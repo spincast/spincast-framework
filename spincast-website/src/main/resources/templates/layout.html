@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="{{langAbrv}}">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Spincast - {% block meta_title %}Java web framework{% endblock %}</title>
+        <meta name="description" content="{% block meta_description %}Java Web Framework{% endblock %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+        <link rel="stylesheet" href="/public/js/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/public/js/letterfx/jquery-letterfx.min.css">
+        <link rel="stylesheet" href="/public/css/hint.min.css">
+        
+        <link rel="stylesheet" href="/public/css/main.css">
+        
+    </head>
+    <body class="{% block sectionClasses %}{% endblock %}">
+    <a href="#top"></a>
+    
+        {#==========================================
+        Header
+        ==========================================#}
+        {% include "./header.html" %}
+        
+        {#==========================================
+        Body block
+        ==========================================#}
+        {% block body %}{% endblock %}
+    
+        {#==========================================
+        Footer
+        ==========================================#}
+        {% include "./footer.html" %}
+        
+        {#==========================================
+        Global js
+        ==========================================#}
+        <script src="/public/js/jquery-1.12.0.min.js"></script>
+        <script src="/public/js/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/public/js/jquery.inview.js"></script>
+        <script src="/public/js/letterfx/jquery-letterfx.min.js"></script>
+        <script src="/public/js/ace/ace.js"></script>
+        <script src="/public/js/main.js"></script>
+        
+        {#==========================================
+        Page specific scripts
+        ==========================================#}
+        {% block scripts %}{% endblock %}
+        
+    </body>
+</html>

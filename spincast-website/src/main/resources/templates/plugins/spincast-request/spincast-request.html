@@ -1,0 +1,499 @@
+{#==========================================
+Spincast Request plugin
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-request{% endblock %}
+{% block meta_title %}Plugins - Spincast Request{% endblock %}
+{% block meta_description %}Spincast Request plugin to access information about the current HTTP request.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Request plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Request <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeCore hint--top-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <span class="clear"></span>
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Request <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable">
+                    <a href="#request_context_addon">The request context add-on</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#request_context_example">Quick Example</a></li>
+                        <li><a href="#request_context_methods">Addon methods</a></li> 
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+            
+	            <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                The <code>Spincast Request</code> plugin provides a request context <code>add-on</code>:
+                    "<code>IRequestRequestContextAddon</code>". This add-on allows your <code>route handlers</code> to get information
+                    about the current request. It is mounted as <code>.request()</code>
+	                on the default Spincast request context. 
+	            </p>
+            </section>
+            
+	        <section id="installation">
+	            <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+	            <p>
+	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
+	                you have nothing more to do!
+	            </p>
+	            <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
+	                plugin by adding this artifact to your project:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-request&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+	            <p>
+	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,71"
+>Injector guice = Guice.createInjector(
+        new SpincastCoreGuiceModule(args),
+        new SpincastRequestPluginGuiceModule(IAppRequestContext.class)
+        // other modules...
+        );</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+	            <p>
+	                ... or by using the <code>install(...)</code> method from your custom Guice module:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,80"
+>public class AppModule extends SpincastCoreGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        install(new SpincastRequestPluginGuiceModule(getRequestContextType()));
+        // other modules...
+    }
+    
+    // ...
+}</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+            </section>
+            
+            <section id="request_context_addon">
+	            <h3>
+                    <a class="anchor" href="#request_context_addon" title="permanent link"></a>
+                    The request context add-on
+                </h3>
+	            <p>
+	            </p>
+	            <div id="request_context_example">
+		            <p>
+		                <div>
+		                    <p>
+		                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Quick example :</h4>
+		                        <pre class="ace ace-java" data-ace-hi="1,27,1,37"
+>public void myHandler(IAppRequestContext context) {
+    String userId = context.request().getPathParam("userId");
+    //...
+}</pre> 
+		                    </p>
+		                </div>
+		            </p>
+	            </div>
+                <div id="request_context_methods">
+		            <p>
+		                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
+		                <ul class="apiList">
+                        
+                        
+                        
+  
+<li>
+    <code class="apiItem">HttpMethod <span>getHttpMethod</span>()</code>
+    <div class="well">
+        Gets the request's <code>HTTP method</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">ContentTypeDefaults <span>getContentTypeBestMatch</span>()</code>
+    <div class="well">
+        Finds the best <code>Content-Type</code> to use for a response
+ using the <code>"Accept"</code> header of the request. It will
+ fallback to <code>ContentTypeDefaults.TEXT</code> if nothing more specific
+ is found.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isJsonRequest</span>()</code>
+    <div class="well">
+        Will return <code>true</code> if the request specifies
+ that <code>Json</code> should be returned.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Locale <span>getLocaleBestMatch</span>()</code>
+    <div class="well">
+        Find the best <code>Locale</code> to use for a response
+ using the <code>"Accept-Language"</code> header of
+ the request.
+<br />Returns the default <code>Locale</code> (taken from the configurations)
+ if nothing more specific is found.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getHeaders</span>()</code>
+    <div class="well">
+        Returns all headers of the current request. A single header can have multiple values.
+<br />The implementation is a <code>TreeMap</code> which is<i>case insensitive</i> for the keys.
+<br />The map is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;String&gt; <span>getHeader</span>(String name)</code>
+    <div class="well">
+        Returns the values of the specified header from the current request or
+ an empty list if not found.
+<br />The <code>name</code> is <i>case insensitive</i>.
+<br />The list is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHeaderFirst</span>(String name)</code>
+    <div class="well">
+        The first value of the specified header from the current request.
+<br />The <code>name</code> is <i>case insensitive</i>.
+<br />Returns <code>null</code> if the header is not found.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getFullUrl</span>()</code>
+    <div class="well">
+        Returns the full URL, including the queryString.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getOriginalFullUrl</span>()</code>
+    <div class="well">
+        If the request has been forwarded, <code>getFullUrl()</code> is
+ going to return the new, forwarded, url.
+<br />This method will always return the <i>original</i> url.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getRequestPath</span>()</code>
+    <div class="well">
+        The path of the request (no querystring).
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, String&gt; <span>getPathParams</span>()</code>
+    <div class="well">
+        The values parsed from the dynamic parameters of the route path.
+<br />The map is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getPathParam</span>(String name)</code>
+    <div class="well">
+        A specific value parsed from a dynamic parameter of the route path.
+<br />The <code>name</code> is <i>case sensitive</i>, since you have easy control over it.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getQueryString</span>()</code>
+    <div class="well">
+        The queryString of the request, without the "?".
+<br />Returns an empty String if there is no querystring.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getQueryStringParams</span>()</code>
+    <div class="well">
+        The parameters taken from the queryString of the request.
+<br />A queryString parameter may have multiple values.
+<br />Returns an empty list if there is no queryString.
+<br />The map is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;String&gt; <span>getQueryStringParam</span>(String name)</code>
+    <div class="well">
+        A specific parameter taken from the queryString of the request.
+<br />A queryString parameter may have multiple values.
+<br />Returns an empty list if the parameter doesn't exist.
+<br />The list is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getQueryStringParamFirst</span>(String name)</code>
+    <div class="well">
+        The first (and often only) value of a specific parameter taken from the
+ queryString of the request.
+<br />Returns <code>null</code> if the parameter doesn't exist.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">InputStream <span>getBodyAsInputStream</span>()</code>
+    <div class="well">
+        The raw InputStream of the request's body.
+<br />Note that what's read from the InputStream cannot be read again!
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">byte[] <span>getBodyAsByteArray</span>()</code>
+    <div class="well">
+        The bytes of the request's body.
+<br />Note that the bytes read cannot be read again!
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getBodyAsString</span>()</code>
+    <div class="well">
+        The request's body as a String, using the <code>UTF-8</code> encoding.
+<br />Note that the characters read cannot be read again!
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getBodyAsString</span>(String encoding)</code>
+    <div class="well">
+        The request's body as a String, using the specified encoding.
+<br />Note that the characters read cannot be read again!
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IJsonObject <span>getJsonBodyAsJsonObject</span>()</code>
+    <div class="well">
+        The request's body deserialized to a <code>IJsonObject</code>. A valid <code>Json</code> body
+ is expected.
+<br />Note that this can only be called once.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, Object&gt; <span>getJsonBodyAsMap</span>()</code>
+    <div class="well">
+        The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>Json</code> body
+ is expected.
+<br />Note that this can only be called once.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">&lt;T&gt; T <span>getJsonBody</span>(Class&lt;T&gt; clazz)</code>
+    <div class="well">
+        The request's body deserialized to the specified <code>class</code>. A valid <code>Json</code> body
+ is expected.
+<br />Note that this can only be called once.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IJsonObject <span>getXmlBodyAsJsonObject</span>()</code>
+    <div class="well">
+        The request's body deserialized to a <code>IJsonObject</code>. A valid <code>XML</code> body
+ is expected.
+<br />Note that this can only be called once.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, Object&gt; <span>getXmlBodyAsMap</span>()</code>
+    <div class="well">
+        The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>XML</code> body
+ is expected.
+<br />Note that this can only be called once.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">&lt;T&gt; T <span>getXmlBody</span>(Class&lt;T&gt; clazz)</code>
+    <div class="well">
+        The request's body deserialized to the specified <code>class</code>. A valid <code>XML</code> body
+ is expected.
+<br />Note that this can only be called once.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getFormDatas</span>()</code>
+    <div class="well">
+        The parameters submitted from a <code>FORM</code> via a <code>POST</code> method.
+<br />More than one value with the same <code>key</code> is possible.
+<br />The names are <i>case sensitive</i>.
+<br />The map is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;String&gt; <span>getFormData</span>(String name)</code>
+    <div class="well">
+        A specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
+<br />More than one value with the same <code>name</code> is possible.
+<br />The <code>name</code> is <i>case sensitive</i>.
+<br />The list is immutable.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getFormDataFirst</span>(String name)</code>
+    <div class="well">
+        The first (and often only) value of a specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
+<br />The <code>name</code> is <i>case sensitive</i>.
+<br />Returns <code>null</code> if the parameter doesn't exist.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, List&lt;File&gt;&gt; <span>getUploadedFiles</span>()</code>
+    <div class="well">
+        The uploaded files, with their names as the keys.
+<br />More than one uploaded file with the same name is possible.
+<br />The map is immutable.
+<br />Returns an empty map if there are no uploadded file.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;File&gt; <span>getUploadedFiles</span>(String name)</code>
+    <div class="well">
+        The uploaded files of the specified name.
+<br />More than one uploaded file with the same <code>name</code> is possible.
+<br />The list is immutable.
+<br />Returns an empty list if no uploaded files of this name exists.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">File <span>getUploadedFileFirst</span>(String name)</code>
+    <div class="well">
+        The first (and often only) uploaded file of the specified name.
+<br />Returns <code>null</code> if no uploaded file of this name exists.
+
+    </div>
+</li>
+
+
+  
+
+    
+ 
+                            
+                            
+		                </ul>
+		            </p>
+	            </div>
+            </section>
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

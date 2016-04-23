@@ -1,0 +1,113 @@
+{#==========================================
+Download
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}download{% endblock %}
+{% block meta_title %}Download{% endblock %}
+{% block meta_description %}Download Spincast{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                <a class="anchor" href="#download" id="download" title="permanent link"></a>
+                Download
+            </h2>
+        </div>
+    </div>
+
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+            {% if spincastCurrrentVersionIsSnapshot  %}
+        
+                <div class="alert alert-warning topContextAlert" role="alert"><strong>Warning!</strong> The current version,
+                    "<code>{{spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
+                    can change, it is not a stable version. Do not use this
+                    as a start for a real application!
+                </div>
+       
+            {% endif %}
+        
+            <h3 class="shortTop">
+                <a class="anchor" href="#quick_start" id="quick_start" title="permanent link"></a>
+                The Quick Start application
+            </h3>
+
+            <p>
+                Download the <a href="/public/quickstart/spincast-quick-start.zip">Spincast Quick Start</a> [<i>.zip</i>]
+                application as a starting point to build a new application or to learn how Spincast works. 
+            </p>
+            <p>
+                Follow the <a href="/documentation#quick_start">Quick Start guide</a> to learn how to use it.
+            </p>
+        
+            <h3>
+                <a class="anchor" href="#maven" id="maven" title="permanent link"></a>
+                Maven artifacts
+            </h3>
+            <p>
+                The current version is : <code>{{spincastCurrrentVersion}}</code>.
+            </p>
+            
+            {% if spincastCurrrentVersionIsSnapshot  %}
+
+                 <p>
+                    Since this is a <code>SNAPSHOT</code> version, you first have to add this repository
+                    to your <code>pom.xml</code> (or ajust this for your <code>build.gradle</code>):
+                    <br />
+                    <pre class="ace ace-xml" 
+>&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;sonatype-snapshots&lt;/id&gt;
+        &lt;url&gt;https://oss.sonatype.org/content/repositories/snapshots&lt;/url&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;true&lt;/enabled&gt;
+        &lt;/snapshots&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</pre>    
+                 </p>
+            {% endif %}
+
+            <p>
+                The Maven artifact to start an application with an implementation for all the 
+                <a href="/documentation#required_components">required components</a>:
+                
+                                <pre class="ace ace-xml" 
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-default&lt;/artifactId>
+    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre> 
+            </p>
+            <p>
+                The Maven artifact to start a Spincast application from scratch (you
+                have to bind an implementation for all the <a href="/documentation#required_components">required components</a>, by yourself):
+                                <pre class="ace ace-xml" 
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-core&lt;/artifactId>
+    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre> 
+                
+            </p>
+            
+            <h3>
+                <a class="anchor" href="#source_code" id="source_code" title="permanent link"></a>
+                Source Code
+            </h3>
+            <p>
+                The <a href="https://github.com/spincast/spincast-framework">source code</a> is on Github.
+            </p>
+
+        </div>
+    </div>
+    
+</div> 
+
+
+{% endblock %}

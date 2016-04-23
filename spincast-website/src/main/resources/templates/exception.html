@@ -1,0 +1,24 @@
+{#==========================================
+Exception
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}serverError{% endblock %}
+{% block meta_title %}Server error{% endblock %}
+{% block meta_description %}Server error{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="errorCore">
+        Server error. Please try again later...
+    </div>
+    <div id="errorCoreImg">
+        <img src="/public/images/404.gif" />
+    </div>
+    
+</div> 
+
+
+{% endblock %}

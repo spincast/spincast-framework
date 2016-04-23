@@ -1,0 +1,22 @@
+Spincast is shamelessly using hours of work from a lot of developers!
+Thanks a lot to all of you! :-)
+
+Java - https://java.com
+Guice - https://github.com/google/guice
+Maven - https://maven.apache.org/
+Undertow - http://undertow.io/
+Apache Commons - https://commons.apache.org/
+Jackson - http://wiki.fasterxml.com/JacksonHome
+jQuery - https://jquery.com/
+Bootstrap - http://getbootstrap.com/
+Logback - http://logback.qos.ch/
+SLF4J - http://www.slf4j.org/
+JUnit - http://junit.org/
+Pebble - http://www.mitchellbosecke.com/pebble/home
+Ace editor - https://ace.c9.io
+Hover.css - http://ianlunn.github.io/Hover/
+LetterFX - https://github.com/tuxsudo/letterfx
+
+
+(Sorry for those we forget! Let us know if you want us to add your
+name here. It will be a pleasure!)

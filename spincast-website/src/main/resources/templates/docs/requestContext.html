@@ -1,0 +1,729 @@
+{#==========================================
+Docs : "Request Context"
+==========================================#}
+
+<section id="request_context">
+    <h3>
+        <a class="anchor" href="#request_context" title="permanent link"></a>
+        The request context
+    </h3>
+    
+    <p>
+        The <code>request context</code> is the
+        object associated with the current request that Spincast passes 
+        to your matching <code>route handlers</code>. First of all, it allows you to access information
+        about the <em>request</em>, and to build the <em>response</em> to send.
+    </p>
+    <p>
+        Those functionalities are provided by simple methods, or by <code><em>add-ons</em></code>. What
+        we call an <code>add-on</code> is an intermediate <code>class</code> containing a set of methods. 
+        In other words, instead of accessing an utility method directly
+        from the request context, "<code>context.getLocaleToUse()</code>" for example, you access
+        it thought an intermediate <code>add-on</code>: "<code>context<strong>.routing()</strong>.isNotFoundRoute()</code>".
+    </p>
+
+    <p>
+        <div>
+            <p>
+                Here are some <code>add-ons</code> and some standalone methods available by default on the request context:
+                {% verbatim %}<pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    // Access the request information
+    String name = context.request().getPathParam("name");
+
+    // Set the response
+    context.response().sendPlainText("Hello world");
+
+    // Get information about the routing process and the current route
+    boolean isNotFoundRoute = context.routing().isNotFoundRoute();
+
+    // Get/Set request-scoped variables
+    String someVariable = context.variables().getAsString("someVariable");
+
+    // Direct access to the Json manager
+    IJsonObject jsonObj = context.json().create();
+
+    // Direct access to the XML manager
+    IJsonObject jsonObj2 = context.xml().fromXml("&lt;someObj&gt;&lt;/someObj&gt;");
+
+    // Direct access the guice context
+    ISpincastUtils spincastUtils = context.guice().getInstance(ISpincastUtils.class);
+
+    // Direct access to the templating engine
+    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+    params.put("name", "Stromgol");
+    context.templating().evaluate("Hello {{name}}", params);
+    
+    // Get the best locale to use given the current request
+    Locale localeToUse = context.getLocaleToUse();
+    
+    // ...
+}
+</pre>{% endverbatim %} 
+            </p>
+        </div>
+    </p>
+    <p>
+        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        Again, the main job of the <code>request context</code> is to allow the <code>route handlers </code>to deal with the
+        <em>request</em> and the <em>response</em>. But it's also a container where various functionalities can be added 
+        to help the <code>route handlers</code> do their job! Take the <code><em>templating()</em></code> add-on, for example:
+    </p>
+    <p>
+        <div>
+            <p>
+                {% verbatim %}<pre class="ace ace-java" data-ace-hi="4,21,4,41"
+>public void myRouteHandler(IDefaultRequestContext context) {
+
+    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+    params.put("name", "Stromgol");
+    String content = context.templating().evaluate("Hi {{name}}!", params);
+
+    // Do something with the evaluated content...
+}</pre>{% endverbatim %}
+            </p>
+        </div>
+    </p>
+    <p>
+        The <code>templating()</code> add-on does not directly manipulate the request or the response.
+        But it provides a useful set of methods for the <code>route handlers</code>. 
+    </p> 
+    <p> 
+        If you have experience with Guice, or with dependency injection in general,
+        you may have noticed that we could simply inject the <code>ITemplatingEngine</code>
+        instance in that controller:
+    </p>
+    <p>
+        <div>
+            <p>
+                {% verbatim %}<pre class="ace ace-java" data-ace-hi="4,4,4,11|5,25,5,59|17,25,17,46"
+>public class AppController {
+
+    private final ITemplatingEngine templatingEngine;
+
+    @Inject
+    public AppController(ITemplatingEngine templatingEngine) {
+        this.templatingEngine = templatingEngine;
+    }
+
+    protected ITemplatingEngine getTemplatingEngine() {
+        return this.templatingEngine;
+    }
+
+    public void myRouteHandler(IDefaultRequestContext context) {
+
+        Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+        params.put("name", "Stromgol");
+        String content = getTemplatingEngine().evaluate("Hi {{name}}!", params);
+
+        // Do something with the evaluated content...
+    }
+}</pre>{% endverbatim %}
+            </p>
+        </div>
+    </p>
+    <p>
+        Or even get the <code>ITemplatingEngine</code> instance using the <code>guice()</code> add-on: 
+    </p>
+    <p>
+        <div>
+            <p>
+                {% verbatim %}<pre class="ace ace-java" data-ace-hi="6,8,6,98|7,25,7,41"
+>public class AppController {
+
+    public void myRouteHandler(IDefaultRequestContext context) {
+
+        Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+        params.put("name", "Stromgol");
+        ITemplatingEngine templatingEngine = context.guice().getInstance(ITemplatingEngine.class);
+        String content = templatingEngine.evaluate("Hi {{name}}!", params);
+
+        // Do something with the evaluated content...
+    }
+}</pre>{% endverbatim %}
+            </p>
+        </div>
+    </p>
+    <p>
+        Those three versions lead to the exact same result. Use the version
+        you prefer! But, for functionalities that are <em>often</em> used inside <code>route handlers</code>, or that should be
+        <em>request scoped</em>, we think extending the <code>request context</code> may be interesting.
+    </p>
+    
+    <p>
+        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        Imagine a <code>plugin</code> which job is to manage <em>authentification</em> and <em>autorization</em>. 
+        Wouldn't it be nice if this plugin could add some extra functionalities to the <code>request context</code>? 
+        For example :   
+    </p>  
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="2,14,2,39|3,33,3,61"
+>public void myHandler(IAppRequestContext context) {
+
+    if(context.auth().isAuthenticated()) {
+        String username = context.auth().user().getUsername();
+        // ...
+    }
+}</pre> 
+            </p> 
+        </div>
+    </p>
+    <p>
+        This is an example where an <code>add-on</code> could be desired.
+    </p>  
+
+    <p>
+        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        There is some boilerplate code to write to get
+        a custom <code>request context</code> type but, when it's done, it's pretty easy to tweak
+        and extend.
+    </p>   
+    <p>  
+        In fact, we highly recommend that you use a custom <code>request context</code> <em>as soon as possible</em>
+        in your application. That way, you can easily add <code>add-ons</code> when you need them.
+    </p>
+    <p>
+        If you use the <a href="#quick_start">Quick Start</a>
+        as a start for your application, the customization of
+        the <code>request context</code> type <em>has already been done for you</em>!
+        But if you start from scratch, an upcoming section will show you how to
+        <a href="#extending_request_context">extend the default request context type</a>, by yourself.
+    </p>
+
+</section>
+
+
+{#==========================================
+Section "Request Context / Core request context add-ons"
+==========================================#}     
+<section id="core_rc_add-ons">
+    <h3>
+        <a class="anchor" href="#core_rc_add-ons" title="permanent link"></a>
+        The core request context <code>add-ons</code>
+    </h3>
+
+    <p>
+        Similarly to the <a href="#required_components">required components</a>, there are <code>add-ons</code> which are always available,
+        in any Spincast application.
+        
+        Here, we'll show some examples for each of them, but you'll have to 
+        go to the associated <code>plugin</code> documentation page to see their full API.
+    </p>
+
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">IRequestRequestContextAddon&lt;R&gt; <span>request</span>()</code>
+                <p class="well">
+                    The <code>request()</code> add-on allows access to
+                    information about the current <code>request</code>: its body, its headers, its URL, etc. The default
+                    implementation, <code>SpincastRequestRequestContextAddon</code>, is provided by the 
+                    <a href="/plugins/spincast-request">Spincast Request</a> plugin. Check this plugin's documentation
+                    for all the available API.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>// Get the request full URL
+String fullUrl = context.request().getFullUrl();
+
+// Get the request body as a JsonObject
+IJsonObject body = context.request().getJsonBodyAsJsonObject();
+
+// Get an header
+String authorization = context.request().getHeaderFirst(HttpHeaders.AUTHORIZATION);
+
+// Get a queryString parameter
+String page = context.request().getQueryStringParamFirst("page");
+
+// Get the value of a dynamic path token.
+// For example for : /users/${userId}
+String userId = context.request().getPathParam("userId");</pre>     
+                        </p> 
+                    </div>   
+                </p>
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>response</span>()</code>
+                <p class="well">
+                    The <code>response()</code> add-on allows you to build
+                    the <code>response</code> : its content, its content-type, its HTTP status, its headers.
+                    The default implementation, <code>SpincastResponseRequestContextAddon</code>, is provided by the 
+                    <a href="/plugins/spincast-response">Spincast Response</a> plugin. Check this plugin's documentation
+                    for all the available API.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>// Set the status code
+context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
+
+// Add an header value
+context.response().addHeaderValue(HttpHeaders.CONTENT_LANGUAGE, "en");
+
+// Set the content-type
+context.response().setContentType(ContentTypeDefaults.JSON.getMainVariation());
+
+// Permanently redirects to a new url (the new url
+// can be absolute or relative)
+context.response().redirect("/new-url", true);
+
+// Send some bytes
+context.response().sendBytes("Hello World".getBytes("UTF-8"));
+
+// Send an object as Json
+context.response().sendJson(user);
+
+// Send HTML evaluated from a template
+context.response().sendHtmlTemplate("/templates/user.html", params);</pre>     
+                        </p> 
+                    </div>
+                </p>
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">ICookiesRequestContextAddon&lt;R&gt; <span>cookies</span>()</code>
+                <p class="well">
+                    
+                    The <code>cookies()</code> add-on allows you to read
+                    and write <code>cookies</code>.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>// Get a cookie
+ICookie cookie = context.cookies().getCookie("someCookie");
+
+// Add a cookie
+context.cookies().addCookie("someCookie", "someValue");
+
+// Delete a cookie
+context.cookies().deleteCookie("someCookie");</pre>     
+                        </p> 
+                    </div>     
+                </p>
+            </li>
+        </ul>
+    </p>
+    
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">IRoutingRequestContextAddon&lt;R&gt; <span>routing</span>()</code>
+                <p class="well">
+                    The <code>routing()</code> add-on allows you to get
+                    information about the current <code>routing process</code>.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>// Get all the matches returned by the router.
+IRoutingResult&lt;IDefaultRequestContext&gt; routingResult = context.routing().getRoutingResult();
+
+// Get the current match : the route handler, its position
+// and its parsed path parameters.
+IRouteHandlerMatch&lt;IDefaultRequestContext&gt; currentMatch =
+        context.routing().getCurrentRouteHandlerMatch();
+
+// Is the current route a "Not found" one?
+boolean isNotFoundRoute = context.routing().isNotFoundRoute();
+
+// Are we currently on a route to handle an exception?
+boolean isExceptionHandling = context.routing().isExceptionRoute();</pre>     
+                        </p> 
+                    </div>
+                </p>
+            </li>
+        </ul>
+    </p>
+    
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">ITemplatingRequestContextAddon&lt;R&gt; <span>templating</span>()</code>
+                <p class="well">
+                    The <code>templating()</code> add-on gives access to <code>templating</code> functionalities.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                                {% verbatim %}<pre class="ace ace-java"
+>Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();
+params.put("name", "Stromgol");
+
+// Evaluation of an inline content 
+String html = context.templating().evaluate("Hello {{name}}", params);
+
+// Evaluation of a template file
+String html = context.templating().fromTemplate("/templates/user.html", params);</pre>{% endverbatim %}   
+                        </p> 
+                    </div>
+                </p>
+            </li>
+        </ul>
+    </p>
+    
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">IVariablesRequestContextAddon&lt;R&gt; <span>variables</span>()</code>
+                <p class="well">
+                    The <code>variables()</code> add-on allows you to add
+                    <code>variables</code> which are <em>request scoped</em>. This is a good way to make a
+                    <code>route handler</code> communicate some informations to others.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>// Get a request scoped variable as a JsonObject.
+IJsonObject info = context.variables().getAsJsonObject("someObjectName");
+
+// Get a request scoped variable as a String.
+String info = context.variables().getAsString("someKey");
+
+// Add a new request scoped variable 
+context.variables().add("someKey", "someValue");
+</pre>
+                        </p> 
+                    </div>   
+                </p>
+            </li>
+        </ul>
+    </p>
+</section>   
+
+
+{#==========================================
+Section "Request Context / Core request context methods"
+==========================================#}     
+<section id="core_rc_methods">
+    <h3>
+        <a class="anchor" href="#core_rc_methods" title="permanent link"></a>
+        The core request context methods
+    </h3>
+    <p>
+        In addition to the <code>add-ons</code> we just listed, there are also
+        some utility methods on the <code>request context</code> which are always
+        available:
+    </p>
+    <p>
+        <ul class="apiList">
+
+            <li>
+                <code class="apiItem">IJsonManager <span>json</span>()</code>
+                <p class="well">
+                    Provides easy access to the <code><a href="/plugins/spincast-jackson-json#jsonmanager">IJsonManager</a></code>,<br />Json related methods.
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">IXmlManager <span>xml</span>()</code>
+                <p class="well">
+                    Provides easy access to the <code><a href="/plugins/spincast-jackson-xml#xmlmanager">IXmlManager</a></code>,<br />XML related methods.
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">Injector <span>guice</span>()</code>
+                <p class="well">
+                    Provides easy access to the <code>Guice</code> context.
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">&lt;T&gt; T <span>get</span>(Class&lt;T&gt; clazz)</code>
+                <p class="well">
+                    Shortcut to get an instance from <code>Guice</code>. Will also cache the instance (as long as it is request scoped or a singleton).
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">&lt;T&gt; T <span>get</span>(Key&lt;T&gt; key)</code>
+                <p class="well">
+                    Shortcut to get an instance from <code>Guice</code>. Will also cache the instance (as long as it is request scoped or a singleton)
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">Locale <span>getLocaleToUse</span>()</code>
+                <p class="well">
+                    The best <code>Locale</code> to use, as found by the 
+                    <code><a href="/plugins/spincast-locale-resolver#localeresolver">LocaleResolver</a></code>.
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">Object <span>exchange</span>()</code>
+                <p class="well">
+                    The underlying <code>exchange</code> object, as provided by the <code>HTTP server</code>.<br />If you know for sure what the 
+                    implementation is, you may cast this object to access extra functionalities not provided by Spincast out of the box!
+                </p>
+            </li>
+        </ul>
+    </p> 
+</section>
+       
+{#==========================================
+Section "Request Context / Extending the request context type"
+==========================================#}     
+<section id="extending_request_context">
+    <h3>
+        <a class="anchor" href="#extending_request_context" title="permanent link"></a>
+        Extending the request context
+    </h3>
+    <p>
+        Extending the <code>request context</code> is probably to most advanced thing to
+        learn about Spincast. Once in place, a custom <code>request context</code> is quite 
+        easy to adjust and extend, but the required code to start may be somewhat challenging. 
+        This is why we recommend that you start your application with the <a href="#quick_start">Quick Start</a>:
+        this application already contains a custom <code>request context</code> type,
+        so you don't have to write the bootstrapping code by yourself! But if you start from scratch or if you
+        are curious about how a custom <code>request context</code> type is possible, keep
+        reading.
+    </p>
+    <p>
+        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        First, let's quickly repeat why we could want to extend the default <code>request context</code> type...
+        We may have a "<code>translate(...)</code>" method which is frequently use by our various
+        <code>route handlers</code>. Let's say this is a method helping translate a sentence from one language
+        to another. 
+    </p>
+    <p>
+        Instead of <em>injecting</em> the class where this method is
+        defined each time we need to use it, wouldn't it be nice if we would have access to it
+        directly from the <code>request context</code>? For example:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,35,3,92"
+>public class AppController {
+
+    public void myRouteHandler(IAppRequestContext context) {
+        String translated = context.translate("Hello World!", Locale.ENGLISH, Locale.FRENCH);
+        // ...
+    }
+}</pre>
+            </p> 
+        </div>
+    </p>
+    
+    <p>
+        Since this method doesn't exist on the default <code>IRequestContext</code> interface,
+        we'll have to create a custom type and add the method to it. In the previous snippet, 
+        this custom type is called "<code>IAppRequestContext</code>".
+    </p>
+    <p>
+        Let's create this custom <code>request context</code> interface:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" 
+>public interface IAppRequestContext extends IRequestContext&lt;IAppRequestContext&gt; {
+
+    public void translate(String sentense, Locale from, Locale to);
+
+    // Other custom methods and/or add-ons...
+}</pre>
+            </p>
+        </div>
+    </p>
+    <p>
+        Note that we extend <code>IRequestContext</code>, which is the
+        base interface for any request context type, but we <em>parameterize it using our custom type</em>.
+        This is required because this custom type is used in some of the base methods' signatures.
+    </p>
+    <p>
+        Then, the implementation:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" 
+>public class AppRequestContext extends RequestContextBase&lt;IAppRequestContext&gt;
+                               implements IAppRequestContext {
+
+    @AssistedInject
+    public AppRequestContext(@Assisted Object exchange) {
+        super(exchange);
+    }
+
+    @Override
+    public String translate(String sentense, Locale from, Locale to) {
+        
+        // More hardcoded than translated here!
+        return "Salut, monde!";
+    }
+}</pre>
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">1</span> : We extend <code>RequestContextBase</code>, 
+                        the default implementation class of a <code>request context</code>, since we want to
+                        keep the default methods and simply add one. We also need to parameterize
+                        this base class with our custom <code>request context</code> type.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">2</span> :We implement our custom interface.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">4-7</span> : The base class requires the server's
+                        <code>exchange</code> object, which is going to be injected using an 
+                        <a href="https://github.com/google/guice/wiki/AssistedInject">assisted factory</a>. Don't
+                        worry too much about this. Simply add this constructor, and things should be working.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">9-14</span> : We implement our new <code>translate(...)</code> method.
+                    </li>
+                </ul>
+            </p>  
+        </div>
+    </p>
+    <p>
+        Last, but not the least, we need to tell Spincast about
+        our custom <code>request context</code> type! This is done by overriding the
+        <code>getRequestContextImplementationClass()</code> method of the <code>core</code> module :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="9,50,9,88|10,15,10,32"
+>public class AppModule extends SpincastDefaultGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        // ...
+    }
+
+    @Override
+    protected Class&lt;? extends IRequestContext&lt;?&gt;&gt; getRequestContextImplementationClass() {
+        return AppRequestContext.class;
+    }
+}</pre>
+
+            </p> 
+        </div>
+    </p>
+    <p>
+        Note that it is <em>the implementation</em>, "<code>AppRequestContext</code>", that we have to specify, 
+        not the interface!
+        This is to simplify your job: Spincast will automatically find the associated
+        <em>interface</em> and will use it to parameterize the required components.
+    </p>
+    <p>
+        And you are done! From now on, when you are using a routing related component which has to be parameterized with the
+        <code>request context</code> type, you use your custom type. For example:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="0,7,0,27|3,31,3,88"
+>IRouter&lt;IAppRequestContext&gt; router = getRouter();
+
+router.GET("/").save(context -&gt; {
+    String translated = context.translate("Hello World!", Locale.ENGLISH, Locale.FRENCH);
+    // do something with the translated sentence...
+});</pre>
+
+            </p> 
+        </div>
+    </p>
+    <p>
+        Or, using an inline <code>route handler</code>: 
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="0,7,0,27|2,33,2,53|5,23,5,41|6,35,6,92"
+>IRouter&lt;IAppRequestContext&gt; router = getRouter();
+
+router.GET("/").save(new IHandler&lt;IAppRequestContext&gt;() {
+
+    @Override
+    public void handle(IAppRequestContext context) {
+        String translated = context.translate("Hello World!", Locale.ENGLISH, Locale.FRENCH);
+        // do something with the translated sentence...
+    }
+});</pre>
+
+            </p> 
+        </div>
+    </p>
+    
+    <p>
+        All this, again, may seem like a lot of boilerplate code. But it has to be done <em>only one time</em> and, once in place, 
+        it's easy to add new methods and <code>add-ons</code> to your <code>request context</code>!
+    </p>
+
+    <h4>
+        <a class="anchor_small" href="#unparameterized_components" id="unparameterized_components" title="permanent link"></a>
+        Using unparameterized components
+    </h4>
+    <p>
+        One last trick about the extending the <code>request context</code>. 
+        You can do for your custom type what we did for the
+        default one: to create an <em>unparameterized version</em> for each component which, at the base, must
+        be parameterized with it. For example, here's how the default <code>router</code> interface is defined:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public interface IDefaultRouter extends IRouter&lt;IDefaultRequestContext&gt; {
+    // nothing required
+}</pre>
+            </p> 
+        </div>
+    </p>
+    <p>
+        This interface has no other goal than to "hide" the parameterization.
+        Because of this definition, you can inject <code>IDefaultRouter</code> 
+        instead of <code>IRouter&lt;IDefaultRequestContext&gt</code>, which is arguably simpler. Both
+        types are interchangeable.
+    </p>
+    <p> 
+        You can do the exact same thing with your <em>custom</em> <code>route context</code> type.
+        For example:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public interface IAppRouter extends IRouter&lt;IAppRequestContext&gt; {
+    // nothing required
+}</pre>
+            </p> 
+        </div>
+    </p>
+    <p> 
+        Now, you could inject <code>IAppRouter</code> instead of <code>IRouter&lt;IAppRequestContext&gt;</code> when you
+        need your custom router. Here again, it's a matter of taste! Some prefer those simpler 
+        interfaces to the generics ones.
+    </p>
+    <p>
+        For more details, have a look at the <a href="#quick_start">Quick Start</a> code. It implements exactly
+        that.
+    </p>
+
+</section>  

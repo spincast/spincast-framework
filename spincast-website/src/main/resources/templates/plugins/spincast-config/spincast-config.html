@@ -1,0 +1,390 @@
+{#==========================================
+Spincast Config plugin
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-config{% endblock %}
+{% block meta_title %}Plugins - Spincast Config{% endblock %}
+{% block meta_description %}Spincast Config plugin provides the default configurations required by Spincast.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Config plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Config <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeCore hint--top-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <span class="clear"></span>
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Config <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable">
+                    <a href="#spincast_config">The <code>ISpincastConfig</code> interface</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#methods">Methods</a></li> 
+                    </ul>
+                </li>  
+                
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+            
+                <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                The <code>Spincast Config</code> plugin provides an implementation
+                    of the <a href="#spincast_config"><code>ISpincastConfig</code></a> interface to provide default
+                    values to the configurations required by Spincast. 
+	            </p>
+                <p>
+                    The current implementation is very simple: the values are simply hardcoded.
+                </p>
+                
+            </section>
+            
+	        <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+	            <p>
+	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
+	                you have nothing more to do!
+	            </p>
+	            <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
+	                plugin by adding this artifact to your project:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-config&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+	            <p>
+	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,69"
+>Injector guice = Guice.createInjector(
+        new SpincastCoreGuiceModule(args),
+        new SpincastConfigPluginGuiceModule(IAppRequestContext.class)
+        // other modules...
+        );</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+	            <p>
+	                ... or by using the <code>install(...)</code> method from your custom Guice module:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,79"
+>public class AppModule extends SpincastCoreGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType()));
+        // other modules...
+    }
+    
+    // ...
+}</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+            </section>
+            
+            <section id="spincast_config">
+                <h3 class="noTop">
+                    <a class="anchor" href="#spincast_config" title="permanent link"></a>
+                    The <code>ISpincastConfig</code> interface
+                </h3>
+                <p>
+                </p> 
+                
+                <div id="methods">
+                    <p>
+                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods :</h4>
+                        <ul class="apiList">
+
+
+<li>
+    <code class="apiItem">boolean <span>isDebugEnabled</span>()</code>
+    <div class="well">
+        Let this to <code>true</code> on development environment,
+ where errors can be publicly displayed, where cache can
+ be disabled, etc. In production set it to <code>false</code>
+<br />The default value is <code>true</code>.
+
+        <div class="apiItemFooter">
+            @return <code>true</code> if debug mode is enabled.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getServerHost</span>()</code>
+    <div class="well">
+        The host/IP on which the server will listen to.
+<br />The default value is <code>0.0.0.0</code>.
+
+        <div class="apiItemFooter">
+            @return the host/IP
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">int <span>getHttpServerPort</span>()</code>
+    <div class="well">
+        The HTTP (unsecure) port on which the server will listen on.
+<br />If &lt;= 0, it won't be used.
+<br />The default value is <code>44419</code> so HTTP
+ is enabled by default.
+
+        <div class="apiItemFooter">
+            @return the HTTP port
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">int <span>getHttpsServerPort</span>()</code>
+    <div class="well">
+        The HTTPS (secure) port on which the server will listen on.
+<br />If &lt;= 0, it won't be used.
+<br />The default value is <code>-1</code> so HTTPS
+ is not enabled by default.
+
+        <div class="apiItemFooter">
+            @return the HTTPS port
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHttpsKeyStorePath</span>()</code>
+    <div class="well">
+        The path to the <code>KeyStore</code>, for SSL. Can be a
+ classpath path or and absolute path.
+<br />The classpath will be checked first.
+<br />Only used if <code>getHttpsServerPort()</code> returns a port &gt; 0.
+<br />The default value is <code>null</code>.
+
+        <div class="apiItemFooter">
+            @return the path to the <code>KeyStore</code>
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHttpsKeyStoreType</span>()</code>
+    <div class="well">
+        The type of the <code>KeyStore</code>, for SSL.
+<br />For example: "JKS".
+<br />Only used if <code>getHttpsServerPort()</code> returns a port &gt; 0.
+<br />The default value is <code>null</code>.
+
+        <div class="apiItemFooter">
+            @return the type of the <code>KeyStore</code>
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHttpsKeyStoreStorePass</span>()</code>
+    <div class="well">
+        The "storepass" of the <code>KeyStore</code>, for SSL.
+<br />Only used if <code>getHttpsServerPort()</code> returns a port > 0.
+<br />The default value is <code>null</code>.
+
+        <div class="apiItemFooter">
+            @return the "storepass" of the <code>KeyStore</code>
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHttpsKeyStoreKeypass</span>()</code>
+    <div class="well">
+        The "keypass" of the <code>KeyStore</code>, for SSL.
+<br />Only used if <code>getHttpsServerPort()</code> returns a port &gt; 0.
+<br />The default value is <code>null</code>.
+
+        <div class="apiItemFooter">
+            @return the "keypass" of the <code>KeyStore</code>
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isRoutesCaseSensitive</span>()</code>
+    <div class="well">
+        Are the URLS case-sensitive or not, during the route matching
+ process?
+<br />The default value is <code>false</code>.
+
+        <div class="apiItemFooter">
+            @return if they are case-sensitive
+<br />@see <a href="http://stackoverflow.com/questions/7996919/should-url-be-case-sensitive">Should URL be case sensitive?</a>
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getEnvironmentName</span>()</code>
+    <div class="well">
+        Returns the name of the environment.
+<br />The default value is <code>local</code>.
+
+        <div class="apiItemFooter">
+            @return the name of the environment
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">long <span>getServerMaxRequestBodyBytes</span>()</code>
+    <div class="well">
+        Maximum number of bytes a request's body can have.
+ "-1" means no limit.
+<br />The default value is <code>104857600</code> (100MB).
+
+        <div class="apiItemFooter">
+            @return the maximum number of bytes
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;String&gt; <span>getContentTypesToSkipGziping</span>()</code>
+    <div class="well">
+        Even if gziping of the response is enabled, those Content-Types
+ still won't be gzipped.
+<br />If an entry ends with "*", it will be considered as a <i>prefix</i>
+ (ex: "image/*" will match all Content-Types starting with "image/").
+<br />Otherwise, the current response Content-Type will have to exactly
+ match the entry (case insensitive), or being followed by a " " or
+ a ";".
+
+        <div class="apiItemFooter">
+            @return the Content-Types that shouldn't be gzipped.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">File <span>getSpincastWritableDir</span>()</code>
+    <div class="well">
+        A directory where generated files and temporary files
+ can be written by Spincast.
+<br />The default value uses <code>System.getProperty("java.io.tmpdir")</code>
+ to create a temporary directory.
+
+        <div class="apiItemFooter">
+            @return a directory with write permissions for Spincast.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Locale <span>getDefaultLocale</span>()</code>
+    <div class="well">
+        The default Locale to use if no other Locale can be found
+ as a "best match", for the current request.
+<br />The default value is <code>Locale.US</code>.
+
+        <div class="apiItemFooter">
+            @return the default Locale
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">int <span>getRouteForwardingMaxNumber</span>()</code>
+    <div class="well">
+        The maximum number of time a request can be forwarded to another
+ route. After this number, an exception will be thrown.
+<br />The default value is <code>2</code>.
+
+        <div class="apiItemFooter">
+            @return the maximum number of time
+
+        </div>
+    </div>
+</li>
+
+
+
+
+
+
+                        </ul>
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

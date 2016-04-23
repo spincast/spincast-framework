@@ -1,0 +1,677 @@
+{#==========================================
+Spincast Response plugin
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-response{% endblock %}
+{% block meta_title %}Plugins - Spincast Response{% endblock %}
+{% block meta_description %}Spincast Response plugin to manipulate the headers and content sent.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Response plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Response <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeCore hint--top-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <span class="clear"></span>
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Response <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable">
+                    <a href="#request_context_addon">The request context add-on</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#request_context_example">Quick Example</a></li>
+                        <li><a href="#request_context_methods">Addon methods</a></li> 
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+
+                <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+                
+                <p>
+                    The <code>Spincast Response</code> plugin provides a request context <code>add-on</code> :
+                    "<code>IResponseRequestContextAddon</code>". This add-on allows your <code>route handlers</code> to manipulate the 
+                    headers and content sent as the response for the current request. It is mounted as <code>.response()</code>
+                    on the default Spincast request context. 
+                </p>
+            </section>
+            
+	        <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+	            <p>
+	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
+	                you have nothing more to do!
+	            </p>
+	            <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
+	                plugin by adding this artifact to your project:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-response&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+	            <p>
+	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,72"
+>Injector guice = Guice.createInjector(
+        new SpincastCoreGuiceModule(args),
+        new SpincastResponsePluginGuiceModule(IAppRequestContext.class)
+        // other modules...
+        );</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+	            <p>
+	                ... or by using the <code>install(...)</code> method from your custom Guice module:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,81"
+>public class AppModule extends SpincastCoreGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        install(new SpincastResponsePluginGuiceModule(getRequestContextType()));
+        // other modules...
+    }
+    
+    // ...
+}</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+            </section>
+            
+            <section id="request_context_addon">
+                <h3>
+                    <a class="anchor" href="#request_context_addon" title="permanent link"></a>
+                    The request context add-on
+                </h3>
+	            <div id="request_context_example">
+		            <p>
+		                <div>
+		                    <p>
+		                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Quick example :</h4>
+		                        <pre class="ace ace-java" data-ace-hi="1,11,1,22|2,11,2,22"
+>public void myHandler(IAppRequestContext context) {
+    context.response().setStatusCode(418);
+    context.response().sendPlainText("Drink tea!");
+}</pre> 
+		                    </p>
+		                </div>
+		            </p>
+	            </div>
+                <div id="request_context_methods">
+		            <p>
+		                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
+		                <ul class="apiList">
+                        
+                        
+    
+<li>
+    <code class="apiItem">boolean <span>isClosed</span>()</code>
+    <div class="well">
+        Is the response closed? If so, nothing more can be sent...
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>end</span>()</code>
+    <div class="well">
+        Flushes everything and closes the response.
+<br />Nothing more can be sent after this (but the
+ remaining <code>route handlers</code> will still
+ be called).
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isHeadersSent</span>()</code>
+    <div class="well">
+        Are the response headers sent? If this is the case,
+ then the headers can't be changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendBytes</span>(byte[] bytes)</code>
+    <div class="well">
+        Sends some <code>bytes</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendBytes</span>(byte[] bytes, String contentType)</code>
+    <div class="well">
+        Sends some <code>bytes</code> using the specified <code>Content-Type</code>,
+ without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendBytes</span>(byte[] bytes, String contentType, boolean flush)</code>
+    <div class="well">
+        Sends some <code>bytes</code> using the specified <code>Content-Type</code> and flushes,
+ if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getCharactersCharsetName</span>()</code>
+    <div class="well">
+        The charset to use to convert characters to bytes.
+<br />Defaults to <code>"UTF-8"</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>setCharactersCharsetName</span>(String name)</code>
+    <div class="well">
+        Sets the charset to use to convert characters to bytes.
+<br />Defaults to <code>"UTF-8"</code>.
+<br />Make sure you use the same charset here
+ than the one that is sent as the <code>"Content-Type"</code> header (which
+ is also <code>"UTF-8"</code> by default, if you send data using
+ <code>sendPlainText()</code>, <code>sendHtml()</code> or <code>sendJson()</code>).
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendCharacters</span>(String content)</code>
+    <div class="well">
+        Sends a String, using the encoding returned by <code>getCharactersCharsetName</code>,
+ without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendCharacters</span>(String content, String contentType)</code>
+    <div class="well">
+        Sends a String, using the encoding returned by <code>getCharactersCharsetName</code> and
+ using the specified <code>Content-Type</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendCharacters</span>(String content, String contentType, boolean flush)</code>
+    <div class="well">
+        Sends a String, using the encoding returned by <code>getCharactersCharsetName</code>
+ and using the specified <code>Content-Type</code>. Flushes the response, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendPlainText</span>(String string)</code>
+    <div class="well">
+        Sends a String as <code>text/plain</code>, <code>UTF-8</code> encoded, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendPlainText</span>(String string, boolean flush)</code>
+    <div class="well">
+        Sends a String as <code>text/plain</code>, <code>UTF-8</code> encoded,
+ and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendJson</span>(Object obj)</code>
+    <div class="well">
+        Serializes to <code>Json</code> and sends as <code>application/json</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendJson</span>(Object obj, boolean flush)</code>
+    <div class="well">
+        Serializes to <code>Json</code>, sends as <code>application/json</code> ,
+ and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendXml</span>(Object obj)</code>
+    <div class="well">
+        Serializes to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendXml</span>(Object obj, boolean flush)</code>
+    <div class="well">
+        Serializes to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtml</span>(String html)</code>
+    <div class="well">
+        Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtml</span>(String html, boolean flush)</code>
+    <div class="well">
+        Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded,
+ and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtmlParse</span>(String html, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Parses the given String using the <code>ITemplatingEngine</code> and
+ the given parameters, then sends the result as <code>text/html</code>,
+ <code>UTF-8</code> encoded, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtmlParse</span>(String html, Map&lt;String, Object&gt; params, boolean flush)</code>
+    <div class="well">
+        Parses the given String using the <code>ITemplatingEngine</code> and
+ the given parameters, then sends the result as <code>text/html</code>,
+ <code>UTF-8</code> encoded, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendParse</span>(String content, String contentType, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Parses the given String using the <code>ITemplatingEngine</code> and
+ the given parameters, then sends the result using the specified
+ <code>Content-Type</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendParse</span>(String content, String contentType, Map&lt;String, Object&gt; params, boolean flush)</code>
+    <div class="well">
+        Parses the given String using the <code>ITemplatingEngine</code> and
+ the given parameters, then sends the result using the specified
+ <code>Content-Type</code>, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, Map&lt;String, Object&gt; params, boolean flush)</code>
+    <div class="well">
+        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendTemplate</span>(String templatePath, String contentType, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result using the given <code>contentType</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendTemplate</span>(String templatePath, String contentType, Map&lt;String, Object&gt; params, boolean flush)</code>
+    <div class="well">
+        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result using the given <code>contentType</code>, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>flush</span>()</code>
+    <div class="well">
+        Flushes the current response. If not already specified,
+ a default <code>status code</code> and <code>Content-Type</code> will be added.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>flush</span>(boolean end)</code>
+    <div class="well">
+        Flushes the current response. If not already specified on the response,
+ a default <code>status code</code> and <code>content-type</code> will be added.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+        <div class="apiItemFooter">
+            @param end If <code>true</code>, the exchange will be closed and no more data
+ can be sent.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>setStatusCode</span>(int statusCode)</code>
+    <div class="well">
+        Sets the response's <code>status code</code> to use. Uses <code>200</code>
+ by default.
+<br />Note that this <code>status code</code> can be changed automatically
+ if an exception is thrown.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">int <span>getStatusCode</span>()</code>
+    <div class="well">
+        The current <code>status code</code> sent or to be send.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>setContentType</span>(String responseContentType)</code>
+    <div class="well">
+        The <code>Content-Type</code> header to use for the response. Most
+ <code>sendXXX()</code> methods will set this automatically.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getContentType</span>()</code>
+    <div class="well">
+        The current <code>Content-Type</code> sent or to be send.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>redirect</span>(String newUrl, boolean permanently)</code>
+    <div class="well">
+        Sets a redirection header.
+<br />This will NOT close the response and will NOT skip the remaining handlers!
+<br />Throw a <code>RedirectException</code> instead if you want to redirect the user
+ immediately.
+
+        <div class="apiItemFooter">
+            @param permanently If <code>true</code>, a
+ <code>301</code> header will be sent. If <code>false</code>,
+ <code>302</code> will be sent.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>redirect</span>(String newUrl, int specific3xxCode)</code>
+    <div class="well">
+        Sets the redirection headers with a specified <code>3xx</code> status code.
+<br />This will NOT close the response and will NOT skip the remaining handlers!
+<br />Throw a <code>RedirectException</code> instead if you want to redirect the user
+ immediately.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>addHeaderValue</span>(String name, String value)</code>
+    <div class="well">
+        Adds a value to a response header. If the header already
+ has values, the new one is added.
+<br />If the value is <code>null</code>, it won't be added.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>addHeaderValues</span>(String name, List&lt;String&gt; values)</code>
+    <div class="well">
+        Adds a list of values to a response header. If the header already
+ has values, the new ones are added.
+<br />If the values are <code>null</code>, nothing will be added.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>setHeader</span>(String name, String value)</code>
+    <div class="well">
+        Set the value to a response header. If the header already
+ exists, its current values are <i>overwritten</i>.
+<br />If the value is <code>null</code>, the header will be
+ removed (same behavior as <code>removeHeader(String name)</code>)
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>setHeader</span>(String name, List&lt;String&gt; values)</code>
+    <div class="well">
+        Set multiple values to a response header. If the header already
+ exists, its current values are <i>overwritten</i>.
+<br />If the lists is <code>null</code> or empty, the header will be
+ removed (same behavior as <code>removeHeader(String name)</code>)
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>removeHeader</span>(String name)</code>
+    <div class="well">
+        Removes an header by its name.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getHeaders</span>()</code>
+    <div class="well">
+        The currently set response headers.
+<br />The map is mutable! Also the returned implementation is a
+ <code>TreeMap</code> with <i>case insensitive</i> keys.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;String&gt; <span>getHeader</span>(String name)</code>
+    <div class="well">
+        The values of a specific response header.
+<br />The list is mutable!
+<br />The name is <i>case insensitive</i>.
+<br />Returns an empty list if the header was not found.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHeaderFirst</span>(String name)</code>
+    <div class="well">
+        The first value of a specific header.
+<br />The name is <i>case insensitive</i>.
+<br />Returns <code>null</code> if the header is not found.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>resetBuffer</span>()</code>
+    <div class="well">
+        Clears the buffer (the <i>unsent</i> buffer, of course).
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>resetEverything</span>()</code>
+    <div class="well">
+        Clears the buffer (the <i>unsent</i> buffer, of course), resets the cookies,
+ the headers, the <code>Content-Type</code> and
+ sets the <code>status code</code> back to <code>200</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">byte[] <span>getUnsentBytes</span>()</code>
+    <div class="well">
+        Gets the current unsent bytes (AKA the buffer).
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getUnsentCharacters</span>()</code>
+    <div class="well">
+        Gets the current unsent characters (AKA the buffer), using the
+ <code>UTF-8</code> encoding.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getUnsentCharacters</span>(String encoding)</code>
+    <div class="well">
+        Gets the current unsent characters (AKA the buffer), using the
+ specified encoding.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>setGzipOption</span>(GzipOption gzipOption)</code>
+    <div class="well">
+        Enable or disable gzipping of the response.
+<br />The default is <code>GzipOption.DEFAULT</code> which
+ will gzip the response only for some <code>Content-Types</code>
+ and only if a <code>gzip 'Accept-Encoding'</code> header
+ has been received from the client.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">GzipOption <span>getGzipOption</span>()</code>
+    <div class="well">
+        The currently set gzip options.
+
+    </div>
+</li>
+
+
+    
+    
+    
+    
+
+
+
+		                </ul>
+		            </p>
+	            </div>
+            </section>
+        </div>
+    </div>
+
+</div> 
+
+{% endblock %}

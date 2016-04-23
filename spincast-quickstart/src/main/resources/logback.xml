@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--===================================
+    Appender - Console
+    ====================================-->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+		    <charset>UTF-8</charset>
+		    <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %msg ~ %caller{1}</pattern>
+		</encoder>
+    </appender>
+    
+    <!--===================================
+    Appender - File
+    ====================================-->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--===================================
+    Appender Level, default
+    ====================================-->
+    <root level="warn">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file"/>
+    </root>
+    
+    <!--===================================
+    Appender Level, for the application
+    ====================================-->
+    <logger name="org.spincast" level="debug" additivity="false">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="file"/>
+    </logger>
+
+</configuration>

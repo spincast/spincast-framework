@@ -1,0 +1,279 @@
+{#==========================================
+Spincast Pebble plugin
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-pebble{% endblock %}
+{% block meta_title %}Plugins - Spincast Pebble{% endblock %}
+{% block meta_description %}Spincast Pebble plugin provides templating functionalities using Pebble.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Pebble plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Pebble <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeCore hint--top-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <span class="clear"></span>
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Pebble <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable">
+                    <a href="#templatingengine">The <code>ITemplatingEngine</code> interface</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#methods">Methods</a></li> 
+                    </ul>
+                </li>  
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+            
+                <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                The <code>Spincast Pebble</code> provides templating and HTML generation functionalities
+                     using <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. It contains an implementation
+                    of the <code><a href="#templatingengine">ITemplatingEngine</a></code> interface.
+	            </p>
+                <p>
+                    Most of the time, the <code>ITemplatingEngine</code> interface is used directly from
+                    the <code>request context</code> via the 
+                    <a href="/plugins/spincast-templating-addon#request_context_addon"><code>templating()</code> add-on</a> or via
+                    some dedicated methods on the <a href="/plugins/spincast-response#request_context_addon"><code>response()</code> add-on</a>. 
+                </p>
+                <p>    
+                    For example:
+                </p>
+                
+                <p>
+                    <div>
+                        <p>
+                            {% verbatim %}<pre class="ace ace-java" data-ace-hi="8,15,8,81|11,29,11,84"
+>public class AppController {
+
+    public void myHandler(IDefaultRequestContext context) {
+
+        Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+        params.put("name", "Stromgol");
+
+        // Sends an evaluated template using the "response()" add-on:
+        context.response().sendHtmlTemplate("/templates/myTemplate.html", params);
+
+        // Evaluates some inline content using the "templating()" add-on:
+        String html = context.templating().evaluate("&lt;h1&gt;Hi {{name}}!&lt;/h1&gt;", params);
+        System.out.println(html); // &lt;h1&gt;Hi Stromgol!&lt;/h1&gt;
+    }
+}</pre>{% endverbatim %}
+                        </p>
+                    </div>
+                </p>
+  
+            </section>
+            
+	        <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+	            <p>
+	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
+	                you have nothing more to do!
+	            </p>
+	            <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
+	                plugin by adding this artifact to your project:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-pebble&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+	            <p>
+	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,70"
+>Injector guice = Guice.createInjector(
+        new SpincastCoreGuiceModule(args),
+        new SpincastPebblePluginGuiceModule(IAppRequestContext.class)
+        // other modules...
+        );</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+	            <p>
+	                ... or by using the <code>install(...)</code> method from your custom Guice module:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,80"
+>public class AppModule extends SpincastCoreGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        install(new SpincastPebblePluginGuiceModule(getRequestContextType()));
+        // other modules...
+    }
+    
+    // ...
+}</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+            </section>
+            
+<section id="templatingengine">
+                <h3 class="noTop">
+                    <a class="anchor" href="#templatingengine" title="permanent link"></a>
+                    The <code>ITemplatingEngine</code> interface
+                </h3>
+                <p>
+               
+                </p> 
+                
+                <div id="methods">
+                    <p>
+                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods :</h4>
+                        <ul class="apiList">
+                        
+           
+      
+      
+<li>
+    <code class="apiItem">String <span>evaluate</span>(String content, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Evaluates the content, using the given parameters.
+<br />Uses the default Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>evaluate</span>(String content, Map&lt;String, Object&gt; params, Locale locale)</code>
+    <div class="well">
+        Evaluates the content, using the given parameters.
+<br />Uses the specified Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>evaluate</span>(String content, IJsonObject jsonObject)</code>
+    <div class="well">
+        Evaluates the content, using the given parameters.
+ specified as a <code>IJsonObject</code>.
+<br />Uses the default Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>evaluate</span>(String content, IJsonObject jsonObject, Locale locale)</code>
+    <div class="well">
+        Evaluates the content, using the given parameters.
+ specified as a <code>IJsonObject</code>.
+<br />Uses the specified Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Evaluates a template using the given parameters.
+<br />Uses the default Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, Map&lt;String, Object&gt; params, Locale locale)</code>
+    <div class="well">
+        Evaluates a template using the given parameters.
+<br />Uses the specified Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, IJsonObject jsonObject)</code>
+    <div class="well">
+        Evaluates a template using the parameters specified
+ as a <code>IJsonObject</code>.
+<br />Uses the default Locale.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, IJsonObject jsonObject, Locale locale)</code>
+    <div class="well">
+        Evaluates a template using the parameters specified
+ as a <code>IJsonObject</code>.
+<br />Uses the specified Locale.
+
+    </div>
+</li>
+
+
+      
+
+           
+           
+
+                        </ul>  
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

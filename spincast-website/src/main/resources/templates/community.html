@@ -1,0 +1,247 @@
+{#==========================================
+Community
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}community{% endblock %}
+{% block meta_title %}Community{% endblock %}
+{% block meta_description %}Forum and support for the Spincast framrwork{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(188);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop">Community</h2></a>
+        </div>
+    </div>
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Community</h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+    
+        <nav id="toc" class="col-md-3">
+            <ul class="nav nav-stacked">
+                <li>
+                    <a href="#top">Forum / Help / News</a>
+                </li>
+                <li>
+                    <a href="#developers">Developers</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#source_code">Source code</a></li>
+                        <li><a href="#contribution">Contribution Guide</a></li> 
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="help">
+                
+                <h3 class="shortTop">
+                    <a class="anchor" href="#help" title="permanent link"></a>
+                    Forum / Help / News
+                </h3>
+                <p>
+                    The best place to get help, to make suggestions, or simply to get in touch, is the 
+                    <a href="https://groups.google.com/forum/#!forum/spincast">Spincast Google Group</a>.
+                </p>
+                <p>
+                    We're also scanning for questions using the <code>#spincast</code> tag on <a href="http://stackoverflow.com/">Stack Overflow</a>.
+                </p>
+                <p>
+                    You can follow us on <a href="https://twitter.com/spincast">Twitter</a>.
+                </p>
+            </section>
+            
+            <section id="developers">
+                <h3>
+                    <a class="anchor" href="#developers" title="permanent link"></a>
+                    Developers
+                </h3>
+                <div id="source_code">
+                    <h4>
+                        <a class="anchor_small" href="#source_code" title="permanent link"></a>
+                        Source code
+                    </h4>
+                    <p>
+                        The open-source code is on <a href="https://github.com/spincast/spincast-framework">Github</a> 
+                        and is <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2</a> licensed.
+                    </p>
+                </div>
+                <div id="contribution">
+                    <h4>
+                        <a class="anchor_small" href="#contribution" title="permanent link"></a>
+                        Contribution Guide
+                    </h4>
+                    <p>
+                        <ul>
+                            <li>
+                                Contributions and suggestions are appreciated!
+                            </li>
+                            <li id="formatter">
+                                Use this <a href="/public/varia/Spincast-Eclipse-Formatter.xml">Formatter</a> (Eclipse export).
+                                <ul>
+                                    <li>
+                                        Instructions
+                                        for <a href="http://www.avajava.com/tutorials/lessons/how-do-i-share-my-code-formatting-settings-with-another-user.html?page=2">Eclipse</a> users
+                                    </li>
+                                    <li>
+                                        Instructions 
+                                        for <a href="https://blog.jetbrains.com/idea/2014/01/intellij-idea-13-importing-code-formatter-settings-from-eclipse/">IntelliJ IDEA</a> users
+                                    </li>
+                                    <li>
+                                        Instructions
+                                        for <a href="http://plugins.netbeans.org/plugin/50877/eclipse-code-formatter-for-java">Netbeans</a> users
+                                    </li>
+                                    <li>
+                                        If you use another IDE, or a plain text editor, look at the Spincast's core and 
+                                        default plugins and follow the same standards.
+                                    </li>
+                                </ul>
+                                The only potentially controversial thing about this formatter is that we don't add a space after the 
+                                <code>if</code>, <code>for</code>, etc. keywords:
+                                <pre class="ace ace-java"
+>if(someCondition) {
+    // blabla
+}</pre>  
+                                Not :
+                                <pre class="ace ace-java"
+>if (someCondition) {
+    // blabla
+}</pre>             
+                                Also, the max number of characters per line is 130. Use a widescreen monitor please.
+                            </li>
+                            <li>
+                               Sometimes, formatters do crazy things and, other times, you simply don't want a section
+                               of your code to be automatically reformatted. In those situations, you can use
+                               <code>// @formatter:off</code> and <code>// @formatter:on</code> to disable the
+                               auto formatting:
+                               <pre class="ace ace-java"
+>// @formatter:off
+String sql = "SELECT color " +
+             "FROM napoleon_horses " +
+             "WHERE color='white'";
+// @formatter:on</pre>
+                            </li>
+                            
+                            <li>
+                                Unit/Integration tests are required.
+                            </li>
+                            <li>
+                                Java 7 compatibility is required. No <code>lambdas</code> or other Java 8 specific constructs in the <code>core</code> and
+                                in the <code>plugins</code>.
+                            </li>  
+                            <li>
+                                Use Guice and make everything injectable and swappable.
+                            </li>
+                            <li>
+                                Prefer short methods that can easily be overrided. If some part of a method
+                                could possibly be tweaked by a user, extract it to a separated method.
+                            </li>
+                            <li>
+                                No <code>private</code> methods. Use <code>protected</code> for a method that shouldn't be <code>public</code>.
+                            </li>
+                            <li>
+                                Member variables should be <code>private</code>, but a <code>public</code> or
+                                <code>protected</code> getter should exist for them.
+                            </li>
+                            <li>
+                                Prefer <em>constructor</em> injection, with <code>final</code> member variables, when possible.
+                            </li>
+                            <li>
+                                Interfaces must begin with a <code>"I"</code> (<code>IServer</code> for example). Don't use
+                                <code>"Impl"</code> as a suffix for concrete classes. <em>(Well, ok, this one may be controversial too!)</em>
+                            </li>
+                            <li>
+                                Avoid one-liners. Use meaningful variable names. Don't be afraid
+                                to be verbose if it makes your code easier to understand. "<em>Always code as if the guy who ends 
+                                up maintaining your code will be a violent psychopath who knows where you live. 
+                                Code for readability.</em>"
+                            </li>
+                            
+                            <li>
+                                Comments in code are encouraged. Use the standard <code>/** comment */</code> style for the 
+                                Javadoc. You can use this style for comments which are not Javadoc:
+                                <br /><br />
+                                <pre class="ace ace-java"
+>//==========================================
+// This is a comment
+//==========================================
+String hello = "World";</pre>  
+                                But regular comment style is ok too :
+                                <br />
+                                <pre class="ace ace-java"
+>// This is a comment
+String hello = "World";</pre>  
+
+                            </li>
+                            <li>
+                                All text based files must be <code>UTF-8</code> encoded.
+                            </li>
+                            <li>
+                                In fact, use <code>UTF-8</code> everywhere an encoding is involved!
+                            </li>
+                            <li>
+                                Newlines are <code>"\n"</code>. No Windows's <code>"\r\n"</code> newlines.
+                            </li>
+                            <li>
+                                Always use braces, even for a single line <code>if</code> condition.
+                                Don't do this:
+                                <pre class="ace ace-java"
+>if(someCondition)
+    // no braces... :-(</pre>  
+                            </li>
+                            <li>
+                                Always assume a date to be <code>UTC</code> if no timezone is specified. If you
+                                need to store a date, store it as <code>UTC</code>. Only when displaying or outputting the
+                                date will you use the user's timezone, if available.
+                            </li>
+                            <li>
+                                For your tests, try to use the same technic as the existing Spincast core tests. You 
+                                probably want your test class to extend <code>DefaultIntegrationTestingBase</code>
+                                or, at least, <code>SpincastGuiceBasedTestBase</code>. Make sure you understand our custom
+                                <code>OneInstancePerClassJUnitRunner</code> JUnit runner, which creates <em>one</em> instance
+                                of a test class only! For our unit tests, we often start an <code>Undertow</code>
+                                server instance even if it could be done without one: 
+                                Undertow is very fast to boot.
+                            </li>
+                            <li>
+                                Always keep the documentation in sync with your code.
+                            </li> 
+                        </ul>
+                        <div id="thanksDiv">
+                            If you're able to live with those decisions, you're good to go! 
+                            <br />
+                            Thank you for your contributions! 
+                            <br />
+                            <img id="goodToGo" src="/public/images/thumb-up.png" /> 
+                        </div>
+                    </p>
+                </div>
+            </section>
+            
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

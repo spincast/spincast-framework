@@ -1,0 +1,322 @@
+{#==========================================
+Docs : "Miscellaneous"
+==========================================#}
+
+<section id="miscellaneous">
+    <h3>
+        <a class="anchor" href="#miscellaneous" title="permanent link"></a>
+        Miscellaneous
+    </h3>
+    
+    <p>
+    </p>
+   
+{#==========================================
+Default Configurations
+==========================================#}     
+<section id="default_config">
+    <h4>
+        <a class="anchor_small" href="#default_config" title="permanent link"></a>
+        Default Configurations
+    </h4>
+    
+    <p>
+        To know what are the default Spincast configurations,
+        have a look at the
+        <a href="/plugins/spincast-config#spincast_config">Spincast Config plugin</a> page, which is the
+        default implementation of the "<code>ISpincastConfig</code>" interface. But here are some
+        important ones:
+    </p>
+    <p>
+        <ul>
+            <li>
+                <code>getServerHost()</code> : The host/IP the HTTP server
+                will listen on. The default is <code>0.0.0.0</code>, which
+                means the server will listen on any IP.
+            </li>
+            <li>
+                <code>getHttpServerPort()</code> : The port the server
+                will listen to for <code>HTTP</code> <em>(unsecure)</em> requests.
+                If <code>&lt;= 0</code>, the server won't listen on <code>HTTP</code> requests.
+            </li>
+            <li>
+                <code>getHttpsServerPort()</code> : The port the server
+                will listen to for <code>HTTPS</code> <em>(secure)</em> requests.
+                If <code>&lt;= 0</code>, the server won't listen on <code>HTTPS</code> requests.
+                If you use <code>HTTPS</code>, you also have to provide some extra
+                configurations related to the <code class="block">SSL</code>
+                certificat to use.
+            </li>
+            <li>
+                <code>isDebugEnabled()</code> : If <code>true</code>,
+                a <em>development</em> environment is taken for granted, and
+                internal error messages may be displayed publicly, no cache will be
+                used for the templates, etc. The default is <code>true</code>, so make
+                sure you change this to <code>false</code> before deploying to
+                production!
+            </li>
+
+        </ul>
+    </p>
+</section>
+   
+{#==========================================
+SSL
+==========================================#}     
+<section id="ssl">
+    <h4>
+        <a class="anchor_small" href="#ssl" title="permanent link"></a>
+        Using a SSL certificat (HTTPS)
+    </h4>
+    
+    <p>
+        It is recommended that you serve your application over <code>HTTPS</code> and
+        not <code>HTTP</code>, which is not secure. To achieve that, you need to install an 
+        <code>SSL certificate</code>.
+    </p>
+    <p>
+        If you download the <a href="#quick_start">Quick Start</a> application, you will
+        find two files explaining the required procedure:
+        
+        <ul>
+            <li>
+                <code>/varia/ssl_certificate_howto/self-signed.txt</code>
+                <br />
+                Shows how to use a <code>self-signed</code> certificate, for development
+                purpose.
+            </li>
+            <li>
+                <code>/varia/ssl_certificate_howto/lets-encrypt.txt</code>
+                <br />
+                Shows how to use a <a href="https://letsencrypt.org/"><code>Let's Encrypt</code></a> 
+                certificate. <code>Let's Encrypt</code> is a provider of <em>free</em>, but totally valid,
+                <code>SSL certificates</code>. Instructions in this file will probably work for certificates 
+                obtained from other providers, but we haven't tested it yet.
+            </li> 
+        </ul>
+    </p>
+</section>
+
+{#==========================================
+JsonObject
+==========================================#}     
+<section id="jsonobject">
+    <h4>
+        <a class="anchor_small" href="#jsonobject" title="permanent link"></a>
+        JsonObject
+    </h4>
+    
+    <p>
+        The <code>JsonObject</code> (interface <code>IJsonObject</code>) is a class
+        provided by Spincast to mimic a real <code>Json</code> object. It is, essentially,
+        a <em>typed</em> <code>Map&ltString, Object&gt;</code>. So there is a <code>put(String key, Object value)</code>
+        method, but the getters are typed: 
+        
+        <ul>
+            <li>
+                <code>String getString(String key)</code>
+            </li>
+            <li>
+                <code>Integer getInteger(String key)</code>
+            </li> 
+            <li>
+                <code>IJsonObject getJsonObject(String key)</code>
+            </li> 
+            <li>
+                ...
+            </li> 
+        </ul>  
+    </p>
+    <p>
+        You can create a <code>JsonObject</code>, or a <code>JsonArray</code>, using the <code>IJsonManager</code>
+        component. This component can be injected by Guice, or it can be accessed through the
+        <code>json()</code> add-on:
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    IJsonObject obj = context.json().create();
+    obj.put("name", "Stromgol");
+    obj.put("lastName", "Laroche");
+
+    context.response().sendJson(obj);
+}</pre> 
+            </p>
+        </div>
+    </p>   
+    
+    <p>
+        Spincast uses <code>JsonObject</code> objects in many places. For example,
+        to get the content of a request for which a <code>Json</code> body has been sent
+        via <code>ajax</code> :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+    IJsonObject json = context.request().getJsonBodyAsJsonObject();
+    // ...
+}}</pre> 
+            </p>
+        </div>
+    </p>   
+    <p>
+        Or even when <code>XML</code> is sent :
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+    IJsonObject json = context.request().getXmlBodyAsJsonObject();
+    // ...
+}}</pre> 
+            </p>
+        </div>
+    </p>   
+    
+    
+</section>
+
+{#==========================================
+@MainArgs
+==========================================#}     
+<section id="main_args">
+    <h4>
+        <a class="anchor_small" href="#main_args" title="permanent link"></a>
+        @MainArgs
+    </h4>
+    
+    <p>
+        Both <code>SpincastCoreGuiceModule</code> and <code>SpincastDefaultGuiceModule</code>
+        Guice modules have a constructor which accepts
+        <code>String[] mainArgs</code>. You can pass to it the arguments received in
+        your <code>main(...)</code> method. For example:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="0,24,0,37|2,73,2,77"
+>public static void main(String[] args) {
+
+    Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
+
+    App app = guice.getInstance(App.class);
+    app.start();
+}</pre> 
+            </p>
+        </div>
+    </p>   
+    <p>
+        By doing so, those arguments will be bound, using a <code>@MainArgs</code>
+        annotation. You can then inject them anywhere you need:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,21,5,48"
+>public class AppConfig extends SpincastConfig implements IAppConfig {
+
+    private final String[] mainArgs;
+
+    @Inject
+    public AppConfig(@MainArgs String[] mainArgs) {
+        this.mainArgs = mainArgs;
+    }
+
+    protected String[] getMainArgs() {
+        return this.mainArgs;
+    }
+
+    @Override
+    public int getHttpServerPort() {
+
+        int port = super.getHttpServerPort();
+        if(getMainArgs().length &gt; 0) {
+            port = Integer.parseInt(getMainArgs()[0]);
+        }
+        return port;
+    }
+}</pre> 
+            </p>
+        </div>
+    </p>   
+    
+</section>
+
+{#==========================================
+Using an init() method
+==========================================#}     
+<section id="init_method">
+    <h4>
+        <a class="anchor_small" href="#init_method" title="permanent link"></a>
+        Using an <code>init()</code> method
+    </h4>
+    
+    <p>
+        This is more about standard Guice development than about Spincast, but we
+        feel it's a useful thing to know.
+    </p>
+    <p>
+        Guice doesn't provide
+        support for a <code>@PostConstruct</code> annotation out of the box.
+        And since it is often seen as a bad practice to do too much work directly in a constructor, what we want
+        is an <code>init()</code> method to be called <em>once the
+        object it fully constructed</em>, and do the initialization work there. 
+    </p>
+    <p>
+        The trick is that Guice calls any <code>@Inject</code> annotated methods
+        once the object is created, so let's use this to our advantage:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public class UserService implements IUserService {
+
+    private final ISpincastConfig spincastConfig;
+
+    @Inject
+    public UserService(ISpincastConfig spincastConfig) {
+        this.spincastConfig = spincastConfig;
+    }
+
+    @Inject
+    protected void init() {
+        doSomeValidation();
+        doSomeInitialization();
+    }
+
+    //...
+}</pre> 
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">5-8</span> : The constructor's job is only to
+                        receive the dependencies.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">10-14</span> : An <code>init()</code> method is
+                        also annotated with <code>@Inject</code>. This method will be called once the
+                        object is fully constructed. This is a good place to do some initialization work!
+                    </li>
+                </ul>
+            </p> 
+        </div>
+    </p>   
+    <p>
+        What we recommend is <em>constructor injection</em> + one (and only one) <code>@Inject</code> 
+        annotated method. The problem with multiple <code>@Inject</code> annotated methods (other than 
+        constructors) is that it's hard to know in which order they will be called.
+    </p>   
+    <p>
+        Finally, if the <code>init()</code> method must be called <em>as soon as the application starts</em>, make sure
+        you bind the object using
+        <a href="https://github.com/google/guice/wiki/Scopes#eager-singletons">asEagerSingleton()</a>!
+    </p>
+    
+</section>        
+            
+            

@@ -1,0 +1,1036 @@
+{#==========================================
+Docs : "Routing"
+==========================================#}
+
+{#==========================================
+Routing
+==========================================#}     
+<section id="routing">
+    <h3>
+        <a class="anchor" href="#routing" title="permanent link"></a>
+        Routing
+    </h3>
+    
+    <p>
+        Let's learn how the routing process works in Spincast, and how to create
+        routes and filters.
+    </p>
+    <p>
+        Note that we won't decribe <em>all</em> the available APIs here! The complete APIs can be found on the
+        <a href="/plugins/spincast-routing">Routing</a> plugin's page.
+    </p>
+    
+    {#==========================================
+    Section "routing / The routing process"
+    ==========================================#}
+    <div id="routing_process">
+        <h4>
+            <a class="anchor_small" href="#routing_process" title="permanent link"></a>
+            The routing process
+        </h4>
+        
+        <p>
+            When an HTTP request arrives, the router is asked to find what <code>route handlers</code> should be used to handle it.
+            There can be more than one <code>route handler</code> for a single request because of <code><em>filters</em></code>.
+            Filters are standard <code>route handlers</code>, but that run <em>before</em> or <em>after</em> the <code>main handler</code>.
+        </p> 
+        <p>
+            There can be only <em>one</em> <code>main handler</code> but multiple 
+            <em>before</em> and <em>after</em> <code>filters</code>. Even if multiple <code>main handlers</code> would match
+            a request, the router will only pick one (by default, it keeps the first one matching).
+        </p> 
+        <p>
+            Those matching <code>routes handlers</code> are called in a
+            specific order. As we'll see in the <a href="#filters">Filters</a> section, a
+            filter can have a <code><em>position</em></code></code> which indicates <em>when</em> the filter should run. So it is
+            possible to specify that we want a filter to run before or after another one. 
+        </p> 
+        <p>
+            The routing process we are discussing is called the <code>Found</code> routing type. The <code>Found</code> routing
+            type is the one active when at least one <code>main handler</code> matches the request. This is the most frequent case,
+            when valid requests are received.
+            But what if no <code>main handler</code> matches? What if we receive a request for an invalid URL? Then, 
+            we enter the <code>Not Found</code> routing type.
+        </p> 
+        <p> 
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            We'll see in the <a href="#routing_types">Routing Types</a> section that we can declare some routes
+            as supporting this <code>Not Found</code> routing type. Those routes are the only ones going to be considered
+            when the <code>Not Found</code> routing type is active.
+        </p> 
+        <p>    
+            Note that we can also enter the <code>Not Found</code> routing
+            type if a <code>NotFoundException</code> is thrown by one of the <code>route handlers</code>. Suppose
+            you have a <code><em>/users/${userId}</em></code> route, and a request for <code><em>/users/42</em></code>
+            arrives; a <code>main handler</code> is found and called,
+            but let's say the user <code>42</code> <em>is not found in the system</em>. The handler can then throw a
+            <code>NotFoundException</code> exception, and a new <code>Not Found</code> typed routing process
+            will be triggered.
+        </p> 
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            The third and final routing type is <code>Exception</code>.
+            If an exception occures during a <code>Found</code> or a <code>Not Found</code>
+            routing process, the response is reset, and a new <code>Exception</code> routing process starts.
+            This is true except for the <code>NotFoundException</code> and 
+            some other <a href="#special_exceptions">special exceptions</a>
+            which can trigger a different behavior.
+        </p> 
+        <p>
+            You can define your custom <code>Not Found</code> and <code>Exception</code>
+            handlers, and this is highly recommended, but there are some basic provided ones, if you don't.
+        </p>
+        <p> 
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            There are two important things to remember about the routing process:
+            
+            <ul>
+                <li>
+                    When the routing process of a new type starts, the code to find the matching handlers is restarted from the beginning.
+                    For example, if you have some "before" <code>filters</code> that
+                    have already been run during the initial <code>Found</code> routing process, and then your <code>main handler</code> 
+                    throws an exception, the
+                    routing process <em>will be restarted</em>, and those <code>filters</code> may be run again. 
+                    The only difference between the first routing process and the
+                    second is the <code>routing type</code> required for a route to be considered, when trying to find
+                    the matching <code>route handlers</code>. Only the routes that have been configured to support the
+                    <code>route type</code> of the current routing process are considered.
+                </li>
+                <li>
+                    When a routing process starts, the current response <em>is reset</em>. Its
+                    buffer is emptied, and the headers are reset. Of course, if the response's
+                    headers have already been flushed, this is not possible, though.
+                </li>  
+            </ul>
+        </p> 
+    </div>
+    
+    {#==========================================
+    Section "routing / Adding a route"
+    ==========================================#}
+    <div id="adding_route">
+        <h4>
+            <a class="anchor_small" href="#adding_route" title="permanent link"></a>
+            Adding a route
+        </h4>
+        
+        <p>
+            Now, let's learn how to define our routes!
+        </p>
+        <p>
+            First, you get an instance of the <code>router</code>. 
+            There are methods on the router to start a <code>route builder</code>. As its name indicates,
+            this object uses a <em>builder pattern</em> to help you create a route. Let's see that in details.
+        </p>
+
+    </div>
+    
+    {#==========================================
+    Section "routing / HTTP method and path"
+    ==========================================#}
+    <div id="http_method_and_path">
+        <h4>
+            <a class="anchor_small" href="#http_method_and_path" title="permanent link"></a>
+            HTTP method and path
+        </h4>
+    
+        You start a <code>route builder</code> by choosing the <code>HTTP method</code> 
+        and <code>path</code> you want this route to handle.
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+router.GET("/") ...
+
+router.POST("/users") ...
+
+router.DELETE("/users/${userId}") ...
+
+// Handles all HTTP methods
+router.ALL("/books") ...
+
+// Handles POST and PUT requests only
+router.SOME("/books", HttpMethod.POST, HttpMethod.PUT) ...
+</pre> 
+                </p>
+            </div>
+        </p>  
+    </div>  
+    
+    {#==========================================
+    Section "routing / Dynamic parameters"
+    ==========================================#}
+    <div id="dynamic_parameters">
+        <h4>
+            <a class="anchor_small" href="#dynamic_parameters" title="permanent link"></a>
+            Dynamic parameters
+        </h4>
+    
+        You can use <code>dynamic parameters</code> in the paths of your routes.
+        For example, the following route will match any request with an
+        URL starting with <code>/users/</code> and followed by another token:
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.GET("/users/${userId}")
+</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            By doing so, your <code>route handlers</code> can then access the actual value of this 
+            dynamic parameter. For example : 
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+    String userId = context.request().getPathParam("userId");
+    // Do something with the user id...
+}</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            If a <code>/users/42</code> request is handled, <code>userId</code> would be <code><em>"42"</em></code>, in this
+            example.
+        </p>
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Note that this <code>"/users/${userId}"</code> example will only match
+            URLs of exactly <em>two</em> tokens! An URL like <code>"/users/42/book/123"</code> 
+            won't match!
+        </p>
+        <p>
+            If you want to match <em>more than one</em> path tokens as a single value, you have to use a
+            <code><em>splat parameter</em></code></code>. For example, the following path
+            <em>does</em> match both <code>"/users/42"</code> and <code>"/users/42/book/123"</code> 
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.GET("/users/${userId}/*{remaining}")
+</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            In that case, the route handler would have access to two path parameters:
+            <code>userId</code>, will be <code><em>"42"</em></code>, and <code>remaining</code> will
+            be <code><em>"book/123"</em></code>.
+        </p>
+        <p>
+            As you can see, a regular dynamic parameter syntax is <code>${paramName}</code>, where
+            a splat parameter syntax is <code>*{paramName}</code>.
+        </p>
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            A dynamic parameter can also contain a regular expression <code><em>pattern</em></code>. The
+            syntax is <code>${paramName:pattern}</code>, where "pattern" is the regular expression
+            to use.
+        </p>
+        <p>
+            In the following example, only requests starting with <code>/users/</code> and followed by a <em>numeric value</em> 
+            will match. In other words, <code>/users/1</code> and <code>/users/42</code> would match, 
+            but not <code>/users/abc</code>:
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.GET("/users/${param1:\\d+}")
+</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Finally, a dynamic parameter can also contain what we call a <code><em>pattern alias</em></code>.
+            Instead of having to type the pattern each time you need it, you can 
+            use an <em>alias</em> for it. The syntax is <code>${paramName:&lt;alias&gt;}</code>.
+        </p>
+        <p>
+            Spincast has some built-in <code>pattern aliases</code>:
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// Matches only alpha characters (A to Z)
+router.GET("/${param1:&lt;A&gt;}")
+
+// Matches only numeric characters (0 to 9)
+router.GET("/${param1:&lt;N&gt;}")
+
+// Matches only alphanumeric characters (A to Z and 0 to 9)
+router.GET("/${param1:&lt;AN&gt;}")
+
+// Matches only alpha characters (A to Z) + "-" and "_"
+router.GET("/${param1:&lt;A+&gt;}")
+
+// Matches only numeric characters (0 to 9) + "-" and "_"
+router.GET("/${param1:&lt;N+&gt;}")
+
+// Matches only alphanumeric characters (A to Z and 0 to 9) + "-" and "_"
+router.GET("/${param1:&lt;AN+&gt;}")
+</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            You can also specify your <em>own</em> aliases.
+            You do that using the <code>addRouteParamPatternAlias(...)</code> method
+            on the router. For example :
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// We register a new alias
+router.addRouteParamPatternAlias("USERS", "user|users|usr");
+
+// And we use it! 
+router.GET("/${param1:&lt;USERS&gt;}/${userId}")
+</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            This pattern would match <code>/user/123</code>, <code>/users/123</code>
+            and <code>/usr/123</code>, but not <code>/nope/123</code>.
+        </p>
+    </div>  
+     
+    {#==========================================
+    Section "routing / Routing Types"
+    ==========================================#}
+    <div id="routing_types">
+        <h4>
+            <a class="anchor_small" href="#routing_types" title="permanent link"></a>
+            Routing Types
+        </h4>
+    
+        You can specify for which <code>routing type</code> your route should be
+        considered. The three routing types are:
+        
+        <ul>
+            <li>
+                <code>Found</code>
+            </li>
+            <li>
+                <code>Not Found</code>
+            </li>
+            <li>
+                <code>Exception</code>
+            </li>
+        </ul> 
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            If no <code>route type</code> is specified when creating a route, <code>Found</code> is used,
+            so the route won't be considered during a <code>Not Found</code> or <code>Exception</code> routing process.
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// Only considered during the "Found" routing process
+// (this is the default, and it is not required to specify it)
+router.GET("/").found()
+
+// Only considered during a "Not Found" routing process
+router.GET("/").notFound()
+
+// Only considered during an "Exception" routing process
+router.GET("/").exception()
+
+// Always considered!
+router.GET("/").allRoutingTypes()
+
+// Only considered during a "Not Found"
+// or an "Exception" routing process
+router.GET("/").notFound().exception()
+</pre> 
+                </p>
+            </div>
+        </p>
+        <p>
+            There are also some shortcuts to quickly define a <code>Not Found</code>
+            or an <code>Exception</code> route :
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+// Synonym of : 
+// router.ALL("/*{path}").notFound().save(handler)
+router.notFound(handler);
+
+// Synonym of : 
+// router.ALL("/*{path}").exception().save(handler)
+router.exception(handler);
+</pre> 
+                </p>
+            </div>
+        </p>
+        
+    </div>  
+
+    {#==========================================
+    Section "routing / Content-Types"
+    ==========================================#}
+    <div id="route_content-type">
+        <h4>
+            <a class="anchor_small" href="#route_content-type" title="permanent link"></a>
+            Content-Types
+        </h4>
+        
+        <p>
+            You can also specify if the route should be used only when some
+            particular <code>Content-Types</code> are specified as being
+            accepted by the request.
+        </p> 
+        <p>
+            For example, you may have a <code>route handler</code> for a <code><em>/users</em></code> URL that will
+            produce <code>Json</code>, and a another handler that will produce
+            <code>XML</code>, for the very same URL.
+        </p> 
+        <p>
+            If no <code>Content-Type</code> is specified when building a route, 
+            the route doesn't care about it.
+        </p> 
+        
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// Only considered if the request accepts HTML
+router.GET("/users").html() ...
+
+// Only considered if the request accepts Json
+router.GET("/users").json() ...
+
+// Only considered if the request accepts XML
+router.GET("/users").xml() ...
+
+// Only considered if the request accepts HTML or plain text
+router.GET("/users").accept(ContentTypeDefaults.HTML, ContentTypeDefaults.TEXT) ...
+
+// Only considered if the request accepts PDF
+router.GET("/users").acceptAsString("application/pdf") ...
+</pre> 
+                </p>
+            </div>
+        </p>     
+    </div>
+
+    {#==========================================
+    Section "routing / Saving"
+    ==========================================#}
+    <div id="route_saving">
+        <h4>
+            <a class="anchor_small" href="#route_saving" title="permanent link"></a>
+            Saving the route
+        </h4>
+        
+        <p>
+            When your route is complete, you save it to the <code>router</code> by passing
+            the <code>route handler</code> to use to the <code>save(...)</code> method. 
+            Using Java 8 you can use a <code>method handler </code>or a <code>lambda</code>:
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// A method handler
+router.GET("/").save(controller::indexHandler);
+
+// A lambda expression
+router.GET("/").save(context -> controller.indexHandler(context));
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            Using Java 7, you have to declare an <em>inline</em> handler :
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.GET("/").save(new IAppHandler() {
+    @Override
+    public void handle(IAppRequestContext context) {
+        controller.indexHandler(context)
+    } 
+});</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            A complete example could be :
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// Will be run for a GET request accepting Json or XML, when the
+// user is not found.
+router.GET("/users/${userId}").notFound().json().xml().save(usersController::userNotFound);
+    </pre> 
+                </p>
+            </div>
+        </p>  
+        
+    </div>
+    
+    {#==========================================
+    Section "routing / Filters"
+    ==========================================#}
+    <div id="filters">
+        <h4>
+            <a class="anchor_small" href="#filters" title="permanent link"></a>
+            Filters
+        </h4>
+        
+        <p>
+            <code>Filters</code> are standard <code>route handlers</code>, with the exception 
+            that they run <em>before</em>
+            or <em>after</em> the <code>main handler</code>.
+        </p> 
+        <p>
+            You can declare a <code>filter</code> exactly like you would declare a
+            standard route, but using the extra "<code><em>position</em></code>" property. The
+            filter's position indicate <em>when</em> this filter should be run. The lower
+            the position number is, the sooner the filter will run. The 
+            <code>main handlers</code> are considered as having a position of <code>0</code>, so filters
+            with a position below 0 are <em>before</em> filters, and those with a 
+            position greater than 0 are <em>after</em> filters.
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// This filter is a "before" filter and
+// will be run first.
+router.GET("/").pos(-3).save(ctl::filter1);
+
+// This filter is a "before" filter and
+// will be run second.
+router.GET("/").pos(-1).save(ctl::filter2);
+
+// This is not a filter, it's a main handler 
+// and the ".pos(0)" part is superfluous!
+router.GET("/").pos(0).save(ctl::mainHandler);
+
+// This filter is an "after" filter
+router.GET("/").pos(100).save(ctl::filter3);
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            There also are shortcuts that you can use if you don't need to
+            specify fine grain information and just want to add a quick before
+            or after filter:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// Will be applied to any request, at position "-1".
+//
+// Synonym of : 
+// router.ALL("/*{path}").pos(-1).save(ctl::filter)
+router.before(ctl::filter);
+
+// Will be applied to any request starting with "/users", 
+// at position "-1".
+//
+// Synonym of : 
+// router.ALL("/users").pos(-1).save(ctl::filter)
+router.before("/users", ctl::filter);
+
+// Will be applied to any request, at position "1".
+//
+// Synonym of : 
+// router.ALL("/*{path}").pos(1).save(ctl::filter)
+router.after(ctl::filter);
+
+// This actually generates two filters.
+// Will be applied to any request, both at
+// position "-1" and position "1".
+router.beforeAndAfter(ctl::filter);
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            You can also add inline filters to be run only on
+            on a <em>specific route</em>:
+        </p>  
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>// This route contains four handlers:
+// two before filters, the main handler, and one after filter.
+router.GET("/users/${userId}")
+      .before(ctl::beforeFilter1)
+      .before(ctl::beforeFilter2)
+      .after(ctl::afterFilter)
+      .save(ctl::mainHandler);
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            Inline filters don't have a position: they are
+            run in the order they are declared. Also, they always run <em>just before</em>
+            or <em>just after</em> the <code>main handler</code>. So they are always run closer to the
+            <code>main handler</code> than the <em>global</em> filters. 
+        </p>  
+        <p>  
+            The inline filters have access to
+            the same <code>request</code> properties than their associated <code>main handler</code>: same 
+            <code>path parameters</code>, same <code>queryString parameters</code>, etc.
+        </p> 
+        
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Finally, note that a filter can decide if it needs to run or not,
+            at runtime. Using the <code>routing()</code> add-on,
+            a filter can know if the current route type is <code>Found</code>, <code>Not Found</code>
+            or <code>Exception</code>, and then decide to run or not! For example:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myFilterHandler(IAppRequestContext context) {
+
+    // The current route is an "Exception" one,
+    // we don't apply the filter.
+    if(context.routing().isExceptionRoute()) {
+        return;
+    }
+
+    // Or :
+    
+    // The current route is a "Not Found" one,
+    // we don't apply the filter.
+    if(context.routing().isNotFoundRoute()) {
+        return;
+    }
+
+    // Run the filter...
+}</pre> 
+                </p>
+            </div>
+        </p>  
+    </div>
+
+    {#==========================================
+    Section "routing / Static resources"
+    ==========================================#}
+    <div id="static_resources">
+        <h4>
+            <a class="anchor_small" href="#static_resources" title="permanent link"></a>
+            Static resources
+        </h4>
+        
+        <p>
+            You can tell Spincast that some files and directories are
+            <code>static resources</code>.
+            Doing so, the resources will be served by the HTTP server directly,
+            and requests for them won't even reach the framework.
+        </p> 
+
+        <p>
+            Those static resources can be on the classpath or on the file system. For example:
+        </p> 
+        
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// Will serve all requests starting with the
+// URL "/public" with files under the classpath
+// directory "/public_files".
+router.dir("/public").classpath("/public_files").save();
+
+// Uses a file system directory (instead of a classpath
+// directory) as a static resources root.
+router.dir("/public").fileSystem("/user/www/myprojet/public_files").save();
+
+// Will serve the requests for a specific file,
+// here "/favicon.ico", with a file from the classpath.
+router.file("/favicon.ico").classpath("/public/favicon.ico").save();
+
+// Uses a file system file (instead of a classpath
+// file) as the static resource target.
+router.file("/favicon.ico").fileSystem("/user/www/myprojet/public_files/favicon.ico").save();
+</pre> 
+                </p>
+            </div>
+        </p> 
+        <p>
+            Be aware that since requests for static resources don't reach the framework, <em>filters don't apply to them</em>! Even a
+            "catch all" filter such as <code>router.ALL("/*{path}").pos(-1).save(handler)</code> 
+            won't be applied.
+        </p> 
+        <p>
+            For the same reason, there are also some limitations about the <code>dynamic parameters</code> the 
+            route of a static resource can contain. Only a <code>splat parameter</code> is allowed and only at the very end of
+            the path. For example :
+            <ul>
+                <li>
+                    This is valid : <code>/one/two/*{remaining}</code>
+                </li>
+                <li>
+                    This is <em>invalid</em> : <code>/one/*{remaining}/two</code>
+                </li>
+                <li>
+                    This is <em>invalid</em> : <code>/${remaining}</code>
+                </li>
+            </ul>
+        </p> 
+        <p>
+            Finally, note that the static resource routes have <em>precedence</em> over all other
+            routes, so if you declare <code>dir("/", "/public")</code> for example, then
+            <em>no route at all</em> would ever reach the framework, everything would be considered
+            as static. This is, by the way, a quick way to serve a static website using Spincast!
+        </p> 
+  
+    </div>
+    
+    {#==========================================
+    Section "routing / Dynamic resources"
+    ==========================================#}
+    <div id="dynamic_resources">
+        <h4>
+            <a class="anchor_small" href="#dynamic_resources" title="permanent link"></a>
+            Dynamic resources
+        </h4>
+
+        <p>
+            A variation on <code>static resources</code> is what we call <code><em>dynamic resources</em></code>. When
+            declaring a static resource, you can provide a <code><em>generator</em></code>. The <code>generator</code> is a 
+            standard <code>route handler</code> that will receive 
+            the request <em>if the static resource is not found</em>. The job of this <code>generator</code> is to
+            generate the missing resource and to return it as the response. Spincast will automatically
+            intercept the response body, save it and, next time this static resource is requested,
+            it will be served directly by the HTTP server!
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.dir("/images/tags/${tagId}").fileSystem("/generated_tags")
+      .save(new IDefaultHandler() {
+
+          @Override
+          public void handle(IDefaultRequestContext context) {
+    
+              String tagId = context.request().getPathParam("tagId");
+              byte[] tagBytes = generateTagImage(tagId);
+    
+              context.response().sendBytes(tagBytes, "image/png");
+          }
+      });</pre> 
+                </p>
+            </div>
+        </p> 
+        <p>
+            Or, for a single file :
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.file("/css/generated.css")
+      .fileSystem("/user/www/myprojet/public_files/css/generated.css")
+      .save(new IDefaultHandler() {
+
+          @Override
+          public void handle(IDefaultRequestContext context) {
+
+              String css = generateCssFile(context.request().getRequestPath());
+              context.response().sendCharacters(css, "text/css");
+          }
+      });</pre> 
+                </p>
+            </div>
+        </p> 
+        <p>
+            Dynamic resources only work when <code>.fileSystem(...)</code> is used, not
+            <code>.classpath(...)</code>, and Spincast must have write permissions on the
+            target directory.
+        </p>
+        
+    </div>
+    
+    {#==========================================
+    Section "routing / Cors"
+    ==========================================#}
+    <div id="cors">
+        <h4>
+            <a class="anchor_small" href="#cors" title="permanent link"></a>
+            Cors
+        </h4>
+
+        <p>
+            Cors, <em><a href="http://www.html5rocks.com/en/tutorials/cors/">Cross-Origin Resource Sharing</a></em>, allows you to
+            specify some resources in your application that can be accessed by a browser <em>from another domain</em>. For example,
+            let's say your Spincast application runs on domain <code>http://www.example1.com</code>, and you want to allow another
+            site, <code>http://www.example2.com</code>, to access some of your APIs, or some of your files. By default, 
+            browsers don't allow such cross domains requests. You have to enable <code>cors</code>
+            for them to work.
+        </p>
+        <p>
+            There is a provided <code>filter</code> to enable cors on regular routes. Since <code>filters</code>
+            are not applied to <code>static resources</code>, there is also a special configuration to add
+            <code>cors</code> to those:
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>// Enable cors for every routes of your application,
+// except for static resources.
+getRouter().cors();
+
+// Enable cors for all routes matching the specified path,
+// except for static resources.
+getRouter().cors("/api/*{path}");
+
+// Enable cors on a specific route.
+getRouter().GET("/something").cors().save(handle);
+
+// Enable cors on a static resource directory.
+getRouter().dir("/public").classpath("/public_files")
+           .cors().save();
+           
+// Enable cors on a static resource file.
+getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
+           .cors().save();</pre> 
+
+                </p>
+            </div>
+        </p> 
+        <p>
+            There are some parameters available when configuring <code>cors()</code>: 
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// The default :
+// - Allows any origins (domains)
+// - Allows cookies
+// - Allows any HTTP methods
+// - Allows any headers to be sent by the browser
+// - A Max-Age of 24h is specified for caching purposes
+//
+// But :
+// - Only basic headers are allowed to be read from the browser.
+getRouter().cors();
+
+// Like the default, but also allows some extra headers
+// to be read from the browser. 
+getRouter().cors(Sets.newHashSet("*"),
+                 Sets.newHashSet("extra-header-1", "extra-header-2"));
+
+// Only allows the domains "http://example2.com" and "https://example3.com" to access 
+// your APIs.
+getRouter().cors(Sets.newHashSet("http://example2.com", "https://example3.com"));
+
+// Like the default, but only allows the specified extra headers
+// to be sent by the browser.
+getRouter().cors(Sets.newHashSet("*"),
+                 null,
+                 Sets.newHashSet("extra-header-1", "extra-header-2"));
+
+// Like the default, but doesn't allow cookies.
+getRouter().cors(Sets.newHashSet("*"),
+                 null,
+                 Sets.newHashSet("*"),
+                 false);
+
+// Like the default, but only allows the extra "PUT" method
+// in addition to GET, POST, HEAD and OPTIONS 
+// (which are always allowed).
+getRouter().cors(Sets.newHashSet("*"),
+                 null,
+                 Sets.newHashSet("*"),
+                 true,
+                 Sets.newHashSet(HttpMethod.PUT));
+
+// Like the default, but specifies a Max-Age of 60 seconds
+// instead of 24 hours.
+getRouter().cors(Sets.newHashSet("*"),
+                 null,
+                 Sets.newHashSet("*"),
+                 true,
+                 Sets.newHashSet(HttpMethod.values()),
+                 60);
+</pre> 
+                </p>
+            </div>
+        </p> 
+    </div>
+
+
+    {#==========================================
+    Section "routing / Special exceptions"
+    ==========================================#}
+    <div id="special_exceptions">
+        <h4>
+            <a class="anchor_small" href="#special_exceptions" title="permanent link"></a>
+            Special exceptions
+        </h4>
+        <p>
+            You can throw any exception and this is going to trigger the <code>Exception</code> <a href="#routing_process">routing process</a>.
+            But some exceptions are provided by Spincast and have a special behavior.
+        <p>
+        <p>
+            <ul>
+                <li>
+                    <code>RedirectException</code>: This exception will stop
+                    the current routing process (as any other exceptions),
+                    will send a <em>redirection</em> header to the user and will end the exchange. 
+ 
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    throw new RedirectException("/new-url", true);
+}</pre> 
+                            </p>
+                        </div>
+                    </p> 
+                    <p>
+                        Note that you can also redirect the user using 
+                        <code>context.response().redirect("/new-url", true)</code>, instead of throwing a
+                        <code>RedirectException</code> exception. The
+                        difference is that in the <em>exception</em> version, the remaining handlers
+                        <em>are not run</em> and the redirection headers are sent
+                        immediately.
+                    </p>
+                    
+                </li>
+                <li>
+                    <code>ForwardRouteException</code>: This exception allows
+                    you to <em>change</em> the route, to forward the request
+                    to another route without doing any client side redirection. A new
+                    routing process will start, but this time using the 
+                    <em>specified url</em> instead of the url from the original request.
+ 
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    throw new ForwardRouteException("/new-url");
+}</pre> 
+                            </p>
+                        </div>
+                    </p> 
+                </li>
+                <li>
+                    <code>SkipRemainingHandlersException</code>: This exception stops
+                    the current routing process, but without starting any new one. In other words, the
+                    remaining handlers won't be run, and the <code>response</code> will be
+                    sent as is, without any more modification.
+ 
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    context.response().sendPlainText("I'm the last thing sent!");
+    throw new SkipRemainingHandlersException();
+}</pre> 
+                            </p>
+                        </div>
+                    </p> 
+                </li>
+                <li>
+                    <code>CustomStatusCodeException</code>: This exception allows you to
+                    set an <code>HTTP status code</code> to return. Then, your custom
+                    Exception handler can check this code and display something
+                    accordingly. Also, in case you use the provided Exception handler, at least
+                    you have control over the status code sent to the user.
+                    
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    throw new CustomStatusCodeException("Forbidden!", HttpStatus.SC_FORBIDDEN);
+}</pre> 
+                            </p>
+                        </div>
+                    </p> 
+  
+                </li>
+                <li>
+                    <code>PublicException</code>: This exception allows you to
+                    specify a message that will be displayed to the user. This is
+                    mainly useful if you use the <em>provided</em> Exception handler since,
+                    in a custom handler, you would have full control over what to send
+                    as a response anyway...
+                    
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    throw new PublicException("You don't have the right to access this page",
+                              HttpStatus.SC_FORBIDDEN);
+}</pre> 
+                            </p>
+                        </div>
+                    </p> 
+                </li>
+            </ul>
+        <p>   
+    </div>
+
+</section>
+
+
+
+            

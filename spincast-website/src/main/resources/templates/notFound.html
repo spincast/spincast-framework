@@ -1,0 +1,28 @@
+{#==========================================
+Not Found
+==========================================#}
+{% extends "./layout.html" %}
+
+{#==========================================
+If available, we add the section classes of the original route
+so the menu keep the cortrect selected item.
+==========================================#}
+{% block sectionClasses %} notFound {% for htmlSectionClass in htmlSectionClasses %}{{htmlSectionClass}}{% else %}{% endfor %}{% endblock %}
+{% block meta_title %}Not Found{% endblock %}
+{% block meta_description %}Not Found{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="errorCore">
+        {{message}}
+    </div>
+    <div id="errorCoreImg">
+        <img src="/public/images/404.gif" />
+    </div>
+    
+</div> 
+
+
+{% endblock %}

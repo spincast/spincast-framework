@@ -1,0 +1,737 @@
+{#==========================================
+Index
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}index{% endblock %}
+{% block meta_title %}Java web framework{% endblock %}
+{% block meta_description %}Highly Flexible Java Web Framework Based On Guice{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div class="row"> 
+        <div class="col-xs-12">
+		    <div id="jumb" class="jumbotron">
+		        <h1>Propulsion for your web backend</h1>
+		        <p><span class="orange spincast">Spincast</span> is an highly flexible 
+                and <a href="https://github.com/spincast/spincast-framework"><span>open source</span></a> Java web framework, based on Guice.</p>
+		    </div>
+	    </div>
+    </div>
+
+    <div class="row"> 
+    
+        {#==========================================
+        Main content
+        ==========================================#}
+        <div class="col-md-9">
+        
+            <div id="indexContent" class="row">
+            
+		        {#==========================================
+		        Spincast overview
+		        ==========================================#}
+                <div class="col-xs-12">
+                    <h2 class="noTop">
+                        <a class="anchor" id="overview" href="#overview" title="permanent link"></a>
+                        Spincast overview
+                    </h2>
+                    
+                    <p>
+                        Spincast is a Java framework to serve as a backend for Single Page Applications (<em>SPA</em>),
+                        to develop old-school <code>HTML</code> generated websites
+                        or even to be a <code>REST</code> web service / microservice platform, as it speaks <code>Json</code>
+                        and <code>XML</code> natively. It is made of a small core and a <a href="/plugins">plugins</a> 
+                        ecosystem. It aims to be as flexible and enjoyable as possible, but not to be simple 
+                        <em>at all cost</em>!
+                    </p> 
+                    <blockquote>
+                        <p><em>Simple things should be simple, complex things should be possible.</em></p>
+                        <footer>Alan Kay</footer>
+                    </blockquote>
+                    <p>
+                        Sane defaults are provided for pretty much all parts of the framework, but everything is 
+                        overridable/configurable. For example, there are no <code>private</code> methods in the
+                        framework, the default method visibility is <code>protected</code> 
+                        (<em><a href="/about#private_methods">learn more</a></em>). 
+                        Spincast is built from the ground up using the wonderful 
+                        <a href="https://github.com/google/guice/wiki/Motivation" class="love">Guice</a>
+                        and the  modularity features this library provides. It uses an embedded HTTP server so it's easy 
+                        to develop, test and deploy. 
+                    </p> 
+                    <blockquote id="coc">
+                        <p><em>Configuration over convention!</em></p>
+                    </blockquote>
+                    <p>
+                        Spincast is <em>not</em> the kind of microframeworks that quickly produces one-liner applications. There are
+                        no static methods, no magical conventions, no easy shortcuts. In our opinion, developers should 
+                        always keep total control over what's going on, even if that requires a little bit more work 
+                        from their part and some extra lines of code.
+                    </p>
+                    <p class="right learnMore">
+                        <em><a href="/about">Learn more...</a></em>
+                    </p>
+                    
+                </div>
+                
+                {#==========================================
+                Hello World (quick version)
+                ==========================================#}
+                <div class="col-xs-12">
+                    
+                    <h2 class="shortTop">
+	                    <a class="anchor" id="hello_world_quick" href="#hello_world_quick" title="permanent link"></a>
+	                    Hello World! <em>(quick and dirty version)</em>
+                    </h2>
+                    <p>
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        First, you add the latest version of the <code>org.spincast:spincast-default</code>
+                        Maven artifact to your <code>pom.xml</code> (or <code>build.gradle</code>) :
+                        <div>
+                            <p>
+                                <pre class="ace ace-xml"
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-default&lt;/artifactId>
+    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre> 
+                            </p>
+                            <p>
+                            </p>  
+                        </div>
+                    </p>
+                    <p class="subSection">
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Then you bootstrap everything using a <code>main</code> method :
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+
+        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
+
+        IDefaultRouter router = guice.getInstance(IDefaultRouter.class);
+        
+        router.GET("/").save(context -&gt; context.response().sendPlainText("Hello World!"));
+
+        guice.getInstance(IServer.class).start();
+    }
+}</pre> 
+                            </p>
+                            <p>
+                                <span class="explanation">Explanation :</span><br />
+                                <em class="explTip">(Tip : try hovering/clicking the page numbers below!)</em>
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">3</span> : A good old Java's <code>main</code> method! This
+                                        is the entry point of a standard Spincast application.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">5</span> : The very first thing a Spincast application
+                                        does is to create a Guice context. Here, we use the provided
+                                        <code>SpincastDefaultGuiceModule</code> module. This module binds a default
+                                        implementation for all the required components of a Spincast application.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">7</span> : We get the default router (<code>IDefaultRouter</code>) from Guice.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">9</span> : We add a <code>GET</code> route for the 
+                                        <code>"/"</code> index page, using a Java 8's <code>lambdas</code> syntax. 
+                                         This inline <code>route handler</code> sends a plain text "<em>Hello World!</em>" message to the user.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">11</span> : We get the HTTP server (<code>IServer</code>) from Guice and
+                                        we start it!
+                                    </li>
+                                </ul>
+                            </p> 
+                            <p>
+                               Now, if you would point your browser to <code>http://localhost:44419</code> 
+                               (Spincast default port is <code>44419</code>), you should see the
+                               "<em>Hello World!</em>" message.
+                            </p> 
+                        </div>
+                    </p>
+                    <p>
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Here's the exact same example but using Java 7, so without <code>lambdas</code>. We prefer this version
+                        for a first example because the types of the various components are more obvious!:
+                    </p>
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+
+        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
+
+        IDefaultRouter router = guice.getInstance(IDefaultRouter.class);
+
+        router.GET("/").save(new IDefaultHandler() {
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("Hello World!");
+            }
+        });
+
+        guice.getInstance(IServer.class).start();
+    }
+}</pre> 
+                            </p>
+                            <p>
+                                <span class="explanation">Explanation :</span><br />
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">9-14</span> : We can now clearly see that the
+                                        <code>save(...)</code> method in fact takes a <code>route handler</code> as a parameter.
+                                        In this simple example, the route handler is declared <em>inline</em> using the 
+                                        <code>IDefaultHandler</code> interface. We'll learn more about route handlers in the
+                                        next example. 
+                                    </li>
+                                </ul>
+                            </p> 
+                        </div>
+                    </p>
+                </div>
+                
+                {#==========================================
+                Hello World (more scalable version)
+                ==========================================#}
+                <div class="col-xs-12">
+
+                    <h2>
+                        <a class="anchor" id="hello_world_scalable" href="#hello_world_scalable" title="permanent link"></a>
+                        Hello World! <em>(more scalable version)</em>
+                    </h2>
+                    <p>
+                        We're not big fans of those very short "Hello world!" examples because, in real life, you
+                        usually don't develop such basic applications. You want an architecture that 
+                        is flexible and scalable! So, let's use a more flexible structure now.
+                    </p>
+                    <p>
+                        In this second example we'll:
+                        
+                        <ul>
+                            <li>
+                                Make the <code>App</code> class itself being managed by Guice.
+                            </li>
+                            <li>
+                                Use a <em>custom</em> Guice module.
+                            </li>
+                            <li>
+                                Learn how to extend the <code>request context</code> type.
+                            </li>
+                        </ul>
+                    </p>
+
+                    <p>
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        If you look carefully, in the previous example we used a lot of <code><em>Default</em></code> components
+                        (<code>"IDefaultRouter"</code> for example). 
+                        Those <code>Default</code> components are useful to have a quick up and running Spincast application. 
+                        But they hide the fact that they 
+                        represent objects that are actually <em>parameterized</em>. In Spincast, most of the components related to 
+                        the routing process are parameterized with the <code>request context</code> type. You can learn more about
+                        this topic in the <a href="/documentation#request_context"><code>The Request Context</code></a> 
+                        section of the documentation, but we'll introduce it briefly here.
+                    </p>   
+                    <p>
+                        A <code>request context</code> is the object Spincast passes to the matching <code>route handlers</code>
+                        when a request arrives. This object allows your handlers to access information
+                        about the current request (its <code>body</code>, <code>headers</code>, <code>path parameters</code>, etc.) and
+                        to build the response that is going to be sent back (its <code>body</code>, <code>headers</code>, <code>http status</code>, etc.).
+                        But there are also more generic <em>utility methods</em> on the <code>request context</code>, methods not directly
+                        related to the request or the response. Here's a quick example :
+                    </p>  
+                    <div>
+                        <p>
+                            {% verbatim %}<pre class="ace ace-java"
+>public void myHandler(IDefaultRequestContext context) {
+
+    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+    params.put("name", "Stromgol");
+    String result = context.templating().evaluate("Hello {{name}}", params);
+    
+    // Do something with the result...
+}</pre>{% endverbatim %}
+                        </p>
+                            <p>
+                                <span class="explanation">Explanation :</span>
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">5</span> : The <code>templating()</code> "method"
+                                        is not directly related to the <em>request</em> or the <em>response</em>. 
+                                        It's an <code><em>add-on</em></code> that provides <em>utilities</em> to the 
+                                        <code>route handlers</code>.
+                                    </li>
+                                </ul>
+                            </p>  
+                    </div>
+                    <p>
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        In our first "Hello World" example, the <code>request context</code> type was <code>IDefaultRequestContext</code>, 
+                        which is the default.
+                        In Spincast, this default type <em>can be extended</em>, you can add extra
+                        functionalities to it! Those functionalities can be simple methods or full objects, 
+                        called <code>add-ons</code>. Most of the time, those <code>add-ons</code> are provided by
+                        <a href="/plugins"><code>plugins</code></a>.
+                    </p>  
+                    <p>
+                        But why would we want to extend the <code>request context</code>? 
+                    </p>  
+                    <p>
+                        Imagine a <code>plugin</code>
+                        which job is to manage <em>authentification</em> and <em>autorization</em>. Wouldn't it be nice if
+                        this plugin could add some extra functionnalities to the <code>request context</code>? 
+                        For example :   
+                    </p>  
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java" data-ace-hi="4,18,4,43|5,37,5,65"
+>router.GET("/").save(new IDefaultHandler() {
+    @Override
+    public void handle(IDefaultRequestContext context) {
+
+        if(context.auth().isAuthenticated()) {
+            String username = context.auth().user().getUsername();
+            // ...
+        }
+    }
+});</pre> 
+                            </p> 
+                        </div>
+                    </p>
+                    <p>
+                        This is what being able to extend the <code>request context</code> allows.
+                    </p>
+                    <p>
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        So in this new and improved "Hello world!" example, we're going to use a <em>custom</em>
+                        <code>request context</code> type: <code>IAppRequestContext</code>. We're going to add a simple method 
+                        to it : <code><em>translate(String sentence, Locale from, Locale to)</em></code>,
+                        which job will be to translate a sentence from one language to another. By adding this
+                        new method to our custom <code>request context</code> type, our <code>route handlers</code> will have
+                        easy access to it.
+                    </p>
+                    <p>
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Note that, for this second example, we still have to include the <code>org.spincast:spincast-default</code>
+                        Maven artifact because, even if we'll use a custom <code>request context</code> type,  we'll still be
+                        using all the other default components (the default <code>HTTP server</code>, for example).
+                    </p>
+                    <p class="subSection">
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Let's first have a look at what our new <code>App</code> class will be. We'll create the other
+                        required components after.
+                        
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+
+        Injector guice = Guice.createInjector(new AppModule());
+
+        App app = guice.getInstance(App.class);
+        app.start();
+    }
+
+    private final IServer server;
+    private final IRouter&lt;IAppRequestContext&gt; router;
+
+    @Inject
+    public App(IServer server, IRouter&lt;IAppRequestContext&gt; router) {
+        this.server = server;
+        this.router = router;
+    }
+
+    public void start() {
+
+        this.router.GET("/").save(new IHandler&lt;IAppRequestContext&gt;() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                String translated = context.translate("Hello World!", 
+                                                      Locale.ENGLISH, 
+                                                      Locale.FRENCH);
+                context.response().sendPlainText(translated);
+            }
+        });
+
+        this.server.start();
+    }
+}</pre> 
+                            </p>
+                            <p>
+                                <span class="explanation">Explanation :</span>
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">1</span> : The <code>App</code> class is still the
+                                        entry point of our application but, in this new example, it is also going to 
+                                        be <em>part of the Guice context</em>!
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">5</span> : Instead of using the default 
+                                        <code>SpincastDefaultGuiceModule</code> Guice module provided by Spincast, we
+                                        use a <em>custom</em> Guice module, <code>AppModule</code> (listed below).
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">7-8</span> : When the Guice context is created, we
+                                        get the <code>App</code> instance and we call its <code>start()</code> method.
+                                        As you'll see, we'll bind the <code>App</code> class itself in our
+                                        custom <code>AppModule</code> module, so Guice manages it!
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">14-18</span> : Since the <code>App</code> instance is
+                                        managed by Guice, all the required dependencies will be automatically injected
+                                        in its constructor. Here, we inject the HTTP server (<code>IServer</code>) and
+                                        a <em>custom and parameterized</em> router : <code>IRouter&lt;IAppRequestContext></code>.
+                                        We'll see that because the router is parameterized with a <em>custom</em> 
+                                        <code>request context</code> type, <code><em>"IAppRequestContext"</em></code>, our <code>route handler</code> will
+                                        have access to a new <code>translate(...)</code> method...
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">20</span> : The <code>start()</code> method called 
+                                        at line <span class="code-line-nbr">8</span>, once
+                                        Guice context is created.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">22</span> : We add a <code>GET</code> route for the <code>"/"</code> index page.
+                                        Here, we won't use Java 8 <code>lambdas</code> or <code>method handles</code> so you can clearly see
+                                        the types involved. Since the router, <code><em>IRouter&lt;IAppRequestContext&gt;</em></code>, is parameterized with our custom 
+                                        <code>request context</code> type, the handler type,
+                                        <code><em>IHandler&lt;IAppRequestContext&gt;</em></code>, will also be.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">25</span> : The <code>handle(...)</code> method receives an
+                                        instance of our
+                                        custom <code>request context</code> type, <code><em>"IAppRequestContext"</em></code>.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">26-28</span> : We can now use our new 
+                                        <code>translate(...)</code> method, available directly on the <code>request context</code>
+                                        object!
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">33</span> : We start the server.
+                                    </li>
+                                </ul>
+                            </p>  
+                        </div>
+                    </p>  
+
+                    <p class="subSection">
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Now that we looked at the new <code>App</code> class, let's create our custom <code>IAppRequestContext</code> 
+                        type in which the new <code>translate(...)</code> method will be defined :
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public interface IAppRequestContext extends IRequestContext&lt;IAppRequestContext&gt; {
+
+    public String translate(String sentence, Locale from, Locale to);
+
+    // Other custom methods and/or add-ons...
+}</pre> 
+                            </p>
+                            <p>
+                                <span class="explanation">Explanation :</span>
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">1</span> : A custom <code>request context</code> interface
+                                        must extend the <code>IRequestContext</code> base interface and parameterize it
+                                        using <em>its own type</em>. To learn more about this, check the 
+                                        <a href="/documentation#extending_request_context">Extending the default request context type</a>
+                                        section of the documentation.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">3</span> : We declare our custom <code>translate(...)</code> method.
+                                    </li> 
+                                </ul>
+                            </p>  
+                        </div>
+                    </p>
+                     
+                    <p class="subSection">
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Then, let's add an implementation for this interface :
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public class AppRequestContext extends RequestContextBase&lt;IAppRequestContext&gt;
+                               implements IAppRequestContext {
+
+    @AssistedInject
+    public AppRequestContext(@Assisted Object exchange) {
+        super(exchange);
+    }
+
+    @Override
+    public String translate(String sentence, Locale from, Locale to) {
+
+        // Ok, it's more hardcoded than translated for now!
+        return "Salut, monde!";
+    }
+}</pre> 
+                            </p>
+                            <p>
+                                <span class="explanation">Explanation :</span>
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">1-2</span> : Our 
+                                        implementation class extends the <code>RequestContextBase</code>
+                                        class to keep all the functionalities of the default
+                                        <code>request context</code>, but also implements
+                                        our custom <code>IAppRequestContext</code> interface, where our new
+                                        <code>translate(...)</code> method is declared.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">4-7</span> : The constructor is annotated with
+                                        <code>@AssistedInject</code> because it will be used by a Guice
+                                        <a href="https://github.com/google/guice/wiki/AssistedInject">assisted factory</a>.
+                                        Don't worry too much about this or about the <code>exchange</code> parameter, 
+                                        the latter is simply required by the parent class's constructor.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">9-14</span> : A dummy implementation of our new
+                                        method, <code>translate(...)</code>. 
+                                    </li> 
+                                </ul>
+                            </p>  
+                        </div>
+                    </p>
+                    
+                    <p class="subSection">
+                        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                        Finally, we bind everything together by creating a custom 
+                        Guice module,  <code>AppModule</code>. This module is the one
+                        used by our <code>App</code> class to create the Guice context.
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public class AppModule extends SpincastDefaultGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        bind(App.class).in(Scopes.SINGLETON);
+    }
+
+    @Override
+    protected Class&lt;? extends IRequestContext&lt;?&gt;&gt; getRequestContextImplementationClass() {
+        return AppRequestContext.class;
+    }
+    
+}</pre> 
+                            </p>
+                            <p>
+                                <span class="explanation">Explanation :</span>
+                                <ul>
+                                    <li>
+                                        <span class="code-line-nbr">1</span> : Our custom module extends 
+                                        <code>SpincastDefaultGuiceModule</code> since we want to keep the
+                                        default bindings and only tweak a few things.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">6</span> : In the overidden <code>configure()</code>
+                                        method, we bind our <code>App</code> class itself! That way, Guice knows about it
+                                        and is able to inject the dependencies it requires.
+                                    </li>
+                                    <li>
+                                        <span class="code-line-nbr">9-12</span> : We override the 
+                                        <code>getRequestContextImplementationClass()</code> method to let Spincast know that
+                                        it has to use our custom
+                                        <code>AppRequestContext</code> request context type instead of the default one!
+                                        Note that Spincast will automatically find the associated <code>IAppRequestContext</code>
+                                        interface and will use it to parameterize the router and the other routing
+                                        related components.    
+                                    </li>  
+                                </ul>
+                            </p>  
+                        </div>
+                    </p>
+                    <p class="tallTop">
+                        And that's it! If you start this application (using the <code>main(...)</code> method of
+                        the <code>App</code> class) and point your browser to
+                        <code>http://localhost:44419</code>, you'll see "<em>Salut, monde!</em>".
+                    </p>    
+                    <p>   
+                        Extending the <code>request context</code> type may seem like a lot of code! 
+                        But once in place, adding new functionnalities is pretty easy. And you'll have a solid and flexible 
+                        base to build your application.
+                     </p>  
+                     <p>   
+                        That said, if it's too much, you can also start using 
+                        Spincast with the provided <em>default</em> components and only switch to custom ones 
+                        when you feel ready...
+                    </p>
+                    <p>
+                        Note that if you use the <a href="/documentation#quick_start">Quick Start</a>
+                        application as a start, the customization of
+                        the <code>request context</code> type <em>has already been done for you</em>.
+                    </p>
+   
+                </div>
+                
+                {#==========================================
+                Hello World (real life version)
+                ==========================================#}
+                <div class="col-xs-12">
+                    
+                    <h2 class="shortTop">
+                        <a class="anchor" id="hello_world_real_life" href="#hello_world_real_life" title="permanent link"></a>
+                        Hello World! <em>(real life version)</em>
+                    </h2>
+                    <p>
+                        Our second example was a good step forward. But in a real life application, your logic
+                        wouldn't all be inside a single <code>App</code> class! You would have <code>controllers</code>,
+                        <code>services</code>, <code>respositories</code>, etc.
+                    </p>
+                    <p>
+                        Make sure you read the <a href="/documentation#bootstrapping">Bootstrapping your app</a> section
+                        of the documentation for more ideas on how to structure a real life Spincast application.
+                    </p>
+                </div>
+                
+                {#==========================================
+                Next steps
+                ==========================================#}
+                <div class="col-xs-12">
+                    <h2 class="shortTop">
+                        <a class="anchor" id="next_steps" href="#next_steps" title="permanent link"></a>
+                        Where to go from here?
+                    </h2>
+                    <p>
+                        If you haven't done so yet, try the <a href="/documentation#quick_start"><i class="glyphicon glyphicon-flash"></i>Quick Start</a>
+                        application. Not only it is a good way to learn how a Spincast application works,
+                        but it also makes a good starting point to build a real application. Open the project
+                        in your favorite IDE, add breakpoints and start debugging: this is probably the best way 
+                        to really learn how Spincast works.
+                    </p>
+                    <p>
+                        Finally, if you feel really adventurous, you could even 
+                        <a href="/documentation">Read The Freaking Manual</a>!
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        {#==========================================
+        Right sidebar
+        ==========================================#}
+        <div id="right-sidebar" class="col-md-3">
+        
+            <div class="quickStartWrapper">
+                <a href="/documentation#quick_start" class="btn btn-lg hvr-radial-out">
+                <i class="glyphicon glyphicon-flash"></i> Quick Start</a>
+            </div>
+        
+	        {#==========================================
+	        Current version
+	        ==========================================#}
+            <div  id="version" class="well right-section">
+	            <h4>
+                    <a class="anchor_small" href="#version" title="permanent link"></a>
+                    Current version
+                </h4>
+	            
+	            <p>
+	                The current version is <code>{{spincastCurrrentVersion}}</code>. 
+                    Spincast is considered as being in <em><b>beta</b></em> as long as
+	                <code>1.0.0</code> is not reached.
+	            </p>
+            </div>
+            
+            {#==========================================
+            Spincast Features
+            ==========================================#}
+            <div id="features" class="well right-section">
+                <h4>
+                    <a class="anchor_small" href="#features" title="permanent link"></a>
+                    Spincast Features
+                </h4>
+
+                <ul>
+                    <li>
+                        Small core, lots of plugins.
+                    </li>
+                    <li>
+                        Entirely built on Guice: all parts are configurable
+                        and tweakable.
+                    </li>
+                    <li>
+                       There are no <code>private</code> methods. The default
+                       visibility is <code>protected</code> (<em><a href="/about#private_methods">learn more</a></em>)
+                    </li>
+                    <li>
+                       No static methods. Everything is testable.
+                    </li>
+                    <li>
+                       Over 450+ tests.
+                    </li>
+                    <li>
+                        Java 7 compatible.
+                    </li>
+                    <li>
+                       Embedded HTTP server. Easy to develop, test and deploy.
+                    </li>
+                </ul>
+            </div>
+            
+            {#==========================================
+            Road to 1.0.0
+            ==========================================#}
+            <div id="roadmap" class="well right-section">
+                <h4>
+                    <a class="anchor_small" href="#roadmap" title="permanent link"></a>
+                    Roadmap to 1.0.0
+                </h4>
+                <p>
+                    <ul>
+                        <li>
+                            Waiting for community feedback and ideas.
+                        </li>
+                        <li>
+                            Making sure the extensibility is the
+                            best possible. Add new hooks if required.
+                        </li>
+                        <li>
+                            Tweaking the development/build process.
+                        </li>
+                        <li>
+                            Improving the Javadoc.
+                        </li>
+                        <li>
+                            Websocket handling.
+                        </li>
+                        <li>
+                            A Security plugin (authentification / authorization).
+                        </li>
+                        <li>
+                            Validate if something related to data sources
+                            and transactions should be included in the 
+                            core itself.
+                        </li>
+                        <li>
+                            Hooks for JRebel and other hot reloaders.
+                        </li>
+                    </ul>
+                </p>
+            </div>
+
+        </div> {# End right-sidebar #}
+    </div> {# End row #}
+    
+</div> 
+
+{% endblock %}
+

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-parent</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
+        <relativePath>spincast-parent</relativePath>
+    </parent>
+
+    <artifactId>spincast-framework</artifactId>
+    <packaging>pom</packaging>
+    
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Spincast - Java web framework</description>
+    <url>https://www.spincast.org</url>
+
+    <modules>
+        <module>spincast-parent</module>
+        <module>spincast-shaded-dependencies</module>
+        <module>spincast-core</module>
+        <module>spincast-testing-utils</module>
+        <module>spincast-testing-core</module>
+        <module>spincast-plugins</module>
+        <module>spincast-default</module>
+        <module>spincast-quickstart</module>
+        <module>spincast-website</module>
+    </modules>
+    
+    <build>
+        <plugins>
+        
+            <!--=================================== 
+            Deploy to Maven Central staging
+            ====================================-->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        
+             <!--=================================== 
+             Release plugin
+             ====================================-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>  
+
+        </plugins>
+    </build>
+</project>

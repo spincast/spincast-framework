@@ -1,0 +1,241 @@
+package org.spincast.quickstart;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spincast.core.filters.ISpincastFilters;
+import org.spincast.core.routing.IHandler;
+import org.spincast.core.server.IServer;
+import org.spincast.quickstart.config.IAppConfig;
+import org.spincast.quickstart.controller.IAppController;
+import org.spincast.quickstart.exchange.IAppHandler;
+import org.spincast.quickstart.exchange.IAppRequestContext;
+import org.spincast.quickstart.exchange.IAppRouter;
+import org.spincast.quickstart.guice.AppModule;
+
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+
+/**
+ * The main class of the application. Everything start with the
+ * classic <code>main(...)</code> method.
+ */
+public class App {
+
+    protected final Logger logger = LoggerFactory.getLogger(App.class);
+
+    /**
+     * The entry point for the application.
+     */
+    public static void main(String[] args) {
+        createApp(args);
+    }
+
+    /**
+     * Creates an <code>App</code> instance and returns the Guice injector. 
+     */
+    public static Injector createApp() {
+        return createApp(null);
+    }
+
+    /**
+     * Create an <code>App</code> instance using the given
+     * parameters and returns the Guice injector.
+     */
+    public static Injector createApp(String[] args) {
+
+        if(args == null) {
+            args = new String[]{};
+        }
+
+        Injector guice = Guice.createInjector(new AppModule(args));
+
+        App app = guice.getInstance(App.class);
+        app.start();
+
+        return guice;
+    }
+
+    private final IServer server;
+    private final IAppConfig appConfig;
+    private final IAppRouter router;
+    private final IAppController appController;
+    private final ISpincastFilters<IAppRequestContext> spincastFilters;
+
+    /**
+     * The application constructor which Guice will call
+     * with the required dependencies.
+     */
+    @Inject
+    public App(IServer server,
+               IAppConfig config,
+               IAppRouter router,
+               IAppController appController,
+               ISpincastFilters<IAppRequestContext> spincastFilters) {
+        this.server = server;
+        this.appConfig = config;
+        this.router = router;
+        this.appController = appController;
+        this.spincastFilters = spincastFilters;
+    }
+
+    protected IAppConfig getConfig() {
+        return this.appConfig;
+    }
+
+    protected IServer getServer() {
+        return this.server;
+    }
+
+    protected IAppRouter getRouter() {
+        return this.router;
+    }
+
+    protected IAppController getAppController() {
+        return this.appController;
+    }
+
+    protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
+        return this.spincastFilters;
+    }
+
+    /**
+     * Once the application instance is created by Guice, start() is called
+     * and the real work begins!
+     */
+    protected void start() {
+
+        //==========================================
+        // We add the application routes.
+        //==========================================
+        addRoutes();
+
+        //==========================================
+        // We start the server!
+        //==========================================
+        getServer().start();
+
+        //==========================================
+        // We display a "started" message.
+        //==========================================
+        displayStartedMessage();
+    }
+
+    /**
+     * Adds the application routes.
+     */
+    protected void addRoutes() {
+
+        //==========================================
+        // A GET route for the index page.
+        //
+        // Note that with Java 8, we could simply use 
+        // a method handler :
+        //
+        // getRouter().GET("/", getAppController()::indexPage);
+        //
+        // Or a Lambda :
+        //
+        // getRouter().GET("/").save(context -> getAppController().indexPage(context));
+        //
+        //==========================================
+        getRouter().GET("/").save(new IAppHandler() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                getAppController().indexPage(context);
+            }
+        });
+
+        //==========================================
+        // Another GET route. 
+        // Note that here we use 
+        // "IHandler<IAppRequestContext>" instead of 
+        // "IAppHandler" for the handler type : 
+        // they are equivalent.
+        //==========================================
+        getRouter().GET("/greet/${name}").save(new IHandler<IAppRequestContext>() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                // Call a method we added on our
+                // custom request context type...
+                context.customGreetingMethod();
+            }
+        });
+
+        //==========================================
+        // "Not Found" handler
+        //==========================================
+        getRouter().notFound(new IAppHandler() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                getAppController().notFound(context);
+            }
+        });
+
+        //==========================================
+        // Exceptions handler
+        //==========================================
+        getRouter().exception(new IAppHandler() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                getAppController().exception(context);
+            }
+        });
+
+        //==========================================
+        // Serves everything under "/public" as
+        // static resources.
+        //==========================================
+        getRouter().dir("/public").classpath("/public").save();
+
+        //==========================================
+        // Some default files which
+        // are not under the "/public" URL.
+        //==========================================
+        getRouter().file("/favicon.ico").classpath("/public/favicon.ico").save();
+        getRouter().file("/robots.txt").classpath("/public/robots.txt").save();
+        getRouter().file("/humans.txt").classpath("/public/humans.txt").save();
+        getRouter().file("/browserconfig.xml").classpath("/public/browserconfig.xml").save();
+        getRouter().file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").save();
+        getRouter().file("/tile-wide.png").classpath("/public/tile-wide.png").save();
+        getRouter().file("/tile.png").classpath("/public/tile.png").save();
+
+        //==========================================
+        // Add some security headers on every route.
+        //==========================================
+        getRouter().before(new IAppHandler() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                getSpincastFilters().addSecurityHeaders(context);
+            }
+        });
+    }
+
+    /**
+     * Display a message when the application is started.
+     */
+    protected void displayStartedMessage() {
+        System.out.println();
+        System.out.println("==========================================");
+        System.out.print("Spincast quick start application started on ");
+
+        if(getConfig().getHttpServerPort() > 0) {
+            System.out.print("port " + getConfig().getHttpServerPort());
+        }
+        if(getConfig().getHttpsServerPort() > 0) {
+            if(getConfig().getHttpServerPort() > 0) {
+                System.out.print(" and ");
+            }
+            System.out.print("port " + getConfig().getHttpsServerPort() + " (HTTPS)");
+        }
+        System.out.println();
+        System.out.println("Try hitting the index page or \"/greet/[YourName]\"...");
+        System.out.println("==========================================");
+    }
+
+}

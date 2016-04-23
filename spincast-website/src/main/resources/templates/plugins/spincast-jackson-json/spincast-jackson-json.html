@@ -1,0 +1,297 @@
+{#==========================================
+Spincast Jackson Json plugin
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-jackson-json{% endblock %}
+{% block meta_title %}Plugins - Spincast Jackson Json{% endblock %}
+{% block meta_description %}Spincast Jackson Json plugin provides Json functionalities using Jackson.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Jackson Json plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Jackson Json <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeCore hint--top-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <span class="clear"></span>
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Jackson Json <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable">
+                    <a href="#jsonmanager">The <code>IJsonManager</code> interface</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#methods">Methods</a></li> 
+                    </ul>
+                </li>   
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+            
+                <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+                <p>
+                    The <code>Spincast Jackson Json</code> plugin provides Json functionalities
+                     using <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>. It contains an implementation
+                    of the <code><a href="#jsonmanager">IJsonManager</a></code> interface.
+                </p>
+                <p>
+                    Most of the time, the <code>IJsonManager</code> interface is used directly from
+                    the <code>request context</code> via the 
+                    <a href="/documentation#core_rc_methods"><code>json()</code> method</a> or indirectly via
+                    some methods on the <a href="/plugins/spincast-response#request_context_addon"><code>response()</code> add-on</a>. 
+                </p>
+                <p>    
+                    For example:
+                </p>
+                
+                <p>
+                    <div>
+                        <p>
+                            {% verbatim %}<pre class="ace ace-java" data-ace-hi="5,37,5,53|8,15,8,44"
+>public class AppController {
+
+    public void myHandler(IDefaultRequestContext context) {
+
+        // Create a Json object, using the "json()" add-on
+        IJsonObject jsonObj = context.json().create();
+
+        // Send an object as Json, using the "response()" add-on
+        context.response().sendJson(jsonObj);
+    }
+}</pre>{% endverbatim %}
+                        </p>
+                    </div>
+                </p>
+                <p>
+                    You can also directly inject the <code>IJsonManager</code>
+                    instance where you need it in your application.
+                </p>
+  
+            </section>
+            
+	        <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+	            <p>
+	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
+	                you have nothing more to do!
+	            </p>
+	            <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
+	                plugin by adding this artifact to your project:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-jackson-json&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+	            <p>
+	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,74"
+>Injector guice = Guice.createInjector(
+        new SpincastCoreGuiceModule(args),
+        new SpincastJacksonJsonPluginGuiceModule(IAppRequestContext.class)
+        // other modules...
+        );</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+	            <p>
+	                ... or by using the <code>install(...)</code> method from your custom Guice module:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,84"
+>public class AppModule extends SpincastCoreGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        install(new SpincastJacksonJsonPluginGuiceModule(getRequestContextType()));
+        // other modules...
+    }
+    
+    // ...
+}</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+            </section>
+            
+            <section id="jsonmanager">
+                <h3 class="noTop">
+                    <a class="anchor" href="#jsonmanager" title="permanent link"></a>
+                    The <code>IJsonManager</code> interface
+                </h3>
+                <p>
+                </p> 
+                
+                <div id="methods">
+                    <p>
+                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods :</h4>
+                        <ul class="apiList">
+            
+            
+<li>
+    <code class="apiItem">IJsonObject <span>create</span>()</code>
+    <div class="well">
+        Creates an empty <code>JsonObject</code>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IJsonObject <span>create</span>(String jsonString)</code>
+    <div class="well">
+        Creates a <code>JsonObject</code> from a <code>Json</code>
+<br />String.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IJsonObject <span>create</span>(InputStream inputStream)</code>
+    <div class="well">
+        Creates a <code>JsonObject</code> from an inputStream.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IJsonArray <span>createArray</span>()</code>
+    <div class="well">
+        Creates an empty <code>JsonArray</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>toJsonString</span>(Object obj)</code>
+    <div class="well">
+        Gets the <code>Json</code> String representation of
+ the specified object.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>toJsonString</span>(Object obj, boolean pretty)</code>
+    <div class="well">
+        Gets the <code>Json</code> String representation of the
+ specified object.
+
+        <div class="apiItemFooter">
+            @param pretty if <code>true</code>, the generated
+ String will be formatted.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, Object&gt; <span>fromJsonStringToMap</span>(String jsonString)</code>
+    <div class="well">
+        Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code>
+<br />String.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, Object&gt; <span>fromJsonInputStreamToMap</span>(InputStream inputStream)</code>
+    <div class="well">
+        Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code> inputStream.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">&lt;T&gt; T <span>fromJsonString</span>(String jsonString, Class&lt;T&gt; clazz)</code>
+    <div class="well">
+        Creates an instance of the specified <code>T</code> type
+ from a <code>Json</code> String.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">&lt;T&gt; T <span>fromJsonInputStream</span>(InputStream inputStream, Class&lt;T&gt; clazz)</code>
+    <div class="well">
+        Creates an instance of the specified <code>T</code> type
+ from a <code>Json</code> inputStream.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Date <span>parseDateFromJson</span>(String str)</code>
+    <div class="well">
+        Converts a <code>Json</code> date to a Java <code>UTC</code> date.
+
+    </div>
+</li>
+
+
+     
+
+
+                        </ul>
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

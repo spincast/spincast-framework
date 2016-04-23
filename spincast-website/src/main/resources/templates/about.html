@@ -1,0 +1,297 @@
+{#==========================================
+About
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}about{% endblock %}
+{% block meta_title %}About{% endblock %}
+{% block meta_description %}Information about Spincast / Philosophy / Team{% endblock %}
+
+{% block scripts %}
+<script>
+
+	{#==========================================
+	Initialize the Table Of Content
+	==========================================#}
+	$(function() {
+	    app.toc(188);
+	});
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop">About</h2></a>
+        </div>
+    </div>
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> About</h2></a>
+        </div>
+    </div>
+    <div id="mobileMenu" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><img src="/public/images/logo_xsmall.png" /></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable">
+                    <a href="#why">Why Spincast?</a>
+                </li>
+                <li class="openable">
+                    <a href="#choices">The choices we made</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#java">Java</a></li>
+                        <li><a href="#dependency_injection">Dependency injection</a></li>
+                        <li><a href="#configuration_over_convention">Configuration over convention</a></li>
+                        <li><a href="#not_asynchronous">Not asynchronous</a></li>
+                        <li><a href="#private_methods">No private methods</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#contact">Contact</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            {#==========================================
+            Why Spincast?
+            ==========================================#}
+            <section id="why">
+                <h3 class="shortTop">
+                    <a class="anchor" href="#why" title="permanent link"></a>
+                    Why Spincast?
+                </h3>
+                <p>
+                    A lot of modern Java web frameworks have emerged in the past few years. 
+                    We needed one for a project, so we tried a lot of them! Sadly, there was always a 
+                    little something we dislike... Some are based on lots of static methods: they seek 
+                    to be as simple to use as possible, but doing so they lose flexibility, extensibility, and testability. 
+                    Some others force you to use <em>this</em> or <em>that</em> library to do a particular task, 
+                    which we found annoying. Also, many use the infamous <code>new</code> keyword everywhere, 
+                    and this hurts fans of <a href="#dependency_injection">dependency injection</a>, like us.
+                </p>
+                <p>
+                    But the main problem we had with most of the frameworks out there, is that they
+                    are often too <em>opinionated</em>. We're grown-up developers, and we don't like when a framework
+                    tells us how things have to be done! We wanted a flexible framework which 
+                    would allow developers to override pretty much everything, even if that means they would also be 
+                    able to <em>break</em> everything!
+                    We wanted a framework which would feel as much as possible like a <em>library</em>.
+                    A framework made to be extensible, from the ground up.
+                </p>
+                <p>
+                    We created Spincast in an attempt to be that flexible framework we were looking for. 
+                    Of course, it is still young and will need improvements when new real life use 
+                    cases emerge. But the core ideology will always stay "<em>Flexibility / Power to the developers</em>". 
+                </p>
+                <p>
+                    <a href="https://groups.google.com/forum/#!forum/spincast">Suggestions</a> and 
+                    <a href="/community#contribution">contributions</a> to help improve 
+                    Spincast are very welcome!
+                </p>
+                
+            </section>
+            
+            {#==========================================
+            The choices we made
+            ==========================================#}
+            <section id="choices">
+                <h3>
+                    <a class="anchor" href="#choices" title="permanent link"></a>
+                    The choices we made
+                </h3>
+                
+                {#==========================================
+                The choices we made / Java
+                ==========================================#}
+                <div id="java">
+                    <h4><a class="anchor_small" href="#java" title="permanent link"></a> Java</h4>
+                    <p>
+                        <em>Haters gonna hate!</em>
+                    </p>
+                    <p>    
+                        Java has a lot of haters, these days. On some forums, you almost feel bad to say you're a fan of the language! 
+                        But the reality is that there are <em>a lot</em> of happy Java developers out there. 
+                        Maybe they are discreet simply because they're just comfortable with their
+                        tools and don't care to argue?
+                    </p>    
+                    <p>    
+                        Java is a <em>mature</em> statically typed language; the JVM is freaking performant, and the library 
+                        ecosystem is huge! Also, the various IDEs and tools are top notch, they allow a 
+                        fantastic coding/refactoring experience.
+                    </p>
+                    <p>    
+                        Those who say Java is bloated and too complex, are clearly not aware of the modern frameworks 
+                        and probably still have in mind the old days of <code>J2EE</code> or the <code>applets</code> disaster. 
+                        Java may be somewhat verbose, and that's true in some cases, but that is not a bad thing in our opinion: 
+                        verbosity doesn't necessarily mean 
+                        "<em>hard to read and understand</em>"... In fact, we find that it is often the opposite! 
+                        Very compact one-liners full of lambdas are often way harder to understand than a 
+                        couple lines of explicit anonymous classes. And, anyway, Java now has lambdas. Finally, it is your
+                        choice if you prefer to call your variables and methods <code>"ulf"</code> and <code>"create()"</code> instead of 
+                        <code>"userListFactory"</code> and <code>"createDynamicRouteHandler()"</code>. But we, personally, 
+                        like verbosity almost as much as we hate buzzwords and hyped technologies.
+                    </p>
+                    <p>    
+                        We have some experience outside Java too: with <a href="https://nodejs.org/en/">Node.js</a> for example. 
+                        Being able to use one language
+                        everywhere is an attractive idea, but Javascript? <em>Javascript</em>?? TypeScript is an improvement,
+                        but the coding experience, even if better than before, is far from the one provided by
+                        the various Java tools.
+                    </p>
+                    <p>    
+                        C# and the .NET platform also provide that fantastic coding experience and maturity, but they are too
+                        platform centric.
+                    </p> 
+                </div>
+                
+                {#==========================================
+                The choices we made / Dependency Injection
+                ==========================================#}
+                <div id="dependency_injection">
+                    <h4><a class="anchor_small" href="#dependency_injection" title="permanent link"></a> Dependency Injection</h4>
+ 
+                    <p>    
+                        Once you've worked with dependency injection, it's hard to go back. To design a whole application 
+                        using DI may be tricky when you are new to it, but the reward is <em>huge</em>.
+                    </p>
+                    <p>    
+                        Being able to easily access the components you need 
+                        (by injecting them) and always be sure they are properly initialized? Easy testing? Easy implementation swapping? 
+                        Yes, please!
+                    </p>
+                    <p>    
+                        <a href="https://github.com/google/guice/wiki/Motivation">Guice</a>  is, in our opinion, the best dependency 
+                        injection library of the Java ecosystem. The way the modules
+                        work together, and the fact that almost everything is statically typed, is just fantastic. Actually, the fact that Spincast 
+                        would be based on Guice from the ground up is probably the very first decision we made.
+                    </p>   
+                </div>
+                
+                
+                {#==========================================
+                The choices we made / Configuration over convention
+                ==========================================#}
+                <div id="configuration_over_convention">
+                    <h4><a class="anchor_small" href="#configuration_over_convention" title="permanent link"></a> <em>Configuration</em> over convention</h4>
+                    <p>
+                        The opposite, <em>convention over configuration</em>, has its benefits. For example, it is easier to be up and running on
+                        a project where conventions have been used. There is only one way of doing things, so any 
+                        project is similar to the other. There is also less boilerplate since some magic
+                        is used: "<em>That class name ends with "Controller"? Well, it is now a controller!</em>" 
+                    </p>    
+                     <p>   
+                        We're not big fans of that kind of magic. We prefer when things are <em>obvious</em> because they have been
+                        explicitly configured.
+                    </p>
+                    <p>
+                        Also, conventions kind of <em>restricts</em> possibilities. "<em>You want to structure a part of your application this
+                        way because it makes more sense? I don't think so, sorry dude!</em>".
+                        Again, we're grown-up developers and we want the freedom to ajust what we want, to structure our application
+                        as we want.
+                    </p>
+                    <p>
+                        Configuration FTW!
+                    </p>
+                </div>
+
+                {#==========================================
+                The choices we made / Not asynchronous
+                ==========================================#}
+                <div id="not_asynchronous">
+                    <h4><a class="anchor_small" href="#not_asynchronous" title="permanent link"></a> Not asynchronous</h4>
+                    <p>
+                        There are some situations where asynchronous code is clearly the way to go. If you work on
+                        the Walt-Mart website or if your site <em>really</em> gets millions of requests per minute,
+                        you better make sure your threads don't block, or you'll probably have some problems. But, in our
+                        experience, 95% of the web applications are perfectly fine with synchronous code! 
+                        Even quite <em>big</em> applications.
+                    </p>
+                    <p>
+                        The problem with asynchronous applications is that they are a lot harder
+                        to develop and trickier to get right. Thinking in an asynchronous manner is not 
+                        natural! It is no coincidence that constructs like 
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promises</a>, 
+                        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*">generators</a> 
+                        and many libraries like <a href="https://github.com/caolan/async">async</a> have been 
+                        created: they try to make asynchronous coding less painful.
+                    </p>  
+                    <p> 
+                        Spincast is synchronous, and this is clearly a conscious decision. You may say this is one of the 
+                        points where Spincast is not "flexible" and will probably never be.
+                    </p> 
+                </div>
+                
+                {#==========================================
+                The choices we made / Private methods
+                ==========================================#}
+                <div id="private_methods">
+                    <h4><a class="anchor_small" href="#private_methods" title="permanent link"></a> No private methods</h4>
+   
+                    <p>
+                        There may be some exceptions, but there are practically no <code>private</code> methods in Spincast's core and 
+                        plugins: the default visibility for methods is <code>protected</code>.
+                    </p>
+                    <p>    
+                        But... Isn't this a bad practice?  Shouldn't you hide your implementation details?
+                    </p>
+                    <p>    
+                         Well, it depends.
+                    </p>
+                    <p>
+                        As we previously said, we're not fans of libraries/frameworks which are too opinionated or that use
+                        static components that can't be extended. Developers should
+                        always have <em>full</em> control over what's going on! And the "<em>no private methods</em>" decision 
+                        follows that principle.
+                    </p>
+                    <p>
+                        More than one time we have encountered a library, or part of a framework, which was doing exactly
+                        what we needed <em>except a little something</em>! In those cases, the solution is often
+                        to extend the class containing the problematic code and to override a particular
+                        method. But many libraries/frameworks make this very difficult by using <code>private</code>
+                        visibility for lots of their methods. Yes, we get it: they hide their implementation details!
+                        But, doing so, they prevent you from adjusting what you would need. So what do you do then? You hope for a code change 
+                        from the authors, or you simply stop using that library...
+                    </p>
+                    <p>    
+                        Of course, many libraries try to help you by providing <em>some</em> <code>protected</code> methods, but
+                        the choices they made is not always the ones you need!
+                    </p>
+                    <p>
+                        So, our mantra, once again: "<em>Flexibility / Power to the developers</em>"! In Spincast, there are no <code>private</code> 
+                        methods, at all! If you override a Spincast method because you have to, it is <em>your</em> responsibility as a developer
+                        to adjust your code if the base code changes. But, at least, <em>you can do it</em>.
+                    </p>
+                </div>
+            </section>
+        
+            {#==========================================
+            Contact
+            ==========================================#}
+            <section id="contact">
+                <h3><a class="anchor" href="#contact" title="permanent link"></a> Contact</h3>
+                <p>
+                    If you want to contact us privately (without using the <a href="https://groups.google.com/forum/#!forum/spincast">forum</a>),
+                    you can send an email to <a href="https://ca.linkedin.com/in/juliendev">Julien Lamarre</a>, 
+                    Spincast lead developer. <a href="http://www.google.com/recaptcha/mailhide/d?k=01Nnh5Nl-8h7LmGXH_0bspGQ==&amp;c=qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501Nnh5Nl-8h7LmGXH_0bspGQ\75\75\46c\75qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" 
+                    title="Reveal this e-mail address">Click Here</a> to get Julien's email address.
+                </p>
+            </section>
+
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

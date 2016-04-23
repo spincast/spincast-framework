@@ -1,0 +1,33 @@
+
+==========================================
+To use a self-signed certificate, so you can test 
+HTTPS in developement.
+
+(In production, make sure you use a real certificate!)
+==========================================
+
+1. Run this Java utility on a command line :
+
+    keytool -genkey -alias mycert -keyalg RSA -sigalg MD5withRSA -keystore devKeyStore.jks -storepass myStorePass -keypass myKeyPass -validity 9999
+
+    Answer the few questions you will be asked.
+
+    This will generate a "devKeyStore.jks" file in the directory where you are.
+    
+2. Take the "devKeyStore.jks" file and add it to your project classpath. For example :
+
+   /src/main/resources/certificates/devKeyStore.jks
+
+3. In your ISpincastConfig implementation :
+
+    - Make "getHttpServerPort()" return "-1", if you only want the server to serve HTTPS and not HTTP.
+    - Make "getHttpsServerPort()" return a valid and free port, "443" is the default one for HTTPS.
+    - Make "getHttpsKeyStorePath()" return the classpath path to your dev KeyStore : "certificates/devKeyStore.jks"
+    - Make "getHttpsKeyStoreType()" return "JKS"
+    - Make "getHttpsKeyStoreStorePass()" return "myStorePass"
+    - Make "getHttpsKeyStoreKeypass()" return "myKeyPass"
+         
+4. Start your application and point your browser to the HTTPS port you specified. Follow the instructions
+   to add an exception for your self-signed certificate or your browser won't let you access the site.
+   
+HTTPS should now be working!

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--===================================
+    Appender - Console
+    ====================================-->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+		    <charset>UTF-8</charset>
+		    <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %msg ~ %caller{1}</pattern>
+		</encoder>
+    </appender>
+    
+    <!--===================================
+    Appender - File - Sync
+    ====================================-->
+    <appender name="fileSync" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] ~ %msg ~ [%thread] - %caller{1}</pattern>
+            <charset>UTF-8</charset>
+            <timeZone>UTC</timeZone>
+        </encoder>
+
+    </appender>
+    
+    <!--===================================
+    Appender - File - Async
+    @see http://logback.qos.ch/manual/appenders.html#AsyncAppender
+    ====================================-->
+	<appender name="fileAsync" class="ch.qos.logback.classic.AsyncAppender">
+	    <queueSize>100</queueSize>
+	    <discardingThreshold>0</discardingThreshold> <!-- TODO En prod ne pas mettre 0 -->
+	    <includeCallerData>true</includeCallerData> <!-- TODO En prod mettre FALSE -->
+	    <appender-ref ref="fileSync" />
+	</appender>
+    
+    <!--===================================
+    Appender Level, par défaut
+    ====================================-->
+    <root level="warn">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="fileAsync"/>
+    </root>
+    
+    <!--===================================
+    Appender Level, pour nos packages
+    ====================================-->
+    <logger name="org.spincast" level="warn" additivity="false">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="fileAsync"/>
+    </logger>
+
+</configuration>
