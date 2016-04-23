@@ -115,7 +115,16 @@ Docs : "installation"
                 can change, it is not a stable version. Do not use this 
                 as a start for a real application!
             </div>
-            
+        {% endif %}
+
+        <p>
+            Spincast is modular, and pretty much all components can be replaced. There are some <em>required</em> components
+            though, and an implementation must be provided for those. This is exactly what the <code>spincast-default</code> 
+            artifact is: an easy way to bind a default implementation for all the required components.
+        </p>
+        
+        {% if spincastCurrrentVersionIsSnapshot  %}
+
              <p>
                 <i class="subIcon glyphicon glyphicon-share-alt"></i>
                 Since this is a <code>SNAPSHOT</code> version, you first have to add this repository
@@ -133,12 +142,7 @@ Docs : "installation"
 &lt;/repositories&gt;</pre>    
              </p>
         {% endif %}
-
-        <p>
-            Spincast is modular, and pretty much all components can be replaced. There are some <em>required</em> components
-            though, and an implementation must be provided for those. This is exactly what the <code>spincast-default</code> 
-            artifact is: an easy way to bind a default implementation for all the required components.
-        </p>
+        
         <p>
             <div>
                 <p>
