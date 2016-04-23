@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.ISpincastConfig;
+import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -323,6 +324,58 @@ public class SpincastUtils implements ISpincastUtils {
             }
         }
         return this.appJarDir;
+    }
+
+    @Override
+    public String getSpincastLatestStableVersion() {
+
+        // TODO Auto-generated method stub
+        return "123";
+
+    }
+
+    @Override
+    public String getSpincastCurrentVersion() {
+
+        String currentVersion = getClass().getPackage().getImplementationVersion();
+
+        //==========================================
+        // We're in an IDE...
+        //==========================================
+        if(currentVersion == null) {
+            currentVersion = getCurrentVersionFromPom();
+        }
+
+        return currentVersion;
+    }
+
+    protected String getCurrentVersionFromPom() {
+
+        String artifactVersion = null;
+        try {
+            File file = new File(".");
+            String filePath = file.getAbsolutePath();
+            file = new File(filePath);
+            File parent = file.getParentFile();
+            File pomFile = new File(parent.getAbsolutePath() + "/pom.xml");
+            if(pomFile.isFile()) {
+                String content = FileUtils.readFileToString(pomFile);
+                int pos = content.indexOf("<version>");
+                if(pos > 0) {
+                    int pos2 = content.indexOf("</version>", pos);
+                    if(pos2 > 0) {
+                        artifactVersion = content.substring(pos + "<version>".length(), pos2);
+                    }
+                }
+            }
+            if(artifactVersion == null) {
+                throw new RuntimeException("Version in pom.xml not found");
+            }
+        } catch(Exception ex) {
+            throw new RuntimeException("Unable to get the pom.xml : " + SpincastStatics.getStackTrace(ex));
+        }
+
+        return artifactVersion;
     }
 
 }

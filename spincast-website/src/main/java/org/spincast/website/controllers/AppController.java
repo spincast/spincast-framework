@@ -1,6 +1,5 @@
 package org.spincast.website.controllers;
 
-import java.io.File;
 import java.net.URL;
 import java.util.regex.Pattern;
 
@@ -9,8 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.json.IJsonManager;
-import org.spincast.core.utils.SpincastStatics;
-import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.website.AppConstants;
 import org.spincast.website.exchange.IAppRequestContext;
 
@@ -25,12 +23,15 @@ public class AppController {
 
     private final String[] mainArgs;
     private final IJsonManager jsonManager;
+    private final ISpincastUtils spincastUtils;
 
     @Inject
     public AppController(@MainArgs String[] mainArgs,
-                         IJsonManager jsonManager) {
+                         IJsonManager jsonManager,
+                         ISpincastUtils spincastUtils) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
+        this.spincastUtils = spincastUtils;
     }
 
     protected String[] getMainArgs() {
@@ -39,6 +40,10 @@ public class AppController {
 
     protected IJsonManager getJsonManager() {
         return this.jsonManager;
+    }
+
+    protected ISpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
     }
 
     /**
@@ -53,48 +58,19 @@ public class AppController {
         context.templating().addTemplatingGlobalVariable("langAbrv", context.getLocaleToUse().getLanguage());
 
         //==========================================
+        // Latest stable Spincast version
+        //==========================================
+        String latestStableVersion = getSpincastUtils().getSpincastLatestStableVersion();
+        context.templating().addTemplatingGlobalVariable("spincastLatestStableVersion", latestStableVersion);
+        context.templating().addTemplatingGlobalVariable("spincastLatestStableVersionIsSnapshot",
+                                                         latestStableVersion.contains("-SNAPSHOT"));
+        //==========================================
         // The current Spincast version
         //==========================================
-        String artifactVersion = getClass().getPackage().getImplementationVersion();
-
-        //==========================================
-        // We're in an IDE...
-        //==========================================
-        if(artifactVersion == null) {
-            artifactVersion = getCurrentVersionFromPom();
-        }
-        context.templating().addTemplatingGlobalVariable("spincastCurrrentVersion", artifactVersion);
+        String currentVersion = getSpincastUtils().getSpincastCurrentVersion();
+        context.templating().addTemplatingGlobalVariable("spincastCurrrentVersion", currentVersion);
         context.templating().addTemplatingGlobalVariable("spincastCurrrentVersionIsSnapshot",
-                                                         artifactVersion.contains("-SNAPSHOT"));
-    }
-
-    protected String getCurrentVersionFromPom() {
-
-        String artifactVersion = null;
-        try {
-            File file = new File(".");
-            String filePath = file.getAbsolutePath();
-            file = new File(filePath);
-            File parent = file.getParentFile();
-            File pomFile = new File(parent.getAbsolutePath() + "/pom.xml");
-            if(pomFile.isFile()) {
-                String content = FileUtils.readFileToString(pomFile);
-                int pos = content.indexOf("<version>");
-                if(pos > 0) {
-                    int pos2 = content.indexOf("</version>", pos);
-                    if(pos2 > 0) {
-                        artifactVersion = content.substring(pos + "<version>".length(), pos2);
-                    }
-                }
-            }
-            if(artifactVersion == null) {
-                throw new RuntimeException("Version in pom.xml not found");
-            }
-        } catch(Exception ex) {
-            throw new RuntimeException("Unable to get the pom.xml : " + SpincastStatics.getStackTrace(ex));
-        }
-
-        return artifactVersion;
+                                                         currentVersion.contains("-SNAPSHOT"));
     }
 
     public void index(IAppRequestContext context) {

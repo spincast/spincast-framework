@@ -46,4 +46,14 @@ public interface ISpincastUtils {
      */
     public File getAppJarDirectory();
 
+    /**
+     * Gets the latest Spincast stable version (not SNAPSHOT).
+     */
+    public String getSpincastLatestStableVersion();
+
+    /**
+     * Gets the current Spincast stable version
+     */
+    public String getSpincastCurrentVersion();
+
 }
