@@ -671,6 +671,10 @@ ul.apiList li.first {
     margin-top:10px;
 }
 
+.plugins .thumbnail {
+    height:240px;
+}
+
 #quickLink {
     font-weight:bold;
 }

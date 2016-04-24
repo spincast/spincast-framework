@@ -67,11 +67,6 @@ public class AppController {
     }
 
     public void index(IAppRequestContext context) {
-
-        //        if(1==1) {
-        //            throw new RuntimeException("test");
-        //        }
-
         context.response().sendHtmlTemplate("/templates/index.html", null);
     }
 
