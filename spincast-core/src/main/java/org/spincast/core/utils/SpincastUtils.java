@@ -327,14 +327,6 @@ public class SpincastUtils implements ISpincastUtils {
     }
 
     @Override
-    public String getSpincastLatestStableVersion() {
-
-        // TODO Auto-generated method stub
-        return "123";
-
-    }
-
-    @Override
     public String getSpincastCurrentVersion() {
 
         String currentVersion = getClass().getPackage().getImplementationVersion();

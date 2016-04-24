@@ -58,16 +58,6 @@ public class AppController {
         context.templating().addTemplatingGlobalVariable("langAbrv", context.getLocaleToUse().getLanguage());
 
         //==========================================
-        // Latest stable Spincast version
-        //==========================================
-
-        // TODO
-        //String latestStableVersion = getSpincastUtils().getSpincastLatestStableVersion();
-        String latestStableVersion = getSpincastUtils().getSpincastCurrentVersion();
-        context.templating().addTemplatingGlobalVariable("spincastLatestStableVersion", latestStableVersion);
-        context.templating().addTemplatingGlobalVariable("spincastLatestStableVersionIsSnapshot",
-                                                         latestStableVersion.contains("-SNAPSHOT"));
-        //==========================================
         // The current Spincast version
         //==========================================
         String currentVersion = getSpincastUtils().getSpincastCurrentVersion();

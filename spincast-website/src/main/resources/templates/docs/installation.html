@@ -41,9 +41,9 @@ Docs : "installation"
             <i class="glyphicon glyphicon-flash"></i> Quick Start</i>
         </h4>
         
-		{% if spincastLatestStableVersionIsSnapshot  %}
+		{% if spincastCurrrentVersionIsSnapshot  %}
 	        <div class="alert alert-warning" role="alert"><strong>Warning!</strong> The current version,
-	            "<code>{{spincastLatestStableVersion}}</code>" is a <em>snapshot</em> version. That means that it
+	            "<code>{{spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
 	            can change, it is not a stable version. Do not use this 
 	            as a start for a real application!
 	        </div>
@@ -109,9 +109,9 @@ Docs : "installation"
             Using <code>SpincastDefaultGuiceModule</code>
         </h4>
         
-        {% if spincastLatestStableVersionIsSnapshot  %}
+        {% if spincastCurrrentVersionIsSnapshot  %}
             <div class="alert alert-warning" role="alert"><strong>Warning!</strong> The current version,
-                "<code>{{spincastLatestStableVersion}}</code>" is a <em>snapshot</em> version. That means that it
+                "<code>{{spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
                 can change, it is not a stable version. Do not use this 
                 as a start for a real application!
             </div>
@@ -123,7 +123,7 @@ Docs : "installation"
             artifact is: an easy way to bind a default implementation for all the required components.
         </p>
         
-        {% if spincastLatestStableVersionIsSnapshot  %}
+        {% if spincastCurrrentVersionIsSnapshot  %}
 
              <p>
                 <i class="subIcon glyphicon glyphicon-share-alt"></i>
@@ -148,14 +148,14 @@ Docs : "installation"
                 <p>
                     <i class="subIcon glyphicon glyphicon-share-alt"></i>
                     Add the 
-                    <code>org.spincast:spincast-default:{{spincastLatestStableVersion}}</code> 
+                    <code>org.spincast:spincast-default:{{spincastCurrrentVersion}}</code> 
                     dependency to your <code>pom.xml</code> :
                     <br />
                     <pre class="ace ace-xml" 
 >&lt;dependency>
     &lt;groupId>org.spincast&lt;/groupId>
     &lt;artifactId>spincast-default&lt;/artifactId>
-    &lt;version>{{spincastLatestStableVersion}}&lt;/version>
+    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre>
                 </p>
             </div>
