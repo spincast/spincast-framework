@@ -60,7 +60,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
     }
 
     /**
-     * Here's the algorothme used to find the environment configurations :
+     * Here's the algorithm used to find the environment configurations :
      * 
      * 1) If a parameter has been passed to the main method of the application,
      *    it is considered as to be the path to the configuration file to use.

@@ -101,7 +101,7 @@ public class AppController {
         if(pluginDocTemplatePath == null) {
 
             //==========================================
-            // We specified the classes of the current section so the 
+            // We specify the classes of the current section so the 
             // menu can keep track of it, even if the Not Found
             // route is used.
             //==========================================
