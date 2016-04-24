@@ -60,7 +60,10 @@ public class AppController {
         //==========================================
         // Latest stable Spincast version
         //==========================================
-        String latestStableVersion = getSpincastUtils().getSpincastLatestStableVersion();
+
+        // TODO
+        //String latestStableVersion = getSpincastUtils().getSpincastLatestStableVersion();
+        String latestStableVersion = getSpincastUtils().getSpincastCurrentVersion();
         context.templating().addTemplatingGlobalVariable("spincastLatestStableVersion", latestStableVersion);
         context.templating().addTemplatingGlobalVariable("spincastLatestStableVersionIsSnapshot",
                                                          latestStableVersion.contains("-SNAPSHOT"));
