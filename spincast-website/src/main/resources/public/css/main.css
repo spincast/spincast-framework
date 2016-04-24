@@ -855,6 +855,7 @@ pre {
     position:fixed;
     top:0px;
     visibility: hidden;
+    z-index:1000;
 }
 
 #sectionTitleFixed.affix {
