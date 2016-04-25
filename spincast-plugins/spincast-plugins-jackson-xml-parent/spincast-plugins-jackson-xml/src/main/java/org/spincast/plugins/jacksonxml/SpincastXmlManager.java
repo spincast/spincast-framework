@@ -5,14 +5,13 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
-
-import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -30,13 +29,17 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
 
 /**
  * Spincast default XML converter
  */
 public class SpincastXmlManager implements IXmlManager {
 
+    private final Provider<Injector> guiceProvider;
     private final IJsonManager jsonManager;
+
     private XmlMapper xmlMapper;
     private XmlMapper xmlMapperPretty;
     private JsonSerializer<IJsonObject> jsonObjectSerializer;
@@ -45,8 +48,14 @@ public class SpincastXmlManager implements IXmlManager {
     private JsonSerializer<IJsonArray> jsonArraySerializer;
 
     @Inject
-    public SpincastXmlManager(IJsonManager jsonManager) {
+    public SpincastXmlManager(Provider<Injector> guiceProvider,
+                              IJsonManager jsonManager) {
+        this.guiceProvider = guiceProvider;
         this.jsonManager = jsonManager;
+    }
+
+    protected Injector getGuice() {
+        return this.guiceProvider.get();
     }
 
     protected IJsonManager getJsonManager() {
@@ -441,6 +450,16 @@ public class SpincastXmlManager implements IXmlManager {
         return fromXmlToType(xml, clazz);
     }
 
+    /**
+     * Once the deserialization of an Object is done,
+     * we inject dependencies using Guice.
+     */
+    protected void injectDependencies(Object obj) {
+        if(obj != null) {
+            getGuice().injectMembers(obj);
+        }
+    }
+
     @Override
     public <T> T fromXmlToType(String xml, Type type) {
 
@@ -454,6 +473,7 @@ public class SpincastXmlManager implements IXmlManager {
         try {
             JavaType javaType = TypeFactory.defaultInstance().constructType(type);
             T obj = getXmlMapper().readValue(xml, javaType);
+            injectDependencies(obj);
             return obj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -472,6 +492,7 @@ public class SpincastXmlManager implements IXmlManager {
         try {
             JavaType javaType = TypeFactory.defaultInstance().constructType(clazz);
             T obj = getXmlMapper().readValue(inputStream, javaType);
+            injectDependencies(obj);
             return obj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);

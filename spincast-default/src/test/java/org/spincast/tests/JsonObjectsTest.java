@@ -2,9 +2,12 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,15 +16,18 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.junit.Test;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
+import org.spincast.core.json.JsonObject;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -941,6 +947,113 @@ public class JsonObjectsTest extends SpincastGuiceModuleBasedTestBase {
             nbr++;
         }
         assertEquals(3, nbr);
+    }
+
+    protected static class TestObject {
+
+        @JsonIgnore
+        @Inject
+        protected ISpincastConfig spincastConfig;
+
+        protected String name;
+
+        public TestObject() {
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public ISpincastConfig getSpincastConfig() {
+            return this.spincastConfig;
+        }
+
+    }
+
+    @Test
+    public void dependenciesInjectionOnDeserializationFromString() throws Exception {
+
+        TestObject obj = new TestObject();
+        obj.setName("test");
+        assertNull(obj.getSpincastConfig());
+
+        String jsonString = this.jsonManager.toJsonString(obj);
+        assertNotNull(jsonString);
+
+        obj = this.jsonManager.fromJsonString(jsonString, TestObject.class);
+        assertNotNull(obj);
+        assertNotNull(obj.getSpincastConfig());
+        assertEquals("test", obj.getName());
+    }
+
+    @Test
+    public void dependenciesInjectionOnDeserializationFromInputStream() throws Exception {
+
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("obj.json");
+        assertNotNull(stream);
+
+        TestObject obj = this.jsonManager.fromJsonInputStream(stream, TestObject.class);
+        assertNotNull(obj);
+        assertNotNull(obj.getSpincastConfig());
+        assertEquals("test", obj.getName());
+    }
+
+    @Test
+    public void dependenciesInjectionOnCreate() throws Exception {
+
+        IJsonObject obj = this.jsonManager.create();
+        assertNotNull(obj);
+
+        assertTrue(obj instanceof JsonObject);
+
+        Field jsonManagerField = obj.getClass().getDeclaredField("jsonManager");
+        assertNotNull(jsonManagerField);
+
+        jsonManagerField.setAccessible(true);
+
+        Object jsonManager = jsonManagerField.get(obj);
+        assertNotNull(jsonManager);
+    }
+
+    @Test
+    public void dependenciesInjectionOnCreateFromString() throws Exception {
+
+        IJsonObject obj = this.jsonManager.create("{\"name\":\"test\"}");
+        assertNotNull(obj);
+
+        assertTrue(obj instanceof JsonObject);
+
+        Field jsonManagerField = obj.getClass().getDeclaredField("jsonManager");
+        assertNotNull(jsonManagerField);
+
+        jsonManagerField.setAccessible(true);
+
+        Object jsonManager = jsonManagerField.get(obj);
+        assertNotNull(jsonManager);
+    }
+
+    @Test
+    public void dependenciesInjectionOnCreateFromInputStream() throws Exception {
+
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("obj.json");
+        assertNotNull(stream);
+
+        IJsonObject obj = this.jsonManager.create(stream);
+        assertNotNull(obj);
+
+        assertTrue(obj instanceof JsonObject);
+
+        Field jsonManagerField = obj.getClass().getDeclaredField("jsonManager");
+        assertNotNull(jsonManagerField);
+
+        jsonManagerField.setAccessible(true);
+
+        Object jsonManager = jsonManagerField.get(obj);
+        assertNotNull(jsonManager);
     }
 
 }

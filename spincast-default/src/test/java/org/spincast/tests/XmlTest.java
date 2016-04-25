@@ -2,16 +2,24 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
+import java.lang.reflect.Field;
+
 import org.junit.Test;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
 public class XmlTest extends DefaultIntegrationTestingBase {
@@ -351,6 +359,91 @@ public class XmlTest extends DefaultIntegrationTestingBase {
         IJsonObject obj = jsonArray.getJsonObject(1);
         assertNotNull(obj);
         assertEquals("toto", obj.getString("titi"));
+    }
+
+    protected static class TestObject {
+
+        @JsonIgnore
+        @Inject
+        protected ISpincastConfig spincastConfig;
+
+        protected String name;
+
+        public TestObject() {
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public ISpincastConfig getSpincastConfig() {
+            return this.spincastConfig;
+        }
+    }
+
+    @Test
+    public void dependenciesInjectionFromXml() throws Exception {
+
+        TestObject obj = new TestObject();
+        obj.setName("test");
+        assertNull(obj.getSpincastConfig());
+
+        String xml = this.xmlManager.toXml(obj);
+        assertNotNull(xml);
+
+        obj = this.xmlManager.fromXml(xml, TestObject.class);
+        assertNotNull(obj);
+        assertNotNull(obj.getSpincastConfig());
+        assertEquals("test", obj.getName());
+    }
+
+    @Test
+    public void dependenciesInjectionFromXmlToType() throws Exception {
+
+        TestObject obj = new TestObject();
+        obj.setName("test");
+        assertNull(obj.getSpincastConfig());
+
+        String xml = this.xmlManager.toXml(obj);
+        assertNotNull(xml);
+
+        obj = this.xmlManager.fromXmlToType(xml, TestObject.class);
+        assertNotNull(obj);
+        assertNotNull(obj.getSpincastConfig());
+        assertEquals("test", obj.getName());
+    }
+
+    @Test
+    public void dependenciesInjectionOnDeserializationFromInputStream() throws Exception {
+
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("obj.xml");
+        assertNotNull(stream);
+
+        TestObject obj = this.xmlManager.fromXmlInputStream(stream, TestObject.class);
+        assertNotNull(obj);
+        assertNotNull(obj.getSpincastConfig());
+        assertEquals("test", obj.getName());
+    }
+
+    @Test
+    public void dependenciesInjectionOnCreateFromXmlToJsonObject() throws Exception {
+
+        IJsonObject obj = this.xmlManager.fromXml("<TestObject><name>test</name></TestObject>");
+        assertNotNull(obj);
+
+        assertTrue(obj instanceof JsonObject);
+
+        Field jsonManagerField = obj.getClass().getDeclaredField("jsonManager");
+        assertNotNull(jsonManagerField);
+
+        jsonManagerField.setAccessible(true);
+
+        Object jsonManager = jsonManagerField.get(obj);
+        assertNotNull(jsonManager);
     }
 
 }

@@ -28,11 +28,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
 
 /**
  * Spincast default Json manager
  */
 public class SpincastJsonManager implements IJsonManager {
+
+    private final IJsonObjectAssistedFactory jsonObjectFactory;
+    private final Provider<Injector> guiceProvider;
 
     private ObjectMapper objectMapper;
     private JsonSerializer<IJsonObject> jsonObjectSerializer;
@@ -40,7 +45,6 @@ public class SpincastJsonManager implements IJsonManager {
     private JsonSerializer<IJsonArray> jsonArraySerializer;
     private JsonDeserializer<IJsonArray> jsonArrayDeserializer;
     private JsonSerializer<Date> dateSerializer;
-    private final IJsonObjectAssistedFactory jsonObjectFactory;
     private DefaultPrettyPrinter jacksonPrettyPrinter;
 
     // All thread safe!
@@ -57,8 +61,14 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Inject
-    public SpincastJsonManager(IJsonObjectAssistedFactory jsonObjectFactory) {
+    public SpincastJsonManager(Provider<Injector> guiceProvider,
+                               IJsonObjectAssistedFactory jsonObjectFactory) {
+        this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
+    }
+
+    protected Injector getGuice() {
+        return this.guiceProvider.get();
     }
 
     protected IJsonObjectAssistedFactory getJsonObjectFactory() {
@@ -356,10 +366,21 @@ public class SpincastJsonManager implements IJsonManager {
         }
     }
 
+    /**
+     * Once the deserialization of an Object is done,
+     * we inject dependencies using Guice.
+     */
+    protected void injectDependencies(Object obj) {
+        if(obj != null) {
+            getGuice().injectMembers(obj);
+        }
+    }
+
     @Override
     public <T> T fromJsonString(String jsonString, Class<T> clazz) {
         try {
             T jsonObj = getObjectMapper().readValue(jsonString, clazz);
+            injectDependencies(jsonObj);
             return jsonObj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -370,6 +391,7 @@ public class SpincastJsonManager implements IJsonManager {
     public <T> T fromJsonInputStream(InputStream inputStream, Class<T> clazz) {
         try {
             T jsonObj = getObjectMapper().readValue(inputStream, clazz);
+            injectDependencies(jsonObj);
             return jsonObj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -379,8 +401,7 @@ public class SpincastJsonManager implements IJsonManager {
     @Override
     public Map<String, Object> fromJsonStringToMap(String jsonString) {
         try {
-            Map<String, Object> map = getObjectMapper().readValue(jsonString,
-                                                                  new TypeReference<Map<String, Object>>() {});
+            Map<String, Object> map = getObjectMapper().readValue(jsonString, new TypeReference<Map<String, Object>>() {});
             return map;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
