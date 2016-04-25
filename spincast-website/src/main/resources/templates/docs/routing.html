@@ -715,13 +715,13 @@ router.file("/favicon.ico").fileSystem("/user/www/myprojet/public_files/favicon.
                     This is <em>invalid</em> : <code>/one/*{remaining}/two</code>
                 </li>
                 <li>
-                    This is <em>invalid</em> : <code>/${remaining}</code>
+                    This is <em>invalid</em> : <code>/${param}</code>
                 </li>
             </ul>
         </p> 
         <p>
             Finally, note that the static resource routes have <em>precedence</em> over all other
-            routes, so if you declare <code>dir("/", "/public")</code> for example, then
+            routes, so if you declare <code>router.dir("/", "/public")</code> for example, then
             <em>no route at all</em> would ever reach the framework, everything would be considered
             as static. This is, by the way, a quick way to serve a static website using Spincast!
         </p> 
@@ -1028,6 +1028,72 @@ getRouter().cors(Sets.newHashSet("*"),
             </ul>
         <p>   
     </div>
+    
+    {#==========================================
+    Section "routing / Router is dynamic"
+    ==========================================#}
+    <div id="router_dynamic">
+        <h4>
+            <a class="anchor_small" href="#router_dynamic" title="permanent link"></a>
+            The router is dynamic
+        </h4>
+        <p>
+            Note that the router is <em>dynamic</em>, which means you can always add new routes to it. This 
+            also means you don't have to define all your routes at the same place, but you can let the
+            controllers (or even the <code>plugins</code>) define their own routes!
+        <p>
+        <p>
+            <div>
+                For example:
+                <p>
+                    <pre class="ace ace-java"
+>public class UserController implements IUserController {
+
+    @Inject
+    protected void init(IDefaultRouter router) {
+        addRoutes(router);
+    }
+
+    protected void addRoutes(IDefaultRouter router) {
+        router.GET("/users/${userId}").save(this::getUser);
+        router.POST("/users").save(this::addUser);
+        router.DELETE("/users/${userId}").save(this::deleteUser);
+    }
+
+    @Override
+    public void getUser(IDefaultRequestContext context) {
+        //...
+    }
+
+    @Override
+    public void addUser(IDefaultRequestContext context) {
+        //...
+    }
+
+    @Override
+    public void deleteUser(IDefaultRequestContext context) {
+        //...
+    }
+}</pre> 
+
+                </p>
+                <p>
+                    <span class="explanation">Explanation :</span>
+                    <ul>
+                        <li>
+                            <span class="code-line-nbr">3-6</span> : An <a href="#init_method"><code>init()</code> method</a>
+                            receives the router.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">8-12</span> : The controller adds its own routes. Here, the 
+                            <code>UserController</code> is responsible to add routes related to <em>users</em>.
+                        </li>   
+                    </ul>
+                </p>   
+            </div>
+        </p> 
+    </div>
+    
 
 </section>
 
