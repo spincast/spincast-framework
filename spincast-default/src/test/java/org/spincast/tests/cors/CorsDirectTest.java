@@ -594,6 +594,49 @@ public class CorsDirectTest extends DefaultIntegrationTestingBase {
     }
 
     @Test
+    public void preflightNoMainHandler() throws Exception {
+
+        // Cors filter
+        getRouter().cors();
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
+        headers.put(HttpHeaders.HOST, "example2.com");
+        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
+
+        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+
+        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+        assertNotNull(allowOriginHeader);
+        assertEquals("*", allowOriginHeader);
+
+        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        assertNotNull(allowCredentialsHeader);
+        assertEquals("true", allowCredentialsHeader);
+
+        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
+        assertNull(exposeHeadersHeader); // simple request header only
+
+        String allowHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
+        assertNotNull(allowHeadersHeader);
+        assertEquals("", allowHeadersHeader);
+
+        String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
+        assertNotNull(allowMethodsHeader);
+        Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
+        for(HttpMethod availableMethod : HttpMethod.values()) {
+            assertTrue(methods.contains(availableMethod.name()));
+        }
+
+        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
+        assertNotNull(maxAgeHeader);
+        assertEquals("86400", maxAgeHeader);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContent());
+    }
+
+    @Test
     public void preflightDefaultAllExtraHeadersToBeSentAreAllowed() throws Exception {
 
         // Cors filter

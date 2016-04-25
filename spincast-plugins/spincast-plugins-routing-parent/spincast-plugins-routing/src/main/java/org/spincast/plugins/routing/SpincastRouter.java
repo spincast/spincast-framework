@@ -1153,13 +1153,19 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
     @Override
     public void cors(String path) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        //==========================================
+        // We have to use "notFound()" too because
+        // we may well not have any "OPTIONS" regular route
+        // so the "Not Found" routing is used.
+        //==========================================
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context);
+                     }
+                 });
     }
 
     @Override
