@@ -1,0 +1,413 @@
+{#==========================================
+Spincast Properties File Config
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-config-props-file{% endblock %}
+{% block meta_title %}Plugins - Spincast Properties File Config{% endblock %}
+{% block meta_description %}Allows an application to define its configurations in a .properties file.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Properties File Config plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Properties File Config <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                &nbsp;
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Properties File Config <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#utility_methods">Base methods</a></li>
+                <li class="openable"><a href="#config_keys">The default configuration keys</a></li>  
+                <li class="openable"><a href="#example_file">Example .properties file</a></li>  
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+            
+                <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                Allows an application to define its configurations in an external <code>.properties</code> file. You
+                    can then have different configurations, depending on the environment the application runs on.
+                </p>
+                <p> 
+                    The path to this file can be explicitly defined: by default, the first
+                    argument of the <code>main(...)</code> method, if present, is considered as the path
+                    to this configuration file. For example:
+	            </p>
+                <p>
+                    <div>
+                        <p>
+                            <pre class="ace ace-batchfile"
+>java -jar mySpincastApp.jar /var/www/mySite/mySiteApp.properties</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    You can override the <code>lookForPropsFileSpecificPath(...)</code>
+                    method if you want to use another way to externally define the path (for example, by looking
+                    at an <code>environment variable</code>).
+                </p>
+                <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    If no explict path is provided, the plugin tries to find an <code>app.properties</code>
+                    file in the same directory where the application's <code>.jar</code> is running.
+                </p>
+                <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    If no <code>app.properties</code> file is found next to the <code>.jar</code>, or if the application is not
+                    running from a <code>.jar</code> file (the code is running inside an IDE, for example), then the 
+                    <a href="/plugins/spincast-config#spincast_config">default configurations</a> are used.
+                </p>
+                <p>
+                    You can add your application specific configurations in this <code>.properties</code> file, but
+                    by using the <a href="#config_keys">default keys</a>,
+                    you can also override Spincast default configurations.
+                    Note that you don't have to override <em>all</em> default configurations. If
+                    a particular Spincast configuration is not there, its default value will be used.
+                </p>
+                
+            </section>
+            
+	        <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+	            <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                Add this artifact to your project:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-config-properties-file&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+                <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    If you use a custom configuration class (which
+                    is probably the case), you don't have to install any Guice module 
+                    for this plugin, and you simply make your configuration class extend 
+                    <code>SpincastConfigPropsFileBased</code>:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppConfig extends SpincastConfigPropsFileBased implements IAppConfig {
+
+    @Inject
+    public AppConfig(ISpincastUtils spincastUtils,
+                     @MainArgs @Nullable String[] mainArgs) {
+        super(spincastUtils, mainArgs);
+    }
+
+    @Override
+    public String getAppName() {
+        return getConfig("app.name");
+    }
+
+    @Override
+    public int getSomeNumericConfig() {
+        return getConfigInteger("app.some.other.config", 12345);
+    }
+}</pre> 
+                        </p>
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : Our custom configuration class
+                                    extends <code>SpincastConfigPropsFileBased</code> but also implements
+                                    our custom <code>IAppConfig</code> interface.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3-7</span> : Constructor required
+                                    to satisfy the base class.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">9-12</span> : A first application
+                                    specific configuration. We use the <code>getConfig(key)</code>
+                                    method to get the value to use from the <code>.properties</code> file. Since
+                                    no default value is provided, <em>an exception is throw </em>
+                                    if the configuration is not found!
+                                </li> 
+                                <li>
+                                    <span class="code-line-nbr">14-17</span> : A second application
+                                    specific configuration. Here we use <code>getConfigInteger(key, defaultValue)</code>
+                                    to get an Integer configuration. If the configuration is not found in the
+                                    <code>.properties</code> file, the specified default value is used.
+                                </li> 
+                            </ul>
+                        </p>  
+                    </div>   
+                </p>
+                <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    If your application doesn't have a custom configuration class and you simply want 
+                    to be able to externally override some of Spincast default configurations (for
+                    example the server port), then bind the provided
+                    <code>SpincastConfigPropsFilePluginGuiceModule</code> Guice module:
+                </p>
+	            <p>
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java"
+>Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule(args))
+        .with(new SpincastConfigPropsFilePluginGuiceModule(IDefaultRequestContext.class)));</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+                <p>
+                    Or, if you use a custom Guice module and request context type:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>Injector guice = Guice.createInjector(Modules.override(new AppModule(args))
+        .with(new SpincastConfigPropsFilePluginGuiceModule(IAppRequestContext.class)));</pre> 
+                        </p>
+                    </div>   
+                </p>
+	            <p>
+	                You can also override the default configuration plugin installation, from your custom Guice module:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,79"
+>public class AppModule extends SpincastDefaultGuiceModule {
+
+    public AppModule(String[] mainArgs) {
+        super(mainArgs);
+    }
+
+    @Override
+    protected void configure() {
+        super.configure();
+        //...
+    }
+
+    @Override
+    protected void bindConfigPlugin() {
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType()));
+    }
+    //...
+}</pre> 
+	                    </p>
+	                </div>   
+	            </p>
+            </section>
+            
+            <section id="utility_methods">
+                <h3 class="noTop">
+                    <a class="anchor" href="#utility_methods" title="permanent link"></a>
+                    SpincastConfigPropsFileBased base methods
+                </h3>
+                <div id="methods">
+                    <p>
+                        <ul class="apiList">
+
+                            <li>
+                                <code class="apiItem">String <span>getConfig</span>(String key)</code>
+                                <div class="well">
+                                    Gets a String configuration and throws an exception if the
+                                    specified key is not found. 
+                                </div>
+                            </li>
+                            <li>
+                                <code class="apiItem">String <span>getConfig</span>(String key, String defaultValue)</code>
+                                <div class="well">
+                                    Gets a String configuration and use the specified default value if the
+                                    key is not found.
+                                </div>
+                            </li>
+                            <li>
+                                <code class="apiItem">Boolean <span>getConfigBoolean</span>(String key)</code>
+                                <div class="well">
+                                    Gets a Boolean configuration and throws an exception if the
+                                    specified key is not found. 
+                                </div>
+                            </li>  
+                            <li>
+                                <code class="apiItem">Boolean <span>getConfigBoolean</span>(String key, Boolean defaultValue)</code>
+                                <div class="well">
+                                    Gets a Boolean configuration and use the specified default value if the
+                                    key is not found.
+                                </div>
+                            </li>
+                            <li>
+                                <code class="apiItem">Integer <span>getConfigInteger</span>(String key)</code>
+                                <div class="well">
+                                    Gets a Integer configuration and throws an exception if the
+                                    specified key is not found. 
+                                </div>
+                            </li>  
+                            <li>
+                                <code class="apiItem">Integer <span>getConfigInteger</span>(String key, Integer defaultValue)</code>
+                                <div class="well">
+                                    Gets a Integer configuration and use the specified default value if the
+                                    key is not found.
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </p>
+                </div>
+  
+            </section>
+            
+            <section id="config_keys">
+                <h3 class="noTop">
+                    <a class="anchor" href="#config_keys" title="permanent link"></a>
+                    The default configuration keys
+                </h3>
+                <p>
+                    In your <code>.properties</code> file, you would add any application specific configuration,
+                    but you can also override default Spincast configurations. Here are the keys to use to
+                    override those.
+                </p> 
+                
+                <div id="methods">
+                    <p>
+                        <ul class="apiList">
+
+                            <li>
+                                <code class="apiItem">spincast.environment.name</code>
+                                <div class="well">
+                                    The name of the environment.
+                                </div>
+                            </li>
+
+                            <li>
+                                <code class="apiItem">spincast.environment.isDebug</code>
+                                <div class="well">
+                                    Should debug mode be enabled? ("<code>true</code>" or "<code>false</code>")
+                                </div>
+                            </li>
+                            
+                            <li>
+                                <code class="apiItem">spincast.server.host</code>
+                                <div class="well">
+                                    The host/IP the server should bind to.
+                                </div>
+                            </li>
+                            
+                            <li>
+                                <code class="apiItem">spincast.httpServer.port</code>
+                                <div class="well">
+                                    The port of the HTTP server. If not specify or is <code><= 0</code>
+                                    no HTTP server will be started. (Integer value)
+                                </div>
+                            </li> 
+
+                            <li>
+                                <code class="apiItem">spincast.httpsServer.port</code>
+                                <div class="well">
+                                    The port of the HTTPS (secure) server. If not specify or is <code><= 0</code>
+                                    no HTTPS server will be started. (Integer value)
+                                </div>
+                            </li> 
+
+                            <li>
+                                <code class="apiItem">spincast.httpsServer.keystore.path</code>
+                                <div class="well">
+                                    The path to the <code>KeyStore</code>, for SSL. Can be a
+                                    classpath path or and absolute path.
+                                </div>
+                            </li> 
+
+                            <li>
+                                <code class="apiItem">spincast.httpsServer.keystore.type</code>
+                                <div class="well">
+                                    The type of the <code>KeyStore</code>, for SSL. For example: "JKS".
+                                </div>
+                            </li> 
+
+                            <li>
+                                <code class="apiItem">spincast.httpsServer.keystore.storepass</code>
+                                <div class="well">
+                                    The "storepass" of the <code>KeyStore</code>, for SSL.
+                                </div>
+                            </li> 
+
+                            <li>
+                                <code class="apiItem">spincast.httpsServer.keystore.keypass</code>
+                                <div class="well">
+                                    The "keypass" of the <code>KeyStore</code>, for SSL.
+                                </div>
+                            </li> 
+                        </ul>
+                    </p>
+                </div>
+            </section>
+            
+            <section id="example_file">
+                <h3 class="noTop">
+                    <a class="anchor" href="#example_file" title="permanent link"></a>
+                    Example <code>.properties</code> file
+                </h3>
+                <p>
+                    <div>
+                        <p>
+                            <pre class="ace ace-properties"
+># Default Spincast configurations
+spincast.environment.name=prod
+spincast.environment.isDebug=false
+spincast.httpServer.port=-1
+spincast.httpsServer.port=443
+spincast.httpsServer.keystore.path=/var/www/mySite/certificates/myKeyStore.jks
+spincast.httpsServer.keystore.type=JKS
+spincast.httpsServer.keystore.storepass=myStorePass
+spincast.httpsServer.keystore.keypass=myKeyPass
+
+# App specific configurations
+app.name=My supercalifragilisticexpialidocious app!
+app.some.other.config=42
+</pre> 
+                        </p>
+                    </div>  
+                </p>
+            </section>
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

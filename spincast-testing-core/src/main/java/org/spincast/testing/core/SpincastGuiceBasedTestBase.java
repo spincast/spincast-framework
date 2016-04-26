@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.junit.runner.RunWith;
 import org.spincast.core.config.ISpincastConfig;
@@ -47,13 +48,11 @@ public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMet
         assertNotNull(this.guice);
 
         this.guice.injectMembers(this);
-
-        deleteTempDir();
     }
 
     @Override
     public void afterClass() {
-        //...
+        deleteTempDir();
     }
 
     @Inject
@@ -70,23 +69,55 @@ public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMet
     }
 
     protected void deleteTempDir() {
-        FileUtils.deleteQuietly(getTestingWritableDir());
+        try {
+            if(this.testingWritableDir != null) {
+                FileUtils.deleteDirectory(this.testingWritableDir);
+            }
+        } catch(Exception ex) {
+            System.err.println(ex);
+        }
     }
 
     protected File getTestingWritableDir() {
         if(this.testingWritableDir == null) {
-            this.testingWritableDir = new File(getSpincastConfig().getSpincastWritableDir().getAbsolutePath() +
-                                               "/testing");
+
+            //==========================================
+            // We don't use the configurations to find a writable
+            // directory since, sometimes, tests may want to create
+            // files *before* the Guice context is created!
+            //==========================================
+            //this.testingWritableDir = new File(getSpincastConfig().getSpincastWritableDir().getAbsolutePath() +
+            //                                   "/testing");
+            this.testingWritableDir = new File(getTestingWritableDirBasePath() + "/spincast/testing");
             if(!this.testingWritableDir.isDirectory()) {
                 boolean mkdirs = this.testingWritableDir.mkdirs();
                 assertTrue(mkdirs);
             }
+            assertTrue(this.testingWritableDir.canWrite());
         }
         return this.testingWritableDir;
     }
 
+    protected String getTestingWritableDirBasePath() {
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        if(!baseDir.isDirectory()) {
+            throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
+        }
+        return baseDir.getAbsolutePath();
+    }
+
+    /**
+     * Create a temporary test file, using the given relative path.
+     */
     protected String createTestingFilePath(String relativePath) {
         return getTestingWritableDir().getAbsolutePath() + "/" + relativePath;
+    }
+
+    /**
+     * Create a temporary test file.
+     */
+    protected String createTestingFilePath() {
+        return createTestingFilePath(UUID.randomUUID().toString());
     }
 
     /**

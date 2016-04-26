@@ -27,6 +27,15 @@
         </dependency>
         
         <!--=================================== 
+        Spincast properties file based config plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-config-properties-file</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
         Logback - implémentation de la  facade de logging 
         Slf4j
         ====================================-->

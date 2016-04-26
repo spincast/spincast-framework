@@ -30,6 +30,7 @@
         <module>spincast-plugins-locale-resolver-parent</module>
         <module>spincast-plugins-config-parent</module>
         <module>spincast-plugins-dictionary-parent</module>
+        <module>spincast-plugins-config-properties-file-parent</module> 
     </modules>
 
 </project>

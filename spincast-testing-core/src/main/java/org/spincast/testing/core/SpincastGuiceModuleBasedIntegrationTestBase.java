@@ -15,7 +15,8 @@ import com.google.inject.Module;
  * Removes all routes and static resources before each test.
  * 
  */
-public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IRequestContext<?>> extends SpincastIntegrationTestBase<R> {
+public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IRequestContext<?>>
+                                                                 extends SpincastIntegrationTestBase<R> {
 
     @Override
     protected Injector createInjector() {
@@ -26,11 +27,21 @@ public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IReq
     public void beforeClass() {
         super.beforeClass();
 
+        beforeStartServer();
+
         //==========================================
         // Since this is a Module based integration test,
         // the server have to be started manually.
         //==========================================
         startServer();
+    }
+
+    /**
+     * Allows some initialization to be run once the Guice context
+     * is created, but before the server is started.
+     */
+    protected void beforeStartServer() {
+        // nothiing by default
     }
 
     /**

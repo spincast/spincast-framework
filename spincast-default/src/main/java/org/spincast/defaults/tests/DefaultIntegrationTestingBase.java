@@ -9,6 +9,10 @@ public class DefaultIntegrationTestingBase extends SpincastGuiceModuleBasedInteg
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule();
+        return new DefaultTestingModule(getMainArgsToUse());
+    }
+
+    protected String[] getMainArgsToUse() {
+        return null;
     }
 }
