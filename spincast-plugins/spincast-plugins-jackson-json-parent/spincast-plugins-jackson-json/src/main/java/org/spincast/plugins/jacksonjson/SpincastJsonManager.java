@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Inject;
@@ -110,11 +111,32 @@ public class SpincastJsonManager implements IJsonManager {
     protected ObjectMapper getObjectMapper() {
         if(this.objectMapper == null) {
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = createObjectManager();
             registerCustomModules(objectMapper);
             this.objectMapper = objectMapper;
         }
         return this.objectMapper;
+    }
+
+    /**
+     * Create the ObjectMapper
+     */
+    protected ObjectMapper createObjectManager() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        configureObjectMapper(objectMapper);
+        return objectMapper;
+    }
+
+    /**
+     * Configuration of the Jackson's ObjectMapper.
+     */
+    protected void configureObjectMapper(ObjectMapper objectMapper) {
+
+        //==========================================
+        // To allow serialization of "empty" POJOs (no properties to serialize)
+        // (without this setting, an exception is thrown in those cases)
+        //==========================================
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
     protected JsonSerializer<IJsonObject> getJsonObjectSerializer() {
