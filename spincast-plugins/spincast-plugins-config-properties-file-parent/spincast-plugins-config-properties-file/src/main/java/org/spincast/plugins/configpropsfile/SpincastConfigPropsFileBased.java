@@ -203,7 +203,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     }
 
     /**
-     * Gets a String configuration and use the specified default value if the
+     * Gets a String configuration and uses the specified default value if the
      * key is not found.
      */
     protected String getConfig(String key, String defaultValue) {
@@ -220,7 +220,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     }
 
     /**
-     * Gets a boolean configuration and use the specified default value if the
+     * Gets a boolean configuration and uses the specified default value if the
      * key is not found.
      */
     protected Boolean getConfigBoolean(String key, Boolean defaultValue) {
@@ -241,7 +241,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     }
 
     /**
-     * Gets a integer configuration and use the specified default value if the
+     * Gets a integer configuration and uses the specified default value if the
      * key is not found.
      */
     protected Integer getConfigInteger(String key, Integer defaultValue) {
