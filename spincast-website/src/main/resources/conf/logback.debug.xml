@@ -36,13 +36,13 @@
     ====================================-->
 	<appender name="fileAsync" class="ch.qos.logback.classic.AsyncAppender">
 	    <queueSize>100</queueSize>
-	    <discardingThreshold>0</discardingThreshold> <!-- TODO En prod ne pas mettre 0 -->
-	    <includeCallerData>true</includeCallerData> <!-- TODO En prod mettre FALSE -->
+	    <discardingThreshold>0</discardingThreshold>
+	    <includeCallerData>true</includeCallerData>
 	    <appender-ref ref="fileSync" />
 	</appender>
     
     <!--===================================
-    Appender Level, par défaut
+    Appender Level, default
     ====================================-->
     <root level="warn">
         <appender-ref ref="stdout"/>
@@ -50,7 +50,7 @@
     </root>
     
     <!--===================================
-    Appender Level, pour nos packages
+    Appender Level, for the application
     ====================================-->
     <logger name="org.spincast" level="debug" additivity="false">
         <appender-ref ref="stdout" />

@@ -47,6 +47,11 @@ public interface IJsonObject extends Iterable<Map.Entry<String, Object>> {
     public void removeAll();
 
     /**
+     * Does the object contain the specified key?
+     */
+    public boolean isKeyExists(String key);
+
+    /**
      * Gets a property.
      * 
      * @return the value of the property or <code>null</code> if not found.

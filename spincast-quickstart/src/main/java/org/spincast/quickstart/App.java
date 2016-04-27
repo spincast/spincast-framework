@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 /**
- * The main class of the application. Everything start with the
+ * The main class of the application. Everything starts with the
  * classic <code>main(...)</code> method.
  */
 public class App {
@@ -39,7 +39,7 @@ public class App {
     }
 
     /**
-     * Create an <code>App</code> instance using the given
+     * Creates an <code>App</code> instance using the given
      * parameters and returns the Guice injector.
      */
     public static Injector createApp(String[] args) {
@@ -217,7 +217,7 @@ public class App {
     }
 
     /**
-     * Display a message when the application is started.
+     * Displays a message when the application is started.
      */
     protected void displayStartedMessage() {
         System.out.println();

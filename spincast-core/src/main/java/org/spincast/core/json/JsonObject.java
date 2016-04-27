@@ -60,6 +60,11 @@ public class JsonObject implements IJsonObject {
     }
 
     @Override
+    public boolean isKeyExists(String key) {
+        return getUnderlyingMap().containsKey(key);
+    }
+
+    @Override
     public Object get(String key) throws KeyNotFoundException {
         return getValue(key, false, null);
     }
