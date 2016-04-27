@@ -1135,4 +1135,27 @@ public class JsonObjectsTest extends SpincastGuiceModuleBasedTestBase {
         assertNotNull(bd);
     }
 
+    protected static class NoPropToSerialize {
+
+        @JsonIgnore
+        public String test;
+
+    }
+
+    @Test
+    public void emptyObject() throws Exception {
+
+        IJsonObject jsonObj = this.jsonManager.create("{}");
+        assertNotNull(jsonObj);
+
+        String jsonString = this.jsonManager.toJsonString(new NoPropToSerialize());
+        assertNotNull(jsonString);
+
+        IJsonArray jsonArray = this.jsonManager.createArray("[]");
+        assertNotNull(jsonArray);
+        jsonString = this.jsonManager.toJsonString(new NoPropToSerialize[0]);
+        assertNotNull(jsonString);
+
+    }
+
 }
