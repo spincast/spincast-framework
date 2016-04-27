@@ -41,7 +41,7 @@ Routing
         </p> 
         <p>
             Those matching <code>routes handlers</code> are called in a
-            specific order. As we'll see in the <a href="#filters">Filters</a> section, a
+            specific order. As we'll see in the <a href="#filters"><code>Filters</code></a> section, a
             filter can have a <code><em>position</em></code></code> which indicates <em>when</em> the filter should run. So it is
             possible to specify that we want a filter to run before or after another one. 
         </p> 
@@ -54,7 +54,7 @@ Routing
         </p> 
         <p> 
             <i class="subIcon glyphicon glyphicon-share-alt"></i> 
-            We'll see in the <a href="#routing_types">Routing Types</a> section that we can declare some routes
+            We'll see in the <a href="#routing_types"><code>Routing Types</code></a> section that we can declare some routes
             as supporting this <code>Not Found</code> routing type. Those routes are the only ones going to be considered
             when the <code>Not Found</code> routing type is active.
         </p> 
@@ -73,7 +73,7 @@ Routing
             If an exception occures during a <code>Found</code> or a <code>Not Found</code>
             routing process, the response is reset, and a new <code>Exception</code> routing process starts.
             This is true except for the <code>NotFoundException</code> and 
-            some other <a href="#special_exceptions">special exceptions</a>
+            some other <a href="#special_exceptions"><code>special exceptions</code></a>
             which can trigger a different behavior.
         </p> 
         <p>
@@ -1039,7 +1039,7 @@ getRouter().cors(Sets.newHashSet("*"),
         </h4>
         <p>
             Note that the router is <em>dynamic</em>, which means you can always add new routes to it. This 
-            also means you don't have to define all your routes at the same place, but you can let the
+            also means you don't have to define all your routes at the same place, you can let the
             controllers (or even the <code>plugins</code>) define their own routes!
         <p>
         <p>

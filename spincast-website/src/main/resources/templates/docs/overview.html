@@ -86,7 +86,7 @@ Docs : "overview"
             <ul>
                 <li>
                     Spincast's top Guice module is <code>SpincastCoreGuiceModule</code>. This core module is provided 
-                    by the <code>spincast-core</code> Maven artifact. It binds a couple of components (mostly the <code>Front controller</code>),
+                    by the <code>spincast-core</code> Maven artifact. It binds a couple of components (mostly the <code>front controller</code>),
                     but its main job is to validate that implementations for all the required components have been bound by
                     the other modules. A Spincast application is made of multiple Guice modules and each of them can validate
                     that some required bindings have been done by other modules, or else they can throw an exception.
@@ -143,7 +143,7 @@ Docs : "overview"
                 plugin which uses the <a href="http://undertow.io">Undertow</a> server.
             </p>
             <p>
-                If the request is for a <code>static resource</code>, the server serves it directly without even reaching the
+                If the request is for a  <a href="#static_resources"><code>static resource</code></a>, the server serves it directly without even reaching the
                 framework. Note that it's also possible to always generate the resource, using a standard route, so the request <em>does</em>
                 enter the framework. There is even a third option which is what we call 
                 <a href="#dynamic_resources"><code>dynamic resources</code></a>:
@@ -157,7 +157,7 @@ Docs : "overview"
                 Spincast component: the <code>front controller</code>. The <code>front controller</code> is at the very center
                 of Spincast! This is one of the very few components which is not provided by a <code>plugin</code>, but
                 that is actually included in the <code>spincast-core</code> Maven artifact itself. Note that you still <em>can</em> extend the default
-                <code>Front controller</code> and override some of its methods, though, if you need to tweak one thing or two. 
+                <code>front controller</code> and override some of its methods, though, if you need to tweak one thing or two. 
             </p>
             <p>
                 The job of the <code>front controller</code> is to:

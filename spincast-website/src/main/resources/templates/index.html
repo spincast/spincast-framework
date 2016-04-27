@@ -104,7 +104,7 @@ Index
                     </p>
                     <p class="subSection">
                         <i class="subIcon glyphicon glyphicon-share-alt"></i>
-                        Then you bootstrap everything using a <code>main</code> method :
+                        Then you bootstrap everything using a <code>main(...)</code> method :
                         <div>
                             <p>
                                 <pre class="ace ace-java"
@@ -127,7 +127,7 @@ Index
                                 <em class="explTip">(Tip : try hovering/clicking the page numbers below!)</em>
                                 <ul>
                                     <li>
-                                        <span class="code-line-nbr">3</span> : A good old Java's <code>main</code> method! This
+                                        <span class="code-line-nbr">3</span> : A good old Java's <code>main(...)</code> method! This
                                         is the entry point of a standard Spincast application.
                                     </li>
                                     <li>
@@ -394,7 +394,7 @@ Index
                                         <span class="code-line-nbr">14-18</span> : Since the <code>App</code> instance is
                                         managed by Guice, all the required dependencies will be automatically injected
                                         in its constructor. Here, we inject the HTTP server (<code>IServer</code>) and
-                                        a <em>custom and parameterized</em> router : <code>IRouter&lt;IAppRequestContext></code>.
+                                        a <em>custom and parameterized</em> router: <code>IRouter&lt;IAppRequestContext></code>.
                                         We'll see that because the router is parameterized with a <em>custom</em> 
                                         <code>request context</code> type, <code><em>"IAppRequestContext"</em></code>, our <code>route handler</code> will
                                         have access to a new <code>translate(...)</code> method...

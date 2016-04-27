@@ -144,7 +144,7 @@ public class SpincastFrontController<R extends IRequestContext<R>> implements IF
 
                 routingResult = prepareNotFoundRouting(exchange, requestContext);
 
-                // Add keep the custom Not Found message, if any.
+                // Keeps the custom Not Found message, if any.
                 requestContext.variables().add(SpincastConstants.RequestScopedVariables.NOT_FOUND_PUBLIC_MESSAGE,
                                                notFoundException.getMessage());
 
@@ -164,7 +164,7 @@ public class SpincastFrontController<R extends IRequestContext<R>> implements IF
                 }
 
                 //==========================================
-                // Flag the requestContext as being in
+                // Flag the request context as being in
                 // the Exception handling process and add the
                 // exception as a variable.
                 //==========================================
