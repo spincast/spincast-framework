@@ -31,7 +31,18 @@ public interface IJsonManager {
     public IJsonArray createArray();
 
     /**
-     * Gets the <code>Json</code> String representation of 
+     * Creates a <code>JsonArray</code> from a <code>Json</code>
+     * String.
+     */
+    public IJsonArray createArray(String jsonString);
+
+    /**
+     * Creates a <code>JsonArray</code> from an inputStream.
+     */
+    public IJsonArray createArray(InputStream inputStream);
+
+    /**
+     * Gets IJsonArray <code>Json</code> String representation of 
      * the specified object.
      */
     public String toJsonString(Object obj);

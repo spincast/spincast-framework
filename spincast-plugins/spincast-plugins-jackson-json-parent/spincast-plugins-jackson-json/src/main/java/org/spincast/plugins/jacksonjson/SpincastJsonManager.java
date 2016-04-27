@@ -471,6 +471,26 @@ public class SpincastJsonManager implements IJsonManager {
         return getJsonObjectFactory().createArray();
     }
 
+    @Override
+    public IJsonArray createArray(String jsonString) {
+        try {
+            IJsonArray obj = getObjectMapper().readValue(jsonString, IJsonArray.class);
+            return obj;
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public IJsonArray createArray(InputStream inputStream) {
+        try {
+            IJsonArray obj = getObjectMapper().readValue(inputStream, IJsonArray.class);
+            return obj;
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
     /**
      * Currently support ISO 8601 encoded dates.
      */

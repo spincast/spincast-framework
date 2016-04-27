@@ -1056,4 +1056,83 @@ public class JsonObjectsTest extends SpincastGuiceModuleBasedTestBase {
         assertNotNull(jsonManager);
     }
 
+    @Test
+    public void jsonArrayArrayDeserialize() throws Exception {
+
+        String str = "[{},123,\"abc\",[1, {}], \"123456\"]";
+
+        IJsonArray jsonArray = this.jsonManager.createArray(str);
+        assertNotNull(jsonArray);
+
+        Integer integer = jsonArray.getInteger(1);
+        assertNotNull(integer);
+
+        Long longVal = jsonArray.getLong(1);
+        assertNotNull(longVal);
+
+        BigDecimal bd = jsonArray.getBigDecimal(1);
+        assertNotNull(bd);
+
+        String string = jsonArray.getString(2);
+        assertNotNull(string);
+
+        IJsonArray array = jsonArray.getJsonArray(3);
+        assertNotNull(array);
+
+        Integer int1 = array.getInteger(0);
+        assertNotNull(int1);
+
+        IJsonObject o1 = array.getJsonObject(1);
+        assertNotNull(o1);
+
+        integer = jsonArray.getInteger(4);
+        assertNotNull(integer);
+
+        longVal = jsonArray.getLong(4);
+        assertNotNull(longVal);
+
+        bd = jsonArray.getBigDecimal(4);
+        assertNotNull(bd);
+    }
+
+    @Test
+    public void jsonArrayArrayDeserializeFromStream() throws Exception {
+
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("array.json");
+        assertNotNull(stream);
+
+        IJsonArray jsonArray = this.jsonManager.createArray(stream);
+        assertNotNull(jsonArray);
+
+        Integer integer = jsonArray.getInteger(1);
+        assertNotNull(integer);
+
+        Long longVal = jsonArray.getLong(1);
+        assertNotNull(longVal);
+
+        BigDecimal bd = jsonArray.getBigDecimal(1);
+        assertNotNull(bd);
+
+        String string = jsonArray.getString(2);
+        assertNotNull(string);
+
+        IJsonArray array = jsonArray.getJsonArray(3);
+        assertNotNull(array);
+
+        Integer int1 = array.getInteger(0);
+        assertNotNull(int1);
+
+        IJsonObject o1 = array.getJsonObject(1);
+        assertNotNull(o1);
+
+        integer = jsonArray.getInteger(4);
+        assertNotNull(integer);
+
+        longVal = jsonArray.getLong(4);
+        assertNotNull(longVal);
+
+        bd = jsonArray.getBigDecimal(4);
+        assertNotNull(bd);
+    }
+
 }
