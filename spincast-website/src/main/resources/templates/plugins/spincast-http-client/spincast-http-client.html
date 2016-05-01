@@ -33,7 +33,9 @@ Spincast Properties File Config
         <div class="col-xs-12">
             <a href="#top"><h2 class="shortTop shortBottom"> Spincast HTTP Client <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                &nbsp;
+                <div class="pluginBadgeCore hint--top-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <span class="clear"></span>
             </div> 
         </div>
     </div>
@@ -117,15 +119,13 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                     Installation
                 </h3>
                 <p>
-                    This plugin is used by pretty much all Spincast <em>tests</em>, so it is declared as a
-                    dependency in the <code>spincast-testing-core</code> artifact. But this
-                    <code>spincast-testing-core</code> artifact is, most of the time, included
-                    in other artifacts in <code><em>test</em></code> scope, which means it
-                    is only available during the <em>testing</em> phase.
+                    If you use the <code>spincast-default</code> artifact, this plugin is already installed so
+                    you have nothing more to do!
+                </p>
                 <p>
-	            <p>
-                    To use the components provided by this plugin, not only in your tests but elsewhere 
-                    in your application, add its artifact using the default scope:
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    If you start from scratch using the <code>spincast-core</code> artifact, you can use the
+                    plugin by adding this artifact to your project:
 	                <div>
 	                    <p>
 	                        <pre class="ace ace-xml"
@@ -144,8 +144,9 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                         <p>
                             <pre class="ace ace-java" data-ace-hi="2,8,2,74"
 >Injector guice = Guice.createInjector(
-        new AppModule(args),
+        new SpincastCoreGuiceModule(args),
         new SpincastHttpClientPluginGuiceModule(IAppRequestContext.class)
+        // other modules...
         );</pre> 
                         </p>
                     </div>   
@@ -155,7 +156,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                     <div>
                         <p>
                             <pre class="ace ace-java" data-ace-hi="5,8,5,84"
->public class AppModule extends SpincastDefaultGuiceModule {
+>public class AppModule extends SpincastCoreGuiceModule {
 
     @Override
     protected void configure() {
