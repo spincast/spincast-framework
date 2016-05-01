@@ -16,8 +16,8 @@ import org.spincast.core.routing.IRouteHandlerMatch;
 import org.spincast.core.routing.IRoutingResult;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
@@ -38,11 +38,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(this.spincastDictionary.exception_default_message(), response.getContent());
+        assertEquals(this.spincastDictionary.exception_default_message(), response.getContentAsString());
     }
 
     @Test
@@ -82,10 +82,10 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("<b>Managed : Some exception message</b>", response.getContent());
+        assertEquals("<b>Managed : Some exception message</b>", response.getContentAsString());
     }
 
     @Test
@@ -99,10 +99,10 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -116,10 +116,10 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -134,12 +134,12 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
 
         // Not equals
-        assertFalse(response.getContent().contains(SpincastTestUtils.TEST_STRING));
+        assertFalse(response.getContentAsString().contains(SpincastTestUtils.TEST_STRING));
     }
 
     @Test
@@ -168,11 +168,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -201,11 +201,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -234,10 +234,10 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("before" + SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals("before" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -267,11 +267,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "after", response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING + "after", response.getContentAsString());
     }
 
     @Test
@@ -323,11 +323,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("111before" + SpincastTestUtils.TEST_STRING + "after222", response.getContent());
+        assertEquals("111before" + SpincastTestUtils.TEST_STRING + "after222", response.getContentAsString());
     }
 
     @Test
@@ -349,12 +349,12 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         // Should have fallback to the default expcetion handler...
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(this.spincastDictionary.exception_default_message(), response.getContent());
+        assertEquals(this.spincastDictionary.exception_default_message(), response.getContentAsString());
     }
 
     @Test
@@ -376,12 +376,12 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         // The original message should have been kept!
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("original message", response.getContent());
+        assertEquals("original message", response.getContentAsString());
     }
 
     @Test
@@ -425,12 +425,12 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/aaa/bbb");
+        IHttpResponse response = GET("/aaa/bbb").send();
 
         // Should have fallback to the default expcetion handler...
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -466,10 +466,10 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("<b>Managed : Some exception message</b>", response.getContent());
+        assertEquals("<b>Managed : Some exception message</b>", response.getContentAsString());
     }
 
     @Test
@@ -500,11 +500,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ex_0", response.getContent());
+        assertEquals("ex_0", response.getContentAsString());
     }
 
     @Test
@@ -527,11 +527,11 @@ public class ExceptionHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ex_0", response.getContent());
+        assertEquals("ex_0", response.getContentAsString());
     }
 
 }

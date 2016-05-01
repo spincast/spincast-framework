@@ -9,8 +9,8 @@ import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 
@@ -30,10 +30,10 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("one", response.getContent());
+        assertEquals("one", response.getContentAsString());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one123");
+        IHttpResponse response = GET("/one123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -63,26 +63,26 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a", response.getContent());
+        assertEquals("a", response.getContentAsString());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("aaaaa", response.getContent());
+        assertEquals("aaaaa", response.getContentAsString());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -97,20 +97,20 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/users/1");
+        IHttpResponse response = GET("/users/1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1", response.getContent());
+        assertEquals("1", response.getContentAsString());
 
-        response = get("/users/123");
+        response = GET("/users/123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("123", response.getContent());
+        assertEquals("123", response.getContentAsString());
 
-        response = get("/users/a");
+        response = GET("/users/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/users/a/b");
+        response = GET("/users/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
     }
@@ -126,15 +126,15 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("one", response.getContent());
+        assertEquals("one", response.getContentAsString());
 
-        response = get("/b123");
+        response = GET("/b123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("b123", response.getContent());
+        assertEquals("b123", response.getContentAsString());
     }
 
     @Test
@@ -200,47 +200,47 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a", response.getContent());
+        assertEquals("a", response.getContentAsString());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A", response.getContent());
+        assertEquals("A", response.getContentAsString());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("aaaaa", response.getContent());
+        assertEquals("aaaaa", response.getContentAsString());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("AAAAA", response.getContent());
+        assertEquals("AAAAA", response.getContentAsString());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("b", response.getContent());
+        assertEquals("b", response.getContentAsString());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1-2_3");
+        response = GET("/1-2_3").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -257,44 +257,44 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1-2_3");
+        response = GET("/1-2_3").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1", response.getContent());
+        assertEquals("1", response.getContentAsString());
 
-        response = get("/123");
+        response = GET("/123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("123", response.getContent());
+        assertEquals("123", response.getContentAsString());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -311,54 +311,54 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a", response.getContent());
+        assertEquals("a", response.getContentAsString());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A", response.getContent());
+        assertEquals("A", response.getContentAsString());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("aaaaa", response.getContent());
+        assertEquals("aaaaa", response.getContentAsString());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("AAAAA", response.getContent());
+        assertEquals("AAAAA", response.getContentAsString());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("b", response.getContent());
+        assertEquals("b", response.getContentAsString());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("-", response.getContent());
+        assertEquals("-", response.getContentAsString());
 
-        response = get("/a-b_c");
+        response = GET("/a-b_c").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a-b_c", response.getContent());
+        assertEquals("a-b_c", response.getContentAsString());
 
-        response = get("/a-2_c");
+        response = GET("/a-2_c").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -375,48 +375,48 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("-", response.getContent());
+        assertEquals("-", response.getContentAsString());
 
-        response = get("/1-2_3");
+        response = GET("/1-2_3").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1-2_3", response.getContent());
+        assertEquals("1-2_3", response.getContentAsString());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1", response.getContent());
+        assertEquals("1", response.getContentAsString());
 
-        response = get("/123");
+        response = GET("/123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("123", response.getContent());
+        assertEquals("123", response.getContentAsString());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -433,57 +433,57 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a", response.getContent());
+        assertEquals("a", response.getContentAsString());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A", response.getContent());
+        assertEquals("A", response.getContentAsString());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("aaaaa", response.getContent());
+        assertEquals("aaaaa", response.getContentAsString());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("AAAAA", response.getContent());
+        assertEquals("AAAAA", response.getContentAsString());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("b", response.getContent());
+        assertEquals("b", response.getContentAsString());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1", response.getContent());
+        assertEquals("1", response.getContentAsString());
 
-        response = get("/1234567890");
+        response = GET("/1234567890").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1234567890", response.getContent());
+        assertEquals("1234567890", response.getContentAsString());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a-b_c");
+        response = GET("/a-b_c").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a-2_c");
+        response = GET("/a-2_c").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -500,63 +500,63 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a", response.getContent());
+        assertEquals("a", response.getContentAsString());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A", response.getContent());
+        assertEquals("A", response.getContentAsString());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("aaaaa", response.getContent());
+        assertEquals("aaaaa", response.getContentAsString());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("AAAAA", response.getContent());
+        assertEquals("AAAAA", response.getContentAsString());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("b", response.getContent());
+        assertEquals("b", response.getContentAsString());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1", response.getContent());
+        assertEquals("1", response.getContentAsString());
 
-        response = get("/1234567890");
+        response = GET("/1234567890").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("1234567890", response.getContent());
+        assertEquals("1234567890", response.getContentAsString());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("-", response.getContent());
+        assertEquals("-", response.getContentAsString());
 
-        response = get("/a-b_c");
+        response = GET("/a-b_c").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a-b_c", response.getContent());
+        assertEquals("a-b_c", response.getContentAsString());
 
-        response = get("/a-2_c");
+        response = GET("/a-2_c").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a-2_c", response.getContent());
+        assertEquals("a-2_c", response.getContentAsString());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -573,51 +573,51 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/AAAAA");
+        response = GET("/AAAAA").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/b");
+        response = GET("/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1");
+        response = GET("/1").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/1234567890");
+        response = GET("/1234567890").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/-");
+        response = GET("/-").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a-b_c");
+        response = GET("/a-b_c").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a-2_c");
+        response = GET("/a-2_c").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/a/b");
+        response = GET("/a/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aaaaa/b");
+        response = GET("/aaaaa/b").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/abc");
+        response = GET("/abc").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("abc", response.getContent());
+        assertEquals("abc", response.getContentAsString());
 
-        response = get("/ABC");
+        response = GET("/ABC").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -634,35 +634,35 @@ public class RoutingPatternsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/abc");
+        response = GET("/abc").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/user");
+        response = GET("/user").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/users");
+        response = GET("/users").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/usr");
+        response = GET("/usr").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/user/123");
+        response = GET("/user/123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("user", response.getContent());
+        assertEquals("user", response.getContentAsString());
 
-        response = get("/users/123");
+        response = GET("/users/123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("users", response.getContent());
+        assertEquals("users", response.getContentAsString());
 
-        response = get("/usr/123");
+        response = GET("/usr/123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("usr", response.getContent());
+        assertEquals("usr", response.getContentAsString());
 
     }
 

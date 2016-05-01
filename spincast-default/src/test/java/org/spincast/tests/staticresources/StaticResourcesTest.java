@@ -14,10 +14,10 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class StaticResourcesTest extends DefaultIntegrationTestingBase {
@@ -27,7 +27,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/one").classpath("/someFile.txt");
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
@@ -37,11 +37,11 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/one").classpath("/someFile.txt").save();
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("Le bœuf et l'éléphant!", response.getContent());
+        assertEquals("Le bœuf et l'éléphant!", response.getContentAsString());
     }
 
     @Test
@@ -49,10 +49,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/file").classpath("someFile.txt").save();
 
-        SpincastTestHttpResponse response = get("/file");
+        IHttpResponse response = GET("/file").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("Le bœuf et l'éléphant!", response.getContent());
+        assertEquals("Le bœuf et l'éléphant!", response.getContentAsString());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/one/two/three").classpath("/image.jpg").save();
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
     }
@@ -70,16 +70,16 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one/two/three").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/two/three/file2.txt");
+        IHttpResponse response = GET("/one/two/three/file2.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("file content 2", response.getContent());
+        assertEquals("file content 2", response.getContentAsString());
 
-        response = get("/one/two/three/image2.jpg");
+        response = GET("/one/two/three/image2.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
 
-        response = get("/one/two/three");
+        response = GET("/one/two/three").send();
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
 
     }
@@ -89,18 +89,18 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/dir").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/dir/file2.txt");
+        IHttpResponse response = GET("/dir/file2.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("file content 2", response.getContent());
+        assertEquals("file content 2", response.getContentAsString());
 
-        response = get("/dir");
+        response = GET("/dir").send();
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
 
-        response = get("/dir/");
+        response = GET("/dir/").send();
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
 
-        response = get("/dir/nope");
+        response = GET("/dir/nope").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -125,18 +125,18 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/dir").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/route1");
+        IHttpResponse response = GET("/route1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("route1", response.getContent());
+        assertEquals("route1", response.getContentAsString());
 
-        response = get("/dir/routes2");
+        response = GET("/dir/routes2").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/dir/file2.txt");
+        response = GET("/dir/file2.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("file content 2", response.getContent());
+        assertEquals("file content 2", response.getContentAsString());
     }
 
     @Test
@@ -170,20 +170,20 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/").classpath("/oneDir/file2.txt").save();
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("file content 2", response.getContent());
+        assertEquals("file content 2", response.getContentAsString());
 
-        response = get("/routes2");
+        response = GET("/routes2").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("routes2", response.getContent());
+        assertEquals("routes2", response.getContentAsString());
 
-        response = get("/route3");
+        response = GET("/route3").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("file content 2", response.getContent());
+        assertEquals("file content 2", response.getContentAsString());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/file").fileSystem(fileTarget.getAbsolutePath()).save();
 
-        SpincastTestHttpResponse response = get("/file");
+        IHttpResponse response = GET("/file").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/java", response.getContentType());
     }
@@ -214,10 +214,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/dir").fileSystem(dir.getAbsolutePath()).save();
 
-        SpincastTestHttpResponse response = get("/dir/");
+        IHttpResponse response = GET("/dir/").send();
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
 
-        response = get("/dir/" + fileTarget.getName());
+        response = GET("/dir/" + fileTarget.getName()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/java", response.getContentType());
     }
@@ -262,7 +262,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
                    .classpath("/image.jpg")
                    .save();
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
     }
@@ -272,10 +272,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/image2.jpg");
+        IHttpResponse response = GET("/one/image2.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
-        assertFalse(StringUtils.isBlank(response.getContent()));
+        assertFalse(StringUtils.isBlank(response.getContentAsString()));
     }
 
     @Test
@@ -283,10 +283,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/dir2/image3.jpg");
+        IHttpResponse response = GET("/one/dir2/image3.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
-        assertFalse(StringUtils.isBlank(response.getContent()));
+        assertFalse(StringUtils.isBlank(response.getContentAsString()));
     }
 
     @Test
@@ -294,10 +294,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/dir2/dir3/image4.jpg");
+        IHttpResponse response = GET("/one/dir2/dir3/image4.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
-        assertFalse(StringUtils.isBlank(response.getContent()));
+        assertFalse(StringUtils.isBlank(response.getContentAsString()));
     }
 
     @Test
@@ -305,7 +305,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/dir2/dir3/nope.jpg");
+        IHttpResponse response = GET("/one/dir2/dir3/nope.jpg").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -314,10 +314,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one/*{remaining}").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/image2.jpg");
+        IHttpResponse response = GET("/one/image2.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
-        assertFalse(StringUtils.isBlank(response.getContent()));
+        assertFalse(StringUtils.isBlank(response.getContentAsString()));
     }
 
     @Test
@@ -325,10 +325,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one/*{remaining}").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/dir2/image3.jpg");
+        IHttpResponse response = GET("/one/dir2/image3.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
-        assertFalse(StringUtils.isBlank(response.getContent()));
+        assertFalse(StringUtils.isBlank(response.getContentAsString()));
     }
 
     @Test
@@ -336,10 +336,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one/*{remaining}").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/dir2/dir3/image4.jpg");
+        IHttpResponse response = GET("/one/dir2/dir3/image4.jpg").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
-        assertFalse(StringUtils.isBlank(response.getContent()));
+        assertFalse(StringUtils.isBlank(response.getContentAsString()));
     }
 
     @Test
@@ -347,7 +347,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/one/*{remaining}").classpath("/oneDir").save();
 
-        SpincastTestHttpResponse response = get("/one/dir2/dir3/nope.jpg");
+        IHttpResponse response = GET("/one/dir2/dir3/nope.jpg").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -538,11 +538,11 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().file("/one").classpath("/someFile.txt").save();
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("Le bœuf et l'éléphant!", response.getContent());
+        assertEquals("Le bœuf et l'éléphant!", response.getContentAsString());
     }
 
     @Test
@@ -558,10 +558,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("titi", response.getContent());
+        assertEquals("titi", response.getContentAsString());
     }
 
     @Test
@@ -577,10 +577,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/oneDir");
+        IHttpResponse response = GET("/oneDir").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("titi", response.getContent());
+        assertEquals("titi", response.getContentAsString());
     }
 
     @Test
@@ -600,10 +600,10 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
 
         getRouter().dir("/oneDir").classpath("/someFile.txt").save();
 
-        SpincastTestHttpResponse response = get("/oneDir");
+        IHttpResponse response = GET("/oneDir").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
-        assertEquals("Le bœuf et l'éléphant!", response.getContent());
+        assertEquals("Le bœuf et l'éléphant!", response.getContentAsString());
     }
 
 }

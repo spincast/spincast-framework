@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
@@ -14,9 +11,9 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.guice.DefaultSpincastRouterConfig;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.common.net.HttpHeaders;
@@ -57,11 +54,9 @@ public class ValidCustomFilterPositionTest extends DefaultIntegrationTestingBase
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -86,7 +81,7 @@ public class ValidCustomFilterPositionTest extends DefaultIntegrationTestingBase
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

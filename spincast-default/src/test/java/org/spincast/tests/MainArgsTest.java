@@ -11,8 +11,8 @@ import org.spincast.core.guice.MainArgs;
 import org.spincast.core.routing.IHandler;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 import com.google.inject.Key;
@@ -70,7 +70,7 @@ public class MainArgsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

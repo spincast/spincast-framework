@@ -15,9 +15,9 @@ import org.spincast.core.routing.IRoutingResult;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Module;
@@ -54,20 +54,20 @@ public class RoutingCaseSensitiveTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/a");
+        IHttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("a", response.getContent());
+        assertEquals("a", response.getContentAsString());
 
-        response = get("/aaaaa");
+        response = GET("/aaaaa").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("aaaaa", response.getContent());
+        assertEquals("aaaaa", response.getContentAsString());
 
-        response = get("/A");
+        response = GET("/A").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/aA");
+        response = GET("/aA").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
     }

@@ -3,6 +3,7 @@ package org.spincast.defaults.tests;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.plugins.config.SpincastConfigPluginGuiceModule;
+import org.spincast.plugins.httpclient.SpincastHttpClientPluginGuiceModule;
 import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.testing.core.SpincastTestConfig;
 
@@ -18,6 +19,16 @@ public class DefaultTestingModule extends SpincastDefaultGuiceModule {
 
     public DefaultTestingModule(String[] mainArgs) {
         super(mainArgs);
+    }
+
+    @Override
+    protected void configure() {
+        super.configure();
+
+        //==========================================
+        // Install the Spincast Http Client Module
+        //==========================================
+        install(new SpincastHttpClientPluginGuiceModule(getRequestContextType()));
     }
 
     @Override

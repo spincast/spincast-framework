@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-parent</artifactId>
+        <version>0.9.7-SNAPSHOT</version>
+        <relativePath>../../spincast-parent</relativePath>
+    </parent>
+    
+	<artifactId>spincast-plugins-http-client-parent</artifactId>
+    <packaging>pom</packaging>
+    
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Parent for the Spincast Http Client plugin</description>
+    <url>https://www.spincast.org</url>
+
+    <modules>
+        <module>spincast-plugins-http-client</module>
+        <module>spincast-plugins-http-client-testing</module>
+    </modules>
+	
+</project>

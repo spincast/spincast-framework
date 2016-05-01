@@ -9,9 +9,9 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.CustomRouter;
 
@@ -58,11 +58,11 @@ public class CustomRouterTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test

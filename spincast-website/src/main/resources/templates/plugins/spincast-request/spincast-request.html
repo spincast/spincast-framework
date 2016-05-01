@@ -163,8 +163,6 @@ Spincast Request plugin
 		                <ul class="apiList">
                         
                         
-                        
-  
 <li>
     <code class="apiItem">HttpMethod <span>getHttpMethod</span>()</code>
     <div class="well">
@@ -233,6 +231,19 @@ Spincast Request plugin
 <br />The <code>name</code> is <i>case insensitive</i>.
 <br />Returns <code>null</code> if the header is not found.
 
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getContentType</span>()</code>
+    <div class="well">
+        The Content-Type of the request, if any.
+
+        <div class="apiItemFooter">
+            @return the <code>Content-Type</code> of the request or <code>null</code>
+ if none was specified.
+
+        </div>
     </div>
 </li>
 

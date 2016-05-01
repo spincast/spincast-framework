@@ -471,7 +471,8 @@ public class SpincastUndertowServer implements IServer {
                                                                  : ResponseCodeHandler.HANDLE_404;
 
             ResourceHandler resourceHandler = new ResourceHandler(new FileResourceManager(file, 1024), next);
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils());
+            GzipCheckerHandler gzipCheckerHandler =
+                    new GzipCheckerHandler(resourceHandler, getSpincastUtils(), file.getAbsolutePath());
             CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
@@ -485,7 +486,7 @@ public class SpincastUndertowServer implements IServer {
             }
 
             ResourceHandler resourceHandler = new ResourceHandler(new FileClassPathResourceManager(classpathPath));
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils());
+            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils(), classpathPath);
             CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
@@ -505,7 +506,7 @@ public class SpincastUndertowServer implements IServer {
                                                                  : ResponseCodeHandler.HANDLE_404;
 
             ResourceHandler resourceHandler = new ResourceHandler(new FileResourceManager(dir, 1024), next);
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils());
+            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils(), null);
             CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
@@ -521,7 +522,7 @@ public class SpincastUndertowServer implements IServer {
             ResourceHandler resourceHandler =
                     new ResourceHandler(new ClassPathResourceManager(SpincastUndertowServer.class.getClassLoader(),
                                                                      classpathPath));
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils());
+            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils(), null);
             CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);

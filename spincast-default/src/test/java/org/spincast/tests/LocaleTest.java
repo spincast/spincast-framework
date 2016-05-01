@@ -9,16 +9,15 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.cookies.ICookie;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.locale.ILocaleResolver;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.client.CookieStore;
-import org.spincast.shaded.org.apache.http.impl.cookie.BasicClientCookie;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class LocaleTest extends DefaultIntegrationTestingBase {
 
@@ -36,11 +35,11 @@ public class LocaleTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(getSpincastConfig().getDefaultLocale().toString(), response.getContent());
+        assertEquals(getSpincastConfig().getDefaultLocale().toString(), response.getContentAsString());
     }
 
     @Test
@@ -60,11 +59,11 @@ public class LocaleTest extends DefaultIntegrationTestingBase {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA");
 
-        SpincastTestHttpResponse response = get("/one", headers);
+        IHttpResponse response = GET("/one").addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("fr_CA", response.getContent());
+        assertEquals("fr_CA", response.getContentAsString());
     }
 
     @Test
@@ -80,20 +79,16 @@ public class LocaleTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA");
+        ICookie cookie = getCookieFactory().createCookie(SpincastConstants.COOKIE_NAME_LOCALE_TO_USE, "jp");
+        cookie.setDomain(getSpincastConfig().getServerHost());
+        cookie.setPath("/");
 
-        CookieStore cookieStore = getCookieStore();
-        BasicClientCookie basicClientCookie = new BasicClientCookie(SpincastConstants.COOKIE_NAME_LOCALE_TO_USE, "jp");
-        basicClientCookie.setDomain(getSpincastConfig().getServerHost());
-        basicClientCookie.setPath("/");
-        cookieStore.addCookie(basicClientCookie);
-
-        SpincastTestHttpResponse response = get("/one", headers);
+        IHttpResponse response =
+                GET("/one").addCookie(cookie).addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("jp", response.getContent());
+        assertEquals("jp", response.getContentAsString());
     }
 
     @Test

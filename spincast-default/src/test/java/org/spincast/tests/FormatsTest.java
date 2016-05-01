@@ -18,8 +18,8 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 
@@ -55,12 +55,12 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("{\"innerObj\":{\"someBoolean\":true,\"someInt\":123},\"anotherBoolean\":true,\"anotherInt\":44444}".length(),
-                     response.getContent().length());
+                     response.getContentAsString().length());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -108,7 +108,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -133,7 +133,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -163,7 +163,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -193,7 +193,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -224,7 +224,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -252,13 +252,13 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(("<HashMap><innerObj><someBoolean>true</someBoolean><someInt>123</someInt>" +
                       "</innerObj><anotherBoolean>true</anotherBoolean><anotherInt>44444</anotherInt></HashMap>").length(),
-                     response.getContent().length());
+                     response.getContentAsString().length());
     }
 
     @Test
@@ -284,11 +284,11 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        String xml = response.getContent();
+        String xml = response.getContentAsString();
         assertNotNull(xml);
 
         IJsonObject json = this.xmlManager.fromXml(xml);
@@ -317,7 +317,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -336,7 +336,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

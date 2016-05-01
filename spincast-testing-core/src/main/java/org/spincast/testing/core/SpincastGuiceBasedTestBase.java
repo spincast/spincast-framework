@@ -44,10 +44,19 @@ public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMet
     @Override
     public void beforeClass() {
 
-        this.guice = createInjector();
-        assertNotNull(this.guice);
+        Injector guice = createInjector();
+        assertNotNull(guice);
+
+        this.guice = extendGuiceInjector(guice);
 
         this.guice.injectMembers(this);
+    }
+
+    /**
+     * Allows to extend the base Guice injector
+     */
+    protected Injector extendGuiceInjector(Injector baseInjector) {
+        return baseInjector;
     }
 
     @Override

@@ -31,7 +31,7 @@ public class HttpsTestInvalidKeyStoreType extends DefaultIntegrationTestingBase 
 
         @Override
         public String getHttpsKeyStorePath() {
-            return "/self-signed-certificat.jks";
+            return "/self-signed-certificate.jks";
         }
 
         @Override

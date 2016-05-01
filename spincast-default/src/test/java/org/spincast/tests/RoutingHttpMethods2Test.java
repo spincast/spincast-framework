@@ -2,16 +2,13 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IHandler;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.NameValuePair;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class RoutingHttpMethods2Test extends DefaultIntegrationTestingBase {
 
@@ -26,7 +23,7 @@ public class RoutingHttpMethods2Test extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -41,7 +38,7 @@ public class RoutingHttpMethods2Test extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = postWithParams("/", new ArrayList<NameValuePair>());
+        IHttpResponse response = POST("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

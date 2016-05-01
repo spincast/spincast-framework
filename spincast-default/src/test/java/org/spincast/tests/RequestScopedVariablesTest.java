@@ -15,8 +15,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
@@ -133,7 +133,7 @@ public class RequestScopedVariablesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -173,7 +173,7 @@ public class RequestScopedVariablesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

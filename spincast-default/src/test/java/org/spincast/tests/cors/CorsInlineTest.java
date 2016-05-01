@@ -13,16 +13,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.spincast.core.cookies.ICookie;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.impl.cookie.BasicClientCookie;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.common.collect.Sets;
@@ -45,7 +45,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -64,7 +64,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -78,11 +78,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example1.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example1.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -101,7 +99,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -115,11 +113,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -144,7 +140,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -159,11 +155,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "http://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -188,7 +182,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -202,11 +196,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "http://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -240,11 +232,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "http://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -281,11 +271,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -311,7 +299,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -330,11 +318,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -359,7 +345,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -380,11 +366,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -409,7 +393,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -429,12 +413,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
-
-        SpincastTestHttpResponse response = postWithHeaders("/", headers);
+        IHttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                  .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                  .addHeaderValue(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                                                  .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -459,7 +441,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -482,11 +464,9 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.HEAD, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                  .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                  .send();
 
         assertTrue(inHandler[0]);
 
@@ -512,7 +492,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertNull(maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals(null, response.getContent()); // no content on a HEAD request!
+        assertTrue(StringUtils.isBlank(response.getContentAsString())); // no content on a HEAD request!
     }
 
     @Test
@@ -526,12 +506,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -560,7 +538,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -574,13 +552,12 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "extra-header-to-be-sent-3,extra-header-to-be-sent-4");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                                     "extra-header-to-be-sent-3,extra-header-to-be-sent-4")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -610,7 +587,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -625,12 +602,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -659,7 +634,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -673,12 +648,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -717,13 +690,12 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "extra-header-to-be-sent-1,extra-header-to-be-sent-2");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                                     "extra-header-to-be-sent-1,extra-header-to-be-sent-2")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -753,7 +725,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -772,14 +744,12 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                    "extra-header-to-be-sent-1,extra-header-to-be-sent-2,extra-header-to-be-sent-3");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                                     "extra-header-to-be-sent-1,extra-header-to-be-sent-2,extra-header-to-be-sent-3")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -812,7 +782,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -830,13 +800,12 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "extra-header-3");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                                     "extra-header-3")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -854,7 +823,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertNull(maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -872,13 +841,12 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "extra-header-to-be-sent-1");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                                     "extra-header-to-be-sent-1")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -918,12 +886,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -952,7 +918,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -973,12 +939,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1008,19 +972,20 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("86400", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
     public void preflightHttpMethodsInvalid() throws Exception {
 
-        getRouter().OPTIONS("/").cors(Sets.newHashSet("https://example1.com"),
-                                      Sets.newHashSet("extra-header-to-be-read-1",
-                                                      "extra-header-to-be-read-2"),
-                                      Sets.newHashSet("extra-header-to-be-sent-1",
-                                                      "extra-header-to-be-sent-2"),
-                                      false,
-                                      Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT))
+        getRouter().OPTIONS("/")
+                   .cors(Sets.newHashSet("https://example1.com"),
+                         Sets.newHashSet("extra-header-to-be-read-1",
+                                         "extra-header-to-be-read-2"),
+                         Sets.newHashSet("extra-header-to-be-sent-1",
+                                         "extra-header-to-be-sent-2"),
+                         false,
+                         Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT))
                    .save(new IHandler<IDefaultRequestContext>() {
 
                        @Override
@@ -1029,12 +994,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1052,7 +1015,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertNull(maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -1074,12 +1037,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1109,7 +1070,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertEquals("123", maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -1131,12 +1092,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1165,7 +1124,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertNull(maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -1187,12 +1146,10 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ORIGIN, "https://example1.com");
-        headers.put(HttpHeaders.HOST, "example2.com");
-        headers.put(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT");
-
-        SpincastTestHttpResponse response = methodWithUrl(HttpMethod.OPTIONS, createTestUrl("/"), headers, null, null);
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                                     .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1221,7 +1178,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         assertNull(maxAgeHeader);
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -1239,12 +1196,14 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
         headers.put(HttpHeaders.ORIGIN, "https://example1.com");
         headers.put(HttpHeaders.HOST, "example2.com");
 
-        BasicClientCookie cookie = new BasicClientCookie("name1", "value2");
+        ICookie cookie = getCookieFactory().createCookie("name1", "value2");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
-        getCookieStore().addCookie(cookie);
 
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                                 .addCookie(cookie)
+                                                 .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1269,7 +1228,7 @@ public class CorsInlineTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

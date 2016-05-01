@@ -12,10 +12,10 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.IDefaultHandler;
 import org.spincast.plugins.routing.IDefaultRouter;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
@@ -64,15 +64,15 @@ public class DefaultComponentsTest extends DefaultIntegrationTestingBase {
         assertNotNull(mainRoutes);
         assertEquals(2, mainRoutes.size());
 
-        SpincastTestHttpResponse response = get("/default");
+        IHttpResponse response = GET("/default").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
-        response = get("/generic");
+        response = GET("/generic").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("generic", response.getContent());
+        assertEquals("generic", response.getContentAsString());
 
     }
 

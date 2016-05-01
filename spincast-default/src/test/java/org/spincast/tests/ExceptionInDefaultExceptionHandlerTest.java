@@ -19,8 +19,8 @@ import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 import com.google.inject.Key;
@@ -88,11 +88,11 @@ public class ExceptionInDefaultExceptionHandlerTest extends DefaultIntegrationTe
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         // The original message should have been kept!
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
-        assertTrue(response.getContent() == null || "".equals(response.getContent()));
+        assertTrue(response.getContentAsString() == null || "".equals(response.getContentAsString()));
     }
 
 }

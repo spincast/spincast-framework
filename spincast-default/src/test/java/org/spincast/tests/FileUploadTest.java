@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -13,13 +13,9 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.http.HttpEntity;
-import org.spincast.shaded.org.apache.http.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.client.HttpClient;
-import org.spincast.shaded.org.apache.http.client.methods.HttpPost;
-import org.spincast.shaded.org.apache.http.entity.mime.MultipartEntityBuilder;
 
 public class FileUploadTest extends DefaultIntegrationTestingBase {
 
@@ -43,19 +39,8 @@ public class FileUploadTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpClient httpclient = getHttpClient();
-
-        URL resource = getClass().getClassLoader().getResource("someFile.txt");
-        File file = new File(resource.toURI());
-
-        HttpEntity httpEntity = MultipartEntityBuilder.create().addBinaryBody("someName", file).build();
-
-        HttpPost httpPost = new HttpPost(createTestUrl("/one"));
-        httpPost.setEntity(httpEntity);
-
-        HttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        assertEquals(HttpStatus.SC_OK, status);
+        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -81,25 +66,9 @@ public class FileUploadTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpClient httpclient = getHttpClient();
-
-        URL resource = getClass().getClassLoader().getResource("someFile.txt");
-        File file = new File(resource.toURI());
-
-        resource = getClass().getClassLoader().getResource("someFile2.txt");
-        File file2 = new File(resource.toURI());
-
-        HttpEntity httpEntity = MultipartEntityBuilder.create()
-                                                      .addBinaryBody("someName", file)
-                                                      .addBinaryBody("someName", file2)
-                                                      .build();
-
-        HttpPost httpPost = new HttpPost(createTestUrl("/one"));
-        httpPost.setEntity(httpEntity);
-
-        HttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        assertEquals(HttpStatus.SC_OK, status);
+        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
+                                                     .addEntityFileUpload("someFile2.txt", true, "someName").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -113,7 +82,7 @@ public class FileUploadTest extends DefaultIntegrationTestingBase {
                 try {
                     Map<String, List<File>> uploadedFiles = context.request().getUploadedFiles();
                     assertNotNull(uploadedFiles);
-                    assertEquals(2, uploadedFiles.size());
+                    assertEquals(3, uploadedFiles.size());
 
                     List<File> uploadedFilesSomeName = context.request().getUploadedFiles("someName");
                     assertNotNull(uploadedFilesSomeName);
@@ -138,35 +107,33 @@ public class FileUploadTest extends DefaultIntegrationTestingBase {
                     content = FileUtils.readFileToString(uploadedFileOther, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant! 3", content);
 
+                    List<File> fileSystemBaseds = context.request().getUploadedFiles("fileSystemBased");
+                    assertNotNull(fileSystemBaseds);
+                    assertEquals(1, fileSystemBaseds.size());
+
+                    File fileSystemBased = fileSystemBaseds.get(0);
+                    assertNotNull(fileSystemBased);
+                    content = FileUtils.readFileToString(fileSystemBased, "UTF-8");
+                    assertEquals("Le bœuf et l'éléphant!", content);
+
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
         });
 
-        HttpClient httpclient = getHttpClient();
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("someFile.txt");
+        assertNotNull(stream);
+        String testFilePath = createTestingFilePath();
+        FileUtils.copyInputStreamToFile(stream, new File(testFilePath));
 
-        URL resource = getClass().getClassLoader().getResource("someFile.txt");
-        File file1 = new File(resource.toURI());
+        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
+                                                     .addEntityFileUpload("someFile2.txt", true, "someName")
+                                                     .addEntityFileUpload("someFile3.txt", true, "other")
+                                                     .addEntityFileUpload(testFilePath, false, "fileSystemBased")
+                                                     .send();
 
-        resource = getClass().getClassLoader().getResource("someFile2.txt");
-        File file2 = new File(resource.toURI());
-
-        resource = getClass().getClassLoader().getResource("someFile3.txt");
-        File file3 = new File(resource.toURI());
-
-        HttpEntity httpEntity = MultipartEntityBuilder.create()
-                                                      .addBinaryBody("someName", file1)
-                                                      .addBinaryBody("someName", file2)
-                                                      .addBinaryBody("other", file3)
-                                                      .build();
-
-        HttpPost httpPost = new HttpPost(createTestUrl("/one"));
-        httpPost.setEntity(httpEntity);
-
-        HttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        assertEquals(HttpStatus.SC_OK, status);
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
 

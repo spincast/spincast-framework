@@ -16,7 +16,7 @@ import org.spincast.core.routing.IRouteHandlerMatch;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
+import org.spincast.plugins.httpclient.IHttpResponse;
 
 public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
@@ -81,7 +81,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
         getRouter().GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -91,7 +91,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
         getRouter().GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
         assertEquals(404, response.getStatus());
         assertEquals("", this.flag);
     }
@@ -101,7 +101,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
         getRouter().GET("/").before(this.beforeFilter).save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -111,7 +111,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
         getRouter().GET("/").after(this.afterFilter).save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -121,7 +121,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
         getRouter().GET("/").before(this.beforeFilter).after(this.afterFilter).save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BMA", this.flag);
     }
@@ -165,7 +165,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/", this.beforeFilter);
         router.GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -178,7 +178,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/").save(this.mainHandler);
         router.before("/", this.beforeFilter);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -192,12 +192,12 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/one").save(this.mainHandler);
         router.GET("/two").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
 
         this.flag = "";
-        response = get("/two");
+        response = GET("/two").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -210,7 +210,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/*{path}", this.beforeFilter);
         router.GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -223,7 +223,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -236,7 +236,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -249,7 +249,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one/two/three").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -262,7 +262,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -276,17 +276,17 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/one").save(this.mainHandler);
         router.GET("/one/*{path}").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
 
         this.flag = "";
-        response = get("/one/");
+        response = GET("/one/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
 
         this.flag = "";
-        response = get("/one/two");
+        response = GET("/one/two").send();
         assertEquals(200, response.getStatus());
         assertEquals("BM", this.flag);
     }
@@ -299,7 +299,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -312,7 +312,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/", this.afterFilter);
         router.GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -325,7 +325,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/").save(this.mainHandler);
         router.after("/", this.afterFilter);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -339,12 +339,12 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/one").save(this.mainHandler);
         router.GET("/two").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
 
         this.flag = "";
-        response = get("/two");
+        response = GET("/two").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -357,7 +357,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/*{path}", this.afterFilter);
         router.GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -370,7 +370,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/*{path}", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -383,7 +383,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/*{path}", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -396,7 +396,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/*{path}", this.afterFilter);
         router.GET("/one/two/three").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -409,7 +409,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/*{path}", this.afterFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -425,17 +425,17 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/one/*{param}").save(this.mainHandler);
         router.GET("/one/${param}").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
 
         this.flag = "";
-        response = get("/one/");
+        response = GET("/one/").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
 
         this.flag = "";
-        response = get("/one/two");
+        response = GET("/one/two").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA", this.flag);
     }
@@ -448,7 +448,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -461,7 +461,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/", this.beforeAndAfterFilter);
         router.GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag); // Balabalabala la bamba!
     }
@@ -474,7 +474,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/").save(this.mainHandler);
         router.beforeAndAfter("/", this.beforeAndAfterFilter);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -488,12 +488,12 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/one").save(this.mainHandler);
         router.GET("/two").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
 
         this.flag = "";
-        response = get("/two");
+        response = GET("/two").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -506,7 +506,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -519,7 +519,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -532,7 +532,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -545,7 +545,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one/two/three").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -558,7 +558,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one/two/three");
+        IHttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -572,17 +572,17 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.GET("/one").save(this.mainHandler);
         router.GET("/one/*{path}").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
 
         this.flag = "";
-        response = get("/one/");
+        response = GET("/one/").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
 
         this.flag = "";
-        response = get("/one/two");
+        response = GET("/one/two").send();
         assertEquals(200, response.getStatus());
         assertEquals("BAMBA", this.flag);
     }
@@ -595,7 +595,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("M", this.flag);
     }
@@ -610,7 +610,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/one", this.beforeFilter);
         router.before("/one", this.beforeFilter2);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BB2M", this.flag);
     }
@@ -625,7 +625,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.before("/one", this.beforeFilter2);
         router.before("/one", this.beforeFilter);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("B2BM", this.flag);
     }
@@ -640,7 +640,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/one", this.afterFilter);
         router.after("/one", this.afterFilter2);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("MAA2", this.flag);
     }
@@ -655,7 +655,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.after("/one", this.afterFilter2);
         router.after("/one", this.afterFilter);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("MA2A", this.flag);
     }
@@ -670,7 +670,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/one", this.beforeAndAfterFilter);
         router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BABA2MBABA2", this.flag);
     }
@@ -685,7 +685,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
         router.beforeAndAfter("/one", this.beforeAndAfterFilter);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BA2BAMBA2BA", this.flag);
     }
@@ -704,7 +704,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
         router.beforeAndAfter("/one", this.beforeAndAfterFilter);
         router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BB2BABA2MAA2BABA2", this.flag);
 
@@ -724,7 +724,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
 
         router.GET("/one").save(this.mainHandler);
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("BBA2B2BAMA2BA2ABA", this.flag);
     }
@@ -810,10 +810,10 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/one/val1/three/four");
+        IHttpResponse response = GET("/one/val1/three/four").send();
         assertEquals(200, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("val1val1val1", response.getContent());
+        assertEquals("val1val1val1", response.getContentAsString());
     }
 
     @Test
@@ -954,10 +954,10 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("BFBF2RBFMRAFAFAF2", response.getContent());
+        assertEquals("BFBF2RBFMRAFAFAF2", response.getContentAsString());
     }
 
     @Test
@@ -1019,9 +1019,9 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
-        assertEquals("ABCmainDEF", response.getContent());
+        assertEquals("ABCmainDEF", response.getContentAsString());
     }
 
 }

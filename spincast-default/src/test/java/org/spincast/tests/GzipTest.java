@@ -2,8 +2,6 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -13,18 +11,14 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.shaded.org.apache.http.Header;
-import org.spincast.shaded.org.apache.http.HttpHeaders;
-import org.spincast.shaded.org.apache.http.HttpResponse;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.client.entity.DecompressingEntity;
-import org.spincast.shaded.org.apache.http.util.EntityUtils;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class GzipTest extends DefaultIntegrationTestingBase {
 
     @Test
-    public void gziped() throws Exception {
+    public void gzipped() throws Exception {
 
         getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
 
@@ -34,30 +28,13 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertTrue(response.getEntity() instanceof DecompressingEntity);
-
-            //==========================================
-            // Apache HttpClient removes the "Content-Encoding" header!
-            //==========================================
-            //String header = response.getHeaderFirst(HttpHeaders.CONTENT_ENCODING);
-            //assertNotNull(header);
-            //assertTrue(header.toLowerCase().contains("gzip"));
-
-            Header header = response.getFirstHeader(HttpHeaders.TRANSFER_ENCODING);
-            assertNotNull(header);
-            assertTrue(header.getValue().toLowerCase().contains("chunked"));
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertTrue(response.isGzipped());
     }
 
     @Test
-    public void notGziped() throws Exception {
+    public void notGzipped() throws Exception {
 
         getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
 
@@ -71,18 +48,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertFalse(response.getEntity() instanceof DecompressingEntity);
-
-            Header header = response.getFirstHeader(HttpHeaders.TRANSFER_ENCODING);
-            assertNull(header);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 
     @Test
@@ -100,18 +68,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertFalse(response.getEntity() instanceof DecompressingEntity);
-
-            Header header = response.getFirstHeader(HttpHeaders.TRANSFER_ENCODING);
-            assertNull(header);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 
     @Test
@@ -130,19 +89,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertTrue(response.getEntity() instanceof DecompressingEntity);
-
-            Header header = response.getFirstHeader(HttpHeaders.TRANSFER_ENCODING);
-            assertNotNull(header);
-            assertTrue(header.getValue().toLowerCase().contains("chunked"));
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertTrue(response.isGzipped());
     }
 
     @Test
@@ -160,52 +109,29 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one.txt"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertTrue(response.getEntity() instanceof DecompressingEntity);
-
-            Header header = response.getFirstHeader(HttpHeaders.TRANSFER_ENCODING);
-            assertNotNull(header);
-            assertTrue(header.getValue().toLowerCase().contains("chunked"));
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertTrue(response.isGzipped());
     }
 
     @Test
-    public void resourceGziped() throws Exception {
+    public void resourceGzipped() throws Exception {
 
         getRouter().file("/txt").classpath("/someFile.txt").save();
 
-        HttpResponse response = getRawResponse(createTestUrl("/txt"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertTrue(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertTrue(response.isGzipped());
     }
 
     @Test
-    public void resourceNotGziped() throws Exception {
+    public void resourceNotGzipped() throws Exception {
 
         getRouter().file("/image").classpath("/image.jpg").save();
 
-        HttpResponse response = getRawResponse(createTestUrl("/image"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertTrue(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
-
+        IHttpResponse response = GET("/image").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 
     @Test
@@ -220,15 +146,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertFalse(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 
     @Test
@@ -250,15 +170,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertFalse(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 
     @Test
@@ -273,15 +187,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertTrue(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertTrue(response.isGzipped());
     }
 
     @Test
@@ -296,15 +204,9 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertFalse(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 
     @Test
@@ -327,14 +229,8 @@ public class GzipTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpResponse response = getRawResponse(createTestUrl("/one"));
-        try {
-            assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
-
-            // DecompressingEntity from HttpClient means the response was compressed!
-            assertFalse(response.getEntity() instanceof DecompressingEntity);
-        } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
-        }
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertFalse(response.isGzipped());
     }
 }

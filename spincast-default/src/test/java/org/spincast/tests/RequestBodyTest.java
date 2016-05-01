@@ -5,9 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 
 import org.junit.Test;
@@ -17,14 +15,9 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
-import org.spincast.shaded.org.apache.http.HttpEntity;
-import org.spincast.shaded.org.apache.http.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.client.HttpClient;
-import org.spincast.shaded.org.apache.http.client.methods.HttpPost;
-import org.spincast.shaded.org.apache.http.entity.StringEntity;
-import org.spincast.shaded.org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class RequestBodyTest extends DefaultIntegrationTestingBase {
@@ -53,19 +46,9 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpClient httpclient = getHttpClient();
-
-        URL resource = getClass().getClassLoader().getResource("someFile.txt");
-        File file = new File(resource.toURI());
-
-        HttpEntity httpEntity = MultipartEntityBuilder.create().addBinaryBody("someName", file).build();
-
-        HttpPost httpPost = new HttpPost(createTestUrl("/one"));
-        httpPost.setEntity(httpEntity);
-
-        HttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        assertEquals(HttpStatus.SC_OK, status);
+        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -90,15 +73,10 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", "UTF-8");
-        input.setContentType(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -119,15 +97,10 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", "UTF-8");
-        input.setContentType(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -149,19 +122,9 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpClient httpclient = getHttpClient();
-
-        URL resource = getClass().getClassLoader().getResource("someFile_Iso8859-15.txt");
-        File file = new File(resource.toURI());
-
-        HttpEntity httpEntity = MultipartEntityBuilder.create().addBinaryBody("someName", file).build();
-
-        HttpPost httpPost = new HttpPost(createTestUrl("/one"));
-        httpPost.setEntity(httpEntity);
-
-        HttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        assertEquals(HttpStatus.SC_OK, status);
+        IHttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -183,19 +146,10 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpClient httpclient = getHttpClient();
+        IHttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        URL resource = getClass().getClassLoader().getResource("someFile_Iso8859-15.txt");
-        File file = new File(resource.toURI());
-
-        HttpEntity httpEntity = MultipartEntityBuilder.create().addBinaryBody("someName", file).build();
-
-        HttpPost httpPost = new HttpPost(createTestUrl("/one"));
-        httpPost.setEntity(httpEntity);
-
-        HttpResponse response = httpclient.execute(httpPost);
-        int status = response.getStatusLine().getStatusCode();
-        assertEquals(HttpStatus.SC_OK, status);
     }
 
     @Test
@@ -221,15 +175,10 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", "UTF-8");
-        input.setContentType(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -255,15 +204,10 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", "UTF-8");
-        input.setContentType(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     public static class UserTest {
@@ -290,15 +234,10 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", "UTF-8");
-        input.setContentType(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                     .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -324,16 +263,11 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
-                                              "UTF-8");
-        input.setContentType(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response =
+                POST("/one").setEntityString("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
+                                             ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
+                            .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -359,16 +293,11 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
-                                              "UTF-8");
-        input.setContentType(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response =
+                POST("/one").setEntityString("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
+                                             ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
+                            .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
@@ -390,16 +319,11 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        HttpPost request = new HttpPost(createTestUrl("/one"));
-
-        StringEntity input = new StringEntity("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
-                                              "UTF-8");
-        input.setContentType(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset());
-        request.setEntity(input);
-
-        HttpResponse response = getHttpClient().execute(request);
-        assertNotNull(response);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        IHttpResponse response =
+                POST("/one").setEntityString("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
+                                             ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
+                            .send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
 }

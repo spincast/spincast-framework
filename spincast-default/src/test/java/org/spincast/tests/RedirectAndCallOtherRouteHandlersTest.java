@@ -9,10 +9,10 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.client.config.RequestConfig;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.common.net.HttpHeaders;
@@ -83,47 +83,47 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
         //==========================================
         // Without following the permanent redirect
         //==========================================
-        SpincastTestHttpResponse response = get("/permanently/one/two", noRedirectConfig);
+        IHttpResponse response = GET("/permanently/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the permanent redirect
         //==========================================
-        response = get("/permanently/one/two");
+        response = GET("/permanently/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the permanent redirect
         //==========================================
-        response = get("/temporary/one/two", noRedirectConfig);
+        response = GET("/temporary/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the temporary redirect
         //==========================================
-        response = get("/temporary/one/two");
+        response = GET("/temporary/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the custom redirect
         //==========================================
-        response = get("/custom/one/two", noRedirectConfig);
+        response = GET("/custom/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the custom redirect
         //==========================================
-        response = get("/custom/one/two");
+        response = GET("/custom/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
     }
 
@@ -191,47 +191,47 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
         //==========================================
         // Without following the permanent redirect
         //==========================================
-        SpincastTestHttpResponse response = get("/permanently/one/two", noRedirectConfig);
+        IHttpResponse response = GET("/permanently/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the permanent redirect
         //==========================================
-        response = get("/permanently/one/two");
+        response = GET("/permanently/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("permanently!", response.getContent());
+        assertEquals("permanently!", response.getContentAsString());
 
         //==========================================
         // Without following the permanent redirect
         //==========================================
-        response = get("/temporary/one/two", noRedirectConfig);
+        response = GET("/temporary/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the temporary redirect
         //==========================================
-        response = get("/temporary/one/two");
+        response = GET("/temporary/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("temporary!", response.getContent());
+        assertEquals("temporary!", response.getContentAsString());
 
         //==========================================
         // Without following the custom redirect
         //==========================================
-        response = get("/custom/one/two", noRedirectConfig);
+        response = GET("/custom/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the custom redirect
         //==========================================
-        response = get("/custom/one/two");
+        response = GET("/custom/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("custom!", response.getContent());
+        assertEquals("custom!", response.getContentAsString());
 
     }
 
@@ -281,47 +281,47 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
         //==========================================
         // Without following the permanent redirect
         //==========================================
-        SpincastTestHttpResponse response = get("/permanently/one/two", noRedirectConfig);
+        IHttpResponse response = GET("/permanently/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the permanent redirect
         //==========================================
-        response = get("/permanently/one/two");
+        response = GET("/permanently/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the permanent redirect
         //==========================================
-        response = get("/temporary/one/two", noRedirectConfig);
+        response = GET("/temporary/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the temporary redirect
         //==========================================
-        response = get("/temporary/one/two");
+        response = GET("/temporary/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the custom redirect
         //==========================================
-        response = get("/custom/one/two", noRedirectConfig);
+        response = GET("/custom/one/two").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-        assertTrue(StringUtils.isBlank(response.getContent()));
+        assertTrue(StringUtils.isBlank(response.getContentAsString()));
 
         //==========================================
         // Following the custom redirect
         //==========================================
-        response = get("/custom/one/two");
+        response = GET("/custom/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
     }
 
@@ -360,10 +360,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("B1232", response.getContent());
+        assertEquals("B1232", response.getContentAsString());
     }
 
     @Test
@@ -385,10 +385,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("two", response.getContent());
+        assertEquals("two", response.getContentAsString());
     }
 
     @Test
@@ -410,10 +410,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("two", response.getContent());
+        assertEquals("two", response.getContentAsString());
     }
 
     @Test
@@ -438,10 +438,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
 
         RequestConfig noRedirectConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
 
-        SpincastTestHttpResponse response = get("/", noRedirectConfig);
+        IHttpResponse response = GET("/").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("mainafter", response.getContent());
+        assertEquals("mainafter", response.getContentAsString());
     }
 
     @Test
@@ -467,10 +467,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("mainafter", response.getContent());
+        assertEquals("mainafter", response.getContentAsString());
     }
 
     @Test
@@ -495,10 +495,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
 
         RequestConfig noRedirectConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
 
-        SpincastTestHttpResponse response = get("/", noRedirectConfig);
+        IHttpResponse response = GET("/").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -515,10 +515,10 @@ public class RedirectAndCallOtherRouteHandlersTest extends DefaultIntegrationTes
 
         RequestConfig noRedirectConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
 
-        SpincastTestHttpResponse response = get("/", noRedirectConfig);
+        IHttpResponse response = GET("/").setRequestConfig(noRedirectConfig).send();
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
 }

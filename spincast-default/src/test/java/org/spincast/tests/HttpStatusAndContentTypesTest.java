@@ -14,8 +14,8 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,7 +34,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/two");
+        IHttpResponse response = GET("/two").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -52,7 +52,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         // Default content-type for an exception
@@ -73,10 +73,8 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-
-        SpincastTestHttpResponse response = get("/one", headers);
+        IHttpResponse response =
+                GET("/one").addHeaderValue("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -96,10 +94,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "application/json");
-
-        SpincastTestHttpResponse response = get("/one", headers);
+        IHttpResponse response = GET("/one").addHeaderValue("Accept", "application/json").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -119,10 +114,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", "application/xml");
-
-        SpincastTestHttpResponse response = get("/one", headers);
+        IHttpResponse response = GET("/one").addHeaderValue("Accept", "application/xml").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -139,10 +131,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -156,10 +148,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/custom; charset=utf-8", response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -173,10 +165,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -193,14 +185,14 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertNotNull(response.getContent());
+        assertNotNull(response.getContentAsString());
 
         ObjectMapper mapper = new ObjectMapper();
         @SuppressWarnings("unchecked")
-        Map<String, Object> map = mapper.readValue(response.getContent(), Map.class);
+        Map<String, Object> map = mapper.readValue(response.getContentAsString(), Map.class);
         assertNotNull(map);
         assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
@@ -220,14 +212,14 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertNotNull(response.getContent());
+        assertNotNull(response.getContentAsString());
 
         XmlMapper mapper = new XmlMapper();
         @SuppressWarnings("unchecked")
-        Map<String, Object> map = mapper.readValue(response.getContent(), Map.class);
+        Map<String, Object> map = mapper.readValue(response.getContentAsString(), Map.class);
         assertNotNull(map);
         assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
@@ -245,10 +237,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_EXPECTATION_FAILED, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -266,7 +258,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
     }
@@ -282,7 +274,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one.mkv");
+        IHttpResponse response = GET("/one.mkv").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("video/x-matroska", response.getContentType());
 
@@ -306,12 +298,52 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one.mkv");
+        IHttpResponse response = GET("/one.mkv").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/test", response.getContentType());
-        assertNotNull(response.getContent());
+        assertNotNull(response.getContentAsString());
         assertEquals(SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING,
-                     response.getContent());
+                     response.getContentAsString());
+    }
+
+    @Test
+    public void guessStaticResourceContentTypeFromTargetFilePath() throws Exception {
+
+        getRouter().file("/image").classpath("/image.jpg").save();
+
+        IHttpResponse response = GET("/image").send();
+        assertNotNull(response);
+        assertEquals("image/jpeg", response.getContentType());
+
+    }
+
+    @Test
+    public void requestContentType() throws Exception {
+
+        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                String body = context.request().getBodyAsString();
+                assertNotNull(body);
+                assertEquals("<toto>the entity</toto>", body);
+
+                String contentType = context.request().getContentType();
+                assertNotNull(contentType);
+                assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), contentType);
+
+                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+            }
+        });
+
+        IHttpResponse response =
+                POST("/").setEntityString("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
+                         .send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.Nullable;
 
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.cookies.ICookie;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 
@@ -12,6 +13,7 @@ import com.google.inject.assistedinject.AssistedInject;
 
 public class Cookie implements ICookie {
 
+    private final ISpincastConfig spincastConfig;
     private final String name;
 
     private String value;
@@ -27,8 +29,10 @@ public class Cookie implements ICookie {
      * Constructor
      */
     @AssistedInject
-    public Cookie(@Assisted("name") String name) {
+    public Cookie(@Assisted("name") String name,
+                  ISpincastConfig spincastConfig) {
         this.name = name;
+        this.spincastConfig = spincastConfig;
     }
 
     /**
@@ -36,9 +40,11 @@ public class Cookie implements ICookie {
      */
     @AssistedInject
     public Cookie(@Assisted("name") String name,
-                  @Assisted("value") String value) {
+                  @Assisted("value") String value,
+                  ISpincastConfig spincastConfig) {
         this.name = name;
         this.value = value;
+        this.spincastConfig = spincastConfig;
     }
 
     /**
@@ -53,7 +59,8 @@ public class Cookie implements ICookie {
                   @Assisted("secure") boolean secure,
                   @Assisted("httpOnly") boolean httpOnly,
                   @Assisted("discard") boolean discard,
-                  @Assisted("version") int version) {
+                  @Assisted("version") int version,
+                  ISpincastConfig spincastConfig) {
 
         this.name = name;
         this.value = value;
@@ -64,6 +71,11 @@ public class Cookie implements ICookie {
         this.httpOnly = httpOnly;
         this.discard = discard;
         this.version = version;
+        this.spincastConfig = spincastConfig;
+    }
+
+    protected ISpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
     }
 
     @Override
@@ -88,6 +100,15 @@ public class Cookie implements ICookie {
 
     @Override
     public String getDomain() {
+
+        //==========================================
+        // If no domain was specify, we use the
+        // host of the server.
+        //==========================================
+        if(this.domain == null) {
+            this.domain = getSpincastConfig().getServerHost();
+        }
+
         return this.domain;
     }
 

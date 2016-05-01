@@ -15,17 +15,17 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Module;
 
 public class HttpsTestAbsoluteKeystorePath extends DefaultIntegrationTestingBase {
 
-    protected final String KEYSTORE_CLASSPATH = "self-signed-certificat.jks";
+    protected final String KEYSTORE_CLASSPATH = "self-signed-certificate.jks";
 
     protected static File keyStoreFile;
 
@@ -115,11 +115,11 @@ public class HttpsTestAbsoluteKeystorePath extends DefaultIntegrationTestingBase
             }
         });
 
-        SpincastTestHttpResponse response = get("/one", true);
+        IHttpResponse response = GET("/one", false, true).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

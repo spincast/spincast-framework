@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -18,11 +19,10 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.client.CookieStore;
-import org.spincast.shaded.org.apache.http.impl.cookie.BasicClientCookie;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
+import com.google.common.collect.Lists;
 import com.google.common.net.HttpHeaders;
 
 public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
@@ -47,11 +47,11 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("two", response.getContent());
+        assertEquals("two", response.getContentAsString());
     }
 
     @Test
@@ -74,11 +74,11 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("two", response.getContent());
+        assertEquals("two", response.getContentAsString());
     }
 
     @Test
@@ -101,11 +101,11 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("onetwo", response.getContent());
+        assertEquals("onetwo", response.getContentAsString());
     }
 
     @Test
@@ -140,11 +140,11 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("twothreefour", response.getContent());
+        assertEquals("twothreefour", response.getContentAsString());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
     }
@@ -218,7 +218,7 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one?q=one");
+        IHttpResponse response = GET("/one?q=one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
@@ -262,19 +262,15 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ACCEPT, ContentTypeDefaults.JSON.getMainVariation());
+        Map<String, List<String>> headers = new HashMap<String, List<String>>();
+        headers.put(HttpHeaders.ACCEPT, Lists.newArrayList(ContentTypeDefaults.JSON.getMainVariation()));
 
-        CookieStore cookieStore = getCookieStore();
+        ICookie cookie = getCookieFactory().createCookie("name1", "toto");
+        cookie.setDomain(getSpincastConfig().getServerHost());
+        cookie.setPath("/");
 
-        BasicClientCookie basicClientCookie = new BasicClientCookie("name1", "toto");
-        basicClientCookie.setDomain(getSpincastConfig().getServerHost());
-        basicClientCookie.setPath("/");
-        cookieStore.addCookie(basicClientCookie);
-
-        SpincastTestHttpResponse response = get("/one?q=one", headers);
+        IHttpResponse response = GET("/one?q=one").addCookie(cookie).setHeaders(headers).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-
     }
 
     @Test
@@ -306,7 +302,9 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = postJson("/one?q=one", "{\"name\":\"toto\"}");
+        IHttpResponse response = POST("/one?q=one").setEntityString("{\"name\":\"toto\"}",
+                                                                    ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                   .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
@@ -330,10 +328,10 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
     }
 
     @Test
@@ -355,7 +353,7 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
     }
@@ -380,7 +378,7 @@ public class ForwardRouteExceptionTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }

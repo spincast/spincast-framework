@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class PluginsTest extends AppIntegrationTestBase {
 
     @Test
     public void pluginValid() throws Exception {
 
-        SpincastTestHttpResponse response = get("/plugins/spincast-request");
+        IHttpResponse response = GET("/plugins/spincast-request").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -21,7 +21,7 @@ public class PluginsTest extends AppIntegrationTestBase {
     @Test
     public void pluginInvalid() throws Exception {
 
-        SpincastTestHttpResponse response = get("/plugins/nope");
+        IHttpResponse response = GET("/plugins/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -30,7 +30,7 @@ public class PluginsTest extends AppIntegrationTestBase {
     @Test
     public void pluginNameSanitization() throws Exception {
 
-        SpincastTestHttpResponse response = get("/plugins/.");
+        IHttpResponse response = GET("/plugins/.").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());

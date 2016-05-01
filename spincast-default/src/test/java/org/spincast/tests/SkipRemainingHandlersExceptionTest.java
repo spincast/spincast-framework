@@ -8,8 +8,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class SkipRemainingHandlersExceptionTest extends DefaultIntegrationTestingBase {
 
@@ -33,11 +33,11 @@ public class SkipRemainingHandlersExceptionTest extends DefaultIntegrationTestin
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("main", response.getContent());
+        assertEquals("main", response.getContentAsString());
     }
 
     @Test
@@ -76,11 +76,11 @@ public class SkipRemainingHandlersExceptionTest extends DefaultIntegrationTestin
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("before1", response.getContent());
+        assertEquals("before1", response.getContentAsString());
     }
 
 }

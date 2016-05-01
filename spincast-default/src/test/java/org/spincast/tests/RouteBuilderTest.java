@@ -2,19 +2,17 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRoute;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
+import com.google.common.collect.Lists;
 import com.google.common.net.HttpHeaders;
 
 public class RouteBuilderTest extends DefaultIntegrationTestingBase {
@@ -40,7 +38,7 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
         assertEquals(0, getRouter().getMainRoutes().size());
         assertEquals(0, getRouter().getGlobalAfterFiltersRoutes().size());
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         getRouter().addRoute(route);
@@ -51,10 +49,10 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
         assertEquals(2, getRouter().getMainRoutes().size());
         assertEquals(0, getRouter().getGlobalAfterFiltersRoutes().size());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -68,11 +66,11 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -126,11 +124,11 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("12main345", response.getContent());
+        assertEquals("12main345", response.getContentAsString());
     }
 
     @Test
@@ -171,11 +169,11 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("121M121", response.getContent());
+        assertEquals("121M121", response.getContentAsString());
     }
 
     @Test
@@ -191,16 +189,13 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ACCEPT, ContentTypeDefaults.JSON.getMainVariation());
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response =
+                GET("/").addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.JSON.getMainVariation()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
 
-        headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ACCEPT, ContentTypeDefaults.XML.getMainVariation());
-        response = get("/", headers);
+        response = GET("/").addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.XML.getMainVariation()).send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -217,16 +212,14 @@ public class RouteBuilderTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ACCEPT, ContentTypeDefaults.JSON.getMainVariation());
-        SpincastTestHttpResponse response = get("/", headers);
+        IHttpResponse response =
+                GET("/").setHeaderValues(HttpHeaders.ACCEPT, Lists.newArrayList(ContentTypeDefaults.JSON.getMainVariation()))
+                        .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
 
-        headers = new HashMap<String, String>();
-        headers.put(HttpHeaders.ACCEPT, ContentTypeDefaults.XML.getMainVariation());
-        response = get("/", headers);
+        response = GET("/").addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.XML.getMainVariation()).send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 

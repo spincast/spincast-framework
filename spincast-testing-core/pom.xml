@@ -34,6 +34,15 @@
             <artifactId>spincast-plugins-config</artifactId>
             <version>${project.version}</version>
         </dependency> 
+        
+        <!--=================================== 
+        Spincast Http Client plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-http-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--=================================== 
         Spincast Testing utilities

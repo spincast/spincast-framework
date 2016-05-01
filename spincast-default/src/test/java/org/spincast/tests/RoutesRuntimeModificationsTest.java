@@ -11,8 +11,8 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRoute;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class RoutesRuntimeModificationsTest extends DefaultIntegrationTestingBase {
 
@@ -82,7 +82,7 @@ public class RoutesRuntimeModificationsTest extends DefaultIntegrationTestingBas
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
@@ -106,18 +106,18 @@ public class RoutesRuntimeModificationsTest extends DefaultIntegrationTestingBas
             }
         });
 
-        SpincastTestHttpResponse response = get("/two");
+        IHttpResponse response = GET("/two").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
 
-        response = get("/two");
+        response = GET("/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("two", response.getContent());
+        assertEquals("two", response.getContentAsString());
 
     }
 
@@ -141,17 +141,17 @@ public class RoutesRuntimeModificationsTest extends DefaultIntegrationTestingBas
             }
         });
 
-        SpincastTestHttpResponse response = get("/two");
+        IHttpResponse response = GET("/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("two", response.getContent());
+        assertEquals("two", response.getContentAsString());
 
-        response = get("/");
+        response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
 
-        response = get("/two");
+        response = GET("/two").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
     }

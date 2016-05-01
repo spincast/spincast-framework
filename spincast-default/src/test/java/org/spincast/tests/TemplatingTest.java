@@ -14,8 +14,8 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 
@@ -45,11 +45,11 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("<p>test : Hello!</p>", response.getContent());
+        assertEquals("<p>test : Hello!</p>", response.getContentAsString());
     }
 
     @Test
@@ -66,11 +66,11 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/test.css");
+        IHttpResponse response = GET("/test.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("body {font-size : 16px;}", response.getContent());
+        assertEquals("body {font-size : 16px;}", response.getContentAsString());
     }
 
     @Test
@@ -97,16 +97,16 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/test.css");
+        IHttpResponse response = GET("/test.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("body {font-size : 16px;}", response.getContent());
+        assertEquals("body {font-size : 16px;}", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
 
-        response = get("/test.css");
+        response = GET("/test.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("body {font-size : 16px;}", response.getContent());
+        assertEquals("body {font-size : 16px;}", response.getContentAsString());
 
         // Still 1!
         assertEquals(1, nbrTimeCalled[0]);

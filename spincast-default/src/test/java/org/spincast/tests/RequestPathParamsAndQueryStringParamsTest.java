@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class RequestPathParamsAndQueryStringParamsTest extends DefaultIntegrationTestingBase {
 
@@ -67,7 +67,7 @@ public class RequestPathParamsAndQueryStringParamsTest extends DefaultIntegratio
 
         String url = createTestUrl("/one/two/three/four/five/six/") + "?key1=val1&key2=vala&key2=valb";
 
-        SpincastTestHttpResponse response = getWithUrl(url);
+        IHttpResponse response = GET(url, true).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

@@ -13,8 +13,8 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class ResponseOutputTest extends DefaultIntegrationTestingBase {
@@ -30,12 +30,12 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         // 200 plain/text, no content
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -51,10 +51,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "123", response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING + "123", response.getContentAsString());
     }
 
     @Test
@@ -74,10 +74,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
     }
 
@@ -104,10 +104,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("first" + SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals("first" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -133,10 +133,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/test", response.getContentType());
-        assertEquals("first" + SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals("first" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -162,10 +162,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -188,10 +188,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("<b>hello</b>", response.getContent());
+        assertEquals("<b>hello</b>", response.getContentAsString());
     }
 
     @Test
@@ -215,10 +215,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "<b>hello</b>", response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING + "<b>hello</b>", response.getContentAsString());
     }
 
     @Test
@@ -241,10 +241,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "<b>hello</b>", response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING + "<b>hello</b>", response.getContentAsString());
     }
 
     @Test
@@ -264,10 +264,10 @@ public class ResponseOutputTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.BINARY.getMainVariation(), response.getContentType());
-        assertEquals("Le bœuf et l'éléphant!", response.getContent());
+        assertEquals("Le bœuf et l'éléphant!", response.getContentAsString());
     }
 
 }

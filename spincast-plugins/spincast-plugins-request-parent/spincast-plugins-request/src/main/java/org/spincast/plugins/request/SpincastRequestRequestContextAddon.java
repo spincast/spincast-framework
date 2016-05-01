@@ -536,4 +536,10 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         return locale;
     }
 
+    @Override
+    public String getContentType() {
+        String contentType = getHeaderFirst(HttpHeaders.CONTENT_TYPE);
+        return contentType;
+    }
+
 }

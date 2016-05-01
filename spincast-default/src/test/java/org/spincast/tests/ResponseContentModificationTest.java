@@ -7,8 +7,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class ResponseContentModificationTest extends DefaultIntegrationTestingBase {
@@ -35,11 +35,11 @@ public class ResponseContentModificationTest extends DefaultIntegrationTestingBa
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("html", response.getContent());
+        assertEquals("html", response.getContentAsString());
     }
 
     @Test
@@ -75,14 +75,14 @@ public class ResponseContentModificationTest extends DefaultIntegrationTestingBa
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         //==========================================
         // Headers and sent content can't be changed
         //==========================================
         assertEquals(HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("124", response.getContent());
+        assertEquals("124", response.getContentAsString());
     }
 
 }

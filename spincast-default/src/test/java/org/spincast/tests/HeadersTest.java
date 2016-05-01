@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +17,9 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class HeadersTest extends DefaultIntegrationTestingBase {
@@ -84,14 +83,13 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("header1", "val1 val2");
-        headers.put("header2", URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"));
-
-        SpincastTestHttpResponse response = get("/one", headers);
+        IHttpResponse response = GET("/one").addHeaderValue("header1", "val1 val2")
+                                                    .addHeaderValue("header2",
+                                                                    URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
+                                                    .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
     @Test
@@ -115,7 +113,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -155,7 +153,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -190,7 +188,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -225,7 +223,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -259,7 +257,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -291,7 +289,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -322,7 +320,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -351,7 +349,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -394,7 +392,7 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");

@@ -66,6 +66,14 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
     public String getHeaderFirst(String name);
 
     /**
+     * The Content-Type of the request, if any.
+     * 
+     * @return the <code>Content-Type</code> of the request or <code>null</code>
+     * if none was specified.
+     */
+    public String getContentType();
+
+    /**
      * Returns the full URL, including the queryString.
      */
     public String getFullUrl();

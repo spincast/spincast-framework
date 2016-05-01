@@ -23,10 +23,22 @@ public class GzipCheckerHandler implements HttpHandler {
     private final ISpincastUtils spincastUtils;
     private EncodingHandler gzipHandler;
 
+    /**
+     * If the static resource to check for gzipping is a file (not a directory),
+     * this will be set to the pth of the file. This can be used to check the
+     * Content-Type of the file to server.
+     * 
+     * In the case of a *directory*, the path of the URL will contain the target
+     * file name.
+     */
+    private final String specificTargetFilePath;
+
     public GzipCheckerHandler(HttpHandler nextHandler,
-                              ISpincastUtils spincastUtils) {
+                              ISpincastUtils spincastUtils,
+                              String specificTargetFilePath) {
         this.nextHandler = nextHandler;
         this.spincastUtils = spincastUtils;
+        this.specificTargetFilePath = specificTargetFilePath;
     }
 
     protected HttpHandler getNextHandler() {
@@ -35,6 +47,10 @@ public class GzipCheckerHandler implements HttpHandler {
 
     protected ISpincastUtils getSpincastUtils() {
         return this.spincastUtils;
+    }
+
+    protected String getSpecificTargetFilePath() {
+        return this.specificTargetFilePath;
     }
 
     protected EncodingHandler getGzipNoNextHandler() {
@@ -80,6 +96,22 @@ public class GzipCheckerHandler implements HttpHandler {
         if(responseHeaderMap != null) {
             HeaderValues contentType = responseHeaderMap.get(HttpHeaders.CONTENT_TYPE);
             if(contentType == null) {
+
+                //==========================================
+                // Check the target file extension.
+                //==========================================
+                String specificTargetFilePath = getSpecificTargetFilePath();
+                if(specificTargetFilePath != null) {
+                    String mimeType = getSpincastUtils().getMimeTypeFromPath(specificTargetFilePath);
+                    if(mimeType != null) {
+                        return mimeType;
+                    }
+                }
+
+                //==========================================
+                // Check the URL file extension, if any (not required,
+                // "/image" for example can point to an ".png".
+                //==========================================
                 String path = exchange.getRequestPath();
                 return getSpincastUtils().getMimeTypeFromPath(path);
             } else {

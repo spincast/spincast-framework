@@ -1,0 +1,807 @@
+{#==========================================
+Spincast Properties File Config
+==========================================#}
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins plugins-spincast-http-client{% endblock %}
+{% block meta_title %}Plugins - Spincast HTTP Client{% endblock %}
+{% block meta_description %}Builder to easily create and send HTTP requests.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast HTTP Client plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop shortBottom"> Spincast HTTP Client <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                &nbsp;
+            </div> 
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast HTTP Client <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#http_client"><code>IHttpClient</code></a></li>
+                <li class="openable"><a href="#request_builder_base"><code>IRequestBuilderBase</code></a></li>
+                <li class="openable"><a href="#entity_sender_builder_base"><code>IEntitySenderRequest-<br/>BuilderBase</code></a></li>
+                <li class="openable"><a href="#http_response"><code>IHttpResponse</code></a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="overview">
+            
+                <h3 class="noTop">
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                Provides an easy way of creating and sending HTTP requests. 
+                </p>
+                <p>  
+                    It is built around
+                    Apache <a href="https://hc.apache.org/httpcomponents-client-ga/">HttpClient</a>. Note that
+                    no extra dependencies are added by this plugin because it uses the
+                    <em>shaded</em> version of Apache HttpClient, which is already included in the <code>spincast-core</code>
+                    artifact.
+                </p>
+                <p>
+                    Usage example:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>IHttpResponse response = httpClient.GET("https://www.google.com").send();
+                                           
+System.out.println(response.getContentAsString());</pre> 
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    Or:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>IUser user = getUser();
+IHttpResponse response = httpClient.POST("https://example.com/api/users")
+                                   .setEntityJson(user)
+                                   .addCookie("cookieKey", "cookieValue")
+                                   .addHeaderValue("headerKey", "headerValue")
+                                   .send();
+                                           
+if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
+    String content = response.getContentAsString();
+    ICookie cookie = response.getCookie("someCookie");
+    String header = response.getHeaderFirst("someHeader"); 
+} else {
+    //...
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+                
+            </section>
+            
+	        <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    This plugin is used by pretty much all Spincast <em>tests</em>, so it is declared as a
+                    dependency in the <code>spincast-testing-core</code> artifact. But this
+                    <code>spincast-testing-core</code> artifact is, most of the time, included
+                    in other artifacts in <code><em>test</em></code> scope, which means it
+                    is only available during the <em>testing</em> phase.
+                <p>
+	            <p>
+                    To use the components provided by this plugin, not only in your tests but elsewhere 
+                    in your application, add its artifact using the default scope:
+	                <div>
+	                    <p>
+	                        <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-http-client&lt;/artifactId&gt;
+    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+	                    </p>
+	                </div>  
+	            </p>
+                <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="2,8,2,74"
+>Injector guice = Guice.createInjector(
+        new AppModule(args),
+        new SpincastHttpClientPluginGuiceModule(IAppRequestContext.class)
+        );</pre> 
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    ... or by using the <code>install(...)</code> method from your custom Guice module:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="5,8,5,84"
+>public class AppModule extends SpincastDefaultGuiceModule {
+
+    @Override
+    protected void configure() {
+        super.configure();
+        install(new SpincastHttpClientPluginGuiceModule(getRequestContextType()));
+        // other modules...
+    }
+    
+    // ...
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+         
+         
+            </section>
+            
+            <section id="usage">
+                <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                <p>
+                    To use Spincast's HTTP Client, you can inject <code>IHttpClient</code> where you need it.
+                    For example:
+                </p>
+                <p>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppController {
+
+    private final IHttpClient httpClient;
+
+    @Inject
+    public AppController(IHttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    protected IHttpClient httpClient() {
+        return this.httpClient;
+    }
+
+    public void myRouteHandler(IAppRequestContext context) {
+
+        IHttpResponse response = httpClient().GET("https://www.google.com").send();
+        if(response.getStatus() == HttpStatus.SC_OK) {
+            //...
+        }
+    }
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    You can also <a href="/documentation#extending_request_context">extend your custom request context</a> objects to add 
+                    <code>IHttpClient</code> as an <code>add-on</code>. To do that, let's tweak some components:
+                </p>
+                <p>
+                    Your <code>IAppRequestContext</code> interface
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public interface IAppRequestContext extends IRequestContext&lt;IAppRequestContext&gt; {
+
+    //...
+    
+    public IHttpClient httpClient();
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    The request content <code>implementation</code>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppRequestContext extends RequestContextBase&lt;IAppRequestContext&gt;
+                               implements IAppRequestContext {
+
+    private final IHttpClient httpClient;
+
+    @AssistedInject
+    public AppRequestContext(@Assisted Object exchange,
+                             IHttpClient httpClient) {
+        super(exchange);
+        this.httpClient = httpClient;
+    }
+    
+    //...
+
+    @Override
+    public IHttpClient httpClient() {
+        return this.httpClient;
+    }
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    Then, you can use the HTTP Client from your <code>route handlers</code>:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppController {
+
+    public void myRouteHandler(IAppRequestContext context) {
+
+        IHttpResponse response = context.httpClient().GET("https://www.google.com").send();
+        if(response.getStatus() == HttpStatus.SC_OK) {
+            //...
+        }
+    }
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+  
+            </section>
+            
+            <section id="http_client">
+                <h3>
+                    <a class="anchor" href="#http_client" title="permanent link"></a>
+                    <code>IHttpClient</code>'s methods
+                </h3>
+                <div>
+                    <p>
+                        <ul class="apiList">
+          
+                        
+<li>
+    <code class="apiItem">IGetRequestBuilder <span>GET</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>GET</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IPostRequestBuilder <span>POST</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>POST</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IPutRequestBuilder <span>PUT</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>PUT</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IDeleteRequestBuilder <span>DELETE</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>DELETE</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IOptionsRequestBuilder <span>OPTIONS</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>OPTIONS</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IHeadRequestBuilder <span>HEAD</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>HEAD</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">ITraceRequestBuilder <span>TRACE</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>TRACE</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IConnectRequestBuilder <span>CONNECT</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>CONNECT</code> request.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IPatchRequestBuilder <span>PATCH</span>(String url)</code>
+    <div class="well">
+        Starts a builder for a <code>PATCH</code> request.
+
+    </div>
+</li>
+
+
+
+                        </ul>
+                        
+                    </p>
+                </div> 
+            </section>
+            
+            <section id="request_builder_base">
+                <h3>
+                    <a class="anchor" href="#request_builder_base" title="permanent link"></a>
+                    <code>IRequestBuilderBase</code>'s methods
+                </h3>
+                <p>
+                    The <code>IRequestBuilderBase</code> is the interface that <em>all</em> request builders
+                    implements: 
+                    <code>IGetRequestBuilder</code>, <code>IPostRequestBuilder</code>, etc.
+                </p>
+
+                <div>
+                    <p>
+                        <ul class="apiList">
+          
+          
+                        
+<li>
+    <code class="apiItem">T <span>addHeaderValue</span>(String key, String value)</code>
+    <div class="well">
+        Adds a value to the specified header. Existing values will
+ be kept.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addHeaderValues</span>(String key, List&lt;String&gt; values)</code>
+    <div class="well">
+        Adds some values to the specified header. Existing values will
+ be kept.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setHeaders</span>(Map&lt;String, List&lt;String&gt;&gt; headers)</code>
+    <div class="well">
+        Sets the headers. Existing headers will be overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setHeaderValues</span>(String key, List&lt;String&gt; values)</code>
+    <div class="well">
+        Sets the values of the specified header. Existing values
+ of this header will be overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addCookie</span>(String name, String value)</code>
+    <div class="well">
+        Adds a cookie.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addCookie</span>(ICookie cookie)</code>
+    <div class="well">
+        Adds a cookie.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addCookies</span>(Collection&lt;ICookie&gt; cookies)</code>
+    <div class="well">
+        Adds some cookies.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setRequestConfig</span>(RequestConfig requestConfig)</code>
+    <div class="well">
+        Sets a custom <code>RequestConfig</code> to use. If not provided,
+ a default one will be used.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setHttpClientBuilder</span>(HttpClientBuilder httpClientBuilder)</code>
+    <div class="well">
+        Sets a specific <code>HttpClientBuilder</code> to use. If not provided,
+ a default one will be used.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>disableSslCertificateErrors</span>()</code>
+    <div class="well">
+        Disables <code>SSL</code> certificates errors (such as self-signed
+ certificate errors).
+ <code>SSL</code> certificate errors are not disabled by default.
+<br />Be sure you know what you are doing if you disable this! It may lead to
+ some security concerns.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IHttpResponse <span>send</span>()</code>
+    <div class="well">
+        Sends the request and gets the response.
+
+    </div>
+</li>
+
+
+
+
+
+
+
+                        </ul>
+                        
+                    </p>
+                </div> 
+            </section>
+
+            <section id="entity_sender_builder_base">
+                <h3>
+                    <a class="anchor" href="#entity_sender_builder_base" title="permanent link"></a>
+                    <code>IEntitySenderRequestBuilderBase</code>'s methods
+                </h3>
+                <p>
+                    The <code>IEntitySenderRequestBuilderBase</code> is the interface implemented by
+                    builders which can send an entity with the request, or that can upload files:
+                    <code>IPostRequestBuilder</code>, <code>IPutRequestBuilder </code> and
+                    <code>IPatchRequestBuilder</code>.
+                </p>
+                <div>
+                    <p>
+                        <ul class="apiList">
+          
+         
+<li>
+    <code class="apiItem">T <span>setEntityFormDatas</span>(Map&lt;String, List&lt;String&gt;&gt; params)</code>
+    <div class="well">
+        Sets the Form datas entity.
+<br />A form data can contain more than one value.
+<br />Overwrites any existing Form datas.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setEntityFormData</span>(String name, List&lt;String&gt; values)</code>
+    <div class="well">
+        Sets a Form data entity.
+<br />A form data can contain more than one value.
+<br />Overwrites the existing Form data of the same
+ name, but keeps the other ones.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addEntityFormDataValue</span>(String name, String value)</code>
+    <div class="well">
+        Adds a value to a Form data.
+<br />Keeps the existing values.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setEntityString</span>(String entity, String contentType)</code>
+    <div class="well">
+        Sets a String entity.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setEntity</span>(HttpEntity entity)</code>
+    <div class="well">
+        Sets an custom <code>HttpEntity</code> entity to be sent.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setEntityJson</span>(Object object)</code>
+    <div class="well">
+        Sets a <code>Json</code> entity to be sent.
+<br />The object will be converted to a <code>Json</code>'s
+<br />String representation and sent using the <code>application/json</code>
+<br />Content-Type.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>setEntityXml</span>(Object object)</code>
+    <div class="well">
+        Sets a <code>XML</code> entity to be sent.
+<br />The object will be converted to a <code>XML</code>
+ and sent using the <code>application/xml</code>
+<br />Content-Type.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+<br />When you set or add an entity of a new type, the
+ existing entity is overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addEntityFileUpload</span>(String path, String name)</code>
+    <div class="well">
+        Adds a file to upload. More than one file
+ can be uploaded at one time. The specified file
+ is added to the existing ones.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+
+        <div class="apiItemFooter">
+            @param path the path to the file to upload,
+ on the file system
+<br />@param name the name to use for the uploaded file.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addEntityFileUpload</span>(String path, boolean isClasspathPath, String name)</code>
+    <div class="well">
+        Adds a file to upload. More than one file
+ can be uploaded at one time. The specified file
+ is added to the existing ones.
+<br />Only one type of entity can be set amongs:
+<br />- Form datas entity
+<br />- String entity
+<br />- File upload
+<br />- Custom <code>HttpEntity</code>
+
+        <div class="apiItemFooter">
+            @param path the path to the file to upload
+<br />@param isClasspathPath if <code>true</code>, the path to the file to upload is
+ on the classpath, otherwise, it's on the file system.
+<br />@param name the name to use for the uploaded file.
+
+        </div>
+    </div>
+</li>
+
+
+
+
+
+
+
+                        </ul>
+                        
+                    </p>
+                </div> 
+            </section>
+            <section id="http_response">
+                <h3>
+                    <a class="anchor" href="#http_response" title="permanent link"></a>
+                    <code>IHttpResponse</code>'s methods
+                </h3>
+                <p>
+                    The <code>IHttpResponse</code> is the response you receive when you send
+                    a request.
+                </p>
+
+                <div>
+                    <p>
+                        <ul class="apiList">
+          
+         
+<li>
+    <code class="apiItem">int <span>getStatus</span>()</code>
+    <div class="well">
+        Gets the HTTP status.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getContentType</span>()</code>
+    <div class="well">
+        Gets the Content-Type.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getHeaders</span>()</code>
+    <div class="well">
+        Gets the headers.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;String&gt; <span>getHeader</span>(String name)</code>
+    <div class="well">
+        Gets an header. An header can have more than
+ one value.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getHeaderFirst</span>(String name)</code>
+    <div class="well">
+        Gets the first value of an header.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Map&lt;String, ICookie&gt; <span>getCookies</span>()</code>
+    <div class="well">
+        Gets the cookies.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">ICookie <span>getCookie</span>(String name)</code>
+    <div class="well">
+        Gets a cookie.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isGzipped</span>()</code>
+    <div class="well">
+        Is the response gzipped?
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getContentAsString</span>()</code>
+    <div class="well">
+        Gets the content as a <code>UTF-8</code> String.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getContentAsString</span>(String encoding)</code>
+    <div class="well">
+        Gets the content as a String using the specified
+ encoding.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">byte[] <span>getContentAsByteArray</span>()</code>
+    <div class="well">
+        Get the content as <code>byte[]</code>.
+
+    </div>
+</li>
+
+
+
+
+
+
+
+
+                        </ul>
+                        
+                    </p>
+                </div> 
+            </section>
+
+
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

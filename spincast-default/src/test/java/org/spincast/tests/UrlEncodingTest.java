@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class UrlEncodingTest extends DefaultIntegrationTestingBase {
@@ -29,8 +29,8 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/" +
-                                                URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8"));
+        IHttpResponse response = GET("/" +
+                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -48,8 +48,8 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one?test=" +
-                                                URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8"));
+        IHttpResponse response = GET("/one?test=" +
+                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -67,8 +67,8 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one?test=" +
-                                                URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8"));
+        IHttpResponse response = GET("/one?test=" +
+                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -91,10 +91,10 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/" +
-                                                URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8") +
-                                                "?test=" +
-                                                URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8"));
+        IHttpResponse response = GET("/" +
+                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8") +
+                                             "?test=" +
+                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

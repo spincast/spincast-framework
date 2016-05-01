@@ -16,12 +16,9 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.plugins.cookies.Cookie;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.client.CookieStore;
-import org.spincast.shaded.org.apache.http.impl.cookie.BasicClientCookie;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class CookiesTest extends DefaultIntegrationTestingBase {
@@ -36,7 +33,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie(SpincastTestUtils.TEST_STRING + "name");
+                ICookie cookie = getCookieFactory().createCookie(SpincastTestUtils.TEST_STRING + "name");
                 cookie.setValue(SpincastTestUtils.TEST_STRING + random);
                 context.cookies().addCookie(cookie);
 
@@ -44,11 +41,11 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/");
+        IHttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("test", response.getContent());
+        assertEquals("test", response.getContentAsString());
 
         Map<String, ICookie> cookies = response.getCookies();
         assertEquals(1, cookies.size());
@@ -68,7 +65,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("name");
+                ICookie cookie = getCookieFactory().createCookie("name");
                 cookie.setValue(random);
                 context.cookies().addCookie(cookie);
             }
@@ -98,7 +95,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         Map<String, ICookie> cookies = response.getCookies();
@@ -107,12 +104,11 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
         assertEquals("name", cookie.getName());
         assertEquals(random, cookie.getValue());
 
-        response = get("/two");
+        response = GET("/two").addCookies(cookies.values()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         cookies = response.getCookies();
         assertEquals(0, cookies.size());
-
     }
 
     @Test
@@ -125,7 +121,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("name");
+                ICookie cookie = getCookieFactory().createCookie("name");
                 cookie.setValue(random);
                 context.cookies().addCookie(cookie);
             }
@@ -141,7 +137,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         Map<String, ICookie> cookies = response.getCookies();
@@ -150,10 +146,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
         assertEquals("name", cookie.getName());
         assertEquals(random, cookie.getValue());
 
-        CookieStore cookieStore = getCookieStore();
-        cookieStore.clear();
-
-        response = get("/two");
+        response = GET("/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         cookies = response.getCookies();
@@ -185,19 +178,15 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        CookieStore cookieStore = getCookieStore();
+        ICookie cookie = getCookieFactory().createCookie("name1", random1);
+        cookie.setDomain(getSpincastConfig().getServerHost());
+        cookie.setPath("/");
 
-        BasicClientCookie basicClientCookie = new BasicClientCookie("name1", random1);
-        basicClientCookie.setDomain(getSpincastConfig().getServerHost());
-        basicClientCookie.setPath("/");
-        cookieStore.addCookie(basicClientCookie);
+        ICookie cookie2 = getCookieFactory().createCookie("name2", random2);
+        cookie2.setDomain(getSpincastConfig().getServerHost());
+        cookie2.setPath("/");
 
-        basicClientCookie = new BasicClientCookie("name2", random2);
-        basicClientCookie.setDomain(getSpincastConfig().getServerHost());
-        basicClientCookie.setPath("/");
-        cookieStore.addCookie(basicClientCookie);
-
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").addCookie(cookie).addCookie(cookie2).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         Map<String, ICookie> cookies = response.getCookies();
@@ -216,7 +205,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         Map<String, ICookie> cookies = response.getCookies();
@@ -231,12 +220,12 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("");
+                ICookie cookie = getCookieFactory().createCookie("");
                 context.cookies().addCookie(cookie);
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         Map<String, ICookie> cookies = response.getCookies();
@@ -254,20 +243,20 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("name1",
-                                            random,
-                                            "/one",
-                                            "localhost",
-                                            expires,
-                                            false,
-                                            false,
-                                            false,
-                                            1);
+                ICookie cookie = getCookieFactory().createCookie("name1",
+                                                                 random,
+                                                                 "/one",
+                                                                 "localhost",
+                                                                 expires,
+                                                                 false,
+                                                                 false,
+                                                                 false,
+                                                                 1);
                 context.cookies().addCookie(cookie);
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         Map<String, ICookie> cookies = response.getCookies();
@@ -295,7 +284,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("name1");
+                ICookie cookie = getCookieFactory().createCookie("name1");
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(maxAge);
 
@@ -303,7 +292,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         ICookie cookie = response.getCookie("name1");
@@ -331,7 +320,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("name1");
+                ICookie cookie = getCookieFactory().createCookie("name1");
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(0);
 
@@ -339,7 +328,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         ICookie cookie = response.getCookie("name1");
@@ -356,7 +345,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                ICookie cookie = new Cookie("name1");
+                ICookie cookie = getCookieFactory().createCookie("name1");
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(-1);
 
@@ -364,7 +353,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         ICookie cookie = response.getCookie("name1");
@@ -391,7 +380,7 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
                 expires = cookie.getExpires();
                 assertTrue(expires.before(new Date()));
 
-                ICookie cookie2 = new Cookie("name2", "val2");
+                ICookie cookie2 = getCookieFactory().createCookie("name2", "val2");
                 context.cookies().addCookie(cookie2);
 
                 cookie = context.cookies().getCookie("name2");
@@ -407,22 +396,19 @@ public class CookiesTest extends DefaultIntegrationTestingBase {
                 cookie = context.cookies().getCookie("name2");
                 assertNull(cookie);
 
-                ICookie cookie3 = new Cookie("name3", "val3");
+                ICookie cookie3 = getCookieFactory().createCookie("name3", "val3");
                 context.cookies().addCookie(cookie3);
             }
         });
 
-        CookieStore cookieStore = getCookieStore();
+        ICookie cookie = getCookieFactory().createCookie("name1", random);
+        cookie.setDomain(getSpincastConfig().getServerHost());
+        cookie.setPath("/");
 
-        BasicClientCookie basicClientCookie = new BasicClientCookie("name1", random);
-        basicClientCookie.setDomain(getSpincastConfig().getServerHost());
-        basicClientCookie.setPath("/");
-        cookieStore.addCookie(basicClientCookie);
-
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").addCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        ICookie cookie = response.getCookie("name1");
+        cookie = response.getCookie("name1");
         assertNotNull(cookie);
 
         cookie = response.getCookie("name2");

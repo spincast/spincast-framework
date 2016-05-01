@@ -10,8 +10,8 @@ import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.dictionary.SpincastDictionary;
 import org.spincast.plugins.dictionary.SpincastDictionaryPluginGuiceModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -54,11 +54,11 @@ public class CustomSpincastDictionaryTest extends DefaultIntegrationTestingBase 
     @Test
     public void testNotFoundCustomMessage() throws Exception {
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("Not found custom message", response.getContent());
+        assertEquals("Not found custom message", response.getContentAsString());
     }
 
 }

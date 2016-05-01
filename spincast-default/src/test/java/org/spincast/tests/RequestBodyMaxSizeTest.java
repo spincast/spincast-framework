@@ -9,9 +9,9 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Module;
 
@@ -50,11 +50,11 @@ public class RequestBodyMaxSizeTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
     }
 
     @Test
@@ -68,10 +68,11 @@ public class RequestBodyMaxSizeTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = postJson("/one", "1234567890");
+        IHttpResponse response =
+                POST("/one").setEntityString("1234567890", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ok", response.getContent());
+        assertEquals("ok", response.getContentAsString());
     }
 
     @Test
@@ -88,7 +89,8 @@ public class RequestBodyMaxSizeTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = postJson("/one", "12345678901");
+        IHttpResponse response =
+                POST("/one").setEntityString("12345678901", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
         assertEquals(HttpStatus.SC_REQUEST_TOO_LONG, response.getStatus());
     }
 

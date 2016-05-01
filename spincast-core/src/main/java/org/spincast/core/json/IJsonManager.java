@@ -42,7 +42,7 @@ public interface IJsonManager {
     public IJsonArray createArray(InputStream inputStream);
 
     /**
-     * Gets IJsonArray <code>Json</code> String representation of 
+     * Gets the <code>Json</code> String representation of 
      * the specified object.
      */
     public String toJsonString(Object obj);

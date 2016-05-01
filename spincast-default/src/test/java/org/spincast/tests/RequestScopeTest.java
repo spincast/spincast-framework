@@ -12,9 +12,8 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
-import org.spincast.plugins.cookies.Cookie;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -53,7 +52,7 @@ public class RequestScopeTest extends DefaultIntegrationTestingBase {
             assertNotNull(requestContext2);
             assertTrue(requestContext1 == requestContext2);
 
-            requestContext1.cookies().addCookie(new Cookie("testCookie", "testValue"));
+            requestContext1.cookies().addCookie("testCookie", "testValue");
 
             requestContext1.response().sendPlainText(requestContext1.getLocaleToUse().toString());
         }
@@ -123,7 +122,7 @@ public class RequestScopeTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -142,10 +141,10 @@ public class RequestScopeTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(getSpincastConfig().getDefaultLocale().toString(), response.getContent());
+        assertEquals(getSpincastConfig().getDefaultLocale().toString(), response.getContentAsString());
     }
 
 }

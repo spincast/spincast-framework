@@ -11,9 +11,9 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 
 public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
 
@@ -52,20 +52,20 @@ public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/generated.css");
+        IHttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals(content1, response.getContent());
+        assertEquals(content1, response.getContentAsString());
 
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
-        response = get("/generated.css");
+        response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals(content1, response.getContent());
+        assertEquals(content1, response.getContentAsString());
 
         // Still called only once!
         assertEquals(1, nbrTimeCalled[0]);
@@ -100,20 +100,20 @@ public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/generated.css");
+        IHttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals(content1, response.getContent());
+        assertEquals(content1, response.getContentAsString());
 
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
-        response = get("/generated.css");
+        response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals(content1, response.getContent());
+        assertEquals(content1, response.getContentAsString());
 
         // Still called only once!
         assertEquals(1, nbrTimeCalled[0]);
@@ -149,20 +149,20 @@ public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/generated.css");
+        IHttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals(content1, response.getContent());
+        assertEquals(content1, response.getContentAsString());
 
         assertEquals(1, nbrTimeCalled[0]);
         assertFalse(generatedCssFile.isFile());
 
-        response = get("/generated.css");
+        response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals(content1, response.getContent());
+        assertEquals(content1, response.getContentAsString());
 
         // Called 2 times now because the filter can't save the resource!
         assertEquals(2, nbrTimeCalled[0]);
@@ -204,29 +204,29 @@ public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/generated/test1.css");
+        IHttpResponse response = GET("/generated/test1.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : test1.css", response.getContent());
+        assertEquals("path : test1.css", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
 
-        response = get("/generated/test1.css");
+        response = GET("/generated/test1.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : test1.css", response.getContent());
+        assertEquals("path : test1.css", response.getContentAsString());
         // Still called only once!
         assertEquals(1, nbrTimeCalled[0]);
 
-        response = get("/generated/test2.css");
+        response = GET("/generated/test2.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : test2.css", response.getContent());
+        assertEquals("path : test2.css", response.getContentAsString());
         assertEquals(2, nbrTimeCalled[0]);
 
-        response = get("/generated/test2.css");
+        response = GET("/generated/test2.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : test2.css", response.getContent());
+        assertEquals("path : test2.css", response.getContentAsString());
         // Still 2!
         assertEquals(2, nbrTimeCalled[0]);
 
@@ -267,7 +267,7 @@ public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/generated/../test1.css");
+        IHttpResponse response = GET("/generated/../test1.css").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
     }
 
@@ -300,29 +300,29 @@ public class StaticResourcesDynamicTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/generated/test1.css");
+        IHttpResponse response = GET("/generated/test1.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : test1.css", response.getContent());
+        assertEquals("path : test1.css", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
 
-        response = get("/generated/test1.css");
+        response = GET("/generated/test1.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : test1.css", response.getContent());
+        assertEquals("path : test1.css", response.getContentAsString());
         // Still called only once!
         assertEquals(1, nbrTimeCalled[0]);
 
-        response = get("/generated/someDir/test2.css");
+        response = GET("/generated/someDir/test2.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : someDir/test2.css", response.getContent());
+        assertEquals("path : someDir/test2.css", response.getContentAsString());
         assertEquals(2, nbrTimeCalled[0]);
 
-        response = get("/generated/someDir/test2.css");
+        response = GET("/generated/someDir/test2.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
-        assertEquals("path : someDir/test2.css", response.getContent());
+        assertEquals("path : someDir/test2.css", response.getContentAsString());
         // Still 2!
         assertEquals(2, nbrTimeCalled[0]);
 

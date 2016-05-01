@@ -12,10 +12,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.shaded.org.apache.http.NameValuePair;
-import org.spincast.shaded.org.apache.http.message.BasicNameValuePair;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 public class PostParamsTest extends DefaultIntegrationTestingBase {
@@ -51,18 +49,17 @@ public class PostParamsTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("param1", SpincastTestUtils.TEST_STRING));
-        params.add(new BasicNameValuePair(SpincastTestUtils.TEST_STRING, "value2"));
+        List<String> paramValues = new ArrayList<String>();
+        paramValues.add("multipleVal1");
+        paramValues.add("multipleVal2");
 
-        params.add(new BasicNameValuePair("multiple", "multipleVal1"));
-        params.add(new BasicNameValuePair("multiple", "multipleVal2"));
-
-        SpincastTestHttpResponse response = postWithParams("/one", params);
+        IHttpResponse response = POST("/one").addEntityFormDataValue("param1", SpincastTestUtils.TEST_STRING)
+                                                     .addEntityFormDataValue(SpincastTestUtils.TEST_STRING, "value2")
+                                                     .setEntityFormData("multiple", paramValues).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("", response.getContent());
+        assertEquals("", response.getContentAsString());
     }
 
 }

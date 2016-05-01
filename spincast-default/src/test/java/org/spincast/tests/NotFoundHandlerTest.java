@@ -14,8 +14,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
@@ -28,11 +28,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
     @Test
     public void notFoundDefault() throws Exception {
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(this.spincastDictionary.route_notFound_default_message(), response.getContent());
+        assertEquals(this.spincastDictionary.route_notFound_default_message(), response.getContentAsString());
     }
 
     @Test
@@ -59,11 +59,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/two");
+        IHttpResponse response = GET("/two").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("custom404", response.getContent());
+        assertEquals("custom404", response.getContentAsString());
     }
 
     @Test
@@ -123,11 +123,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
                        }
                    });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("111222beforecustom404after222", response.getContent());
+        assertEquals("111222beforecustom404after222", response.getContentAsString());
     }
 
     @Test
@@ -142,11 +142,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/two");
+        IHttpResponse response = GET("/two").send();
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("custom404", response.getContent());
+        assertEquals("custom404", response.getContentAsString());
     }
 
     @Test
@@ -167,11 +167,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/two");
+        IHttpResponse response = GET("/two").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("custom404_1", response.getContent());
+        assertEquals("custom404_1", response.getContentAsString());
     }
 
     @Test
@@ -188,11 +188,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/nopeParam");
+        IHttpResponse response = GET("/nopeParam").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -224,11 +224,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A" + SpincastTestUtils.TEST_STRING, response.getContent());
+        assertEquals("A" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -255,11 +255,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("custom404", response.getContent());
+        assertEquals("custom404", response.getContentAsString());
     }
 
     @Test
@@ -286,11 +286,11 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("Acustom404", response.getContent());
+        assertEquals("Acustom404", response.getContentAsString());
     }
 
     @Test
@@ -360,12 +360,12 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
 
-        assertEquals("AB" + SpincastTestUtils.TEST_STRING + "EF", response.getContent());
+        assertEquals("AB" + SpincastTestUtils.TEST_STRING + "EF", response.getContentAsString());
     }
 
     @Test
@@ -434,7 +434,7 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -448,7 +448,7 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
         // not part of the Not Found handler. But the "C" before filter
         // was already applied.
         //==========================================
-        assertEquals("ABCAB" + SpincastTestUtils.TEST_STRING + "EF", response.getContent());
+        assertEquals("ABCAB" + SpincastTestUtils.TEST_STRING + "EF", response.getContentAsString());
     }
 
     @Test
@@ -524,7 +524,7 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
             }
         });
 
-        SpincastTestHttpResponse response = get("/nope");
+        IHttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -533,7 +533,7 @@ public class NotFoundHandlerTest extends DefaultIntegrationTestingBase {
         // The "A" before filter doesn't run when the current 
         // route is a Not Found one.
         //==========================================
-        assertEquals("ABCB" + SpincastTestUtils.TEST_STRING + "EF", response.getContent());
+        assertEquals("ABCB" + SpincastTestUtils.TEST_STRING + "EF", response.getContentAsString());
     }
 
 }

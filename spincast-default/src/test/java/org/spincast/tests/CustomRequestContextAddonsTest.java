@@ -14,9 +14,9 @@ import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastGuiceModuleBasedIntegrationTestBase;
-import org.spincast.testing.core.utils.SpincastTestHttpResponse;
 import org.spincast.tests.CustomRequestContextAddonsTest.ITestRequestContext;
 import org.spincast.tests.varia.IRequestContextAddon;
 import org.spincast.tests.varia.RequestContextAddon;
@@ -109,7 +109,7 @@ public class CustomRequestContextAddonsTest extends SpincastGuiceModuleBasedInte
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -131,7 +131,7 @@ public class CustomRequestContextAddonsTest extends SpincastGuiceModuleBasedInte
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -155,7 +155,7 @@ public class CustomRequestContextAddonsTest extends SpincastGuiceModuleBasedInte
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -172,11 +172,11 @@ public class CustomRequestContextAddonsTest extends SpincastGuiceModuleBasedInte
             }
         });
 
-        SpincastTestHttpResponse response = get("/one");
+        IHttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("addonMethod1addonMethod2", response.getContent());
+        assertEquals("addonMethod1addonMethod2", response.getContentAsString());
     }
 
 }
