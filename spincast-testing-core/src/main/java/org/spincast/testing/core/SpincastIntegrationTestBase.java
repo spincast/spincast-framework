@@ -45,7 +45,7 @@ import com.google.inject.Key;
 public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> extends SpincastGuiceBasedTestBase {
 
     @Inject
-    private IHttpClient spincastHttpClientFactory;
+    private IHttpClient httpClient;
 
     @Inject
     private IServer server;
@@ -103,8 +103,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
         }
     }
 
-    protected IHttpClient getSpincastHttpClientFactory() {
-        return this.spincastHttpClientFactory;
+    protected IHttpClient getHttpClient() {
+        return this.httpClient;
     }
 
     protected IRouter<R> getRouter() {
@@ -214,7 +214,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      */
     protected IGetRequestBuilder GET(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
 
-        IGetRequestBuilder client = getSpincastHttpClientFactory().GET(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IGetRequestBuilder client = getHttpClient().GET(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -272,7 +272,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IPostRequestBuilder POST(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IPostRequestBuilder client = getSpincastHttpClientFactory().POST(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IPostRequestBuilder client = getHttpClient().POST(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -322,7 +322,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IPutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IPutRequestBuilder client = getSpincastHttpClientFactory().PUT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IPutRequestBuilder client = getHttpClient().PUT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -372,7 +372,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IDeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IDeleteRequestBuilder client = getSpincastHttpClientFactory().DELETE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IDeleteRequestBuilder client = getHttpClient().DELETE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -422,7 +422,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IOptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IOptionsRequestBuilder client = getSpincastHttpClientFactory().OPTIONS(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IOptionsRequestBuilder client = getHttpClient().OPTIONS(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -472,7 +472,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected ITraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        ITraceRequestBuilder client = getSpincastHttpClientFactory().TRACE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        ITraceRequestBuilder client = getHttpClient().TRACE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -522,7 +522,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IConnectRequestBuilder client = getSpincastHttpClientFactory().CONNECT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IConnectRequestBuilder client = getHttpClient().CONNECT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -572,7 +572,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IPatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IPatchRequestBuilder client = getSpincastHttpClientFactory().PATCH(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IPatchRequestBuilder client = getHttpClient().PATCH(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -622,7 +622,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * instead of "http:".
      */
     protected IHeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IHeadRequestBuilder client = getSpincastHttpClientFactory().HEAD(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        IHeadRequestBuilder client = getHttpClient().HEAD(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
