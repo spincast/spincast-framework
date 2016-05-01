@@ -13,7 +13,7 @@ import com.google.inject.Injector;
 public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase<IAppRequestContext> {
 
     /**
-     * Create the application and return the Guice
+     * Creates the application and returns the Guice
      * injector.
      */
     @Override
