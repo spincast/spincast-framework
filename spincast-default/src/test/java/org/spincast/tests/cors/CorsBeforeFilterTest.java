@@ -95,8 +95,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example1.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example1.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -139,8 +139,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -191,8 +191,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -241,8 +241,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -286,8 +286,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -334,8 +334,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -390,8 +390,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -447,8 +447,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -503,9 +503,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                  .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                  .addHeaderValue(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                                                  .send();
+                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                          .addHeaderValue(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                                          .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -563,8 +563,8 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                  .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                  .send();
+                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                          .send();
 
         assertTrue(inHandler[0]);
 
@@ -614,9 +614,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -661,9 +661,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -716,11 +716,11 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                                     "extra-header-to-be-sent-3,extra-header-to-be-sent-4")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                             "extra-header-to-be-sent-3,extra-header-to-be-sent-4")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -776,9 +776,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -831,9 +831,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -882,11 +882,11 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                                     "extra-header-to-be-sent-1,extra-header-to-be-sent-2")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                             "extra-header-to-be-sent-1,extra-header-to-be-sent-2")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -945,11 +945,11 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                                     "extra-header-to-be-sent-1,extra-header-to-be-sent-2,extra-header-to-be-sent-3")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                             "extra-header-to-be-sent-1,extra-header-to-be-sent-2,extra-header-to-be-sent-3")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1010,11 +1010,11 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                                     "extra-header-3")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                             "extra-header-3")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1060,11 +1060,11 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                                     "extra-header-to-be-sent-1")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                             "extra-header-to-be-sent-1")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1114,9 +1114,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1176,9 +1176,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1239,9 +1239,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1291,9 +1291,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1355,9 +1355,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1418,9 +1418,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                                     .send();
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1477,9 +1477,9 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         cookie.setPath("/");
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .addCookie(cookie)
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .addCookie(cookie)
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1505,6 +1505,168 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+    }
+
+    /**
+     * An "OPTIONS" request is made by the browser for Cors checking 
+     * and it should be handled even if there is no OPTIONS route.
+     */
+    @Test
+    public void preflightNoOptionsMethod() throws Exception {
+
+        // Cors filter
+        getRouter().before(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                CorsBeforeFilterTest.this.spincastFilters.cors(context);
+            }
+        });
+
+        getRouter().DELETE("/").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                fail();
+            }
+        });
+
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
+
+        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+        assertNotNull(allowOriginHeader);
+        assertEquals("*", allowOriginHeader);
+
+        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        assertNotNull(allowCredentialsHeader);
+        assertEquals("true", allowCredentialsHeader);
+
+        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
+        assertNull(exposeHeadersHeader); // simple request header only
+
+        String allowHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
+        assertNotNull(allowHeadersHeader);
+        assertEquals("", allowHeadersHeader);
+
+        String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
+        assertNotNull(allowMethodsHeader);
+        Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
+        for(HttpMethod availableMethod : HttpMethod.values()) {
+            assertTrue(methods.contains(availableMethod.name()));
+        }
+
+        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
+        assertNotNull(maxAgeHeader);
+        assertEquals("86400", maxAgeHeader);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+    }
+
+    /**
+     * By default "before()" will work to define a Cors filter
+     * because it applies to all route types.
+     * 
+     * But if we add the Cors filter only for the "Normal"
+     * route type, it may not work.
+     */
+    @Test
+    public void corsOnlyOnFoundRoutingTypeFails() throws Exception {
+
+        // Cors filter
+        getRouter().ALL("/*{path}").pos(-1).save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                CorsBeforeFilterTest.this.spincastFilters.cors(context);
+            }
+        });
+
+        getRouter().DELETE("/").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                fail();
+            }
+        });
+
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
+
+        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+        assertNull(allowOriginHeader);
+
+        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        assertNull(allowCredentialsHeader);
+
+        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
+        assertNull(exposeHeadersHeader);
+
+        String allowMehodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
+        assertNull(allowMehodsHeader);
+
+        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
+        assertNull(maxAgeHeader);
+    }
+
+    @Test
+    public void corsOnlyOnNotFoundRoutingTypeSuccess() throws Exception {
+
+        // Cors filter
+        getRouter().ALL("/*{path}").notFound().pos(-1).save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                CorsBeforeFilterTest.this.spincastFilters.cors(context);
+            }
+        });
+
+        getRouter().DELETE("/").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                fail();
+            }
+        });
+
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                             .send();
+
+        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+        assertNotNull(allowOriginHeader);
+        assertEquals("*", allowOriginHeader);
+
+        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        assertNotNull(allowCredentialsHeader);
+        assertEquals("true", allowCredentialsHeader);
+
+        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
+        assertNull(exposeHeadersHeader);
+
+        String allowHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
+        assertNotNull(allowHeadersHeader);
+        assertEquals("", allowHeadersHeader);
+
+        String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
+        assertNotNull(allowMethodsHeader);
+        Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
+        for(HttpMethod availableMethod : HttpMethod.values()) {
+            assertTrue(methods.contains(availableMethod.name()));
+        }
+
+        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
+        assertNotNull(maxAgeHeader);
+        assertEquals("86400", maxAgeHeader);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
     }
 
 }

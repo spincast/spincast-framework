@@ -80,6 +80,8 @@ public interface IRouter<R extends IRequestContext<?>> {
      * Synonym of : 
      * 
      * <code>ALL("/*{path}").pos(-1).save(handler)</code>
+     * and with the Routing types as returned by
+     * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
     public void before(IHandler<R> handler);
 
@@ -89,6 +91,8 @@ public interface IRouter<R extends IRequestContext<?>> {
      * Synonym of : 
      * 
      * <code>ALL(path).pos(-1).save(handler)</code>
+     * and with the Routing types as returned by
+     * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
     public void before(String path, IHandler<R> handler);
 
@@ -98,6 +102,8 @@ public interface IRouter<R extends IRequestContext<?>> {
      * Synonym of : 
      * 
      * <code>ALL("/*{path}").pos(1).save(handler)</code>
+     * and with the Routing types as returned by
+     * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
     public void after(IHandler<R> handler);
 
@@ -107,6 +113,8 @@ public interface IRouter<R extends IRequestContext<?>> {
      * Synonym of : 
      * 
      * <code>ALL(path).pos(1).save(handler)</code>
+     * and with the Routing types as returned by
+     * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
     public void after(String path, IHandler<R> handler);
 
@@ -118,6 +126,8 @@ public interface IRouter<R extends IRequestContext<?>> {
      * <code>ALL("/*{path}").pos(-1).save(handler)</code>
      * and
      * <code>ALL("/*{path}").pos(1).save(handler)</code>
+     * and with the Routing types as returned by
+     * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
     public void beforeAndAfter(IHandler<R> handler);
 
@@ -129,6 +139,8 @@ public interface IRouter<R extends IRequestContext<?>> {
      * <code>ALL(path).pos(-1).save(handler)</code>
      * and
      * <code>ALL(path).pos(1).save(handler)</code>
+     * and with the Routing types as returned by
+     * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
     public void beforeAndAfter(String path, IHandler<R> handler);
 

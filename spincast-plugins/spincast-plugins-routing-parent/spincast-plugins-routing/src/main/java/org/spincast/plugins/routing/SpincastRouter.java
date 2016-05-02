@@ -1153,11 +1153,6 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
     @Override
     public void cors(String path) {
 
-        //==========================================
-        // We have to use "notFound()" too because
-        // we may well not have any "OPTIONS" regular route
-        // so the "Not Found" routing is used.
-        //==========================================
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
                  .found().notFound().save(new IHandler<R>() {
 
@@ -1172,14 +1167,15 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
     public void cors(String path,
                      final Set<String> allowedOrigins) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context,
-                                          allowedOrigins);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context,
+                                                   allowedOrigins);
+                     }
+                 });
     }
 
     @Override
@@ -1187,15 +1183,16 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
                      final Set<String> allowedOrigins,
                      final Set<String> extraHeadersAllowedToBeRead) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context,
-                                          allowedOrigins,
-                                          extraHeadersAllowedToBeRead);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context,
+                                                   allowedOrigins,
+                                                   extraHeadersAllowedToBeRead);
+                     }
+                 });
     }
 
     @Override
@@ -1204,16 +1201,17 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
                      final Set<String> extraHeadersAllowedToBeRead,
                      final Set<String> extraHeadersAllowedToBeSent) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context,
-                                          allowedOrigins,
-                                          extraHeadersAllowedToBeRead,
-                                          extraHeadersAllowedToBeSent);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context,
+                                                   allowedOrigins,
+                                                   extraHeadersAllowedToBeRead,
+                                                   extraHeadersAllowedToBeSent);
+                     }
+                 });
     }
 
     @Override
@@ -1223,17 +1221,18 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
                      final Set<String> extraHeadersAllowedToBeSent,
                      final boolean allowCookies) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context,
-                                          allowedOrigins,
-                                          extraHeadersAllowedToBeRead,
-                                          extraHeadersAllowedToBeSent,
-                                          allowCookies);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context,
+                                                   allowedOrigins,
+                                                   extraHeadersAllowedToBeRead,
+                                                   extraHeadersAllowedToBeSent,
+                                                   allowCookies);
+                     }
+                 });
     }
 
     @Override
@@ -1244,18 +1243,19 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
                      final boolean allowCookies,
                      final Set<HttpMethod> allowedMethods) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context,
-                                          allowedOrigins,
-                                          extraHeadersAllowedToBeRead,
-                                          extraHeadersAllowedToBeSent,
-                                          allowCookies,
-                                          allowedMethods);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context,
+                                                   allowedOrigins,
+                                                   extraHeadersAllowedToBeRead,
+                                                   extraHeadersAllowedToBeSent,
+                                                   allowCookies,
+                                                   allowedMethods);
+                     }
+                 });
     }
 
     @Override
@@ -1267,19 +1267,20 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
                      final Set<HttpMethod> allowedMethods,
                      final int maxAgeInSeconds) {
 
-        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition()).save(new IHandler<R>() {
+        ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
+                 .found().notFound().save(new IHandler<R>() {
 
-            @Override
-            public void handle(R context) {
-                getSpincastFilters().cors(context,
-                                          allowedOrigins,
-                                          extraHeadersAllowedToBeRead,
-                                          extraHeadersAllowedToBeSent,
-                                          allowCookies,
-                                          allowedMethods,
-                                          maxAgeInSeconds);
-            }
-        });
+                     @Override
+                     public void handle(R context) {
+                         getSpincastFilters().cors(context,
+                                                   allowedOrigins,
+                                                   extraHeadersAllowedToBeRead,
+                                                   extraHeadersAllowedToBeSent,
+                                                   allowCookies,
+                                                   allowedMethods,
+                                                   maxAgeInSeconds);
+                     }
+                 });
     }
 
     @Override

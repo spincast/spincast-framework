@@ -828,9 +828,6 @@ getRouter().cors();
 // except for static resources.
 getRouter().cors("/api/*{path}");
 
-// Enable cors on a specific route.
-getRouter().GET("/something").cors().save(handle);
-
 // Enable cors on a static resource directory.
 getRouter().dir("/public").classpath("/public_files")
            .cors().save();

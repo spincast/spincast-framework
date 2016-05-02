@@ -6,13 +6,12 @@ import org.spincast.core.routing.RoutingType;
 
 /**
  * Configurations for the Spincast Router.
- * 
  */
 public interface ISpincastRouterConfig {
 
     /**
-     * The routing types to use when none is
-     * explicitally specified.
+     * The routing types to use for a filter when none is
+     * explicitly specified.
      */
     public Set<RoutingType> getFilterDefaultRoutingTypes();
 
