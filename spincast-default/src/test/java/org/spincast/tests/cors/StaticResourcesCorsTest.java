@@ -6,12 +6,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.spincast.core.cookies.ICookie;
 import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IHandler;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.collect.Sets;
@@ -67,12 +73,12 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -127,8 +133,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example1.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example1.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -166,8 +172,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -210,8 +216,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -250,8 +256,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -292,8 +298,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -328,6 +334,7 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
                    .cors(Sets.newHashSet("https://example1.com"),
                          Sets.newHashSet("extra-header-to-be-read-1",
                                          "extra-header-to-be-read-2"),
+                         Sets.newHashSet("*"),
                          false)
                    .save();
 
@@ -347,8 +354,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -382,6 +389,7 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
                    .cors(Sets.newHashSet("https://example1.com"),
                          Sets.newHashSet("extra-header-to-be-read-1",
                                          "extra-header-to-be-read-2"),
+                         Sets.newHashSet("*"),
                          false)
                    .save();
 
@@ -394,8 +402,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                  .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                  .send();
+                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                          .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -426,6 +434,7 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
                    .cors(Sets.newHashSet("https://example1.com"),
                          Sets.newHashSet("extra-header-to-be-read-1",
                                          "extra-header-to-be-read-2"),
+                         Sets.newHashSet("*"),
                          false)
                    .save();
 
@@ -438,48 +447,8 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = DELETE("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                    .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                    .send();
-
-        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
-        assertNull(allowOriginHeader);
-
-        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
-        assertNull(allowCredentialsHeader);
-
-        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
-        assertNull(exposeHeadersHeader);
-
-        String allowMehodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
-        assertNull(allowMehodsHeader);
-
-        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
-        assertNull(maxAgeHeader);
-
-        assertEquals(HttpStatus.SC_METHOD_NOT_ALLOWED, response.getStatus());
-    }
-
-    @Test
-    public void invalidHttpMethodOptionsNoPreflight() throws Exception {
-
-        getRouter().file("/").classpath("/image.jpg")
-                   .cors(Sets.newHashSet("https://example1.com"),
-                         Sets.newHashSet("extra-header-to-be-read-1",
-                                         "extra-header-to-be-read-2"),
-                         false)
-                   .save();
-
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
-
-            @Override
-            public void handle(IDefaultRequestContext context) {
-                fail();
-            }
-        });
-
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                     .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                     .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -513,12 +482,12 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                  .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                  .send();
+                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                          .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -559,9 +528,9 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
         cookie.setPath("/");
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .addCookie(cookie)
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .addCookie(cookie)
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -586,5 +555,91 @@ public class StaticResourcesCorsTest extends DefaultIntegrationTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("image/jpeg", response.getContentType());
+    }
+
+    @Test
+    public void preflightDefault() throws Exception {
+
+        getRouter().file("/").classpath("/image.jpg").cors().save();
+
+        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                fail();
+            }
+        });
+
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                                             .send();
+
+        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+        assertNotNull(allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
+
+        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        assertNotNull(allowCredentialsHeader);
+        assertEquals("true", allowCredentialsHeader);
+
+        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
+        assertNull(exposeHeadersHeader); // simple request header only
+
+        String allowHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS);
+        assertNotNull(allowHeadersHeader);
+        assertEquals("", allowHeadersHeader);
+
+        String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
+        assertNotNull(allowMethodsHeader);
+        Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
+        assertEquals(3, methods.size());
+        assertTrue(methods.contains(HttpMethod.GET.toString()));
+        assertTrue(methods.contains(HttpMethod.HEAD.toString()));
+        assertTrue(methods.contains(HttpMethod.OPTIONS.toString()));
+
+        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
+        assertNotNull(maxAgeHeader);
+        assertEquals("86400", maxAgeHeader);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+    }
+
+    @Test
+    public void preflightInvalidMethodAsked() throws Exception {
+
+        getRouter().file("/").classpath("/image.jpg").cors().save();
+
+        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                fail();
+            }
+        });
+
+        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PUT")
+                                             .send();
+
+        String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
+        assertNull(allowOriginHeader);
+
+        String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+        assertNull(allowCredentialsHeader);
+
+        String exposeHeadersHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
+        assertNull(exposeHeadersHeader);
+
+        String allowMehodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
+        assertNull(allowMehodsHeader);
+
+        String maxAgeHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_MAX_AGE);
+        assertNull(maxAgeHeader);
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+
     }
 }

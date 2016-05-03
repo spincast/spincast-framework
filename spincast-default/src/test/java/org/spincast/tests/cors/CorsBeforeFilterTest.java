@@ -144,7 +144,7 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -620,7 +620,7 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -667,7 +667,7 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -724,7 +724,7 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -1538,7 +1538,7 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);
@@ -1641,7 +1641,7 @@ public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);

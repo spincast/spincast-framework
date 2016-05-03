@@ -840,7 +840,10 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
             </div>
         </p> 
         <p>
-            There are some parameters available when configuring <code>cors()</code>: 
+            There are some parameters available when configuring <code>cors()</code>. The only differences between
+            available parameters for regular routes and for static resources, it that you can't specify 
+            the <code>HTTP methods</code> for
+            static resources: they are always <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code>.
         </p>
         <p>
             <div>
@@ -851,52 +854,54 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
 // The default :
 // - Allows any origins (domains)
 // - Allows cookies
-// - Allows any HTTP methods
+// - Allows any HTTP methods (except for static resources,
+//   which allow GET, HEAD and OPTIONS only)
 // - Allows any headers to be sent by the browser
 // - A Max-Age of 24h is specified for caching purposes
 //
 // But :
 // - Only basic headers are allowed to be read from the browser.
-getRouter().cors();
+.cors()
 
 // Like the default, but also allows some extra headers
 // to be read from the browser. 
-getRouter().cors(Sets.newHashSet("*"),
-                 Sets.newHashSet("extra-header-1", "extra-header-2"));
+.cors(Sets.newHashSet("*"),
+      Sets.newHashSet("extra-header-1", "extra-header-2"))
 
 // Only allows the domains "http://example2.com" and "https://example3.com" to access 
 // your APIs.
-getRouter().cors(Sets.newHashSet("http://example2.com", "https://example3.com"));
+.cors(Sets.newHashSet("http://example2.com", "https://example3.com"))
 
 // Like the default, but only allows the specified extra headers
 // to be sent by the browser.
-getRouter().cors(Sets.newHashSet("*"),
-                 null,
-                 Sets.newHashSet("extra-header-1", "extra-header-2"));
+.cors(Sets.newHashSet("*"),
+      null,
+      Sets.newHashSet("extra-header-1", "extra-header-2"))
 
 // Like the default, but doesn't allow cookies.
-getRouter().cors(Sets.newHashSet("*"),
-                 null,
-                 Sets.newHashSet("*"),
-                 false);
+.cors(Sets.newHashSet("*"),
+      null,
+      Sets.newHashSet("*"),
+      false)
 
 // Like the default, but only allows the extra "PUT" method
 // in addition to GET, POST, HEAD and OPTIONS 
-// (which are always allowed).
-getRouter().cors(Sets.newHashSet("*"),
-                 null,
-                 Sets.newHashSet("*"),
-                 true,
-                 Sets.newHashSet(HttpMethod.PUT));
+// (which are always allowed). Not applicable to
+// static resources.
+.cors(Sets.newHashSet("*"),
+      null,
+      Sets.newHashSet("*"),
+      true,
+      Sets.newHashSet(HttpMethod.PUT))
 
 // Like the default, but specifies a Max-Age of 60 seconds
 // instead of 24 hours.
-getRouter().cors(Sets.newHashSet("*"),
-                 null,
-                 Sets.newHashSet("*"),
-                 true,
-                 Sets.newHashSet(HttpMethod.values()),
-                 60);
+.cors(Sets.newHashSet("*"),
+      null,
+      Sets.newHashSet("*"),
+      true,
+      Sets.newHashSet(HttpMethod.values()),
+      60)
 </pre> 
                 </p>
             </div>

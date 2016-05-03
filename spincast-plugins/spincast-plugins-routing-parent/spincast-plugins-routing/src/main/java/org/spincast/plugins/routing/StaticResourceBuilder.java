@@ -102,28 +102,67 @@ public class StaticResourceBuilder<R extends IRequestContext<?>> implements ISta
 
     @Override
     public IStaticResourceBuilder<R> cors() {
-        return cors(Sets.newHashSet("*"), null, true);
+        return cors(getCorsDefaultAllowedOrigins(),
+                    getCorsDefaultExtraHeadersAllowedToBeRead(),
+                    getCorsDefaultExtraHeadersAllowedToBeSent(),
+                    getCorsDefaultIsCookiesAllowed(),
+                    getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
     public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins) {
-        return cors(allowedOrigins, null, true);
+        return cors(allowedOrigins,
+                    getCorsDefaultExtraHeadersAllowedToBeRead(),
+                    getCorsDefaultExtraHeadersAllowedToBeSent(),
+                    getCorsDefaultIsCookiesAllowed(),
+                    getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
     public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
                                           Set<String> extraHeadersAllowedToBeRead) {
-        return cors(allowedOrigins, extraHeadersAllowedToBeRead, true);
+        return cors(allowedOrigins,
+                    extraHeadersAllowedToBeRead,
+                    getCorsDefaultExtraHeadersAllowedToBeSent(),
+                    getCorsDefaultIsCookiesAllowed(),
+                    getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
     public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
                                           Set<String> extraHeadersAllowedToBeRead,
+                                          Set<String> extraHeadersAllowedToBeSent) {
+        return cors(allowedOrigins,
+                    extraHeadersAllowedToBeRead,
+                    extraHeadersAllowedToBeSent,
+                    getCorsDefaultIsCookiesAllowed(),
+                    getCorsDefaultMaxAgeInSeconds());
+    }
+
+    @Override
+    public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
+                                          Set<String> extraHeadersAllowedToBeRead,
+                                          Set<String> extraHeadersAllowedToBeSent,
                                           boolean allowCookies) {
+        return cors(allowedOrigins,
+                    extraHeadersAllowedToBeRead,
+                    extraHeadersAllowedToBeSent,
+                    allowCookies,
+                    getCorsDefaultMaxAgeInSeconds());
+    }
+
+    @Override
+    public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
+                                          Set<String> extraHeadersAllowedToBeRead,
+                                          Set<String> extraHeadersAllowedToBeSent,
+                                          boolean allowCookies,
+                                          int maxAgeInSeconds) {
 
         this.corsConfig = getStaticResourceCorsConfigFactory().create(allowedOrigins,
                                                                       extraHeadersAllowedToBeRead,
-                                                                      allowCookies);
+                                                                      extraHeadersAllowedToBeSent,
+                                                                      allowCookies,
+                                                                      maxAgeInSeconds);
         return this;
     }
 
@@ -181,6 +220,58 @@ public class StaticResourceBuilder<R extends IRequestContext<?>> implements ISta
                                                                               getGenerator(),
                                                                               getCorsConfig());
         return staticResource;
+    }
+
+    /**
+     * If <= 0, the "Access-Control-Max-Age" header
+     * won't be sent.
+     */
+    protected int getCorsDefaultMaxAgeInSeconds() {
+        return 86400; // 24h
+    }
+
+    /**
+     * The origins allowed, by default.
+     */
+    protected Set<String> getCorsDefaultAllowedOrigins() {
+
+        //==========================================
+        // All origins allowed.
+        //==========================================
+        return Sets.newHashSet("*");
+    }
+
+    /**
+     * The extra headers allowed to be read, by default,
+     */
+    protected Set<String> getCorsDefaultExtraHeadersAllowedToBeRead() {
+
+        //==========================================
+        // No extra header allowed.
+        //==========================================
+        return null;
+    }
+
+    /**
+     * The extra headers allowed to be sent, by default,
+     */
+    protected Set<String> getCorsDefaultExtraHeadersAllowedToBeSent() {
+
+        //==========================================
+        // All headers allowed.
+        //==========================================
+        return Sets.newHashSet("*");
+    }
+
+    /**
+     * Are cookies allowed by default?
+     */
+    protected boolean getCorsDefaultIsCookiesAllowed() {
+
+        //==========================================
+        // Cookies allowed.
+        //==========================================
+        return true;
     }
 
 }

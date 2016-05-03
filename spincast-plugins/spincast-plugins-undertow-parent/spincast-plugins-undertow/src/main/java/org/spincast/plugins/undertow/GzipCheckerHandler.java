@@ -1,8 +1,12 @@
 package org.spincast.plugins.undertow;
 
+import javax.annotation.Nullable;
+
 import org.spincast.core.utils.ISpincastUtils;
 
 import com.google.common.net.HttpHeaders;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -12,12 +16,7 @@ import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.HeaderValues;
 
-/**
- * Handler that will check if gzip compress is required for
- * the resource and, if so, will call the gzip handler before
- * calling the next handler.
- */
-public class GzipCheckerHandler implements HttpHandler {
+public class GzipCheckerHandler implements IGzipCheckerHandler {
 
     private final HttpHandler nextHandler;
     private final ISpincastUtils spincastUtils;
@@ -33,9 +32,10 @@ public class GzipCheckerHandler implements HttpHandler {
      */
     private final String specificTargetFilePath;
 
-    public GzipCheckerHandler(HttpHandler nextHandler,
-                              ISpincastUtils spincastUtils,
-                              String specificTargetFilePath) {
+    @AssistedInject
+    public GzipCheckerHandler(@Assisted HttpHandler nextHandler,
+                              @Assisted @Nullable String specificTargetFilePath,
+                              ISpincastUtils spincastUtils) {
         this.nextHandler = nextHandler;
         this.spincastUtils = spincastUtils;
         this.specificTargetFilePath = specificTargetFilePath;

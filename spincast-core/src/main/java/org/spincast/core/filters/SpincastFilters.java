@@ -1,8 +1,6 @@
 package org.spincast.core.filters;
 
 import java.io.File;
-import java.net.URI;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,11 +12,10 @@ import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.collect.Sets;
-import com.google.common.net.HttpHeaders;
+import com.google.inject.Inject;
 
 /**
  * Spincast filters implementations.
@@ -26,6 +23,20 @@ import com.google.common.net.HttpHeaders;
 public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastFilters<R> {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastFilters.class);
+
+    private final ICorsFilter corsFilter;
+
+    /**
+     * Constructor
+     */
+    @Inject
+    public SpincastFilters(ICorsFilter corsFilter) {
+        this.corsFilter = corsFilter;
+    }
+
+    protected ICorsFilter getCorsFilter() {
+        return this.corsFilter;
+    }
 
     @Override
     public void saveGeneratedResource(R context, String pathForGeneratedResource) {
@@ -76,58 +87,70 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
 
     @Override
     public void cors(R context) {
+
         cors(context,
-             Sets.newHashSet("*"),
-             null,
-             Sets.newHashSet("*"),
-             true,
-             Sets.newHashSet(HttpMethod.values()),
+             getCorsDefaultAllowedOrigins(),
+             getCorsDefaultExtraHeadersAllowedToBeRead(),
+             getCorsDefaultExtraHeadersAllowedToBeSent(),
+             getCorsDefaultIsCookiesAllowed(),
+             getCorsDefaultAllowedMethods(),
              getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
-    public void cors(R context, Set<String> allowedOrigins) {
+    public void cors(R context,
+                     Set<String> allowedOrigins) {
+
         cors(context,
              allowedOrigins,
-             null,
-             Sets.newHashSet("*"),
-             true,
-             Sets.newHashSet(HttpMethod.values()),
+             getCorsDefaultExtraHeadersAllowedToBeRead(),
+             getCorsDefaultExtraHeadersAllowedToBeSent(),
+             getCorsDefaultIsCookiesAllowed(),
+             getCorsDefaultAllowedMethods(),
              getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
-    public void cors(R context, Set<String> allowedOrigins, Set<String> extraHeadersAllowedToBeRead) {
+    public void cors(R context,
+                     Set<String> allowedOrigins,
+                     Set<String> extraHeadersAllowedToBeRead) {
         cors(context,
              allowedOrigins,
              extraHeadersAllowedToBeRead,
-             Sets.newHashSet("*"),
-             true,
-             Sets.newHashSet(HttpMethod.values()),
+             getCorsDefaultExtraHeadersAllowedToBeSent(),
+             getCorsDefaultIsCookiesAllowed(),
+             getCorsDefaultAllowedMethods(),
              getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
-    public void cors(R context, Set<String> allowedOrigins, Set<String> extraHeadersAllowedToBeRead,
+    public void cors(R context,
+                     Set<String> allowedOrigins,
+                     Set<String> extraHeadersAllowedToBeRead,
                      Set<String> extraHeadersAllowedToBeSent) {
+
         cors(context,
              allowedOrigins,
              extraHeadersAllowedToBeRead,
              extraHeadersAllowedToBeSent,
-             true,
-             Sets.newHashSet(HttpMethod.values()),
+             getCorsDefaultIsCookiesAllowed(),
+             getCorsDefaultAllowedMethods(),
              getCorsDefaultMaxAgeInSeconds());
     }
 
     @Override
-    public void cors(R context, Set<String> allowedOrigins, Set<String> extraHeadersAllowedToBeRead,
-                     Set<String> extraHeadersAllowedToBeSent, boolean allowCookies) {
+    public void cors(R context,
+                     Set<String> allowedOrigins,
+                     Set<String> extraHeadersAllowedToBeRead,
+                     Set<String> extraHeadersAllowedToBeSent,
+                     boolean allowCookies) {
+
         cors(context,
              allowedOrigins,
              extraHeadersAllowedToBeRead,
              extraHeadersAllowedToBeSent,
              allowCookies,
-             Sets.newHashSet(HttpMethod.values()),
+             getCorsDefaultAllowedMethods(),
              getCorsDefaultMaxAgeInSeconds());
     }
 
@@ -138,6 +161,7 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
                      Set<String> extraHeadersAllowedToBeSent,
                      boolean allowCookies,
                      Set<HttpMethod> allowedMethods) {
+
         cors(context,
              allowedOrigins,
              extraHeadersAllowedToBeRead,
@@ -156,158 +180,148 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
                      Set<HttpMethod> allowedMethods,
                      int maxAgeInSeconds) {
 
-        String origin = context.request().getHeaderFirst(HttpHeaders.ORIGIN);
+        ICorsFilterClient corsFilterClient = createCorsFilterClient(context,
+                                                                    allowedOrigins,
+                                                                    extraHeadersAllowedToBeRead,
+                                                                    extraHeadersAllowedToBeSent,
+                                                                    allowCookies,
+                                                                    allowedMethods,
+                                                                    maxAgeInSeconds);
 
-        //==========================================
-        // No "Origin" header == Not a cors request!
-        // No need to do anything here.
-        //==========================================
-        if(origin == null) {
-            return;
-        }
+        CorsFilterResponse corsResult = getCorsFilter().apply(corsFilterClient);
 
-        //==========================================
-        // Same origin request? No need for
-        // cors headers.
-        //==========================================
-        String host = context.request().getHeaderFirst(HttpHeaders.HOST);
-        if(host != null) {
-            try {
-                String originHost = new URI(origin).getHost();
-                if(host.equals(originHost)) {
-                    return;
-                }
-            } catch(Exception ex) {
-                throw SpincastStatics.runtimize(ex);
-            }
-        }
+        if(corsResult == CorsFilterResponse.NOT_CORS) {
 
-        //==========================================
-        // Headers already sent? There is nothing we can do...
-        //==========================================
-        if(context.response().isHeadersSent()) {
             //==========================================
-            // We can't be sure this is a cors request, even if the
-            // "Origin" is present. So we only log an *error* level
-            // message if another cors header is present.
+            // Not a cors request, or same origin...
+            // No need to do anything here.
             //==========================================
-            String message = "Headers already sent: if this is a cors request, it will fail. " +
-                             "The request URL is: " + context.request().getFullUrl();
-            if(context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD) != null) {
-                this.logger.error(message);
-            } else {
-                this.logger.info(message);
-            }
             return;
-        }
 
-        Set<String> allowedOriginsLowercased = new HashSet<String>();
-        if(allowedOrigins == null) {
-            allowedOrigins = new HashSet<>();
-        }
-        for(String allowedOrigin : allowedOrigins) {
-            if(allowedOrigin != null) {
-                allowedOriginsLowercased.add(allowedOrigin.toLowerCase().trim());
-            }
-        }
+        } else if(corsResult == CorsFilterResponse.HEADERS_ALREADY_SENT) {
 
-        Set<String> extraHeadersAllowedToBeReadLowercased = new HashSet<String>();
-        if(extraHeadersAllowedToBeRead == null) {
-            extraHeadersAllowedToBeRead = new HashSet<>();
-        }
-        for(String headerAllowedToBeRead : extraHeadersAllowedToBeRead) {
-            if(headerAllowedToBeRead != null) {
-                extraHeadersAllowedToBeReadLowercased.add(headerAllowedToBeRead.toLowerCase().trim());
-            }
-        }
+            //==========================================
+            // Headers already sent? There is nothing we can do...
+            //==========================================
+            return;
 
-        Set<String> extraHeadersAllowedToBeSentLowercased = new HashSet<String>();
-        if(extraHeadersAllowedToBeSent == null) {
-            extraHeadersAllowedToBeSent = new HashSet<>();
-        }
-        for(String extraHeaderAllowedToBeSent : extraHeadersAllowedToBeSent) {
-            if(extraHeaderAllowedToBeSent != null) {
-                extraHeadersAllowedToBeSentLowercased.add(extraHeaderAllowedToBeSent.toLowerCase().trim());
-            }
-        }
+        } else if(corsResult == CorsFilterResponse.INVALID_CORS_REQUEST) {
 
-        if(allowedMethods == null) {
-            allowedMethods = new HashSet<HttpMethod>();
-        }
-        //==========================================
-        // OPTIONS should always be allowed.
-        //==========================================
-        allowedMethods.add(HttpMethod.OPTIONS);
-
-        //==========================================
-        // Validation of the origin
-        //==========================================
-        if(!isCorsOriginValid(context, allowedOriginsLowercased)) {
-            this.logger.info("Invalid origin for a cors request : " + origin);
-
-            context.response().resetEverything();
-            context.response().setStatusCode(HttpStatus.SC_OK);
+            //==========================================
+            // Invalid request, we return OK without the
+            // cors headers.
+            //==========================================
             throw new SkipRemainingHandlersException();
-        }
 
-        //==========================================
-        // Not a Preflight request.
-        // We add some required headers and our job is done.
-        // The routing process can continue...
-        //==========================================
-        if(!isPreflightRequest(context)) {
-            corsCore(context, allowedOrigins, allowCookies);
-            corsAddExtraHeadersAllowedToBeRead(context, extraHeadersAllowedToBeRead);
+        } else if(corsResult == CorsFilterResponse.SIMPLE) {
+
+            //==========================================
+            // Simple cors request (not a Preflight).
+            // We added the required headers and our job is now done.
+            // The routing process can continue...
+            //==========================================
             return;
+
+        } else if(corsResult == CorsFilterResponse.PREFLIGHT) {
+
+            //==========================================
+            // We always skip all remaining handlers 
+            // on a Preflight request!
+            // For example if the request is for a "dynamic resource",
+            // we don't want to run the "saveGeneratedResource" after
+            // filter, which would save an empty resource.
+            //==========================================
+            throw new SkipRemainingHandlersException();
+
+        } else {
+            throw new RuntimeException("Unmanaged cors result: " + corsResult);
         }
+    }
 
-        //==========================================
-        // Preflight request!
-        //==========================================
-        context.response().resetEverything();
-        context.response().setStatusCode(HttpStatus.SC_OK);
+    /**
+     * Creates a client for the cors filter.
+     */
+    protected ICorsFilterClient createCorsFilterClient(final R context,
+                                                       final Set<String> allowedOrigins,
+                                                       final Set<String> extraHeadersAllowedToBeRead,
+                                                       final Set<String> extraHeadersAllowedToBeSent,
+                                                       final boolean allowCookies,
+                                                       final Set<HttpMethod> allowedMethods,
+                                                       final int maxAgeInSeconds) {
+        return new ICorsFilterClient() {
 
-        //==========================================
-        // Validate requested HTTP methods
-        //==========================================
-        boolean preflightRequestValid = true;
-        if(!isCorsRequestMethodHeaderValid(context, allowedMethods)) {
-            this.logger.info("Invalid 'Access-Control-Allow-Methods' cors header received : " +
-                             context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD));
-            preflightRequestValid = false;
-        }
-
-        //==========================================
-        // Validate extra headers to be sent.
-        //==========================================
-        if(preflightRequestValid) {
-            if(!isCorsRequestedHeadersToBeSentValid(context, extraHeadersAllowedToBeSentLowercased)) {
-                this.logger.info("Invalid 'Access-Control-Request-Headers' cors header received : " +
-                                 context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS));
-                preflightRequestValid = false;
+            @Override
+            public void setStatusCode(int code) {
+                context.response().setStatusCode(code);
             }
-        }
 
-        //==========================================
-        // If the preflight request is valid, we add 
-        // the required cors headers.
-        //==========================================
-        if(preflightRequestValid) {
-            corsCore(context, allowedOrigins, allowCookies);
-            corsAddAllowMethods(context, allowedMethods);
-            corsAddExtraHeadersAllowedToBeSent(context, extraHeadersAllowedToBeSent);
-            corsAddMaxAge(context, maxAgeInSeconds);
-        }
+            @Override
+            public void resetEverything() {
+                context.response().resetEverything();
+            }
 
-        //==========================================
-        // We always skip all remaining handlers 
-        // on a Preflight request!
-        // For example if the request is for a "dynamic resource",
-        // you don't want to run the "saveGeneratedResource" after
-        // filter, which would save an empty resource on the
-        // preflight request...
-        //==========================================
-        throw new SkipRemainingHandlersException();
+            @Override
+            public boolean requestContainsCookies() {
+
+                Map<String, ICookie> cookies = context.cookies().getCookies();
+                return (cookies != null) && (cookies.size() > 0);
+            }
+
+            @Override
+            public boolean isHeadersSent() {
+                return context.response().isHeadersSent();
+            }
+
+            @Override
+            public boolean isAllowCookies() {
+                return allowCookies;
+            }
+
+            @Override
+            public int getMaxAgeInSeconds() {
+                return maxAgeInSeconds;
+            }
+
+            @Override
+            public HttpMethod getHttpMethod() {
+                return context.request().getHttpMethod();
+            }
+
+            @Override
+            public String getHeaderFirst(String name) {
+                return context.request().getHeaderFirst(name);
+            }
+
+            @Override
+            public String getFullUrl() {
+                return context.request().getFullUrl();
+            }
+
+            @Override
+            public Set<String> getExtraHeadersAllowedToBeSent() {
+                return extraHeadersAllowedToBeSent;
+            }
+
+            @Override
+            public Set<String> getExtraHeadersAllowedToBeRead() {
+                return extraHeadersAllowedToBeRead;
+            }
+
+            @Override
+            public Set<String> getAllowedOrigins() {
+                return allowedOrigins;
+            }
+
+            @Override
+            public Set<HttpMethod> getAllowedMethods() {
+                return allowedMethods;
+            }
+
+            @Override
+            public void addHeaderValue(String name, String value) {
+                context.response().addHeaderValue(name, value);
+            }
+        };
     }
 
     /**
@@ -318,190 +332,60 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
         return 86400; // 24h
     }
 
-    protected boolean isCorsOriginValid(R context, Set<String> allowedOriginsLowercased) {
+    /**
+     * The origins allowed, by default.
+     */
 
-        if(allowedOriginsLowercased.contains("*")) {
-            return true;
-        }
-
-        String origin = context.request().getHeaderFirst(HttpHeaders.ORIGIN).toLowerCase();
-        if(allowedOriginsLowercased.contains(origin)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    protected void corsCore(R context, Set<String> allowedOrigins, boolean allowCookies) {
+    protected Set<String> getCorsDefaultAllowedOrigins() {
 
         //==========================================
-        // "Allow Origin" header : always required
+        // All origins allowed.
         //==========================================
-        corsAddAlloweOrigin(context, allowedOrigins);
+        return Sets.newHashSet("*");
+    }
+
+    /**
+     * The extra headers allowed to be read, by default,
+     */
+    protected Set<String> getCorsDefaultExtraHeadersAllowedToBeRead() {
 
         //==========================================
-        // Do we "Allow Credentials" (cookies)?
+        // No extra header allowed.
         //==========================================
-        if(allowCookies) {
-            corsAddAllowCookies(context);
-        }
-    }
-
-    protected boolean isCorsRequestMethodHeaderValid(R context, Set<HttpMethod> allowedMethods) {
-
-        if(allowedMethods == null || allowedMethods.size() == 0) {
-            return false;
-        }
-
-        String accessControlRequestMethodsStr = context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD);
-        if(accessControlRequestMethodsStr == null) {
-            return false;
-        }
-
-        String[] accessControlRequestMethods = StringUtils.split(accessControlRequestMethodsStr, ",");
-        if(accessControlRequestMethods == null || accessControlRequestMethods.length == 0) {
-            return false;
-        }
-
-        for(String accessControlRequestMethod : accessControlRequestMethods) {
-            HttpMethod method = HttpMethod.fromStringValue(accessControlRequestMethod);
-            if(method == null) {
-                return false;
-            }
-            if(!allowedMethods.contains(method)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    protected boolean isCorsRequestedHeadersToBeSentValid(R context, Set<String> extraHeadersAllowedToBeSentLowercased) {
-
-        String requestedHeadersStr = context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
-        if(requestedHeadersStr == null) {
-            return true;
-        }
-
-        String[] requestedHeaders = StringUtils.split(requestedHeadersStr, ",");
-        if(requestedHeaders == null || requestedHeaders.length == 0) {
-            return true;
-        }
-
-        if(extraHeadersAllowedToBeSentLowercased.contains("*")) {
-            return true;
-        }
-
-        if(extraHeadersAllowedToBeSentLowercased == null || extraHeadersAllowedToBeSentLowercased.size() == 0) {
-            return false;
-        }
-
-        for(String requestedHeader : requestedHeaders) {
-            if(!extraHeadersAllowedToBeSentLowercased.contains(requestedHeader.toLowerCase().trim())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    protected boolean isPreflightRequest(R context) {
-        HttpMethod httpMethod = context.request().getHttpMethod();
-        if(httpMethod == HttpMethod.OPTIONS) {
-            String accessControlRequestMethod = context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD);
-            if(accessControlRequestMethod != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected void corsAddExtraHeadersAllowedToBeRead(R context, Set<String> extraHeadersAllowedToBeRead) {
-
-        String extraHeadersAllowedToBeReadStr = "";
-        if(extraHeadersAllowedToBeRead != null && extraHeadersAllowedToBeRead.size() > 0) {
-            extraHeadersAllowedToBeReadStr = StringUtils.join(extraHeadersAllowedToBeRead, ",");
-        }
-
-        context.response().addHeaderValue(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, extraHeadersAllowedToBeReadStr);
-    }
-
-    protected void corsAddExtraHeadersAllowedToBeSent(R context, Set<String> extraHeadersAllowedToBeSent) {
-
-        String extraHeadersAllowedToBeSentStr = "";
-        if(extraHeadersAllowedToBeSent != null && extraHeadersAllowedToBeSent.size() > 0) {
-
-            //==========================================
-            // If we allow all headers to be sent, we simply copy
-            // the requested ones.
-            //==========================================
-            if(extraHeadersAllowedToBeSent.contains("*")) {
-                String requestedHeadersStr = context.request().getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
-                if(!StringUtils.isBlank(requestedHeadersStr)) {
-                    extraHeadersAllowedToBeSentStr = requestedHeadersStr;
-                }
-            } else {
-                extraHeadersAllowedToBeSentStr = StringUtils.join(extraHeadersAllowedToBeSent, ",");
-            }
-        } else {
-            Set<String> defaultExtraHeadersAllowedToBeSent = getDefaultHeadersAllowedToBeSent();
-            if(defaultExtraHeadersAllowedToBeSent != null && defaultExtraHeadersAllowedToBeSent.size() > 0) {
-                extraHeadersAllowedToBeSentStr = StringUtils.join(defaultExtraHeadersAllowedToBeSent, ",");
-            }
-        }
-
-        context.response().addHeaderValue(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, extraHeadersAllowedToBeSentStr);
-    }
-
-    protected Set<String> getDefaultHeadersAllowedToBeSent() {
         return null;
     }
 
-    protected void corsAddMaxAge(R context, int maxAgeInSeconds) {
-        if(maxAgeInSeconds > 0) {
-            context.response().addHeaderValue(HttpHeaders.ACCESS_CONTROL_MAX_AGE, String.valueOf(maxAgeInSeconds));
-        }
-    }
-
-    protected void corsAddAllowMethods(R context, Set<HttpMethod> allowedMethods) {
-
-        if(allowedMethods == null || allowedMethods.size() == 0) {
-            return;
-        }
-        String allowedMethodsStr = StringUtils.join(allowedMethods, ",");
-
-        context.response().addHeaderValue(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, allowedMethodsStr);
-    }
-
-    protected void corsAddAllowCookies(R context) {
-        context.response().addHeaderValue(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-    }
-
-    protected void corsAddAlloweOrigin(R context, Set<String> allowedOrigins) {
-
-        if(allowedOrigins == null || allowedOrigins.size() == 0) {
-            return;
-        }
+    /**
+     * The extra headers allowed to be sent, by default,
+     */
+    protected Set<String> getCorsDefaultExtraHeadersAllowedToBeSent() {
 
         //==========================================
-        // When responding to a credentialed request,  
-        // server must specify a domain, and cannot use wild carding.  
-        // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials
+        // All headers allowed.
         //==========================================
-        Map<String, ICookie> cookies = context.cookies().getCookies();
-        boolean hasCookies = cookies != null && cookies.size() > 0;
+        return Sets.newHashSet("*");
+    }
 
-        String allowedOriginsStr;
-        if(!hasCookies && allowedOrigins.contains("*")) {
-            allowedOriginsStr = "*";
-        } else {
-            allowedOriginsStr = context.request().getHeaderFirst(HttpHeaders.ORIGIN);
+    /**
+     * Are cookies allowed by default?
+     */
+    protected boolean getCorsDefaultIsCookiesAllowed() {
 
-            // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Origin
-            context.response().addHeaderValue(HttpHeaders.VARY, HttpHeaders.ORIGIN);
-        }
+        //==========================================
+        // Cookies allowed.
+        //==========================================
+        return true;
+    }
 
-        context.response().addHeaderValue(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, allowedOriginsStr);
+    /**
+     * The HTTP methods allowed by default.
+     */
+    protected Set<HttpMethod> getCorsDefaultAllowedMethods() {
+
+        //==========================================
+        // All methods
+        //==========================================
+        return Sets.newHashSet(HttpMethod.values());
     }
 
 }

@@ -59,13 +59,46 @@ public interface IStaticResourceBuilder<R extends IRequestContext<?>> {
      *                                          ISpincastFilters#cors(R context, 
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent)   
+     */
+    public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
+                                          Set<String> extraHeadersAllowedToBeRead,
+                                          Set<String> extraHeadersAllowedToBeSent);
+    
+    /**
+     * Enables Cross-Origin Resource Sharing (Cors)
+     * 
+     * @see org.spincast.core.filters.ISpincastFilters#cors(R, Set, Set, Set, boolean) 
+     *                                          ISpincastFilters#cors(R context, 
+     *                                          Set&lt;String&gt; allowedOrigins,
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
      *                                          boolean allowCookies)   
      */
     public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
                                           Set<String> extraHeadersAllowedToBeRead,
+                                          Set<String> extraHeadersAllowedToBeSent,
                                           boolean allowCookies);
+    
 
+    /**
+     * Enables Cross-Origin Resource Sharing (Cors)
+     * 
+     * @see org.spincast.core.filters.ISpincastFilters#cors(R, Set, Set, Set, boolean) 
+     *                                          ISpincastFilters#cors(R context, 
+     *                                          Set&lt;String&gt; allowedOrigins,
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
+     *                                          boolean allowCookies,
+     *                                          int maxAgeInSeconds
+     *                                          )   
+     */
+    public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
+                                          Set<String> extraHeadersAllowedToBeRead,
+                                          Set<String> extraHeadersAllowedToBeSent,
+                                          boolean allowCookies,
+                                          int maxAgeInSeconds);
+    
     /**
      * Saves the static resource route to the router.
      * 

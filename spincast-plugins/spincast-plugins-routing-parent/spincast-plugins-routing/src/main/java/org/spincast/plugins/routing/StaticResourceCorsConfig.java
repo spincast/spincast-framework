@@ -13,15 +13,21 @@ public class StaticResourceCorsConfig implements IStaticResourceCorsConfig {
 
     private final Set<String> allowedOrigins;
     private final Set<String> extraHeadersAllowedToBeRead;
+    private final Set<String> extraHeadersAllowedToBeSent;
     private final boolean allowCookies;
+    private final int maxAgeInSeconds;
 
     @AssistedInject
     public StaticResourceCorsConfig(@Assisted("allowedOrigins") Set<String> allowedOrigins,
                                     @Assisted("extraHeadersAllowedToBeRead") @Nullable Set<String> extraHeadersAllowedToBeRead,
-                                    @Assisted boolean allowCookies) {
+                                    @Assisted("extraHeadersAllowedToBeSent") @Nullable Set<String> extraHeadersAllowedToBeSent,
+                                    @Assisted("allowCookies") boolean allowCookies,
+                                    @Assisted("maxAgeInSeconds") int maxAgeInSeconds) {
         this.allowedOrigins = allowedOrigins;
         this.extraHeadersAllowedToBeRead = extraHeadersAllowedToBeRead;
+        this.extraHeadersAllowedToBeSent = extraHeadersAllowedToBeSent;
         this.allowCookies = allowCookies;
+        this.maxAgeInSeconds = maxAgeInSeconds;
     }
 
     @Override
@@ -35,8 +41,18 @@ public class StaticResourceCorsConfig implements IStaticResourceCorsConfig {
     }
 
     @Override
+    public Set<String> getExtraHeadersAllowedToBeSent() {
+        return this.extraHeadersAllowedToBeSent;
+    }
+
+    @Override
     public boolean isAllowCookies() {
         return this.allowCookies;
+    }
+
+    @Override
+    public int getMaxAgeInSeconds() {
+        return this.maxAgeInSeconds;
     }
 
 }

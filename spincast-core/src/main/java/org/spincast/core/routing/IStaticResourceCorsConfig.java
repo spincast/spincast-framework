@@ -18,8 +18,18 @@ public interface IStaticResourceCorsConfig {
     public Set<String> getExtraHeadersAllowedToBeRead();
 
     /**
+     * The extra headers a browser will be allowed to send.
+     */
+    public Set<String> getExtraHeadersAllowedToBeSent();
+
+    /**
      * Are cookies allowed?
      */
     public boolean isAllowCookies();
+
+    /**
+     * The max Age a preflight request can be cached.
+     */
+    public int getMaxAgeInSeconds();
 
 }

@@ -55,12 +55,12 @@ public class ValidCustomFilterPositionTest extends DefaultIntegrationTestingBase
         });
 
         IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                                 .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                                 .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
-        assertEquals("*", allowOriginHeader);
+        assertEquals("https://example1.com", allowOriginHeader);
 
         String allowCredentialsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
         assertNotNull(allowCredentialsHeader);

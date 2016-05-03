@@ -3,7 +3,6 @@ package org.spincast.plugins.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -27,7 +26,6 @@ import org.spincast.core.cookies.ICookie;
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IStaticResource;
-import org.spincast.core.routing.IStaticResourceCorsConfig;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -36,7 +34,6 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 
-import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
 import io.undertow.Undertow;
@@ -70,21 +67,15 @@ public class SpincastUndertowServer implements IServer {
 
     public static final String UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE = "UT000020";
 
-    protected static final HttpString HTTPSTRING_GET = new HttpString("GET");
-    protected static final HttpString HTTPSTRING_HEAD = new HttpString("HEAD");
-    protected static final HttpString HTTPSTRING_VARY = new HttpString(HttpHeaders.VARY);
-    protected static final HttpString HTTPSTRING_ACCESS_CONTROL_ALLOW_ORIGIN =
-            new HttpString(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
-    protected static final HttpString HTTPSTRING_ACCESS_CONTROL_ALLOW_CREDENTIALS =
-            new HttpString(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
-    protected static final HttpString HTTPSTRING_ACCESS_CONTROL_EXPOSE_HEADERS =
-            new HttpString(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS);
-
     private final ISpincastUtils spincastUtils;
     private final ISpincastConfig config;
     private final IFrontController frontController;
     private final ICookieFactory cookieFactory;
     private final ISSLContextManager sslContextManager;
+    private final ICorsHandlerFactory corsHandlerFactory;
+    private final IGzipCheckerHandlerFactory gzipCheckerHandlerFactory;
+    private final IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
+
     private Undertow undertowServer;
     private IoCallback doNothingCallback = null;
     private IoCallback closeExchangeCallback = null;
@@ -103,12 +94,18 @@ public class SpincastUndertowServer implements IServer {
                                   IFrontController frontController,
                                   ISpincastUtils spincastUtils,
                                   ICookieFactory cookieFactory,
-                                  ISSLContextManager sslContextManager) {
+                                  ISSLContextManager sslContextManager,
+                                  ICorsHandlerFactory corsHandlerFactory,
+                                  IGzipCheckerHandlerFactory gzipCheckerHandlerFactory,
+                                  IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory) {
         this.config = config;
         this.frontController = frontController;
         this.spincastUtils = spincastUtils;
         this.cookieFactory = cookieFactory;
         this.sslContextManager = sslContextManager;
+        this.corsHandlerFactory = corsHandlerFactory;
+        this.gzipCheckerHandlerFactory = gzipCheckerHandlerFactory;
+        this.fileClassPathResourceManagerFactory = fileClassPathResourceManagerFactory;
     }
 
     protected ISpincastConfig getConfig() {
@@ -129,6 +126,18 @@ public class SpincastUndertowServer implements IServer {
 
     protected ISSLContextManager getSslContextManager() {
         return this.sslContextManager;
+    }
+
+    protected ICorsHandlerFactory getCorsHandlerFactory() {
+        return this.corsHandlerFactory;
+    }
+
+    protected IGzipCheckerHandlerFactory getGzipCheckerHandlerFactory() {
+        return this.gzipCheckerHandlerFactory;
+    }
+
+    protected IFileClassPathResourceManagerFactory getFileClassPathResourceManagerFactory() {
+        return this.fileClassPathResourceManagerFactory;
     }
 
     protected Map<String, IStaticResource<?>> getStaticResourcesServedByUrlPath() {
@@ -261,185 +270,6 @@ public class SpincastUndertowServer implements IServer {
         return this.staticResourcesPathHandler;
     }
 
-    /**
-     * Handler that will add cors headers, if required.
-     */
-    protected class CorsHandler implements HttpHandler {
-
-        private final HttpHandler nextHandler;
-        private final IStaticResourceCorsConfig corsConfig;
-        private Set<String> allowedOriginsLowercased;
-
-        public CorsHandler(HttpHandler nextHandler, IStaticResourceCorsConfig corsConfig) {
-            this.nextHandler = nextHandler;
-            this.corsConfig = corsConfig;
-        }
-
-        protected HttpHandler getNextHandler() {
-            return this.nextHandler;
-        }
-
-        protected IStaticResourceCorsConfig getCorsConfig() {
-            return this.corsConfig;
-        }
-
-        protected Set<String> getAllowedOriginsLowercased() {
-
-            if(this.allowedOriginsLowercased == null) {
-
-                this.allowedOriginsLowercased = new HashSet<String>();
-
-                Set<String> allowedOrigins = getCorsConfig().getAllowedOrigins();
-                if(allowedOrigins == null) {
-                    allowedOrigins = new HashSet<>();
-                }
-                for(String allowedOrigin : allowedOrigins) {
-                    if(allowedOrigin != null) {
-                        this.allowedOriginsLowercased.add(allowedOrigin.toLowerCase().trim());
-                    }
-                }
-            }
-
-            return this.allowedOriginsLowercased;
-        }
-
-        @Override
-        public void handleRequest(HttpServerExchange exchange) throws Exception {
-            IStaticResourceCorsConfig corsConfig = getCorsConfig();
-
-            do {
-
-                if(corsConfig == null) {
-                    break;
-                }
-
-                //==========================================
-                // No "Origin" header == Not a cors request!
-                // No need to do anything here.
-                //==========================================
-                HeaderValues originHeaderValues = exchange.getRequestHeaders().get(HttpHeaders.ORIGIN);
-                if(originHeaderValues == null || originHeaderValues.size() == 0) {
-                    SpincastUndertowServer.this.logger.debug("No 'Origin' header : no cors processing");
-                    break;
-                }
-                String originHeader = originHeaderValues.get(0);
-
-                //==========================================
-                // Same origin request? No need for
-                // cors headers.
-                //==========================================
-                HeaderValues hostHeaderValues = exchange.getRequestHeaders().get(HttpHeaders.HOST);
-                if(hostHeaderValues != null && hostHeaderValues.size() > 0) {
-                    String hostHeader = hostHeaderValues.get(0);
-
-                    if(hostHeader != null) {
-                        try {
-                            String originHost = new URI(originHeader).getHost();
-                            if(hostHeader.equals(originHost)) {
-                                break;
-                            }
-                        } catch(Exception ex) {
-                            throw SpincastStatics.runtimize(ex);
-                        }
-                    }
-                }
-
-                HttpString requestMethod = exchange.getRequestMethod();
-                if(!HTTPSTRING_GET.equals(requestMethod) && !HTTPSTRING_HEAD.equals(requestMethod)) {
-                    SpincastUndertowServer.this.logger.warn("Cors on static resources only available for GET and HEAD methods, not : " +
-                                                            requestMethod);
-                    break;
-                }
-
-                //==========================================
-                // Validation of the origin
-                //==========================================
-                if(!isCorsOriginValid(exchange, corsConfig, originHeader)) {
-                    SpincastUndertowServer.this.logger.info("Invalid origin for a cors request : " + originHeader);
-                    break;
-                }
-
-                //==========================================
-                // Valid cors request! 
-                // We add the headers...
-                //==========================================
-                corsAddAlloweOrigin(exchange, corsConfig, originHeader);
-                corsAddAllowCookies(exchange, corsConfig);
-                corsAddExtraHeadersAllowedToBeRead(exchange, corsConfig);
-
-            } while(false);
-
-            getNextHandler().handleRequest(exchange);
-        }
-
-        protected boolean isCorsOriginValid(HttpServerExchange exchange,
-                                            IStaticResourceCorsConfig corsConfig,
-                                            String originHeader) {
-
-            if(getAllowedOriginsLowercased().contains("*")) {
-                return true;
-            }
-
-            if(getAllowedOriginsLowercased().contains(originHeader.toLowerCase())) {
-                return true;
-            }
-
-            return false;
-        }
-
-        protected void corsAddAlloweOrigin(HttpServerExchange exchange,
-                                           IStaticResourceCorsConfig corsConfig,
-                                           String originHeader) {
-
-            Set<String> allowedOrigins = corsConfig.getAllowedOrigins();
-
-            if(allowedOrigins == null || allowedOrigins.size() == 0) {
-                return;
-            }
-
-            //==========================================
-            // When responding to a credentialed request,  
-            // server must specify a domain, and cannot use wild carding.  
-            // @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials
-            //==========================================
-            Map<String, Cookie> cookies = exchange.getRequestCookies();
-            boolean hasCookies = cookies != null && cookies.size() > 0;
-
-            String allowedOriginsStr;
-            if(!hasCookies && allowedOrigins.contains("*")) {
-                allowedOriginsStr = "*";
-            } else {
-                allowedOriginsStr = originHeader;
-
-                // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Origin
-                exchange.getResponseHeaders().add(HTTPSTRING_VARY, HttpHeaders.ORIGIN);
-            }
-
-            exchange.getResponseHeaders().put(HTTPSTRING_ACCESS_CONTROL_ALLOW_ORIGIN, allowedOriginsStr);
-        }
-
-        protected void corsAddAllowCookies(HttpServerExchange exchange, IStaticResourceCorsConfig corsConfig) {
-            if(!corsConfig.isAllowCookies()) {
-                return;
-            }
-            exchange.getResponseHeaders().put(HTTPSTRING_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-        }
-
-        protected void corsAddExtraHeadersAllowedToBeRead(HttpServerExchange exchange,
-                                                          IStaticResourceCorsConfig corsConfig) {
-
-            Set<String> extraHeadersAllowedToBeRead = corsConfig.getExtraHeadersAllowedToBeRead();
-
-            String extraHeadersAllowedToBeReadStr = "";
-            if(extraHeadersAllowedToBeRead != null && extraHeadersAllowedToBeRead.size() > 0) {
-                extraHeadersAllowedToBeReadStr = StringUtils.join(extraHeadersAllowedToBeRead, ",");
-            }
-
-            exchange.getResponseHeaders().put(HTTPSTRING_ACCESS_CONTROL_EXPOSE_HEADERS,
-                                              extraHeadersAllowedToBeReadStr);
-        }
-    }
-
     @Override
     public void addStaticResourceToServe(final IStaticResource<?> staticResource) {
 
@@ -471,9 +301,9 @@ public class SpincastUndertowServer implements IServer {
                                                                  : ResponseCodeHandler.HANDLE_404;
 
             ResourceHandler resourceHandler = new ResourceHandler(new FileResourceManager(file, 1024), next);
-            GzipCheckerHandler gzipCheckerHandler =
-                    new GzipCheckerHandler(resourceHandler, getSpincastUtils(), file.getAbsolutePath());
-            CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
+            IGzipCheckerHandler gzipCheckerHandler =
+                    getGzipCheckerHandlerFactory().create(resourceHandler, file.getAbsolutePath());
+            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
 
@@ -485,9 +315,9 @@ public class SpincastUndertowServer implements IServer {
                 classpathPath = classpathPath.substring(1);
             }
 
-            ResourceHandler resourceHandler = new ResourceHandler(new FileClassPathResourceManager(classpathPath));
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils(), classpathPath);
-            CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
+            ResourceHandler resourceHandler = new ResourceHandler(getFileClassPathResourceManagerFactory().create(classpathPath));
+            IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, classpathPath);
+            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
 
@@ -506,8 +336,8 @@ public class SpincastUndertowServer implements IServer {
                                                                  : ResponseCodeHandler.HANDLE_404;
 
             ResourceHandler resourceHandler = new ResourceHandler(new FileResourceManager(dir, 1024), next);
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils(), null);
-            CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
+            IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
+            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
 
@@ -522,8 +352,8 @@ public class SpincastUndertowServer implements IServer {
             ResourceHandler resourceHandler =
                     new ResourceHandler(new ClassPathResourceManager(SpincastUndertowServer.class.getClassLoader(),
                                                                      classpathPath));
-            GzipCheckerHandler gzipCheckerHandler = new GzipCheckerHandler(resourceHandler, getSpincastUtils(), null);
-            CorsHandler corsHandler = new CorsHandler(gzipCheckerHandler, staticResource.getCorsConfig());
+            IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
+            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
 

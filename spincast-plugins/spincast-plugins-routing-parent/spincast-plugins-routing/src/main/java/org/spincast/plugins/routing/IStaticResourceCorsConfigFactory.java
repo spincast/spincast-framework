@@ -10,5 +10,7 @@ public interface IStaticResourceCorsConfigFactory {
 
     public IStaticResourceCorsConfig create(@Assisted("allowedOrigins") Set<String> allowedOrigins,
                                             @Assisted("extraHeadersAllowedToBeRead") Set<String> extraHeadersAllowedToBeRead,
-                                            boolean allowCookies);
+                                            @Assisted("extraHeadersAllowedToBeSent") Set<String> extraHeadersAllowedToBeSent,
+                                            @Assisted("allowCookies") boolean allowCookies,
+                                            @Assisted("maxAgeInSeconds") int maxAgeInSeconds);
 }

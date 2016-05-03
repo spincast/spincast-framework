@@ -21,6 +21,8 @@ import org.spincast.core.exchange.IRequestRequestContextAddon;
 import org.spincast.core.exchange.IResponseRequestContextAddon;
 import org.spincast.core.exchange.IVariablesRequestContextAddon;
 import org.spincast.core.exchange.RequestContextType;
+import org.spincast.core.filters.CorsFilter;
+import org.spincast.core.filters.ICorsFilter;
 import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.json.IJsonArray;
@@ -224,6 +226,12 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         }
 
         bind(parametrizeWithRequestContextInterface(ISpincastFilters.class)).to(key).in(Scopes.SINGLETON);
+
+        bind(ICorsFilter.class).to(getCorsFilterClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ICorsFilter> getCorsFilterClass() {
+        return CorsFilter.class;
     }
 
     @SuppressWarnings("rawtypes")
