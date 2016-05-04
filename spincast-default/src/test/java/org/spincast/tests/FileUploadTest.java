@@ -67,7 +67,7 @@ public class FileUploadTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
-                                                     .addEntityFileUpload("someFile2.txt", true, "someName").send();
+                                             .addEntityFileUpload("someFile2.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -128,10 +128,10 @@ public class FileUploadTest extends DefaultIntegrationTestingBase {
         FileUtils.copyInputStreamToFile(stream, new File(testFilePath));
 
         IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
-                                                     .addEntityFileUpload("someFile2.txt", true, "someName")
-                                                     .addEntityFileUpload("someFile3.txt", true, "other")
-                                                     .addEntityFileUpload(testFilePath, false, "fileSystemBased")
-                                                     .send();
+                                             .addEntityFileUpload("someFile2.txt", true, "someName")
+                                             .addEntityFileUpload("someFile3.txt", true, "other")
+                                             .addEntityFileUpload(testFilePath, false, "fileSystemBased")
+                                             .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 

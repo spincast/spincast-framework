@@ -64,7 +64,7 @@ public interface IStaticResourceBuilder<R extends IRequestContext<?>> {
     public IStaticResourceBuilder<R> cors(Set<String> allowedOrigins,
                                           Set<String> extraHeadersAllowedToBeRead,
                                           Set<String> extraHeadersAllowedToBeSent);
-    
+
     /**
      * Enables Cross-Origin Resource Sharing (Cors)
      * 
@@ -79,7 +79,6 @@ public interface IStaticResourceBuilder<R extends IRequestContext<?>> {
                                           Set<String> extraHeadersAllowedToBeRead,
                                           Set<String> extraHeadersAllowedToBeSent,
                                           boolean allowCookies);
-    
 
     /**
      * Enables Cross-Origin Resource Sharing (Cors)
@@ -98,7 +97,7 @@ public interface IStaticResourceBuilder<R extends IRequestContext<?>> {
                                           Set<String> extraHeadersAllowedToBeSent,
                                           boolean allowCookies,
                                           int maxAgeInSeconds);
-    
+
     /**
      * Saves the static resource route to the router.
      * 

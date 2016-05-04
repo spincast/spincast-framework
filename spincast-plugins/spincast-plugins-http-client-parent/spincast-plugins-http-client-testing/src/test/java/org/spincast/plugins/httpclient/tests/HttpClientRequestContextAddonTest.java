@@ -84,8 +84,8 @@ public class HttpClientRequestContextAddonTest extends SpincastGuiceModuleBasedI
                 // Uses the addon!
                 //==========================================
                 IHttpResponse response = context.http().GET(url2)
-                                                        .addHeaderValue("test-header", "test-value")
-                                                        .send();
+                                                .addHeaderValue("test-header", "test-value")
+                                                .send();
 
                 assertEquals(HttpStatus.SC_OK, response.getStatus());
                 assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());

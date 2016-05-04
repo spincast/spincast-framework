@@ -6,6 +6,9 @@ import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
@@ -33,12 +36,13 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 
 /**
- * Spincast default XML converter
+ * Spincast Jackson XML manager
  */
 public class SpincastXmlManager implements IXmlManager {
 
     private final Provider<Injector> guiceProvider;
     private final IJsonManager jsonManager;
+    private final Set<IXmlMixinInfo> xmlMixinInfos;
 
     private XmlMapper xmlMapper;
     private XmlMapper xmlMapperPretty;
@@ -49,9 +53,11 @@ public class SpincastXmlManager implements IXmlManager {
 
     @Inject
     public SpincastXmlManager(Provider<Injector> guiceProvider,
-                              IJsonManager jsonManager) {
+                              IJsonManager jsonManager,
+                              @Nullable Set<IXmlMixinInfo> xmlMixinInfos) {
         this.guiceProvider = guiceProvider;
         this.jsonManager = jsonManager;
+        this.xmlMixinInfos = xmlMixinInfos;
     }
 
     protected Injector getGuice() {
@@ -62,14 +68,55 @@ public class SpincastXmlManager implements IXmlManager {
         return this.jsonManager;
     }
 
+    protected Set<IXmlMixinInfo> getXmlMixinInfos() {
+        return this.xmlMixinInfos;
+    }
+
     protected XmlMapper getXmlMapper() {
         if(this.xmlMapper == null) {
 
-            XmlMapper xmlMapper = new XmlMapper();
+            XmlMapper xmlMapper = createXmlMapper();
             registerCustomModules(xmlMapper);
             this.xmlMapper = xmlMapper;
         }
         return this.xmlMapper;
+    }
+
+    /**
+     * Creates the XmlMapper
+     */
+    protected XmlMapper createXmlMapper() {
+
+        XmlMapper xmlMapper = new XmlMapper();
+        configureXmlMapper(xmlMapper);
+        return xmlMapper;
+    }
+
+    /**
+     * Configuration of the XmlMapper.
+     */
+    protected void configureXmlMapper(XmlMapper xmlMapper) {
+
+        //==========================================
+        // To allow serialization of "empty" POJOs (no properties to serialize)
+        // (without this setting, an exception is thrown in those cases)
+        //==========================================
+        configureEmptyBeans(xmlMapper);
+
+        //==========================================
+        // Add the mixins, if any.
+        //==========================================
+        configureMixins(xmlMapper);
+    }
+
+    protected void configureEmptyBeans(XmlMapper xmlMapper) {
+        xmlMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    }
+
+    protected void configureMixins(XmlMapper xmlMapper) {
+        for(IXmlMixinInfo xmlMixinInfo : getXmlMixinInfos()) {
+            xmlMapper.addMixIn(xmlMixinInfo.getTargetClass(), xmlMixinInfo.getMixinClass());
+        }
     }
 
     protected XmlMapper getXmlMapperPretty() {

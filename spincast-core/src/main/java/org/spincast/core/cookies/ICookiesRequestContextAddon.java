@@ -44,18 +44,18 @@ public interface ICookiesRequestContextAddon<R extends IRequestContext<?>> {
      * <code>isExpired()</code> will return <code>true</code> after you called
      * this method.
      */
-     public void deleteCookie(String name);
+    public void deleteCookie(String name);
 
     /**
      * Deletes all cookies. In fact, this sets their <code>expires date</code> in the
      * past so the user's browser will remove them.
      */
-     public void deleteAllCookies();
+    public void deleteAllCookies();
 
     /**
      * Resets the current cookies to the original ones
      * of the request.
      */
-     public void resetCookies();
+    public void resetCookies();
 
 }

@@ -446,4 +446,27 @@ public class XmlTest extends DefaultIntegrationTestingBase {
         assertNotNull(jsonManager);
     }
 
+    protected static class NoPropToSerialize {
+
+        @JsonIgnore
+        public String test;
+
+    }
+
+    @Test
+    public void emptyObject() throws Exception {
+
+        IJsonObject jsonObj = this.jsonManager.create();
+        assertNotNull(jsonObj);
+
+        String xml = this.xmlManager.toXml(new NoPropToSerialize());
+        assertNotNull(xml);
+
+        IJsonArray jsonArray = this.jsonManager.createArray("[]");
+        assertNotNull(jsonArray);
+        xml = this.xmlManager.toXml(new NoPropToSerialize[0]);
+        assertNotNull(xml);
+
+    }
+
 }

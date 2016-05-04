@@ -452,8 +452,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
         getRouter().file("/one").fileSystem(getTestingWritableDir() + "/one").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
-            public void
-                    handle(IDefaultRequestContext context) {
+            public void handle(IDefaultRequestContext context) {
             }
         });
 
@@ -462,8 +461,7 @@ public class StaticResourcesTest extends DefaultIntegrationTestingBase {
                        .save(new IHandler<IDefaultRequestContext>() {
 
                            @Override
-                           public void
-                                   handle(IDefaultRequestContext context) {
+                           public void handle(IDefaultRequestContext context) {
                            }
                        });
             fail();

@@ -54,8 +54,8 @@ public class PostParamsTest extends DefaultIntegrationTestingBase {
         paramValues.add("multipleVal2");
 
         IHttpResponse response = POST("/one").addEntityFormDataValue("param1", SpincastTestUtils.TEST_STRING)
-                                                     .addEntityFormDataValue(SpincastTestUtils.TEST_STRING, "value2")
-                                                     .setEntityFormData("multiple", paramValues).send();
+                                             .addEntityFormDataValue(SpincastTestUtils.TEST_STRING, "value2")
+                                             .setEntityFormData("multiple", paramValues).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

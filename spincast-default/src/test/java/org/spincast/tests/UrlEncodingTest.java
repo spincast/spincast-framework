@@ -30,7 +30,7 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/" +
-                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                     URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -49,7 +49,7 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/one?test=" +
-                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                     URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -68,7 +68,7 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/one?test=" +
-                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                     URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -92,9 +92,9 @@ public class UrlEncodingTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/" +
-                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8") +
-                                             "?test=" +
-                                             URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                     URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8") +
+                                     "?test=" +
+                                     URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

@@ -88,38 +88,32 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
     }
 
     @Inject
-    protected void
-            setCookiesRequestContextAddonProvider(Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider) {
+    protected void setCookiesRequestContextAddonProvider(Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider) {
         this.cookiesRequestContextAddonProvider = cookiesRequestContextAddonProvider;
     }
 
     @Inject
-    protected void
-            setRequestRequestContextAddonProvider(Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider) {
+    protected void setRequestRequestContextAddonProvider(Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider) {
         this.requestRequestContextAddonProvider = requestRequestContextAddonProvider;
     }
 
     @Inject
-    protected void
-            setRoutingRequestContextAddonProvider(Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider) {
+    protected void setRoutingRequestContextAddonProvider(Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider) {
         this.routingRequestContextAddonProvider = routingRequestContextAddonProvider;
     }
 
     @Inject
-    protected void
-            setResponseRequestContextAddonProvider(Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider) {
+    protected void setResponseRequestContextAddonProvider(Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider) {
         this.responseRequestContextAddonProvider = responseRequestContextAddonProvider;
     }
 
     @Inject
-    protected void
-            setVariablesRequestContextAddonProvider(Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider) {
+    protected void setVariablesRequestContextAddonProvider(Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider) {
         this.variablesRequestContextAddonProvider = variablesRequestContextAddonProvider;
     }
 
     @Inject
-    protected void
-            setTemplatingRequestContextAddonProvider(Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider) {
+    protected void setTemplatingRequestContextAddonProvider(Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider) {
         this.templatingRequestContextAddonProvider = templatingRequestContextAddonProvider;
     }
 

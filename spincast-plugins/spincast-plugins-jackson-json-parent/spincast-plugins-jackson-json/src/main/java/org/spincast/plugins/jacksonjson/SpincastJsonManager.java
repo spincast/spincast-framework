@@ -3,8 +3,12 @@ package org.spincast.plugins.jacksonjson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
+
+import javax.annotation.Nullable;
 
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
@@ -33,12 +37,13 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 
 /**
- * Spincast default Json manager
+ * Spincast Jackson Json manager
  */
 public class SpincastJsonManager implements IJsonManager {
 
     private final IJsonObjectAssistedFactory jsonObjectFactory;
     private final Provider<Injector> guiceProvider;
+    private final Set<IJsonMixinInfo> jsonMixinInfos;
 
     private ObjectMapper objectMapper;
     private JsonSerializer<IJsonObject> jsonObjectSerializer;
@@ -63,9 +68,15 @@ public class SpincastJsonManager implements IJsonManager {
 
     @Inject
     public SpincastJsonManager(Provider<Injector> guiceProvider,
-                               IJsonObjectAssistedFactory jsonObjectFactory) {
+                               IJsonObjectAssistedFactory jsonObjectFactory,
+                               @Nullable Set<IJsonMixinInfo> jsonMixinInfos) {
         this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
+
+        if(jsonMixinInfos == null) {
+            jsonMixinInfos = new HashSet<IJsonMixinInfo>();
+        }
+        this.jsonMixinInfos = jsonMixinInfos;
     }
 
     protected Injector getGuice() {
@@ -74,6 +85,10 @@ public class SpincastJsonManager implements IJsonManager {
 
     protected IJsonObjectAssistedFactory getJsonObjectFactory() {
         return this.jsonObjectFactory;
+    }
+
+    protected Set<IJsonMixinInfo> getJsonMixinInfos() {
+        return this.jsonMixinInfos;
     }
 
     protected DefaultPrettyPrinter getJacksonPrettyPrinter() {
@@ -119,7 +134,7 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     /**
-     * Create the ObjectMapper
+     * Creates the ObjectMapper
      */
     protected ObjectMapper createObjectManager() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -128,7 +143,7 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     /**
-     * Configuration of the Jackson's ObjectMapper.
+     * Configuration of the ObjectMapper.
      */
     protected void configureObjectMapper(ObjectMapper objectMapper) {
 
@@ -136,7 +151,22 @@ public class SpincastJsonManager implements IJsonManager {
         // To allow serialization of "empty" POJOs (no properties to serialize)
         // (without this setting, an exception is thrown in those cases)
         //==========================================
+        configureEmptyBeans(objectMapper);
+
+        //==========================================
+        // Add the mixins, if any.
+        //==========================================
+        configureMixins(objectMapper);
+    }
+
+    protected void configureEmptyBeans(ObjectMapper objectMapper) {
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    }
+
+    protected void configureMixins(ObjectMapper objectMapper) {
+        for(IJsonMixinInfo jsonMixinInfo : getJsonMixinInfos()) {
+            objectMapper.addMixIn(jsonMixinInfo.getTargetClass(), jsonMixinInfo.getMixinClass());
+        }
     }
 
     protected JsonSerializer<IJsonObject> getJsonObjectSerializer() {

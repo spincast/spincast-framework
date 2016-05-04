@@ -47,7 +47,7 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
-                                                     .send();
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -74,8 +74,8 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                                     .send();
+                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -98,8 +98,8 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                                     .send();
+                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -123,7 +123,7 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
-                                                     .send();
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -147,7 +147,7 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
-                                                     .send();
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
@@ -176,8 +176,8 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                                     .send();
+                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -205,8 +205,8 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                                     .send();
+                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -235,8 +235,8 @@ public class RequestBodyTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                                      ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                                     .send();
+                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

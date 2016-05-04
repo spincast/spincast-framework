@@ -84,9 +84,9 @@ public class HeadersTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/one").addHeaderValue("header1", "val1 val2")
-                                                    .addHeaderValue("header2",
-                                                                    URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
-                                                    .send();
+                                            .addHeaderValue("header2",
+                                                            URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("", response.getContentAsString());

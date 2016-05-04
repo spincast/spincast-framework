@@ -88,7 +88,7 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         headers.put("test-header", Lists.newArrayList("test", "testb"));
         headers.put("test-header2", Lists.newArrayList("test2"));
         IHttpResponse response = GET("/").setHeaders(headers)
-                                                 .send();
+                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -115,8 +115,8 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").setHeaderValues("test-header", Lists.newArrayList("nope"))
-                                                 .setHeaderValues("test-header", Lists.newArrayList("test", "test2"))
-                                                 .send();
+                                         .setHeaderValues("test-header", Lists.newArrayList("test", "test2"))
+                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -142,8 +142,8 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue("test-header", "test1")
-                                                 .addHeaderValues("test-header", Lists.newArrayList("test2", "test3"))
-                                                 .send();
+                                         .addHeaderValues("test-header", Lists.newArrayList("test2", "test3"))
+                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -175,8 +175,8 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         });
 
         IHttpResponse response = GET("/").addHeaderValue("test-header", "test")
-                                                 .addHeaderValue("test-header2", "test2")
-                                                 .send();
+                                         .addHeaderValue("test-header2", "test2")
+                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -207,7 +207,7 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         RequestConfig noRedirectConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
 
         IHttpResponse response = GET("/").setRequestConfig(noRedirectConfig)
-                                                 .send();
+                                         .send();
 
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
     }
@@ -314,9 +314,9 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         ICookie cookie = getCookieFactory().createCookie("sendCookie13", "sendCookieVal3");
 
         IHttpResponse response = GET("/").addCookie("sendCookie1", "sendCookieVal1")
-                                                 .addCookie("sendCookie2", "sendCookieVal2")
-                                                 .addCookie(cookie)
-                                                 .send();
+                                         .addCookie("sendCookie2", "sendCookieVal2")
+                                         .addCookie(cookie)
+                                         .send();
         assertNotNull(response);
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         cookie = response.getCookie("cookie1");
@@ -387,8 +387,8 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         customHttpClientBuilder.setDefaultCookieStore(cookieStore);
 
         IHttpResponse response = GET("/").setHttpClientBuilder(customHttpClientBuilder)
-                                                 .addCookie("sentCookie1", "sent1")
-                                                 .send();
+                                         .addCookie("sentCookie1", "sent1")
+                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
