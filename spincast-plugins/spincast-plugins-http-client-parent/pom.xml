@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-http-client</module>
-        <module>spincast-plugins-http-client-testing</module>
+        <module>spincast-plugins-http-client-tests</module>
     </modules>
 	
 </project>

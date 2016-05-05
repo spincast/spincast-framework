@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-routing</module>
-        <module>spincast-plugins-routing-testing</module>
+        <module>spincast-plugins-routing-tests</module>
     </modules>
 	
 </project>

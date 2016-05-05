@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-locale-resolver</module>
-        <module>spincast-plugins-locale-resolver-testing</module>
+        <module>spincast-plugins-locale-resolver-tests</module>
     </modules>
 	
 </project>

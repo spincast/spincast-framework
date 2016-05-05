@@ -1,1 +1,0 @@
-The tests are located in the "spincast-default" artifact.

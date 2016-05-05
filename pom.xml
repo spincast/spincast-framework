@@ -19,9 +19,8 @@
     <modules>
         <module>spincast-parent</module>
         <module>spincast-shaded-dependencies</module>
-        <module>spincast-core</module>
-        <module>spincast-testing-utils</module>
-        <module>spincast-testing-core</module>
+        <module>spincast-core-parent</module>
+        <module>spincast-testing</module>
         <module>spincast-plugins</module>
         <module>spincast-default</module>
         <module>spincast-quickstart</module>

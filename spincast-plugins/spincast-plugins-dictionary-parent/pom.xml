@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-dictionary</module>
-        <module>spincast-plugins-dictionary-testing</module>
+        <module>spincast-plugins-dictionary-tests</module>
     </modules>
 
 </project>

@@ -53,6 +53,16 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>4.5.1</version>
         </dependency>
+        
+        <!--=================================== 
+        Spincast testing default
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-testing-default</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
 
 	</dependencies>
 

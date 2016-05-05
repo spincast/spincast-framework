@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-variables-addon</module>
-        <module>spincast-plugins-variables-addon-testing</module>
+        <module>spincast-plugins-variables-addon-tests</module>
     </modules>
 	
 </project>

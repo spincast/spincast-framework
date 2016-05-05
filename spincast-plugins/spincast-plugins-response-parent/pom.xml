@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-response</module>
-        <module>spincast-plugins-response-testing</module>
+        <module>spincast-plugins-response-tests</module>
     </modules>
 	
 </project>

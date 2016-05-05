@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-cookies</module>
-        <module>spincast-plugins-cookies-testing</module>
+        <module>spincast-plugins-cookies-tests</module>
     </modules>
 	
 </project>

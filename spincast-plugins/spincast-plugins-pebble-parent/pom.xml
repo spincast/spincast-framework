@@ -18,7 +18,7 @@
 
     <modules>
         <module>spincast-plugins-pebble</module>
-        <module>spincast-plugins-pebble-testing</module>
+        <module>spincast-plugins-pebble-tests</module>
     </modules>
 	
 </project>
