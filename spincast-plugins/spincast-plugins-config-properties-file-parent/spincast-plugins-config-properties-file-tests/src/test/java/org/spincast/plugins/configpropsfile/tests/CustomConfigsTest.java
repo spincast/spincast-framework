@@ -17,14 +17,17 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.configpropsfile.IFreeKeyConfig;
+import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfigDefault;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class CustomConfigClassTest extends DefaultIntegrationTestingBase {
+public class CustomConfigsTest extends DefaultIntegrationTestingBase {
 
     @Inject
     protected IAppConfig appConfig;
@@ -89,8 +92,9 @@ public class CustomConfigClassTest extends DefaultIntegrationTestingBase {
 
         @Inject
         public PropsFileBasedConfig(ISpincastUtils spincastUtils,
-                                    @MainArgs @Nullable String[] mainArgs) {
-            super(spincastUtils, mainArgs);
+                                    @MainArgs @Nullable String[] mainArgs,
+                                    @Nullable ISpincastConfigPropsFileBasedConfig pluginConfig) {
+            super(spincastUtils, mainArgs, pluginConfig);
         }
 
         @Override
@@ -144,14 +148,25 @@ public class CustomConfigClassTest extends DefaultIntegrationTestingBase {
         return new DefaultTestingModule(getMainArgsToUse()) {
 
             @Override
-            protected void configure() {
-                super.configure();
-                bind(IAppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
+            protected void bindConfigPlugin() {
+                install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType()));
             }
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
-                return PropsFileBasedConfig.class;
+            protected void configure() {
+                super.configure();
+
+                bind(ISpincastConfigPropsFileBasedConfig.class).toInstance(new SpincastConfigPropsFileBasedConfigDefault() {
+
+                    //==========================================
+                    // We enable the main arg strategy!
+                    //==========================================
+                    @Override
+                    public int getSpecificPathMainArgsPosition() {
+                        return 1;
+                    }
+                });
+                bind(IAppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
             }
         };
     }

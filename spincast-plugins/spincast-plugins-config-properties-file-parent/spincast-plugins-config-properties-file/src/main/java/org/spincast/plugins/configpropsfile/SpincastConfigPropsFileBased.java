@@ -26,8 +26,6 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastConfigPropsFileBased.class);
 
-    public static final String APP_PROPERTIES_FILE_NAME = "app.properties";
-
     public static final String APP_PROPERTIES_KEY_ENVIRONMENT_NAME = "spincast.environment.name";
     public static final String APP_PROPERTIES_KEY_ENVIRONMENT_IS_DEBUG = "spincast.environment.isDebug";
     public static final String APP_PROPERTIES_KEY_SERVER_HOST = "spincast.server.host";
@@ -38,8 +36,12 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     public static final String APP_PROPERTIES_KEY_HTTPS_SERVER_KEYSTORE_STOREPASS = "spincast.httpsServer.keystore.storepass";
     public static final String APP_PROPERTIES_KEY_HTTPS_SERVER_KEYSTORE_KEYPASS = "spincast.httpsServer.keystore.keypass";
 
-    private final String specificAppPropertiesFilePath;
     private final ISpincastUtils spincastUtils;
+    private final String[] mainArgs;
+    private final ISpincastConfigPropsFileBasedConfig pluginConfig;
+
+    private boolean specificAppPropertiesFilePathInited = false;
+    private String specificAppPropertiesFilePath;
     private Properties appProperties;
     private String foundPropertiesFilePath;
 
@@ -48,39 +50,66 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      */
     @Inject
     public SpincastConfigPropsFileBased(ISpincastUtils spincastUtils,
-                                        @MainArgs @Nullable String[] mainArgs) {
+                                        @MainArgs @Nullable String[] mainArgs,
+                                        ISpincastConfigPropsFileBasedConfig pluginConfig) {
         super();
         this.spincastUtils = spincastUtils;
-        this.specificAppPropertiesFilePath = lookForPropsFileSpecificPath(mainArgs);
+
+        if(mainArgs == null) {
+            mainArgs = new String[0];
+        }
+        this.mainArgs = mainArgs;
+
+        this.pluginConfig = pluginConfig;
     }
 
-    /**
-     * If the properties file is not at the default location where
-     * this plugin will search for it, it is possible to simply
-     * reuturn the path here. By default, if a main arg as been
-     * pased when starting the applciation, we considere it as the
-     * path to the configuration file.
-     * 
-     * You could also override this to use a envrironment variable
-     * to specify the path, for example.
-     * 
-     * @return the path to the configuration file or NULL to let
-     * the plugin search for it on the default locations.
-     */
-    protected String lookForPropsFileSpecificPath(String[] mainArgs) {
-        if(mainArgs != null && mainArgs.length > 0) {
-            return mainArgs[0];
-        } else {
-            return null;
-        }
+    protected ISpincastConfigPropsFileBasedConfig getPluginConfig() {
+        return this.pluginConfig;
     }
 
     protected ISpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
+    protected String[] getMainArgs() {
+        return this.mainArgs;
+    }
+
     protected String getSpecificAppPropertiesFilePath() {
+
+        if(!this.specificAppPropertiesFilePathInited) {
+            this.specificAppPropertiesFilePathInited = true;
+            this.specificAppPropertiesFilePath = lookForPropsFileSpecificPath();
+        }
+
         return this.specificAppPropertiesFilePath;
+    }
+
+    /**
+     * Look for a specific .properties file.
+     * 
+     * You can override this to implement your own strategy
+     * to locate the .properties file to use.
+     */
+    protected String lookForPropsFileSpecificPath() {
+
+        //==========================================
+        // Is the strategy to use a main arg parameter enabled?
+        //==========================================
+        if(getPluginConfig().getSpecificPathMainArgsPosition() > 0) {
+
+            int argPos = getPluginConfig().getSpecificPathMainArgsPosition();
+
+            String[] mainArgs = getMainArgs();
+            if(mainArgs != null && mainArgs.length >= argPos) {
+                String filePath = mainArgs[argPos - 1];
+                this.logger.info("Main argument #" + argPos + " found to be used as the configuration file path: " + filePath);
+                return filePath;
+            } else {
+                this.logger.info("The path to the configuration file to use was not found as a main argument, we'll use another strategy.");
+            }
+        }
+        return null;
     }
 
     /**
@@ -91,10 +120,6 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      */
     protected String getFoundPropertiesFilePath() {
         return this.foundPropertiesFilePath;
-    }
-
-    protected String getConfigFileName() {
-        return APP_PROPERTIES_FILE_NAME;
     }
 
     protected String getConfigKeyEnvironmentName() {
@@ -154,14 +179,15 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
 
                 this.appProperties = new Properties();
 
-                if(!StringUtils.isBlank(getSpecificAppPropertiesFilePath())) {
-                    if(!new File(getSpecificAppPropertiesFilePath()).isFile()) {
+                String specificPath = getSpecificAppPropertiesFilePath();
+                if(!StringUtils.isBlank(specificPath)) {
+                    if(!new File(specificPath).isFile()) {
                         throw new RuntimeException("Specified environment specific configuration file not found: " +
-                                                   getSpecificAppPropertiesFilePath());
+                                                   specificPath);
                     }
-                    this.logger.info("Using environment specified configuration file : " + getSpecificAppPropertiesFilePath());
-                    this.foundPropertiesFilePath = getSpecificAppPropertiesFilePath();
-                    FileInputStream stream = new FileInputStream(getSpecificAppPropertiesFilePath());
+                    this.logger.info("Using environment specified configuration file : " + specificPath);
+                    this.foundPropertiesFilePath = specificPath;
+                    FileInputStream stream = new FileInputStream(specificPath);
                     try {
                         this.appProperties.load(stream);
                     } finally {
@@ -171,7 +197,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
                 } else {
                     File jarDir = getSpincastUtils().getAppJarDirectory();
                     if(jarDir != null) {
-                        File appConfigFile = new File(jarDir.getAbsolutePath() + "/" + getConfigFileName());
+                        File appConfigFile =
+                                new File(jarDir.getAbsolutePath() + "/" + getPluginConfig().getNextToJarConfigFileName());
                         if(!appConfigFile.isFile()) {
                             this.logger.warn("No environment specific configuration file found. " +
                                              "Default configurations will be used! Was looking for : " +

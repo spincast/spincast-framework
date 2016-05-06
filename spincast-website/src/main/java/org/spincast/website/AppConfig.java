@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 
 import com.google.inject.Inject;
@@ -20,8 +21,9 @@ public class AppConfig extends SpincastConfigPropsFileBased implements IAppConfi
 
     @Inject
     public AppConfig(ISpincastUtils spincastUtils,
-                     @MainArgs @Nullable String[] mainArgs) {
-        super(spincastUtils, mainArgs);
+                     @MainArgs @Nullable String[] mainArgs,
+                     @Nullable ISpincastConfigPropsFileBasedConfig pluginConfig) {
+        super(spincastUtils, mainArgs, pluginConfig);
     }
 
     /**

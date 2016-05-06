@@ -3,9 +3,11 @@ package org.spincast.website.guice;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
-import org.spincast.plugins.config.SpincastConfigPluginGuiceModule;
+import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
 import org.spincast.website.App;
 import org.spincast.website.AppConfig;
+import org.spincast.website.AppConfigPropsFileBasedConfig;
 import org.spincast.website.IAppConfig;
 import org.spincast.website.controllers.AppController;
 import org.spincast.website.controllers.ErrorController;
@@ -29,6 +31,12 @@ public class AppModule extends SpincastDefaultGuiceModule {
         bind(App.class).in(Scopes.SINGLETON);
 
         //==========================================
+        // Bind custom configurations fo the .properties 
+        // file based config plugin.
+        //==========================================
+        bind(ISpincastConfigPropsFileBasedConfig.class).to(AppConfigPropsFileBasedConfig.class).in(Scopes.SINGLETON);
+
+        //==========================================
         // The application config
         //==========================================
         bind(IAppConfig.class).to(AppConfig.class).in(Scopes.SINGLETON);
@@ -38,16 +46,15 @@ public class AppModule extends SpincastDefaultGuiceModule {
         //==========================================
         bind(AppController.class).in(Scopes.SINGLETON);
         bind(ErrorController.class).in(Scopes.SINGLETON);
-
     }
 
     /**
-     * We use our application config instead of the Spincast
-     * default config.
+     * We use our application config class instead of the 
+     * default one for the ISpincastConfig interface.
      */
     @Override
     protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()) {
+        install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType()) {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigImplClass() {

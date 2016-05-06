@@ -234,7 +234,6 @@ public abstract class EntitySenderRequestBuilderBase<T extends IRequestBuilderBa
     public T addEntityFileUpload(String path, boolean isClasspathPath, String name) {
 
         Objects.requireNonNull(path, "The path can't be NULL");
-        Objects.requireNonNull(name, "The name can't be NULL");
 
         if(getEntityType() != null && getEntityType() != EntityType.FILE_UPLOADS) {
             this.logger.warn("There was already an entity set. It will be replaced.");
