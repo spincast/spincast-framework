@@ -50,6 +50,7 @@ Spincast Properties File Config
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
                 <li class="openable"><a href="#utility_methods">Base methods</a></li>
+                <li class="openable"><a href="#free_keys">Using free keys</a></li>
                 <li class="openable"><a href="#config_keys">The default configuration keys</a></li>  
                 <li class="openable"><a href="#example_file">Example .properties file</a></li>  
             </ul>
@@ -292,6 +293,60 @@ Spincast Properties File Config
                     </p>
                 </div>
   
+            </section>
+            
+            <section id="free_keys">
+                <h3 class="noTop">
+                    <a class="anchor" href="#free_keys" title="permanent link"></a>
+                    Using free keys
+                </h3>
+                <p>
+                    If you want to be able to access your configurations without having to
+                    define a method for all of them, you can use the provided <code>IFreeKeyConfig</code>
+                    interface:
+                </p> 
+                <p>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="0,60,0,74"
+>public static interface IAppConfig extends ISpincastConfig, IFreeKeyConfig {
+
+    public String someTypedConfig1();
+    public Boolean someTypedConfig2();
+    
+    //...
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    Now, you have access your <code>.properties</code> based configurations without having to
+                    define a method for all of them. You directly use <code>getConfig(...)</code>, 
+                    <code>getConfigInteger(...)</code> or <code>getConfigBoolean(...)</code>:
+                </p> 
+                <p>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>IAppConfig configs = getAppConfig();
+
+String config = configs.getConfig("some.config.as.string");
+config = configs.getConfig("some.non.existing.config", "default value");
+
+Integer configInt = configs.getConfigInteger("some.config.as.int");
+configInt = configs.getConfigInteger("some.non.existing.config", 42);
+
+Boolean configBool = configs.getConfigBoolean("some.config.as.bool");
+configBool = configs.getConfigBoolean("some.non.existing.config", true);
+
+// Typed configs still work too, of course:
+config = configs.someTypedConfig1();
+configBool = configs.someTypedConfig2();
+</pre> 
+                        </p>
+                    </div>   
+                </p>
+                  
             </section>
             
             <section id="config_keys">

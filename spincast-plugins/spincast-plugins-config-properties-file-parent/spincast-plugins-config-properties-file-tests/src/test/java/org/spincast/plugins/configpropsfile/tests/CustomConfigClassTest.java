@@ -16,6 +16,7 @@ import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.plugins.configpropsfile.IFreeKeyConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
@@ -62,7 +63,7 @@ public class CustomConfigClassTest extends DefaultIntegrationTestingBase {
         return new String[]{this.appPropertiesPath};
     }
 
-    public static interface IAppConfig extends ISpincastConfig {
+    public static interface IAppConfig extends ISpincastConfig, IFreeKeyConfig {
 
         public String getTestString();
 
@@ -249,6 +250,84 @@ public class CustomConfigClassTest extends DefaultIntegrationTestingBase {
 
         assertNotNull(getAppConfig().getTestIntegerNotFoundDefaultValue());
         assertEquals(Integer.valueOf(42), getAppConfig().getTestIntegerNotFoundDefaultValue());
+    }
+
+    @Test
+    public void freeKeyString() throws Exception {
+
+        String config = getAppConfig().getConfig("app.test.string");
+        assertNotNull(config);
+        assertEquals("été", config);
+    }
+
+    @Test
+    public void freeKeyStringDefault() throws Exception {
+
+        String config = getAppConfig().getConfig("nope", "yep");
+        assertNotNull(config);
+        assertEquals("yep", config);
+    }
+
+    @Test
+    public void freeKeyStringException() throws Exception {
+
+        try {
+            getAppConfig().getConfig("nope");
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void freeKeyBoolean() throws Exception {
+
+        Boolean config = getAppConfig().getConfigBoolean("app.test.boolean");
+        assertNotNull(config);
+        assertEquals(true, config);
+    }
+
+    @Test
+    public void freeKeyBooleanDefault() throws Exception {
+
+        Boolean config = getAppConfig().getConfigBoolean("nope", true);
+        assertNotNull(config);
+        assertEquals(true, config);
+    }
+
+    @Test
+    public void freeKeyBooleanException() throws Exception {
+
+        try {
+            getAppConfig().getConfigBoolean("nope");
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void freeKeyInteger() throws Exception {
+
+        Integer config = getAppConfig().getConfigInteger("app.test.integer");
+        assertNotNull(config);
+        assertEquals(new Integer(123), config);
+    }
+
+    @Test
+    public void freeKeyIntegerDefault() throws Exception {
+
+        Integer config = getAppConfig().getConfigInteger("nope", 42);
+        assertNotNull(config);
+        assertEquals(new Integer(42), config);
+    }
+
+    @Test
+    public void freeKeyIntegerException() throws Exception {
+
+        try {
+            getAppConfig().getConfigInteger("nope");
+            fail();
+        } catch(Exception ex) {
+        }
     }
 
 }

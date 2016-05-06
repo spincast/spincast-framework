@@ -22,7 +22,7 @@ import com.google.inject.Inject;
  * This configuration implementation will try to find a
  * properties file to load the configurations.
  */
-public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpincastConfig {
+public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpincastConfig, IFreeKeyConfig {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastConfigPropsFileBased.class);
 
@@ -198,7 +198,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      * Gets a String configuration and throws an exception if the
      * specified key is not found.
      */
-    protected String getConfig(String key) {
+    @Override
+    public String getConfig(String key) {
         return (String)getConfig(key, null, false);
     }
 
@@ -206,7 +207,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      * Gets a String configuration and uses the specified default value if the
      * key is not found.
      */
-    protected String getConfig(String key, String defaultValue) {
+    @Override
+    public String getConfig(String key, String defaultValue) {
         return (String)getConfig(key, defaultValue, true);
     }
 
@@ -214,7 +216,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      * Gets a boolean configuration and throws an exception if the
      * specified key is not found.
      */
-    protected Boolean getConfigBoolean(String key) {
+    @Override
+    public Boolean getConfigBoolean(String key) {
         Object value = getConfig(key, null, false);
         return Boolean.parseBoolean(value.toString());
     }
@@ -223,7 +226,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      * Gets a boolean configuration and uses the specified default value if the
      * key is not found.
      */
-    protected Boolean getConfigBoolean(String key, Boolean defaultValue) {
+    @Override
+    public Boolean getConfigBoolean(String key, Boolean defaultValue) {
         Object value = getConfig(key, defaultValue, true);
         if(value instanceof Boolean) {
             return (boolean)value;
@@ -235,7 +239,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      * Gets a integer configuration and throws an exception if the
      * specified key is not found.
      */
-    protected Integer getConfigInteger(String key) {
+    @Override
+    public Integer getConfigInteger(String key) {
         Object value = getConfig(key, null, false);
         return Integer.parseInt(value.toString());
     }
@@ -244,7 +249,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      * Gets a integer configuration and uses the specified default value if the
      * key is not found.
      */
-    protected Integer getConfigInteger(String key, Integer defaultValue) {
+    @Override
+    public Integer getConfigInteger(String key, Integer defaultValue) {
         Object value = getConfig(key, defaultValue, true);
         if(value instanceof Integer) {
             return (Integer)value;
