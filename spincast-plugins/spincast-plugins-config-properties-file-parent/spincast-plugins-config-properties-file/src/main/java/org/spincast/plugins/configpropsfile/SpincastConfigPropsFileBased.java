@@ -43,6 +43,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     private boolean specificAppPropertiesFilePathInited = false;
     private String specificAppPropertiesFilePath;
     private Properties appProperties;
+    private boolean appPropertiesLoaded = false;
     private String foundPropertiesFilePath;
 
     /**
@@ -173,7 +174,8 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
      *    SpincastConfig base class.
      */
     protected Properties getAppProperties() {
-        if(this.appProperties == null) {
+        if(!this.appPropertiesLoaded) {
+            this.appPropertiesLoaded = true;
 
             try {
 

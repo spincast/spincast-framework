@@ -41,7 +41,7 @@ public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IReq
      * is created, but before the server is started.
      */
     protected void beforeStartServer() {
-        // nothiing by default
+        // nothing by default
     }
 
     /**

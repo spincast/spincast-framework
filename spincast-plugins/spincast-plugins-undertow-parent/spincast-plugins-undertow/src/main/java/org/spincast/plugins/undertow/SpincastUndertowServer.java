@@ -3,6 +3,7 @@ package org.spincast.plugins.undertow;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.BindException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -155,7 +156,28 @@ public class SpincastUndertowServer implements IServer {
     public void start() {
 
         this.undertowServer = getServerBuilder().build();
-        this.undertowServer.start();
+
+        int serverStartTryNbr = getServerStartTryNbr();
+        for(int i = 0; i < serverStartTryNbr; i++) {
+
+            try {
+                this.undertowServer.start();
+                break;
+            } catch(Exception ex) {
+                if(ex instanceof BindException || ex.getCause() != null && ex.getCause() instanceof BindException) {
+                    this.logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
+                                     "...");
+                    if(i == (serverStartTryNbr - 1)) {
+                        try {
+                            Thread.sleep(getStartServerSleepMilliseconds());
+                        } catch(InterruptedException e) {
+                        }
+                    }
+                    continue;
+                }
+                throw ex;
+            }
+        }
 
         if(getConfig().getHttpServerPort() > 0) {
             this.logger.info("HTTP server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
@@ -165,6 +187,14 @@ public class SpincastUndertowServer implements IServer {
             this.logger.info("HTTPS server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
                              getConfig().getHttpsServerPort());
         }
+    }
+
+    protected int getServerStartTryNbr() {
+        return 5;
+    }
+
+    protected long getStartServerSleepMilliseconds() {
+        return 500;
     }
 
     protected Builder getServerBuilder() {

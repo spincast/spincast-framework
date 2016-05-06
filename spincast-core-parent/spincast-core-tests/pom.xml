@@ -4,9 +4,8 @@
 	
     <parent>
         <groupId>org.spincast</groupId>
-        <artifactId>spincast-parent</artifactId>
+        <artifactId>spincast-core-parent</artifactId>
         <version>0.9.10-SNAPSHOT</version>
-        <relativePath>../spincast-parent</relativePath>
     </parent>
     
 	<artifactId>spincast-core-tests</artifactId>
