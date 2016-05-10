@@ -5,28 +5,21 @@ import java.lang.reflect.Type;
 import org.spincast.core.cookies.ICookie;
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.cookies.ICookiesRequestContextAddon;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastGuiceScopes;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  * Guice module for the Spincast Cookies plugin.
  */
-public class SpincastCookiesPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastCookiesPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastCookiesPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override

@@ -32,6 +32,7 @@
         <module>spincast-plugins-dictionary-parent</module>
         <module>spincast-plugins-config-properties-file-parent</module> 
         <module>spincast-plugins-http-client-parent</module> 
+        <module>spincast-plugins-validation-parent</module>  
     </modules>
 
 </project>

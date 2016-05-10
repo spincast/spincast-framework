@@ -4,8 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastGuiceScopes;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.core.routing.IRoute;
 import org.spincast.core.routing.IRouteBuilder;
 import org.spincast.core.routing.IRouteBuilderFactory;
@@ -25,20 +25,13 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 /**
  * Guice module for the Spincast Routing plugin.
  */
-public class SpincastRoutingPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastRoutingPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override
@@ -96,7 +89,7 @@ public class SpincastRoutingPluginGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(ISpincastRouterConfig.class);
     }
 
-    protected Key<?> getRouterKey() {
+    protected Key<?> getRouterImplementationKey() {
 
         //==========================================
         // If we use the defaulre quest context, we
@@ -122,7 +115,7 @@ public class SpincastRoutingPluginGuiceModule extends SpincastGuiceModuleBase {
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRouter() {
 
-        Key key = getRouterKey();
+        Key key = getRouterImplementationKey();
         try {
             key.getTypeLiteral().getSupertype(IRouter.class);
         } catch(Exception ex) {

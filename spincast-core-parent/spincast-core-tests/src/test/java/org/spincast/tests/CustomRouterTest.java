@@ -39,7 +39,7 @@ public class CustomRouterTest extends DefaultIntegrationTestingBase {
                 install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
 
                     @Override
-                    protected Key<?> getRouterKey() {
+                    protected Key<?> getRouterImplementationKey() {
                         return Key.get(CustomRouter.class);
                     }
                 });

@@ -2,25 +2,18 @@ package org.spincast.plugins.pebble;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.core.templating.ITemplatingEngine;
 
 import com.google.inject.Scopes;
 
-public class SpincastPebblePluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastPebblePluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastPebblePluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override

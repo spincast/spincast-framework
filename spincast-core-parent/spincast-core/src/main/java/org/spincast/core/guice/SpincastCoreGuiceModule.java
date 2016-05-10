@@ -28,7 +28,7 @@ import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
-import org.spincast.core.json.IJsonObjectAssistedFactory;
+import org.spincast.core.json.IJsonObjectFactory;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.locale.ILocaleResolver;
@@ -322,23 +322,23 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
                                               .implement(IJsonArray.class,
                                                          jsonArrayKeyAnnotation,
                                                          jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectAssistedFactory.class));
+                                              .build(IJsonObjectFactory.class));
         } else if(jsonObjectKeyAnnotation != null) {
             install(new FactoryModuleBuilder().implement(IJsonObject.class,
                                                          jsonObjectKeyAnnotation,
                                                          jsonObjectKey.getTypeLiteral())
                                               .implement(IJsonArray.class, jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectAssistedFactory.class));
+                                              .build(IJsonObjectFactory.class));
         } else if(jsonArrayKeyAnnotation != null) {
             install(new FactoryModuleBuilder().implement(IJsonObject.class, jsonObjectKey.getTypeLiteral())
                                               .implement(IJsonArray.class,
                                                          jsonArrayKeyAnnotation,
                                                          jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectAssistedFactory.class));
+                                              .build(IJsonObjectFactory.class));
         } else {
             install(new FactoryModuleBuilder().implement(IJsonObject.class, jsonObjectKey.getTypeLiteral())
                                               .implement(IJsonArray.class, jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectAssistedFactory.class));
+                                              .build(IJsonObjectFactory.class));
         }
     }
 

@@ -23,7 +23,6 @@ import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.JsonObject;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -87,11 +86,14 @@ public class JsonObjectsTest extends SpincastGuiceModuleBasedTestBase {
         String jsonStr = this.jsonManager.toJsonString(jsonObj, true);
         assertNotNull(jsonStr);
 
-        String[] tokens = jsonStr.split("\n");
-        assertEquals(3, tokens.length);
-        assertEquals("{", StringUtils.strip(tokens[0], "\r\n\t "));
-        assertEquals("\"someInt\" : 123", StringUtils.strip(tokens[1], "\r\n\t "));
-        assertEquals("}", StringUtils.strip(tokens[2], "\r\n\t "));
+        StringBuilder expected = new StringBuilder();
+
+        expected.append("{\n");
+        expected.append("    \"someInt\" : 123\n");
+        expected.append("}");
+
+        assertEquals(expected.toString(), jsonStr);
+
     }
 
     @Test

@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
-import org.spincast.core.json.IJsonObjectAssistedFactory;
+import org.spincast.core.json.IJsonObjectFactory;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
@@ -41,7 +41,7 @@ import com.google.inject.Provider;
  */
 public class SpincastJsonManager implements IJsonManager {
 
-    private final IJsonObjectAssistedFactory jsonObjectFactory;
+    private final IJsonObjectFactory jsonObjectFactory;
     private final Provider<Injector> guiceProvider;
     private final Set<IJsonMixinInfo> jsonMixinInfos;
 
@@ -68,7 +68,7 @@ public class SpincastJsonManager implements IJsonManager {
 
     @Inject
     public SpincastJsonManager(Provider<Injector> guiceProvider,
-                               IJsonObjectAssistedFactory jsonObjectFactory,
+                               IJsonObjectFactory jsonObjectFactory,
                                @Nullable Set<IJsonMixinInfo> jsonMixinInfos) {
         this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
@@ -83,7 +83,7 @@ public class SpincastJsonManager implements IJsonManager {
         return this.guiceProvider.get();
     }
 
-    protected IJsonObjectAssistedFactory getJsonObjectFactory() {
+    protected IJsonObjectFactory getJsonObjectFactory() {
         return this.jsonObjectFactory;
     }
 
@@ -95,12 +95,16 @@ public class SpincastJsonManager implements IJsonManager {
         if(this.jacksonPrettyPrinter == null) {
             this.jacksonPrettyPrinter = new DefaultPrettyPrinter();
 
-            Indenter indenter = new DefaultIndenter(getJacksonPrettyPrinterIndentation(), DefaultIndenter.SYS_LF);
+            Indenter indenter = new DefaultIndenter(getJacksonPrettyPrinterIndentation(), getJacksonPrettyPrinterNewline());
 
             this.jacksonPrettyPrinter.indentObjectsWith(indenter);
             this.jacksonPrettyPrinter.indentArraysWith(indenter);
         }
         return this.jacksonPrettyPrinter;
+    }
+
+    protected String getJacksonPrettyPrinterNewline() {
+        return "\n"; // DefaultIndenter.SYS_LF
     }
 
     protected String getJacksonPrettyPrinterIndentation() {

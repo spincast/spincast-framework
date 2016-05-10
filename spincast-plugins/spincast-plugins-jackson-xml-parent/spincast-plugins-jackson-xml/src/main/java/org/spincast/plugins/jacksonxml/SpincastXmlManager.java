@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlPrettyPrinter;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.google.inject.Inject;
@@ -43,6 +44,7 @@ public class SpincastXmlManager implements IXmlManager {
     private final Provider<Injector> guiceProvider;
     private final IJsonManager jsonManager;
     private final Set<IXmlMixinInfo> xmlMixinInfos;
+    private final XmlPrettyPrinter xmlPrettyPrinter;
 
     private XmlMapper xmlMapper;
     private XmlMapper xmlMapperPretty;
@@ -54,10 +56,12 @@ public class SpincastXmlManager implements IXmlManager {
     @Inject
     public SpincastXmlManager(Provider<Injector> guiceProvider,
                               IJsonManager jsonManager,
-                              @Nullable Set<IXmlMixinInfo> xmlMixinInfos) {
+                              @Nullable Set<IXmlMixinInfo> xmlMixinInfos,
+                              XmlPrettyPrinter xmlPrettyPrinter) {
         this.guiceProvider = guiceProvider;
         this.jsonManager = jsonManager;
         this.xmlMixinInfos = xmlMixinInfos;
+        this.xmlPrettyPrinter = xmlPrettyPrinter;
     }
 
     protected Injector getGuice() {
@@ -70,6 +74,10 @@ public class SpincastXmlManager implements IXmlManager {
 
     protected Set<IXmlMixinInfo> getXmlMixinInfos() {
         return this.xmlMixinInfos;
+    }
+
+    protected XmlPrettyPrinter getXmlPrettyPrinter() {
+        return this.xmlPrettyPrinter;
     }
 
     protected XmlMapper getXmlMapper() {
@@ -122,8 +130,12 @@ public class SpincastXmlManager implements IXmlManager {
     protected XmlMapper getXmlMapperPretty() {
         if(this.xmlMapperPretty == null) {
             XmlMapper xmlMapper = getXmlMapper().copy();
-            registerCustomModules(xmlMapper);
+
+            xmlMapper.setDefaultPrettyPrinter(getXmlPrettyPrinter());
             xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+            registerCustomModules(xmlMapper);
+
             this.xmlMapperPretty = xmlMapper;
         }
         return this.xmlMapperPretty;

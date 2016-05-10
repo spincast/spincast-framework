@@ -2,26 +2,21 @@ package org.spincast.plugins.jacksonxml;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.core.xml.IXmlManager;
 
+import com.fasterxml.jackson.dataformat.xml.XmlPrettyPrinter;
+import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter.Indenter;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 
-public class SpincastJacksonXmlPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastJacksonXmlPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastJacksonXmlPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override
@@ -29,6 +24,9 @@ public class SpincastJacksonXmlPluginGuiceModule extends SpincastGuiceModuleBase
 
         bindXmlManager();
         bindXmlMixinsMultiBinder();
+
+        binxCustomXmlPrettyPrinter();
+        bindCustomXmlIndenter();
     }
 
     protected void bindXmlManager() {
@@ -47,6 +45,23 @@ public class SpincastJacksonXmlPluginGuiceModule extends SpincastGuiceModuleBase
         //==========================================
         @SuppressWarnings("unused")
         Multibinder<IXmlMixinInfo> uriBinder = Multibinder.newSetBinder(binder(), IXmlMixinInfo.class);
+    }
+
+    protected void binxCustomXmlPrettyPrinter() {
+        // Not singleton! Because of SpincastXmlPrettyPrinter#createInstance()
+        bind(XmlPrettyPrinter.class).to(getXmlPrettyPrinterClass());
+    }
+
+    protected Class<? extends XmlPrettyPrinter> getXmlPrettyPrinterClass() {
+        return SpincastXmlPrettyPrinter.class;
+    }
+
+    protected void bindCustomXmlIndenter() {
+        bind(Indenter.class).to(getXmlIndenterClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends Indenter> getXmlIndenterClass() {
+        return SpincastXmlIndenter.class;
     }
 
 }

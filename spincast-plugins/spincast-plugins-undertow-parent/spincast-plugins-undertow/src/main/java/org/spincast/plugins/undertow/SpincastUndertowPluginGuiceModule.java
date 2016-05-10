@@ -2,26 +2,19 @@ package org.spincast.plugins.undertow;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.core.server.IServer;
 
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
-public class SpincastUndertowPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastUndertowPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override

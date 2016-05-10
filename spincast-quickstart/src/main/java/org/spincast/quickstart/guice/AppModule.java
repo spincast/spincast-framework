@@ -98,7 +98,7 @@ public class AppModule extends SpincastDefaultGuiceModule {
         install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
 
             @Override
-            protected Key<?> getRouterKey() {
+            protected Key<?> getRouterImplementationKey() {
                 return Key.get(AppRouter.class);
             }
         });

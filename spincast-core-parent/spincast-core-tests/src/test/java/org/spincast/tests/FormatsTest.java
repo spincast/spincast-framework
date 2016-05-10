@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.json.IJsonObject;
-import org.spincast.core.json.IJsonObjectAssistedFactory;
+import org.spincast.core.json.IJsonObjectFactory;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -26,7 +26,7 @@ import com.google.inject.Inject;
 public class FormatsTest extends DefaultIntegrationTestingBase {
 
     @Inject
-    protected IJsonObjectAssistedFactory jsonObjectFactory;
+    protected IJsonObjectFactory jsonObjectFactory;
 
     @Inject
     protected IXmlManager xmlManager;

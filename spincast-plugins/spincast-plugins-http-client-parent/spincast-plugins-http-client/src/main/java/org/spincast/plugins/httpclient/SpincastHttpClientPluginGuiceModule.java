@@ -2,7 +2,7 @@ package org.spincast.plugins.httpclient;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.plugins.httpclient.builders.ConnectRequestBuilder;
 import org.spincast.plugins.httpclient.builders.DeleteRequestBuilder;
 import org.spincast.plugins.httpclient.builders.GetRequestBuilder;
@@ -27,20 +27,13 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 /**
  * Guice module for the Spincast Http Client plugin.
  */
-public class SpincastHttpClientPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastHttpClientPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastHttpClientPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override

@@ -3,31 +3,24 @@ package org.spincast.plugins.request;
 import java.lang.reflect.Type;
 
 import org.spincast.core.exchange.IRequestRequestContextAddon;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastGuiceScopes;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
 /**
  * Guice module for the Spincast Request plugin.
  */
-public class SpincastRequestPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastRequestPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastRequestPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
+        super(requestContextType);
     }
 
     @Override
     protected void configure() {
         bindRequestContextAddon();
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
     }
 
     protected void bindRequestContextAddon() {

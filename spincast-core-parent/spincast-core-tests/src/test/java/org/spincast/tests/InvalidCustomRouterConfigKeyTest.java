@@ -21,7 +21,7 @@ public class InvalidCustomRouterConfigKeyTest extends DefaultIntegrationTestingB
                 install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
 
                     @Override
-                    protected Key<?> getRouterKey() {
+                    protected Key<?> getRouterImplementationKey() {
                         return Key.get(ISpincastUtils.class); // Invalid!
                     }
                 });

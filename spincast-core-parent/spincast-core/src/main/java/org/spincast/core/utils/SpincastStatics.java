@@ -3,6 +3,8 @@ package org.spincast.core.utils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -72,6 +74,9 @@ public class SpincastStatics {
         return new RuntimeException(ex.getMessage(), ex);
     }
 
+    /**
+     * Gets the stack trace of an Exception.
+     */
     public static String getStackTrace(Throwable ex) {
         return getInstance().getStackTraceInstance(ex);
     }
@@ -86,6 +91,172 @@ public class SpincastStatics {
         PrintWriter pw = new PrintWriter(sw);
         ex.printStackTrace(pw);
         return sw.toString();
+    }
+
+    /**
+     * Creates a map.
+     */
+    public static <K, V> Map<K, V> map(K key1, V value1) {
+        return getInstance().mapInstance(key1, value1);
+    }
+
+    /**
+     * Creates a Map&lt;String, Object&gt; map.
+     */
+    public static Map<String, Object> params(String key1, Object value1) {
+        return map(key1, value1);
+    }
+
+    protected <K, V> Map<K, V> mapInstance(K key1, V value1) {
+
+        Objects.requireNonNull(key1, "The keys can't be NULL");
+
+        Map<K, V> map = new HashMap<K, V>();
+        map.put(key1, value1);
+
+        return map;
+    }
+
+    /**
+     * Creates a map.
+     */
+    public static <K, V> Map<K, V> map(K key1, V value1,
+                                       K key2, V value2) {
+        return getInstance().mapInstance(key1,
+                                         value1,
+                                         key2,
+                                         value2);
+    }
+
+    /**
+     * Creates a Map&lt;String, Object&gt; map.
+     */
+    public static Map<String, Object> params(String key1, Object value1, String key2, Object value2) {
+        return map(key1, value1, key2, value2);
+    }
+
+    protected <K, V> Map<K, V> mapInstance(K key1, V value1,
+                                           K key2, V value2) {
+
+        Objects.requireNonNull(key2, "The keys can't be NULL");
+
+        Map<K, V> map = mapInstance(key1, value1);
+        map.put(key2, value2);
+
+        return map;
+    }
+
+    /**
+     * Creates a map.
+     */
+    public static <K, V> Map<K, V> map(K key1, V value1,
+                                       K key2, V value2,
+                                       K key3, V value3) {
+        return getInstance().mapInstance(key1,
+                                         value1,
+                                         key2,
+                                         value2,
+                                         key3,
+                                         value3);
+    }
+
+    /**
+     * Creates a Map&lt;String, Object&gt; map.
+     */
+    public static Map<String, Object> params(String key1, Object value1, String key2, Object value2, String key3, Object value3) {
+        return map(key1, value1, key2, value2, key3, value3);
+    }
+
+    protected <K, V> Map<K, V> mapInstance(K key1, V value1,
+                                           K key2, V value2,
+                                           K key3, V value3) {
+
+        Objects.requireNonNull(key3, "The keys can't be NULL");
+
+        Map<K, V> map = mapInstance(key1, value1, key2, value2);
+        map.put(key3, value3);
+
+        return map;
+    }
+
+    /**
+     * Creates a map.
+     */
+    public static <K, V> Map<K, V> map(K key1, V value1,
+                                       K key2, V value2,
+                                       K key3, V value3,
+                                       K key4, V value4) {
+        return getInstance().mapInstance(key1,
+                                         value1,
+                                         key2,
+                                         value2,
+                                         key3,
+                                         value3,
+                                         key4,
+                                         value4);
+    }
+
+    /**
+     * Creates a Map&lt;String, Object&gt; map.
+     */
+    public static Map<String, Object> params(String key1, Object value1, String key2, Object value2, String key3, Object value3,
+                                             String key4, Object value4) {
+        return map(key1, value1, key2, value2, key3, value3, key4, value4);
+    }
+
+    protected <K, V> Map<K, V> mapInstance(K key1, V value1,
+                                           K key2, V value2,
+                                           K key3, V value3,
+                                           K key4, V value4) {
+
+        Objects.requireNonNull(key4, "The keys can't be NULL");
+
+        Map<K, V> map = mapInstance(key1, value1, key2, value2, key3, value3);
+        map.put(key4, value4);
+
+        return map;
+    }
+
+    /**
+     * Creates a map.
+     */
+    public static <K, V> Map<K, V> map(K key1, V value1,
+                                       K key2, V value2,
+                                       K key3, V value3,
+                                       K key4, V value4,
+                                       K key5, V value5) {
+        return getInstance().mapInstance(key1,
+                                         value1,
+                                         key2,
+                                         value2,
+                                         key3,
+                                         value3,
+                                         key4,
+                                         value4,
+                                         key5,
+                                         value5);
+    }
+
+    /**
+     * Creates a Map&lt;String, Object&gt; map.
+     */
+    public static Map<String, Object> params(String key1, Object value1, String key2, Object value2, String key3, Object value3,
+                                             String key4, Object value4, String key5, Object value5) {
+        return map(key1, value1, key2, value2, key3, value3, key4, value4, key5, value5);
+    }
+
+    protected <K, V> Map<K, V> mapInstance(K key1, V value1,
+                                           K key2, V value2,
+                                           K key3, V value3,
+                                           K key4, V value4,
+                                           K key5, V value5) {
+
+        Objects.requireNonNull(key5, "The keys can't be NULL");
+
+        Map<K, V> map = mapInstance(key1, value1, key2, value2, key3, value3, key4, value4);
+        map.put(key5, value5);
+
+        return map;
     }
 
 }

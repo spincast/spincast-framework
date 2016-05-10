@@ -2,26 +2,19 @@ package org.spincast.plugins.jacksonjson;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.core.json.IJsonManager;
 
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 
-public class SpincastJacksonJsonPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastJacksonJsonPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastJacksonJsonPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override

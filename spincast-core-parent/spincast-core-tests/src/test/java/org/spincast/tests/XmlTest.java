@@ -17,7 +17,6 @@ import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
@@ -65,11 +64,38 @@ public class XmlTest extends DefaultIntegrationTestingBase {
         String xml = this.xmlManager.toXml(jsonObj, true);
         assertNotNull(xml);
 
-        String[] tokens = xml.split("\n");
-        assertEquals(3, tokens.length);
-        assertEquals("<JsonObject>", StringUtils.strip(tokens[0], "\r\n\t "));
-        assertEquals("<someInt>123</someInt>", StringUtils.strip(tokens[1], "\r\n\t "));
-        assertEquals("</JsonObject>", StringUtils.strip(tokens[2], "\r\n\t "));
+        StringBuilder expected = new StringBuilder();
+        expected.append("<JsonObject>\n");
+        expected.append("    <someInt>123</someInt>\n");
+        expected.append("</JsonObject>");
+
+        assertEquals(expected.toString(), xml);
+    }
+
+    protected static class User {
+
+        public String name;
+        public int age;
+    }
+
+    @Test
+    public void toXmlPretty2() throws Exception {
+
+        User user = new User();
+        user.name = "Stromgol";
+        user.age = 42;
+
+        String xml = this.xmlManager.toXml(user, true);
+        assertNotNull(xml);
+
+        StringBuilder expected = new StringBuilder();
+
+        expected.append("<User>\n");
+        expected.append("    <name>Stromgol</name>\n");
+        expected.append("    <age>42</age>\n");
+        expected.append("</User>");
+
+        assertEquals(expected.toString(), xml);
     }
 
     @Test

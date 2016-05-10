@@ -3,27 +3,20 @@ package org.spincast.plugins.config;
 import java.lang.reflect.Type;
 
 import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
 import com.google.inject.Scopes;
 
 /**
  * Guice module for the Spincast Config plugin.
  */
-public class SpincastConfigPluginGuiceModule extends SpincastGuiceModuleBase {
-
-    private final Type requestContextType;
+public class SpincastConfigPluginGuiceModule extends SpincastPluginGuiceModuleBase {
 
     /**
      * Constructor.
      */
     public SpincastConfigPluginGuiceModule(Type requestContextType) {
-        this.requestContextType = requestContextType;
-    }
-
-    @Override
-    protected Type getRequestContextType() {
-        return this.requestContextType;
+        super(requestContextType);
     }
 
     @Override

@@ -9,13 +9,12 @@ import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
 import org.spincast.website.exchange.IAppRequestContext;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 public class AppController {
 

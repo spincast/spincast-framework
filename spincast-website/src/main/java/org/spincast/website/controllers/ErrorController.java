@@ -9,13 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
 import org.spincast.website.exchange.IAppRequestContext;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 public class ErrorController {
 

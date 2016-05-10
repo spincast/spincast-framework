@@ -34,7 +34,7 @@ public class CustomRouterNotParameterizedTest extends DefaultIntegrationTestingB
                 install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
 
                     @Override
-                    protected Key<?> getRouterKey() {
+                    protected Key<?> getRouterImplementationKey() {
                         return Key.get(CustomRouter2.class);
                     }
                 });
