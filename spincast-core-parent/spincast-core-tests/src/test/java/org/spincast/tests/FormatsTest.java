@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,11 +15,13 @@ import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.IJsonObjectFactory;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.IHandler;
+import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -30,6 +33,9 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
 
     @Inject
     protected IXmlManager xmlManager;
+
+    @Inject
+    protected ITemplatingEngine templatingEngine;
 
     @Test
     public void toJsonString() throws Exception {
@@ -309,7 +315,8 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                String content = "Hello {{name}}!";
+                String placeholder = context.templating().createPlaceholder("name");
+                String content = "Hello " + placeholder + "!";
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("name", "Toto");
                 String evaluated = context.templating().evaluate(content, params);
@@ -324,6 +331,10 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
     @Test
     public void fromTemplate() throws Exception {
 
+        final File testFile = new File(createTestingFilePath());
+        String placeholder = this.templatingEngine.createPlaceholder("param1");
+        FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
+
         getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
@@ -331,7 +342,7 @@ public class FormatsTest extends DefaultIntegrationTestingBase {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("param1", "Toto");
-                String evaluated = context.templating().fromTemplate("/template.html", params);
+                String evaluated = context.templating().fromTemplate(testFile.getAbsolutePath(), false, params);
                 assertEquals("<p>test : Toto</p>", evaluated);
             }
         });

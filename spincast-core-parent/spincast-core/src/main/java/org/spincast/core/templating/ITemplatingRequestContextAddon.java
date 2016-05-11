@@ -60,13 +60,53 @@ public interface ITemplatingRequestContextAddon<R extends IRequestContext<?>> {
      * Renders a template using the given parameters.
      * 
      * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
+     * 
+     * @param templatePath must be a classpath's relative path.
      */
     public String fromTemplate(String templatePath, Map<String, Object> params);
 
     /**
      * Renders a template usgin the given parameters.
      * Uses the <code>Locale</code> specified.
+     * 
+     * @param templatePath must be a classpath's relative path.
      */
     public String fromTemplate(String templatePath, Map<String, Object> params, Locale locale);
+
+    /**
+     * Renders a template using the given parameters.
+     * 
+     * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params);
+
+    /**
+     * Renders a template usgin the given parameters.
+     * Uses the <code>Locale</code> specified.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale);
+
+    /**
+     * Creates a placeholder using the current templating engine
+     * implementation. 
+     * <p>
+     * This is mainly useful for the tests, which don't know in advance
+     * which templating engine will be used, so which syntax to use
+     * for the placeholders.
+     * </p>
+     * <p>
+     * For example, using Pebble, a call to <code>createPlaceholder("name")</code> will
+     * result in "<code>{{name}}</code>" (without the quotes).
+     * </p>
+     */
+    public String createPlaceholder(String variable);
 
 }

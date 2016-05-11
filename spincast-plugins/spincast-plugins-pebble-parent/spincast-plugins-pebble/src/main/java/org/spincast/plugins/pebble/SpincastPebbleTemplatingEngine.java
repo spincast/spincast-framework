@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.PebbleEngine.Builder;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
+import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -26,7 +27,8 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     private final ISpincastConfig spincastConfig;
     private PebbleEngine pebbleEngineString;
-    private PebbleEngine pebbleEngineTemplate;
+    private PebbleEngine pebbleEngineTemplateClasspath;
+    private PebbleEngine pebbleEngineTemplateFileSystem;
 
     @Inject
     public SpincastPebbleTemplatingEngine(ISpincastConfig spincastConfig) {
@@ -47,14 +49,24 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
         return this.pebbleEngineString;
     }
 
-    protected PebbleEngine getPebbleEngineTemplate() {
-        if(this.pebbleEngineTemplate == null) {
+    protected PebbleEngine getPebbleEngineTemplateClasspath() {
+        if(this.pebbleEngineTemplateClasspath == null) {
 
-            Builder builder = new PebbleEngine.Builder().loader(getTemplateLoader());
+            Builder builder = new PebbleEngine.Builder().loader(getClasspathTemplateLoader());
             addCommonLoaderFeatures(builder);
-            this.pebbleEngineTemplate = builder.build();
+            this.pebbleEngineTemplateClasspath = builder.build();
         }
-        return this.pebbleEngineTemplate;
+        return this.pebbleEngineTemplateClasspath;
+    }
+
+    protected PebbleEngine getPebbleEngineTemplateFileSystem() {
+        if(this.pebbleEngineTemplateFileSystem == null) {
+
+            Builder builder = new PebbleEngine.Builder().loader(getFileSystemTemplateLoader());
+            addCommonLoaderFeatures(builder);
+            this.pebbleEngineTemplateFileSystem = builder.build();
+        }
+        return this.pebbleEngineTemplateFileSystem;
     }
 
     protected void addCommonLoaderFeatures(Builder builder) {
@@ -65,9 +77,14 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
         }
     }
 
-    protected Loader<String> getTemplateLoader() {
+    protected Loader<String> getClasspathTemplateLoader() {
         ClasspathLoader classpathLoader = new ClasspathLoader(SpincastPebbleTemplatingEngine.class.getClassLoader());
         return classpathLoader;
+    }
+
+    protected Loader<String> getFileSystemTemplateLoader() {
+        FileLoader fileSystemLoader = new FileLoader();
+        return fileSystemLoader;
     }
 
     @Override
@@ -77,7 +94,7 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     @Override
     public String evaluate(String content, Map<String, Object> params, Locale locale) {
-        return parse(content, params, false, locale);
+        return parse(content, params, false, false, locale);
     }
 
     @Override
@@ -96,16 +113,6 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
     }
 
     @Override
-    public String fromTemplate(String templatePath, Map<String, Object> params, Locale locale) {
-
-        if(templatePath != null && templatePath.startsWith("/")) {
-            templatePath = templatePath.substring(1);
-        }
-
-        return parse(templatePath, params, true, locale);
-    }
-
-    @Override
     public String fromTemplate(String templatePath, IJsonObject jsonObject) {
         return fromTemplate(templatePath, jsonObject.getUnderlyingMap(), null);
     }
@@ -115,9 +122,35 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
         return fromTemplate(templatePath, jsonObject.getUnderlyingMap(), locale);
     }
 
+    @Override
+    public String fromTemplate(String templatePath, Map<String, Object> params, Locale locale) {
+        return parse(templatePath, params, true, true, locale);
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params) {
+        return parse(templatePath, params, true, isClasspathPath, null);
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale) {
+        return parse(templatePath, params, true, isClasspathPath, locale);
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject jsonObject) {
+        return parse(templatePath, jsonObject.getUnderlyingMap(), true, isClasspathPath, null);
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject jsonObject, Locale locale) {
+        return parse(templatePath, jsonObject.getUnderlyingMap(), true, isClasspathPath, locale);
+    }
+
     protected String parse(String htmlOrPath,
                            Map<String, Object> params,
                            boolean isTemplate,
+                           boolean isClasspathPath,
                            Locale locale) {
         try {
 
@@ -131,7 +164,15 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
             PebbleEngine pebbleEngine;
             if(isTemplate) {
-                pebbleEngine = getPebbleEngineTemplate();
+                if(isClasspathPath) {
+                    pebbleEngine = getPebbleEngineTemplateClasspath();
+
+                    if(htmlOrPath != null && htmlOrPath.startsWith("/")) {
+                        htmlOrPath = htmlOrPath.substring(1);
+                    }
+                } else {
+                    pebbleEngine = getPebbleEngineTemplateFileSystem();
+                }
             } else {
                 pebbleEngine = getPebbleEngineString();
             }
@@ -147,6 +188,11 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    @Override
+    public String createPlaceholder(String variable) {
+        return "{{" + variable + "}}";
     }
 
 }

@@ -72,12 +72,21 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
 
     @Override
     public String fromTemplate(String templatePath, Map<String, Object> params) {
-        return fromTemplate(templatePath, params, getLocaleToUse());
+        return fromTemplate(templatePath, true, params, getLocaleToUse());
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params) {
+        return fromTemplate(templatePath, isClasspathPath, params, getLocaleToUse());
     }
 
     @Override
     public String fromTemplate(String templatePath, Map<String, Object> params, Locale locale) {
+        return fromTemplate(templatePath, true, params, locale);
+    }
 
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale) {
         if(params == null) {
             params = new HashMap<String, Object>();
         }
@@ -85,7 +94,7 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
         // We also add the global variables!
         params.putAll(getTemplatingGlobalVariables());
 
-        return getTemplatingEngine().fromTemplate(templatePath, params, locale);
+        return getTemplatingEngine().fromTemplate(templatePath, isClasspathPath, params, locale);
     }
 
     @Override
@@ -111,6 +120,11 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
     @Override
     public void deleteTemplatingGlobalVariable(String key) {
         getTemplatingGlobalVariables().remove(key);
+    }
+
+    @Override
+    public String createPlaceholder(String variable) {
+        return getTemplatingEngine().createPlaceholder(variable);
     }
 
 }

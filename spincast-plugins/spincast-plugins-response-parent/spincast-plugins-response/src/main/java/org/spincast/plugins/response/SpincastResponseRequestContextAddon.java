@@ -430,30 +430,50 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
     @Override
     public void sendHtmlTemplate(String templatePath, Map<String, Object> params) {
-        sendHtmlTemplate(templatePath, params, false);
+        sendHtmlTemplate(templatePath, true, params, false);
+    }
+
+    @Override
+    public void sendHtmlTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params) {
+        sendHtmlTemplate(templatePath, isClasspathPath, params, false);
     }
 
     @Override
     public void sendHtmlTemplate(String templatePath, Map<String, Object> params, boolean flush) {
+        sendHtmlTemplate(templatePath, true, params, flush);
+    }
 
-        String evaluated = getRequestContext().templating().fromTemplate(templatePath, params);
+    @Override
+    public void sendHtmlTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, boolean flush) {
+        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, params);
         sendHtml(evaluated, flush);
     }
 
     @Override
     public void sendTemplate(String templatePath, String contentType, Map<String, Object> params) {
-        sendTemplate(templatePath, contentType, params, false);
+        sendTemplate(templatePath, true, contentType, params, false);
+    }
+
+    @Override
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, Map<String, Object> params) {
+        sendTemplate(templatePath, isClasspathPath, contentType, params, false);
     }
 
     @Override
     public void sendTemplate(String templatePath, String contentType, Map<String, Object> params, boolean flush) {
+        sendTemplate(templatePath, true, contentType, params, flush);
+    }
+
+    @Override
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, Map<String, Object> params,
+                             boolean flush) {
 
         if(StringUtils.isBlank(contentType)) {
-            sendHtmlTemplate(templatePath, params, flush);
+            sendHtmlTemplate(templatePath, isClasspathPath, params, flush);
             return;
         }
 
-        String evaluated = getRequestContext().templating().fromTemplate(templatePath, params);
+        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, params);
         sendCharacters(evaluated, contentType, flush);
     }
 

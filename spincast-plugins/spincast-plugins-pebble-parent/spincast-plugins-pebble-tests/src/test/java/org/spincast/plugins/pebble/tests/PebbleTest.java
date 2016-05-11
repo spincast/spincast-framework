@@ -1,9 +1,8 @@
-package org.spincast.tests;
+package org.spincast.plugins.pebble.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,30 +15,11 @@ import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-/**
- * There are some tests we can't do here because we don't know
- * the implementation of the templating engine that is going to be used.
- * <p>
- * Depending on the implementation, the placeholders format may not
- * be the same: "${name}" vs "{{name}}", for example.
- * </p>
- * <p>
- * So one limitation for the tests here is that we can't directly
- * use a file on the classpath, we have to generate the content
- * to be parsed by ourself and make sure the correct placeholders
- * format is used.
- * </p>
- * <p>
- * For tests specfic to an implementation, checs the implementation
- * plugin's project!
- * </p>
- */
-public class TemplatingTest extends DefaultIntegrationTestingBase {
+public class PebbleTest extends DefaultIntegrationTestingBase {
 
     @Inject
     protected ITemplatingEngine templatingEngine;
@@ -50,10 +30,6 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
     @Test
     public void htmlTemplate() throws Exception {
 
-        final File testFile = new File(createTestingFilePath());
-        String placeholder = this.templatingEngine.createPlaceholder("param1");
-        FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
-
         getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
@@ -61,7 +37,7 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("param1", "Hello!");
-                context.response().sendHtmlTemplate(testFile.getAbsolutePath(), false, params);
+                context.response().sendHtmlTemplate("/template.html", params);
             }
         });
 
@@ -75,10 +51,6 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
     @Test
     public void genericTemplate() throws Exception {
 
-        final File testFile = new File(createTestingFilePath());
-        String placeholder = this.templatingEngine.createPlaceholder("fontPxSize");
-        FileUtils.writeStringToFile(testFile, "body {font-size : " + placeholder + "px;}", "UTF-8");
-
         getRouter().GET("/test.css").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
@@ -86,7 +58,7 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("fontPxSize", 16);
-                context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css", params);
+                context.response().sendTemplate("/template.css", "text/css", params);
             }
         });
 
@@ -99,10 +71,6 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
 
     @Test
     public void resourceUsingTemplate() throws Exception {
-
-        final File testFile = new File(createTestingFilePath());
-        String placeholder = this.templatingEngine.createPlaceholder("fontPxSize");
-        FileUtils.writeStringToFile(testFile, "body {font-size : " + placeholder + "px;}", "UTF-8");
 
         String generatedFilePath = getTestingWritableDir().getAbsolutePath() + "/generated.css";
 
@@ -121,7 +89,7 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("fontPxSize", 16);
-                context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css", params);
+                context.response().sendTemplate("/template.css", "text/css", params);
             }
         });
 
@@ -138,6 +106,7 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
 
         // Still 1!
         assertEquals(1, nbrTimeCalled[0]);
+
     }
 
     @Test
@@ -146,8 +115,7 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", "Stromgol");
 
-        String placeholder = this.templatingEngine.createPlaceholder("name");
-        String result = this.templatingEngine.evaluate("Hello " + placeholder, params);
+        String result = this.templatingEngine.evaluate("Hello {{name}}", params);
         assertNotNull(result);
         assertEquals("Hello Stromgol", result);
     }
@@ -158,8 +126,7 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
         IJsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("name", "Stromgol");
 
-        String placeholder = this.templatingEngine.createPlaceholder("name");
-        String result = this.templatingEngine.evaluate("Hello " + placeholder, jsonObj);
+        String result = this.templatingEngine.evaluate("Hello {{name}}", jsonObj);
         assertNotNull(result);
         assertEquals("Hello Stromgol", result);
     }
@@ -167,14 +134,10 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
     @Test
     public void fromTemplateMap() throws Exception {
 
-        final File testFile = new File(createTestingFilePath());
-        String placeholder = this.templatingEngine.createPlaceholder("param1");
-        FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
-
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("param1", "Stromgol");
 
-        String result = this.templatingEngine.fromTemplate(testFile.getAbsolutePath(), false, params);
+        String result = this.templatingEngine.fromTemplate("template.html", params);
         assertNotNull(result);
         assertEquals("<p>test : Stromgol</p>", result);
     }
@@ -182,14 +145,10 @@ public class TemplatingTest extends DefaultIntegrationTestingBase {
     @Test
     public void fromTemplateJsonObject() throws Exception {
 
-        final File testFile = new File(createTestingFilePath());
-        String placeholder = this.templatingEngine.createPlaceholder("param1");
-        FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
-
         IJsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("param1", "Stromgol");
 
-        String result = this.templatingEngine.fromTemplate(testFile.getAbsolutePath(), false, jsonObj);
+        String result = this.templatingEngine.fromTemplate("template.html", jsonObj);
         assertNotNull(result);
         assertEquals("<p>test : Stromgol</p>", result);
     }

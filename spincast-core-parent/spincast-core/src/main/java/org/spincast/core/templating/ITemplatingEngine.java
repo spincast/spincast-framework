@@ -46,6 +46,8 @@ public interface ITemplatingEngine {
      * Evaluates a template using the given parameters.
      * 
      * Uses the default Locale.
+     * 
+     * @param templatePath must be a classpath's relative path.
      */
     public String fromTemplate(String templatePath, Map<String, Object> params);
 
@@ -53,6 +55,8 @@ public interface ITemplatingEngine {
      * Evaluates a template using the given parameters.
      * 
      * Uses the specified Locale.
+     * 
+     * @param templatePath must be a classpath's relative path.
      */
     public String fromTemplate(String templatePath, Map<String, Object> params, Locale locale);
 
@@ -61,6 +65,8 @@ public interface ITemplatingEngine {
      * as a <code>IJsonObject</code>.
      * 
      * Uses the default Locale.
+     * 
+     * @param templatePath must be a classpath's relative path.
      */
     public String fromTemplate(String templatePath, IJsonObject jsonObject);
 
@@ -69,7 +75,71 @@ public interface ITemplatingEngine {
      * as a <code>IJsonObject</code>.
      * 
      * Uses the specified Locale.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     * 
      */
     public String fromTemplate(String templatePath, IJsonObject jsonObject, Locale locale);
+
+    /**
+     * Evaluates a template using the given parameters.
+     * 
+     * Uses the default Locale.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params);
+
+    /**
+     * Evaluates a template using the given parameters.
+     * 
+     * Uses the specified Locale.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale);
+
+    /**
+     * Evaluates a template using the parameters specified 
+     * as a <code>IJsonObject</code>.
+     * 
+     * Uses the default Locale.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject jsonObject);
+
+    /**
+     * Evaluates a template using the parameters specified 
+     * as a <code>IJsonObject</code>.
+     * 
+     * Uses the specified Locale.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject jsonObject, Locale locale);
+
+    /**
+     * Creates a placeholder using the current templating engine
+     * implementation. 
+     * <p>
+     * This is mainly useful for the tests, which don't know in advance
+     * which templating engine will be used, so which syntax to use
+     * for the placeholders.
+     * </p>
+     * <p>
+     * For example, using Pebble, a call to <code>createPlaceholder("name")</code> will
+     * result in "<code>{{name}}</code>" (without the quotes).
+     * </p>
+     */
+    public String createPlaceholder(String variable);
 
 }

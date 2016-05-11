@@ -162,7 +162,6 @@ Spincast Response plugin
 		                <ul class="apiList">
                         
                         
-    
 <li>
     <code class="apiItem">boolean <span>isClosed</span>()</code>
     <div class="well">
@@ -388,6 +387,10 @@ Spincast Response plugin
  the given parameters, then sends the
  result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
@@ -399,6 +402,10 @@ Spincast Response plugin
  result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
 <br />Note that once the response is flushed, no header can be added or changed anymore.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
@@ -409,6 +416,10 @@ Spincast Response plugin
  the given parameters, then sends the
  result using the given <code>contentType</code>, without flushing.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
@@ -420,6 +431,76 @@ Spincast Response plugin
  result using the given <code>contentType</code>, and flushes, if specified.
 <br />Note that once the response is flushed, no header can be added or changed anymore.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params, boolean flush)</code>
+    <div class="well">
+        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendTemplate</span>(String templatePath, boolean isClasspathPath, String contentType, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result using the given <code>contentType</code>, without flushing.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendTemplate</span>(String templatePath, boolean isClasspathPath, String contentType, Map&lt;String, Object&gt; params,                              boolean flush)</code>
+    <div class="well">
+        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+ the given parameters, then sends the
+ result using the given <code>contentType</code>, and flushes, if specified.
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
     </div>
 </li>
 
@@ -658,9 +739,6 @@ Spincast Response plugin
 </li>
 
 
-    
-    
-    
     
 
 

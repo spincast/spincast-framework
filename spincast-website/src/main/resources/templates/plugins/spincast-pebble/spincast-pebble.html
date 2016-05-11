@@ -182,8 +182,6 @@ Spincast Pebble plugin
                         <ul class="apiList">
                         
            
-      
-      
 <li>
     <code class="apiItem">String <span>evaluate</span>(String content, Map&lt;String, Object&gt; params)</code>
     <div class="well">
@@ -228,6 +226,10 @@ Spincast Pebble plugin
         Evaluates a template using the given parameters.
 <br />Uses the default Locale.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
@@ -237,6 +239,10 @@ Spincast Pebble plugin
         Evaluates a template using the given parameters.
 <br />Uses the specified Locale.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
@@ -247,6 +253,10 @@ Spincast Pebble plugin
  as a <code>IJsonObject</code>.
 <br />Uses the default Locale.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
@@ -257,13 +267,95 @@ Spincast Pebble plugin
  as a <code>IJsonObject</code>.
 <br />Uses the specified Locale.
 
+        <div class="apiItemFooter">
+            @param templatePath must be a classpath's relative path.
+
+        </div>
     </div>
 </li>
 
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params)</code>
+    <div class="well">
+        Evaluates a template using the given parameters.
+<br />Uses the default Locale.
 
-      
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
 
-           
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params, Locale locale)</code>
+    <div class="well">
+        Evaluates a template using the given parameters.
+<br />Uses the specified Locale.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, IJsonObject jsonObject)</code>
+    <div class="well">
+        Evaluates a template using the parameters specified
+ as a <code>IJsonObject</code>.
+<br />Uses the default Locale.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, IJsonObject jsonObject, Locale locale)</code>
+    <div class="well">
+        Evaluates a template using the parameters specified
+ as a <code>IJsonObject</code>.
+<br />Uses the specified Locale.
+
+        <div class="apiItemFooter">
+            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+ a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+ system path.
+
+        </div>
+    </div>
+</li>
+
+{% verbatim %}
+<li>
+    <code class="apiItem">String <span>createPlaceholder</span>(String variable)</code>
+    <div class="well">
+        Creates a placeholder using the current templating engine
+ implementation.
+ <p>
+<br />This is mainly useful for the tests, which don't know in advance
+ which templating engine will be used, so which syntax to use
+ for the placeholders.
+ </p>
+ <p>
+<br />For example, using Pebble, a call to <code>createPlaceholder("name")</code> will
+result in "<code>{{name}}</code>" (without the quotes).
+ </p>
+
+    </div>
+</li>
+{% endverbatim %}
+
            
 
                         </ul>  

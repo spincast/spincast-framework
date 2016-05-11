@@ -52,7 +52,10 @@ public class SpincastValidationConfigDefault implements ISpincastValidationConfi
     }
 
     protected String getErrorMessageDefaultMinLengthRaw() {
-        return "Minimum length of {{minLength}} characters. Currently: {{currentLength}} characters.";
+        String minLengthPlaceholder = getTemplatingEngine().createPlaceholder("minLength");
+        String currentLengthPlaceholder = getTemplatingEngine().createPlaceholder("currentLength");
+        return "Minimum length of " + minLengthPlaceholder + " characters. Currently: " + currentLengthPlaceholder +
+               " characters.";
     }
 
     @Override
@@ -65,7 +68,10 @@ public class SpincastValidationConfigDefault implements ISpincastValidationConfi
     }
 
     protected String getErrorMessageDefaultMaxLengthRaw() {
-        return "Maximum length of {{maxLength}} characters. Currently: {{currentLength}} characters.";
+        String maxLengthPlaceholder = getTemplatingEngine().createPlaceholder("minLength");
+        String currentLengthPlaceholder = getTemplatingEngine().createPlaceholder("currentLength");
+        return "Maximum length of " + maxLengthPlaceholder + " characters. Currently: " + currentLengthPlaceholder +
+               " characters.";
     }
 
     @Override
@@ -85,7 +91,8 @@ public class SpincastValidationConfigDefault implements ISpincastValidationConfi
     }
 
     protected String getErrorMessageDefaultPatternRaw() {
-        return "Doesn't match the pattern: \"{{pattern}}\".";
+        String patternPlaceholder = getTemplatingEngine().createPlaceholder("pattern");
+        return "Doesn't match the pattern: \"" + patternPlaceholder + "\".";
     }
 
     @Override
@@ -107,7 +114,9 @@ public class SpincastValidationConfigDefault implements ISpincastValidationConfi
     }
 
     protected String getErrorMessageDefaultMinSizeRaw() {
-        return "The minimum value is {{minSize}}. Currently: {{currentSize}}.";
+        String minSizePlaceholder = getTemplatingEngine().createPlaceholder("minSize");
+        String currentSizePlaceholder = getTemplatingEngine().createPlaceholder("currentSize");
+        return "The minimum value is " + minSizePlaceholder + ". Currently: " + currentSizePlaceholder + ".";
     }
 
     @Override
@@ -120,7 +129,9 @@ public class SpincastValidationConfigDefault implements ISpincastValidationConfi
     }
 
     protected String getErrorMessageDefaultMaxSizeRaw() {
-        return "The maximum value is {{maxSize}}. Currently: {{currentSize}}.";
+        String maxSizePlaceholder = getTemplatingEngine().createPlaceholder("maxSize");
+        String currentSizePlaceholder = getTemplatingEngine().createPlaceholder("currentSize");
+        return "The maximum value is " + maxSizePlaceholder + ". Currently: " + currentSizePlaceholder + ".";
     }
 
 }
