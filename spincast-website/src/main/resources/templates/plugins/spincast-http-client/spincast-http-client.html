@@ -243,8 +243,9 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 
     @AssistedInject
     public AppRequestContext(@Assisted Object exchange,
+                             RequestContextBaseDeps&lt;IAppRequestContext&gt; requestContextBaseDeps,
                              IHttpClient httpClient) {
-        super(exchange);
+        super(exchange, requestContextBaseDeps);
         this.httpClient = httpClient;
     }
     

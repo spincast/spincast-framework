@@ -10,6 +10,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.RequestContextBase;
+import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -44,8 +45,9 @@ public class CustomRequestContextAddonsTest extends SpincastGuiceModuleBasedInte
                                            implements ITestRequestContext {
 
         @AssistedInject
-        public TestRequestContext(@Assisted Object exchange) {
-            super(exchange);
+        public TestRequestContext(@Assisted Object exchange,
+                                  RequestContextBaseDeps<ITestRequestContext> requestContextBaseDeps) {
+            super(exchange, requestContextBaseDeps);
         }
 
         //==========================================

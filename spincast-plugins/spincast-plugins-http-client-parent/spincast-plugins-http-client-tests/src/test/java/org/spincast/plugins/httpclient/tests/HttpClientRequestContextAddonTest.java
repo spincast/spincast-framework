@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.RequestContextBase;
+import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultTestingModule;
@@ -34,8 +35,9 @@ public class HttpClientRequestContextAddonTest extends SpincastGuiceModuleBasedI
 
         @AssistedInject
         public CustomRequestContext(@Assisted Object exchange,
+                                    RequestContextBaseDeps<ICustomRequestContext> requestContextBaseDeps,
                                     IHttpClient spincastHttpClientFactory) {
-            super(exchange);
+            super(exchange, requestContextBaseDeps);
             this.spincastHttpClientFactory = spincastHttpClientFactory;
         }
 

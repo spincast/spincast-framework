@@ -20,6 +20,7 @@ import org.spincast.core.exchange.IRequestContextFactory;
 import org.spincast.core.exchange.IRequestRequestContextAddon;
 import org.spincast.core.exchange.IResponseRequestContextAddon;
 import org.spincast.core.exchange.IVariablesRequestContextAddon;
+import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.filters.CorsFilter;
 import org.spincast.core.filters.ICorsFilter;
@@ -114,6 +115,12 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         bindRequestContextInRequestScope();
 
         //==========================================
+        // Bind the request context base's depenedencies
+        // wrapper
+        //==========================================
+        bindRequestContextBaseDeps();
+
+        //==========================================
         // Bind the default predefined route parameter patterns binder.
         //==========================================
         bindDefaultPredefinedRouteParamPatternsBinder();
@@ -142,6 +149,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         // Bind JsonObject factory
         //==========================================
         bindJsonObjectFactory();
+
     }
 
     /**
@@ -200,6 +208,10 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         bind(Key.get(typeLiteral))
                                   .toProvider((Provider)SpincastRequestScope.getSeedErrorProvider(Key.get(typeLiteral)))
                                   .in(SpincastGuiceScopes.REQUEST);
+    }
+
+    protected void bindRequestContextBaseDeps() {
+        bind(parametrizeWithRequestContextInterface(RequestContextBaseDeps.class)).in(Scopes.SINGLETON);
     }
 
     @Override

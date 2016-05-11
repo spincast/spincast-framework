@@ -1,4 +1,5 @@
 
+
 body {
     background-color: #FFFFFF; 
     font-family:arial;
@@ -421,6 +422,8 @@ a.love:hover::after {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     color:#FFFFFF;
+    position:relative;
+    overflow:hidden;
 }
 
 #jumb span {
@@ -441,6 +444,19 @@ a.love:hover::after {
         text-align:center;
     }
 }
+
+#ribbon {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+#ribbon a {
+  outline : none;
+}
+#ribbon img {
+  outline : none;
+}
+
 
 #features h3 {
     text-decoration:underline;

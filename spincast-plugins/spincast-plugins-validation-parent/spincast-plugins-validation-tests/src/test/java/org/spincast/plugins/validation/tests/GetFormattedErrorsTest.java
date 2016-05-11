@@ -5,16 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.validation.FormatType;
-import org.spincast.plugins.validation.ISpincastValidationConfig;
-import org.spincast.plugins.validation.IValidationErrorFactory;
 import org.spincast.plugins.validation.IValidator;
 import org.spincast.plugins.validation.IValidatorFactory;
 import org.spincast.plugins.validation.SpincastValidationPluginGuiceModule;
 import org.spincast.plugins.validation.SpincastValidatorBase;
+import org.spincast.plugins.validation.SpincastValidatorBaseDeps;
 import org.spincast.plugins.validation.tests.utils.IUser;
 import org.spincast.plugins.validation.tests.utils.User;
 import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
@@ -37,15 +34,8 @@ public class GetFormattedErrorsTest extends SpincastGuiceModuleBasedTestBase {
 
         @AssistedInject
         public UserValidator(@Assisted IUser user,
-                             IValidationErrorFactory validationErrorFactory,
-                             ISpincastValidationConfig spincastBeanValidationConfig,
-                             IJsonManager jsonManager,
-                             IXmlManager xmlManager) {
-            super(user,
-                  validationErrorFactory,
-                  spincastBeanValidationConfig,
-                  jsonManager,
-                  xmlManager);
+                             SpincastValidatorBaseDeps spincastValidatorBaseDeps) {
+            super(user, spincastValidatorBaseDeps);
         }
 
         @Override

@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
+import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
@@ -21,6 +22,7 @@ public class SpincastValidationPluginGuiceModule extends SpincastPluginGuiceModu
     @Override
     protected void configure() {
         bindValidationErrorFactory();
+        bindSpincastValidatorBaseDeps();
     }
 
     protected void bindValidationErrorFactory() {
@@ -31,6 +33,10 @@ public class SpincastValidationPluginGuiceModule extends SpincastPluginGuiceModu
 
     protected Class<? extends IValidationError> getValidationErrorImplementationClass() {
         return ValidatorError.class;
+    }
+
+    protected void bindSpincastValidatorBaseDeps() {
+        bind(SpincastValidatorBaseDeps.class).in(Scopes.SINGLETON);
     }
 
 }

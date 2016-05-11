@@ -33,8 +33,9 @@ public class DefaultRequestContext extends RequestContextBase<IDefaultRequestCon
     protected final Logger logger = LoggerFactory.getLogger(DefaultRequestContext.class);
 
     @AssistedInject
-    public DefaultRequestContext(@Assisted Object exchange) {
-        super(exchange);
+    public DefaultRequestContext(@Assisted Object exchange,
+                                 RequestContextBaseDeps<IDefaultRequestContext> requestContextBaseDeps) {
+        super(exchange, requestContextBaseDeps);
     }
 
 }

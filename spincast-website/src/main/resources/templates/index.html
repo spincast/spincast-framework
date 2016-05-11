@@ -14,6 +14,7 @@ Index
     <div class="row"> 
         <div class="col-xs-12">
 		    <div id="jumb" class="jumbotron">
+                <div id="ribbon"><a href="http://todobackend.com"><img src="/public/images/try.png" /></a></div>
 		        <h1>Propulsion for your web backend</h1>
 		        <p><span class="orange spincast">Spincast</span> is an highly flexible 
                 and <a href="https://github.com/spincast/spincast-framework"><span>open source</span></a> Java web framework, based on Guice.</p>
@@ -471,8 +472,9 @@ Index
                                implements IAppRequestContext {
 
     @AssistedInject
-    public AppRequestContext(@Assisted Object exchange) {
-        super(exchange);
+    public AppRequestContext(@Assisted Object exchange,
+                             RequestContextBaseDeps&lt;IAppRequestContext&gt; requestContextBaseDeps) {
+        super(exchange, requestContextBaseDeps);
     }
 
     @Override
@@ -495,14 +497,14 @@ Index
                                         <code>translate(...)</code> method is declared.
                                     </li>
                                     <li>
-                                        <span class="code-line-nbr">4-7</span> : The constructor is annotated with
+                                        <span class="code-line-nbr">4-8</span> : The constructor is annotated with
                                         <code>@AssistedInject</code> because it will be used by a Guice
                                         <a href="https://github.com/google/guice/wiki/AssistedInject">assisted factory</a>.
-                                        Don't worry too much about this or about the <code>exchange</code> parameter, 
-                                        the latter is simply required by the parent class's constructor.
+                                        Don't worry too much about this or about the parameters, 
+                                        they are simply required by the parent class's constructor.
                                     </li>
                                     <li>
-                                        <span class="code-line-nbr">9-14</span> : A dummy implementation of our new
+                                        <span class="code-line-nbr">10-15</span> : A dummy implementation of our new
                                         method, <code>translate(...)</code>. 
                                     </li> 
                                 </ul>

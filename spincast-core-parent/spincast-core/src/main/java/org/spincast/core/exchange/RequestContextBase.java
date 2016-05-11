@@ -17,14 +17,11 @@ import org.spincast.core.templating.ITemplatingRequestContextAddon;
 import org.spincast.core.xml.IXmlManager;
 
 import com.google.inject.Binding;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
 
 /**
  * The base implementation for a request context object.
@@ -43,17 +40,17 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
     protected final Logger logger = LoggerFactory.getLogger(RequestContextBase.class);
 
     private final Object exchange;
-    private Provider<Injector> injectorProvider;
-    private ILocaleResolver localeResolver;
-    private IJsonManager jsonManager;
-    private IXmlManager xmlManager;
+    private final Provider<Injector> injectorProvider;
+    private final ILocaleResolver localeResolver;
+    private final IJsonManager jsonManager;
+    private final IXmlManager xmlManager;
 
-    private Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider;
-    private Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider;
-    private Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider;
-    private Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
-    private Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider;
-    private Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
+    private final Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider;
+    private final Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider;
+    private final Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider;
+    private final Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
+    private final Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider;
+    private final Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
 
     private ICookiesRequestContextAddon<R> cookiesRequestContextAddon;
     private IVariablesRequestContextAddon<R> variablesRequestContextAddon;
@@ -67,59 +64,19 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
     /**
      * Constructor
      */
-    @AssistedInject
-    public RequestContextBase(@Assisted Object exchange) {
+    public RequestContextBase(Object exchange,
+                              RequestContextBaseDeps<R> requestContextBaseDeps) {
         this.exchange = exchange;
-    }
-
-    @Inject
-    protected void setLocaleResolver(ILocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
-    }
-
-    @Inject
-    protected void setJsonManager(IJsonManager jsonManager) {
-        this.jsonManager = jsonManager;
-    }
-
-    @Inject
-    protected void setXmlManager(IXmlManager xmlManager) {
-        this.xmlManager = xmlManager;
-    }
-
-    @Inject
-    protected void setCookiesRequestContextAddonProvider(Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider) {
-        this.cookiesRequestContextAddonProvider = cookiesRequestContextAddonProvider;
-    }
-
-    @Inject
-    protected void setRequestRequestContextAddonProvider(Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider) {
-        this.requestRequestContextAddonProvider = requestRequestContextAddonProvider;
-    }
-
-    @Inject
-    protected void setRoutingRequestContextAddonProvider(Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider) {
-        this.routingRequestContextAddonProvider = routingRequestContextAddonProvider;
-    }
-
-    @Inject
-    protected void setResponseRequestContextAddonProvider(Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider) {
-        this.responseRequestContextAddonProvider = responseRequestContextAddonProvider;
-    }
-
-    @Inject
-    protected void setVariablesRequestContextAddonProvider(Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider) {
-        this.variablesRequestContextAddonProvider = variablesRequestContextAddonProvider;
-    }
-
-    @Inject
-    protected void setTemplatingRequestContextAddonProvider(Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider) {
-        this.templatingRequestContextAddonProvider = templatingRequestContextAddonProvider;
-    }
-
-    @Inject
-    protected void setInjectorProvider(Provider<Injector> injectorProvider) {
-        this.injectorProvider = injectorProvider;
+        this.injectorProvider = requestContextBaseDeps.getInjectorProvider();
+        this.localeResolver = requestContextBaseDeps.getLocaleResolver();
+        this.jsonManager = requestContextBaseDeps.getJsonManager();
+        this.xmlManager = requestContextBaseDeps.getXmlManager();
+        this.cookiesRequestContextAddonProvider = requestContextBaseDeps.getCookiesRequestContextAddonProvider();
+        this.variablesRequestContextAddonProvider = requestContextBaseDeps.getVariablesRequestContextAddonProvider();
+        this.requestRequestContextAddonProvider = requestContextBaseDeps.getRequestRequestContextAddonProvider();
+        this.responseRequestContextAddonProvider = requestContextBaseDeps.getResponseRequestContextAddonProvider();
+        this.routingRequestContextAddonProvider = requestContextBaseDeps.getRoutingRequestContextAddonProvider();
+        this.templatingRequestContextAddonProvider = requestContextBaseDeps.getTemplatingRequestContextAddonProvider();
     }
 
     public Injector guice() {

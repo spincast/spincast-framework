@@ -562,8 +562,9 @@ Section "Request Context / Extending the request context type"
                                implements IAppRequestContext {
 
     @AssistedInject
-    public AppRequestContext(@Assisted Object exchange) {
-        super(exchange);
+    public AppRequestContext(@Assisted Object exchange, 
+                             RequestContextBaseDeps&lt;IAppRequestContext&gt; requestContextBaseDeps) {
+        super(exchange, requestContextBaseDeps);
     }
 
     @Override
@@ -587,13 +588,14 @@ Section "Request Context / Extending the request context type"
                         <span class="code-line-nbr">2</span> :We implement our custom interface.
                     </li>
                     <li>
-                        <span class="code-line-nbr">4-7</span> : The base class requires the server's
-                        <code>exchange</code> object, which is going to be injected using an 
+                        <span class="code-line-nbr">4-8</span> : The base class requires the server's
+                        <code>exchange</code> object and a <code>RequestContextBaseDeps</code> parameter, 
+                        which are going to be injected using an 
                         <a href="https://github.com/google/guice/wiki/AssistedInject">assisted factory</a>. Don't
                         worry too much about this. Simply add this constructor, and things should be working.
                     </li>
                     <li>
-                        <span class="code-line-nbr">9-14</span> : We implement our new <code>translate(...)</code> method.
+                        <span class="code-line-nbr">10-15</span> : We implement our new <code>translate(...)</code> method.
                     </li>
                 </ul>
             </p>  

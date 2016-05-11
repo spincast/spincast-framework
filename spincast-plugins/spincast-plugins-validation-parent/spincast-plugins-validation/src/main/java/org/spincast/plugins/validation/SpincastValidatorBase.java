@@ -35,17 +35,14 @@ public abstract class SpincastValidatorBase<T> implements IValidator {
      * Constructor
      */
     public SpincastValidatorBase(T objToValidate,
-                                 IValidationErrorFactory validationErrorFactory,
-                                 ISpincastValidationConfig spincastBeanValidationConfig,
-                                 IJsonManager jsonManager,
-                                 IXmlManager xmlManager) {
+                                 SpincastValidatorBaseDeps spincastValidatorBaseDeps) {
         Objects.requireNonNull(objToValidate, "The object to validate can't be NULL");
         this.objToValidate = objToValidate;
 
-        this.validationErrorFactory = validationErrorFactory;
-        this.spincastBeanValidationConfig = spincastBeanValidationConfig;
-        this.jsonManager = jsonManager;
-        this.xmlManager = xmlManager;
+        this.validationErrorFactory = spincastValidatorBaseDeps.getValidationErrorFactory();
+        this.spincastBeanValidationConfig = spincastValidatorBaseDeps.getSpincastBeanValidationConfig();
+        this.jsonManager = spincastValidatorBaseDeps.getJsonManager();
+        this.xmlManager = spincastValidatorBaseDeps.getXmlManager();
     }
 
     protected T getObjToValidate() {
@@ -573,7 +570,8 @@ public abstract class SpincastValidatorBase<T> implements IValidator {
      * @param mustMatch if <code>true</code>, the field must match the pattern, if
      * <code>false</code>, it must not match it.
      */
-    protected boolean validatePattern(String fieldName, String fieldValue, String pattern, boolean mustMatch, String errorMessage) {
+    protected boolean validatePattern(String fieldName, String fieldValue, String pattern, boolean mustMatch,
+                                      String errorMessage) {
 
         Objects.requireNonNull(pattern, "The pattern can't be NULL");
 

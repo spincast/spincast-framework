@@ -168,7 +168,7 @@ Spincast Properties File Config
                     A factory is required because
                     a validator is <em>stateful</em>, it keeps informations about the current object being 
                     validated. Therefore a validator can't be reused and a new instance must 
-                    be created for each object to validate, using its associated factory.
+                    be created for each object to validate, using the factory.
                 </p>
                 <p>
                     <div>
@@ -198,7 +198,7 @@ Spincast Properties File Config
                     </div>   
                 </p>
                 <p>
-                    Finally, you can then inject the <code>IValidatorFactory&lt;IUser&gt;</code> where you need to
+                    You can then inject the <code>IValidatorFactory&lt;IUser&gt;</code> where you need to
                     create validators for users. Let's see an example...
                 </p>
                 
@@ -351,21 +351,14 @@ Spincast Properties File Config
 
     @AssistedInject
     public UserValidator(@Assisted IUser user,
-                         IValidationErrorFactory validationErrorFactory,
-                         ISpincastValidationConfig spincastBeanValidationConfig,
-                         IJsonManager jsonManager,
-                         IXmlManager xmlManager) {
-        super(user,
-              validationErrorFactory,
-              spincastBeanValidationConfig,
-              jsonManager,
-              xmlManager);
+                         SpincastValidatorBaseDeps spincastValidatorBaseDeps) {
+        super(user, spincastValidatorBaseDeps);
     }
 
     @Override
     protected void validate() {
 
-        // The name of the user can be null.
+        // The name of the user can't be null.
         validateNotNull("name", getObjToValidate().getName());
 
         // The password of the user should be at least 12 characters long.
@@ -384,23 +377,25 @@ Spincast Properties File Config
                             <span class="explanation">Explanation :</span>
                             <ul>
                                 <li>
-                                    <span class="code-line-nbr">16-17</span> : We override the abstract <code>validate()</code>
+                                    <span class="code-line-nbr">9-10</span> : We override the abstract <code>validate()</code>
                                     method, which is where we declare the validation rules.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">20</span> : We validate that the user's <code>name</code> is 
+                                    <span class="code-line-nbr">13</span> : We validate that the user's <code>name</code> is 
                                     <em>not null</em>. Validation rules may use methods provided by the <code>SpincastValidatorBase</code>
                                     base class, like <code>validateNotNull(...)</code> in this case. Each of those validation rule 
                                     at least takes a <code>name</code> representing the field that
-                                    is validated on the target object, and the value of the field.
+                                    is validated on the target object, and the value of the field. Also note that the
+                                    <code>getObjToValidate()</code> method returns the object to validate (the <code>user</code> in
+                                    this case).
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">23</span> : We validate that the user's <code>password</code> has
+                                    <span class="code-line-nbr">16</span> : We validate that the user's <code>password</code> contains
                                     at least 12 characters.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">26-30</span> : We add a <a href="#custom_validation">custom validation</a> rule. 
-                                    Here, the user can't be named "Stromgol". If the custom rule fails, we register an error using the
+                                    <span class="code-line-nbr">19-23</span> : We add a <a href="#custom_validation">custom validation</a> rule. 
+                                    Here, the user can't be named "<em>Stromgol</em>". If the custom rule fails, we register an error using the
                                     <code>addError(...)</code> method. A validation error includes the <code>name</code> of the invalid field, 
                                     a <code>type</code> representing the error, and an error <code>message</code>.
                                 </li>

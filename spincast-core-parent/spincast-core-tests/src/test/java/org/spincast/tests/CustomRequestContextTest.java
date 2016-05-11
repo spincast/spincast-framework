@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.RequestContextBase;
+import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.DefaultTestingModule;
@@ -29,8 +30,9 @@ public class CustomRequestContextTest extends SpincastGuiceModuleBasedIntegratio
                                              implements ICustomRequestContext {
 
         @AssistedInject
-        public CustomRequestContext(@Assisted Object exchange) {
-            super(exchange);
+        public CustomRequestContext(@Assisted Object exchange,
+                                    RequestContextBaseDeps<ICustomRequestContext> requestContextBaseDeps) {
+            super(exchange, requestContextBaseDeps);
         }
 
         @Override
