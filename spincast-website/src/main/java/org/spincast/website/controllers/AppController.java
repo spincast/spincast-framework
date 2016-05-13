@@ -1,6 +1,7 @@
 package org.spincast.website.controllers;
 
 import java.net.URL;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -9,9 +10,11 @@ import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
 import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.models.INewsEntry;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -23,14 +26,17 @@ public class AppController {
     private final String[] mainArgs;
     private final IJsonManager jsonManager;
     private final ISpincastUtils spincastUtils;
+    private final List<INewsEntry> newsEntries;
 
     @Inject
     public AppController(@MainArgs String[] mainArgs,
                          IJsonManager jsonManager,
-                         ISpincastUtils spincastUtils) {
+                         ISpincastUtils spincastUtils,
+                         List<INewsEntry> newsEntries) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
+        this.newsEntries = newsEntries;
     }
 
     protected String[] getMainArgs() {
@@ -43,6 +49,10 @@ public class AppController {
 
     protected ISpincastUtils getSpincastUtils() {
         return this.spincastUtils;
+    }
+
+    protected List<INewsEntry> getNewsEntries() {
+        return this.newsEntries;
     }
 
     /**
@@ -137,5 +147,11 @@ public class AppController {
             return null;
         }
         return pluginDocTemplatePath;
+    }
+
+    public void news(IAppRequestContext context) {
+
+        context.response().sendHtmlTemplate("/templates/news.html",
+                                            SpincastStatics.params("newsEntries", getNewsEntries()));
     }
 }

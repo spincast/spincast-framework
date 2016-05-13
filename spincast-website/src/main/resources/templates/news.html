@@ -1,0 +1,136 @@
+{#==========================================
+Community
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}news{% endblock %}
+{% block meta_title %}What's new / Change log{% endblock %}
+{% block meta_description %}What's new / Change log{% endblock %}
+
+{% block scripts %}
+
+{#==========================================
+Moment.js, for dates formatting
+==========================================#}
+<script src="/public/js/moment.min.js"></script>
+
+<script>
+
+    $(function() {
+    	
+        {#==========================================
+        Initialize the Table Of Content
+        ==========================================#}
+        app.toc(188);
+        
+        {#==========================================
+        Create friendly dates
+        ==========================================#}
+        app.createFriendlyDates();
+    });
+    
+    app.createFriendlyDates = function() {
+    	$(".news_date").each(function(index, el) {
+    		var $el = $(el);
+    		$el.html($el.text() + " <span>(" + moment($el.text(), "YYYY-MM-DD").fromNow() + ")</span>");
+    	});
+    }
+
+</script>
+
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop">What's new?</h2></a>
+        </div>
+    </div>
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> What's new?</h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+    
+        <nav id="toc" class="col-md-3">
+            <ul class="nav nav-stacked">
+                <li>
+                    <a href="#top">News</a>
+                </li>
+                <li>
+                    <a href="#change_log">Change log</a>
+                </li>
+                <li>
+                    <a href="#twitter">Twitter</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+        
+            <section id="news">
+                
+                <h2 class="noTop">
+                    <a class="anchor" href="#news" title="permanent link"></a>
+                    News 
+                </h2>
+            <div class="feed">
+                <a href="/rss"><img src="/public/images/rss.png" /></a> 
+                <span class="clear"></span>
+            </div> 
+                
+                {#==========================================
+                Loop over the news entries to display
+                ==========================================#}
+                {% for newsEntry in newsEntries %}
+                
+                    <p class="news_date">
+                        <span>{{newsEntry.publishedDateISO}}</span>
+                    </p>
+            
+                    <div class="news_headline">
+                        {{newsEntry.title | raw }}
+                    </div>
+                    <div class="news_text">
+                        {{newsEntry.description | raw }}
+                    </div>
+                {% else %}
+                    <p> There are no news entries. </p>
+                {% endfor %}
+                
+            </section>
+            
+            <section id="change_log">
+                <h2 class="noTop">
+                    <a class="anchor" href="#change_log" title="permanent link"></a>
+                    Change log
+                </h2>
+                
+                <p>
+                    Have a look at the <a href="https://github.com/spincast/spincast-framework/commits/master">Github commits</a> page.
+                </p>
+            </section>
+            
+            <section id="twitter">
+            
+                <h2 class="shortTop">
+                    <a class="anchor" href="#twitter"" title="permanent link"></a>
+                    Twitter
+                </h2>
+                <p>
+                    You can follow us on <a href="https://twitter.com/spincast" class="twitter">Twitter</a>.
+                </p>
+            </section>
+            
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

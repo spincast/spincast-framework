@@ -35,4 +35,9 @@ public class AppConfig extends SpincastConfigPropsFileBased implements IAppConfi
         return getConfigInteger(getConfigKeyHttpServerPort(), 44420);
     }
 
+    @Override
+    public String getServerSchemeHostPort() {
+        return getConfig("app.server.scheme_host_port", "http://localhost:" + getHttpServerPort());
+    }
+
 }

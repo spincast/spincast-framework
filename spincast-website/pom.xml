@@ -36,6 +36,15 @@
         </dependency>
         
         <!--=================================== 
+        Rome - For RSS and Atom feeds
+        ====================================-->
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+        
+        <!--=================================== 
         Logback - Logging implementation.
         ====================================-->
         <dependency>

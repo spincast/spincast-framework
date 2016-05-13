@@ -205,7 +205,6 @@ $(function() {
     app.initHiLine();
     app.spincastHover();
     app.aceInit();
-
 });
 
 

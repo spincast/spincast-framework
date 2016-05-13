@@ -1,5 +1,6 @@
 package org.spincast.website;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.slf4j.Logger;
@@ -8,8 +9,10 @@ import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.website.controllers.AppController;
 import org.spincast.website.controllers.ErrorController;
+import org.spincast.website.controllers.FeedController;
 import org.spincast.website.exchange.IAppRequestContext;
 import org.spincast.website.guice.AppModule;
 
@@ -64,6 +67,7 @@ public class App {
     private final IRouter<IAppRequestContext> router;
     private final AppController appController;
     private final ErrorController errorController;
+    private final FeedController feedController;
     private final ISpincastFilters<IAppRequestContext> spincastFilters;
 
     @Inject
@@ -72,12 +76,14 @@ public class App {
                IRouter<IAppRequestContext> router,
                AppController appController,
                ErrorController errorController,
+               FeedController feedController,
                ISpincastFilters<IAppRequestContext> spincastFilters) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
         this.appController = appController;
         this.errorController = errorController;
+        this.feedController = feedController;
         this.spincastFilters = spincastFilters;
     }
 
@@ -99,6 +105,10 @@ public class App {
 
     protected ErrorController getErrorController() {
         return this.errorController;
+    }
+
+    protected FeedController getFeedController() {
+        return this.feedController;
     }
 
     protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
@@ -165,6 +175,27 @@ public class App {
     }
 
     /**
+     * Return an empty directory for the feeds.
+     */
+    protected File getEmptyFeedDir() {
+
+        try {
+            File feedDir = new File(getConfig().getSpincastWritableDir().getAbsolutePath() + "/feeds");
+            FileUtils.deleteDirectory(feedDir);
+
+            boolean result = feedDir.mkdirs();
+            if(!result) {
+                throw new RuntimeException("Unable to create the feed directory: " + feedDir.getAbsolutePath());
+            }
+
+            return feedDir;
+
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    /**
      * The application's routes
      */
     protected void addRoutes() {
@@ -207,9 +238,16 @@ public class App {
         router.exception(getErrorController()::exceptionHandler);
 
         //==========================================
+        // News Feed, as a dynamic resouce
+        //==========================================
+        File feedDir = getEmptyFeedDir();
+        router.file("/rss").fileSystem(feedDir + "/rss.xml").save(getFeedController()::rss);
+
+        //==========================================
         // Pages
         //==========================================
         router.GET("/").save(appCtl::index);
+        router.GET("/news").save(appCtl::news);
         router.GET("/documentation").save(appCtl::documentation);
         router.GET("/download").save(appCtl::download);
         router.GET("/plugins").save(appCtl::plugins);

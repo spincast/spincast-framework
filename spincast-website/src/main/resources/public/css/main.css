@@ -292,10 +292,11 @@ a.love:hover::after {
     margin-right: 0;
 }
 
-.index #menu_index a ,
-.documentation #menu_documentation a ,
-.download #menu_download a ,
-.plugins #menu_plugins a ,
+.index #menu_index a,
+.news #menu_news a,
+.documentation #menu_documentation a,
+.download #menu_download a,
+.plugins #menu_plugins a,
 .community #menu_community a, 
 .about #menu_about a {
     color: #222222;
@@ -336,6 +337,9 @@ a.love:hover::after {
     }
 }
 
+#menu_news img {
+    vertical-align:-2%;
+}
 
 .quickStartWrapper, .pluginDocBtn {
     text-align:center;
@@ -986,4 +990,50 @@ pre {
 #contact {
     margin-bottom:80px;
 }
+
+#news h3 {
+    margin-bottom:20px;
+}
+
+#news .news_date {
+    color:#7F0000;
+    margin:0;
+    margin-bottom:10px;
+    font-size:0.7em;
+    clear:both;
+    font-family: Verdana;
+    font-weight: bold;
+    padding:4px 6px;
+    background-color: #EFEFEF;
+}
+
+#news .news_date:before {
+    font-family: "Glyphicons Halflings";
+    content: "\e250";
+    font-size: 0.7em;
+}
+
+#news .news_headline {
+    clear:both;
+    font-weight: normal;
+    font-size: 1em;
+    font-family: Verdana;
+    font-style:italic;
+    margin-bottom:10px;
+}
+
+#news .news_text {
+    padding-bottom:16px;
+}
+
+.news .feed {
+    float:right;
+    margin-top:-40px;
+}
+
+.news .feedLabel {
+    font-style:italic;
+    color:#888888;
+}
+
 
