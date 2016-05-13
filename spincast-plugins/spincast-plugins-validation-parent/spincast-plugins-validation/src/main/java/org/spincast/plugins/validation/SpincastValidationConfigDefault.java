@@ -68,7 +68,7 @@ public class SpincastValidationConfigDefault implements ISpincastValidationConfi
     }
 
     protected String getErrorMessageDefaultMaxLengthRaw() {
-        String maxLengthPlaceholder = getTemplatingEngine().createPlaceholder("minLength");
+        String maxLengthPlaceholder = getTemplatingEngine().createPlaceholder("maxLength");
         String currentLengthPlaceholder = getTemplatingEngine().createPlaceholder("currentLength");
         return "Maximum length of " + maxLengthPlaceholder + " characters. Currently: " + currentLengthPlaceholder +
                " characters.";

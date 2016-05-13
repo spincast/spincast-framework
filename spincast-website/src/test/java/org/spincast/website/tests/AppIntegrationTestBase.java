@@ -12,6 +12,7 @@ import org.spincast.website.AppConfig;
 import org.spincast.website.exchange.IAppRequestContext;
 
 import com.google.inject.Injector;
+import com.google.inject.Module;
 
 /**
  * Integration test base class specifically made for 
@@ -56,12 +57,19 @@ public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase
     }
 
     /**
-     * Create the application and return the Guice
+     * Creates the application and returns the Guice
      * injector.
      */
     @Override
     protected Injector createInjector() {
-        return App.createApp(getMainArgs());
+        return App.createApp(getMainArgs(), getOverridingModule());
+    }
+
+    /**
+     * Do we need to add an overriding Module?
+     */
+    protected Module getOverridingModule() {
+        return null;
     }
 
     protected String[] getMainArgs() {

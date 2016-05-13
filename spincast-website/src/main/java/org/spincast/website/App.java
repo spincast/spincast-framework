@@ -2,6 +2,7 @@ package org.spincast.website;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,12 @@ import org.spincast.website.controllers.FeedController;
 import org.spincast.website.exchange.IAppRequestContext;
 import org.spincast.website.guice.AppModule;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -46,17 +50,46 @@ public class App {
      * parameters and returns the Guice injector.
      */
     public static Injector createApp(String[] args) {
+        return createApp(args, null);
+    }
+
+    /**
+     * Create an App instance using the given
+     * parameters and an overriding module,
+     * and returns the Guice injector.
+     * 
+     * @param overridingModule Mostly useful for the integration tests. Those
+     * can override some bindings by passing an overriding module!
+     */
+    public static Injector createApp(String[] args, Module overridingModule) {
 
         if(args == null) {
             args = new String[]{};
         }
 
-        Injector guice = Guice.createInjector(new AppModule(args));
+        //==========================================
+        // Should we override the base app modules
+        // with an overring module?
+        //==========================================
+        Injector guice = null;
+        if(overridingModule != null) {
+            guice = Guice.createInjector(Modules.override(getAppModules(args))
+                                                .with(overridingModule));
+        } else {
+            guice = Guice.createInjector(getAppModules(args));
+        }
 
         App website = guice.getInstance(App.class);
         website.start();
 
         return guice;
+    }
+
+    /**
+     * The app's Guice modules to use.
+     */
+    protected static List<? extends Module> getAppModules(String[] args) {
+        return Lists.newArrayList(new AppModule(args));
     }
 
     //==========================================
