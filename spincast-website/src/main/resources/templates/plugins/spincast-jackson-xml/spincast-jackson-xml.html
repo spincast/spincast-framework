@@ -52,8 +52,9 @@ Spincast Jackson XML plugin
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
                 <li class="openable"><a href="#xmlmanager"><code>IXmlManager</code></a></li>   
+                <li class="openable"><a href="#configs">Main configurations</a></li>   
                 <li class="openable">
-                    <a href="#config">(de)serialization configurations</a>
+                    <a href="#serialization_config">(de)serialization configurations</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#annotating_objects">Annotating the Objects</a></li>
                         <li><a href="#mixins">Using mix-ins</a></li> 
@@ -276,10 +277,49 @@ Spincast Jackson XML plugin
                 </div>
             </section>
             
-           
-            <section id="config">
+            <section id="configs">
                 <h3 class="noTop">
-                    <a class="anchor" href="#config" title="permanent link"></a>
+                    <a class="anchor" href="#configs" title="permanent link"></a>
+                    Main configurations
+                </h3>
+                <p>
+                    You can bind a <code>ISpincastXmlManagerConfig</code> implementation to tweak
+                     the default configurations
+                    used by the components this plugin provides. By default, the
+                    <code>SpincastXmlManagerConfigDefault</code> class is used as the implementation.
+                </p> 
+                
+                <div>
+                    <p>
+                        <ul class="apiList">
+
+                            <li>
+                                <code class="apiItem">int <span>getPrettyPrinterIndentationSpaceNumber</span>()</code>
+                                <div class="well">
+                                    The number of spaces to used to indent generated <code>XML</code> when
+                                    <em>pretty print</em> is used.
+                                    <br />
+                                    Defaults to <code>4</code> spaces.
+                                </div>
+                            </li>
+                            <li>
+                                <code class="apiItem">String <span>getPrettyPrinterNewlineChars</span>()</code>
+                                <div class="well">
+                                    The newline character(s) to use for generated <code>XML</code> when
+                                    <em>pretty print</em> is used.
+                                    <br />
+                                    Defaults to <code>\n</code>, wathever the platform the application is running on.
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </p>
+                </div>
+            </section>
+           
+            <section id="serialization_config">
+                <h3 class="noTop">
+                    <a class="anchor" href="#serialization_config" title="permanent link"></a>
                     (de)serialization configurations
                 </h3>
                 <p>

@@ -10,13 +10,10 @@ import org.spincast.plugins.localeresolver.SpincastLocaleResolverPluginGuiceModu
 import org.spincast.plugins.pebble.SpincastPebblePluginGuiceModule;
 import org.spincast.plugins.request.SpincastRequestPluginGuiceModule;
 import org.spincast.plugins.response.SpincastResponsePluginGuiceModule;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.plugins.templatingaddon.SpincastTemplatingAddonPluginGuiceModule;
 import org.spincast.plugins.undertow.SpincastUndertowPluginGuiceModule;
 import org.spincast.plugins.variables.SpincastVariablesPluginGuiceModule;
-
-import com.google.inject.Scopes;
 
 /**
  * Spincast Guice module that binds a default implementation
@@ -159,23 +156,10 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
     protected void bindRoutingPlugin() {
 
         //==========================================
-        // Spincast Routing plugin configurations
-        //==========================================
-        bindRoutingPluginConfigurations();
-
-        //==========================================
         // Spincast Routing plugin
         //==========================================
         installRoutingPlugin();
 
-    }
-
-    protected void bindRoutingPluginConfigurations() {
-        bind(ISpincastRouterConfig.class).to(getSpincastRoutingPluginConfigClass()).in(Scopes.SINGLETON);
-    }
-
-    protected Class<? extends ISpincastRouterConfig> getSpincastRoutingPluginConfigClass() {
-        return DefaultSpincastRouterConfig.class;
     }
 
     protected void installRoutingPlugin() {

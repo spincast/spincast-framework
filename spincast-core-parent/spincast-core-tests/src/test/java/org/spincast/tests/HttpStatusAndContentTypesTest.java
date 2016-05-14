@@ -10,9 +10,11 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.json.IJsonManager;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -20,8 +22,23 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.inject.Inject;
 
 public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase {
+
+    @Inject
+    private IJsonManager jsonManager;
+
+    @Inject
+    private IXmlManager xmlManager;
+
+    protected IJsonManager getJsonManager() {
+        return this.jsonManager;
+    }
+
+    protected IXmlManager getXmlManager() {
+        return this.xmlManager;
+    }
 
     @Test
     public void notFound() throws Exception {
@@ -178,10 +195,37 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
 
             @Override
             public void handle(IDefaultRequestContext context) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("key1", SpincastTestUtils.TEST_STRING);
+                map.put("key2", "val2");
+
+                String jsonString = context.json().toJsonString(map);
+                context.response().sendJson(jsonString);
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertNotNull(response.getContentAsString());
+
+        Map<String, Object> map = getJsonManager().fromJsonStringToMap(response.getContentAsString());
+        assertNotNull(map);
+        assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
+        assertEquals("val2", map.get("key2"));
+    }
+
+    @Test
+    public void jsonObj() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
                 Map<String, Object> json = new HashMap<String, Object>();
                 json.put("key1", SpincastTestUtils.TEST_STRING);
                 json.put("key2", "val2");
-                context.response().sendJson(json);
+                context.response().sendJsonObj(json);
             }
         });
 
@@ -208,7 +252,35 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("key1", SpincastTestUtils.TEST_STRING);
                 map.put("key2", "val2");
-                context.response().sendXml(map);
+
+                String xml = context.xml().toXml(map);
+                context.response().sendXml(xml);
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertNotNull(response.getContentAsString());
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = getXmlManager().fromXml(response.getContentAsString(), Map.class);
+        assertNotNull(map);
+        assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
+        assertEquals("val2", map.get("key2"));
+    }
+
+    @Test
+    public void xmlObj() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("key1", SpincastTestUtils.TEST_STRING);
+                map.put("key2", "val2");
+                context.response().sendXmlObj(map);
             }
         });
 

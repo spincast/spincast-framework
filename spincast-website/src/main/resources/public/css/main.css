@@ -1005,6 +1005,8 @@ pre {
     font-weight: bold;
     padding:4px 6px;
     background-color: #EFEFEF;
+    border-top:solid 1px #A0A0A0;
+    border-bottom:solid 1px #A0A0A0;
 }
 
 #news .news_date:before {
@@ -1020,6 +1022,7 @@ pre {
     font-family: Verdana;
     font-style:italic;
     margin-bottom:10px;
+    color:#000;
 }
 
 #news .news_text {

@@ -99,29 +99,75 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
     public void sendPlainText(String string, boolean flush);
 
     /**
-     * Serializes to <code>Json</code> and sends as <code>application/json</code>, without flushing.
+     * Sends a <code>Json</code> String using the <code>application/json</code> Content-Type, 
+     * without flushing.
+     * 
+     * <p>
+     * Synonym of : <code>sendCharacters(jsonString, "application/json")</code> 
+     * </p>
      */
-    public void sendJson(Object obj);
+    public void sendJson(String jsonString);
 
     /**
-     * Serializes to <code>Json</code>, sends as <code>application/json</code> ,
+     * Sends a <code>Json</code> String using the <code>application/json</code> Content-Type, 
+     * and flushes, if specified.
+     * 
+     * <p>
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * </p>
+     * <p>
+     * Synonym of : <code>sendCharacters(jsonString, "application/json", flush)</code> 
+     * </p>
+     */
+    public void sendJson(String jsonString, boolean flush);
+
+    /**
+     * Serializes the object to <code>Json</code> and sends as <code>application/json</code>, without flushing.
+     */
+    public void sendJsonObj(Object obj);
+
+    /**
+     * Serializes the object to <code>Json</code>, sends as <code>application/json</code>,
      * and flushes, if specified.
      * 
      * Note that once the response is flushed, no header can be added or changed anymore.
      */
-    public void sendJson(Object obj, boolean flush);
+    public void sendJsonObj(Object obj, boolean flush);
 
     /**
-     * Serializes to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
+     * Sends some <code>XML</code> using the <code>application/xml</code> Content-Type, 
+     * without flushing.
+     * 
+     * <p>
+     * Synonym of : <code>sendCharacters(xml, "application/xml")</code> 
+     * </p>
      */
-    public void sendXml(Object obj);
+    public void sendXml(String xml);
 
     /**
-     * Serializes to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
+     * Sends some <code>XML</code> using the <code>application/xml</code> Content-Type, 
+     * and flushes, if specified.
+     * 
+     * <p>
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * </p>
+     * <p>
+     * Synonym of : <code>sendCharacters(xml, "application/xml", flush)</code> 
+     * </p>
+     */
+    public void sendXml(String xml, boolean flush);
+
+    /**
+     * Serializes the object to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
+     */
+    public void sendXmlObj(Object obj);
+
+    /**
+     * Serializes the object to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
      * 
      * Note that once the response is flushed, no header can be added or changed anymore.
      */
-    public void sendXml(Object obj, boolean flush);
+    public void sendXmlObj(Object obj, boolean flush);
 
     /**
      * Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
@@ -264,7 +310,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * Note that once the response is flushed, no header can be added or changed anymore.
      */
-                             public void flush();
+    public void flush();
 
     /**
      * Flushes the current response. If not already specified on the response,
@@ -275,7 +321,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * @param end If <code>true</code>, the exchange will be closed and no more data
      * can be sent.
      */
-                             public void flush(boolean end);
+    public void flush(boolean end);
 
     /**
      * Sets the response's <code>status code</code> to use. Uses <code>200</code>
@@ -284,23 +330,23 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * Note that this <code>status code</code> can be changed automatically
      * if an exception is thrown.
      */
-                             public void setStatusCode(int statusCode);
+    public void setStatusCode(int statusCode);
 
     /**
      * The current <code>status code</code> sent or to be send.
      */
-                             public int getStatusCode();
+    public int getStatusCode();
 
     /**
      * The <code>Content-Type</code> header to use for the response. Most 
      * <code>sendXXX()</code> methods will set this automatically.
      */
-                             public void setContentType(String responseContentType);
+    public void setContentType(String responseContentType);
 
     /**
      * The current <code>Content-Type</code> sent or to be send.
      */
-                             public String getContentType();
+    public String getContentType();
 
     /**
      * Sets a redirection header. 
@@ -313,7 +359,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * <code>301</code> header will be sent. If <code>false</code>, 
      * <code>302</code> will be sent.
      */
-                             public void redirect(String newUrl, boolean permanently);
+    public void redirect(String newUrl, boolean permanently);
 
     /**
      * Sets the redirection headers with a specified <code>3xx</code> status code.
@@ -322,7 +368,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * Throw a <code>RedirectException</code> instead if you want to redirect the user
      * immediately.
      */
-                             public void redirect(String newUrl, int specific3xxCode);
+    public void redirect(String newUrl, int specific3xxCode);
 
     /**
      * Adds a value to a response header. If the header already
@@ -330,7 +376,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * If the value is <code>null</code>, it won't be added.
      */
-                             public void addHeaderValue(String name, String value);
+    public void addHeaderValue(String name, String value);
 
     /**
      * Adds a list of values to a response header. If the header already
@@ -338,7 +384,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * If the values are <code>null</code>, nothing will be added.
      */
-                             public void addHeaderValues(String name, List<String> values);
+    public void addHeaderValues(String name, List<String> values);
 
     /**
      * Set the value to a response header. If the header already
@@ -347,7 +393,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * If the value is <code>null</code>, the header will be 
      * removed (same behavior as {@link #removeHeader(String) removeHeader(String name)})
      */
-                             public void setHeader(String name, String value);
+    public void setHeader(String name, String value);
 
     /**
      * Set multiple values to a response header. If the header already
@@ -356,12 +402,12 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * If the lists is <code>null</code> or empty, the header will be 
      * removed (same behavior as {@link #removeHeader(String) removeHeader(String name)})
      */
-                             public void setHeader(String name, List<String> values);
+    public void setHeader(String name, List<String> values);
 
     /**
      * Removes an header by its name.
      */
-                             public void removeHeader(String name);
+    public void removeHeader(String name);
 
     /**
      * The currently set response headers.
@@ -369,7 +415,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * The map is mutable! Also the returned implementation is a 
      * <code>TreeMap</code> with <i>case insensitive</i> keys.
      */
-                             public Map<String, List<String>> getHeaders();
+    public Map<String, List<String>> getHeaders();
 
     /**
      * The values of a specific response header. 
@@ -379,7 +425,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * Returns an empty list if the header was not found.
      */
-                             public List<String> getHeader(String name);
+    public List<String> getHeader(String name);
 
     /**
      * The first value of a specific header.
@@ -388,36 +434,36 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * Returns <code>null</code> if the header is not found.
      */
-                             public String getHeaderFirst(String name);
+    public String getHeaderFirst(String name);
 
     /**
      * Clears the buffer (the <i>unsent</i> buffer, of course).
      */
-                             public void resetBuffer();
+    public void resetBuffer();
 
     /**
      * Clears the buffer (the <i>unsent</i> buffer, of course), resets the cookies,
      * the headers, the <code>Content-Type</code> and 
      * sets the <code>status code</code> back to <code>200</code>.
      */
-                             public void resetEverything();
+    public void resetEverything();
 
     /**
      * Gets the current unsent bytes (AKA the buffer).
      */
-                             public byte[] getUnsentBytes();
+    public byte[] getUnsentBytes();
 
     /**
      * Gets the current unsent characters (AKA the buffer), using the
      * <code>UTF-8</code> encoding.
      */
-                             public String getUnsentCharacters();
+    public String getUnsentCharacters();
 
     /**
      * Gets the current unsent characters (AKA the buffer), using the
      * specified encoding.
      */
-                             public String getUnsentCharacters(String encoding);
+    public String getUnsentCharacters(String encoding);
 
     /**
      * Enable or disable gzipping of the response.
@@ -426,11 +472,11 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * and only if a <code>gzip 'Accept-Encoding'</code> header 
      * has been received from the client.
      */
-                             public void setGzipOption(GzipOption gzipOption);
+    public void setGzipOption(GzipOption gzipOption);
 
     /**
      * The currently set gzip options.
      */
-                             public GzipOption getGzipOption();
+    public GzipOption getGzipOption();
 
 }

@@ -69,6 +69,7 @@ Spincast Routing plugin
                         <li><a href="#static_resource_builder_methods">Methods</a></li>
                     </ul>
                 </li>
+                <li class="openable"><a href="#configs">Configurations</a></li>
                 <li class="openable">
                     <a href="#request_context_addon">The request context add-on</a>
                     <ul class="nav nav-stacked">
@@ -1184,8 +1185,45 @@ Spincast Routing plugin
                 </div>
             </section>
             
-            
-            
+            <section id="configs">
+                <h3 class="noTop">
+                    <a class="anchor" href="#configs" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    You can bind a <code>ISpincastRouterConfig</code> implementation to tweak
+                    the default configurations
+                    used by the components this plugin provides. By default, the
+                    <code>SpincastRouterConfigDefault</code> class is used as the implementation.
+                </p> 
+                
+                <div>
+                    <p>
+                        <ul class="apiList">
+
+                            <li>
+                                <code class="apiItem">Set&lt;RoutingType&gt; <span>getFilterDefaultRoutingTypes</span>()</code>
+                                <div class="well">
+                                    The <code>routing types</code> to apply a filter to when none is
+                                    explicitly specified.
+                                    <br />
+                                    Defaults to <em>all</em> route types.
+                                </div>
+                            </li>
+                            <li>
+                                <code class="apiItem">int <span>getCorsFilterPosition</span>()</code>
+                                <div class="well">
+                                    The default position  for a <code>cors</code> "before" filter.
+                                    Must be <code>&lt; 0</code> ! 
+                                    <br />
+                                    Defaults to <code>-100</code>.
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    </p>
+                </div>
+            </section>
             
             
             <section id="request_context_addon">

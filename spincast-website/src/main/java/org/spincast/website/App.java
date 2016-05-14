@@ -35,31 +35,16 @@ public class App {
      * The entry point for the application.
      */
     public static void main(String[] args) {
-        createApp(args);
+        createApp(args, null);
     }
 
     /**
-     * Create an App instance and returns the Guice injector. 
-     */
-    public static Injector createApp() {
-        return createApp(null);
-    }
-
-    /**
-     * Create an App instance using the given
-     * parameters and returns the Guice injector.
-     */
-    public static Injector createApp(String[] args) {
-        return createApp(args, null);
-    }
-
-    /**
-     * Create an App instance using the given
-     * parameters and an overriding module,
-     * and returns the Guice injector.
+     * Creates an App instance using the given
+     * parameters, an overriding module, and returns the 
+     * Guice injector.
      * 
      * @param overridingModule Mostly useful for the integration tests. Those
-     * can override some bindings by passing an overriding module!
+     * can override some bindings by specifying this overriding module.
      */
     public static Injector createApp(String[] args, Module overridingModule) {
 

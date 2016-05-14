@@ -1,4 +1,4 @@
-package org.spincast.tests;
+package org.spincast.tests.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

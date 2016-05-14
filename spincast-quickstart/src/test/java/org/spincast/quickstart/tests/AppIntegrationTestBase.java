@@ -18,6 +18,6 @@ public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase
      */
     @Override
     protected Injector createInjector() {
-        return App.createApp();
+        return App.createApp(null, null);
     }
 }

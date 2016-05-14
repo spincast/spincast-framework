@@ -33,31 +33,16 @@ public class App {
      * The entry point for the application.
      */
     public static void main(String[] args) {
-        createApp(args);
+        createApp(args, null);
     }
 
     /**
-     * Creates an <code>App</code> instance and returns the Guice injector. 
-     */
-    public static Injector createApp() {
-        return createApp(null);
-    }
-
-    /**
-     * Creates an <code>App</code> instance using the given
-     * parameters and returns the Guice injector.
-     */
-    public static Injector createApp(String[] args) {
-        return createApp(args, null);
-    }
-
-    /**
-     * Create an <code>App</code> instance using the given
-     * parameters and an overriding module,
-     * and returns the Guice injector.
+     * Creates an App instance using the given
+     * parameters, an overriding module, and returns the 
+     * Guice injector.
      * 
      * @param overridingModule Mostly useful for the integration tests. Those
-     * can override some bindings by passing an overriding module!
+     * can override some bindings by specifying this overriding module.
      */
     public static Injector createApp(String[] args, Module overridingModule) {
 
@@ -90,6 +75,9 @@ public class App {
         return Lists.newArrayList(new AppModule(args));
     }
 
+    //==========================================
+    // The application
+    //==========================================
     private final IServer server;
     private final IAppConfig appConfig;
     private final IAppRouter router;
@@ -164,11 +152,11 @@ public class App {
         // A GET route for the index page.
         //
         // Note that with Java 8, we could simply use 
-        // a method handler :
+        // a method handler:
         //
         // getRouter().GET("/", getAppController()::indexPage);
         //
-        // Or a Lambda :
+        // Or a Lambda:
         //
         // getRouter().GET("/").save(context -> getAppController().indexPage(context));
         //
@@ -185,7 +173,7 @@ public class App {
         // Another GET route. 
         // Note that here we use 
         // "IHandler<IAppRequestContext>" instead of 
-        // "IAppHandler" for the handler type : 
+        // "IAppHandler" for the handler type: 
         // they are equivalent.
         //==========================================
         getRouter().GET("/greet/${name}").save(new IHandler<IAppRequestContext>() {

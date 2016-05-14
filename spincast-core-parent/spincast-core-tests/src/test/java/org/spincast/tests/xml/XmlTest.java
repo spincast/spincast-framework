@@ -1,4 +1,4 @@
-package org.spincast.tests;
+package org.spincast.tests.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -493,6 +493,47 @@ public class XmlTest extends DefaultIntegrationTestingBase {
         xml = this.xmlManager.toXml(new NoPropToSerialize[0]);
         assertNotNull(xml);
 
+    }
+
+    @Test
+    public void fromXmlWithNamespacesToJsonObject() throws Exception {
+
+        StringBuilder xml = new StringBuilder();
+        xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xml.append("<rss xmlns:dc=\"http://purl.org/dc/elements/1.1/\" version=\"2.0\">\n");
+        xml.append("  <channel>\n");
+        xml.append("    <title>Spincast Framework</title>\n");
+        xml.append("    <link>http://localhost:57125</link>\n");
+        xml.append("    <description>What's new about the Spincast framework?</description>\n");
+        xml.append("    <image>\n");
+        xml.append("      <title>Spincast Framework</title>\n");
+        xml.append("      <url>http://localhost:57125/public/images/feed.png</url>\n");
+        xml.append("    </image>\n");
+        xml.append("    <item>\n");
+        xml.append("      <title>my title</title>\n");
+        xml.append("      <description>&lt;p&gt;my description&lt;/p&gt;</description>\n");
+        xml.append("      <pubDate>Sun, 02 Jan 2000 05:00:00 GMT</pubDate>\n");
+        xml.append("      <dc:date>2000-01-02T05:00:00Z</dc:date>\n");
+        xml.append("    </item>\n");
+        xml.append("  </channel>\n");
+        xml.append("</rss>\n");
+
+        IJsonObject jsonObject = this.xmlManager.fromXml(xml.toString());
+        assertNotNull(jsonObject);
+
+        IJsonObject channelObj = jsonObject.getJsonObject("channel");
+        assertNotNull(channelObj);
+
+        IJsonObject itemObj = channelObj.getJsonObject("item");
+        assertNotNull(channelObj);
+
+        //==========================================
+        // Currently, the namespaces are not kept when
+        // deserializing XML. Is that what we need?
+        //==========================================
+        String dcDate = itemObj.getString("date");
+        assertNotNull(dcDate);
+        assertEquals("2000-01-02T05:00:00Z", dcDate);
     }
 
 }

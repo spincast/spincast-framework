@@ -63,7 +63,7 @@ public class ErrorController {
         this.logger.error(SpincastStatics.getStackTrace(exception));
 
         if(context.request().isJsonRequest()) {
-            context.response().sendJson("Server error");
+            context.response().sendJsonObj("Server error");
         } else {
             context.response().sendHtmlTemplate("/templates/exception.html", null);
         }

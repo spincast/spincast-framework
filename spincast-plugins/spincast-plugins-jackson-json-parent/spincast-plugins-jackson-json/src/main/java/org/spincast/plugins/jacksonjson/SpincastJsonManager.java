@@ -15,6 +15,7 @@ import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.IJsonObjectFactory;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -44,6 +45,7 @@ public class SpincastJsonManager implements IJsonManager {
     private final IJsonObjectFactory jsonObjectFactory;
     private final Provider<Injector> guiceProvider;
     private final Set<IJsonMixinInfo> jsonMixinInfos;
+    private final ISpincastJsonManagerConfig spincastJsonManagerConfig;
 
     private ObjectMapper objectMapper;
     private JsonSerializer<IJsonObject> jsonObjectSerializer;
@@ -69,7 +71,8 @@ public class SpincastJsonManager implements IJsonManager {
     @Inject
     public SpincastJsonManager(Provider<Injector> guiceProvider,
                                IJsonObjectFactory jsonObjectFactory,
-                               @Nullable Set<IJsonMixinInfo> jsonMixinInfos) {
+                               @Nullable Set<IJsonMixinInfo> jsonMixinInfos,
+                               ISpincastJsonManagerConfig spincastJsonManagerConfig) {
         this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
 
@@ -77,6 +80,7 @@ public class SpincastJsonManager implements IJsonManager {
             jsonMixinInfos = new HashSet<IJsonMixinInfo>();
         }
         this.jsonMixinInfos = jsonMixinInfos;
+        this.spincastJsonManagerConfig = spincastJsonManagerConfig;
     }
 
     protected Injector getGuice() {
@@ -89,6 +93,10 @@ public class SpincastJsonManager implements IJsonManager {
 
     protected Set<IJsonMixinInfo> getJsonMixinInfos() {
         return this.jsonMixinInfos;
+    }
+
+    protected ISpincastJsonManagerConfig getSpincastJsonManagerConfig() {
+        return this.spincastJsonManagerConfig;
     }
 
     protected DefaultPrettyPrinter getJacksonPrettyPrinter() {
@@ -104,11 +112,11 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     protected String getJacksonPrettyPrinterNewline() {
-        return "\n"; // DefaultIndenter.SYS_LF
+        return getSpincastJsonManagerConfig().getPrettyPrinterNewlineChars();
     }
 
     protected String getJacksonPrettyPrinterIndentation() {
-        return "    ";
+        return StringUtils.repeat(" ", getSpincastJsonManagerConfig().getPrettyPrinterIndentationSpaceNumber());
     }
 
     protected FastDateFormat getIso8601DateParserDefault() {

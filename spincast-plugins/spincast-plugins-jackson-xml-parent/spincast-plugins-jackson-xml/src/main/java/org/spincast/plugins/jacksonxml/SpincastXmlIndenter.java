@@ -10,14 +10,27 @@ import org.codehaus.stax2.XMLStreamWriter2;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter.Indenter;
+import com.google.inject.Inject;
 
 /**
  * Custom XML indenter.
- * Uses 4 spaces instead of 2 and always uses "\n" for newlines.
+ * Allow us to specify how many spaces to use for indentation and what
+ * newline character to use.
  * 
  * Based on com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter$Lf2SpacesIndenter
  */
 public class SpincastXmlIndenter implements Indenter {
+
+    private final ISpincastXmlManagerConfig spincastXmlManagerConfig;
+
+    @Inject
+    public SpincastXmlIndenter(ISpincastXmlManagerConfig spincastXmlManagerConfig) {
+        this.spincastXmlManagerConfig = spincastXmlManagerConfig;
+    }
+
+    protected ISpincastXmlManagerConfig getSpincastXmlManagerConfig() {
+        return this.spincastXmlManagerConfig;
+    }
 
     @Override
     public boolean isInline() {
@@ -55,11 +68,11 @@ public class SpincastXmlIndenter implements Indenter {
     }
 
     protected int getIndentationSpaceNumber() {
-        return 4;
+        return getSpincastXmlManagerConfig().getPrettyPrinterIndentationSpaceNumber();
     }
 
     protected String getNewlineChars() {
-        return "\n";
+        return getSpincastXmlManagerConfig().getPrettyPrinterNewlineChars();
     }
 
 }

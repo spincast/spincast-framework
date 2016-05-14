@@ -1,17 +1,18 @@
 package org.spincast.tests.cors;
 
-import org.spincast.defaults.guice.DefaultSpincastRouterConfig;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.routing.ISpincastRouterConfig;
+import org.spincast.plugins.routing.SpincastRouterConfigDefault;
 import org.spincast.testing.utils.ExpectingInstanciationException;
 
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 
 @ExpectingInstanciationException
 public class InvalidFilterPosition0Test2 extends DefaultIntegrationTestingBase {
 
-    protected static class TestRoutingConfig extends DefaultSpincastRouterConfig {
+    protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
 
         @Override
         public int getCorsFilterPosition() {
@@ -24,8 +25,9 @@ public class InvalidFilterPosition0Test2 extends DefaultIntegrationTestingBase {
         return new DefaultTestingModule() {
 
             @Override
-            protected Class<? extends ISpincastRouterConfig> getSpincastRoutingPluginConfigClass() {
-                return TestRoutingConfig.class;
+            protected void configure() {
+                super.configure();
+                bind(ISpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
             }
         };
     }

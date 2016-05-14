@@ -1,13 +1,15 @@
-package org.spincast.defaults.guice;
+package org.spincast.plugins.routing;
 
 import java.util.Set;
 
 import org.spincast.core.routing.RoutingType;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
 
 import com.google.common.collect.Sets;
 
-public class DefaultSpincastRouterConfig implements ISpincastRouterConfig {
+/**
+ * Default configuration for the Spincast Router.
+ */
+public class SpincastRouterConfigDefault implements ISpincastRouterConfig {
 
     @Override
     public Set<RoutingType> getFilterDefaultRoutingTypes() {

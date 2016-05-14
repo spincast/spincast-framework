@@ -478,23 +478,43 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendJson(Object obj) {
-        sendJson(obj, false);
+    public void sendJson(String jsonString) {
+        sendJson(jsonString, false);
     }
 
     @Override
-    public void sendJson(Object obj, boolean flush) {
+    public void sendJson(String jsonString, boolean flush) {
+        sendCharacters(jsonString, ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), flush);
+    }
+
+    @Override
+    public void sendJsonObj(Object obj) {
+        sendJsonObj(obj, false);
+    }
+
+    @Override
+    public void sendJsonObj(Object obj, boolean flush) {
         String json = getJsonManager().toJsonString(obj);
         sendCharacters(json, ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), flush);
     }
 
     @Override
-    public void sendXml(Object obj) {
-        sendXml(obj, false);
+    public void sendXml(String xml) {
+        sendXml(xml, false);
     }
 
     @Override
-    public void sendXml(Object obj, boolean flush) {
+    public void sendXml(String xml, boolean flush) {
+        sendCharacters(xml, ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), flush);
+    }
+
+    @Override
+    public void sendXmlObj(Object obj) {
+        sendXmlObj(obj, false);
+    }
+
+    @Override
+    public void sendXmlObj(Object obj, boolean flush) {
         String xml = getXmlManager().toXml(obj);
         sendCharacters(xml, ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), flush);
     }

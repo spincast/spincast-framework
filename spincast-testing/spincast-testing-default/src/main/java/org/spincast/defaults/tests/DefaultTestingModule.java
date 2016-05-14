@@ -4,7 +4,6 @@ import org.spincast.core.config.ISpincastConfig;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.plugins.config.SpincastConfigPluginGuiceModule;
 import org.spincast.plugins.httpclient.SpincastHttpClientPluginGuiceModule;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.testing.core.SpincastTestConfig;
 
 /**
@@ -44,11 +43,6 @@ public class DefaultTestingModule extends SpincastDefaultGuiceModule {
 
     protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
         return SpincastTestConfig.class;
-    }
-
-    @Override
-    protected Class<? extends ISpincastRouterConfig> getSpincastRoutingPluginConfigClass() {
-        return SpincastTestSpincastRoutingPluginConfig.class;
     }
 
 }
