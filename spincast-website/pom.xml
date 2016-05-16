@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent</artifactId>
-        <version>0.9.15-SNAPSHOT</version>
+        <version>0.9.15</version>
         <relativePath>../spincast-parent</relativePath>
     </parent>
 
@@ -153,23 +152,23 @@
                             Requires deps : ant-contrib:ant-contrib and
                             org.apache.ant:ant-nodeps
                             ====================================-->
-                            <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath"/>
+                            <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
 
                             <!--===================================
                             "ac" => namespace to use <ac:var>, <ac:if>, etc.
                             ====================================-->
                             <tasks xmlns:ac="antlib:net.sf.antcontrib">
-                                <echo message="Replacing content in the quick start's pom.xml!"/>
+                                <echo message="Replacing content in the quick start's pom.xml!" />
 
                                 <property name="targetDir">${project.build.directory}/spincast-quickstart/spincast-quick-start</property>
 
                                 <copy todir="${targetDir}/src">
-                                    <fileset dir="${project.basedir}/../spincast-quickstart/src"/>
+                                    <fileset dir="${project.basedir}/../spincast-quickstart/src" />
                                 </copy>
                                 <copy todir="${targetDir}/varia">
-                                    <fileset dir="${project.basedir}/../spincast-quickstart/varia"/>
+                                    <fileset dir="${project.basedir}/../spincast-quickstart/varia" />
                                 </copy>
-                                <copy file="${project.basedir}/../spincast-quickstart/pom.xml" todir="${targetDir}"/>
+                                <copy file="${project.basedir}/../spincast-quickstart/pom.xml" todir="${targetDir}" />
 
                                 <replace file="${targetDir}/pom.xml" encoding="UTF8">
                                     <replacetoken><![CDATA[{project.version}</version>]]></replacetoken>
@@ -187,30 +186,29 @@
     <version>1.0.0-SNAPSHOT</version>]]></property>
 
                                 <replaceregexp file="${targetDir}/pom.xml" flags="gs">
-                                    <regexp pattern="${pattern}"/>
-                                    <substitution expression="${replacement}"/>
+                                    <regexp pattern="${pattern}" />
+                                    <substitution expression="${replacement}" />
                                 </replaceregexp>
 
                                 <property name="patternRepo"><![CDATA[<!-- SPINCAST_SNAPSHOTS_REPO -->(.*)<!-- /SPINCAST_SNAPSHOTS_REPO -->]]></property>
 
                                 <ac:if>
-                                    <ac:contains string="${project.version}" substring="-SNAPSHOT"/>
+                                    <ac:contains string="${project.version}" substring="-SNAPSHOT" />
                                     <ac:then>
                                         <replaceregexp file="${targetDir}/pom.xml" flags="gs">
-                                            <regexp pattern="${patternRepo}"/>
-                                            <substitution expression="\1"/>
+                                            <regexp pattern="${patternRepo}" />
+                                            <substitution expression="\1" />
                                         </replaceregexp>
                                     </ac:then>
                                     <ac:else>
                                         <replaceregexp file="${targetDir}/pom.xml" flags="gs">
-                                            <regexp pattern="${patternRepo}"/>
-                                            <substitution expression=""/>
+                                            <regexp pattern="${patternRepo}" />
+                                            <substitution expression="" />
                                         </replaceregexp>
                                     </ac:else>
                                 </ac:if>
 
-                                <zip destfile="${project.basedir}/src/main/resources/public/quickstart/spincast-quick-start.zip"
-                                    basedir="${project.build.directory}/spincast-quickstart"/>
+                                <zip destfile="${project.basedir}/src/main/resources/public/quickstart/spincast-quick-start.zip" basedir="${project.build.directory}/spincast-quickstart" />
 
                             </tasks>
                         </configuration>
