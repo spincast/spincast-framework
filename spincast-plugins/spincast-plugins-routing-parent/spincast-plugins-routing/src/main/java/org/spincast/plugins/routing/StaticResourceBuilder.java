@@ -223,7 +223,7 @@ public class StaticResourceBuilder<R extends IRequestContext<?>> implements ISta
     }
 
     /**
-     * If <= 0, the "Access-Control-Max-Age" header
+     * If &lt;= 0, the "Access-Control-Max-Age" header
      * won't be sent.
      */
     protected int getCorsDefaultMaxAgeInSeconds() {

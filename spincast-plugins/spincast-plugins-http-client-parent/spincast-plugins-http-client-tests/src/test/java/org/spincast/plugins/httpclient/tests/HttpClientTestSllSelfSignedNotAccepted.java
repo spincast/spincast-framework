@@ -48,12 +48,12 @@ public class HttpClientTestSllSelfSignedNotAccepted extends DefaultIntegrationTe
 
         @Override
         public String getHttpsKeyStoreStorePass() {
-            return "secret";
+            return "myStorePass";
         }
 
         @Override
         public String getHttpsKeyStoreKeypass() {
-            return "secret";
+            return "myKeyPass";
         }
     }
 

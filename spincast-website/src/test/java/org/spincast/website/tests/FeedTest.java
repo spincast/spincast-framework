@@ -116,11 +116,11 @@ public class FeedTest extends AppIntegrationTestBase {
 
         String pubDate = itemObj.getString("pubDate");
         assertNotNull(pubDate);
-        assertEquals("Sun, 02 Jan 2000 05:00:00 GMT", pubDate);
+        assertEquals("Sun, 02 Jan 2000 00:00:00 GMT", pubDate);
 
         String dcDate = itemObj.getString("date");
         assertNotNull(dcDate);
-        assertEquals("2000-01-02T05:00:00Z", dcDate);
+        assertEquals("2000-01-02T00:00:00Z", dcDate);
 
     }
 

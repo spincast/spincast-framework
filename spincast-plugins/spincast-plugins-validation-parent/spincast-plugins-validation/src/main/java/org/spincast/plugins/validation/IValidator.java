@@ -23,7 +23,7 @@ public interface IValidator {
      * Gets the validation errors. The keys are the
      * field names.
      * <p>
-     * If {@link validate(Object)} hasn't been called yet, calls it.
+     * If the validation hasn't been called yet, calls it.
      * </p>
      */
     public Map<String, List<IValidationError>> getErrors();
@@ -31,7 +31,7 @@ public interface IValidator {
     /**
      * Gets the validation errors for the specified field.
      * <p>
-     * If {@link validate(Object)} hasn't been called yet, calls it.
+     * If the validation hasn't been called yet, calls it.
      * </p>
      */
     public List<IValidationError> getErrors(String fieldName);
@@ -39,7 +39,7 @@ public interface IValidator {
     /**
      * Gets the formatted errors, if there are any.
      * <p>
-     * If {@link validate(Object)} hasn't been called yet, calls it.
+     * If the validation hasn't been called yet, calls it.
      * </p>
      * 
      * @param formatType The type of output for the errors (Text, HTML, Json or XML).
@@ -52,7 +52,7 @@ public interface IValidator {
     /**
      * Gets the formatted errors of a specific field, if there are any.
      * <p>
-     * If {@link validate(Object)} hasn't been called yet, calls it.
+     * If the validation hasn't been called yet, calls it.
      * </p>
      * 
      * @param fieldName The field to get errors for.

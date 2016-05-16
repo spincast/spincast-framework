@@ -18,6 +18,7 @@ public interface ISpincastFilters<R extends IRequestContext<?>> {
 
     /**
      * Adds some recommended security headers.
+     * 
      * @see https://www.owasp.org/index.php/List_of_useful_HTTP_headers
      */
     public void addSecurityHeaders(R context);
@@ -40,7 +41,7 @@ public interface ISpincastFilters<R extends IRequestContext<?>> {
      * <li>Content-Type</li>
      * <li>Expires</li>
      * <li>Last-Modified</li>
-     * <li>Pragma
+     * <li>Pragma</li>
      * </ul>
      * </p>
      * 
@@ -81,7 +82,7 @@ public interface ISpincastFilters<R extends IRequestContext<?>> {
      * <li>Content-Type</li>
      * <li>Expires</li>
      * <li>Last-Modified</li>
-     * <li>Pragma
+     * <li>Pragma</li>
      * </ul>
      * </p>
      * 
@@ -292,7 +293,7 @@ public interface ISpincastFilters<R extends IRequestContext<?>> {
      *        
      * @param maxAgeInSeconds The maximum number of seconds a
      *        preflight response can be cached without querying
-     *        again. If <= 0, the "Access-Control-Max-Age" header
+     *        again. If &lt;= 0, the "Access-Control-Max-Age" header
      *        won't be sent.     
      */
     public void cors(R context,

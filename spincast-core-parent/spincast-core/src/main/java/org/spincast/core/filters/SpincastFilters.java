@@ -325,7 +325,7 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
     }
 
     /**
-     * If <= 0, the "Access-Control-Max-Age" header
+     * If &lt;= 0, the "Access-Control-Max-Age" header
      * won't be sent.
      */
     protected int getCorsDefaultMaxAgeInSeconds() {

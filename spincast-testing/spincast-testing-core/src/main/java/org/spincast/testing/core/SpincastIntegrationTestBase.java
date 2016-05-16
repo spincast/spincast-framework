@@ -135,7 +135,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * @param path the relative path to be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param https if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected String createTestUrl(String path, boolean https) {
@@ -151,7 +151,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected String createTestUrl(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -187,8 +187,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -203,13 +202,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IGetRequestBuilder GET(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -246,8 +245,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -262,13 +260,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IPostRequestBuilder POST(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -296,8 +294,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -312,13 +309,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IPutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -346,8 +343,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -362,13 +358,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IDeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -396,8 +392,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -412,13 +407,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IOptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -446,8 +441,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -462,13 +456,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected ITraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -496,8 +490,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -512,13 +505,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -546,8 +539,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -562,13 +554,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IPatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -596,8 +588,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param path the relative path to be appended to the
-     * base test URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
@@ -612,13 +603,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
      * 
      * A cookie store is automatically added.
      * 
-     * @param pathOrUrl a relative path OR a full URL.
+     * @param pathOrUrl a relative path or a full URL.
      * 
      * @param isFullUrl if the 'pathOrUrl' parameter a full URL? If
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL.
      * 
-     * @param https if <true>true</true>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
     protected IHeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl, boolean isHttps) {

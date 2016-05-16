@@ -3,6 +3,7 @@ package org.spincast.website.controllers;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class FeedController {
 
     private final List<INewsEntry> newsEntries;
     private final IAppConfig appConfig;
-    private final FastDateFormat feedDateFormatter = FastDateFormat.getInstance("yyyy-MM-dd");
+    private final FastDateFormat feedDateFormatter = FastDateFormat.getInstance("yyyy-MM-dd", TimeZone.getTimeZone("UTC"));
 
     /**
      * Constructor

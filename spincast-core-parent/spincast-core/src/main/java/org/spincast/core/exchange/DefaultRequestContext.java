@@ -20,7 +20,7 @@ import com.google.inject.assistedinject.AssistedInject;
  * So SpincastCoreGuiceModule can't be <code>abstract</code> and
  * therefore we have to provide this method implementation :
  * 
- *  protected Key<?> getRequestContextImplementationClass() {
+ *  protected Key&lt;?&gt; getRequestContextImplementationClass() {
  *      return Key.get(DefaultRequestContext.class);
  *  }
  *  

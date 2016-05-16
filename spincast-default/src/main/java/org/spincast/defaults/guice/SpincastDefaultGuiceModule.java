@@ -25,7 +25,7 @@ import org.spincast.plugins.variables.SpincastVariablesPluginGuiceModule;
  *    and override some methods. For example:
  * 
  *    public class AppModule extends SpincastDefaultGuiceModule {
- *        @Override
+ *
  *        protected void configure() {
  *            super.configure();
  *            

@@ -79,7 +79,7 @@ public interface ISpincastConfig {
     /**
      * The "storepass" of the <code>KeyStore</code>, for SSL.
      * 
-     * Only used if <code>getHttpsServerPort()</code> returns a port > 0.
+     * Only used if <code>getHttpsServerPort()</code> returns a port &gt; 0.
      * 
      * The default value is <code>null</code>.
      * 

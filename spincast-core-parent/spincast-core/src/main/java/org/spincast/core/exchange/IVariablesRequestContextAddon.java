@@ -46,7 +46,7 @@ public interface IVariablesRequestContextAddon<R extends IRequestContext<?>> {
      * Gets the specified request scoped variable as the
      * specified class. 
      * 
-     * @throw an exception is the object is not
+     * @throws an exception is the object is not
      * of the specified class.
      */
     public <T> T get(String key, Class<T> clazz);
@@ -55,7 +55,7 @@ public interface IVariablesRequestContextAddon<R extends IRequestContext<?>> {
      * Gets the specified request scoped variable as the
      * specified <code>Key</code>. 
      * 
-     * @throw an exception is the object is not
+     * @throws an exception is the object is not
      * of the specified Key.
      */
     public <T> T get(String key, Key<T> typeKey);

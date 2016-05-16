@@ -17,11 +17,12 @@ import com.google.inject.Scopes;
 /**
  * Guice scope for a <code>request</code>.
  * 
- * <br /><br />
- * Modified from:  * <a href="https://github.com/google/guice/wiki/CustomScopes">https://github.com/google/guice/wiki/CustomScopes</a>:
- * <br /><br />
+ * <p>
+ * Modified from: <a href="https://github.com/google/guice/wiki/CustomScopes">https://github.com/google/guice/wiki/CustomScopes</a>:
+ * </p>
+ * <p>
  * Scopes a single execution of a block of code. Apply this scope with a
- * try/finally block: <pre><code>
+ * try/finally block: <pre>
  *
  *   scope.enter();
  *   try {
@@ -39,11 +40,12 @@ import com.google.inject.Scopes;
  * scope, representing a Request Scope, and seed HttpServletRequest and
  * HttpServletResponse.  For each key inserted with seed(), you must include a
  * corresponding binding:
- *  <pre><code>
+ *  <pre>
  *   bind(key)
  *       .toProvider(SimpleScope.&lt;KeyClass&gt;seededKeyProvider())
  *       .in(ScopeAnnotation.class);
  * </pre>
+ * </p>
  *
  * @author Jesse Wilson
  * @author Fedor Karpelevitch

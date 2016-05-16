@@ -35,6 +35,16 @@ public class NewsEntriesProvider implements Provider<List<INewsEntry>> {
             String appUrlPrefix = getAppConfig().getServerSchemeHostPort();
 
             INewsEntry entry = null;
+            entry = new NewsEntry("2016-05-16",
+                                  "Javadoc now available online",
+                                  "<p>The Spincast Javadoc is now <a href=\"" + appUrlPrefix + "/public/javadoc/\">available online</a>.</p>" +
+                                  "<p>A link to that Javadoc has been added at the top of the <a href=\"" + appUrlPrefix + "/documentation/\">documentation</a> " +
+                                  "page, and at the top of each plugin's page.</p>" +
+                                  "<p>Look for thoses links: <img src=\"" + appUrlPrefix + "/public/images/javadoc-link.png\" /> !</p>");
+            
+            this.newsEntries.add(entry);
+            
+            entry = null;
             entry = new NewsEntry("2016-05-13",
                                   "Spincast news page and feed",
                                   "<p>A new <a href=\"" + appUrlPrefix + "/news\">What's new?</a> page is now online!</p>" +

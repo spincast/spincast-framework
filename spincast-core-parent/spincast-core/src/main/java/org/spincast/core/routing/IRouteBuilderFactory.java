@@ -9,8 +9,9 @@ public interface IRouteBuilderFactory<R extends IRequestContext<?>> {
 
     /**
      * Creates a route builder without using a router.
-     * The {@link org.spincast.core.routing.IRouteBuilder#save() save()} method
-     * will throw an expception if called. Only {@link org.spincast.core.routing.IRouteBuilder#create() create()}
+     * The {@link org.spincast.core.routing.IRouteBuilder#save(IHandler) save()} method
+     * will throw an expception if called. Only 
+     * {@link org.spincast.core.routing.IRouteBuilder#create(IHandler) create()}
      * will be available.
      */
     public IRouteBuilder<R> create();

@@ -806,9 +806,21 @@ pre {
 }
 
 .pluginBadges {
-    margin:0px auto;
+    margin-top:-32px;
     width:100%;
     text-align:center;
+}
+
+.plugins-list .pluginBadges {
+    margin-top:0px;
+}
+
+@media only screen and (max-width: 660px) {
+
+    .pluginBadges {
+        float:none;
+        margin-top:0px;
+    }
 }
 
 .pluginBadges div, .pluginBadgeCore {
@@ -821,8 +833,9 @@ pre {
     border: solid 1px #888888;
     color: #888888;
 }
-.pluginDoc .pluginBadges div {
+.pluginDoc .pluginBadges div, .documentation .pluginBadges div {
     float:right;
+    margin-left:6px;
 }
 
 .pluginBadgeCore {
@@ -831,6 +844,11 @@ pre {
 }
 
 .pluginBadgeActive {
+    color:#546B2F !important;
+    border: solid 1px #546B2F !important;
+}
+
+.pluginBadgeJavadoc {
     color:#546B2F !important;
     border: solid 1px #546B2F !important;
 }

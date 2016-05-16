@@ -47,12 +47,12 @@ public class HttpsTest extends DefaultIntegrationTestingBase {
 
         @Override
         public String getHttpsKeyStoreStorePass() {
-            return "secret";
+            return "myStorePass";
         }
 
         @Override
         public String getHttpsKeyStoreKeypass() {
-            return "secret";
+            return "myKeyPass";
         }
     }
 

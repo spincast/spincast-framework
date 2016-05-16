@@ -22,7 +22,7 @@ public interface ISpincastConfigPropsFileBasedConfig {
      * Disabled by default.
      * </p>
      * 
-     * @return the position of the argument or <= 0 to
+     * @return the position of the argument or &lt;= 0 to
      * disable this strategy.
      */
     public int getSpecificPathMainArgsPosition();

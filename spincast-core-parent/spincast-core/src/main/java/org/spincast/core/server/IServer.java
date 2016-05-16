@@ -119,7 +119,7 @@ public interface IServer {
     /**
      * Flushes some bytes to the response.
      * 
-     * @param en if <code>true</code>, the exchnage will be closed
+     * @param end if <code>true</code>, the exchange will be closed
      * and nothing more will be able to be send.
      */
     public void flushBytes(Object exchange, byte[] bytes, boolean end);

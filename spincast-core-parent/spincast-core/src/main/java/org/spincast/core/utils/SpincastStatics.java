@@ -67,7 +67,7 @@ public class SpincastStatics {
      * Return <code>null</code> to continue the exception processing or
      * an exception to be returned immediatly.
      * 
-     * @see <a href="http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html ">http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html</a>
+     * @see <a href="http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html">http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html</a>
      */
     protected RuntimeException manageInterruptedException(Exception ex) {
         Thread.currentThread().interrupt();

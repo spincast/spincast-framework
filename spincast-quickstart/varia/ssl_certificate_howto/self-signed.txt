@@ -8,7 +8,7 @@ HTTPS in developement.
 
 1. Run this Java utility on a command line :
 
-    keytool -genkey -alias mycert -keyalg RSA -sigalg MD5withRSA -keystore devKeyStore.jks -storepass myStorePass -keypass myKeyPass -validity 9999
+    keytool -genkey -alias mycert -keyalg RSA -keysize 2048 -keystore devKeyStore.jks -storepass myStorePass -keypass myKeyPass -validity 9999
 
     Answer the few questions you will be asked.
 

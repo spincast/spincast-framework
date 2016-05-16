@@ -28,7 +28,7 @@ import com.google.inject.Singleton;
  * 
  * We need to inject *providers* for the add-ons because they depend on the
  * request context this class build!
- * @see https://github.com/google/guice/wiki/CyclicDependencies#break-the-cycle-with-a-provider
+ * {@link https://github.com/google/guice/wiki/CyclicDependencies#break-the-cycle-with-a-provider}
  * 
  * Note that we're exceptionally not injecting the dependencies in
  * the <em>constructor</em> here, but using setters! This is because this class
