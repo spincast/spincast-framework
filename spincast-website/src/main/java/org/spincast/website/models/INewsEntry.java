@@ -6,9 +6,9 @@ package org.spincast.website.models;
 public interface INewsEntry {
 
     /**
-     * The published date, ISO format : "YYYY-MM-DD"
+     * The published date, format: "YYYY-MM-DD HH:mm"
      */
-    public String getPublishedDateISO();
+    public String getPublishedDate();
 
     /**
      * The title of the news entry.

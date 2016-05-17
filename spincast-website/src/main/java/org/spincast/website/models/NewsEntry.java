@@ -21,7 +21,7 @@ public class NewsEntry implements INewsEntry {
     }
 
     @Override
-    public String getPublishedDateISO() {
+    public String getPublishedDate() {
         return this.publishedDateISO;
     }
 
@@ -37,7 +37,7 @@ public class NewsEntry implements INewsEntry {
 
     @Override
     public String toString() {
-        return getPublishedDateISO() + " - " + getTitle();
+        return getPublishedDate() + " - " + getTitle();
     }
 
 }

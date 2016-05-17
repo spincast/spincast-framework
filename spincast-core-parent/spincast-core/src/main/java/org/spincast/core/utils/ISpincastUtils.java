@@ -51,4 +51,23 @@ public interface ISpincastUtils {
      */
     public String getSpincastCurrentVersion();
 
+    /**
+     * Zips a directory.
+     * 
+     * @param targetZipFile the target .zip file. If the parent directories don't
+     * exist, tries to create them.
+     * 
+     * @param If <code>true</code>, the directory itself will be included in the
+     * zip file, otherwise only its content will be.
+     */
+    public void zipDirectory(File directoryToZip, File targetZipFile, boolean includeDirItself);
+
+    /**
+     * Extracts a .zip file to the specified directory.
+     * 
+     * @param targetDir The target directory. If it doesn't exist, tried to
+     * create it (and its parents, if required).
+     */
+    public void zipExtract(File zipFile, File targetDir);
+
 }

@@ -32,7 +32,8 @@ Moment.js, for dates formatting
     app.createFriendlyDates = function() {
     	$(".news_date").each(function(index, el) {
     		var $el = $(el);
-    		$el.html($el.text() + " <span>(" + moment($el.text(), "YYYY-MM-DD").fromNow() + ")</span>");
+    		var localDate = moment.utc($el.text(), "YYYY-MM-DD HH:mm").local();
+    		$el.html(localDate.format("YYYY-MM-DD HH:mm") + " <span>(" + localDate.fromNow() + ")</span>");
     	});
     }
 
@@ -81,7 +82,7 @@ Moment.js, for dates formatting
                     News 
                 </h2>
             <div class="feed">
-                <a href="/rss"><img src="/public/images/rss.png" /></a> 
+                <a href="/rss" class="hint--bottom-left hint--bounce" data-hint="Spincast news feed"><img src="/public/images/rss.png" /></a> 
                 <span class="clear"></span>
             </div> 
                 
@@ -91,7 +92,7 @@ Moment.js, for dates formatting
                 {% for newsEntry in newsEntries %}
                 
                     <p class="news_date">
-                        <span>{{newsEntry.publishedDateISO}}</span>
+                        <span>{{newsEntry.publishedDate}}</span>
                     </p>
             
                     <div class="news_headline">

@@ -25,8 +25,8 @@ public class SpincastRequestPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     protected void bindRequestContextAddon() {
 
-        bind(parametrizeWithRequestContextInterface(IRequestRequestContextAddon.class))
-                                                                                       .to(parametrizeWithRequestContextInterface(SpincastRequestRequestContextAddon.class))
+        bind(parameterizeWithRequestContextInterface(IRequestRequestContextAddon.class))
+                                                                                       .to(parameterizeWithRequestContextInterface(SpincastRequestRequestContextAddon.class))
                                                                                        .in(SpincastGuiceScopes.REQUEST);
     }
 

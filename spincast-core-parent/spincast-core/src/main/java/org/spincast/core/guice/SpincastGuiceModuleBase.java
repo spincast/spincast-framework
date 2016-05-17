@@ -16,7 +16,7 @@ public abstract class SpincastGuiceModuleBase extends AbstractModule {
      * request context type.
      */
     @SuppressWarnings("unchecked")
-    protected <T> Key<T> parametrizeWithRequestContextInterface(Class<T> clazz) {
+    protected <T> Key<T> parameterizeWithRequestContextInterface(Class<T> clazz) {
         return (Key<T>)Key.get(Types.newParameterizedType(clazz, getRequestContextType()));
     }
 

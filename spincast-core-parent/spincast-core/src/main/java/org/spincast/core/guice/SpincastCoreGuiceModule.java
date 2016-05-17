@@ -158,9 +158,9 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     protected void validateRequirements() {
 
         requireBinding(IServer.class);
-        requireBinding(parametrizeWithRequestContextInterface(IRouter.class));
+        requireBinding(parameterizeWithRequestContextInterface(IRouter.class));
         requireBinding(Key.get(new TypeLiteral<IRouter<?>>() {}));
-        requireBinding(parametrizeWithRequestContextInterface(IRouteBuilderFactory.class));
+        requireBinding(parameterizeWithRequestContextInterface(IRouteBuilderFactory.class));
         requireBinding(ITemplatingEngine.class);
         requireBinding(IJsonManager.class);
         requireBinding(IXmlManager.class);
@@ -168,12 +168,12 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(ISpincastDictionary.class);
         requireBinding(ICookieFactory.class);
         requireBinding(ILocaleResolver.class);
-        requireBinding(parametrizeWithRequestContextInterface(IRequestRequestContextAddon.class));
-        requireBinding(parametrizeWithRequestContextInterface(IResponseRequestContextAddon.class));
-        requireBinding(parametrizeWithRequestContextInterface(IRoutingRequestContextAddon.class));
-        requireBinding(parametrizeWithRequestContextInterface(ICookiesRequestContextAddon.class));
-        requireBinding(parametrizeWithRequestContextInterface(ITemplatingRequestContextAddon.class));
-        requireBinding(parametrizeWithRequestContextInterface(IVariablesRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContextInterface(IRequestRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContextInterface(IResponseRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContextInterface(IRoutingRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContextInterface(ICookiesRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContextInterface(ITemplatingRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContextInterface(IVariablesRequestContextAddon.class));
     }
 
     protected void bindMainArgs() {
@@ -211,7 +211,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     }
 
     protected void bindRequestContextBaseDeps() {
-        bind(parametrizeWithRequestContextInterface(RequestContextBaseDeps.class)).in(Scopes.SINGLETON);
+        bind(parameterizeWithRequestContextInterface(RequestContextBaseDeps.class)).in(Scopes.SINGLETON);
     }
 
     @Override
@@ -237,7 +237,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
                                        " : " + key);
         }
 
-        bind(parametrizeWithRequestContextInterface(ISpincastFilters.class)).to(key).in(Scopes.SINGLETON);
+        bind(parameterizeWithRequestContextInterface(ISpincastFilters.class)).to(key).in(Scopes.SINGLETON);
 
         bind(ICorsFilter.class).to(getCorsFilterClass()).in(Scopes.SINGLETON);
     }
@@ -248,11 +248,11 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
 
     @SuppressWarnings("rawtypes")
     protected Key<SpincastFilters> getSpincastFiltersKey() {
-        return parametrizeWithRequestContextInterface(SpincastFilters.class);
+        return parameterizeWithRequestContextInterface(SpincastFilters.class);
     }
 
     protected void bindDefaultPredefinedRouteParamPatternsBinder() {
-        bind(parametrizeWithRequestContextInterface(DefaultRouteParamAliasesBinder.class)).asEagerSingleton();
+        bind(parameterizeWithRequestContextInterface(DefaultRouteParamAliasesBinder.class)).asEagerSingleton();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -260,7 +260,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
 
         Key<? extends IRequestContext<?>> key = Key.get(getRequestContextImplementationClass());
 
-        Key requestContextFactoryKey = parametrizeWithRequestContextInterface(IRequestContextFactory.class);
+        Key requestContextFactoryKey = parameterizeWithRequestContextInterface(IRequestContextFactory.class);
 
         Annotation annotation = key.getAnnotation();
         if(annotation != null) {
@@ -366,7 +366,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     }
 
     protected Key<?> getFrontControllerKey() {
-        return parametrizeWithRequestContextInterface(SpincastFrontController.class);
+        return parameterizeWithRequestContextInterface(SpincastFrontController.class);
     }
 
     protected Key<?> getSpincastUtilsKey() {

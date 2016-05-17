@@ -31,7 +31,8 @@ public class FeedController {
 
     private final List<INewsEntry> newsEntries;
     private final IAppConfig appConfig;
-    private final FastDateFormat feedDateFormatter = FastDateFormat.getInstance("yyyy-MM-dd", TimeZone.getTimeZone("UTC"));
+    private final FastDateFormat feedDateFormatter =
+            FastDateFormat.getInstance("yyyy-MM-dd HH:mm", TimeZone.getTimeZone("UTC"));
 
     /**
      * Constructor
@@ -83,7 +84,7 @@ public class FeedController {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setTitle(newsEntry.getTitle());
                 //entry.setLink("http://wiki.java.net/bin/view/Javawsxml/Rome01");
-                entry.setPublishedDate(getFeedDateFormatter().parse(newsEntry.getPublishedDateISO()));
+                entry.setPublishedDate(getFeedDateFormatter().parse(newsEntry.getPublishedDate()));
                 SyndContent description = new SyndContentImpl();
                 description.setType("text/html");
                 description.setValue(newsEntry.getDescription());

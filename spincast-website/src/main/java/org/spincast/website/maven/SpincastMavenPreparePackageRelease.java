@@ -11,129 +11,34 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 /**
- * Generates the aggregated Javadoc for all 
- * Spincast modules and adds it to the website.
- * 
- * <p>
- * Called by a "exec-maven-plugin" Maven plugin.
- * </p>
- * 
- * <p>
- * Uses Spincast itself! So we have access to all the utlities if required.
- * It is currently not required to do so, but it's pretty cool and very fast,
- * so why not! Of course we don't start any HTTP server though...
- * </p>
+ * Script ran at the "prepare-package" phase, when building
+ * the website using the "release" profile.
  */
-public class GenerateAggregatedJavadoc {
-
-    /**
-     * Guice module specific to this script, if required.
-     */
-    public static class SpincastMavenPluginPackageModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            //...
-        }
-    }
+public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase {
 
     /**
      * Main method
      */
     public static void main(String[] args) {
 
-        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args),
-                                              new SpincastMavenPluginPackageModule());
-
-        GenerateAggregatedJavadoc spincastMavenPluginPackage =
-                guice.getInstance(GenerateAggregatedJavadoc.class);
-        spincastMavenPluginPackage.start();
+        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
+        SpincastMavenPreparePackageRelease script = guice.getInstance(SpincastMavenPreparePackageRelease.class);
+        script.start();
     }
 
-    private final String[] mainArgs;
-    private File projectBaseDir;
-    private File projectBuildOutputDir;
-    private File mavenInstallatinRoot;
     private File javadocSourceGenerationDir;
 
     /**
      * Constructor
      */
     @Inject
-    public GenerateAggregatedJavadoc(@MainArgs String[] mainArgs) {
-        this.mainArgs = mainArgs;
-    }
-
-    protected String[] getMainArgs() {
-        return this.mainArgs;
-    }
-
-    protected File getProjectBaseDir() {
-        if(this.projectBaseDir == null) {
-
-            if(getMainArgs().length == 0) {
-                sendException("The " + GenerateAggregatedJavadoc.class.getName() +
-                              " class expect the base directory of the project " +
-                              "to be passed as the first parameter:  <arguments><argument>${project.basedir}</argument></arguments>");
-            }
-            String baseDirPath = getMainArgs()[0];
-            this.projectBaseDir = new File(baseDirPath);
-
-            if(!this.projectBaseDir.isDirectory()) {
-                sendException("The first parameter must be the base directory of the project. The specified directory " +
-                              "doesn't exist: " + baseDirPath);
-            }
-        }
-        return this.projectBaseDir;
-    }
-
-    protected File getProjectBuildOutputDir() {
-        if(this.projectBuildOutputDir == null) {
-
-            if(getMainArgs().length < 2) {
-                sendException("The " + GenerateAggregatedJavadoc.class.getName() +
-                              " class expect the build output directory of the project " +
-                              "to be passed as the second parameter:  <arguments><argument>${project.build.outputDirectory}</argument></arguments>");
-            }
-            String buildDirPath = getMainArgs()[1];
-            this.projectBuildOutputDir = new File(buildDirPath);
-
-            if(!this.projectBuildOutputDir.isDirectory()) {
-                sendException("The second parameter must be the build output directory of the project. The specified directory " +
-                              "doesn't exist: " + buildDirPath);
-            }
-        }
-        return this.projectBuildOutputDir;
-    }
-
-    protected File getMavenInstallatinRoot() {
-        if(this.mavenInstallatinRoot == null) {
-
-            if(getMainArgs().length < 3) {
-                sendException("The " + GenerateAggregatedJavadoc.class.getName() +
-                              " class expect the Maven installation directory (M2_HOME) " +
-                              "to be passed as the third parameter:  <arguments><argument>${env.M2_HOME}</argument></arguments>");
-            }
-            String mavenHome = getMainArgs()[2];
-            this.mavenInstallatinRoot = new File(mavenHome);
-
-            if(!this.mavenInstallatinRoot.isDirectory()) {
-                sendException("The third parameter must be the Maven installation directory. The specified directory " +
-                              "doesn't exist: " + mavenHome);
-            }
-
-            if(!(new File(mavenHome + "/bin/").isDirectory())) {
-                sendException("The specified Maven home doesn't seem to be valid: " + mavenHome);
-            }
-
-        }
-        return this.mavenInstallatinRoot;
+    public SpincastMavenPreparePackageRelease(@MainArgs String[] mainArgs) {
+        super(mainArgs);
     }
 
     protected File getJavadocSourceGenerationDir() {
@@ -143,21 +48,6 @@ public class GenerateAggregatedJavadoc {
         }
 
         return this.javadocSourceGenerationDir;
-    }
-
-    protected void sendException(String message) {
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("\n!\n!\n! ==========================================\n");
-        builder.append("! SPINCAST MAVEN BUILD ERROR:\n!\n");
-        builder.append("! ").append(message);
-        builder.append("\n! ==========================================\n!\n!\n");
-
-        throw new RuntimeException(builder.toString());
-    }
-
-    protected void log(String message) {
-        System.out.println("[INFO-SPINCAST] " + message);
     }
 
     /**

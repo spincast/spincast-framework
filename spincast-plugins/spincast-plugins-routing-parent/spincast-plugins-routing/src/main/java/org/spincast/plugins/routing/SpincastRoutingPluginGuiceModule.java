@@ -100,16 +100,16 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         if(getRequestContextType().equals(IDefaultRequestContext.class)) {
             return Key.get(DefaultRouter.class);
         } else {
-            return parametrizeWithRequestContextInterface(SpincastRouter.class);
+            return parameterizeWithRequestContextInterface(SpincastRouter.class);
         }
     }
 
     protected Key<?> getRouteKey() {
-        return parametrizeWithRequestContextInterface(SpincastRoute.class);
+        return parameterizeWithRequestContextInterface(SpincastRoute.class);
     }
 
     protected Key<?> getStaticResourceKey() {
-        return parametrizeWithRequestContextInterface(StaticResource.class);
+        return parameterizeWithRequestContextInterface(StaticResource.class);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -131,7 +131,7 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         //==========================================
         // Bind a parameterized version.
         //==========================================
-        bind(parametrizeWithRequestContextInterface(IRouter.class)).to(key).in(Scopes.SINGLETON);
+        bind(parameterizeWithRequestContextInterface(IRouter.class)).to(key).in(Scopes.SINGLETON);
 
         //==========================================
         // Bind a generic "IRouter" version.
@@ -166,8 +166,8 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
                                        IRoute.class.getName() + " : " + key);
         }
 
-        Key routeKey = parametrizeWithRequestContextInterface(IRoute.class);
-        Key factoryKey = parametrizeWithRequestContextInterface(IRouteFactory.class);
+        Key routeKey = parameterizeWithRequestContextInterface(IRoute.class);
+        Key factoryKey = parameterizeWithRequestContextInterface(IRouteFactory.class);
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
@@ -185,9 +185,9 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRouteBuilderFactory() {
 
-        Key interfaceKey = parametrizeWithRequestContextInterface(IRouteBuilder.class);
-        Key implementationKey = parametrizeWithRequestContextInterface(getRouteBuilderImplClass());
-        Key factoryKey = parametrizeWithRequestContextInterface(IRouteBuilderFactory.class);
+        Key interfaceKey = parameterizeWithRequestContextInterface(IRouteBuilder.class);
+        Key implementationKey = parameterizeWithRequestContextInterface(getRouteBuilderImplClass());
+        Key factoryKey = parameterizeWithRequestContextInterface(IRouteBuilderFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
@@ -200,9 +200,9 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRouteHandlerMatchFactory() {
-        Key interfaceKey = parametrizeWithRequestContextInterface(IRouteHandlerMatch.class);
-        Key implementationKey = parametrizeWithRequestContextInterface(getRouteHandlerMatchImplClass());
-        Key factoryKey = parametrizeWithRequestContextInterface(IRouteHandlerMatchFactory.class);
+        Key interfaceKey = parameterizeWithRequestContextInterface(IRouteHandlerMatch.class);
+        Key implementationKey = parameterizeWithRequestContextInterface(getRouteHandlerMatchImplClass());
+        Key factoryKey = parameterizeWithRequestContextInterface(IRouteHandlerMatchFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
@@ -224,8 +224,8 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
                                        IStaticResource.class.getName() + " : " + key);
         }
 
-        Key staticResourceKey = parametrizeWithRequestContextInterface(IStaticResource.class);
-        Key factoryKey = parametrizeWithRequestContextInterface(IStaticResourceFactory.class);
+        Key staticResourceKey = parameterizeWithRequestContextInterface(IStaticResource.class);
+        Key factoryKey = parameterizeWithRequestContextInterface(IStaticResourceFactory.class);
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
@@ -242,9 +242,9 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindStaticResourceBuilderFactory() {
-        Key interfaceKey = parametrizeWithRequestContextInterface(IStaticResourceBuilder.class);
-        Key implementationKey = parametrizeWithRequestContextInterface(getStaticResourceBuilderImplClass());
-        Key factoryKey = parametrizeWithRequestContextInterface(IStaticResourceBuilderFactory.class);
+        Key interfaceKey = parameterizeWithRequestContextInterface(IStaticResourceBuilder.class);
+        Key implementationKey = parameterizeWithRequestContextInterface(getStaticResourceBuilderImplClass());
+        Key factoryKey = parameterizeWithRequestContextInterface(IStaticResourceBuilderFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
@@ -265,8 +265,8 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
     }
 
     protected void bindRequestContextAddon() {
-        bind(parametrizeWithRequestContextInterface(IRoutingRequestContextAddon.class))
-                                                                                       .to(parametrizeWithRequestContextInterface(SpincastRoutingRequestContextAddon.class))
+        bind(parameterizeWithRequestContextInterface(IRoutingRequestContextAddon.class))
+                                                                                       .to(parameterizeWithRequestContextInterface(SpincastRoutingRequestContextAddon.class))
                                                                                        .in(SpincastGuiceScopes.REQUEST);
     }
 

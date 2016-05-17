@@ -45,7 +45,7 @@ public class FeedTest extends AppIntegrationTestBase {
                 // Bind one news entry only.
                 //==========================================
                 List<INewsEntry> newsEntries = new ArrayList<INewsEntry>();
-                newsEntries.add(new NewsEntry("2000-01-02",
+                newsEntries.add(new NewsEntry("2000-01-02 19:00",
                                               "my title",
                                               "<p>my description</p>"));
 
@@ -116,11 +116,11 @@ public class FeedTest extends AppIntegrationTestBase {
 
         String pubDate = itemObj.getString("pubDate");
         assertNotNull(pubDate);
-        assertEquals("Sun, 02 Jan 2000 00:00:00 GMT", pubDate);
+        assertEquals("Sun, 02 Jan 2000 19:00:00 GMT", pubDate);
 
         String dcDate = itemObj.getString("date");
         assertNotNull(dcDate);
-        assertEquals("2000-01-02T00:00:00Z", dcDate);
+        assertEquals("2000-01-02T19:00:00Z", dcDate);
 
     }
 

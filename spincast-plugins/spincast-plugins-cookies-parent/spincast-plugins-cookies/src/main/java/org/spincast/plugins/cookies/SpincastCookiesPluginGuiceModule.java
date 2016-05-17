@@ -30,8 +30,8 @@ public class SpincastCookiesPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     protected void bindRequestContextAddon() {
 
-        bind(parametrizeWithRequestContextInterface(ICookiesRequestContextAddon.class))
-                                                                                       .to(parametrizeWithRequestContextInterface(SpincastCookiesRequestContextAddon.class))
+        bind(parameterizeWithRequestContextInterface(ICookiesRequestContextAddon.class))
+                                                                                       .to(parameterizeWithRequestContextInterface(SpincastCookiesRequestContextAddon.class))
                                                                                        .in(SpincastGuiceScopes.REQUEST);
     }
 

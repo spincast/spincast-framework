@@ -10,6 +10,7 @@ import com.google.inject.Provider;
 
 /**
  * Spincast news entries are currently hardcoded here.
+ * Dates are UTC.
  */
 public class NewsEntriesProvider implements Provider<List<INewsEntry>> {
 
@@ -35,7 +36,7 @@ public class NewsEntriesProvider implements Provider<List<INewsEntry>> {
             String appUrlPrefix = getAppConfig().getServerSchemeHostPort();
 
             INewsEntry entry = null;
-            entry = new NewsEntry("2016-05-16",
+            entry = new NewsEntry("2016-05-16 23:00",
                                   "Javadoc now available online",
                                   "<p>The Spincast Javadoc is now <a href=\"" + appUrlPrefix + "/public/javadoc/\">available online</a>.</p>" +
                                   "<p>A link to that Javadoc has been added at the top of the <a href=\"" + appUrlPrefix + "/documentation/\">documentation</a> " +
@@ -45,7 +46,7 @@ public class NewsEntriesProvider implements Provider<List<INewsEntry>> {
             this.newsEntries.add(entry);
             
             entry = null;
-            entry = new NewsEntry("2016-05-13",
+            entry = new NewsEntry("2016-05-13 00:00",
                                   "Spincast news page and feed",
                                   "<p>A new <a href=\"" + appUrlPrefix + "/news\">What's new?</a> page is now online!</p>" +
                                   "<p>Each time a new plugin is available, or each time an interesting thing happens in " +
@@ -55,7 +56,7 @@ public class NewsEntriesProvider implements Provider<List<INewsEntry>> {
             this.newsEntries.add(entry);
             
             entry = null;
-            entry = new NewsEntry("2016-05-10",
+            entry = new NewsEntry("2016-05-10 00:00",
                                   "New plugin available: Spincast Validation",
                                   "<p>A new plugin is available: <a href=\"" + appUrlPrefix + "/plugins/spincast-validation\"><em>Spincast Validation</em></a>.</p>" +
                                   
@@ -64,7 +65,7 @@ public class NewsEntriesProvider implements Provider<List<INewsEntry>> {
             
             this.newsEntries.add(entry);
             
-            entry = new NewsEntry("2016-05-08",
+            entry = new NewsEntry("2016-05-08 00:00",
                                   "Spincast is now listed on Todo-Backend (todobackend.com)",
                                   "<p>Spincast is now listed on <a href=\"http://todobackend.com/\">Todo-Backend</a> <em>(todobackend.com)</em>.</p>" +
                                   

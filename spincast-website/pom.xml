@@ -69,7 +69,6 @@
            <version>1.3</version>
        </dependency>
 
-
     </dependencies>
 
     <build>
@@ -130,119 +129,34 @@
                     </execution>
                 </executions>
             </plugin>
-
+            
+            <!--===================================
+            "Prepare package" Spincast Maven script
+            ====================================-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
                 <executions>
-                
-                    <!--===================================
-                    Make a copy of the spincast-quickstart project, 
-                    modify its pom.xml and create a zip of the result
-                    where the website makes it available to download.
-                    ====================================-->
                     <execution>
-                        <id>ant-standard</id>
-                        <phase>package</phase>
-                        <configuration>
-                            
-                            <!--===================================
-                            Allow the use of <ac:var>, <ac:if>, etc.
-                            Requires deps : ant-contrib:ant-contrib and
-                            org.apache.ant:ant-nodeps
-                            ====================================-->
-                            <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.plugin.classpath" />
-
-                            <!--===================================
-                            "ac" => namespace to use <ac:var>, <ac:if>, etc.
-                            ====================================-->
-                            <tasks xmlns:ac="antlib:net.sf.antcontrib">
-                                <echo message="Replacing content in the quick start's pom.xml!" />
-
-                                <property name="targetDir">${project.build.directory}/spincast-quickstart/spincast-quick-start</property>
-
-                                <copy todir="${targetDir}/src">
-                                    <fileset dir="${project.basedir}/../spincast-quickstart/src" />
-                                </copy>
-                                <copy todir="${targetDir}/varia">
-                                    <fileset dir="${project.basedir}/../spincast-quickstart/varia" />
-                                </copy>
-                                <copy file="${project.basedir}/../spincast-quickstart/pom.xml" todir="${targetDir}" />
-
-                                <replace file="${targetDir}/pom.xml" encoding="UTF8">
-                                    <replacetoken><![CDATA[{project.version}</version>]]></replacetoken>
-                                    <replacevalue><![CDATA[SPINCAST_VERSION</version>]]></replacevalue>
-                                </replace>
-
-                                <replace file="${targetDir}/pom.xml" encoding="UTF8">
-                                    <replacetoken><![CDATA[$SPINCAST_VERSION</version>]]></replacetoken>
-                                    <replacevalue><![CDATA[${project.version}</version>]]></replacevalue>
-                                </replace>
-
-                                <property name="pattern"><![CDATA[<!-- SPINCAST_COORDINATES -->.*<!-- /SPINCAST_COORDINATES -->]]></property>
-                                <property name="replacement"><![CDATA[    <groupId>org.spincast</groupId>
-    <artifactId>spincast-quickstart</artifactId>
-    <version>1.0.0-SNAPSHOT</version>]]></property>
-
-                                <replaceregexp file="${targetDir}/pom.xml" flags="gs">
-                                    <regexp pattern="${pattern}" />
-                                    <substitution expression="${replacement}" />
-                                </replaceregexp>
-
-                                <property name="patternRepo"><![CDATA[<!-- SPINCAST_SNAPSHOTS_REPO -->(.*)<!-- /SPINCAST_SNAPSHOTS_REPO -->]]></property>
-
-                                <ac:if>
-                                    <ac:contains string="${project.version}" substring="-SNAPSHOT" />
-                                    <ac:then>
-                                        <replaceregexp file="${targetDir}/pom.xml" flags="gs">
-                                            <regexp pattern="${patternRepo}" />
-                                            <substitution expression="\1" />
-                                        </replaceregexp>
-                                    </ac:then>
-                                    <ac:else>
-                                        <replaceregexp file="${targetDir}/pom.xml" flags="gs">
-                                            <regexp pattern="${patternRepo}" />
-                                            <substitution expression="" />
-                                        </replaceregexp>
-                                    </ac:else>
-                                </ac:if>
-
-                                <zip destfile="${project.basedir}/src/main/resources/public/quickstart/spincast-quick-start.zip" basedir="${project.build.directory}/spincast-quickstart" />
-
-                            </tasks>
-                        </configuration>
+                        <id>spincast-prepare-package</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>java</goal>
                         </goals>
+                        <configuration>
+                            <mainClass>org.spincast.website.maven.SpincastMavenPreparePackage</mainClass>
+                            <arguments>
+                                <argument>${project.basedir}</argument>
+                                <argument>${project.version}</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-
-                <dependencies>  
-                    <!--===================================
-                    Allow the use of <ac:var>, <ac:if>, etc.
-                    ====================================-->
-                    <dependency>
-                        <groupId>ant-contrib</groupId>
-                        <artifactId>ant-contrib</artifactId>
-                        <version>1.0b3</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>ant</groupId>
-                                <artifactId>ant</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>1.8.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             
             <!--===================================
-            Delete the unecessary original-xxx and xxx-shaded
+            Deletes the unecessary original-xxx and xxx-shaded
             generated artifact
             ====================================-->
             <plugin>
@@ -276,14 +190,10 @@
 
     <profiles>
         
-         <!--=================================== 
-         Plugin to generate the aggregated Javadoc
-         of all modules and to add it to the website.
-         
-         Runs at the "prepare-package" phase so the 
-         generated Javadoc is bundle at the "packaging"
-         phase.
-         ====================================-->
+        <!--===================================
+        "Prepare package" Spincast Maven script,
+        profile "release".
+        ====================================-->
         <profile>
             <id>release</id>
             <build>
@@ -293,19 +203,17 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.5.0</version>
-
                         <executions>
                             <execution>
+                                <id>spincast-prepare-package-release</id>
                                 <phase>prepare-package</phase>
                                 <goals>
                                     <goal>java</goal>
                                 </goals>
                                 <configuration>
-                                    <mainClass>org.spincast.website.maven.GenerateAggregatedJavadoc</mainClass>
+                                    <mainClass>org.spincast.website.maven.SpincastMavenPreparePackageRelease</mainClass>
                                     <arguments>
                                         <argument>${project.basedir}</argument>
-                                        <argument>${project.build.outputDirectory}</argument>
-                                        <argument>${env.M2_HOME}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

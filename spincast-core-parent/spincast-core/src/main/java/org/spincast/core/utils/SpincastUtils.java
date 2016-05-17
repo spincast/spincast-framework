@@ -1,16 +1,29 @@
 package org.spincast.core.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -368,6 +381,125 @@ public class SpincastUtils implements ISpincastUtils {
         }
 
         return artifactVersion;
+    }
+
+    @Override
+    public void zipDirectory(File directoryToZip, File targetZipFile, boolean includeDirItself) {
+
+        File targetParentDir = targetZipFile.getParentFile();
+        if(!targetParentDir.isDirectory()) {
+            boolean result = targetParentDir.mkdirs();
+            if(!result) {
+                throw new RuntimeException("Unable to create the target parent directory: " + targetParentDir.getAbsolutePath());
+            }
+        }
+
+        try(FileOutputStream fos = new FileOutputStream(targetZipFile);
+            ZipOutputStream zos = new ZipOutputStream(fos)) {
+
+            final Path directoryToZipPath = directoryToZip.toPath();
+
+            String prefix = "";
+            if(includeDirItself) {
+                prefix = directoryToZip.getName() + "/";
+                zos.putNextEntry(new ZipEntry(prefix));
+            }
+            final String prefixFinal = prefix;
+
+            Files.walkFileTree(directoryToZipPath, new SimpleFileVisitor<Path>() {
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    zos.putNextEntry(new ZipEntry(prefixFinal + directoryToZipPath.relativize(file).toString()));
+                    Files.copy(file, zos);
+                    zos.closeEntry();
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+
+                    if(!"".equals(directoryToZipPath.relativize(dir).toString())) {
+                        zos.putNextEntry(new ZipEntry(prefixFinal + directoryToZipPath.relativize(dir).toString() + "/"));
+                        zos.closeEntry();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public void zipExtract(File zipFile, File targetDir) {
+
+        Objects.requireNonNull(zipFile, "The zip file can't be NULL");
+        Objects.requireNonNull(targetDir, "The target directory can't be NULL");
+
+        try {
+
+            if(!zipFile.isFile()) {
+                throw new RuntimeException("The file to extract doesn't exist: " + zipFile.getCanonicalPath());
+            }
+
+            if(!targetDir.isDirectory()) {
+                boolean result = targetDir.mkdirs();
+                if(!result) {
+                    throw new RuntimeException("Unable to create the target directory: " + targetDir.getCanonicalPath());
+                }
+            }
+
+            byte[] buffer = new byte[1024];
+
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+            try {
+                ZipEntry ze = zis.getNextEntry();
+                while(ze != null) {
+
+                    String fileName = ze.getName();
+                    File newFile = new File(targetDir.getAbsolutePath() + "/" + fileName);
+
+                    File newFileParent = newFile.getParentFile();
+                    if(!newFileParent.isDirectory()) {
+                        boolean result = targetDir.mkdirs();
+                        if(!result) {
+                            throw new RuntimeException("Unable to create an unzipped directory: " +
+                                                       newFileParent.getCanonicalPath());
+                        }
+                    }
+
+                    if(ze.isDirectory()) {
+                        boolean result = newFile.mkdirs();
+                        if(!result) {
+                            throw new RuntimeException("Unable to create an unzipped directory: " +
+                                                       newFile.getCanonicalPath());
+                        }
+                    } else {
+                        FileOutputStream fos = null;
+                        try {
+
+                            fos = new FileOutputStream(newFile);
+
+                            int len;
+                            while((len = zis.read(buffer)) > 0) {
+                                fos.write(buffer, 0, len);
+                            }
+                        } finally {
+                            IOUtils.closeQuietly(fos);
+                        }
+                    }
+
+                    ze = zis.getNextEntry();
+                }
+
+                zis.closeEntry();
+            } finally {
+                IOUtils.closeQuietly(zis);
+            }
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
     }
 
 }
