@@ -6,6 +6,11 @@ package org.spincast.website.models;
 public interface INewsEntry {
 
     /**
+     * The news entry's id
+     */
+    public long getId();
+
+    /**
      * The published date, format: "YYYY-MM-DD HH:mm"
      */
     public String getPublishedDate();

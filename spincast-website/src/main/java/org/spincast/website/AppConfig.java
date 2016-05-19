@@ -40,4 +40,9 @@ public class AppConfig extends SpincastConfigPropsFileBased implements IAppConfi
         return getConfig("app.server.scheme_host_port", "http://localhost:" + getHttpServerPort());
     }
 
+    @Override
+    public int getNbrNewsEntriesPerPage() {
+        return 3;
+    }
+
 }

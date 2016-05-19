@@ -13,6 +13,7 @@ import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 import org.spincast.website.IAppConfig;
 import org.spincast.website.exchange.IAppRequestContext;
 import org.spincast.website.models.INewsEntry;
+import org.spincast.website.services.INewsService;
 
 import com.google.inject.Inject;
 import com.rometools.rome.feed.synd.SyndContent;
@@ -29,7 +30,7 @@ public class FeedController {
 
     protected final Logger logger = LoggerFactory.getLogger(FeedController.class);
 
-    private final List<INewsEntry> newsEntries;
+    private final INewsService newsService;
     private final IAppConfig appConfig;
     private final FastDateFormat feedDateFormatter =
             FastDateFormat.getInstance("yyyy-MM-dd HH:mm", TimeZone.getTimeZone("UTC"));
@@ -37,15 +38,15 @@ public class FeedController {
     /**
      * Constructor
      */
-    @Inject
-    public FeedController(List<INewsEntry> newsEntries,
+            @Inject
+    public FeedController(INewsService newsService,
                           IAppConfig appConfig) {
-        this.newsEntries = newsEntries;
+        this.newsService = newsService;
         this.appConfig = appConfig;
     }
 
-    protected List<INewsEntry> getNewsEntries() {
-        return this.newsEntries;
+    protected INewsService getNewsService() {
+        return this.newsService;
     }
 
     protected IAppConfig getAppConfig() {
@@ -62,8 +63,8 @@ public class FeedController {
     }
 
     protected String generateFeed(String feedType) {
-        try {
 
+        try {
             SyndFeed feed = new SyndFeedImpl();
             feed.setFeedType(feedType);
 
@@ -76,14 +77,14 @@ public class FeedController {
             feedImage.setTitle("Spincast Framework");
             feed.setImage(feedImage);
 
-            feed.setDescription("What's new about the Spincast framework?");
+            feed.setDescription("What's new about Spincast Framework?");
 
             List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
-            for(INewsEntry newsEntry : getNewsEntries()) {
+            for(INewsEntry newsEntry : getNewsService().getNewsEntries(true)) {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setTitle(newsEntry.getTitle());
-                //entry.setLink("http://wiki.java.net/bin/view/Javawsxml/Rome01");
+                entry.setLink(getAppConfig().getServerSchemeHostPort() + "/news/" + newsEntry.getId());
                 entry.setPublishedDate(getFeedDateFormatter().parse(newsEntry.getPublishedDate()));
                 SyndContent description = new SyndContentImpl();
                 description.setType("text/html");

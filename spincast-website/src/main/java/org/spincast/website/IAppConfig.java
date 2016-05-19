@@ -11,4 +11,9 @@ public interface IAppConfig extends ISpincastConfig {
      * build absolute URLs.
      */
     public String getServerSchemeHostPort();
+
+    /**
+     * The number of news entries per page.
+     */
+    public int getNbrNewsEntriesPerPage();
 }

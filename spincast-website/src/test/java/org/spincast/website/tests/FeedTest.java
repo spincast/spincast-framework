@@ -4,25 +4,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.IAppConfig;
 import org.spincast.website.models.INewsEntry;
 import org.spincast.website.models.NewsEntry;
+import org.spincast.website.repositories.HardcodedNewsRepository;
+import org.spincast.website.repositories.INewsRepository;
 
+import com.google.common.collect.Lists;
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Module;
-import com.google.inject.TypeLiteral;
+import com.google.inject.Scopes;
 
 public class FeedTest extends AppIntegrationTestBase {
 
@@ -33,28 +34,41 @@ public class FeedTest extends AppIntegrationTestBase {
         return this.xmlManager;
     }
 
+    /**
+     * Test repository
+     */
+    protected static class TestNewsRepository extends HardcodedNewsRepository {
+
+        @Inject
+        public TestNewsRepository(IAppConfig appConfig) {
+            super(appConfig);
+        }
+
+        @Override
+        protected List<INewsEntry> getNewsEntriesLocal() {
+
+            return Lists.newArrayList(new NewsEntry(123,
+                                                    "2000-01-02 19:00",
+                                                    "my title",
+                                                    "<p>my description</p>"));
+        }
+    }
+
+    /**
+     * Overriding Guice module
+     */
     @Override
     protected Module getOverridingModule() {
 
-        return new SpincastGuiceModuleBase() {
+        return new AbstractModule() {
 
             @Override
             protected void configure() {
 
                 //==========================================
-                // Bind one news entry only.
+                // Overrides the News repository with our test one.
                 //==========================================
-                List<INewsEntry> newsEntries = new ArrayList<INewsEntry>();
-                newsEntries.add(new NewsEntry("2000-01-02 19:00",
-                                              "my title",
-                                              "<p>my description</p>"));
-
-                bind(new TypeLiteral<List<INewsEntry>>() {}).toInstance(newsEntries);
-            }
-
-            @Override
-            protected Type getRequestContextType() {
-                return AppRequestContext.class;
+                bind(INewsRepository.class).to(TestNewsRepository.class).in(Scopes.SINGLETON);
             }
         };
     }

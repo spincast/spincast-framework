@@ -808,7 +808,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 
         IUser user = getUserService().getUser(userId);
 
-        context.response().sendJson(user);
+        context.response().sendJsonObj(user);
     }
 }</pre>
             </p>
@@ -835,7 +835,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     </li>
                     <li>
                         <span class="code-line-nbr">21</span> : We use the <code>response()</code>
-                        add-on, and more specifically its <code>sendJson(...)</code> method, to serialize
+                        add-on, and more specifically its <code>sendJsonObj(...)</code> method, to serialize
                         the user to <code>Json</code> and return the result as the response.
                     </li>
                     

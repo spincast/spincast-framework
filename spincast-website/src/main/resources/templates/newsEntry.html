@@ -1,0 +1,65 @@
+{#==========================================
+Community
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}news newsEntry{% endblock %}
+{% block meta_title %}News - {{newsEntry.title}}{% endblock %}
+{% block meta_description %}News - {{newsEntry.title}}{% endblock %}
+
+{% block scripts %}
+
+{#==========================================
+Moment.js, for dates formatting
+==========================================#}
+<script src="/public/js/moment.min.js"></script>
+
+<script>
+
+    $(function() {
+        {#==========================================
+        Create friendly dates
+        ==========================================#}
+        app.createFriendlyDates();
+    });
+    
+    app.createFriendlyDates = function() {
+    	$(".news_date").each(function(index, el) {
+    		var $el = $(el);
+    		var localDate = moment.utc($el.text(), "YYYY-MM-DD HH:mm").local();
+    		$el.html(localDate.format("YYYY-MM-DD HH:mm") + " <span>(" + localDate.fromNow() + ")</span>");
+    	});
+    }
+
+</script>
+
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <ol class="breadcrumb">
+        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/news">News</a></li>
+        <li class="active">{{newsEntry.title | raw }}</li>
+    </ol>
+
+    <div id="newsEntry" class="row"> 
+        <div class="col-xs-12">
+        
+            <h2>{{newsEntry.title | raw }}</h2>
+        
+            <p class="news_date">
+                <span>{{newsEntry.publishedDate}}</span>
+            </p>
+
+            <div class="news_text">
+                {{newsEntry.description | raw }}
+            </div>
+            
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

@@ -1,7 +1,6 @@
 package org.spincast.website.controllers;
 
 import java.net.URL;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -13,8 +12,11 @@ import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
+import org.spincast.website.IAppConfig;
 import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.models.INewsEntriesAndTotalNbr;
 import org.spincast.website.models.INewsEntry;
+import org.spincast.website.services.INewsService;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -26,17 +28,20 @@ public class AppController {
     private final String[] mainArgs;
     private final IJsonManager jsonManager;
     private final ISpincastUtils spincastUtils;
-    private final List<INewsEntry> newsEntries;
+    private final INewsService newsService;
+    private final IAppConfig appConfig;
 
     @Inject
     public AppController(@MainArgs String[] mainArgs,
                          IJsonManager jsonManager,
                          ISpincastUtils spincastUtils,
-                         List<INewsEntry> newsEntries) {
+                         INewsService newsService,
+                         IAppConfig appConfig) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
-        this.newsEntries = newsEntries;
+        this.newsService = newsService;
+        this.appConfig = appConfig;
     }
 
     protected String[] getMainArgs() {
@@ -51,8 +56,12 @@ public class AppController {
         return this.spincastUtils;
     }
 
-    protected List<INewsEntry> getNewsEntries() {
-        return this.newsEntries;
+    protected INewsService getNewsService() {
+        return this.newsService;
+    }
+
+    protected IAppConfig getAppConfig() {
+        return this.appConfig;
     }
 
     /**
@@ -151,7 +160,65 @@ public class AppController {
 
     public void news(IAppRequestContext context) {
 
+        int page = 1;
+        String pageStr = context.request().getQueryStringParamFirst("page");
+
+        if(pageStr != null) {
+            try {
+                page = Integer.parseInt(pageStr);
+                if(page < 0) {
+                    context.response().redirect("/news", false);
+                    return;
+                }
+            } catch(Exception ex) {
+                // ok
+            }
+        }
+
+        int nbrNewsEntriesPerPage = getAppConfig().getNbrNewsEntriesPerPage();
+
+        int startPos = ((page - 1) * nbrNewsEntriesPerPage) + 1;
+        int endPos = (startPos - 1) + nbrNewsEntriesPerPage;
+
+        INewsEntriesAndTotalNbr newsEntriesAndTotalNbr = getNewsService().getNewsEntries(startPos, endPos, false);
+
+        if(page > 1 && newsEntriesAndTotalNbr.getNewsEntries().size() == 0) {
+            context.response().redirect("/news", false);
+            return;
+        }
+
+        int nextPage = -1;
+        if(newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() > endPos) {
+            nextPage = page + 1;
+        }
+
+        int nbrPageTotal = (int)Math.floor((newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() - 1) / nbrNewsEntriesPerPage) + 1;
+
+        // @formatter:off
         context.response().sendHtmlTemplate("/templates/news.html",
-                                            SpincastStatics.params("newsEntries", getNewsEntries()));
+                                            SpincastStatics.params("newsEntries", newsEntriesAndTotalNbr.getNewsEntries(),
+                                                                   "currentPage", page,
+                                                                   "nextPage", nextPage,
+                                                                   "nbrPageTotal", nbrPageTotal));
+         // @formatter:on
     }
+
+    public void newsEntry(IAppRequestContext context) {
+
+        long newsId;
+        try {
+            newsId = Long.parseLong(context.request().getPathParam("newsId"));
+        } catch(Exception ex) {
+            throw new NotFoundException("The news entry was not found.");
+        }
+
+        INewsEntry newsEntry = getNewsService().getNewsEntry(newsId);
+        if(newsEntry == null) {
+            throw new NotFoundException("The news entry '" + newsId + "' was not found.");
+        }
+
+        context.response().sendHtmlTemplate("/templates/newsEntry.html",
+                                            SpincastStatics.params("newsEntry", newsEntry));
+    }
+
 }

@@ -5,19 +5,24 @@ package org.spincast.website.models;
  */
 public class NewsEntry implements INewsEntry {
 
+    private final long id;
     private final String publishedDateISO;
-
     private final String title;
-
     private final String description;
 
     /**
      * Constructor
      */
-    public NewsEntry(String publishedDateISO, String title, String description) {
+    public NewsEntry(long id, String publishedDateISO, String title, String description) {
+        this.id = id;
         this.publishedDateISO = publishedDateISO;
         this.title = title;
         this.description = description;
+    }
+
+    @Override
+    public long getId() {
+        return this.id;
     }
 
     @Override

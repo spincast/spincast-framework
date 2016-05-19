@@ -238,7 +238,7 @@ Spincast Properties File Config
         IUser user = context.request().getJsonBody(User.class);
         user = getUserService().addUser(user);
         
-        context.response().sendJson(user);
+        context.response().sendJsonObj(user);
     }
 }</pre> 
                         </p>

@@ -140,7 +140,7 @@ JsonObject
     obj.put("name", "Stromgol");
     obj.put("lastName", "Laroche");
 
-    context.response().sendJson(obj);
+    context.response().sendJsonObj(obj);
 }</pre> 
             </p>
         </div>
@@ -174,9 +174,132 @@ JsonObject
             </p>
         </div>
     </p>   
-    
-    
+
 </section>
+
+{#==========================================
+Spincast Utilities
+==========================================#}     
+<section id="spincast_utils">
+    <h4>
+        <a class="anchor_small" href="#spincast_utils" title="permanent link"></a>
+        Spincast Utilities
+    </h4>
+    
+    <p>
+        Spincast provides some generic utilities, accessible via the <code>ISpincastUtils</code>
+        interface:
+    </p>
+    <p>
+        <ul class="apiList">
+
+
+<li>
+    <code class="apiItem">void <span>zipDirectory</span>(File directoryToZip, File targetZipFile, boolean includeDirItself)</code>
+    <div class="well">
+        Zips a directory.
+
+        <div class="apiItemFooter">
+            @param targetZipFile the target .zip file. If the parent directories don't
+ exist, tries to create them.
+<br />@param If <code>true</code>, the directory itself will be included in the
+ zip file, otherwise only its content will be.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>zipExtract</span>(File zipFile, File targetDir)</code>
+    <div class="well">
+        Extracts a .zip file to the specified directory.
+
+        <div class="apiItemFooter">
+            @param targetDir The target directory. If it doesn't exist, tried to
+ create it (and its parents, if required).
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getMimeTypeFromPath</span>(String path)</code>
+    <div class="well">
+        Gets the <code>mime type</code> from a path, using its extension.
+
+        <div class="apiItemFooter">
+            @return the <code>mime type</code> or <code>null</code> if it can't be
+ decided.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getMimeTypeFromExtension</span>(String extension)</code>
+    <div class="well">
+        Gets the <code>mime type</code> from the extension.
+
+        <div class="apiItemFooter">
+            @return the <code>mime type</code> or <code>null</code> if it can't be
+ decided.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Locale <span>getLocaleBestMatchFromAcceptLanguageHeader</span>(String acceptLanguageHeader)</code>
+    <div class="well">
+        Gets the best Locale to use given a "Accept-Language" HTTP header.
+
+        <div class="apiItemFooter">
+            @return the best Locale to use or <code>null</code>
+ if the given header can't be parsed.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isContentTypeToSkipGziping</span>(String contentType)</code>
+    <div class="well">
+        Should the specified <code>Content-Type</code> be gzipped?
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
+    <div class="well">
+        Returns the working directory: the directory
+ in which the executable .jar is located.
+
+        <div class="apiItemFooter">
+            @return the working directory or <code>null</code> if the application is
+ running inside an IDE.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getSpincastCurrentVersion</span>()</code>
+    <div class="well">
+        Gets the current Spincast version.
+
+    </div>
+</li>
+
+
+
+            
+            
+        </ul>
+    </p> 
+
+</section>
+
 
 {#==========================================
 @MainArgs

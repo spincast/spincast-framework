@@ -9,9 +9,23 @@ import java.util.Locale;
 public interface ISpincastUtils {
 
     /**
-     * Should the specified <code>Content-Type</code> be gzipped?
+     * Zips a directory.
+     * 
+     * @param targetZipFile the target .zip file. If the parent directories don't
+     * exist, tries to create them.
+     * 
+     * @param If <code>true</code>, the directory itself will be included in the
+     * zip file, otherwise only its content will be.
      */
-    public boolean isContentTypeToSkipGziping(String contentType);
+    public void zipDirectory(File directoryToZip, File targetZipFile, boolean includeDirItself);
+
+    /**
+     * Extracts a .zip file to the specified directory.
+     * 
+     * @param targetDir The target directory. If it doesn't exist, tried to
+     * create it (and its parents, if required).
+     */
+    public void zipExtract(File zipFile, File targetDir);
 
     /**
      * Gets the <code>mime type</code> from a path, using its extension.
@@ -38,6 +52,11 @@ public interface ISpincastUtils {
     public Locale getLocaleBestMatchFromAcceptLanguageHeader(String acceptLanguageHeader);
 
     /**
+     * Should the specified <code>Content-Type</code> be gzipped?
+     */
+    public boolean isContentTypeToSkipGziping(String contentType);
+
+    /**
      * Returns the working directory: the directory
      * in which the executable .jar is located.
      * 
@@ -47,27 +66,8 @@ public interface ISpincastUtils {
     public File getAppJarDirectory();
 
     /**
-     * Gets the current Spincast version
+     * Gets the current Spincast version.
      */
     public String getSpincastCurrentVersion();
-
-    /**
-     * Zips a directory.
-     * 
-     * @param targetZipFile the target .zip file. If the parent directories don't
-     * exist, tries to create them.
-     * 
-     * @param If <code>true</code>, the directory itself will be included in the
-     * zip file, otherwise only its content will be.
-     */
-    public void zipDirectory(File directoryToZip, File targetZipFile, boolean includeDirItself);
-
-    /**
-     * Extracts a .zip file to the specified directory.
-     * 
-     * @param targetDir The target directory. If it doesn't exist, tried to
-     * create it (and its parents, if required).
-     */
-    public void zipExtract(File zipFile, File targetDir);
 
 }

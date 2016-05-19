@@ -1,7 +1,5 @@
 package org.spincast.website.guice;
 
-import java.util.List;
-
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
@@ -15,11 +13,12 @@ import org.spincast.website.controllers.AppController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
 import org.spincast.website.exchange.AppRequestContext;
-import org.spincast.website.models.INewsEntry;
-import org.spincast.website.models.NewsEntriesProvider;
+import org.spincast.website.repositories.HardcodedNewsRepository;
+import org.spincast.website.repositories.INewsRepository;
+import org.spincast.website.services.INewsService;
+import org.spincast.website.services.NewsService;
 
 import com.google.inject.Scopes;
-import com.google.inject.TypeLiteral;
 
 public class AppModule extends SpincastDefaultGuiceModule {
 
@@ -55,9 +54,11 @@ public class AppModule extends SpincastDefaultGuiceModule {
         bind(FeedController.class).in(Scopes.SINGLETON);
 
         //==========================================
-        // The Spincast news entries
+        // The application services and repositories
         //==========================================
-        bind(new TypeLiteral<List<INewsEntry>>() {}).toProvider(NewsEntriesProvider.class).in(Scopes.SINGLETON);
+        bind(INewsService.class).to(NewsService.class).in(Scopes.SINGLETON);
+        bind(INewsRepository.class).to(HardcodedNewsRepository.class).in(Scopes.SINGLETON);
+
     }
 
     /**

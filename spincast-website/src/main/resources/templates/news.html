@@ -4,8 +4,8 @@ Community
 {% extends "./layout.html" %}
 
 {% block sectionClasses %}news{% endblock %}
-{% block meta_title %}What's new / Change log{% endblock %}
-{% block meta_description %}What's new / Change log{% endblock %}
+{% block meta_title %}What's new / Blog{% endblock %}
+{% block meta_description %}What's new? / Blog / Change log{% endblock %}
 
 {% block scripts %}
 
@@ -18,10 +18,12 @@ Moment.js, for dates formatting
 
     $(function() {
     	
-        {#==========================================
-        Initialize the Table Of Content
-        ==========================================#}
-        app.toc(188);
+        {% if currentPage == 1 %}
+            {#==========================================
+            Initialize the Table Of Content
+            ==========================================#}
+            app.toc(188);
+        {% endif %}
         
         {#==========================================
         Create friendly dates
@@ -46,89 +48,135 @@ Moment.js, for dates formatting
 
 <div class="container">
 
-    <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop">What's new?</h2></a>
+    {% if currentPage > 1 %}
+        <ol class="breadcrumb">
+            <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/news">News</a></li>
+            <li class="active">page {{currentPage}} of {{nbrPageTotal}}</li>
+        </ol>
+    {% endif %}
+    
+    {% if currentPage > 1 %}
+        <div id="sectionTitle" class="row"> 
+            <div class="col-xs-12">
+                <a href="#top"><h2 class="shortTop">News</h2></a>
+            </div>
         </div>
-    </div>
-    <div id="sectionTitleFixed" class="row"> 
-        <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> What's new?</h2></a>
+    {% else %}
+        <div id="sectionTitle" class="row"> 
+            <div class="col-xs-12">
+                <a href="#top"><h2 class="shortTop">What's new?</h2></a>
+            </div>
         </div>
-    </div>
+        <div id="sectionTitleFixed" class="row"> 
+            <div class="col-xs-12">
+                <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> What's new?</h2></a>
+            </div>
+        </div>
+    {% endif %}
 
     <div class="row">
     
-        <nav id="toc" class="col-md-3">
-            <ul class="nav nav-stacked">
-                <li>
-                    <a href="#top">News</a>
-                </li>
-                <li>
-                    <a href="#change_log">Change log</a>
-                </li>
-                <li>
-                    <a href="#twitter">Twitter</a>
-                </li>
-            </ul>
-        </nav>
+        {% if currentPage == 1 %}
+            <nav id="toc" class="col-md-3">
+                <ul class="nav nav-stacked">
+                    <li>
+                        <a href="#top">News</a>
+                    </li>
+                    <li>
+                        <a href="#change_log">Change log</a>
+                    </li>
+                    <li>
+                        <a href="#twitter">Twitter</a>
+                    </li>      
+                </ul>
+            </nav>
+        {% endif %}  
         
-        <div id="toc-content" class="col-md-9">
+        {% if currentPage == 1 %}
+            <div id="toc-content" class="col-md-9">
+        {% else %}
+            <div id="toc-content" class="col-md-12">
+        {% endif %}
         
             <section id="news">
                 
-                <h2 class="noTop">
-                    <a class="anchor" href="#news" title="permanent link"></a>
-                    News 
-                </h2>
-            <div class="feed">
-                <a href="/rss" class="hint--bottom-left hint--bounce" data-hint="Spincast news feed"><img src="/public/images/rss.png" /></a> 
-                <span class="clear"></span>
-            </div> 
-                
+                {% if currentPage == 1 %}
+                    <h2 class="noTop">
+                        <a class="anchor" href="#news" title="permanent link"></a>
+                        News 
+                    </h2>
+                    <div class="feed">
+                        <a href="/rss" class="hint--bottom-left hint--bounce" data-hint="Spincast news feed"><img src="/public/images/rss.png" /></a> 
+                        <span class="clear"></span>
+                    </div> 
+                {% endif %}
+
                 {#==========================================
                 Loop over the news entries to display
                 ==========================================#}
                 {% for newsEntry in newsEntries %}
-                
-                    <p class="news_date">
-                        <span>{{newsEntry.publishedDate}}</span>
-                    </p>
-            
-                    <div class="news_headline">
-                        {{newsEntry.title | raw }}
-                    </div>
-                    <div class="news_text">
-                        {{newsEntry.description | raw }}
+                    <div>
+                        <h3 class="news_headline">
+                            <a class="anchor" href="/news/{{newsEntry.id}}" title="permanent link"></a>
+                            <a href="/news/{{newsEntry.id}}">{{newsEntry.title | raw }}</a>
+                        </h3>
+                        <p class="news_date">
+                            <span>{{newsEntry.publishedDate}}</span>
+                        </p>
+    
+                        <div class="news_text">
+                            {{newsEntry.description | raw }}
+                        </div>
                     </div>
                 {% else %}
-                    <p> There are no news entries. </p>
+                    <p>No news.</p>
                 {% endfor %}
                 
-            </section>
-            
-            <section id="change_log">
-                <h2 class="noTop">
-                    <a class="anchor" href="#change_log" title="permanent link"></a>
-                    Change log
-                </h2>
+                {% if currentPage > 1 %}
                 
-                <p>
-                    Have a look at the <a href="https://github.com/spincast/spincast-framework/commits/master">Github commits</a> page.
-                </p>
+                    {% if currentPage == 2 %}
+                        <div class="newerNews btn btn-default"><a href="/news">back</a></div> 
+                    {% else %}
+                        <div class="newerNews btn btn-default"><a href="/news?page={{currentPage - 1}}">back</a></div> 
+                    {% endif %}  
+                {% endif %}  
+                
+                {% if nextPage > 0 %}
+                    <div class="olderNews btn btn-default"><a href="/news?page={{nextPage}}">More news...</a></div>  
+                {% endif %}  
+                
             </section>
             
-            <section id="twitter">
-            
-                <h2 class="shortTop">
-                    <a class="anchor" href="#twitter"" title="permanent link"></a>
-                    Twitter
-                </h2>
-                <p>
-                    You can follow us on <a href="https://twitter.com/spincast" class="twitter">Twitter</a>.
-                </p>
-            </section>
-            
+            {#==========================================
+            We only display the Change Log and Twitter
+            section on the first page
+            ==========================================#}
+            {% if currentPage == 1 %}
+              
+                <section id="change_log">
+                    <h2 class="noTop">
+                        <a class="anchor" href="#change_log" title="permanent link"></a>
+                        Change log
+                    </h2>
+                    
+                    <p>
+                        Have a look at the <a href="https://github.com/spincast/spincast-framework/commits/master">Github commits</a> page.
+                    </p>
+                </section>
+                
+                <section id="twitter">
+                
+                    <h2 class="shortTop">
+                        <a class="anchor" href="#twitter"" title="permanent link"></a>
+                        Twitter
+                    </h2>
+                    <p>
+                        You can follow us on <a href="https://twitter.com/spincast" class="twitter">Twitter</a>.
+                    </p>
+                </section>
+               
+            {% endif %}  
+
         </div>
     </div>
     

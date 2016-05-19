@@ -165,7 +165,7 @@ Spincast Response plugin
 		                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
 		                <ul class="apiList">
                         
-                        
+             
 <li>
     <code class="apiItem">boolean <span>isClosed</span>()</code>
     <div class="well">
@@ -290,17 +290,44 @@ Spincast Response plugin
 </li>
 
 <li>
-    <code class="apiItem">void <span>sendJson</span>(Object obj)</code>
+    <code class="apiItem">void <span>sendJson</span>(String jsonString)</code>
     <div class="well">
-        Serializes to <code>Json</code> and sends as <code>application/json</code>, without flushing.
+        Sends a <code>Json</code> String using the <code>application/json</code> Content-Type,
+ without flushing.
+ <p>
+<br />Synonym of : <code>sendCharacters(jsonString, "application/json")</code>
+ </p>
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>sendJson</span>(Object obj, boolean flush)</code>
+    <code class="apiItem">void <span>sendJson</span>(String jsonString, boolean flush)</code>
     <div class="well">
-        Serializes to <code>Json</code>, sends as <code>application/json</code> ,
+        Sends a <code>Json</code> String using the <code>application/json</code> Content-Type,
+ and flushes, if specified.
+ <p>
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+ </p>
+ <p>
+<br />Synonym of : <code>sendCharacters(jsonString, "application/json", flush)</code>
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendJsonObj</span>(Object obj)</code>
+    <div class="well">
+        Serializes the object to <code>Json</code> and sends as <code>application/json</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendJsonObj</span>(Object obj, boolean flush)</code>
+    <div class="well">
+        Serializes the object to <code>Json</code>, sends as <code>application/json</code>,
  and flushes, if specified.
 <br />Note that once the response is flushed, no header can be added or changed anymore.
 
@@ -308,17 +335,44 @@ Spincast Response plugin
 </li>
 
 <li>
-    <code class="apiItem">void <span>sendXml</span>(Object obj)</code>
+    <code class="apiItem">void <span>sendXml</span>(String xml)</code>
     <div class="well">
-        Serializes to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
+        Sends some <code>XML</code> using the <code>application/xml</code> Content-Type,
+ without flushing.
+ <p>
+<br />Synonym of : <code>sendCharacters(xml, "application/xml")</code>
+ </p>
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>sendXml</span>(Object obj, boolean flush)</code>
+    <code class="apiItem">void <span>sendXml</span>(String xml, boolean flush)</code>
     <div class="well">
-        Serializes to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
+        Sends some <code>XML</code> using the <code>application/xml</code> Content-Type,
+ and flushes, if specified.
+ <p>
+<br />Note that once the response is flushed, no header can be added or changed anymore.
+ </p>
+ <p>
+<br />Synonym of : <code>sendCharacters(xml, "application/xml", flush)</code>
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendXmlObj</span>(Object obj)</code>
+    <div class="well">
+        Serializes the object to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>sendXmlObj</span>(Object obj, boolean flush)</code>
+    <div class="well">
+        Serializes the object to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
 <br />Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
@@ -742,8 +796,6 @@ Spincast Response plugin
     </div>
 </li>
 
-
-    
 
 
 

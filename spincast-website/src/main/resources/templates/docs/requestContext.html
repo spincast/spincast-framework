@@ -282,7 +282,7 @@ context.response().redirect("/new-url", true);
 context.response().sendBytes("Hello World".getBytes("UTF-8"));
 
 // Send an object as Json
-context.response().sendJson(user);
+context.response().sendJsonObj(user);
 
 // Send HTML evaluated from a template
 context.response().sendHtmlTemplate("/templates/user.html", params);</pre>     

@@ -266,6 +266,7 @@ public class App {
         //==========================================
         router.GET("/").save(appCtl::index);
         router.GET("/news").save(appCtl::news);
+        router.GET("/news/${newsId:<N>}").save(appCtl::newsEntry);
         router.GET("/documentation").save(appCtl::documentation);
         router.GET("/download").save(appCtl::download);
         router.GET("/plugins").save(appCtl::plugins);
