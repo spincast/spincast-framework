@@ -104,7 +104,7 @@ public class FeedTest extends AppIntegrationTestBase {
 
         String description = channelObj.getString("description");
         assertNotNull(description);
-        assertEquals("What's new about the Spincast framework?", description);
+        assertEquals("What's new about Spincast Framework?", description);
 
         IJsonObject imageObj = channelObj.getJsonObject("image");
         assertNotNull(imageObj);
