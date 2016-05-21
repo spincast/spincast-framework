@@ -1,8 +1,6 @@
 package org.spincast.website.repositories;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -12,9 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
@@ -192,46 +193,34 @@ public class TemplateFilesRepository implements INewsRepository {
                     try {
                         List<INewsEntry> newsEntries = new ArrayList<INewsEntry>();
 
-                        ClassLoader cl = this.getClass().getClassLoader();
-                        InputStream in = null;
-                        BufferedReader br = null;
-                        try {
-                            in = cl.getResourceAsStream("news/");
-                            br = new BufferedReader(new InputStreamReader(in));
-                            String fileName;
-                            while((fileName = br.readLine()) != null) {
+                        Set<String> newsRelPaths =
+                                new Reflections("news", new ResourcesScanner()).getResources(Pattern.compile(".+\\.html"));
 
-                                if(!fileName.endsWith(".html")) {
-                                    continue;
-                                }
+                        for(String newsRelPath : newsRelPaths) {
 
-                                InputStream stream = cl.getResourceAsStream("news/" + fileName);
-                                try {
-                                    StringWriter writer = new StringWriter();
-                                    IOUtils.copy(stream, writer, "UTF-8");
-                                    String newsEntryContent = writer.toString();
+                            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(newsRelPath);
+                            try {
+                                StringWriter writer = new StringWriter();
+                                IOUtils.copy(stream, writer, "UTF-8");
+                                String newsEntryContent = writer.toString();
 
-                                    Properties metaProps = getMetaProperties(newsEntryContent);
+                                Properties metaProps = getMetaProperties(newsEntryContent);
 
-                                    String idStr = metaProps.getProperty("id");
-                                    long id = Long.parseLong(idStr);
-                                    String dateStr = metaProps.getProperty("dateUTC");
-                                    String title = metaProps.getProperty("title");
+                                String idStr = metaProps.getProperty("id");
+                                long id = Long.parseLong(idStr);
+                                String dateStr = metaProps.getProperty("dateUTC");
+                                String title = metaProps.getProperty("title");
 
-                                    newsEntryContent = cleanContent(newsEntryContent);
+                                newsEntryContent = cleanContent(newsEntryContent);
 
-                                    INewsEntry entry = new NewsEntry(id, dateStr, title, newsEntryContent);
-                                    newsEntries.add(entry);
-                                } finally {
-                                    IOUtils.closeQuietly(stream);
-                                }
+                                INewsEntry entry = new NewsEntry(id, dateStr, title, newsEntryContent);
+                                newsEntries.add(entry);
+                            } finally {
+                                IOUtils.closeQuietly(stream);
                             }
-
-                            this.newsEntries = newsEntries;
-                        } finally {
-                            IOUtils.closeQuietly(in);
-                            IOUtils.closeQuietly(br);
                         }
+                        this.newsEntries = newsEntries;
+
                     } catch(Exception ex) {
                         throw SpincastStatics.runtimize(ex);
                     }
