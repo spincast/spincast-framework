@@ -376,13 +376,13 @@ public class SpincastFrontController<R extends IRequestContext<R>> implements IF
     protected void callRouteHandlers(R requestContext, IRoutingResult<R> routingResult) throws Exception {
 
         //==========================================
-        // Save the current routing result
+        // Saves the current routing result
         //==========================================
         requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
                                        routingResult);
 
         //==========================================
-        // Call the "handle()" method on each handlers.
+        // Calls the "handle()" method on each handlers.
         //==========================================
         for(IRouteHandlerMatch<R> routeHandlerMatch : routingResult.getRouteHandlerMatches()) {
 
@@ -410,7 +410,7 @@ public class SpincastFrontController<R extends IRequestContext<R>> implements IF
         }
 
         //==========================================
-        // End the response if required.
+        // Ends the response if required.
         //==========================================
         if(!requestContext.response().isClosed()) {
             requestContext.response().end();

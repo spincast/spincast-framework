@@ -19,7 +19,11 @@ public class SpincastPebblePluginGuiceModule extends SpincastPluginGuiceModuleBa
     @Override
     protected void configure() {
 
-        bind(ITemplatingEngine.class).to(SpincastPebbleTemplatingEngine.class).in(Scopes.SINGLETON);
+        bind(ITemplatingEngine.class).to(getSpincastPebbleTemplatingEngineClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ITemplatingEngine> getSpincastPebbleTemplatingEngineClass() {
+        return SpincastPebbleTemplatingEngine.class;
     }
 
 }

@@ -469,4 +469,26 @@ public class HttpClientTest extends DefaultIntegrationTestingBase {
         assertTrue(StringUtils.isBlank(response.getContentAsString()));
     }
 
+    @Test
+    public void setHttpAuthCredentials() throws Exception {
+
+        getServer().addHttpAuthentication("testRealm", "user1", "pass1");
+
+        getRouter().httpAuth("/one", "testRealm");
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("one");
+            }
+        });
+
+        IHttpResponse response = GET("/one").setHttpAuthCredentials("user1", "pass1").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("one", response.getContentAsString());
+
+        response = GET("/one").setHttpAuthCredentials("user2", "pass2").send();
+        assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatus());
+    }
+
 }

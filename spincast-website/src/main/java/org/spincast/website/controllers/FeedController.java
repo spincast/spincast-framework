@@ -81,7 +81,7 @@ public class FeedController {
 
             List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
-            for(INewsEntry newsEntry : getNewsService().getNewsEntries(true)) {
+            for(INewsEntry newsEntry : getNewsService().getFeedNewsEntries()) {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setTitle(newsEntry.getTitle());
                 entry.setLink(getAppConfig().getServerSchemeHostPort() + "/news/" + newsEntry.getId());

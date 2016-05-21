@@ -185,4 +185,25 @@ public class CustomServer implements IServer {
     public void removeAllStaticResourcesServed() {
     }
 
+    @Override
+    public void addHttpAuthentication(String pathPrefix, String username, String password) {
+    }
+
+    @Override
+    public void createHttpAuthenticationRealm(String pathPrefix, String realmName) {
+    }
+
+    @Override
+    public void removeHttpAuthentication(String username, String realmName) {
+    }
+
+    @Override
+    public void removeHttpAuthentication(String username) {
+    }
+
+    @Override
+    public Map<String, String> getHttpAuthenticationRealms() {
+        return null;
+    }
+
 }

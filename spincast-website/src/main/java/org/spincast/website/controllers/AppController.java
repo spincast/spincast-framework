@@ -64,26 +64,6 @@ public class AppController {
         return this.appConfig;
     }
 
-    /**
-     * This will add some global variables that will be 
-     * available to any templating engine evaluation.
-     */
-    public void addGlobalTemplatingVariables(IAppRequestContext context) {
-
-        //==========================================
-        // The Language abreviation
-        //==========================================
-        context.templating().addTemplatingGlobalVariable("langAbrv", context.getLocaleToUse().getLanguage());
-
-        //==========================================
-        // The current Spincast version
-        //==========================================
-        String currentVersion = getSpincastUtils().getSpincastCurrentVersion();
-        context.templating().addTemplatingGlobalVariable("spincastCurrrentVersion", currentVersion);
-        context.templating().addTemplatingGlobalVariable("spincastCurrrentVersionIsSnapshot",
-                                                         currentVersion.contains("-SNAPSHOT"));
-    }
-
     public void index(IAppRequestContext context) {
         context.response().sendHtmlTemplate("/templates/index.html", null);
     }
@@ -175,7 +155,7 @@ public class AppController {
             }
         }
 
-        int nbrNewsEntriesPerPage = getAppConfig().getNbrNewsEntriesPerPage();
+        int nbrNewsEntriesPerPage = getAppConfig().getNbrNewsEntriesOnNewsPage();
 
         int startPos = ((page - 1) * nbrNewsEntriesPerPage) + 1;
         int endPos = (startPos - 1) + nbrNewsEntriesPerPage;

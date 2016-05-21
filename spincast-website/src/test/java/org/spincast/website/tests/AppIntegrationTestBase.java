@@ -24,7 +24,7 @@ public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase
 
     @Override
     public void beforeClass() {
-        createTestAppPropertiesFile();
+        createTestAppConfigPropertiesFile();
         super.beforeClass();
     };
 
@@ -38,18 +38,22 @@ public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase
      * We create a test properties file to specify some custom
      * configurations for our tests.
      */
-    protected void createTestAppPropertiesFile() {
+    protected void createTestAppConfigPropertiesFile() {
 
         try {
             this.tempAppPropertiesFile = Files.createTempFile(AppIntegrationTestBase.class.getName(), ".properties").toFile();
 
-            String srt = AppConfig.APP_PROPERTIES_KEY_HTTP_SERVER_PORT + "=" + SpincastTestUtils.findFreePort();
+            String content = getAppConfigPropertiesFileContent();
 
-            FileUtils.writeStringToFile(this.tempAppPropertiesFile, srt, "UTF-8");
+            FileUtils.writeStringToFile(this.tempAppPropertiesFile, content, "UTF-8");
 
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    protected String getAppConfigPropertiesFileContent() {
+        return AppConfig.APP_PROPERTIES_KEY_HTTP_SERVER_PORT + "=" + SpincastTestUtils.findFreePort() + "\n";
     }
 
     protected void deleteTestAppPropertiesFile() {

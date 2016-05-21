@@ -170,4 +170,41 @@ public interface IServer {
      */
     public Map<String, List<String>> getRequestHeaders(Object exchange);
 
+    /**
+     * Creates HTTP authentication protection (realm) for the
+     * specified path prefix.
+     * 
+     * @param realmName The name of the realm. Must be unique on this server,
+     * otherwise an exception is thrown. This allows the application to add
+     * user to the realm using its name.
+     */
+    public void createHttpAuthenticationRealm(String pathPrefix, String realmName);
+
+    /**
+     * Returns the existing HTTP authentication realms, the
+     * key being the realm's name and the value being the
+     * prefix path associated to this realm.
+     * <p>
+     * The map is immutable.
+     * </p>
+     */
+    public Map<String, String> getHttpAuthenticationRealms();
+
+    /**
+     * Adds a user to an HTTP protected realm.
+     */
+    public void addHttpAuthentication(String realmName,
+                                      String username,
+                                      String password);
+
+    /**
+     * Removes a user to an HTTP protected realm.
+     */
+    public void removeHttpAuthentication(String username, String realmName);
+
+    /**
+     * Removes a user from all HTTP protected realms.
+     */
+    public void removeHttpAuthentication(String username);
+
 }

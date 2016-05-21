@@ -18,11 +18,15 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.httpclient.IHttpResponseFactory;
 import org.spincast.plugins.httpclient.IRequestBuilderBase;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.Header;
 import org.spincast.shaded.org.apache.http.HttpEntity;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpResponse;
+import org.spincast.shaded.org.apache.http.auth.AuthScope;
+import org.spincast.shaded.org.apache.http.auth.UsernamePasswordCredentials;
 import org.spincast.shaded.org.apache.http.client.CookieStore;
+import org.spincast.shaded.org.apache.http.client.CredentialsProvider;
 import org.spincast.shaded.org.apache.http.client.HttpClient;
 import org.spincast.shaded.org.apache.http.client.config.CookieSpecs;
 import org.spincast.shaded.org.apache.http.client.config.RequestConfig;
@@ -33,6 +37,7 @@ import org.spincast.shaded.org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.spincast.shaded.org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.spincast.shaded.org.apache.http.cookie.Cookie;
 import org.spincast.shaded.org.apache.http.impl.client.BasicCookieStore;
+import org.spincast.shaded.org.apache.http.impl.client.BasicCredentialsProvider;
 import org.spincast.shaded.org.apache.http.impl.client.HttpClientBuilder;
 import org.spincast.shaded.org.apache.http.impl.cookie.BasicClientCookie;
 import org.spincast.shaded.org.apache.http.ssl.SSLContexts;
@@ -56,6 +61,9 @@ public abstract class SpincastRequestBuilderBase<T extends IRequestBuilderBase<?
     private CookieStore cookieStore;
     private HttpClientBuilder httpClientBuilder;
     private boolean disableSslCertificateErrors = false;
+
+    private String httpAuthUsername;
+    private String httpAuthPassword;
 
     /**
      * Constructor
@@ -111,6 +119,18 @@ public abstract class SpincastRequestBuilderBase<T extends IRequestBuilderBase<?
             } catch(Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
+        }
+
+        //==========================================
+        // Http authentication credentials?
+        //==========================================
+        if(!StringUtils.isBlank(getHttpAuthUsername())) {
+
+            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY,
+                                               new UsernamePasswordCredentials(getHttpAuthUsername(), getHttpAuthPassword()));
+
+            this.httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
 
         return this.httpClientBuilder;
@@ -319,6 +339,25 @@ public abstract class SpincastRequestBuilderBase<T extends IRequestBuilderBase<?
 
     protected String getCookieEncoding() {
         return "UTF-8";
+    }
+
+    @Override
+    public T setHttpAuthCredentials(String username, String password) {
+
+        this.httpAuthUsername = username;
+        this.httpAuthPassword = password;
+
+        @SuppressWarnings("unchecked")
+        T t = (T)this;
+        return t;
+    }
+
+    protected String getHttpAuthUsername() {
+        return this.httpAuthUsername;
+    }
+
+    protected String getHttpAuthPassword() {
+        return this.httpAuthPassword;
     }
 
     /**

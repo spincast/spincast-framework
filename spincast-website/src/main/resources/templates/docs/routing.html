@@ -907,7 +907,87 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
             </div>
         </p> 
     </div>
+    
+    {#==========================================
+    Section "routing / HTTP Authentication"
+    ==========================================#}
+    <div id="http_auth">
+        <h4>
+            <a class="anchor_small" href="#http_auth" title="permanent link"></a>
+            HTTP Authentication
+        </h4>
 
+        <p>
+            If you need a section of your application to be protected so only privileged users
+            can access it, you can use
+            <code>HTTP Authentication</code>. With <code>HTTP Authentication</code>, the <code>server</code> itself
+            manages the authentication, so no request will ever reach the
+            framework or a protected resource unless the correct username/password is given.
+        </p>
+        <p>
+            Here's a <a href="/protected_example">protected page example</a>. To access it, you have
+            to provide the correct username/password combination: <code>Stromgol</code>/<code>Laroche</code>.
+        </p>
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            You enable <code>HTTP Authentication</code> by specifying the base
+            path of the URL associated with the section to protect, and a <code>realm</code> name 
+            (The term <code>"realm"</code> is a synonym for <em>"a protected section"</em>). Note that
+            the name of the <code>realm</code> will be 
+            displayed to the user when the server asks for the username/password.
+        </p>
+        <p>
+            A <code>realm</code>
+            can be added using the <code>server</code> directly, but the preferred method is to use
+            the <code><em>httpAuth(...)</em></code> method on the <code>router</code>:
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+router.httpAuth("/admin", "Protected Admin Section");
+</pre> 
+
+                </p>
+            </div>
+        </p> 
+        <p>
+            Now, any request for <code>"/admin"</code> or any URL under it (<code>"/admin/files/secret.txt"</code>, for example)
+            will be intercepted and a username/password will be required to access the requested page or resource.
+        </p>
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Of course, you also have to associate some username/password combinations to a <code>realm</code>, otherwise no one
+            will have access to the protected resources. You add such credentials using the <code>server</code> 
+            object itself. This can
+            be done next to the routes definitions, or in a dedicated class, it doesn't matter. Just make sure you use the
+            correct <code>realm</code> name:
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+getServer().addHttpAuthentication("Protected Admin Section", "Stromgol", "Laroche")
+</pre> 
+
+                </p>
+            </div>
+        </p> 
+        <p>
+            Have a look at the <code>server</code>'s 
+            <a href="http://spincast.loc:44420/public/javadoc/index.html?org/spincast/core/server/IServer.html">Javadoc</a>
+            to see all methods related to <code>HTTP Authentication</code>.
+        </p>
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Finally, note that <code>HTTP Authentication</code> is a quick and easy way to protect a section
+            of your application but, if you need more control, a <code>form based</code> authentication may be
+            preferred.
+        </p>
+        
+    </div>
 
     {#==========================================
     Section "routing / Special exceptions"

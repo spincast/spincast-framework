@@ -727,7 +727,7 @@ Spincast Properties File Config
                 <p>
                     For example, let's say we want to validate that a password contains at least one number. But let's 
                     also say we only want this 
-                    error to be registered only if the password is not empty in the first place (which is also invalid)! 
+                    error to be registered if the password is not empty in the first place (which is also invalid)! 
                     In other words, we want the resulting validation of an empty password to contain
                     only one error, "<em>Can't be null, empty or only contain spaces.</em>". 
                     We don't want two errors: "<em>Can't be null, empty or only contain spaces.</em>" 
@@ -741,15 +741,8 @@ Spincast Properties File Config
 
     @AssistedInject
     public UserValidator(@Assisted IUser user,
-                         IValidationErrorFactory validationErrorFactory,
-                         ISpincastValidationConfig spincastBeanValidationConfig,
-                         IJsonManager jsonManager,
-                         IXmlManager xmlManager) {
-        super(user,
-              validationErrorFactory,
-              spincastBeanValidationConfig,
-              jsonManager,
-              xmlManager);
+                         SpincastValidatorBaseDeps spincastValidatorBaseDeps) {
+        super(user, spincastValidatorBaseDeps);
     }
 
     @Override
@@ -775,21 +768,21 @@ Spincast Properties File Config
                             <span class="explanation">Explanation :</span>
                             <ul>
                                 <li>
-                                    <span class="code-line-nbr">21</span> : We first validate that the password
+                                    <span class="code-line-nbr">14</span> : We first validate that the password
                                     is not blank. If it is blank, the validation fails and <code>false</code>
                                     is returned.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">25</span> : We only continue validating the password
+                                    <span class="code-line-nbr">18</span> : We only continue validating the password
                                     if it is not blank in the first place. Of course, we could still run the other validations and have more
                                     errors displayed to the end user: this is up to you.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">26</span> : Is the password is not empty, we validate 
+                                    <span class="code-line-nbr">19</span> : Is the password is not empty, we validate 
                                     that it contains at least one number.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">27-29</span> : If our custom validation fails, we 
+                                    <span class="code-line-nbr">20-22</span> : If our custom validation fails, we 
                                     register an <em>validation error</em>. A validation error is composed of a <code>field name</code>, 
                                     an <code>error type</code> and an <code>error message</code>.
                                 </li>

@@ -61,6 +61,7 @@ Spincast Pebble plugin
                         <li><a href="#methods">Methods</a></li> 
                     </ul>
                 </li>  
+                <li class="openable"><a href="#configs">Configurations</a></li>   
             </ul>
         </nav>
         
@@ -363,6 +364,37 @@ result in "<code>{{name}}</code>" (without the quotes).
            
 
                         </ul>  
+                    </p>
+                </div>
+            </section>
+            
+            <section id="configs">
+                <h3 class="noTop">
+                    <a class="anchor" href="#configs" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    You can bind a <code>ISpincastPebbleTemplatingEngineConfig</code> implementation to tweak
+                    the default configurations used by Pebble. By default, the
+                    <code>SpincastPebbleTemplatingEngineConfigDefault</code> class is used as the implementation.
+                </p> 
+                <p>
+                    The main configuration, <code><em>getExtension()</em></code>, allows you to add a custom <code>extension</code> to Pebble.
+                    Learn more about extensions on <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble">Pebble website</a>.
+                </p> 
+                <div>
+                    <p>
+                        <ul class="apiList">
+
+                            <li>
+                                <code class="apiItem">Extension <span>getExtension</span>()</code>
+                                <div class="well">
+                                    Pebble extension to register: allows you to add custom
+                                    filters, functions, etc.
+                                </div>
+                            </li>
+                            
+                        </ul>
                     </p>
                 </div>
             </section>

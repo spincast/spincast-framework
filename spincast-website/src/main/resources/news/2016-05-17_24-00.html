@@ -1,0 +1,37 @@
+<!-- META_START
+id=5
+dateUTC=2016-05-17 24:00
+title=Spincast is now used to build itself!
+META_END -->
+
+<p>
+    Spincast is now used to build itself! <img src="{{appUrlPrefix}}/public/images/crazy.png" />
+</p>
+<p>
+    How is this possible? Well, if you don't know yet, a Maven build process contains multiple <i>phases</i>, 
+    one of them is <i>compile</i> and this is where Spincast is actually compiled. But there are many other 
+    important phases following that one, and this is where the compiled Spincast classes can be used!
+</p>
+<p>
+    In <code>spincast-website</code>'s <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/pom.xml">pom.xml</a>, 
+    during the <code>prepare-package</code> phase, we declare <code>exec-maven-plugin</code> plugins to dynamically call some Spincast classes. 
+    One of those classes is <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/java/org/spincast/website/maven/SpincastMavenPreparePackage.java">SpincastMavenPreparePackage</a>, 
+    for example. Since Spincast is already compiled at this point, we can use it! In this particular case, we use Spincast to create a 
+    modified version of the <i>Quick Start</i> application, to zip it, and then to add it to the website's "public" folder, where it can be downloaded.
+</p>
+<p>
+    If you look at <code>SpincastMavenPreparePackage</code>'s code, you'll see that in its <code>main(...)</code> method we start a 
+    Guice context using the <code>SpincastDefaultGuiceModule</code> Spincast's Guice module, exactly as we could do for a real 
+    Spincast application! This allows us to access all the functionalities, all the utilities provided by Spincast. 
+    For example, here we use a Spincast utility to zip the <i>Quick Start</i> sources. Note that we don't start a HTTP server though, 
+    since we don't need it!
+</p>
+<p>
+    In summary, instead of using a <code>maven-antrun-plugin</code> plugin for example, and having to 
+    deal with cumbersome XML logic when some custom steps are required during a build, we simply start a Guice context and we have 
+    full access to Spincast.</p><p>We will probably use that little trick in a reusable 
+    <a href="https://maven.apache.org/guides/plugin/guide-java-plugin-development.html">Maven Mojo plugin</a> one day, but 
+    for build steps that are <i>specific</i> to a project, this approach works very well.
+</p>
+
+       

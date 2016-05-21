@@ -11,10 +11,12 @@ import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.AppController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
 import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.filters.GlobalTemplateVariablesAdderFilter;
 import org.spincast.website.guice.AppModule;
 
 import com.google.common.collect.Lists;
@@ -86,7 +88,9 @@ public class App {
     private final AppController appController;
     private final ErrorController errorController;
     private final FeedController feedController;
+    private final AdminController adminController;
     private final ISpincastFilters<IAppRequestContext> spincastFilters;
+    private final GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter;
 
     @Inject
     public App(IServer server,
@@ -95,14 +99,18 @@ public class App {
                AppController appController,
                ErrorController errorController,
                FeedController feedController,
-               ISpincastFilters<IAppRequestContext> spincastFilters) {
+               AdminController adminController,
+               ISpincastFilters<IAppRequestContext> spincastFilters,
+               GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
         this.appController = appController;
         this.errorController = errorController;
         this.feedController = feedController;
+        this.adminController = adminController;
         this.spincastFilters = spincastFilters;
+        this.globalTemplateVariablesAdderFilter = globalTemplateVariablesAdderFilter;
     }
 
     protected IServer getServer() {
@@ -129,8 +137,16 @@ public class App {
         return this.feedController;
     }
 
+    protected AdminController getAdminController() {
+        return this.adminController;
+    }
+
     protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
         return this.spincastFilters;
+    }
+
+    protected GlobalTemplateVariablesAdderFilter getGlobalTemplateVariablesAdderFilter() {
+        return this.globalTemplateVariablesAdderFilter;
     }
 
     /**
@@ -243,7 +259,7 @@ public class App {
         // Filter that will add some global variables that will be 
         // available to any following templating engine evaluation.
         //==========================================
-        router.before(appCtl::addGlobalTemplatingVariables);
+        router.before(getGlobalTemplateVariablesAdderFilter()::apply);
 
         //==========================================
         // Not Found (404) handler
@@ -260,6 +276,18 @@ public class App {
         //==========================================
         File feedDir = getEmptyFeedDir();
         router.file("/rss").fileSystem(feedDir + "/rss.xml").save(getFeedController()::rss);
+
+        //==========================================
+        // Protected area example
+        //==========================================
+        router.httpAuth("/protected_example", AppConstants.HTTP_AUTH_REALM_NAME_EXAMPLE);
+        router.GET("/protected_example").save(getAdminController()::example);
+
+        //==========================================
+        // Admin - protected area
+        //==========================================
+        router.httpAuth("/admin", AppConstants.HTTP_AUTH_REALM_NAME_ADMIN);
+        router.GET("/admin").save(getAdminController()::index);
 
         //==========================================
         // Pages

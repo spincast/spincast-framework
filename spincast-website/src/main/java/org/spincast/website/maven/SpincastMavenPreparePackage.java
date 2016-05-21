@@ -69,7 +69,7 @@ public class SpincastMavenPreparePackage extends SpincastMavenScriptBase {
      */
     protected void start() {
 
-        log("Starting 'package' phase Spincast script.");
+        log("Starting 'prepare-package' phase Spincast script.");
 
         addQuickStartToWebsite();
     }

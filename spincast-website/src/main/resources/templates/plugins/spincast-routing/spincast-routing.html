@@ -184,8 +184,6 @@ Spincast Routing plugin
                         <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Router Methods :</h4>
                         <ul class="apiList">
                         
-                        
-                        
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>GET</span>(String path)</code>
     <div class="well">
@@ -282,8 +280,9 @@ Spincast Routing plugin
         Creates a "before" filter.
 <br />Synonym of :
  <code>ALL("/*{path}").pos(-1).save(handler)</code>
-     and with the Routing types as returned by
-     ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+ and with the Routing types as returned by
+<br />ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+
     </div>
 </li>
 
@@ -293,8 +292,9 @@ Spincast Routing plugin
         Creates a "before" filter.
 <br />Synonym of :
  <code>ALL(path).pos(-1).save(handler)</code>
-     and with the Routing types as returned by
-     ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+ and with the Routing types as returned by
+<br />ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+
     </div>
 </li>
 
@@ -304,8 +304,9 @@ Spincast Routing plugin
         Creates an "after" filter.
 <br />Synonym of :
  <code>ALL("/*{path}").pos(1).save(handler)</code>
-      and with the Routing types as returned by
-     ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+ and with the Routing types as returned by
+<br />ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+
     </div>
 </li>
 
@@ -315,8 +316,9 @@ Spincast Routing plugin
         Creates an "after" filter.
 <br />Synonym of :
  <code>ALL(path).pos(1).save(handler)</code>
-     and with the Routing types as returned by
-     ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+ and with the Routing types as returned by
+<br />ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+
     </div>
 </li>
 
@@ -328,8 +330,9 @@ Spincast Routing plugin
  <code>ALL("/*{path}").pos(-1).save(handler)</code>
  and
  <code>ALL("/*{path}").pos(1).save(handler)</code>
-     and with the Routing types as returned by
-     ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+ and with the Routing types as returned by
+<br />ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+
     </div>
 </li>
 
@@ -341,8 +344,9 @@ Spincast Routing plugin
  <code>ALL(path).pos(-1).save(handler)</code>
  and
  <code>ALL(path).pos(1).save(handler)</code>
-     and with the Routing types as returned by
-     ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+ and with the Routing types as returned by
+<br />ISpincastRouterConfig#getFilterDefaultRoutingTypes()
+
     </div>
 </li>
 
@@ -707,6 +711,14 @@ Spincast Routing plugin
     </div>
 </li>
 
+<li>
+    <code class="apiItem">void <span>httpAuth</span>(String pathPrefix, String realmName)</code>
+    <div class="well">
+        Creates HTTP authentication protection (realm) for the
+ specified path prefix.
+
+    </div>
+</li>
 
 
 

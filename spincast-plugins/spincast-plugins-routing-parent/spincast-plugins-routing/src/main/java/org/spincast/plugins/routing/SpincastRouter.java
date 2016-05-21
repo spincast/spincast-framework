@@ -1331,7 +1331,7 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
         StringBuilder urlPathForServerBuilder = new StringBuilder("");
         String[] tokens = staticResource.getUrlPath().split("/");
         for(String token : tokens) {
-
+            token = token.trim();
             if(staticResource.isFileResource()) {
                 if(token.startsWith("${") || token.startsWith("*{")) {
                     throw new RuntimeException("A file resource path can't contain dynamic parameters. Use 'dir()' instead or " +
@@ -1467,6 +1467,30 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
 
             addRoute(route);
         }
+    }
+
+    @Override
+    public void httpAuth(String pathPrefix, String realmName) {
+
+        if(StringUtils.isBlank(realmName)) {
+            throw new RuntimeException("The realm name can't be empty");
+        }
+        if(StringUtils.isBlank(pathPrefix)) {
+            pathPrefix = "/";
+        } else if(!pathPrefix.startsWith("/")) {
+            pathPrefix = "/" + pathPrefix;
+        }
+
+        String[] tokens = pathPrefix.split("/");
+        for(String token : tokens) {
+            token = token.trim();
+            if(token.startsWith("${") || token.startsWith("*{")) {
+                throw new RuntimeException("The path prefix for an HTTP authenticated section can't contain " +
+                                           "any dynamic parameters: " + token);
+            }
+        }
+
+        getServer().createHttpAuthenticationRealm(pathPrefix, realmName);
     }
 
 }

@@ -75,6 +75,11 @@ public interface IRequestBuilderBase<T extends IRequestBuilderBase<?>> {
     public T disableSslCertificateErrors();
 
     /**
+     * Set HTTP authentication credentials.
+     */
+    public T setHttpAuthCredentials(String username, String password);
+
+    /**
      * Sends the request and gets the response.
      */
     public IHttpResponse send();

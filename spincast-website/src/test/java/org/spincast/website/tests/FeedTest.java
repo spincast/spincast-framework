@@ -16,8 +16,8 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.website.IAppConfig;
 import org.spincast.website.models.INewsEntry;
 import org.spincast.website.models.NewsEntry;
-import org.spincast.website.repositories.HardcodedNewsRepository;
 import org.spincast.website.repositories.INewsRepository;
+import org.spincast.website.tests.utils.HardcodedNewsRepository;
 
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
@@ -52,6 +52,16 @@ public class FeedTest extends AppIntegrationTestBase {
                                                     "my title",
                                                     "<p>my description</p>"));
         }
+
+        @Override
+        public int getNewsEntriesTotalNumber() {
+            return getNewsEntriesLocal().size();
+        }
+
+        @Override
+        public List<INewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder) {
+            return getNewsEntriesLocal().subList(startPos - 1, endPos);
+        }
     }
 
     /**
@@ -85,7 +95,7 @@ public class FeedTest extends AppIntegrationTestBase {
         String contentAsString = response.getContentAsString();
         contentAsString = StringUtils.replaceChars(contentAsString, "\r\n", "");
 
-        assertTrue(contentAsString.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss xmlns:dc=\"http://purl.org/dc/elements/1.1/\" version=\"2.0\">"));
+        assertTrue(contentAsString.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         assertTrue(contentAsString.endsWith("</rss>"));
 
         IJsonObject xmlAsJsonObj = getXmlManager().fromXml(contentAsString);

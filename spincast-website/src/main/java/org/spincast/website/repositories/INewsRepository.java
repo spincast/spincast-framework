@@ -11,6 +11,11 @@ import org.spincast.website.models.INewsEntry;
 public interface INewsRepository {
 
     /**
+     * Gets news entries number.
+     */
+    public int getNewsEntriesTotalNumber();
+
+    /**
      * Gets all the news entries.
      * 
      * @param ascOrder If <code>true</code>, returns the entries by their
@@ -24,13 +29,27 @@ public interface INewsRepository {
      * 
      * @param startPos The position of the first entry to return. The first element
      * is "1", not "0".
+     * 
      * @param endPos The position of the last entry to return (inclusive).
      * 
      * @param ascOrder If <code>true</code>, returns the entries by their
      * publication date in ascending order. Otherwise, in descending
      * order.
      */
-    public INewsEntriesAndTotalNbr getNewsEntries(int startPos, int endPos, boolean ascOrder);
+    public List<INewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder);
+
+    /**
+     * Gets news entries and the number total of entries in the data source.
+     * 
+     * @param startPos The position of the first entry to return. The first element
+     * is "1", not "0".
+     * @param endPos The position of the last entry to return (inclusive).
+     * 
+     * @param ascOrder If <code>true</code>, returns the entries by their
+     * publication date in ascending order. Otherwise, in descending
+     * order.
+     */
+    public INewsEntriesAndTotalNbr getNewsEntriesAndTotalNbr(int startPos, int endPos, boolean ascOrder);
 
     /**
      * Gets a specific news entry.

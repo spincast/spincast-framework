@@ -42,4 +42,9 @@ public interface INewsService {
      */
     public INewsEntry getNewsEntry(long newsId);
 
+    /**
+     * Gets the news entries for the RSS feed.
+     */
+    public List<INewsEntry> getFeedNewsEntries();
+
 }

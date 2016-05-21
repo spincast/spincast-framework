@@ -1,0 +1,21 @@
+{#==========================================
+Exception - public
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}error{% endblock %}
+{% block meta_title %}Error{% endblock %}
+{% block meta_description %}Error{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="errorCore">
+        {{message}}
+    </div>
+    
+</div> 
+
+
+{% endblock %}

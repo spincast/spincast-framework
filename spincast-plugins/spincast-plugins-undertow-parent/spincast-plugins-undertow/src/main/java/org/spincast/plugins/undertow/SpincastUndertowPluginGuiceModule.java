@@ -27,6 +27,7 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
         bindCorsHandlerFactory();
         bindGzipCheckerHandlerFactory();
         bindFileClassPathResourceManagerFactory();
+        bindHttpAuthIdentityManagerFactory();
     }
 
     protected Class<? extends IServer> getSpincastUndertowServerClass() {
@@ -63,6 +64,16 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
 
     protected Class<? extends IFileClassPathResourceManager> getFileClassPathResourceManagerClass() {
         return FileClassPathResourceManager.class;
+    }
+
+    protected void bindHttpAuthIdentityManagerFactory() {
+        install(new FactoryModuleBuilder().implement(ISpincastHttpAuthIdentityManager.class,
+                                                     getSpincastHttpAuthIdentityManagerClass())
+                                          .build(ISpincastHttpAuthIdentityManagerFactory.class));
+    }
+
+    protected Class<? extends ISpincastHttpAuthIdentityManager> getSpincastHttpAuthIdentityManagerClass() {
+        return SpincastHttpAuthIdentityManager.class;
     }
 
 }

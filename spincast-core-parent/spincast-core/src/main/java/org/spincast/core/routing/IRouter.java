@@ -489,4 +489,10 @@ public interface IRouter<R extends IRequestContext<?>> {
      */
     public Map<String, String> getRouteParamPatternAliases();
 
+    /**
+     * Creates HTTP authentication protection (realm) for the
+     * specified path prefix.
+     */
+    public void httpAuth(String pathPrefix, String realmName);
+
 }

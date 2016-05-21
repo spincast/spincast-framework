@@ -4,8 +4,8 @@ Community
 {% extends "./layout.html" %}
 
 {% block sectionClasses %}news newsEntry{% endblock %}
-{% block meta_title %}News - {{newsEntry.title}}{% endblock %}
-{% block meta_description %}News - {{newsEntry.title}}{% endblock %}
+{% block meta_title %}News - {{newsEntry.title | strip}}{% endblock %}
+{% block meta_description %}News - {{newsEntry.title | strip}}{% endblock %}
 
 {% block scripts %}
 

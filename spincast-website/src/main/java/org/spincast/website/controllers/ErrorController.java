@@ -8,6 +8,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.exceptions.ICustomStatusCodeException;
+import org.spincast.core.exceptions.IPublicException;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
@@ -60,13 +62,36 @@ public class ErrorController {
 
         Exception exception = context.variables().get(SpincastConstants.RequestScopedVariables.EXCEPTION,
                                                       Exception.class);
-        this.logger.error(SpincastStatics.getStackTrace(exception));
 
-        if(context.request().isJsonRequest()) {
-            context.response().sendJsonObj("Server error");
-        } else {
-            context.response().sendHtmlTemplate("/templates/exception.html", null);
+        if(!(exception instanceof IPublicException)) {
+            this.logger.error(SpincastStatics.getStackTrace(exception));
         }
+
+        //==========================================
+        // Custom status code to use?
+        //==========================================
+        if(exception instanceof ICustomStatusCodeException) {
+            context.response().setStatusCode(((ICustomStatusCodeException)exception).getStatusCode());
+        }
+
+        //==========================================
+        // Public exception?
+        //==========================================
+        if(exception instanceof IPublicException) {
+            if(context.request().isJsonRequest()) {
+                context.response().sendJsonObj(exception.getMessage());
+            } else {
+                context.response().sendHtmlTemplate("/templates/exceptionPublic.html",
+                                                    SpincastStatics.params("message", exception.getMessage()));
+            }
+        } else {
+            if(context.request().isJsonRequest()) {
+                context.response().sendJsonObj("Server error");
+            } else {
+                context.response().sendHtmlTemplate("/templates/exception.html", null);
+            }
+        }
+
     }
 
 }

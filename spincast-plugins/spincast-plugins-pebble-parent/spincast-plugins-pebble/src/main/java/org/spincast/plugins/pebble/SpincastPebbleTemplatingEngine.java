@@ -14,6 +14,7 @@ import org.spincast.core.utils.SpincastStatics;
 import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.PebbleEngine.Builder;
+import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
@@ -25,18 +26,25 @@ import com.mitchellbosecke.pebble.template.PebbleTemplate;
  */
 public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
+    private final ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
     private final ISpincastConfig spincastConfig;
     private PebbleEngine pebbleEngineString;
     private PebbleEngine pebbleEngineTemplateClasspath;
     private PebbleEngine pebbleEngineTemplateFileSystem;
 
     @Inject
-    public SpincastPebbleTemplatingEngine(ISpincastConfig spincastConfig) {
+    public SpincastPebbleTemplatingEngine(ISpincastConfig spincastConfig,
+                                          ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig) {
         this.spincastConfig = spincastConfig;
+        this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
     }
 
     protected ISpincastConfig getSpincastConfig() {
         return this.spincastConfig;
+    }
+
+    protected ISpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
+        return this.spincastPebbleTemplatingEngineConfig;
     }
 
     protected PebbleEngine getPebbleEngineString() {
@@ -74,6 +82,14 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
             builder.strictVariables(true);
             builder.tagCache(null);
             builder.templateCache(null);
+        }
+
+        //==========================================
+        // Some extension to add?
+        //==========================================
+        Extension extension = getSpincastPebbleTemplatingEngineConfig().getExtension();
+        if(extension != null) {
+            builder.extension(extension);
         }
     }
 

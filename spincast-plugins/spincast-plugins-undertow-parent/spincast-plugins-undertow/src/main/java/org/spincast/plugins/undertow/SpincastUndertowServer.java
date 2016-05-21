@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,13 @@ import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
 import io.undertow.io.IoCallback;
 import io.undertow.io.Sender;
+import io.undertow.security.api.AuthenticationMechanism;
+import io.undertow.security.api.AuthenticationMode;
+import io.undertow.security.handlers.AuthenticationCallHandler;
+import io.undertow.security.handlers.AuthenticationConstraintHandler;
+import io.undertow.security.handlers.AuthenticationMechanismsHandler;
+import io.undertow.security.handlers.SecurityInitialHandler;
+import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
@@ -76,6 +84,7 @@ public class SpincastUndertowServer implements IServer {
     private final ICorsHandlerFactory corsHandlerFactory;
     private final IGzipCheckerHandlerFactory gzipCheckerHandlerFactory;
     private final IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
+    private final ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
 
     private Undertow undertowServer;
     private IoCallback doNothingCallback = null;
@@ -83,8 +92,15 @@ public class SpincastUndertowServer implements IServer {
 
     private final Map<String, IStaticResource<?>> staticResourcesServedByUrlPath = new HashMap<String, IStaticResource<?>>();
 
+    private final Map<String, String> httpAuthActiveRealms = new HashMap<String, String>();
+
+    private final Map<String, ISpincastHttpAuthIdentityManager> httpAuthIdentityManagersByRealmName =
+            new HashMap<String, ISpincastHttpAuthIdentityManager>();
+
     private HttpHandler spincastFrontControllerHandler;
     private PathHandler staticResourcesPathHandler;
+    private PathHandler httpAuthenticationHandler;
+
     private FormParserFactory formParserFactory;
 
     /**
@@ -98,7 +114,8 @@ public class SpincastUndertowServer implements IServer {
                                   ISSLContextManager sslContextManager,
                                   ICorsHandlerFactory corsHandlerFactory,
                                   IGzipCheckerHandlerFactory gzipCheckerHandlerFactory,
-                                  IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory) {
+                                  IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
+                                  ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory) {
         this.config = config;
         this.frontController = frontController;
         this.spincastUtils = spincastUtils;
@@ -107,6 +124,7 @@ public class SpincastUndertowServer implements IServer {
         this.corsHandlerFactory = corsHandlerFactory;
         this.gzipCheckerHandlerFactory = gzipCheckerHandlerFactory;
         this.fileClassPathResourceManagerFactory = fileClassPathResourceManagerFactory;
+        this.spincastHttpAuthIdentityManagerFactory = spincastHttpAuthIdentityManagerFactory;
     }
 
     protected ISpincastConfig getConfig() {
@@ -141,8 +159,25 @@ public class SpincastUndertowServer implements IServer {
         return this.fileClassPathResourceManagerFactory;
     }
 
+    protected ISpincastHttpAuthIdentityManagerFactory getSpincastHttpAuthIdentityManagerFactory() {
+        return this.spincastHttpAuthIdentityManagerFactory;
+    }
+
     protected Map<String, IStaticResource<?>> getStaticResourcesServedByUrlPath() {
         return this.staticResourcesServedByUrlPath;
+    }
+
+    protected Map<String, ISpincastHttpAuthIdentityManager> getHttpAuthIdentityManagersByRealmName() {
+        return this.httpAuthIdentityManagersByRealmName;
+    }
+
+    protected Map<String, String> getHttpAuthActiveRealms() {
+        return this.httpAuthActiveRealms;
+    }
+
+    @Override
+    public Map<String, String> getHttpAuthenticationRealms() {
+        return Collections.unmodifiableMap(getHttpAuthActiveRealms());
     }
 
     protected FormParserFactory getFormParserFactory() {
@@ -248,7 +283,92 @@ public class SpincastUndertowServer implements IServer {
     }
 
     protected HttpHandler getFinalHandler() {
+        return getHttpAuthenticationHandler();
+    }
+
+    /**
+     * Handler to check for HTTP authentication requirement.
+     */
+    protected PathHandler getHttpAuthenticationHandler() {
+        if(this.httpAuthenticationHandler == null) {
+            this.httpAuthenticationHandler = new PathHandler(getHttpAuthHandlerNextHandler());
+        }
+        return this.httpAuthenticationHandler;
+    }
+
+    protected HttpHandler getHttpAuthHandlerNextHandler() {
         return getStaticResourcesPathHandler();
+    }
+
+    @Override
+    public void createHttpAuthenticationRealm(String pathPrefix, String realmName) {
+
+        if(getHttpAuthActiveRealms().containsKey(realmName)) {
+            throw new RuntimeException("A HTTP authentication realm named '" + realmName + "' " +
+                                       "already exists for path: " + pathPrefix);
+        }
+
+        ISpincastHttpAuthIdentityManager identityManager = getOrCreateHttpAuthIdentityManagersByRealmName(realmName);
+
+        HttpHandler handler = new AuthenticationCallHandler(getHttpAuthHandlerNextHandler());
+        handler = new AuthenticationConstraintHandler(handler);
+        final List<AuthenticationMechanism> mechanisms =
+                Collections.<AuthenticationMechanism>singletonList(new BasicAuthenticationMechanism(getRealmNameToDisplay(pathPrefix,
+                                                                                                                          realmName)));
+        handler = new AuthenticationMechanismsHandler(handler, mechanisms);
+        handler = new SecurityInitialHandler(AuthenticationMode.PRO_ACTIVE,
+                                             identityManager,
+                                             handler);
+
+        getHttpAuthIdentityManagersByRealmName().put(realmName, identityManager);
+
+        getHttpAuthenticationHandler().addPrefixPath(pathPrefix, handler);
+        getHttpAuthActiveRealms().put(realmName, pathPrefix);
+
+    }
+
+    /**
+     * The realm name to display.
+     */
+    protected String getRealmNameToDisplay(String pathPrefix, String realmName) {
+        return realmName;
+    }
+
+    protected ISpincastHttpAuthIdentityManager getOrCreateHttpAuthIdentityManagersByRealmName(String realmName) {
+        ISpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
+        if(identityManager == null) {
+            identityManager = getSpincastHttpAuthIdentityManagerFactory().create();
+            getHttpAuthIdentityManagersByRealmName().put(realmName, identityManager);
+        }
+        return identityManager;
+    }
+
+    @Override
+    public void addHttpAuthentication(String realmName,
+                                      String username,
+                                      String password) {
+
+        //==========================================
+        // Adds the new username/password to the
+        // identity manager of this realm.
+        //==========================================
+        ISpincastHttpAuthIdentityManager identityManager = getOrCreateHttpAuthIdentityManagersByRealmName(realmName);
+        identityManager.addUser(username, password);
+    }
+
+    @Override
+    public void removeHttpAuthentication(String username, String realmName) {
+        ISpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
+        if(identityManager != null) {
+            identityManager.removeUser(username);
+        }
+    }
+
+    @Override
+    public void removeHttpAuthentication(String username) {
+        for(ISpincastHttpAuthIdentityManager identityManager : getHttpAuthIdentityManagersByRealmName().values()) {
+            identityManager.removeUser(username);
+        }
     }
 
     protected HttpHandler getSpincastFrontControllerHandler() {
