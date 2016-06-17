@@ -56,7 +56,7 @@ public class EmailValidationTest extends SpincastGuiceModuleBasedTestBase {
             protected void configure() {
                 super.configure();
 
-                install(new SpincastValidationPluginGuiceModule(getRequestContextType()));
+                install(new SpincastValidationPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
 
                 //==========================================
                 // Binds a user validator factory

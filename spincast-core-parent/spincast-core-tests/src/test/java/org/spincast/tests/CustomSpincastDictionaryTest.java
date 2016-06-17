@@ -40,7 +40,7 @@ public class CustomSpincastDictionaryTest extends DefaultIntegrationTestingBase 
 
             @Override
             protected void bindDictionaryPlugin() {
-                install(new SpincastDictionaryPluginGuiceModule(getRequestContextType()) {
+                install(new SpincastDictionaryPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
                     @Override
                     protected Class<? extends ISpincastDictionary> bindSpincastDictionaryImplClass() {

@@ -12,6 +12,7 @@ import org.spincast.core.exchange.IRequestRequestContextAddon;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IRoutingResult;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -22,14 +23,14 @@ import com.google.inject.Module;
 public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
 
     @Inject
-    IRouter<IDefaultRequestContext> router;
+    IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router;
 
     @Before
     public void before() {
         getRouter().removeAllRoutes();
     }
 
-    protected IRouter<IDefaultRequestContext> getRouter() {
+    protected IRouter<IDefaultRequestContext, IDefaultWebsocketContext> getRouter() {
         return this.router;
     }
 
@@ -54,7 +55,7 @@ public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void oneHttpMethodRoute() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -91,7 +92,7 @@ public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void someHttpMethodRouteAtLeastOne() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         try {
             router.SOME("/").save(SpincastTestUtils.dummyRouteHandler);
@@ -103,7 +104,7 @@ public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void someHttpMethodRoute() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.SOME("/", HttpMethod.GET).save(SpincastTestUtils.dummyRouteHandler);
 
@@ -140,7 +141,7 @@ public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void someHttpMethodRoute2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.SOME("/", HttpMethod.GET, HttpMethod.CONNECT).save(SpincastTestUtils.dummyRouteHandler);
 
@@ -176,7 +177,7 @@ public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void allHttpMethodRoute() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.ALL("/").save(SpincastTestUtils.dummyRouteHandler);
 

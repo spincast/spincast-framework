@@ -18,7 +18,8 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.plugins.httpclient.FileToUpload;
 import org.spincast.plugins.httpclient.IHttpResponseFactory;
-import org.spincast.plugins.httpclient.IRequestBuilderBase;
+import org.spincast.plugins.httpclient.ISpincastHttpClientConfig;
+import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils;
 import org.spincast.shaded.org.apache.http.HttpEntity;
 import org.spincast.shaded.org.apache.http.NameValuePair;
 import org.spincast.shaded.org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -31,8 +32,8 @@ import org.spincast.shaded.org.apache.http.message.BasicNameValuePair;
 /**
  * Implementation for the builders that can send an entity, or upload files..
  */
-public abstract class EntitySenderRequestBuilderBase<T extends IRequestBuilderBase<?>>
-                                                    extends SpincastRequestBuilderBase<T>
+public abstract class EntitySenderRequestBuilderBase<T extends IEntitySenderRequestBuilderBase<?>>
+                                                    extends SpincastHttpRequestBuilderBase<T>
                                                     implements IEntitySenderRequestBuilderBase<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(EntitySenderRequestBuilderBase.class);
@@ -57,8 +58,10 @@ public abstract class EntitySenderRequestBuilderBase<T extends IRequestBuilderBa
                                           ICookieFactory cookieFactory,
                                           IHttpResponseFactory spincastHttpResponseFactory,
                                           IJsonManager jsonManager,
-                                          IXmlManager xmlManager) {
-        super(url, cookieFactory, spincastHttpResponseFactory);
+                                          IXmlManager xmlManager,
+                                          ISpincastHttpClientUtils spincastHttpClientUtils,
+                                          ISpincastHttpClientConfig spincastHttpClientConfig) {
+        super(url, cookieFactory, spincastHttpResponseFactory, spincastHttpClientUtils, spincastHttpClientConfig);
         this.jsonManager = jsonManager;
         this.xmlManager = xmlManager;
     }

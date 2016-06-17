@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.SpincastIntegrationTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -12,13 +13,12 @@ import org.spincast.website.AppConfig;
 import org.spincast.website.exchange.IAppRequestContext;
 
 import com.google.inject.Injector;
-import com.google.inject.Module;
 
 /**
  * Integration test base class specifically made for 
  * our application.
  */
-public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase<IAppRequestContext> {
+public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase<IAppRequestContext, IDefaultWebsocketContext> {
 
     protected File tempAppPropertiesFile;
 
@@ -66,14 +66,7 @@ public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase
      */
     @Override
     protected Injector createInjector() {
-        return App.createApp(getMainArgs(), getOverridingModule());
-    }
-
-    /**
-     * Do we need to add an overriding Module?
-     */
-    protected Module getOverridingModule() {
-        return null;
+        return App.createApp(getMainArgs(), getTestOverridingModule(IAppRequestContext.class, IDefaultWebsocketContext.class));
     }
 
     protected String[] getMainArgs() {

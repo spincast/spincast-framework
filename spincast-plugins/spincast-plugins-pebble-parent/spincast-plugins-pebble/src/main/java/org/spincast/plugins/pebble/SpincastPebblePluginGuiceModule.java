@@ -12,8 +12,9 @@ public class SpincastPebblePluginGuiceModule extends SpincastPluginGuiceModuleBa
     /**
      * Constructor.
      */
-    public SpincastPebblePluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastPebblePluginGuiceModule(Type requestContextType,
+                                           Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override

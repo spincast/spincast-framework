@@ -36,8 +36,14 @@ import org.spincast.core.routing.IStaticResourceBuilderFactory;
 import org.spincast.core.routing.RoutingType;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.websocket.IWebsocketRoute;
+import org.spincast.core.websocket.IWebsocketRouteBuilder;
+import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
+import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
@@ -45,19 +51,21 @@ import com.google.inject.Inject;
 /**
  * Spincast router 
  */
-public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> {
+public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketContext<?>> implements IRouter<R, W> {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastRouter.class);
 
     private final IRouteHandlerMatchFactory<R> routeHandlerMatchFactory;
-    private final IRouteBuilderFactory<R> routeBuilderFactory;
-    private final IStaticResourceBuilderFactory<R> staticResourceBuilderFactory;
+    private final IRouteBuilderFactory<R, W> routeBuilderFactory;
+    private final IStaticResourceBuilderFactory<R, W> staticResourceBuilderFactory;
     private final IStaticResourceFactory<R> staticResourceFactory;
     private final ISpincastRouterConfig spincastRouterConfig;
     private final IRouteFactory<R> routeFactory;
     private final ISpincastConfig spincastConfig;
     private final ISpincastDictionary spincastDictionary;
     private final ISpincastFilters<R> spincastFilters;
+    private final IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
+    private final IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
 
     private TreeMap<Integer, List<IRoute<R>>> globalBeforeFiltersPerPosition;
     private TreeMap<Integer, List<IRoute<R>>> globalAfterFiltersPerPosition;
@@ -79,10 +87,12 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
                           ISpincastDictionary spincastDictionary,
                           IServer server,
                           ISpincastFilters<R> spincastFilters,
-                          IRouteBuilderFactory<R> routeBuilderFactory,
-                          IStaticResourceBuilderFactory<R> staticResourceBuilderFactory,
+                          IRouteBuilderFactory<R, W> routeBuilderFactory,
+                          IStaticResourceBuilderFactory<R, W> staticResourceBuilderFactory,
                           IRouteHandlerMatchFactory<R> routeHandlerMatchFactory,
-                          IStaticResourceFactory<R> staticResourceFactory) {
+                          IStaticResourceFactory<R> staticResourceFactory,
+                          IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory,
+                          IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory) {
         this.spincastRouterConfig = spincastRouterConfig;
         this.routeFactory = routeFactory;
         this.spincastConfig = spincastConfig;
@@ -93,6 +103,8 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
         this.staticResourceBuilderFactory = staticResourceBuilderFactory;
         this.routeHandlerMatchFactory = routeHandlerMatchFactory;
         this.staticResourceFactory = staticResourceFactory;
+        this.websocketRouteBuilderFactory = websocketRouteBuilderFactory;
+        this.websocketRouteHandlerFactory = websocketRouteHandlerFactory;
     }
 
     @Inject
@@ -132,11 +144,19 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
         return this.spincastFilters;
     }
 
-    protected IRouteBuilderFactory<R> getRouteBuilderFactory() {
+    protected IRouteBuilderFactory<R, W> getRouteBuilderFactory() {
         return this.routeBuilderFactory;
     }
 
-    protected IStaticResourceBuilderFactory<R> getStaticResourceBuilderFactory() {
+    protected IWebsocketRouteBuilderFactory<R, W> getWebsocketRouteBuilderFactory() {
+        return this.websocketRouteBuilderFactory;
+    }
+
+    protected IWebsocketRouteHandlerFactory<R, W> getWebsocketRouteHandlerFactory() {
+        return this.websocketRouteHandlerFactory;
+    }
+
+    protected IStaticResourceBuilderFactory<R, W> getStaticResourceBuilderFactory() {
         return this.staticResourceBuilderFactory;
     }
 
@@ -438,7 +458,7 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
 
     @Override
     public IRoutingResult<R> route(R requestContext) {
-        return route(requestContext, requestContext.request().getFullUrl(), RoutingType.NORMAL);
+        return route(requestContext, requestContext.request().getFullUrl(), RoutingType.FOUND);
     }
 
     @Override
@@ -1056,7 +1076,7 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
 
         Set<RoutingType> defaultRoutingTypes = getSpincastRouterConfig().getFilterDefaultRoutingTypes();
         for(RoutingType routingType : defaultRoutingTypes) {
-            if(routingType == RoutingType.NORMAL) {
+            if(routingType == RoutingType.FOUND) {
                 builder.found();
             } else if(routingType == RoutingType.NOT_FOUND) {
                 builder.notFound();
@@ -1458,7 +1478,7 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
             route = getRouteFactory().createRoute(null,
                                                   Sets.newHashSet(HttpMethod.GET),
                                                   urlPath,
-                                                  Sets.newHashSet(RoutingType.NORMAL),
+                                                  Sets.newHashSet(RoutingType.FOUND),
                                                   null,
                                                   staticResource.getGenerator(),
                                                   saveResourceFilter != null ? Arrays.asList(saveResourceFilter) : null,
@@ -1491,6 +1511,110 @@ public class SpincastRouter<R extends IRequestContext<?>> implements IRouter<R> 
         }
 
         getServer().createHttpAuthenticationRealm(pathPrefix, realmName);
+    }
+
+    @Override
+    public IWebsocketRouteBuilder<R, W> websocket(String path) {
+
+        IWebsocketRouteBuilder<R, W> builder = getWebsocketRouteBuilderFactory().create(this);
+        builder = builder.path(path);
+
+        return builder;
+    }
+
+    @Override
+    public void addWebsocketRoute(IWebsocketRoute<R, W> websocketRoute) {
+
+        //==========================================
+        // We create an HTTP route from the Websocket route
+        // informations: this allows the inital request to
+        // be routed exactly as a standard route and to have "before"
+        // filters applied.
+        //==========================================
+        IRoute<R> httpRoute = createHttpRouteFromWebsocketRoute(websocketRoute);
+        addRoute(httpRoute);
+    }
+
+    protected IRoute<R> createHttpRouteFromWebsocketRoute(final IWebsocketRoute<R, W> websocketRoute) {
+
+        //==========================================
+        // We create the "main" route handler for this
+        // route: its job will be to convert the HTTP request 
+        // to a Websocket connection.
+        //==========================================
+        final IHandler<R> routeHandler = getWebsocketRouteHandlerFactory().createWebsocketRouteHandler(websocketRoute);
+
+        IRoute<R> httpRoute = new IRoute<R>() {
+
+            @Override
+            public String getId() {
+                return websocketRoute.getId();
+            }
+
+            @Override
+            public String getPath() {
+                return websocketRoute.getPath();
+            }
+
+            @Override
+            public Set<HttpMethod> getHttpMethods() {
+
+                //==========================================
+                // Websocket connection request only valid using a 
+                // GET method.
+                //==========================================
+                return Sets.newHashSet(HttpMethod.GET);
+            }
+
+            @Override
+            public Set<String> getAcceptedContentTypes() {
+
+                //==========================================
+                // Not interesting for a Websocket connection.
+                //==========================================
+                return null;
+            }
+
+            @Override
+            public Set<RoutingType> getRoutingTypes() {
+                return Sets.newHashSet(RoutingType.FOUND);
+            }
+
+            @Override
+            public IHandler<R> getMainHandler() {
+
+                //==========================================
+                // The Websocket route hander we just created...
+                //==========================================
+                return routeHandler;
+            }
+
+            @Override
+            public List<IHandler<R>> getBeforeFilters() {
+                return websocketRoute.getBeforeFilters();
+            }
+
+            @Override
+            public List<IHandler<R>> getAfterFilters() {
+                //==========================================
+                // No "after" filter for a Websocket route:
+                // if the Websocket connection is established, 
+                // the HTTP request is not anymore.
+                //==========================================
+                return null;
+            }
+
+            @Override
+            public List<Integer> getPositions() {
+
+                //==========================================
+                // Websocket routes can't be used as filters.
+                //==========================================
+                return Lists.newArrayList(0);
+            }
+        };
+
+        return httpRoute;
     }
 
 }

@@ -11,6 +11,8 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IStaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IWebsocketEndpointHandler;
+import org.spincast.core.websocket.IWebsocketEndpointManager;
 
 /**
  * The interface a HTTP server implementation must implement.
@@ -120,12 +122,12 @@ public interface IServer {
      * Flushes some bytes to the response.
      * 
      * @param end if <code>true</code>, the exchange will be closed
-     * and nothing more will be able to be send.
+     * and nothing more can be send.
      */
     public void flushBytes(Object exchange, byte[] bytes, boolean end);
 
     /**
-     * Ends the exchange. Nothing more will be able to be send.
+     * Ends the exchange. Nothing more can be send.
      */
     public void end(Object exchange);
 
@@ -193,9 +195,7 @@ public interface IServer {
     /**
      * Adds a user to an HTTP protected realm.
      */
-    public void addHttpAuthentication(String realmName,
-                                      String username,
-                                      String password);
+    public void addHttpAuthentication(String realmName, String username, String password);
 
     /**
      * Removes a user to an HTTP protected realm.
@@ -206,5 +206,48 @@ public interface IServer {
      * Removes a user from all HTTP protected realms.
      */
     public void removeHttpAuthentication(String username);
+
+    /**
+     * Creates a new Websocket endpoint.
+     * 
+     * @return the manager for this endpoint.
+     */
+    public IWebsocketEndpointManager websocketCreateEndpoint(String endpointId, IWebsocketEndpointHandler endpointHandler);
+
+    /**
+     * Closes a Websocket endpoint. No more connections will
+     * be accepter
+     */
+    public void websocketCloseEndpoint(String endpointId);
+
+    /**
+     * Closes the entire Websocket endpoint. 
+     * All peer connections of this endpoint will be
+     * closed.
+     * 
+     * @param closingCode The closing code.
+     * @param closingReason The closing reason.
+     */
+    public void websocketCloseEndpoint(String endpointId, int closingCode, String closingReason);
+
+    /**
+     * Transforms the request to a peer Websocket connection
+     * on the endpoint 'endpointId'. 
+     */
+    public void websocketConnection(Object exchange,
+                                    String endpointId,
+                                    String peerId);
+
+    /**
+     * Returns the managers of the existing Websockets endpoints. 
+     */
+    public List<IWebsocketEndpointManager> getWebsocketEndpointManagers();
+
+    /**
+     * Returns the manager for a Websockets endpoint. 
+     * 
+     * @return the manager or <code>null</code> if not found.
+     */
+    public IWebsocketEndpointManager getWebsocketEndpointManager(String endpointId);
 
 }

@@ -34,7 +34,7 @@ public class CustomRouterTest extends DefaultIntegrationTestingBase {
             @Override
             protected void bindRoutingPlugin() {
 
-                install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
+                install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
                     @Override
                     protected Key<?> getRouterImplementationKey() {

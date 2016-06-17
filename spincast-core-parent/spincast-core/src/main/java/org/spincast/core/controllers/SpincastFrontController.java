@@ -30,6 +30,7 @@ import org.spincast.core.routing.RoutingType;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -38,11 +39,11 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
-public class SpincastFrontController<R extends IRequestContext<R>> implements IFrontController {
+public class SpincastFrontController<R extends IRequestContext<R>, W extends IWebsocketContext<?>> implements IFrontController {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastFrontController.class);
 
-    private final IRouter<R> router;
+    private final IRouter<R, W> router;
     private final ISpincastConfig spincastConfig;
     private final ISpincastDictionary spincastDictionary;
     private final IServer server;
@@ -54,7 +55,7 @@ public class SpincastFrontController<R extends IRequestContext<R>> implements IF
      * The constructor.
      */
     @Inject
-    public SpincastFrontController(IRouter<R> router,
+    public SpincastFrontController(IRouter<R, W> router,
                                    ISpincastConfig spincastConfig,
                                    ISpincastDictionary spincastDictionary,
                                    IServer server,
@@ -70,7 +71,7 @@ public class SpincastFrontController<R extends IRequestContext<R>> implements IF
         this.requestContextType = requestContextType;
     }
 
-    protected IRouter<R> getRouter() {
+    protected IRouter<R, W> getRouter() {
         return this.router;
     }
 

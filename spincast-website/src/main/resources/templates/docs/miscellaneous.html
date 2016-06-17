@@ -59,6 +59,140 @@ Default Configurations
         </ul>
     </p>
 </section>
+
+{#==========================================
+Templating engine
+==========================================#}     
+<section id="templating_engine">
+    <h4>
+        <a class="anchor_small" href="#templating_engine" title="permanent link"></a>
+        Templating engine (view engine)
+    </h4>
+    
+    <p>
+        The templating engine (also called <em>view engine</em>, or <em>template engine</em>), is the component you use
+        to generate dynamic <code>HTML</code> pages. It can be used for other purposes, for example to generate
+        the body of an email when some placeholders have to be replaced in the base template, but its
+        most frequent use is to generate <code>HTML</code> pages.
+    </p>
+    <p>
+        You can inject the <a href="/plugins/spincast-pebble#templatingengine"><code>ITemplatingEngine</code></a> component 
+        anywhere you need it, but to generate <code>HTML</code> pages the preferred way is to use the
+        methods provided by the <code><em>response()</em></code> <code>add-on</code>, on
+        the <code>request context</code> objects:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public class AppController {
+
+    public void myRouteHandler(IAppRequestContext context) {
+
+        IUser user = getUser();
+
+        Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+        params.put("user", user);
+
+        // A template which is on the classpath:
+        context.response().sendHtmlTemplate("/templates/user.html",
+                                            params);
+
+        // Or, a template which is on the file system:
+        context.response().sendHtmlTemplate("/usr/www/myProject/templates/user.html",
+                                            false,
+                                            SpincastStatics.params("user", user));
+    }
+}</pre> 
+            </p>
+                <p>
+                    <span class="explanation">Explanation :</span>
+                    <ul>
+                        <li>
+                            <span class="code-line-nbr">11</span> : We use the <code>response()</code>
+                            add-on to access the <code>sendHtmlTemplate(...)</code> method. This method
+                            takes two parameters: the path to the <code>HTML</code> template to use (listed below)
+                            and a set of variables to use to generate the final output. By default, the 
+                            <code>templating engine</code> will try to find the template file <em>on the classpath</em>.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">12</span> : We pass a <code>user</code>
+                            object to the <code>templating engine</code> so it can use it to
+                            generate the final <code>HTML</code>. Here, we do so using a classic 
+                            <code>Map&ltString, Object&gt;</code> structure (<span class="code-line-nbr">7-8</span>).
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">15-16</span> : By passing <code>false</code> as
+                            a second parameter to the <code>sendHtmlTemplate(...)</code> method, we can also tell
+                            the <code>templating engine</code> to search for the template
+                            <em>on the file system</em>, and not on the classpath.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">17</span> : <code>SpincastStatics.params(...)</code>
+                            is a utility method provided by Spincast to easily create 
+                            <code>Map&ltString, Object&gt;</code> parameters, <em>inline</em>. It is equivalent to
+                            creating a <code>new HashMap&lt;String, Object&gt;()</code> as in the first example (<span class="code-line-nbr">7-8</span>).
+                        </li>
+                        
+                    </ul>
+                </p>  
+        </div>
+    </p>  
+    <p>
+        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        Here's an example template file which would be on the classpath 
+        (for example, at <code>src/resources/templates/user.html</code>, in the
+        project). Note that the syntax used inside your templates depends on the 
+        implementation of the <code>templating engine</code> 
+        you use! In this example, we use the default implementation, 
+        <a href="/plugins/spincast-pebble">Pebble</a>:
+    </p>
+    <p>
+        <div>
+            <p>
+                {% verbatim %}
+                <pre class="ace ace-html" data-ace-hi="7,18,7,31"
+>&lt;!doctype html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;Test&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello {{user.name}}!&lt;/h1&gt; 
+    &lt;/body&gt;
+&lt;/html&gt;</pre> 
+             {% endverbatim %}
+            </p> 
+        </div>
+    </p>  
+    <p>
+        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        Finally, note that you can also access the <code>templating engine</code> via its own <code><em>"templating()"</em></code>
+        <code>add-on</code>, on the <code>request context</code> objects. 
+        This can be useful when you need to generate some dynamic content
+        without sending it as the <code>response</code> for the current request:
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="6,34,6,47"
+>public class AppController {
+
+    public void myRouteHandler(IAppRequestContext context) {
+
+        IUser user = getUser();
+        
+        String emailBody = context.templating().fromTemplate("/templates/email.html", 
+                                                             SpincastStatics.params("user", user));
+        // Do something with the 'emailBody'...
+    }
+}</pre> 
+            </p> 
+        </div>
+    </p>  
+   
+</section>
    
 {#==========================================
 SSL

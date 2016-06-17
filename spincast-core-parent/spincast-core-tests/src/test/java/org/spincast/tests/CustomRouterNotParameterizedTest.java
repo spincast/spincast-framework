@@ -29,7 +29,7 @@ public class CustomRouterNotParameterizedTest extends DefaultIntegrationTestingB
             @Override
             protected void bindRoutingPlugin() {
 
-                install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
+                install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
                     @Override
                     protected Key<?> getRouterImplementationKey() {

@@ -103,6 +103,12 @@ Routing
                 </li>  
             </ul>
         </p> 
+        <p>
+            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Finally, Spincast also supports <a href="#websockets"><em>WebSockets</em></a>. Make sure you read the dedicated section about
+            WebSockets since it diverges from standard routing!
+        </p>
+
     </div>
     
     {#==========================================
@@ -651,6 +657,37 @@ router.GET("/users/${userId}")
             </div>
         </p>  
     </div>
+    
+    {#==========================================
+    Section "routing / WebSockets"
+    ==========================================#}
+    <div id="routing_websockets">
+        <h4>
+            <a class="anchor_small" href="#routing_websockets" title="permanent link"></a>
+            WebSockets
+        </h4>
+        <p>
+            Because of the particular nature of <a href="https://en.wikipedia.org/wiki/WebSocket">WebSockets</a>, we decided 
+            to aggregate all the documentation about them 
+            in a dedicated <a href="#websockets">WebSockets section</a>.
+            Make sure you read that section to learn everything about WebSockets and the creation of their 
+            routes! 
+        </p> 
+        <p>
+            But, if all you need is a quick WebSocket route definition example, here's one. You use
+            the <code>router</code> object to start the creation, as for a standard <code>HTTP</code> route:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.websocket("/chat").before(someFilter).save(chatWebsocketController);</pre> 
+                </p>
+            </div>
+        </p>  
+        
+    </div>
+    
 
     {#==========================================
     Section "routing / Static resources"
@@ -925,7 +962,7 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
             framework or a protected resource unless the correct username/password is given.
         </p>
         <p>
-            Here's a <a href="/protected_example">protected page example</a>. To access it, you have
+            Here's a <a href="/protected_example"><i class="glyphicon glyphicon-hand-right"></i> Protected page example</a>. To access it, you have
             to provide the correct username/password combination: <code>Stromgol</code>/<code>Laroche</code>.
         </p>
         <p>
@@ -977,7 +1014,7 @@ getServer().addHttpAuthentication("Protected Admin Section", "Stromgol", "Laroch
         </p> 
         <p>
             Have a look at the <code>server</code>'s 
-            <a href="http://spincast.loc:44420/public/javadoc/index.html?org/spincast/core/server/IServer.html">Javadoc</a>
+            <a href="/public/javadoc/index.html?org/spincast/core/server/IServer.html">Javadoc</a>
             to see all methods related to <code>HTTP Authentication</code>.
         </p>
         <p>

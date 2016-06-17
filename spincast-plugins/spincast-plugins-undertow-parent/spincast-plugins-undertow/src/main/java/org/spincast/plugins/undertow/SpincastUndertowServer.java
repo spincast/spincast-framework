@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.SSLContext;
 
@@ -33,6 +35,10 @@ import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.utils.ssl.ISSLContextFactory;
+import org.spincast.core.websocket.IWebsocketEndpointHandler;
+import org.spincast.core.websocket.IWebsocketEndpointManager;
+import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 
@@ -76,15 +82,17 @@ public class SpincastUndertowServer implements IServer {
 
     public static final String UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE = "UT000020";
 
+    private final IWebsocketEndpointFactory spincastWebsocketEndpointFactory;
     private final ISpincastUtils spincastUtils;
     private final ISpincastConfig config;
+    private final ISpincastUndertowConfig spincastUndertowConfig;
     private final IFrontController frontController;
     private final ICookieFactory cookieFactory;
-    private final ISSLContextManager sslContextManager;
     private final ICorsHandlerFactory corsHandlerFactory;
     private final IGzipCheckerHandlerFactory gzipCheckerHandlerFactory;
     private final IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
     private final ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
+    private final ISSLContextFactory sslContextFactory;
 
     private Undertow undertowServer;
     private IoCallback doNothingCallback = null;
@@ -97,38 +105,55 @@ public class SpincastUndertowServer implements IServer {
     private final Map<String, ISpincastHttpAuthIdentityManager> httpAuthIdentityManagersByRealmName =
             new HashMap<String, ISpincastHttpAuthIdentityManager>();
 
+    //==========================================
+    // Websocket endpoints, with there id as the key.
+    //==========================================
+    private final Map<String, IWebsocketEndpoint> websocketEndpointsMap =
+            new ConcurrentHashMap<String, IWebsocketEndpoint>();
+
     private HttpHandler spincastFrontControllerHandler;
     private PathHandler staticResourcesPathHandler;
     private PathHandler httpAuthenticationHandler;
 
     private FormParserFactory formParserFactory;
 
+    private final Map<String, Object> websocketEndpointCreationLocks = new ConcurrentHashMap<String, Object>();
+    private final Object websocketEndpointLockCreationLock = new Object();
+
     /**
      * Constructor
      */
     @Inject
     public SpincastUndertowServer(ISpincastConfig config,
+                                  ISpincastUndertowConfig spincastUndertowConfig,
                                   IFrontController frontController,
                                   ISpincastUtils spincastUtils,
                                   ICookieFactory cookieFactory,
-                                  ISSLContextManager sslContextManager,
                                   ICorsHandlerFactory corsHandlerFactory,
                                   IGzipCheckerHandlerFactory gzipCheckerHandlerFactory,
                                   IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
-                                  ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory) {
+                                  ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
+                                  IWebsocketEndpointFactory spincastWebsocketEndpointFactory,
+                                  ISSLContextFactory sslContextFactory) {
         this.config = config;
+        this.spincastUndertowConfig = spincastUndertowConfig;
         this.frontController = frontController;
         this.spincastUtils = spincastUtils;
         this.cookieFactory = cookieFactory;
-        this.sslContextManager = sslContextManager;
         this.corsHandlerFactory = corsHandlerFactory;
         this.gzipCheckerHandlerFactory = gzipCheckerHandlerFactory;
         this.fileClassPathResourceManagerFactory = fileClassPathResourceManagerFactory;
         this.spincastHttpAuthIdentityManagerFactory = spincastHttpAuthIdentityManagerFactory;
+        this.spincastWebsocketEndpointFactory = spincastWebsocketEndpointFactory;
+        this.sslContextFactory = sslContextFactory;
     }
 
     protected ISpincastConfig getConfig() {
         return this.config;
+    }
+
+    protected ISpincastUndertowConfig getSpincastUndertowConfig() {
+        return this.spincastUndertowConfig;
     }
 
     protected IFrontController getFrontController() {
@@ -141,10 +166,6 @@ public class SpincastUndertowServer implements IServer {
 
     protected ICookieFactory getCookieFactory() {
         return this.cookieFactory;
-    }
-
-    protected ISSLContextManager getSslContextManager() {
-        return this.sslContextManager;
     }
 
     protected ICorsHandlerFactory getCorsHandlerFactory() {
@@ -163,6 +184,10 @@ public class SpincastUndertowServer implements IServer {
         return this.spincastHttpAuthIdentityManagerFactory;
     }
 
+    protected IWebsocketEndpointFactory getSpincastWebsocketEndpointFactory() {
+        return this.spincastWebsocketEndpointFactory;
+    }
+
     protected Map<String, IStaticResource<?>> getStaticResourcesServedByUrlPath() {
         return this.staticResourcesServedByUrlPath;
     }
@@ -171,8 +196,16 @@ public class SpincastUndertowServer implements IServer {
         return this.httpAuthIdentityManagersByRealmName;
     }
 
+    protected Map<String, IWebsocketEndpoint> getWebsocketEndpointsMap() {
+        return this.websocketEndpointsMap;
+    }
+
     protected Map<String, String> getHttpAuthActiveRealms() {
         return this.httpAuthActiveRealms;
+    }
+
+    protected ISSLContextFactory getSslContextFactory() {
+        return this.sslContextFactory;
     }
 
     @Override
@@ -188,7 +221,12 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
+
+        if(this.undertowServer != null) {
+            this.logger.warn("Server already started.");
+            return;
+        }
 
         this.undertowServer = getServerBuilder().build();
 
@@ -210,6 +248,7 @@ public class SpincastUndertowServer implements IServer {
                     }
                     continue;
                 }
+                this.undertowServer = null;
                 throw ex;
             }
         }
@@ -269,7 +308,11 @@ public class SpincastUndertowServer implements IServer {
 
         try {
 
-            SSLContext sslContext = getSslContextManager().getSSLContext();
+            SSLContext sslContext = getSslContextFactory().createSSLContext(getConfig().getHttpsKeyStorePath(),
+                                                                            getConfig().getHttpsKeyStoreType(),
+                                                                            getConfig().getHttpsKeyStoreStorePass(),
+                                                                            getConfig().getHttpsKeyStoreKeypass());
+
             builder = builder.addHttpsListener(httpsServerPort, serverHost, sslContext);
 
         } catch(Exception ex) {
@@ -282,6 +325,9 @@ public class SpincastUndertowServer implements IServer {
         return builder;
     }
 
+    /**
+     * The very first handler considered by Undertow.
+     */
     protected HttpHandler getFinalHandler() {
         return getHttpAuthenticationHandler();
     }
@@ -396,14 +442,37 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
 
         if(this.undertowServer != null) {
 
+            //==========================================
+            // If there are some active Websocket endpoints,
+            // we try to send a "close" event to the peers before
+            // closing the server.
+            //==========================================
             try {
-                this.undertowServer.stop();
+                sendWebsocketEnpointsClosedWhenServerStops();
+            } finally {
+                try {
+                    this.undertowServer.stop();
+                    this.undertowServer = null;
+                } catch(Exception ex) {
+                    this.logger.error("Error stopping the Undertow server :\n" + SpincastStatics.getStackTrace(ex));
+                }
+            }
+        }
+    }
+
+    protected void sendWebsocketEnpointsClosedWhenServerStops() {
+        Collection<IWebsocketEndpoint> websocketEndpointsMap = getWebsocketEndpointsMap().values();
+        List<IWebsocketEndpoint> websocketEndpoints = new ArrayList<IWebsocketEndpoint>(websocketEndpointsMap);
+        for(IWebsocketEndpoint websocketEndpoint : websocketEndpoints) {
+            try {
+                websocketEndpoint.closeEndpoint();
             } catch(Exception ex) {
-                this.logger.warn("Error stopping the Undertow server :\n" + SpincastStatics.getStackTrace(ex));
+                this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
+                                 ex.getMessage());
             }
         }
     }
@@ -412,8 +481,8 @@ public class SpincastUndertowServer implements IServer {
         if(this.staticResourcesPathHandler == null) {
 
             //==========================================
-            // If no static resource path match, our main
-            // Spincast front controller handler will be used!
+            // If no static resource path match, we
+            // call the framework.
             //==========================================
             this.staticResourcesPathHandler = new PathHandler(getSpincastFrontControllerHandler());
         }
@@ -998,6 +1067,151 @@ public class SpincastUndertowServer implements IServer {
         }
 
         return headers;
+    }
+
+    /**
+     * Gets the creation/close lock for a specific Websocket endpoint.
+     */
+    protected Object getWebsocketEndpointCreationLock(String endpointId) {
+        Object lock = this.websocketEndpointCreationLocks.get(endpointId);
+        if(lock == null) {
+            synchronized(this.websocketEndpointLockCreationLock) {
+                lock = this.websocketEndpointCreationLocks.get(endpointId);
+                if(lock == null) {
+                    lock = new Object();
+                    this.websocketEndpointCreationLocks.put(endpointId, lock);
+                }
+            }
+        }
+        return lock;
+    }
+
+    @Override
+    public IWebsocketEndpointManager websocketCreateEndpoint(final String endpointId,
+                                                             final IWebsocketEndpointHandler appEndpointHandler) {
+
+        Object lock = getWebsocketEndpointCreationLock(endpointId);
+        synchronized(lock) {
+            IWebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
+            if(websocketEndpoint != null) {
+                throw new RuntimeException("The endpoint '" + endpointId + "' already exists.");
+            }
+
+            //==========================================
+            // We wrap the app endpoint handler to add
+            // extra event listeners.
+            //==========================================
+            IWebsocketEndpointHandler undertowEndpointHandler =
+                    createUndertowWebsocketEndpointHandler(endpointId, appEndpointHandler);
+
+            websocketEndpoint = getSpincastWebsocketEndpointFactory().create(endpointId, undertowEndpointHandler);
+            getWebsocketEndpointsMap().put(endpointId, websocketEndpoint);
+
+            return websocketEndpoint;
+        }
+    }
+
+    protected IWebsocketEndpointHandler createUndertowWebsocketEndpointHandler(final String endpointId,
+                                                                               final IWebsocketEndpointHandler appHandler) {
+        return new IWebsocketEndpointHandler() {
+
+            @Override
+            public void onPeerMessage(String peerId, byte[] message) {
+                appHandler.onPeerMessage(peerId, message);
+            }
+
+            @Override
+            public void onPeerMessage(String peerId, String message) {
+                appHandler.onPeerMessage(peerId, message);
+            }
+
+            @Override
+            public void onPeerConnected(String peerId) {
+                appHandler.onPeerConnected(peerId);
+            }
+
+            @Override
+            public void onPeerClosed(String peerId) {
+                appHandler.onPeerClosed(peerId);
+            }
+
+            @Override
+            public void onEndpointClosed() {
+
+                //==========================================
+                // We remove the endpoint from our local Map.
+                //==========================================
+                getWebsocketEndpointsMap().remove(endpointId);
+
+                appHandler.onEndpointClosed();
+            }
+        };
+    }
+
+    @Override
+    public void websocketCloseEndpoint(String endpointId) {
+        websocketCloseEndpoint(endpointId,
+                               getSpincastUndertowConfig().getWebsocketDefaultClosingCode(),
+                               getSpincastUndertowConfig().getWebsocketDefaultClosingReason());
+    }
+
+    @Override
+    public void websocketCloseEndpoint(String endpointId, int closingCode, String closingReason) {
+
+        Object lock = getWebsocketEndpointCreationLock(endpointId);
+        synchronized(lock) {
+            IWebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
+            if(websocketEndpoint == null) {
+                this.logger.warn("No Websocket endpoint with id '" + endpointId + "' exists...");
+                return;
+            }
+
+            //==========================================
+            // This will close the endpoint and call the 
+            // "onEndpointClosed" event for which we have
+            // a listener: it's this listener that will remove the
+            // endpoint from the local Map.
+            //==========================================
+            websocketEndpoint.closeEndpoint(closingCode, closingReason);
+        }
+    }
+
+    @Override
+    public void websocketConnection(Object exchangeObj,
+                                    final String endpointId,
+                                    final String peerId) {
+
+        if(StringUtils.isBlank(endpointId)) {
+            throw new RuntimeException("The endpoint id can't be empty.");
+        }
+
+        if(StringUtils.isBlank(peerId)) {
+            throw new RuntimeException("The peer id can't be empty.");
+        }
+
+        HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
+
+        IWebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
+        if(websocketEndpoint == null) {
+            throw new RuntimeException("The Websocket endpoint '" + endpointId + "' doesn't exist.");
+        }
+
+        if(websocketEndpoint.getPeersIds().contains(peerId)) {
+            throw new RuntimeException("The Websocket endpoint '" + endpointId + "' is already used by a peer with " +
+                                       "id '" + peerId + "'! Close the existing peer if you want to reuse this id.");
+        }
+
+        websocketEndpoint.handleConnectionRequest(exchange, peerId);
+    }
+
+    @Override
+    public List<IWebsocketEndpointManager> getWebsocketEndpointManagers() {
+        return new ArrayList<IWebsocketEndpointManager>(getWebsocketEndpointsMap().values());
+    }
+
+    @Override
+    public IWebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
+        return getWebsocketEndpointsMap().get(endpointId);
     }
 
 }

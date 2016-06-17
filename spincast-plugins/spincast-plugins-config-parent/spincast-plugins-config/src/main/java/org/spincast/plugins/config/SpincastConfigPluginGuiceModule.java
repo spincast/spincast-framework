@@ -15,8 +15,9 @@ public class SpincastConfigPluginGuiceModule extends SpincastPluginGuiceModuleBa
     /**
      * Constructor.
      */
-    public SpincastConfigPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastConfigPluginGuiceModule(Type requestContextType,
+                                           Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override

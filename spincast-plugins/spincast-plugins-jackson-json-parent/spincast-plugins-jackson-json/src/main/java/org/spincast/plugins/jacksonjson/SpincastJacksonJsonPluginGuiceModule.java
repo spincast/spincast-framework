@@ -13,8 +13,8 @@ public class SpincastJacksonJsonPluginGuiceModule extends SpincastPluginGuiceMod
     /**
      * Constructor.
      */
-    public SpincastJacksonJsonPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastJacksonJsonPluginGuiceModule(Type requestContextType, Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override

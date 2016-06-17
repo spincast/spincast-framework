@@ -38,7 +38,7 @@ public class FeedController {
     /**
      * Constructor
      */
-            @Inject
+    @Inject
     public FeedController(INewsService newsService,
                           IAppConfig appConfig) {
         this.newsService = newsService;

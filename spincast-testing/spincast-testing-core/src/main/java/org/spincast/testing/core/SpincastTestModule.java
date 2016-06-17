@@ -18,7 +18,7 @@ public class SpincastTestModule extends SpincastCoreGuiceModule {
     }
 
     protected void bindTestConfig() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()) {
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigImplClass() {

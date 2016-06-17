@@ -7,7 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.filters.ISpincastFilters;
-import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -15,7 +14,10 @@ import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.AppController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
+import org.spincast.website.controllers.ShowcaseController;
+import org.spincast.website.controllers.ShowcaseWebsocketEchoAllController;
 import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.exchange.IAppRouter;
 import org.spincast.website.filters.GlobalTemplateVariablesAdderFilter;
 import org.spincast.website.guice.AppModule;
 
@@ -84,24 +86,28 @@ public class App {
     //==========================================
     private final IServer server;
     private final IAppConfig appConfig;
-    private final IRouter<IAppRequestContext> router;
+    private final IAppRouter router;
     private final AppController appController;
     private final ErrorController errorController;
     private final FeedController feedController;
     private final AdminController adminController;
+    private final ShowcaseController showcaseController;
     private final ISpincastFilters<IAppRequestContext> spincastFilters;
     private final GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter;
+    private final ShowcaseWebsocketEchoAllController showcaseWebsocketEchoAllController;
 
     @Inject
     public App(IServer server,
                IAppConfig config,
-               IRouter<IAppRequestContext> router,
+               IAppRouter router,
                AppController appController,
                ErrorController errorController,
                FeedController feedController,
                AdminController adminController,
+               ShowcaseController showcaseController,
                ISpincastFilters<IAppRequestContext> spincastFilters,
-               GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter) {
+               GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter,
+               ShowcaseWebsocketEchoAllController showcaseWebsocketEchoAllController) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
@@ -109,8 +115,10 @@ public class App {
         this.errorController = errorController;
         this.feedController = feedController;
         this.adminController = adminController;
+        this.showcaseController = showcaseController;
         this.spincastFilters = spincastFilters;
         this.globalTemplateVariablesAdderFilter = globalTemplateVariablesAdderFilter;
+        this.showcaseWebsocketEchoAllController = showcaseWebsocketEchoAllController;
     }
 
     protected IServer getServer() {
@@ -121,7 +129,7 @@ public class App {
         return this.appConfig;
     }
 
-    protected IRouter<IAppRequestContext> getRouter() {
+    protected IAppRouter getRouter() {
         return this.router;
     }
 
@@ -141,12 +149,20 @@ public class App {
         return this.adminController;
     }
 
+    protected ShowcaseController getShowcaseController() {
+        return this.showcaseController;
+    }
+
     protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
         return this.spincastFilters;
     }
 
     protected GlobalTemplateVariablesAdderFilter getGlobalTemplateVariablesAdderFilter() {
         return this.globalTemplateVariablesAdderFilter;
+    }
+
+    protected ShowcaseWebsocketEchoAllController getShowcaseWebsocketEchoAllController() {
+        return this.showcaseWebsocketEchoAllController;
     }
 
     /**
@@ -234,7 +250,7 @@ public class App {
      */
     protected void addRoutes() {
 
-        IRouter<IAppRequestContext> router = getRouter();
+        IAppRouter router = getRouter();
 
         AppController appCtl = getAppController();
 
@@ -288,6 +304,13 @@ public class App {
         //==========================================
         router.httpAuth("/admin", AppConstants.HTTP_AUTH_REALM_NAME_ADMIN);
         router.GET("/admin").save(getAdminController()::index);
+        router.GET("/admin/news").save(getAdminController()::news);
+
+        //==========================================
+        // Showcase - Websockets
+        //==========================================
+        router.GET("/showcase/websockets/echo-all").save(getShowcaseController()::websockets);
+        router.websocket("/showcase/websockets/echo-all-endpoint").save(getShowcaseWebsocketEchoAllController());
 
         //==========================================
         // Pages

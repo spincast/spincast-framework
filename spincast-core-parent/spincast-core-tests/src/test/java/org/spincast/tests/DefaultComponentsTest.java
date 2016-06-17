@@ -31,9 +31,9 @@ public class DefaultComponentsTest extends DefaultIntegrationTestingBase {
     @Inject
     protected IRouter genericRouter;
 
-    // IRouter<?>
+    // IRouter<?, ?>
     @Inject
-    protected IRouter<?> genericRouterPara;
+    protected IRouter<?, ?> genericRouterPara;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test

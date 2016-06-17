@@ -3,7 +3,7 @@ package org.spincast.defaults.tests;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.plugins.config.SpincastConfigPluginGuiceModule;
-import org.spincast.plugins.httpclient.SpincastHttpClientPluginGuiceModule;
+import org.spincast.plugins.httpclient.websocket.SpincastHttpClientWithWebsocketPluginGuiceModule;
 import org.spincast.testing.core.SpincastTestConfig;
 
 /**
@@ -25,14 +25,15 @@ public class DefaultTestingModule extends SpincastDefaultGuiceModule {
         super.configure();
 
         //==========================================
-        // Install the Spincast Http Client Module
+        // Install the Spincast Http Client with Websocket 
+        // support module
         //==========================================
-        install(new SpincastHttpClientPluginGuiceModule(getRequestContextType()));
+        install(new SpincastHttpClientWithWebsocketPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     @Override
     protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()) {
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigImplClass() {

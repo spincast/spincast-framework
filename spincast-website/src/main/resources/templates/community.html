@@ -216,7 +216,7 @@ String hello = "World";</pre>
                                 For your tests, try to use the same technic as the existing Spincast core tests. You 
                                 probably want your test class to extend <code>DefaultIntegrationTestingBase</code>
                                 or, at least, <code>SpincastGuiceBasedTestBase</code>. Make sure you understand our custom
-                                <code>OneInstancePerClassJUnitRunner</code> JUnit runner, which creates <em>one</em> instance
+                                <code>SpincastJUnitRunner</code> JUnit runner, which creates <em>one</em> instance
                                 of a test class only! For our unit tests, we often start an <code>Undertow</code>
                                 server instance even if it could be done without one: 
                                 Undertow is very fast to boot.

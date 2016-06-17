@@ -9,14 +9,16 @@ import org.spincast.core.routing.IStaticResource;
 import org.spincast.core.routing.IStaticResourceBuilder;
 import org.spincast.core.routing.IStaticResourceCorsConfig;
 import org.spincast.core.routing.StaticResourceType;
+import org.spincast.core.websocket.IWebsocketContext;
 
 import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class StaticResourceBuilder<R extends IRequestContext<?>> implements IStaticResourceBuilder<R> {
+public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
+                                  implements IStaticResourceBuilder<R> {
 
-    private final IRouter<R> router;
+    private final IRouter<R, W> router;
     private final boolean isDir;
     private String url = null;
     private String path = null;
@@ -34,7 +36,7 @@ public class StaticResourceBuilder<R extends IRequestContext<?>> implements ISta
     }
 
     @AssistedInject
-    public StaticResourceBuilder(@Assisted IRouter<R> router,
+    public StaticResourceBuilder(@Assisted IRouter<R, W> router,
                                  @Assisted boolean isDir,
                                  IStaticResourceFactory<R> staticResourceFactory,
                                  IStaticResourceCorsConfigFactory staticResourceCorsConfigFactory) {
@@ -48,7 +50,7 @@ public class StaticResourceBuilder<R extends IRequestContext<?>> implements ISta
         return this.isDir;
     }
 
-    protected IRouter<R> getRouter() {
+    protected IRouter<R, W> getRouter() {
         return this.router;
     }
 

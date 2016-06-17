@@ -86,7 +86,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Config Plugin
         //==========================================
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()));
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindDictionaryPlugin() {
@@ -94,7 +94,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Dictionary Plugin
         //==========================================
-        install(new SpincastDictionaryPluginGuiceModule(getRequestContextType()));
+        install(new SpincastDictionaryPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindServerPlugin() {
@@ -102,7 +102,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Undertow
         //==========================================
-        install(new SpincastUndertowPluginGuiceModule(getRequestContextType()));
+        install(new SpincastUndertowPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindTemplatingEnginePlugin() {
@@ -110,7 +110,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Pebble
         //==========================================
-        install(new SpincastPebblePluginGuiceModule(getRequestContextType()));
+        install(new SpincastPebblePluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void binJsonManagerPlugin() {
@@ -118,7 +118,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Jackson
         //==========================================
-        install(new SpincastJacksonJsonPluginGuiceModule(getRequestContextType()));
+        install(new SpincastJacksonJsonPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void binXmlManagerPlugin() {
@@ -126,7 +126,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Jackson
         //==========================================
-        install(new SpincastJacksonXmlPluginGuiceModule(getRequestContextType()));
+        install(new SpincastJacksonXmlPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindCookiesPlugin() {
@@ -134,7 +134,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Cookies plugin
         //==========================================
-        install(new SpincastCookiesPluginGuiceModule(getRequestContextType()));
+        install(new SpincastCookiesPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindRequestPlugin() {
@@ -142,7 +142,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Request plugin
         //==========================================
-        install(new SpincastRequestPluginGuiceModule(getRequestContextType()));
+        install(new SpincastRequestPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindResponsePlugin() {
@@ -150,7 +150,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Response plugin
         //==========================================
-        install(new SpincastResponsePluginGuiceModule(getRequestContextType()));
+        install(new SpincastResponsePluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindRoutingPlugin() {
@@ -158,12 +158,8 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Routing plugin
         //==========================================
-        installRoutingPlugin();
+        install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
 
-    }
-
-    protected void installRoutingPlugin() {
-        install(new SpincastRoutingPluginGuiceModule(getRequestContextType()));
     }
 
     protected void bindTemplatingPlugin() {
@@ -171,7 +167,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Templating plugin
         //==========================================
-        install(new SpincastTemplatingAddonPluginGuiceModule(getRequestContextType()));
+        install(new SpincastTemplatingAddonPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindVariablesPlugin() {
@@ -179,7 +175,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Variables plugin
         //==========================================
-        install(new SpincastVariablesPluginGuiceModule(getRequestContextType()));
+        install(new SpincastVariablesPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
     protected void bindLocaleResolverPlugin() {
@@ -187,7 +183,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         //==========================================
         // Spincast Locale Resolver plugin
         //==========================================
-        install(new SpincastLocaleResolverPluginGuiceModule(getRequestContextType()));
+        install(new SpincastLocaleResolverPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
 }

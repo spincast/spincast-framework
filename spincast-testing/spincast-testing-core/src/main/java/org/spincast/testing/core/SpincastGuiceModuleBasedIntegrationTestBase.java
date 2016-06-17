@@ -1,10 +1,12 @@
 package org.spincast.testing.core;
 
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.websocket.IWebsocketContext;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.util.Modules;
 
 /**
  * Base class for Spincast tests which creates
@@ -15,12 +17,26 @@ import com.google.inject.Module;
  * Removes all routes and static resources before each test.
  * 
  */
-public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IRequestContext<?>>
-                                                                 extends SpincastIntegrationTestBase<R> {
+public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
+                                                                 extends SpincastIntegrationTestBase<R, W> {
 
     @Override
     protected Injector createInjector() {
-        return Guice.createInjector(getTestingModule());
+
+        Module overridingModule = getOverridingModule();
+        if(overridingModule == null) {
+            return Guice.createInjector(getTestingModule());
+        } else {
+            return Guice.createInjector(Modules.override(getTestingModule())
+                                               .with(overridingModule));
+        }
+    }
+
+    /**
+     * An overriding module to use?
+     */
+    protected Module getOverridingModule() {
+        return null;
     }
 
     @Override
@@ -48,8 +64,8 @@ public abstract class SpincastGuiceModuleBasedIntegrationTestBase<R extends IReq
      * Ran before each test.
      */
     @Override
-    public void before() {
-        super.before();
+    public void beforeTest() {
+        super.beforeTest();
         clearRoutes();
     }
 

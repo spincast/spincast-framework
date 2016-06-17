@@ -8,6 +8,9 @@ import org.spincast.core.routing.IRouteBuilderFactory;
 import org.spincast.core.routing.IStaticResourceBuilder;
 import org.spincast.core.routing.IStaticResourceBuilderFactory;
 import org.spincast.core.server.IServer;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
+import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
 import org.spincast.plugins.routing.IRouteFactory;
 import org.spincast.plugins.routing.IRouteHandlerMatchFactory;
 import org.spincast.plugins.routing.ISpincastRouterConfig;
@@ -16,7 +19,7 @@ import org.spincast.plugins.routing.SpincastRouter;
 
 import com.google.inject.Inject;
 
-public class CustomRouter extends SpincastRouter<IDefaultRequestContext> {
+public class CustomRouter extends SpincastRouter<IDefaultRequestContext, IDefaultWebsocketContext> {
 
     @Inject
     public CustomRouter(ISpincastRouterConfig spincastRouterConfig,
@@ -25,10 +28,12 @@ public class CustomRouter extends SpincastRouter<IDefaultRequestContext> {
                         ISpincastDictionary spincastDictionary,
                         IServer server,
                         ISpincastFilters<IDefaultRequestContext> spincastFilters,
-                        IRouteBuilderFactory<IDefaultRequestContext> routeBuilderFactory,
-                        IStaticResourceBuilderFactory<IDefaultRequestContext> staticResourceBuilderFactory,
+                        IRouteBuilderFactory<IDefaultRequestContext, IDefaultWebsocketContext> routeBuilderFactory,
+                        IStaticResourceBuilderFactory<IDefaultRequestContext, IDefaultWebsocketContext> staticResourceBuilderFactory,
                         IRouteHandlerMatchFactory<IDefaultRequestContext> routeHandlerMatchFactory,
-                        IStaticResourceFactory<IDefaultRequestContext> staticResourceFactory) {
+                        IStaticResourceFactory<IDefaultRequestContext> staticResourceFactory,
+                        IWebsocketRouteBuilderFactory<IDefaultRequestContext, IDefaultWebsocketContext> websocketRouteBuilderFactory,
+                        IWebsocketRouteHandlerFactory<IDefaultRequestContext, IDefaultWebsocketContext> websocketHandshakerFactory) {
         super(spincastRouterConfig,
               routeFactory,
               spincastConfig,
@@ -38,7 +43,9 @@ public class CustomRouter extends SpincastRouter<IDefaultRequestContext> {
               routeBuilderFactory,
               staticResourceBuilderFactory,
               routeHandlerMatchFactory,
-              staticResourceFactory);
+              staticResourceFactory,
+              websocketRouteBuilderFactory,
+              websocketHandshakerFactory);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.spincast.core.exchange.IRequestContext;
 
 /**
- * Represents a route and all its informations.
+ * Represents a regular route and all its informations.
  */
 public interface IRoute<R extends IRequestContext<?>> {
 

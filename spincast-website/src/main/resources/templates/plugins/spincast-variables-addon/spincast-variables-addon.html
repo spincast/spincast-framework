@@ -111,10 +111,11 @@ Spincast Variables plugin
 	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="2,8,2,75"
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastVariablesPluginGuiceModule(IAppRequestContext.class)
+        new SpincastVariablesPluginGuiceModule(IAppRequestContext.class, 
+                                               IAppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -124,13 +125,14 @@ Spincast Variables plugin
 	                ... or by using the <code>install(...)</code> method from your custom Guice module:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="5,8,5,85"
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,85|6,8,6,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastVariablesPluginGuiceModule(getRequestContextType()));
+        install(new SpincastVariablesPluginGuiceModule(getRequestContextType(), 
+                                                       getWebsocketContextType()));
         // other modules...
     }
     

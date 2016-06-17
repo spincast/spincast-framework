@@ -15,8 +15,8 @@ public class SpincastDictionaryPluginGuiceModule extends SpincastPluginGuiceModu
     /**
      * Constructor.
      */
-    public SpincastDictionaryPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastDictionaryPluginGuiceModule(Type requestContextType, Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.spincast.plugins.httpclient.builders;
 
-import org.spincast.plugins.httpclient.IRequestBuilderBase;
+import org.spincast.plugins.httpclient.IHttpRequestBuilder;
 
-public interface ITraceRequestBuilder extends IRequestBuilderBase<ITraceRequestBuilder> {
+public interface ITraceRequestBuilder extends IHttpRequestBuilder<ITraceRequestBuilder> {
 
 }

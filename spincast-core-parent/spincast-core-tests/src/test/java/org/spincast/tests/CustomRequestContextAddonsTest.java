@@ -14,6 +14,7 @@ import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -28,7 +29,8 @@ import com.google.inject.Scopes;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class CustomRequestContextAddonsTest extends SpincastGuiceModuleBasedIntegrationTestBase<ITestRequestContext> {
+public class CustomRequestContextAddonsTest extends
+                                            SpincastGuiceModuleBasedIntegrationTestBase<ITestRequestContext, IDefaultWebsocketContext> {
 
     public static class Singleton {
     }

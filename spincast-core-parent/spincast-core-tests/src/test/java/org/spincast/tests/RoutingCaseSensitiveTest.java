@@ -13,6 +13,7 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IRoutingResult;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
@@ -88,7 +89,7 @@ public class RoutingCaseSensitiveTest extends DefaultIntegrationTestingBase {
     @Test
     public void oneTokenCaseSensitive() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
 

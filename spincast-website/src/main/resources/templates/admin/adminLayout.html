@@ -1,0 +1,41 @@
+{#==========================================
+Admin
+==========================================#}
+{% extends "../layout.html" %}
+
+{% block sectionClasses %}admin{% endblock %}
+{% block meta_title %}Spincast website Admin{% endblock %}
+{% block meta_description %}Spincast website Admin{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                <a class="anchor" href="#admin" id="admin" title="permanent link"></a>
+                Admin
+            </h2>
+            
+            <div class="left menu" id="adminMenu">
+                <ul>
+                    <li id="admin_menu_index"><a href="/admin">Index</a></li>
+                    <li id="admin_menu_news"><a href="/admin/news">News Management</a></li>
+                    <li id="admin_menu_websockets_test"><a href="/admin/websockets-test">Websockets test</a></li>
+                </ul>
+                <div class="clear">&nbsp;</div>
+            </div> 
+            
+        </div>
+    </div>
+
+    {#==========================================
+    Admin body
+    ==========================================#}
+    {% block adminBody %}{% endblock %}
+    
+</div> 
+
+
+{% endblock %}

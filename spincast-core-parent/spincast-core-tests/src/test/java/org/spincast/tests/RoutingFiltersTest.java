@@ -15,6 +15,7 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouteHandlerMatch;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 
@@ -160,7 +161,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/", this.beforeFilter);
         router.GET("/").save(this.mainHandler);
@@ -173,7 +174,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal1b() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(this.mainHandler);
         router.before("/", this.beforeFilter);
@@ -186,7 +187,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal1c() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/one", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
@@ -205,7 +206,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/*{path}", this.beforeFilter);
         router.GET("/").save(this.mainHandler);
@@ -218,7 +219,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal3() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
@@ -231,7 +232,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal4() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
@@ -244,7 +245,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal5() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one/two/three").save(this.mainHandler);
@@ -257,7 +258,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal6() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/*{path}", this.beforeFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
@@ -270,7 +271,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobal7() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/one/*{path}", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
@@ -294,7 +295,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeGlobalNotApplied1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.before("/", this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
@@ -307,7 +308,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/", this.afterFilter);
         router.GET("/").save(this.mainHandler);
@@ -320,7 +321,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal1b() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(this.mainHandler);
         router.after("/", this.afterFilter);
@@ -333,7 +334,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal1c() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/one", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -352,7 +353,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/*{path}", this.afterFilter);
         router.GET("/").save(this.mainHandler);
@@ -365,7 +366,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal3() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/*{path}", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -378,7 +379,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal4() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/*{path}", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -391,7 +392,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal5() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/*{path}", this.afterFilter);
         router.GET("/one/two/three").save(this.mainHandler);
@@ -404,7 +405,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal6() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/*{path}", this.afterFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
@@ -417,7 +418,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobal7() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/one/*{path}", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -443,7 +444,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterAfterGlobalNotApplied1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/", this.afterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -456,7 +457,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/", this.beforeAndAfterFilter);
         router.GET("/").save(this.mainHandler);
@@ -469,7 +470,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal1b() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(this.mainHandler);
         router.beforeAndAfter("/", this.beforeAndAfterFilter);
@@ -482,7 +483,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal1c() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/one", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -501,7 +502,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/").save(this.mainHandler);
@@ -514,7 +515,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal3() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -527,7 +528,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal4() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -540,7 +541,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal5() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one/two/three").save(this.mainHandler);
@@ -553,7 +554,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal6() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
@@ -566,7 +567,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobal7() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/one/*{path}", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -590,7 +591,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterBeforeAfterGlobalNotApplied1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.beforeAndAfter("/", this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
@@ -603,7 +604,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterOrder() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -618,7 +619,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterOrder2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -633,7 +634,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterOrder3() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -648,7 +649,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterOrder4() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -663,7 +664,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterOrder5() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -678,7 +679,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filterOrder6() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -693,7 +694,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void multipleFilter1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(this.mainHandler);
 
@@ -713,7 +714,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void multipleFilter2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.after("/one", this.afterFilter2);
         router.before("/one", this.beforeFilter);
@@ -963,7 +964,7 @@ public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
     @Test
     public void filtersWithInlineFilters() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").pos(-1)
               .before(new IHandler<IDefaultRequestContext>() {

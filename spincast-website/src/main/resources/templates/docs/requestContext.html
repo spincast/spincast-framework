@@ -27,7 +27,7 @@ Docs : "Request Context"
             <p>
                 Here are some <code>add-ons</code> and some standalone methods available by default on the request context:
                 {% verbatim %}<pre class="ace ace-java"
->public void myHandler(IAppRequestContext context) {
+>public void myHandler(IDefaultRequestContext context) {
 
     // Access the request information
     String name = context.request().getPathParam("name");
@@ -161,7 +161,7 @@ Docs : "Request Context"
         <div>
             <p>
                 <pre class="ace ace-java" data-ace-hi="2,14,2,39|3,33,3,61"
->public void myHandler(IAppRequestContext context) {
+>public void myHandler(ICustomRequestContext context) {
 
     if(context.auth().isAuthenticated()) {
         String username = context.auth().user().getUsername();
@@ -640,8 +640,8 @@ Section "Request Context / Extending the request context type"
     <p>
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="0,7,0,27|3,31,3,88"
->IRouter&lt;IAppRequestContext&gt; router = getRouter();
+                <pre class="ace ace-java" data-ace-hi="0,8,0,26|3,31,3,88"
+>IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt; router = getRouter();
 
 router.GET("/").save(context -&gt; {
     String translated = context.translate("Hello World!", Locale.ENGLISH, Locale.FRENCH);
@@ -657,8 +657,8 @@ router.GET("/").save(context -&gt; {
     <p>
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="0,7,0,27|2,33,2,53|5,23,5,41|6,35,6,92"
->IRouter&lt;IAppRequestContext&gt; router = getRouter();
+                <pre class="ace ace-java" data-ace-hi="0,8,0,26|2,34,2,52|5,23,5,41|6,35,6,92"
+>IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt; router = getRouter();
 
 router.GET("/").save(new IHandler&lt;IAppRequestContext&gt;() {
 
@@ -674,8 +674,16 @@ router.GET("/").save(new IHandler&lt;IAppRequestContext&gt;() {
     </p>
     
     <p>
+        As you can see, the parameterized version of <code>IRouter</code> doesn't simply contain
+        your custom <code>request context</code> type, <code>"IAppRequestContext"</code>,  but also 
+        the default <code><em>Websocket context</em></code>
+        type, <a href="#websockets_extending_context">which can also be extended</a>!
+    </p>
+    <p>
         All this, again, may seem like a lot of boilerplate code. But it has to be done <em>only one time</em> and, once in place, 
-        it's easy to add new methods and <code>add-ons</code> to your <code>request context</code>!
+        it's easy to add new methods and <code>add-ons</code> to your <code>request context</code>. Also, those
+        routing components are way more visually appealing if you create a <em>unparameterized</em> version
+        for them. Let's see how!
     </p>
 
     <h4>
@@ -686,40 +694,41 @@ router.GET("/").save(new IHandler&lt;IAppRequestContext&gt;() {
         One last trick about the extending the <code>request context</code>. 
         You can do for your custom type what we did for the
         default one: to create an <em>unparameterized version</em> for each component which, at the base, must
-        be parameterized with it. For example, here's how the default <code>router</code> interface is defined:
+        be parameterized with it. For example, here's how the <code>IDefaultRouter</code> default router interface is defined:
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public interface IDefaultRouter extends IRouter&lt;IDefaultRequestContext&gt; {
+>public interface IDefaultRouter extends IRouter&lt;IDefaultRequestContext, IDefaultWebsocketContext&gt; {
     // nothing required
 }</pre>
             </p> 
         </div>
     </p>
     <p>
-        This interface has no other goal than to "hide" the parameterization.
+        This interface has no other goal than to "hide" the parameterization, to be more visually appealing,
+        more easy to use...
         Because of this definition, you can inject <code>IDefaultRouter</code> 
-        instead of <code>IRouter&lt;IDefaultRequestContext&gt</code>, which is arguably simpler. Both
+        instead of <code>IRouter&lt;IDefaultRequestContext, IDefaultWebsocketContext&gt</code>, which is arguably simpler. Both
         types are interchangeable.
     </p>
     <p> 
-        You can do the exact same thing with your <em>custom</em> <code>route context</code> type.
+        You can do the exact same thing with your <em>custom</em> <code>route context</code> type!
         For example:
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public interface IAppRouter extends IRouter&lt;IAppRequestContext&gt; {
+>public interface IAppRouter extends IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt; {
     // nothing required
 }</pre>
             </p> 
         </div>
     </p>
     <p> 
-        Now, you could inject <code>IAppRouter</code> instead of <code>IRouter&lt;IAppRequestContext&gt;</code> when you
+        Now, you could inject <code>IAppRouter</code> instead of <code>IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt;</code> when you
         need your custom router. Here again, it's a matter of taste! Some prefer those simpler 
         interfaces to the generics ones.
     </p>

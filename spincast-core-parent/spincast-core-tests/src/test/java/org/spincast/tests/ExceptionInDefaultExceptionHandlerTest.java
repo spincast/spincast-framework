@@ -17,6 +17,7 @@ import org.spincast.core.guice.SpincastRequestScope;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
@@ -28,10 +29,10 @@ import com.google.inject.Module;
 
 public class ExceptionInDefaultExceptionHandlerTest extends DefaultIntegrationTestingBase {
 
-    public static class CustomFrontController extends SpincastFrontController<IDefaultRequestContext> {
+    public static class CustomFrontController extends SpincastFrontController<IDefaultRequestContext, IDefaultWebsocketContext> {
 
         @Inject
-        public CustomFrontController(IRouter<IDefaultRequestContext> router,
+        public CustomFrontController(IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router,
                                      ISpincastConfig spincastConfig,
                                      ISpincastDictionary spincastDictionary,
                                      IServer server,

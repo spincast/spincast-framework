@@ -2,6 +2,7 @@ package org.spincast.quickstart.guice;
 
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.quickstart.App;
@@ -11,6 +12,7 @@ import org.spincast.quickstart.controller.AppController;
 import org.spincast.quickstart.controller.IAppController;
 import org.spincast.quickstart.exchange.AppRequestContext;
 import org.spincast.quickstart.exchange.AppRouter;
+import org.spincast.quickstart.exchange.AppWebsocketContext;
 import org.spincast.quickstart.exchange.IAppRouter;
 
 import com.google.inject.Key;
@@ -79,6 +81,17 @@ public class AppModule extends SpincastDefaultGuiceModule {
     }
 
     /**
+     * Tells Spincast to use our custom Websocket context type
+     * instead of the default one. Spincast will automatically find the
+     * associated interface, "IAppWebsocketContext", and will use
+     * it to parameterize some of the components, like "IRouter".
+     */
+    @Override
+    protected Class<? extends IWebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return AppWebsocketContext.class;
+    }
+
+    /**
      * Instead of installing the default "spincast-default-plugin" plugin,
      * which only provides hardcoded values for the Spincast configurations,
      * we directly bind the required "ISpincastConfig" component to our
@@ -94,8 +107,8 @@ public class AppModule extends SpincastDefaultGuiceModule {
      * "spincast-routing" plugin, so our custom class is used.
      */
     @Override
-    protected void installRoutingPlugin() {
-        install(new SpincastRoutingPluginGuiceModule(getRequestContextType()) {
+    protected void bindRoutingPlugin() {
+        install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
             @Override
             protected Key<?> getRouterImplementationKey() {

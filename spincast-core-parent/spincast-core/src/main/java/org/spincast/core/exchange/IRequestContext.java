@@ -14,8 +14,8 @@ import com.google.inject.Key;
 /**
  * The base interface for a request context.
  * 
- * THis declare the default <code>add-ons</code> and default
- * utilities methods.
+ * This declares the default <code>add-ons</code> and default
+ * utility methods.
  */
 public interface IRequestContext<R extends IRequestContext<?>> {
 

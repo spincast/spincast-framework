@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -26,7 +27,7 @@ public class RequestScopedVariablesTest extends DefaultIntegrationTestingBase {
     @Test
     public void variables() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").pos(-1).save(new IHandler<IDefaultRequestContext>() {
 

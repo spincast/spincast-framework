@@ -1,11 +1,12 @@
 package org.spincast.core.routing;
 
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.websocket.IWebsocketContext;
 
 /**
  * Factory to create static resources builders.
  */
-public interface IStaticResourceBuilderFactory<R extends IRequestContext<?>> {
+public interface IStaticResourceBuilderFactory<R extends IRequestContext<?>, W extends IWebsocketContext<?>> {
 
     /**
      * Creates a static resources builder by specifying
@@ -23,5 +24,5 @@ public interface IStaticResourceBuilderFactory<R extends IRequestContext<?>> {
      * Creates a static resources builder by specifying
      * if the resource to build is a file or a directory.
      */
-    public IStaticResourceBuilder<R> create(IRouter<R> router, boolean isDir);
+    public IStaticResourceBuilder<R> create(IRouter<R, W> router, boolean isDir);
 }

@@ -18,8 +18,9 @@ public class SpincastCookiesPluginGuiceModule extends SpincastPluginGuiceModuleB
     /**
      * Constructor.
      */
-    public SpincastCookiesPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastCookiesPluginGuiceModule(Type requestContextType,
+                                            Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override
@@ -30,9 +31,8 @@ public class SpincastCookiesPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     protected void bindRequestContextAddon() {
 
-        bind(parameterizeWithRequestContextInterface(ICookiesRequestContextAddon.class))
-                                                                                       .to(parameterizeWithRequestContextInterface(SpincastCookiesRequestContextAddon.class))
-                                                                                       .in(SpincastGuiceScopes.REQUEST);
+        bind(parameterizeWithRequestContext(ICookiesRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastCookiesRequestContextAddon.class))
+                                                                               .in(SpincastGuiceScopes.REQUEST);
     }
 
     protected void bindCookieFactory() {

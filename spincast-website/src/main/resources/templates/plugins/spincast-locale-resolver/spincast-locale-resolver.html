@@ -109,10 +109,11 @@ Spincast Locale Resolver plugin
 	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="2,8,2,77"
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastLocaleResolverPluginGuiceModule(IAppRequestContext.class)
+        new SpincastLocaleResolverPluginGuiceModule(IAppRequestContext.class, 
+                                                    IAppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -122,13 +123,14 @@ Spincast Locale Resolver plugin
 	                ... or by using the <code>install(...)</code> method from your custom Guice module:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="5,8,5,87"
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,87|6,8,6,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastLocaleResolverPluginGuiceModule(getRequestContextType()));
+        install(new SpincastLocaleResolverPluginGuiceModule(getRequestContextType(), 
+                                                            getWebsocketContextType()));
         // other modules...
     }
     

@@ -296,7 +296,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
      */
     @Override
     protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()) {
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), 
+                                                    getWebsocketContextType()) {
 
             @Override
             protected Class&lt;? extends ISpincastConfig&gt; getSpincastConfigImplClass() {
@@ -337,7 +338,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                             also bind your controllers, your services, your repositories, etc.
                         </li>
                         <li>
-                            <span class="code-line-nbr">22-31</span> : Since we want Spincast to use our <em>custom</em>
+                            <span class="code-line-nbr">22-32</span> : Since we want Spincast to use our <em>custom</em>
                             class, <code>AppConfig</code>, as the implementation for the <code>ISpincastConfig</code> interface, 
                             we need to override that binding! There
                             are a couple of ways to do this, but here we're going to override the
@@ -720,7 +721,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 
     @Override
     protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()) {
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), 
+                                                    getWebsocketContextType()) {
 
             @Override
             protected Class&lt;? extends ISpincastConfig&gt; getSpincastConfigImplClass() {
@@ -738,7 +740,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                             bootstrapping class is bound. 
                         </li>
                         <li>
-                            <span class="code-line-nbr">16-25</span> : We override the installation of the
+                            <span class="code-line-nbr">16-26</span> : We override the installation of the
                             <code>SpincastConfigPluginGuiceModule</code> module, so our <code>App</code> class
                             is used as the implementation for the <code>ISpincastConfig</code> interface. 
                         </li>
@@ -773,7 +775,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 >public interface IUserController {
 
     // Route handler to get a user as Json
-    public void getUser(IAppRequestContext context);
+    public void getUser(IDefaultRequestContext context);
     
     // ...
 }</pre>
@@ -783,7 +785,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             <i class="subIcon glyphicon glyphicon-share-alt"></i> 
             Here's a possible implementation for this controller. Note that
             we inject an <code>"IUserService"</code> <em>service</em>, and we use it
-            to actually get the user from our system:
+            to actually get the user from our system. The implementation of this service
+            is not important in this example...
         </p>
         <div>
             <p>
@@ -1025,7 +1028,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     <i class="subIcon glyphicon glyphicon-share-alt"></i> 
                     And then install their Guice modules:
                     
-                    <pre class="ace ace-java" data-ace-hi="10,8,10,80|11,8,11,78"
+                    <pre class="ace ace-java" data-ace-hi="10,8,10,100|11,8,11,100|12,8,12,100|13,8,13,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     public AppModule(String[] mainArgs) {
@@ -1036,8 +1039,10 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
     protected void configure() {
         super.configure();
 
-        install(new SpincastUndertowPluginGuiceModule(getRequestContextType()));
-        install(new SpincastPebblePluginGuiceModule(getRequestContextType()));
+        install(new SpincastUndertowPluginGuiceModule(getRequestContextType(), 
+                                                      getWebsocketContextType()));
+        install(new SpincastPebblePluginGuiceModule(getRequestContextType(), 
+                                                    getWebsocketContextType()));
         // ...
     }
 }</pre>

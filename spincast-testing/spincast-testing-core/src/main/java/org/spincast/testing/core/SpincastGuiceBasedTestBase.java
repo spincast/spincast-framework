@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.utils.IBeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.OneInstancePerClassJUnitRunner;
+import org.spincast.testing.utils.SpincastJUnitRunner;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -20,7 +20,7 @@ import com.google.inject.Injector;
  * 
  * <p>
  * Uses a custom Junit runner, 
- * {@link org.spincast.testing.utils.OneInstancePerClassJUnitRunner OneInstancePerClassJUnitRunner}.
+ * {@link org.spincast.testing.utils.SpincastJUnitRunner SpincastJUnitRunner}.
  * </p>
  * <p>
  * This runner create a single instance of the test class for all of its tests,
@@ -34,7 +34,7 @@ import com.google.inject.Injector;
  * the required dependencies will be injected into it.
  * </p>
  */
-@RunWith(OneInstancePerClassJUnitRunner.class)
+@RunWith(SpincastJUnitRunner.class)
 public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMethodsProvider {
 
     private Injector guice;
@@ -44,19 +44,10 @@ public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMet
     @Override
     public void beforeClass() {
 
-        Injector guice = createInjector();
-        assertNotNull(guice);
-
-        this.guice = extendGuiceInjector(guice);
+        this.guice = createInjector();
+        assertNotNull(this.guice);
 
         this.guice.injectMembers(this);
-    }
-
-    /**
-     * Allows to extend the base Guice injector
-     */
-    protected Injector extendGuiceInjector(Injector baseInjector) {
-        return baseInjector;
     }
 
     @Override

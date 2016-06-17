@@ -198,17 +198,19 @@ Spincast Properties File Config
 	                    <p>
 	                        <pre class="ace ace-java"
 >Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule(args))
-        .with(new SpincastConfigPropsFilePluginGuiceModule(IDefaultRequestContext.class)));</pre> 
+        .with(new SpincastConfigPropsFilePluginGuiceModule(IDefaultRequestContext.class, 
+                                                           IDefaultWebsocketContext.class)));</pre> 
 	                    </p>
 	                </div>   
 	            </p>
                 <p>
-                    Or, if you use a custom Guice module and request context type:
+                    Or, if you use a custom Guice module, request context type and WebSocket context type:
                     <div>
                         <p>
                             <pre class="ace ace-java"
 >Injector guice = Guice.createInjector(Modules.override(new AppModule(args))
-        .with(new SpincastConfigPropsFilePluginGuiceModule(IAppRequestContext.class)));</pre> 
+        .with(new SpincastConfigPropsFilePluginGuiceModule(IAppRequestContext.class, 
+                                                           IAppWebsocketContext.class)));</pre> 
                         </p>
                     </div>   
                 </p>
@@ -216,7 +218,7 @@ Spincast Properties File Config
 	                You can also override the default configuration plugin installation, from your custom Guice module:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="5,8,5,79"
+	                        <pre class="ace ace-java" data-ace-hi="14,8,14,79|15,8,15,79"
 >public class AppModule extends SpincastDefaultGuiceModule {
 
     public AppModule(String[] mainArgs) {
@@ -231,7 +233,8 @@ Spincast Properties File Config
 
     @Override
     protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType()));
+        install(new SpincastConfigPluginGuiceModule(getRequestContextType(),
+                                                    getWebsocketContextType()));
     }
     //...
 }</pre> 

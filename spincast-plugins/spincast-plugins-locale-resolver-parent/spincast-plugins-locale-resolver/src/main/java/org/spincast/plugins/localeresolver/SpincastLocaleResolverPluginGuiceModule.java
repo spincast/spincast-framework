@@ -15,8 +15,9 @@ public class SpincastLocaleResolverPluginGuiceModule extends SpincastPluginGuice
     /**
      * Constructor.
      */
-    public SpincastLocaleResolverPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastLocaleResolverPluginGuiceModule(Type requestContextType,
+                                                   Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override

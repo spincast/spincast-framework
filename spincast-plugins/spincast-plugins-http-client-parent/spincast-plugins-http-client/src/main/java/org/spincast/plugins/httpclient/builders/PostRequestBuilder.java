@@ -4,6 +4,8 @@ import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.plugins.httpclient.IHttpResponseFactory;
+import org.spincast.plugins.httpclient.ISpincastHttpClientConfig;
+import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils;
 import org.spincast.shaded.org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.spincast.shaded.org.apache.http.client.methods.HttpPost;
 
@@ -21,8 +23,16 @@ public class PostRequestBuilder extends EntitySenderRequestBuilderBase<IPostRequ
                               ICookieFactory cookieFactory,
                               IHttpResponseFactory spincastHttpResponseFactory,
                               IJsonManager jsonManager,
-                              IXmlManager xmlManager) {
-        super(url, cookieFactory, spincastHttpResponseFactory, jsonManager, xmlManager);
+                              IXmlManager xmlManager,
+                              ISpincastHttpClientUtils spincastHttpClientUtils,
+                              ISpincastHttpClientConfig spincastHttpClientConfig) {
+        super(url,
+              cookieFactory,
+              spincastHttpResponseFactory,
+              jsonManager,
+              xmlManager,
+              spincastHttpClientUtils,
+              spincastHttpClientConfig);
     }
 
     @Override

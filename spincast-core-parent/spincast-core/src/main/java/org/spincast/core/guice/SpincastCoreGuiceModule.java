@@ -42,6 +42,18 @@ import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.templating.ITemplatingRequestContextAddon;
 import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastUtils;
+import org.spincast.core.utils.ssl.ISSLContextFactory;
+import org.spincast.core.utils.ssl.SSLContextFactory;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.websocket.IWebsocketContextFactory;
+import org.spincast.core.websocket.IWebsocketEndpointHandler;
+import org.spincast.core.websocket.IWebsocketEndpointHandlerFactory;
+import org.spincast.core.websocket.IWebsocketEndpointToControllerManager;
+import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
+import org.spincast.core.websocket.WebsocketContextType;
+import org.spincast.core.websocket.WebsocketEndpointHandler;
+import org.spincast.core.websocket.WebsocketEndpointToControllerManager;
 import org.spincast.core.xml.IXmlManager;
 
 import com.google.inject.Key;
@@ -59,6 +71,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     protected final Logger logger = LoggerFactory.getLogger(SpincastCoreGuiceModule.class);
 
     private Type requestContextType;
+    private Type websocketContextType;
     private final String[] mainArgs;
 
     /**
@@ -103,6 +116,11 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         // Bind the request context key
         //==========================================
         bindRequestContextType();
+
+        //==========================================
+        // Bind the Websocket context key
+        //==========================================
+        bindWebsocketContextType();
 
         //==========================================
         // Bind Spincast request scope
@@ -150,6 +168,26 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         //==========================================
         bindJsonObjectFactory();
 
+        //==========================================
+        // Bind Websocket handlers factory
+        //==========================================
+        bindWebsocketEndpointHandlerFactory();
+
+        //==========================================
+        // Bind Websocket context factory
+        //==========================================
+        bindWebsocketContextFactory();
+
+        //==========================================
+        // Bind Websocket endpoint to controller manager.
+        //==========================================
+        bindWebsocketEndpointToControllerManager();
+
+        //==========================================
+        // Bind SSL Context Factory.
+        //==========================================
+        bindSSLContextFactory();
+
     }
 
     /**
@@ -158,9 +196,9 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     protected void validateRequirements() {
 
         requireBinding(IServer.class);
-        requireBinding(parameterizeWithRequestContextInterface(IRouter.class));
-        requireBinding(Key.get(new TypeLiteral<IRouter<?>>() {}));
-        requireBinding(parameterizeWithRequestContextInterface(IRouteBuilderFactory.class));
+        requireBinding(parameterizeWithContextInterfaces(IRouter.class));
+        requireBinding(Key.get(new TypeLiteral<IRouter<?, ?>>() {}));
+        requireBinding(parameterizeWithContextInterfaces(IRouteBuilderFactory.class));
         requireBinding(ITemplatingEngine.class);
         requireBinding(IJsonManager.class);
         requireBinding(IXmlManager.class);
@@ -168,12 +206,14 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(ISpincastDictionary.class);
         requireBinding(ICookieFactory.class);
         requireBinding(ILocaleResolver.class);
-        requireBinding(parameterizeWithRequestContextInterface(IRequestRequestContextAddon.class));
-        requireBinding(parameterizeWithRequestContextInterface(IResponseRequestContextAddon.class));
-        requireBinding(parameterizeWithRequestContextInterface(IRoutingRequestContextAddon.class));
-        requireBinding(parameterizeWithRequestContextInterface(ICookiesRequestContextAddon.class));
-        requireBinding(parameterizeWithRequestContextInterface(ITemplatingRequestContextAddon.class));
-        requireBinding(parameterizeWithRequestContextInterface(IVariablesRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(IRequestRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(IResponseRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(IRoutingRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(ICookiesRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(ITemplatingRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(IVariablesRequestContextAddon.class));
+
+        requireBinding(parameterizeWithContextInterfaces(IWebsocketRouteBuilderFactory.class));
     }
 
     protected void bindMainArgs() {
@@ -184,6 +224,11 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     protected void bindRequestContextType() {
         Type type = getRequestContextType();
         bind(Type.class).annotatedWith(RequestContextType.class).toInstance(type);
+    }
+
+    protected void bindWebsocketContextType() {
+        Type type = getWebsocketContextType();
+        bind(Type.class).annotatedWith(WebsocketContextType.class).toInstance(type);
     }
 
     protected void bindSpincastRequestScope() {
@@ -211,7 +256,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
     }
 
     protected void bindRequestContextBaseDeps() {
-        bind(parameterizeWithRequestContextInterface(RequestContextBaseDeps.class)).in(Scopes.SINGLETON);
+        bind(parameterizeWithRequestContext(RequestContextBaseDeps.class)).in(Scopes.SINGLETON);
     }
 
     @Override
@@ -226,6 +271,18 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         return this.requestContextType;
     }
 
+    @Override
+    protected Type getWebsocketContextType() {
+        if(this.websocketContextType == null) {
+
+            Key<? extends IWebsocketContext<?>> key = Key.get(getWebsocketContextImplementationClass());
+
+            TypeLiteral<?> websocketContextTypeLiteral = key.getTypeLiteral().getSupertype(IWebsocketContext.class);
+            this.websocketContextType = ((ParameterizedType)websocketContextTypeLiteral.getType()).getActualTypeArguments()[0];
+        }
+        return this.websocketContextType;
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindSpincastFilters() {
 
@@ -237,7 +294,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
                                        " : " + key);
         }
 
-        bind(parameterizeWithRequestContextInterface(ISpincastFilters.class)).to(key).in(Scopes.SINGLETON);
+        bind(parameterizeWithRequestContext(ISpincastFilters.class)).to(key).in(Scopes.SINGLETON);
 
         bind(ICorsFilter.class).to(getCorsFilterClass()).in(Scopes.SINGLETON);
     }
@@ -248,11 +305,11 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
 
     @SuppressWarnings("rawtypes")
     protected Key<SpincastFilters> getSpincastFiltersKey() {
-        return parameterizeWithRequestContextInterface(SpincastFilters.class);
+        return parameterizeWithContextInterfaces(SpincastFilters.class);
     }
 
     protected void bindDefaultPredefinedRouteParamPatternsBinder() {
-        bind(parameterizeWithRequestContextInterface(DefaultRouteParamAliasesBinder.class)).asEagerSingleton();
+        bind(parameterizeWithContextInterfaces(DefaultRouteParamAliasesBinder.class)).asEagerSingleton();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -260,7 +317,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
 
         Key<? extends IRequestContext<?>> key = Key.get(getRequestContextImplementationClass());
 
-        Key requestContextFactoryKey = parameterizeWithRequestContextInterface(IRequestContextFactory.class);
+        Key requestContextFactoryKey = parameterizeWithRequestContext(IRequestContextFactory.class);
 
         Annotation annotation = key.getAnnotation();
         if(annotation != null) {
@@ -365,8 +422,19 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         return DefaultRequestContext.class;
     }
 
+    /**
+     * The implementation to use for the Websocket context objects.
+     * 
+     * Extend this method to create a custom Websocket context type.
+     * 
+     * @see <a href="https://www.spincast.org/documentation#extending_request_context">Extending the request context</a>
+     */
+    protected Class<? extends IWebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return DefaultWebsocketContext.class;
+    }
+
     protected Key<?> getFrontControllerKey() {
-        return parameterizeWithRequestContextInterface(SpincastFrontController.class);
+        return parameterizeWithContextInterfaces(SpincastFrontController.class);
     }
 
     protected Key<?> getSpincastUtilsKey() {
@@ -379,6 +447,45 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
 
     protected Key<?> getJsonArrayKey() {
         return Key.get(JsonArray.class);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected void bindWebsocketEndpointHandlerFactory() {
+
+        Key factoryKey = parameterizeWithContextInterfaces(IWebsocketEndpointHandlerFactory.class);
+
+        install(new FactoryModuleBuilder().implement((Class)IWebsocketEndpointHandler.class,
+                                                     getWebsocketEndpointHandlerKey().getTypeLiteral())
+                                          .build(factoryKey));
+    }
+
+    protected Key<?> getWebsocketEndpointHandlerKey() {
+        return parameterizeWithContextInterfaces(WebsocketEndpointHandler.class);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected void bindWebsocketContextFactory() {
+
+        Key factoryKey = parameterizeWithWebsocketContext(IWebsocketContextFactory.class);
+
+        install(new FactoryModuleBuilder().implement((Class)getWebsocketContextType(), getWebsocketContextImplementationClass())
+                                          .build(factoryKey));
+    }
+
+    protected void bindWebsocketEndpointToControllerManager() {
+        bind(IWebsocketEndpointToControllerManager.class).to(getWebsocketEndpointToControllerKeysMapClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends IWebsocketEndpointToControllerManager> getWebsocketEndpointToControllerKeysMapClass() {
+        return WebsocketEndpointToControllerManager.class;
+    }
+
+    protected void bindSSLContextFactory() {
+        bind(ISSLContextFactory.class).to(getSSLContextFactoryClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ISSLContextFactory> getSSLContextFactoryClass() {
+        return SSLContextFactory.class;
     }
 
 }

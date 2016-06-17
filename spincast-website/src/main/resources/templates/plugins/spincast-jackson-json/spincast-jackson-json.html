@@ -94,7 +94,7 @@ Spincast Jackson Json plugin
                 <p>
                     <div>
                         <p>
-                            {% verbatim %}<pre class="ace ace-java" data-ace-hi="5,37,5,53|8,15,8,44"
+                            {% verbatim %}<pre class="ace ace-java" data-ace-hi="5,37,5,53|8,15,8,47"
 >public class AppController {
 
     public void myHandler(IDefaultRequestContext context) {
@@ -145,10 +145,11 @@ Spincast Jackson Json plugin
 	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="2,8,2,74"
+	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastJacksonJsonPluginGuiceModule(IAppRequestContext.class)
+        new SpincastJacksonJsonPluginGuiceModule(IAppRequestContext.class, 
+                                                 IAppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -158,13 +159,14 @@ Spincast Jackson Json plugin
 	                ... or by using the <code>install(...)</code> method from your custom Guice module:
 	                <div>
 	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="5,8,5,84"
+	                        <pre class="ace ace-java" data-ace-hi="5,8,5,84|6,8,6,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastJacksonJsonPluginGuiceModule(getRequestContextType()));
+        install(new SpincastJacksonJsonPluginGuiceModule(getRequestContextType(), 
+                                                         getWebsocketContextType()));
         // other modules...
     }
     

@@ -4,7 +4,7 @@ package org.spincast.core.routing;
  * The possible types of a routing process.
  */
 public enum RoutingType {
-    NORMAL,
+    FOUND,
     NOT_FOUND,
     EXCEPTION
 }

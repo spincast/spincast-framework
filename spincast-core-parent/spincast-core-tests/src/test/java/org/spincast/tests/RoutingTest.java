@@ -20,6 +20,7 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouteHandlerMatch;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IRoutingResult;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -30,14 +31,14 @@ import com.google.inject.Module;
 public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
 
     @Inject
-    IRouter<IDefaultRequestContext> router;
+    IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router;
 
     @Before
     public void before() {
         getRouter().removeAllRoutes();
     }
 
-    protected IRouter<IDefaultRequestContext> getRouter() {
+    protected IRouter<IDefaultRequestContext, IDefaultWebsocketContext> getRouter() {
         return this.router;
     }
 
@@ -62,7 +63,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void addRemove() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         assertEquals(0, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(0, router.getMainRoutes().size());
@@ -98,7 +99,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void root() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         IRoutingResult<IDefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
@@ -364,7 +365,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void rootNoSlash() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -458,7 +459,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void oneToken() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -581,7 +582,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void oneTokenNoSlashPrefix() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("one").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -681,7 +682,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void oneTokenSlashSuffix() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -781,7 +782,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void oneTokenSlashSuffixNoSlashPrefix() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("one/").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -880,7 +881,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void twoTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/two").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1028,7 +1029,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void paramRoot() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1053,7 +1054,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void paramEmptyName() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1074,7 +1075,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void twoParams() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1103,7 +1104,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void twoParamsSameName() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         try {
             router.GET("/${param1}/${param1}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1115,7 +1116,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void twoParamsSameNameEmpty() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         // This is ok, we don't collect them!
         router.GET("/${}/${}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1124,7 +1125,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void lotsdOfParamNamesEmpty() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         // Yeah, why not?
         router.GET("/${}/${}/*{}/${}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1133,7 +1134,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void paramEmptyNameNotCollected() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/${param1}/${}/${}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1162,7 +1163,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void twoParamsSameNameOneSplat() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         try {
             router.GET("/${param1}/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1174,7 +1175,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void filterBeforeAfter() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         final Map<String, String> handlerCalled = new HashMap<String, String>();
 
@@ -1243,7 +1244,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void twoSplats() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         // Two splat params not allowed...
         try {
@@ -1256,7 +1257,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatSimpleNoName() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1278,7 +1279,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splat1() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1339,7 +1340,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splat2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("*{param1}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1400,7 +1401,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatAndRegularParams() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/*{param2}/${param3}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1433,7 +1434,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatAndRegularParams2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{param1}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1463,7 +1464,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatAndRegularParams3() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/*{param2}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1492,7 +1493,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatAndRegularParamsAndHardcodedTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{param1}/333/444/${param2}/666/${}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1521,7 +1522,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatAndRegularParamsAndHardcodedTokens2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/222/*{param2}/${param3}/777").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1554,7 +1555,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatAndRegularParamsAndHardcodedTokens3() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("111/${param1}/${param2}/*{param3}/").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1587,7 +1588,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void splatSlashOrNot() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/*{splat}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1636,7 +1637,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void notEnoughTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/two/three").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1649,7 +1650,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void tooManyTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1662,7 +1663,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void tooManyTokensButSplat() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/*{any}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1675,7 +1676,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void missingToken() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1691,7 +1692,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void emptyDynamicParam() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
@@ -1706,7 +1707,7 @@ public class RoutingTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void emptyDynamicParam2() throws Exception {
 
-        IRouter<IDefaultRequestContext> router = getRouter();
+        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 

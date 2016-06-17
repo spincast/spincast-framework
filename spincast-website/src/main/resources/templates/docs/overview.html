@@ -39,7 +39,7 @@ Docs : "overview"
                 Here's what using Spincast looks like at a very high level:
             </p>
             <p class="center">
-                <img src="/public/images/arch/architecture_01a.png" />
+                <img src="/public/images/arch/spincast_high_level.png" />
             </p>
             <p>
                 Users make requests to your web application. This application can
@@ -56,7 +56,7 @@ Docs : "overview"
                 without any user interface, since it "talks" <code>JSON</code> and <code>XML</code> natively.
             </p>
             <p class="center">
-                <img src="/public/images/arch/architecture_01b.png" />
+                <img src="/public/images/arch/spincast_rest_webservices.png" />
             </p>   
         </div> 
     </div>
@@ -78,7 +78,7 @@ Docs : "overview"
             but your application will also bind business logic components specific to it: 
             <code>controllers</code>, <code>services</code>, etc.
         </p>
-        <p class="center">
+        <p class="center tallBottom">
             <img src="/public/images/arch/code_structure.png" />
         </p>
         <p>
@@ -106,7 +106,7 @@ Docs : "overview"
                     still tweak/override what is bound, but at least you do not start from scratch.
                 </li>
                 <li>
-                    Finally, you have your application's own Guice module (here we called it <code>AppGuiceModule</code>). In this module,
+                    Finally, you have your application's own Guice module (here we called it <code><em>AppGuiceModule</em></code>). In this module,
                     you can override some default bindings. The best example of this would be to override the implementation
                     of the <code>ISpincastConfig</code> component so you can change the <em>port</em> the server will be running on.
                     Of course, in this module, you're also going to bind your application specific components: the controllers, 
@@ -131,13 +131,14 @@ Docs : "overview"
             and what are the components involved.
         </p>
         <div class="archZoom">
-            <p class="center">
-                <img src="/public/images/arch/architecture_02a.png" />
+        
+            <p class="center tallBottom">
+                <img src="/public/images/arch/request_handling.png" />
             </p>
 
             <p>
                 <i class="subIcon glyphicon glyphicon-share-alt"></i>
-                First, the embedded HTTP <code>Server</code> receives a request. This server consists of an <code>IServer</code> interface and an
+                First, the embedded HTTP <code>Server</code> receives a request from a user. This server consists of an <code>IServer</code> interface and an
                 implementation. The default implementation is provided by 
                 the <a href="/plugins/spincast-undertow"><code>spincast-plugins-undertow</code></a>
                 plugin which uses the <a href="http://undertow.io">Undertow</a> server.
@@ -171,6 +172,13 @@ Docs : "overview"
                         itself, and some <code>filters</code> which are run <em>after</em> the <code>main handler</code>.
                     </li>
                     <li>
+                        It's a little bit different if the request is for a <code>WebSocket</code> connection. In that
+                        case, the handling of the request is made by a <code>WebSocket controller</code> instead of a <code>route handler</code>.
+                        Also, the result is not a simple response but a permanent and full duplex connection where each side 
+                        can send messages to the other side.
+                        Have a look at the <a href="#websockets">WebSockets</a> section for more information!
+                    </li>
+                    <li>
                         If no matching route is returned by the <code>router</code>, the <code>front controller</code> 
                         will use a <code>Not Found route</code>. The <code>Not Found route</code> can be a custom
                         one specified by the developer, or the default one.
@@ -193,9 +201,20 @@ Docs : "overview"
             </p>
             <p>
                 <i class="subIcon glyphicon glyphicon-share-alt"></i>
-                Finally, the <code>route handlers</code> receive a <code>request context</code> reprensenting the request,
-                and decide what to return as the response. This can be anything: <code>Json</code>, <code>HTML</code>,
-                <code>XML</code> or even <code>bytes</code>.
+                Finally:
+                <ul>
+                    <li>
+                        The <code>route handlers</code> receive a <code>request context</code> reprensenting the request,
+                        and decide what to return as the response. This can be anything: <code>Json</code>, <code>HTML</code>,
+                        <code>XML</code> or even <code>bytes</code>.
+                        <br />
+                        <b>or:</b>
+                    </li>
+                    <li>
+                        A <code>WebSocket controller</code> receives the request for a WebSocket connection, allows or
+                        denies it, and then receives and sends messages on that connection.
+                    </li>
+                </ul>
             </p>
         </div>
     </div>
@@ -231,7 +250,8 @@ Docs : "overview"
                     have to use this component directly.
                 </li>
                 <li>
-                    <strong><code>IServer</code></strong>: the embedded HTTP server. The default implementation, <code>SpincastUndertowServer</code> , 
+                    <strong><code>IServer</code></strong>: the embedded HTTP/WebSocket server. The default implementation, 
+                    <code>SpincastUndertowServer</code> , 
                     uses the <a href="http://undertow.io">Undertow</a> server and is provided by the 
                     <a href="/plugins/spincast-undertow">Spincast Undertow</a> plugin.
                 </li>
@@ -239,7 +259,7 @@ Docs : "overview"
                     <strong><code>IRouter</code></strong>: the router. The default implementation is
                     <code>SpincastRouter</code>. There is also a <code>IDefaultRouter</code> interface
                     which extends <code>IRouter</code> and parameterizes it with
-                    the default request context type, <code>IDefaultRequestContext</code>. All those
+                    some default types, <code>IDefaultRequestContext</code> and <code>IDefaultWebsocketContext</code>. All those
                     implementations are provided by the 
                     <a href="/plugins/spincast-routing">Spincast Routing</a> plugin.
                 </li>

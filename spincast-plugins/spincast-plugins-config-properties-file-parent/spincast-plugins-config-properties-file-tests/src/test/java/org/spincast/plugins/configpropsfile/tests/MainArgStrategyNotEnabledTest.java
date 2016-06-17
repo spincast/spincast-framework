@@ -85,7 +85,7 @@ public class MainArgStrategyNotEnabledTest extends DefaultIntegrationTestingBase
 
             @Override
             protected void bindConfigPlugin() {
-                install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType()));
+                install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
             }
 
             @Override

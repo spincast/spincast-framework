@@ -73,6 +73,12 @@ Spincast Routing plugin
                         <li><a href="#static_resource_builder_methods">Methods</a></li>
                     </ul>
                 </li>
+                <li class="openable">
+                    <a href="#websocketroutebuilder"><code>IWebsocketRouteBuilder</code></a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#websocketroutebuilder_methods">Methods</a></li>
+                    </ul>
+                </li>
                 <li class="openable"><a href="#configs">Configurations</a></li>
                 <li class="openable">
                     <a href="#request_context_addon">The request context add-on</a>
@@ -137,10 +143,10 @@ Spincast Routing plugin
                     You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,71"
+                            <pre class="ace ace-java" data-ace-hi="2,8,2,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastRoutingPluginGuiceModule(IAppRequestContext.class)
+        new SpincastRoutingPluginGuiceModule(IAppRequestContext.class, IAppWebsocketContext.class)
         // other modules...
         );</pre> 
                         </p>
@@ -150,13 +156,14 @@ Spincast Routing plugin
                     ... or by using the <code>install(...)</code> method from your custom Guice module:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="5,8,5,80"
+                            <pre class="ace ace-java" data-ace-hi="5,8,5,80|6,8,6,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastRoutingPluginGuiceModule(getRequestContextType()));
+        install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), 
+                                                     getWebsocketContextType()));
         // other modules...
     }
     
@@ -183,7 +190,7 @@ Spincast Routing plugin
                     <p>
                         <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Router Methods :</h4>
                         <ul class="apiList">
-                        
+           
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>GET</span>(String path)</code>
     <div class="well">
@@ -720,6 +727,22 @@ Spincast Routing plugin
     </div>
 </li>
 
+<li>
+    <code class="apiItem">IWebsocketRouteBuilder&lt;R, W&gt; <span>websocket</span>(String path)</code>
+    <div class="well">
+        Starts the creation of a <code>Websocket route</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>addWebsocketRoute</span>(IWebsocketRoute&lt;R, W&gt; websocketRoute)</code>
+    <div class="well">
+        Adds a Websocket route, directly.
+
+    </div>
+</li>
+
 
 
 
@@ -1200,6 +1223,87 @@ Spincast Routing plugin
                     </p>
                 </div>
             </section>
+            
+           
+            <section id="websocketroutebuilder">
+            
+                <h3 class="noTop">
+                    <a class="anchor" href="#websocketroutebuilder" title="permanent link"></a>
+                    The <code>IWebsocketRouteBuilder</code> interface
+                </h3>
+                <p>
+                    When you start the creation of a Websocket route, using
+                    <code>router.websocket("/somePath")</code>, a <code>IWebsocketRouteBuilder</code>
+                    instance is returned. You use this builder object to complete
+                    the creation of your Websocket route.
+                </p> 
+                
+                <div id="websocketroutebuilder_methods">
+                    <p>
+                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods:</h4>
+                        <ul class="apiList">
+                        
+                 
+<li>
+    <code class="apiItem">IWebsocketRouteBuilder&lt;R, W&gt; <span>path</span>(String path)</code>
+    <div class="well">
+        The path that trigger the beginning of that
+<br />HTTP to Websocket connection.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IWebsocketRouteBuilder&lt;R, W&gt; <span>id</span>(String id)</code>
+    <div class="well">
+        The Websocket route id.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IWebsocketRouteBuilder&lt;R, W&gt; <span>before</span>(IHandler&lt;R&gt; beforeFilter)</code>
+    <div class="well">
+        Adds a before filter. Those will be run before the
+<br />Websocket connection handshake is started.
+ <p>
+<br />Note that there are no "after" filters because once a
+<br />Websocket connection is established, the HTTP one
+ is no more.
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">void <span>save</span>(IWebsocketController&lt;R, W&gt; websocketController)</code>
+    <div class="well">
+        Saves the Websocket route on the router.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IWebsocketRoute&lt;R, W&gt; <span>create</span>(IWebsocketController&lt;R, W&gt; websocketController)</code>
+    <div class="well">
+        Creates and returns the Websocket route without adding it to
+ the router.
+<br />NOTE : use <code>save(...)</code> instead to save the route
+ to the router at the end of the build process!
+
+    </div>
+</li>
+
+
+    
+
+
+                        </ul>
+                    </p>
+                </div>
+            </section>
+            
+
             
             <section id="configs">
                 <h3 class="noTop">

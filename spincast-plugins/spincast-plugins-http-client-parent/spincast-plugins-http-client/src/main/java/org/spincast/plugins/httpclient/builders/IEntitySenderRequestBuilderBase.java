@@ -3,13 +3,14 @@ package org.spincast.plugins.httpclient.builders;
 import java.util.List;
 import java.util.Map;
 
-import org.spincast.plugins.httpclient.IRequestBuilderBase;
+import org.spincast.plugins.httpclient.IHttpRequestBuilder;
 import org.spincast.shaded.org.apache.http.HttpEntity;
 
 /**
  * Builders that can send an entity, or upload files.
  */
-public interface IEntitySenderRequestBuilderBase<T extends IRequestBuilderBase<?>> extends IRequestBuilderBase<T> {
+public interface IEntitySenderRequestBuilderBase<T extends IEntitySenderRequestBuilderBase<?>>
+                                                extends IHttpRequestBuilder<T> {
 
     /**
      * Sets the Form datas entity.

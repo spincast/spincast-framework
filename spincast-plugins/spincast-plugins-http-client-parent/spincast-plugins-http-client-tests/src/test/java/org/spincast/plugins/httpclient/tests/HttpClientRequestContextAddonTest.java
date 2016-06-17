@@ -9,10 +9,11 @@ import org.spincast.core.exchange.RequestContextBase;
 import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.defaults.tests.DefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpClient;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.httpclient.tests.HttpClientRequestContextAddonTest.ICustomRequestContext;
+import org.spincast.plugins.httpclient.websocket.IHttpClient;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastGuiceModuleBasedIntegrationTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -21,7 +22,8 @@ import com.google.inject.Module;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class HttpClientRequestContextAddonTest extends SpincastGuiceModuleBasedIntegrationTestBase<ICustomRequestContext> {
+public class HttpClientRequestContextAddonTest extends
+                                               SpincastGuiceModuleBasedIntegrationTestBase<ICustomRequestContext, IDefaultWebsocketContext> {
 
     public static interface ICustomRequestContext extends IRequestContext<ICustomRequestContext> {
 

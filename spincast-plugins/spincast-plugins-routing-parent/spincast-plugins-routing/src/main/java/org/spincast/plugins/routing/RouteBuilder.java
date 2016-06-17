@@ -17,16 +17,17 @@ import org.spincast.core.routing.IRouteBuilder;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.RoutingType;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IWebsocketContext;
 
 import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class RouteBuilder<R extends IRequestContext<?>> implements IRouteBuilder<R> {
+public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketContext<?>> implements IRouteBuilder<R> {
 
     protected final Logger logger = LoggerFactory.getLogger(RouteBuilder.class);
 
-    private final IRouter<R> router;
+    private final IRouter<R, W> router;
     private final IRouteFactory<R> routeFactory;
     private final ISpincastRouterConfig spincastRouterConfig;
     private final ISpincastFilters<R> spincastFilters;
@@ -49,7 +50,7 @@ public class RouteBuilder<R extends IRequestContext<?>> implements IRouteBuilder
     }
 
     @AssistedInject
-    public RouteBuilder(@Assisted IRouter<R> router,
+    public RouteBuilder(@Assisted IRouter<R, W> router,
                         IRouteFactory<R> routeFactory,
                         ISpincastRouterConfig spincastRouterConfig,
                         ISpincastFilters<R> spincastFilters) {
@@ -59,7 +60,7 @@ public class RouteBuilder<R extends IRequestContext<?>> implements IRouteBuilder
         this.spincastFilters = spincastFilters;
     }
 
-    protected IRouter<R> getRouter() {
+    protected IRouter<R, W> getRouter() {
         return this.router;
     }
 
@@ -150,7 +151,7 @@ public class RouteBuilder<R extends IRequestContext<?>> implements IRouteBuilder
 
     @Override
     public IRouteBuilder<R> found() {
-        getRoutingTypes().add(RoutingType.NORMAL);
+        getRoutingTypes().add(RoutingType.FOUND);
         return this;
     }
 
@@ -330,7 +331,7 @@ public class RouteBuilder<R extends IRequestContext<?>> implements IRouteBuilder
         Set<RoutingType> routingTypes = getRoutingTypes();
         if(routingTypes.size() == 0) {
             routingTypes = new HashSet<RoutingType>();
-            routingTypes.add(RoutingType.NORMAL);
+            routingTypes.add(RoutingType.FOUND);
         }
 
         //==========================================

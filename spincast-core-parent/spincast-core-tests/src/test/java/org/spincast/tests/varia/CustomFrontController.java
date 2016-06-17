@@ -12,14 +12,15 @@ import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.guice.SpincastRequestScope;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
+import org.spincast.core.websocket.IDefaultWebsocketContext;
 
 import com.google.inject.Inject;
 
-public class CustomFrontController extends SpincastFrontController<IDefaultRequestContext>
+public class CustomFrontController extends SpincastFrontController<IDefaultRequestContext, IDefaultWebsocketContext>
                                    implements IFrontController {
 
     @Inject
-    public CustomFrontController(IRouter<IDefaultRequestContext> router,
+    public CustomFrontController(IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router,
                                  ISpincastConfig spincastConfig,
                                  ISpincastDictionary spincastDictionary,
                                  IServer server,

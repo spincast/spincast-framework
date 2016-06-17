@@ -6,6 +6,7 @@ import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
 import org.spincast.plugins.pebble.ISpincastPebbleTemplatingEngineConfig;
+import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.website.App;
 import org.spincast.website.AppConfig;
 import org.spincast.website.AppConfigPropsFileBasedConfig;
@@ -16,12 +17,15 @@ import org.spincast.website.controllers.AppController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
 import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.exchange.AppRouter;
+import org.spincast.website.exchange.IAppRouter;
 import org.spincast.website.pebble.AppPebbleExtension;
 import org.spincast.website.repositories.INewsRepository;
 import org.spincast.website.repositories.TemplateFilesRepository;
 import org.spincast.website.services.INewsService;
 import org.spincast.website.services.NewsService;
 
+import com.google.inject.Key;
 import com.google.inject.Scopes;
 
 public class AppModule extends SpincastDefaultGuiceModule {
@@ -75,6 +79,16 @@ public class AppModule extends SpincastDefaultGuiceModule {
         bind(INewsService.class).to(NewsService.class).in(Scopes.SINGLETON);
         bind(INewsRepository.class).to(TemplateFilesRepository.class).in(Scopes.SINGLETON);
 
+        //==========================================
+        // One instance only of our router class.
+        //==========================================
+        bind(AppRouter.class).in(Scopes.SINGLETON);
+
+        //==========================================
+        // Bind our router implementation to our custom
+        // and already parameterized "IAppRouter" interface.
+        //==========================================
+        bind(IAppRouter.class).to(AppRouter.class).in(Scopes.SINGLETON);
     }
 
     /**
@@ -83,7 +97,7 @@ public class AppModule extends SpincastDefaultGuiceModule {
      */
     @Override
     protected void bindConfigPlugin() {
-        install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType()) {
+        install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigImplClass() {
@@ -95,6 +109,21 @@ public class AppModule extends SpincastDefaultGuiceModule {
     @Override
     protected Class<? extends IRequestContext<?>> getRequestContextImplementationClass() {
         return AppRequestContext.class;
+    }
+
+    /**
+     * Inline, we override the router implementation bound by the 
+     * "spincast-routing" plugin, so our custom class is used.
+     */
+    @Override
+    protected void bindRoutingPlugin() {
+        install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
+
+            @Override
+            protected Key<?> getRouterImplementationKey() {
+                return Key.get(AppRouter.class);
+            }
+        });
     }
 
 }

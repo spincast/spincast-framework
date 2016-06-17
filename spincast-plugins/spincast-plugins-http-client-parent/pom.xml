@@ -18,6 +18,7 @@
 
     <modules>
         <module>spincast-plugins-http-client</module>
+        <module>spincast-plugins-http-client-with-websocket</module>
         <module>spincast-plugins-http-client-tests</module>
     </modules>
 	

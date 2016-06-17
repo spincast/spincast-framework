@@ -16,6 +16,8 @@ import org.spincast.core.routing.IStaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IWebsocketEndpointHandler;
+import org.spincast.core.websocket.IWebsocketEndpointManager;
 
 import com.google.inject.Inject;
 
@@ -203,6 +205,33 @@ public class CustomServer implements IServer {
 
     @Override
     public Map<String, String> getHttpAuthenticationRealms() {
+        return null;
+    }
+
+    @Override
+    public List<IWebsocketEndpointManager> getWebsocketEndpointManagers() {
+        return null;
+    }
+
+    @Override
+    public IWebsocketEndpointManager websocketCreateEndpoint(String endpointId, IWebsocketEndpointHandler endpointHandler) {
+        return null;
+    }
+
+    @Override
+    public void websocketCloseEndpoint(String endpointId) {
+    }
+
+    @Override
+    public void websocketCloseEndpoint(String endpointId, int closingCode, String closingReason) {
+    }
+
+    @Override
+    public void websocketConnection(Object exchange, String endpointId, String peerId) {
+    }
+
+    @Override
+    public IWebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
         return null;
     }
 

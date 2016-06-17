@@ -14,8 +14,9 @@ public class SpincastResponsePluginGuiceModule extends SpincastPluginGuiceModule
     /**
      * Constructor.
      */
-    public SpincastResponsePluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastResponsePluginGuiceModule(Type requestContextType,
+                                             Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override
@@ -25,9 +26,8 @@ public class SpincastResponsePluginGuiceModule extends SpincastPluginGuiceModule
 
     protected void bindRequestContextAddon() {
 
-        bind(parameterizeWithRequestContextInterface(IResponseRequestContextAddon.class))
-                                                                                        .to(parameterizeWithRequestContextInterface(SpincastResponseRequestContextAddon.class))
-                                                                                        .in(SpincastGuiceScopes.REQUEST);
+        bind(parameterizeWithRequestContext(IResponseRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastResponseRequestContextAddon.class))
+                                                                                .in(SpincastGuiceScopes.REQUEST);
     }
 
 }

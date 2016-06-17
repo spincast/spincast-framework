@@ -98,6 +98,7 @@ Documentation
                         <li><a href="#route_content-type">Content-Types</a></li>
                         <li><a href="#route_saving">Saving the route</a></li>
                         <li><a href="#filters">Filters</a></li>
+                        <li><a href="#routing_websockets">WebSockets</a></li>
                         <li><a href="#static_resources">Static resources</a></li>
                         <li><a href="#dynamic_resources">Dynamic resources</a></li>
                         <li><a href="#cors">Cors</a></li>
@@ -107,9 +108,20 @@ Documentation
                     </ul>
                 </li>
                 <li class="openable">
+                    <a href="#websockets">WebSockets</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#websockets_quick_example">Quick Example</a></li>
+                        <li><a href="#websockets_routing">WebSocket Routing</a></li>
+                        <li><a href="#websockets_controllers">WebSocket Controllers</a></li>
+                        <li><a href="#websockets_context">The WebSocket context</a></li>
+                        <li><a href="#websockets_extending_context">Extending the WebSocket context</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
                     <a href="#miscellaneous">Miscellaneous</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#default_config">Default configurations</a></li>
+                        <li><a href="#templating_engine">Templating engine</a></li>
                         <li><a href="#ssl">Using a SSL certificate (HTTPS)</a></li>
                         <li><a href="#jsonobject">JsonObject</a></li>
                         <li><a href="#spincast_utils">Spincast Utilities</a></li>
@@ -150,6 +162,11 @@ Documentation
             Section "Routing"
             ==========================================#}
             {% include "./docs/routing.html" %}
+
+            {#==========================================
+            Section "WebsSockets"
+            ==========================================#}
+            {% include "./docs/websockets.html" %}
 
             {#==========================================
             Section "Miscellaneous"

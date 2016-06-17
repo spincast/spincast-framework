@@ -347,10 +347,10 @@ Index
     }
 
     private final IServer server;
-    private final IRouter&lt;IAppRequestContext&gt; router;
+    private final IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt; router;
 
     @Inject
-    public App(IServer server, IRouter&lt;IAppRequestContext&gt; router) {
+    public App(IServer server, IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt; router) {
         this.server = server;
         this.router = router;
     }
@@ -361,8 +361,8 @@ Index
 
             @Override
             public void handle(IAppRequestContext context) {
-                String translated = context.translate("Hello World!", 
-                                                      Locale.ENGLISH, 
+                String translated = context.translate("Hello World!",
+                                                      Locale.ENGLISH,
                                                       Locale.FRENCH);
                 context.response().sendPlainText(translated);
             }
@@ -395,10 +395,12 @@ Index
                                         <span class="code-line-nbr">14-18</span> : Since the <code>App</code> instance is
                                         managed by Guice, all the required dependencies will be automatically injected
                                         in its constructor. Here, we inject the HTTP server (<code>IServer</code>) and
-                                        a <em>custom and parameterized</em> router: <code>IRouter&lt;IAppRequestContext></code>.
+                                        a <em>custom and parameterized</em> router: 
+                                        <code>IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt;</code>.
                                         We'll see that because the router is parameterized with a <em>custom</em> 
                                         <code>request context</code> type, <code><em>"IAppRequestContext"</em></code>, our <code>route handler</code> will
-                                        have access to a new <code>translate(...)</code> method...
+                                        have access to a new <code>translate(...)</code> method... You can see that the router is also
+                                        parameterized with a <em>Websocket context</em> type, but that's not important in this example. 
                                     </li>
                                     <li>
                                         <span class="code-line-nbr">20</span> : The <code>start()</code> method called 
@@ -408,7 +410,9 @@ Index
                                     <li>
                                         <span class="code-line-nbr">22</span> : We add a <code>GET</code> route for the <code>"/"</code> index page.
                                         Here, we won't use Java 8 <code>lambdas</code> or <code>method handles</code> so you can clearly see
-                                        the types involved. Since the router, <code><em>IRouter&lt;IAppRequestContext&gt;</em></code>, is parameterized with our custom 
+                                        the types involved. Since the router, 
+                                        <code><em>IRouter&lt;IAppRequestContext, IDefaultWebsocketContext&gt;</em></code>, 
+                                        is parameterized with our custom 
                                         <code>request context</code> type, the handler type,
                                         <code><em>IHandler&lt;IAppRequestContext&gt;</em></code>, will also be.
                                     </li>
@@ -678,10 +682,14 @@ Index
                        No static methods. Everything is testable.
                     </li>
                     <li>
-                       Over 500+ tests.
+                       Over 650+ tests.
                     </li>
                     <li>
                         Java 7 compatible.
+                    </li>
+                    <li>
+                        WebSockets (<a href="/plugins/spincast-http-client-with-websocket">client</a> 
+                        and <a href="/documentation#websockets">server</a>)
                     </li>
                     <li>
                        Embedded HTTP server. Easy to develop, test and deploy.
@@ -711,9 +719,6 @@ Index
                         </li>
                         <li>
                             Improving the Javadoc.
-                        </li>
-                        <li>
-                            Websocket handling.
                         </li>
                         <li>
                             A Security plugin (authentification / authorization).

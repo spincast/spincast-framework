@@ -1,11 +1,12 @@
 package org.spincast.core.routing;
 
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.websocket.IWebsocketContext;
 
 /**
  * Factory to create a route builder.
  */
-public interface IRouteBuilderFactory<R extends IRequestContext<?>> {
+public interface IRouteBuilderFactory<R extends IRequestContext<?>, W extends IWebsocketContext<?>> {
 
     /**
      * Creates a route builder without using a router.
@@ -19,5 +20,5 @@ public interface IRouteBuilderFactory<R extends IRequestContext<?>> {
     /**
      * Creates a route builder using the specified router.
      */
-    public IRouteBuilder<R> create(IRouter<R> router);
+    public IRouteBuilder<R> create(IRouter<R, W> router);
 }

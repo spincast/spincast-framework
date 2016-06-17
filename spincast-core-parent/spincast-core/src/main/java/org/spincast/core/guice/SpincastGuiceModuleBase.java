@@ -16,13 +16,36 @@ public abstract class SpincastGuiceModuleBase extends AbstractModule {
      * request context type.
      */
     @SuppressWarnings("unchecked")
-    protected <T> Key<T> parameterizeWithRequestContextInterface(Class<T> clazz) {
+    protected <T> Key<T> parameterizeWithRequestContext(Class<T> clazz) {
         return (Key<T>)Key.get(Types.newParameterizedType(clazz, getRequestContextType()));
+    }
+
+    /**
+     * Get a version of the specified class parameterized with the
+     * Websocket context type.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> Key<T> parameterizeWithWebsocketContext(Class<T> clazz) {
+        return (Key<T>)Key.get(Types.newParameterizedType(clazz, getWebsocketContextType()));
+    }
+
+    /**
+     * Get a version of the specified class parameterized with the
+     * request and Websocket context types.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> Key<T> parameterizeWithContextInterfaces(Class<T> clazz) {
+        return (Key<T>)Key.get(Types.newParameterizedType(clazz, getRequestContextType(), getWebsocketContextType()));
     }
 
     /**
      * The type of the request context objects.
      */
     protected abstract Type getRequestContextType();
+
+    /**
+     * The type of the Websocket context objects.
+     */
+    protected abstract Type getWebsocketContextType();
 
 }

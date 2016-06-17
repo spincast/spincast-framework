@@ -3,6 +3,8 @@ package org.spincast.testing.core.utils;
 import java.io.File;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.spincast.core.exchange.IDefaultRequestContext;
@@ -73,7 +75,155 @@ public class SpincastTestUtils {
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
 
+    /**
+     * Since Websockets are async, it's hard to wait for a
+     * specific period of time before validating if an event
+     * occured.
+     * 
+     * This method checks frequently if the TrueChecker returns true
+     * and when it does, it returns too. Il also waits
+     * for a maximum of 5 seconds.
+     */
+    public static boolean waitForTrue(TrueChecker trueChecker) {
+        return waitForTrue(trueChecker, 5000);
+    }
+
+    /**
+     * Since Websockets are async, it's hard to wait for a
+     * specific period of time before validating if an event
+     * occured.
+     * 
+     * This method checks frequently if the TrueChecker returns true
+     * and when it does, it returns too. Il also waits
+     * for the maximum number of milliseconds specified.
+     */
+    public static boolean waitForTrue(TrueChecker trueChecker, int maxMillisecToWait) {
+
+        if(trueChecker == null) {
+            throw new RuntimeException("The true checker can't be null");
+        }
+
+        if(maxMillisecToWait < 0) {
+            maxMillisecToWait = 0;
+        }
+
+        try {
+            int waitTimeTotal = 0;
+            while(true) {
+
+                if(trueChecker.check()) {
+                    return true;
+                }
+
+                if(waitTimeTotal >= maxMillisecToWait) {
+                    return false;
+                }
+
+                Thread.sleep(waitForTrueLoopInterval());
+                waitTimeTotal += waitForTrueLoopInterval();
+            }
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    protected static int waitForTrueLoopInterval() {
+        return 50;
+    }
+
+    /**
+     * This method checks frequently if the size of the specified collection
+     * has reached the expected size. If so, it returns. Always returns
+     * after 5 seconds.
+     */
+    public static boolean waitForSize(Collection<?> collection, int expected) {
+        return waitForSize(collection, expected, 5000);
+    }
+
+    /**
+     * This method checks frequently if the size of the specified collection
+     * has reached the expected size. If so, it returns.
+     */
+    public static boolean waitForSize(final Collection<?> collection,
+                                      final int expected,
+                                      int maxMillisecToWait) {
+
+        Objects.requireNonNull(collection, "The collection can't be NULL");
+
+        if(expected <= 0) {
+            throw new RuntimeException("The expected size must be at least 1.");
+        }
+
+        return waitForTrue(new TrueChecker() {
+
+            @Override
+            public boolean check() {
+                return collection.size() >= expected;
+            }
+
+        }, maxMillisecToWait);
+    }
+
+    /**
+     * This method checks frequently if the size of the specified collection
+     * is under the speficied max size. If so, it returns. Always returns
+     * after 5 seconds.
+     */
+    public static boolean waitForMaxSize(Collection<?> collection, int maxSize) {
+        return waitForMaxSize(collection, maxSize, 5000);
+    }
+
+    /**
+     * This method checks frequently if the size of the specified collection
+     * is under the speficied max size. If so, it returns.
+     */
+    public static boolean waitForMaxSize(final Collection<?> collection,
+                                         final int maxSize,
+                                         int maxMillisecToWait) {
+
+        Objects.requireNonNull(collection, "The collection can't be NULL");
+
+        return waitForTrue(new TrueChecker() {
+
+            @Override
+            public boolean check() {
+                return collection.size() <= maxSize;
+            }
+
+        }, maxMillisecToWait);
+    }
+
+    /**
+     * This method checks frequently if the number of the first element
+     * of the specified int[] has reached the expected value. If so, it returns.
+     * Always returns after 5 seconds.
+     */
+    public static boolean waitForNumber(int[] oneIntArray, int expected) {
+        return waitForNumber(oneIntArray, expected, 5000);
+    }
+
+    /**
+     * This method checks frequently if the number of the first element
+     * of the specified int[] has reached the expected value. If so, it returns.
+     */
+    public static boolean waitForNumber(final int[] oneIntArray,
+                                        final int expected,
+                                        int maxMillisecToWait) {
+
+        if(oneIntArray == null || oneIntArray.length == 0) {
+            throw new RuntimeException("The array can't be null and must have at least (and probably only) one element.");
+        }
+
+        return waitForTrue(new TrueChecker() {
+
+            @Override
+            public boolean check() {
+                return oneIntArray[0] >= expected;
+            }
+
+        }, maxMillisecToWait);
     }
 
 }

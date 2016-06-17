@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import org.junit.Test;
@@ -24,6 +25,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
+import com.google.inject.util.Modules;
 
 public class FeedTest extends AppIntegrationTestBase {
 
@@ -68,9 +70,11 @@ public class FeedTest extends AppIntegrationTestBase {
      * Overriding Guice module
      */
     @Override
-    protected Module getOverridingModule() {
+    protected Module getTestOverridingModule(Type requestContextType, Type websocketContextType) {
 
-        return new AbstractModule() {
+        Module baseModule = super.getTestOverridingModule(requestContextType, websocketContextType);
+
+        Module localModule = new AbstractModule() {
 
             @Override
             protected void configure() {
@@ -81,6 +85,12 @@ public class FeedTest extends AppIntegrationTestBase {
                 bind(INewsRepository.class).to(TestNewsRepository.class).in(Scopes.SINGLETON);
             }
         };
+
+        if(baseModule == null) {
+            return localModule;
+        } else {
+            return Modules.combine(baseModule, localModule);
+        }
     }
 
     @Test

@@ -5,11 +5,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.websocket.IWebsocketRoute;
+import org.spincast.core.websocket.IWebsocketRouteBuilder;
 
 /**
  * The router.
  */
-public interface IRouter<R extends IRequestContext<?>> {
+public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketContext<?>> {
 
     /**
      * The default path used when Spincast creates routes by
@@ -494,5 +497,15 @@ public interface IRouter<R extends IRequestContext<?>> {
      * specified path prefix.
      */
     public void httpAuth(String pathPrefix, String realmName);
+
+    /**
+     * Starts the creation of a <code>Websocket route</code>.
+     */
+    public IWebsocketRouteBuilder<R, W> websocket(String path);
+
+    /**
+     * Adds a Websocket route, directly.
+     */
+    public void addWebsocketRoute(IWebsocketRoute<R, W> websocketRoute);
 
 }

@@ -52,6 +52,10 @@ a:hover {
     text-align:center;
 }
 
+img {
+    max-width:100%;
+}
+
 .well, #pluginsWrapper .thumbnail {
     background: #ffffff;
     background: -moz-linear-gradient(top, #ffffff 0%, #f6f6f6 47%, #ededed 100%);
@@ -80,6 +84,9 @@ a:hover {
 }
 .shortBottom {
     margin-bottom: 6px;
+}
+.tallBottom {
+    margin-bottom: 40px;
 }
 
 a.anchor, a.anchor_small {
@@ -261,34 +268,38 @@ a.love:hover::after {
     }
 }
 
-#menu {
+.menu {
     border-bottom: 1px solid #DDDDDD;
 }
-#menu a {
+.menu a {
     color: #888;
     text-decoration: none;
     line-height: 2em;
     padding-bottom: 2px;
 }
-#menu a:hover {
+.menu a:hover {
     color: #002;
 }
 
-#menu ul {
+.menu ul {
     display: inline;
     margin: 0;
 }
-#menu ul li {
+.menu ul li {
     list-style: none;
     margin: 0 26px;
     float: left;
     font-size:21px;
     color:#888888;
 }
-#menu ul li:first-child {
+#adminMenu ul li {
+    margin: 0 16px;
+}
+
+.menu ul li:first-child, #adminMenu ul li:first-child {
     margin-left: 0;
 }
-#menu ul li:last-child {
+.menu ul li:last-child, #adminMenu ul li:last-child  {
     margin-right: 0;
 }
 
@@ -298,23 +309,40 @@ a.love:hover::after {
 .download #menu_download a,
 .plugins #menu_plugins a,
 .community #menu_community a, 
-.about #menu_about a {
+.about #menu_about a,
+
+.adminIndex #admin_menu_index a,
+.adminNews #admin_menu_news a,
+.adminWebsocketsTest #admin_menu_websockets_test a
+{
     color: #222222;
     border-bottom: 2px solid #779943; 
 }
 
+.admin #sectionTitle h2 {
+    margin-bottom:0;
+    border:0;
+}
+#adminMenu li a {
+    font-size:0.8em;;
+    font-weight:bold;
+}
+#adminMenu li a:hover {
+    color: #002;
+}
+
 @media only screen and (max-width: 1024px) {
     
-    #menu {
+    .menu {
         margin-top:10px;
         border-top: 1px solid #DDDDDD;  
     }
     
-    #menu ul {
+    .menu ul {
         display:table-row;
     }
     
-    #menu ul li {
+    .menu ul li {
         vertical-align: middle;
         display: table-cell;
         margin-left: 0;
@@ -324,11 +352,11 @@ a.love:hover::after {
 
 @media only screen and (max-width: 430px) {
     
-    #menu {
+    .menu {
         padding-bottom:10px;
     }
 
-    #menu ul li {
+    .menu ul li {
         display: inline-block;
         width:100%;
         text-align: center;
@@ -623,16 +651,23 @@ ul.apiList li.first {
 }
 
 #toc-content h5 {
+    font-size:22px;
+    margin-top:20px;
+    margin-bottom:10px;
+}
+
+#toc-content .apiList h5 {
     font-size:15px;
     font-weight:bold;
     color:#4C4C4C;
     margin-top:36px;
+    margin-bottom:10px;
 }
-#toc-content h5.first {
+#toc-content .apiList h5.first {
     margin-top:20px;
 }
 
-#toc-content h5.examples {
+#toc-content .apiList h5.examples {
     margin-top:-10px;
     font-weight:normal;
     font-style:italic;
@@ -1110,4 +1145,14 @@ pre {
 #change_log {
     clear:both;
 }
+
+.showcase_websockets #messages {
+    width:100%;
+    height:300px;
+    font-size:0.8em;
+}
+.showcase_websockets #message {
+    width:80%;
+}
+
 

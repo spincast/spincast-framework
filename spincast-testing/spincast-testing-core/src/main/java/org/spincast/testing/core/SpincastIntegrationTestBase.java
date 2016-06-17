@@ -5,11 +5,9 @@ import java.lang.reflect.Type;
 import org.junit.Before;
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
-import org.spincast.plugins.httpclient.IHttpClient;
-import org.spincast.plugins.httpclient.SpincastHttpClientPluginGuiceModule;
+import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.plugins.httpclient.builders.IConnectRequestBuilder;
 import org.spincast.plugins.httpclient.builders.IDeleteRequestBuilder;
 import org.spincast.plugins.httpclient.builders.IGetRequestBuilder;
@@ -19,13 +17,13 @@ import org.spincast.plugins.httpclient.builders.IPatchRequestBuilder;
 import org.spincast.plugins.httpclient.builders.IPostRequestBuilder;
 import org.spincast.plugins.httpclient.builders.IPutRequestBuilder;
 import org.spincast.plugins.httpclient.builders.ITraceRequestBuilder;
+import org.spincast.plugins.httpclient.websocket.IHttpClient;
+import org.spincast.plugins.httpclient.websocket.SpincastHttpClientWithWebsocketPluginGuiceModule;
+import org.spincast.plugins.httpclient.websocket.builders.IWebsocketRequestBuilder;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Binding;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Key;
+import com.google.inject.Module;
 
 /**
  * Base class for Spincast integration tests. 
@@ -42,7 +40,8 @@ import com.google.inject.Key;
  * All client data (such as cookies) are cleared before each test.
  * 
  */
-public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> extends SpincastGuiceBasedTestBase {
+public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
+                                                 extends SpincastGuiceBasedTestBase {
 
     @Inject
     private IHttpClient httpClient;
@@ -51,38 +50,13 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
     private IServer server;
 
     @Inject
-    private IRouter<R> router;
+    private IRouter<R, W> router;
 
     @Inject
     private ICookieFactory cookieFactory;
 
-    @Override
-    protected Injector extendGuiceInjector(final Injector baseInjector) {
-
-        //==========================================
-        // We extend the base Guice injector to add
-        // the Spincast Http Client module.
-        //==========================================
-        Injector childInjector = baseInjector.createChildInjector(new AbstractModule() {
-
-            @Override
-            protected void configure() {
-
-                Type requestContextType = baseInjector.getInstance(Key.get(Type.class, RequestContextType.class));
-
-                //==========================================
-                // Install the Spincast Http Client Module,
-                // if not already bound.
-                //==========================================
-                Binding<IHttpClient> existingBinding =
-                        baseInjector.getExistingBinding(Key.get(IHttpClient.class));
-                if(existingBinding == null) {
-                    install(new SpincastHttpClientPluginGuiceModule(requestContextType));
-                }
-            }
-        });
-
-        return childInjector;
+    protected Module getTestOverridingModule(Type requestContextType, Type websocketContextType) {
+        return new SpincastHttpClientWithWebsocketPluginGuiceModule(requestContextType, websocketContextType);
     }
 
     @Override
@@ -93,7 +67,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
     }
 
     @Before
-    public void before() {
+    public void beforeTest() {
         // nothing for now here  
     }
 
@@ -107,7 +81,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
         return this.httpClient;
     }
 
-    protected IRouter<R> getRouter() {
+    protected IRouter<R, W> getRouter() {
         return this.router;
     }
 
@@ -168,6 +142,20 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>> 
 
         return "http" + (isHttps ? "s" : "") + "://" + getSpincastConfig().getServerHost() + ":" +
                (isHttps ? getSpincastConfig().getHttpsServerPort() : getSpincastConfig().getHttpServerPort()) + pathOrUrl;
+    }
+
+    protected IWebsocketRequestBuilder websocket(String path) {
+        return websocket(path, false, false);
+    }
+
+    protected IWebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl) {
+        return websocket(pathOrUrl, isFullUrl, false);
+    }
+
+    protected IWebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+
+        IWebsocketRequestBuilder builder = getHttpClient().websocket(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        return builder;
     }
 
     /**

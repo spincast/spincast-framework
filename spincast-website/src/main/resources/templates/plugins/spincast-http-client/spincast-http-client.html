@@ -1,11 +1,11 @@
 {#==========================================
-Spincast Properties File Config
+Spincast HTTP Client plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
 {% block sectionClasses %}plugins plugins-spincast-http-client{% endblock %}
 {% block meta_title %}Plugins - Spincast HTTP Client{% endblock %}
-{% block meta_description %}Builder to easily create and send HTTP requests.{% endblock %}
+{% block meta_description %}Client to easily create and send HTTP requests.{% endblock %}
 
 {% block scripts %}
 <script>
@@ -71,8 +71,14 @@ Spincast Properties File Config
 	            <p>
 	                Provides an easy way of creating and sending HTTP requests. 
                 </p>
+                <p>
+                    Please note that this is the light version of the Spincast HTTP client,
+                    without support for <code>WebSockets</code>. If you want your HTTP client to be able 
+                    to establish WebSocket connections, use the 
+                    <a href="/plugins/spincast-http-client-with-websocket">Spincast HTTP Client With WebSocket</a> version!
+                </p>
                 <p>  
-                    It is built around
+                    This client is built around
                     Apache <a href="https://hc.apache.org/httpcomponents-client-ga/">HttpClient</a>. Note that
                     no extra dependencies are added by this plugin because it uses the
                     <em>shaded</em> version of Apache HttpClient, which is already included in the <code>spincast-core</code>
@@ -144,10 +150,11 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                     Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,74"
+                            <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new AppModule(args),
-        new SpincastHttpClientPluginGuiceModule(IAppRequestContext.class)
+        new SpincastHttpClientPluginGuiceModule(IAppRequestContext.class, 
+                                                IAppWebsocketContext.class)
         // other modules...
         );</pre> 
                         </p>
@@ -157,7 +164,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                     ... or by using the <code>install(...)</code> method from your custom Guice module:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="7,8,7,84"
+                            <pre class="ace ace-java" data-ace-hi="7,8,7,84|8,8,8,100"
 >public class AppModule extends SpincastDefaultGuiceModule {
 
     //...
@@ -165,7 +172,8 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastHttpClientPluginGuiceModule(getRequestContextType()));
+        install(new SpincastHttpClientPluginGuiceModule(getRequestContextType(), 
+                                                        getWebsocketContextType()));
         // other modules...
     }
     

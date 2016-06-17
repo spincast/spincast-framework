@@ -68,7 +68,7 @@ public class HttpClientTestSllSelfSignedAccepted extends DefaultIntegrationTesti
     }
 
     @Test
-    public void selfSignedCetificateAccepted() throws Exception {
+    public void selfSignedCertificateAccepted() throws Exception {
 
         getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
 

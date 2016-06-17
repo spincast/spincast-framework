@@ -1,0 +1,110 @@
+{#==========================================
+Showcase - WebSockets
+==========================================#}
+{% extends "../layout.html" %}
+
+{% block sectionClasses %}showcase showcase_websockets{% endblock %}
+{% block meta_title %}showcase - WebSockets{% endblock %}
+{% block meta_description %}Showcase - WebSockets example{% endblock %}
+
+{% block scripts %}
+<script>
+  
+    app.addMessage = function(message) {
+        var messages = $("#messages").val();
+        $("#messages").focus().val('').val(messages  + "- " + message + "\n");
+    }
+    
+    app.showcaseInit = function() {
+        
+        if(!window.WebSocket) {
+            alert("Your browser does not support WebSockets!");
+            return;
+        }
+
+        app.showcaseWebsocket = new WebSocket("ws://" + location.host + "/showcase/websockets/echo-all-endpoint");
+        
+        app.showcaseWebsocket.onopen = function(event) {
+            app.addMessage("WebSocket connection established!"); 
+        };
+        
+        app.showcaseWebsocket.onclose = function(event) {
+            app.addMessage("WebSocket connection closed."); 
+        };
+        
+        app.showcaseWebsocket.onmessage = function(event) {
+            app.addMessage(event.data); 
+        };   
+    };
+    
+    app.sendWebsocketMessage = function sendWebsocketMessage(message) {
+        
+        if(!window.WebSocket) {
+            return;
+        }
+        
+        if(app.showcaseWebsocket.readyState != WebSocket.OPEN) {
+        	app.addMessage("The WebSocket connection is not open.");
+        	return;
+        }
+        
+        app.showcaseWebsocket.send(message);
+    };
+    
+    app.showcaseInit();
+    
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                <a class="anchor" href="#download" id="download" title="permanent link"></a>
+                WebSockets example
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row"> 
+        <div class="col-xs-12">
+            <p>
+                Try opening more multiple browser windows on this very page and then send some messages. You will see the messages sent
+                by all peers connected to this WebSocket endpoint. You can even ask a friend to do so at the same time: you should see his messages
+                too!
+            </p>
+        </div>
+    </div>
+
+    <div class="row"> 
+        <div class="col-xs-4">
+        
+            <p>
+                Send a message:
+            </p>
+            
+            <form onsubmit="return false;">
+                <input type="text" id="message" name="message" value="Hi!"/>
+                <input type="button" value="send" onclick="app.sendWebsocketMessage(this.form.message.value)"/>
+            </form>
+            
+        </div>
+        <div class="col-xs-8">
+        
+            <p>
+                Messages:
+            </p>
+            
+            <textarea id="messages"></textarea>
+            
+        </div>
+     </div>
+     
+</div>
+
+
+
+{% endblock %}

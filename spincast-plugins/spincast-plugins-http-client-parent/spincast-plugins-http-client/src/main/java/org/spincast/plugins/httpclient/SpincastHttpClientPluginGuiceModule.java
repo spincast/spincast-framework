@@ -21,7 +21,10 @@ import org.spincast.plugins.httpclient.builders.PatchRequestBuilder;
 import org.spincast.plugins.httpclient.builders.PostRequestBuilder;
 import org.spincast.plugins.httpclient.builders.PutRequestBuilder;
 import org.spincast.plugins.httpclient.builders.TraceRequestBuilder;
+import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils;
+import org.spincast.plugins.httpclient.utils.SpincastHttpClientUtils;
 
+import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
@@ -32,14 +35,15 @@ public class SpincastHttpClientPluginGuiceModule extends SpincastPluginGuiceModu
     /**
      * Constructor.
      */
-    public SpincastHttpClientPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastHttpClientPluginGuiceModule(Type requestContextType, Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override
     protected void configure() {
         bindHttpClientFactory();
         bindHttpResponseFactory();
+        bindSpincastHttpClientUtils();
     }
 
     protected void bindHttpClientFactory() {
@@ -59,6 +63,14 @@ public class SpincastHttpClientPluginGuiceModule extends SpincastPluginGuiceModu
     protected void bindHttpResponseFactory() {
         install(new FactoryModuleBuilder().implement(IHttpResponse.class, SpincastHttpResponse.class)
                                           .build(IHttpResponseFactory.class));
+    }
+
+    protected void bindSpincastHttpClientUtils() {
+        bind(ISpincastHttpClientUtils.class).to(getSpincastHttpClientUtilsClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ISpincastHttpClientUtils> getSpincastHttpClientUtilsClass() {
+        return SpincastHttpClientUtils.class;
     }
 
 }

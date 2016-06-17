@@ -127,10 +127,10 @@ Spincast Cookies plugin
                     You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,71"
+                            <pre class="ace ace-java" data-ace-hi="2,8,2,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastCookiesPluginGuiceModule(IAppRequestContext.class)
+        new SpincastCookiesPluginGuiceModule(IAppRequestContext.class, IAppWebsocketContext.class)
         // other modules...
         );</pre> 
                         </p>
@@ -140,13 +140,14 @@ Spincast Cookies plugin
                     ... or by using the <code>install(...)</code> method from your custom Guice module:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="5,8,5,80"
+                            <pre class="ace ace-java" data-ace-hi="5,8,5,80|6,8,6,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastCookiesPluginGuiceModule(getRequestContextType()));
+        install(new SpincastCookiesPluginGuiceModule(getRequestContextType(), 
+                                                     getWebsocketContextType()));
         // other modules...
     }
     

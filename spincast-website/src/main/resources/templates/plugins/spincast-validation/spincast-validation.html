@@ -110,10 +110,11 @@ Spincast Properties File Config
                     Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,74"
+                            <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new AppModule(args),
-        new SpincastValidationPluginGuiceModule(IAppRequestContext.class)
+        new SpincastValidationPluginGuiceModule(IAppRequestContext.class, 
+                                                IAppWebsocketContext.class)
         // other modules...
         );</pre> 
                         </p>
@@ -123,7 +124,7 @@ Spincast Properties File Config
                     ... or by using the <code>install(...)</code> method from your custom Guice module:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="7,8,7,84"
+                            <pre class="ace ace-java" data-ace-hi="7,8,7,84|8,8,8,100"
 >public class AppModule extends SpincastDefaultGuiceModule {
 
     //...
@@ -131,7 +132,8 @@ Spincast Properties File Config
     @Override
     protected void configure() {
         super.configure();
-        install(new SpincastValidationPluginGuiceModule(getRequestContextType()));
+        install(new SpincastValidationPluginGuiceModule(getRequestContextType(), 
+                                                        getWebsocketContextType()));
         // other modules...
     }
     
@@ -176,7 +178,7 @@ Spincast Properties File Config
                 <p>
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="12,8,12,91|13,42,13,97"
+                            <pre class="ace ace-java" data-ace-hi="13,8,13,91|14,42,14,97"
 >public class AppModule extends SpincastDefaultGuiceModule {
 
     public AppModule(String[] mainArgs) {
@@ -187,7 +189,8 @@ Spincast Properties File Config
     protected void configure() {
         super.configure();
 
-        install(new SpincastValidationPluginGuiceModule(getRequestContextType()));
+        install(new SpincastValidationPluginGuiceModule(getRequestContextType(), 
+                                                        getWebsocketContextType()));
 
         install(new FactoryModuleBuilder().implement(IValidator.class, UserValidator.class)
                                           .build(new TypeLiteral&lt;IValidatorFactory&lt;IUser&gt;&gt;(){}));
@@ -412,7 +415,7 @@ Spincast Properties File Config
                     <code>IUserService</code>:
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="12,8,12,91|13,42,13,97"
+                            <pre class="ace ace-java" data-ace-hi="13,8,13,91|14,42,14,97"
 >public class AppModule extends SpincastDefaultGuiceModule {
 
     public AppModule(String[] mainArgs) {
@@ -423,7 +426,8 @@ Spincast Properties File Config
     protected void configure() {
         super.configure();
 
-        install(new SpincastValidationPluginGuiceModule(getRequestContextType()));
+        install(new SpincastValidationPluginGuiceModule(getRequestContextType(), 
+                                                        getWebsocketContextType()));
 
         install(new FactoryModuleBuilder().implement(IValidator.class, UserValidator.class)
                                           .build(new TypeLiteral&lt;IValidatorFactory&lt;IUser&gt;&gt;(){}));

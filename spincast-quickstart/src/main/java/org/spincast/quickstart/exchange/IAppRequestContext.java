@@ -4,7 +4,7 @@ import org.spincast.core.exchange.IRequestContext;
 
 /**
  * Custom type which allows our application to
- * extend the default request context and add customs methods
+ * extend the default request context and add custom methods
  * and add-ons provided by plugins.
  * 
  * Spincast will pass an instance of this class to all matching

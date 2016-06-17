@@ -13,29 +13,34 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
     /**
      * Constructor.
      */
-    public SpincastUndertowPluginGuiceModule(Type requestContextType) {
-        super(requestContextType);
+    public SpincastUndertowPluginGuiceModule(Type requestContextType,
+                                             Type websocketContextType) {
+        super(requestContextType, websocketContextType);
     }
 
     @Override
     protected void configure() {
 
         bind(IServer.class).to(getSpincastUndertowServerClass()).in(Scopes.SINGLETON);
-
-        bind(ISSLContextManager.class).to(getSSLContextManagerClass()).in(Scopes.SINGLETON);
-
+        bindSpincastUndertowUtils();
         bindCorsHandlerFactory();
         bindGzipCheckerHandlerFactory();
         bindFileClassPathResourceManagerFactory();
         bindHttpAuthIdentityManagerFactory();
+        bindUndertowWebsocketEndpointWriterFactory();
+        bindWebsocketEndpointFactory();
+    }
+
+    protected void bindSpincastUndertowUtils() {
+        bind(ISpincastUndertowUtils.class).to(getSpincastUndertowUtilsClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ISpincastUndertowUtils> getSpincastUndertowUtilsClass() {
+        return SpincastUndertowUtils.class;
     }
 
     protected Class<? extends IServer> getSpincastUndertowServerClass() {
         return SpincastUndertowServer.class;
-    }
-
-    protected Class<? extends ISSLContextManager> getSSLContextManagerClass() {
-        return SSLContextManager.class;
     }
 
     protected void bindCorsHandlerFactory() {
@@ -74,6 +79,26 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
 
     protected Class<? extends ISpincastHttpAuthIdentityManager> getSpincastHttpAuthIdentityManagerClass() {
         return SpincastHttpAuthIdentityManager.class;
+    }
+
+    protected void bindUndertowWebsocketEndpointWriterFactory() {
+        install(new FactoryModuleBuilder().implement(IUndertowWebsocketEndpointWriter.class,
+                                                     getUndertowWebsocketEndpointWriterClass())
+                                          .build(IUndertowWebsocketEndpointWriterFactory.class));
+    }
+
+    protected Class<? extends IUndertowWebsocketEndpointWriter> getUndertowWebsocketEndpointWriterClass() {
+        return SpincastUndertowWebsocketEndpointWriter.class;
+    }
+
+    protected void bindWebsocketEndpointFactory() {
+        install(new FactoryModuleBuilder().implement(IWebsocketEndpoint.class,
+                                                     getWebsocketEndpointClass())
+                                          .build(IWebsocketEndpointFactory.class));
+    }
+
+    protected Class<? extends IWebsocketEndpoint> getWebsocketEndpointClass() {
+        return SpincastWebsocketEndpoint.class;
     }
 
 }

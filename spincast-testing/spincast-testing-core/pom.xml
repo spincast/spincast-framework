@@ -35,11 +35,11 @@
         </dependency> 
         
         <!--=================================== 
-        Spincast Http Client plugin
+        Spincast Http Client with Websocket support plugin
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-http-client</artifactId>
+            <artifactId>spincast-plugins-http-client-with-websocket</artifactId>
             <version>${project.version}</version>
         </dependency>
 
