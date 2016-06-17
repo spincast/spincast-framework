@@ -11,9 +11,10 @@ public class AppConfigPropsFileBasedConfig extends SpincastConfigPropsFileBasedC
     public int getSpecificPathMainArgsPosition() {
 
         //==========================================
-        // Enable this stategy: if present, the first main
-        // argument will be considered as the path to
-        // the .properties configuration file to use.
+        // Enable this stategy: if > 0, the 
+        // argument at the specified position will be considered 
+        // as the path to  the .properties configuration file to use.
+        // The first argument is at position "1".
         //==========================================
         return 1;
     }

@@ -15,6 +15,7 @@ Showcase - WebSockets
         $("#messages").focus().val('').val(messages  + "- " + message + "\n");
     }
     
+    app.showcaseWebsocket = null;
     app.showcaseInit = function() {
         
         if(!window.WebSocket) {
@@ -22,7 +23,7 @@ Showcase - WebSockets
             return;
         }
 
-        app.showcaseWebsocket = new WebSocket("ws://" + location.host + "/showcase/websockets/echo-all-endpoint");
+        app.showcaseWebsocket = new WebSocket("wss://" + location.host + "/showcase/websockets/echo-all-endpoint");
         
         app.showcaseWebsocket.onopen = function(event) {
             app.addMessage("WebSocket connection established!"); 
@@ -39,7 +40,7 @@ Showcase - WebSockets
     
     app.sendWebsocketMessage = function sendWebsocketMessage(message) {
         
-        if(!window.WebSocket) {
+        if(!window.WebSocket || !app.showcaseWebsocket) {
             return;
         }
         

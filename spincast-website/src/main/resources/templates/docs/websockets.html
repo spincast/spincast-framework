@@ -197,7 +197,9 @@ Quick Example
             return;
         }
 
-        app.showcaseWebsocket = new WebSocket("ws://" + location.host + "/chat");
+        // Use "ws://" instead of "wss://" for an insecure 
+        // connection, without SSL.
+        app.showcaseWebsocket = new WebSocket("wss://" + location.host + "/chat");
         
         app.showcaseWebsocket.onopen = function(event) {
             console.log("WebSocket connection established!"); 
