@@ -4,7 +4,7 @@ import com.google.inject.ImplementedBy;
 import com.mitchellbosecke.pebble.extension.Extension;
 
 /**
- * Configurations for the Pebble templating engine plugin. jjj123
+ * Configurations for the Pebble templating engine plugin.
  * 
  * We use "@ImplementedBy" to specify the default configurations
  * to use if none is specified in a Guice module.

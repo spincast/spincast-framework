@@ -4,12 +4,12 @@ import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
-import org.spincast.testing.utils.ExpectingInstanciationException;
+import org.spincast.testing.utils.ExpectingBeforeClassException;
 
 import com.google.inject.Key;
 import com.google.inject.Module;
 
-@ExpectingInstanciationException // Expect an exception!
+@ExpectingBeforeClassException // Expect an exception!
 public class InvalidCustomRouterConfigKeyTest extends DefaultIntegrationTestingBase {
 
     @Override

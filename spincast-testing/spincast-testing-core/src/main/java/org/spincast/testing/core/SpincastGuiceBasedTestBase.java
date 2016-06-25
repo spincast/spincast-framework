@@ -6,10 +6,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.UUID;
 
+import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
+import org.junit.runner.notification.Failure;
+import org.junit.runners.MethodSorters;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.utils.IBeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.IRepeatedClassAfterMethodProvider;
+import org.spincast.testing.utils.ITestFailureListener;
 import org.spincast.testing.utils.SpincastJUnitRunner;
 
 import com.google.inject.Inject;
@@ -33,9 +38,17 @@ import com.google.inject.Injector;
  * (created using the {@link #createInjector() createInjector} method) and 
  * the required dependencies will be injected into it.
  * </p>
+ * <p>
+ * Finally, the NAME_ASCENDING option is used to sort the tests. This means you
+ * can force the order in which tests are run by prefixeing them 
+ * with something like : "t01_firstTest", "t02_secondTest", etc.
+ * </p>
  */
 @RunWith(SpincastJUnitRunner.class)
-public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMethodsProvider {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMethodsProvider,
+                                                 ITestFailureListener,
+                                                 IRepeatedClassAfterMethodProvider {
 
     private Injector guice;
     private File testingWritableDir;
@@ -53,6 +66,20 @@ public abstract class SpincastGuiceBasedTestBase implements IBeforeAfterClassMet
     @Override
     public void afterClass() {
         deleteTempDir();
+    }
+
+    @Override
+    public void afterClassLoops() {
+        // nothing be default
+    }
+
+    /**
+     * You can override this method to be 
+     * informed when a test fails.
+     */
+    @Override
+    public void testFailure(Failure failure) {
+        // nothing by default
     }
 
     @Inject

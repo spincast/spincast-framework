@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-core-parent</artifactId>
-        <version>0.9.21</version>
+        <version>0.9.22-SNAPSHOT</version>
     </parent>
 
     <artifactId>spincast-core</artifactId>
@@ -19,11 +19,17 @@
         <!--=================================== 
         The shaded dependencies used 
         by the framework. 
+
+        This project is built separatly
+        from the framework because it leads to errors
+        when imported in an IDE with the other projects.
+         
+        Also, it won't change frequently.
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
             <artifactId>spincast-shaded-dependencies</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>

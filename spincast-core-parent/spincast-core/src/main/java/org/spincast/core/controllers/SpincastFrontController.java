@@ -219,18 +219,33 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      * Prepare a direct Not Found routing.
      */
     protected IRoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext) {
+        return prepareNotFoundRouting(exchange, requestContext, false);
+    }
+
+    /**
+     * Prepare a direct Not Found routing.
+     */
+    protected IRoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext, boolean alreadyTried) {
 
         //==========================================
         // Get the Not Found handler
         //==========================================
         IRoutingResult<R> routingResult = getRouter().route(requestContext, RoutingType.NOT_FOUND);
+
         //==========================================
         // If no route matches for Not Found, we
         // create a default one!
         //==========================================
         if(routingResult == null) {
+
+            if(alreadyTried) {
+                throw new RuntimeException("The method prepareNotFoundRouting was already tried, we called addDefaultNotFoundRoute() " +
+                                           "but there's still no Not Found route!! Full url: " +
+                                           getServer().getFullUrl(exchange));
+            }
+
             addDefaultNotFoundRoute();
-            return prepareNotFoundRouting(exchange, requestContext);
+            return prepareNotFoundRouting(exchange, requestContext, true);
         }
 
         //==========================================

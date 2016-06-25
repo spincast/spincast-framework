@@ -12,7 +12,7 @@ Showcase - WebSockets
   
     app.addMessage = function(message) {
         var messages = $("#messages").val();
-        $("#messages").focus().val('').val(messages  + "- " + message + "\n");
+        $("#messages").val('').val(messages  + "- " + message + "\n");
     }
     
     app.showcaseWebsocket = null;
@@ -89,7 +89,7 @@ Showcase - WebSockets
             
             <form onsubmit="return false;">
                 <input type="text" id="message" name="message" value="Hi!"/>
-                <input type="button" value="send" onclick="app.sendWebsocketMessage(this.form.message.value)"/>
+                <input type="button" value="send" onclick="app.sendWebsocketMessage(this.form.message.value); this.form.message.value=''; this.form.message.focus();"/>
             </form>
             
         </div>
@@ -99,7 +99,7 @@ Showcase - WebSockets
                 Messages:
             </p>
             
-            <textarea id="messages"></textarea>
+            <textarea id="messages" readonly></textarea>
             
         </div>
      </div>

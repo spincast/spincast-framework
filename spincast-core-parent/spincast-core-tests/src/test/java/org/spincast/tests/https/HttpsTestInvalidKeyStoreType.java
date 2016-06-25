@@ -5,11 +5,11 @@ import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
 import org.spincast.defaults.tests.DefaultTestingModule;
 import org.spincast.testing.core.SpincastTestConfig;
 import org.spincast.testing.core.utils.SpincastTestUtils;
-import org.spincast.testing.utils.ExpectingInstanciationException;
+import org.spincast.testing.utils.ExpectingBeforeClassException;
 
 import com.google.inject.Module;
 
-@ExpectingInstanciationException
+@ExpectingBeforeClassException
 public class HttpsTestInvalidKeyStoreType extends DefaultIntegrationTestingBase {
 
     protected static class HttpsTestConfig extends SpincastTestConfig {

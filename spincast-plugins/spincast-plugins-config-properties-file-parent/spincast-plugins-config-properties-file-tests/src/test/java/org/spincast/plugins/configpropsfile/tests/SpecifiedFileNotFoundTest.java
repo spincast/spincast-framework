@@ -15,12 +15,12 @@ import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfigDefault;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
-import org.spincast.testing.utils.ExpectingInstanciationException;
+import org.spincast.testing.utils.ExpectingBeforeClassException;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-@ExpectingInstanciationException
+@ExpectingBeforeClassException
 public class SpecifiedFileNotFoundTest extends DefaultIntegrationTestingBase {
 
     protected String appPropertiesPath;

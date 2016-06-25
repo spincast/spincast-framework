@@ -6,7 +6,26 @@ https://letsencrypt.org
 ==========================================
 
 -----------------------------------
-If you're using a reserve proxy (here for Apache)
+If you're using Nginx as a reverse proxy
+-----------------------------------
+
+1. To generate the certificates from Let's Encrypt, follow their
+   Getting Start guide : 
+   
+   https://letsencrypt.org/getting-started/
+   
+   At the end of this proces, you're going to have three files generated :
+   - cert.pem
+   - privkey.pem
+   - chain.pem
+   
+2. Add this to the server() pointing to your Spincast application :
+
+    ssl_certificate      /etc/letsencrypt/live/spincast.org/cert.pem;
+    ssl_certificate_key  /etc/letsencrypt/live/spincast.org/privkey.pem;
+
+-----------------------------------
+If you're using Apache as a reverse proxy
 -----------------------------------
 
 1. To generate the certificates from Let's Encrypt, follow their
@@ -52,7 +71,7 @@ it directly without reverse proxy.
 
    openssl pkcs12 -export -in cert.pem -inkey privkey.pem -out cert_and_key.p12 -name spincast -CAfile chain.pem -caname root
 
-   When asked, choose a password. We'll use "[PASS_PEM]" to identify this password in the following steps.
+   When asked, choose a password (minimum 6 characters). We'll use "[PASS_PEM]" to identify this password in the following steps.
    
 3. Run (replace the "[PASS_PEM]" password as enter in the previous step and choose a [YOUR_STORE_PASS] and [YOUR_KEY_PASS] passwords):
    keytool -importkeystore -deststorepass [YOUR_STORE_PASS] -destkeypass [YOUR_KEY_PASS] -destkeystore myKeyStore.jks -srckeystore cert_and_key.p12 -srcstoretype PKCS12 -srcstorepass [PASS_PEM] -alias spincast
@@ -61,6 +80,8 @@ it directly without reverse proxy.
    keytool -import -trustcacerts -alias root -file chain.pem -keystore myKeyStore.jks
 
    When asked, enter your [YOUR_STORE_PASS].
+   
+   When asked "Trust this certificate?", enter "yes".
 
    At the end of this, you're going to have a valid "myKeyStore.jks" which
    can be used by your Spincast application directly.

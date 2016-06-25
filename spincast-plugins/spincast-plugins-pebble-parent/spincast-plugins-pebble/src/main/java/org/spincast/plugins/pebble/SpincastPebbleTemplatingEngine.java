@@ -22,7 +22,7 @@ import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 /**
- * Pebble Html template engine jjj123
+ * Pebble Html template engine
  */
 public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 

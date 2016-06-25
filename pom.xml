@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent</artifactId>
-        <version>0.9.21</version>
+        <version>0.9.22-SNAPSHOT</version>
         <relativePath>spincast-parent</relativePath>
     </parent>
 
@@ -18,7 +18,6 @@
 
     <modules>
         <module>spincast-parent</module>
-        <module>spincast-shaded-dependencies</module>
         <module>spincast-core-parent</module>
         <module>spincast-testing</module>
         <module>spincast-plugins</module>
