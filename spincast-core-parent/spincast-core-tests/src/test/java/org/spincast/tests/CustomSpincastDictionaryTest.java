@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.spincast.core.config.ISpincastDictionary;
 import org.spincast.core.locale.ILocaleResolver;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.dictionary.SpincastDictionary;
 import org.spincast.plugins.dictionary.SpincastDictionaryPluginGuiceModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
@@ -16,7 +16,7 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class CustomSpincastDictionaryTest extends DefaultIntegrationTestingBase {
+public class CustomSpincastDictionaryTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     public static class CustomSpincastDictionary extends SpincastDictionary {
 
@@ -36,7 +36,7 @@ public class CustomSpincastDictionaryTest extends DefaultIntegrationTestingBase 
      */
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void bindDictionaryPlugin() {

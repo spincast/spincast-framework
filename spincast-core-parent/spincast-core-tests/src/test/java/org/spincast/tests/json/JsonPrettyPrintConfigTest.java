@@ -6,21 +6,27 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.jacksonjson.ISpincastJsonManagerConfig;
-import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
+import org.spincast.testing.core.SpincastTestBase;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 
-public class JsonPrettyPrintConfigTest extends SpincastGuiceModuleBasedTestBase {
+public class JsonPrettyPrintConfigTest extends SpincastTestBase {
 
     @Inject
     protected IJsonManager jsonManager;
 
     @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(getTestingModule());
+    }
+
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

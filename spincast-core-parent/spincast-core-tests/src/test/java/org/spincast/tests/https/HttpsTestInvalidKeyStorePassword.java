@@ -1,8 +1,8 @@
 package org.spincast.tests.https;
 
 import org.spincast.core.config.ISpincastConfig;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.testing.core.SpincastTestConfig;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
@@ -10,7 +10,7 @@ import org.spincast.testing.utils.ExpectingBeforeClassException;
 import com.google.inject.Module;
 
 @ExpectingBeforeClassException
-public class HttpsTestInvalidKeyStorePassword extends DefaultIntegrationTestingBase {
+public class HttpsTestInvalidKeyStorePassword extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected static class HttpsTestConfig extends SpincastTestConfig {
 
@@ -52,7 +52,7 @@ public class HttpsTestInvalidKeyStorePassword extends DefaultIntegrationTestingB
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigClass() {

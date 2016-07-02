@@ -22,6 +22,8 @@ import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.IRequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.guice.SpincastRequestScope;
+import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouteHandlerMatch;
 import org.spincast.core.routing.IRouter;
@@ -31,6 +33,7 @@ import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.xml.IXmlManager;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -50,6 +53,8 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     private final IRequestContextFactory<R> requestCreationFactory;
     private final SpincastRequestScope spincastRequestScope;
     private final Type requestContextType;
+    private final IJsonManager jsonManager;
+    private final IXmlManager xmlManager;
 
     /**
      * The constructor.
@@ -61,7 +66,9 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
                                    IServer server,
                                    IRequestContextFactory<R> requestCreationFactory,
                                    SpincastRequestScope spincastRequestScope,
-                                   @RequestContextType Type requestContextType) {
+                                   @RequestContextType Type requestContextType,
+                                   IJsonManager jsonManager,
+                                   IXmlManager xmlManager) {
         this.router = router;
         this.spincastConfig = spincastConfig;
         this.spincastDictionary = spincastDictionary;
@@ -69,6 +76,8 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         this.requestCreationFactory = requestCreationFactory;
         this.spincastRequestScope = spincastRequestScope;
         this.requestContextType = requestContextType;
+        this.jsonManager = jsonManager;
+        this.xmlManager = xmlManager;
     }
 
     protected IRouter<R, W> getRouter() {
@@ -97,6 +106,14 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
 
     protected Type getRequestContextType() {
         return this.requestContextType;
+    }
+
+    protected IJsonManager getJsonManager() {
+        return this.jsonManager;
+    }
+
+    protected IXmlManager getXmlManager() {
+        return this.xmlManager;
     }
 
     /**
@@ -183,7 +200,11 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
                 //==========================================
                 // Default exception HTTP status.
                 //==========================================
-                requestContext.response().setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                if(ex instanceof ICustomStatusCodeException) {
+                    requestContext.response().setStatusCode(((ICustomStatusCodeException)ex).getStatusCode());
+                } else {
+                    requestContext.response().setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                }
 
                 customExceptionHandling(ex, requestContext, routingResult);
 
@@ -216,14 +237,14 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     }
 
     /**
-     * Prepare a direct Not Found routing.
+     * Prepares a direct Not Found routing.
      */
     protected IRoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext) {
         return prepareNotFoundRouting(exchange, requestContext, false);
     }
 
     /**
-     * Prepare a direct Not Found routing.
+     * Prepares a direct Not Found routing.
      */
     protected IRoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext, boolean alreadyTried) {
 
@@ -280,6 +301,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
 
             @Override
             public void handle(R context) {
+
                 String message = getDefaultNotFoundHandlerNotFoundMessage();
 
                 //==========================================
@@ -292,10 +314,47 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
                 }
 
                 context.response().setStatusCode(HttpStatus.SC_NOT_FOUND);
-                context.response().sendPlainText(message);
+
+                if(context.request().isJsonShouldBeReturn()) {
+                    context.response().sendJson(getNotFoundJsonContent(message));
+
+                } else if(context.request().isXMLShouldBeReturn()) {
+                    context.response().sendXml(getNotFoundXmlContent(message));
+
+                } else if(context.request().isHTMLShouldBeReturn()) {
+                    String html = getNotFoundHtmlContent(message);
+                    context.response().sendHtml(html);
+
+                } else {
+                    if(!context.request().isPlainTextShouldBeReturn()) {
+                        SpincastFrontController.this.logger.error("Format not managed here!: " +
+                                                                  context.request().getContentTypeBestMatch());
+                    }
+                    context.response().sendPlainText(getNotFoundPlainTextContent(message));
+                }
             }
         };
         return handler;
+    }
+
+    protected String getNotFoundHtmlContent(String message) {
+        return "<pre>" + message + "</pre>";
+    }
+
+    protected String getNotFoundJsonContent(String message) {
+        IJsonObject jsonObj = getJsonManager().create();
+        jsonObj.put("error", message);
+        return jsonObj.toJsonString();
+    }
+
+    protected String getNotFoundXmlContent(String message) {
+        IJsonObject jsonObj = getJsonManager().create();
+        jsonObj.put("error", message);
+        return getXmlManager().toXml(jsonObj);
+    }
+
+    protected String getNotFoundPlainTextContent(String message) {
+        return message;
     }
 
     /**
@@ -682,20 +741,28 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         return "UTF-8";
     }
 
-    protected String getInternalErrorJsonContent(String defaultContent) {
-        return defaultContent;
+    protected String getInternalErrorJsonContent(String errorMessage) {
+
+        IJsonObject jsonObject = getJsonManager().create();
+        jsonObject.put("error", errorMessage);
+
+        return jsonObject.toJsonString();
     }
 
-    protected String getInternalErrorXmlContent(String defaultContent) {
-        return defaultContent;
+    protected String getInternalErrorXmlContent(String errorMessage) {
+
+        IJsonObject jsonObject = getJsonManager().create();
+        jsonObject.put("error", errorMessage);
+
+        return getXmlManager().toXml(jsonObject);
     }
 
-    protected String getInternalErrorHtmlContent(String defaultContent) {
-        return "<pre>" + defaultContent + "</pre>";
+    protected String getInternalErrorHtmlContent(String errorMessage) {
+        return "<pre>" + errorMessage + "</pre>";
     }
 
-    protected String getInternalErrorTextContent(String defaultContent) {
-        return defaultContent;
+    protected String getInternalErrorTextContent(String errorMessage) {
+        return errorMessage;
     }
 
     protected ContentTypeDefaults getResponseContentTypeToUse(Object exchange) {

@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import org.junit.Test;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
@@ -17,7 +17,7 @@ import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceMo
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class DefaultPluginConfigTest extends DefaultIntegrationTestingBase {
+public class DefaultPluginConfigTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected String appPropertiesPath;
 
@@ -33,7 +33,7 @@ public class DefaultPluginConfigTest extends DefaultIntegrationTestingBase {
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule(getMainArgsToUse()) {
+        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
 
             @Override
             protected void bindConfigPlugin() {

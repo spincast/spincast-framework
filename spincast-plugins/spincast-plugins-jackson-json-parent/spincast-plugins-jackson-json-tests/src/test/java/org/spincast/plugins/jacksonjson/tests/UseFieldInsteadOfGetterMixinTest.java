@@ -5,18 +5,20 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.spincast.core.json.IJsonManager;
-import org.spincast.defaults.tests.DefaultTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.jacksonjson.IJsonMixinInfo;
 import org.spincast.plugins.jacksonjson.JsonMixinInfo;
+import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-public class UseFieldInsteadOfGetterMixinTest extends DefaultTestingBase {
+public class UseFieldInsteadOfGetterMixinTest extends SpincastTestBase {
 
     @Inject
     IJsonManager jsonManager;
@@ -45,8 +47,12 @@ public class UseFieldInsteadOfGetterMixinTest extends DefaultTestingBase {
     }
 
     @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(getTestingModule());
+    }
+
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

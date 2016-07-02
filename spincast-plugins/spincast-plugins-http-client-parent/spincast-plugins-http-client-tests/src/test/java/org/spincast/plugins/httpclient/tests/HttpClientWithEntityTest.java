@@ -17,7 +17,7 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
@@ -30,7 +30,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public class HttpClientWithEntityTest extends DefaultIntegrationTestingBase {
+public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IJsonManager jsonManager;

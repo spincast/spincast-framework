@@ -14,6 +14,7 @@ import javax.net.ssl.SSLContext;
 
 import org.spincast.core.cookies.ICookie;
 import org.spincast.core.cookies.ICookieFactory;
+import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.httpclient.IHttpRequestBuilder;
 import org.spincast.plugins.httpclient.IHttpResponse;
@@ -350,6 +351,26 @@ public abstract class SpincastHttpRequestBuilderBase<T extends IHttpRequestBuild
             this.headers = new HashMap<String, List<String>>();
         }
         return this.headers;
+    }
+
+    @Override
+    public T addJsonAcceptHeader() {
+        return addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.JSON.getMainVariation());
+    }
+
+    @Override
+    public T addXMLAcceptHeader() {
+        return addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.XML.getMainVariation());
+    }
+
+    @Override
+    public T addHTMLAcceptHeader() {
+        return addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.HTML.getMainVariation());
+    }
+
+    @Override
+    public T addPlainTextAcceptHeader() {
+        return addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.TEXT.getMainVariation());
     }
 
     @Override

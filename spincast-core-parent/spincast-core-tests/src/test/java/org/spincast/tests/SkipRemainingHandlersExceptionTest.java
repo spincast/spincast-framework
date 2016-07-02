@@ -7,11 +7,11 @@ import org.spincast.core.exceptions.SkipRemainingHandlersException;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class SkipRemainingHandlersExceptionTest extends DefaultIntegrationTestingBase {
+public class SkipRemainingHandlersExceptionTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Test
     public void skipRemainingHandlersExceptionInMainHandler() throws Exception {

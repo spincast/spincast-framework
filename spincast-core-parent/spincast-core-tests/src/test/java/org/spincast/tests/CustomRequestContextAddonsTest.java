@@ -15,10 +15,10 @@ import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastGuiceModuleBasedIntegrationTestBase;
+import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
 import org.spincast.tests.CustomRequestContextAddonsTest.ITestRequestContext;
 import org.spincast.tests.varia.IRequestContextAddon;
 import org.spincast.tests.varia.RequestContextAddon;
@@ -30,7 +30,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class CustomRequestContextAddonsTest extends
-                                            SpincastGuiceModuleBasedIntegrationTestBase<ITestRequestContext, IDefaultWebsocketContext> {
+                                            SpincastNoAppIntegrationTestBase<ITestRequestContext, IDefaultWebsocketContext> {
 
     public static class Singleton {
     }
@@ -63,7 +63,7 @@ public class CustomRequestContextAddonsTest extends
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {
@@ -90,7 +90,6 @@ public class CustomRequestContextAddonsTest extends
             protected Class<? extends IRequestContext<?>> getRequestContextImplementationClass() {
                 return TestRequestContext.class;
             }
-
         };
     }
 

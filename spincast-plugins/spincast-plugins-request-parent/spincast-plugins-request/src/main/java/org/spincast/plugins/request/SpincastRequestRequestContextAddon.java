@@ -110,8 +110,23 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public boolean isJsonRequest() {
+    public boolean isJsonShouldBeReturn() {
         return ContentTypeDefaults.JSON == getContentTypeBestMatch();
+    }
+
+    @Override
+    public boolean isHTMLShouldBeReturn() {
+        return ContentTypeDefaults.HTML == getContentTypeBestMatch();
+    }
+
+    @Override
+    public boolean isXMLShouldBeReturn() {
+        return ContentTypeDefaults.XML == getContentTypeBestMatch();
+    }
+
+    @Override
+    public boolean isPlainTextShouldBeReturn() {
+        return ContentTypeDefaults.TEXT == getContentTypeBestMatch();
     }
 
     @Override

@@ -10,7 +10,7 @@ import javax.net.ssl.SSLHandshakeException;
 import org.junit.Test;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
 import org.spincast.testing.core.SpincastTestConfig;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -19,7 +19,7 @@ import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 
 import com.google.inject.Module;
 
-public class SSLTest extends DefaultWebsocketTestBase {
+public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     /**
      * Custom Test config to start the server on HTTPS.
@@ -64,7 +64,7 @@ public class SSLTest extends DefaultWebsocketTestBase {
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigClass() {

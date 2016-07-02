@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.routing.IHandler;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -19,13 +19,13 @@ import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 
-public class MainArgsTest extends DefaultIntegrationTestingBase {
+public class MainArgsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected String[] args = new String[]{"one", "two"};
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule(this.args);
+        return new SpincastDefaultTestingModule(this.args);
     }
 
     @Inject

@@ -13,8 +13,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -23,7 +23,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Module;
 
-public class HttpsTestAbsoluteKeystorePath extends DefaultIntegrationTestingBase {
+public class HttpsTestAbsoluteKeystorePath extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected final String KEYSTORE_CLASSPATH = "self-signed-certificate.jks";
 
@@ -95,7 +95,7 @@ public class HttpsTestAbsoluteKeystorePath extends DefaultIntegrationTestingBase
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigClass() {

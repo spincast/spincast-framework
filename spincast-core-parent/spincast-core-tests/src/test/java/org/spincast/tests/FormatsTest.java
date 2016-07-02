@@ -19,14 +19,14 @@ import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class FormatsTest extends DefaultIntegrationTestingBase {
+public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IJsonObjectFactory jsonObjectFactory;

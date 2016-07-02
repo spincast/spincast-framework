@@ -16,10 +16,10 @@ import org.spincast.core.routing.IRouteHandlerMatch;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 
-public class RoutingFiltersTest extends DefaultIntegrationTestingBase {
+public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected String flag = "";
     protected IHandler<IDefaultRequestContext> mainHandler = new IHandler<IDefaultRequestContext>() {

@@ -15,7 +15,7 @@ import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 
-public class MultipleEndpointsTest extends DefaultWebsocketTestBase {
+public class MultipleEndpointsTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     @Test
     public void onlyOneControllerCanManageAGivenEndpoint() throws Exception {

@@ -12,7 +12,7 @@ import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.xnio.http.UpgradeFailedException;
 
-public class HttpProtectedTest extends DefaultWebsocketTestBase {
+public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     @Override
     public void beforeClass() {

@@ -5,14 +5,22 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.spincast.core.json.IJsonManager;
-import org.spincast.defaults.tests.DefaultTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.testing.core.SpincastTestBase;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
-public class NoMixinTest extends DefaultTestingBase {
+public class NoMixinTest extends SpincastTestBase {
 
     @Inject
     IJsonManager jsonManager;
+
+    @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(new SpincastDefaultTestingModule());
+    }
 
     protected IJsonManager getJsonManager() {
         return this.jsonManager;

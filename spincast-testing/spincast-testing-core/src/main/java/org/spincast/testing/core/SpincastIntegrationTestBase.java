@@ -2,7 +2,6 @@ package org.spincast.testing.core;
 
 import java.lang.reflect.Type;
 
-import org.junit.Before;
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.IRouter;
@@ -26,22 +25,25 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 
 /**
- * Base class for Spincast integration tests. 
+ * Base class for tests that need the HTTP/WebSocket server
+ * to be started.
  * 
  * <p>
  * This requires a "IServer" to be bound in the Guice 
- * context : it will be stopped after a test class is ran.
+ * context : it will automatically be stopped after the
+ * test class is ran.
  * </p>
- * 
- * It doesn't start the server automatically because most
- * integration tests will have the server started an application 
- * (a <code>main(...)</code> method).
- * 
+ * <p>
+ * Note that this class doesn't start the server by itself because 
+ * this lets the opportunity to test an application by using its true
+ * bootstraping process, which usually starts a server itself!
+ * </p>
+ * <p>
  * All client data (such as cookies) are cleared before each test.
- * 
+ * </p>
  */
 public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
-                                                 extends SpincastGuiceBasedTestBase {
+                                                 extends SpincastTestBase {
 
     @Inject
     private IHttpClient httpClient;
@@ -55,7 +57,12 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
     @Inject
     private ICookieFactory cookieFactory;
 
-    protected Module getTestOverridingModule(Type requestContextType, Type websocketContextType) {
+    /**
+     * We make sure the Spincast HTTP Client with WebSocket
+     * support is bound since this class provides methods that
+     * use it.
+     */
+    protected Module getDefaultOverridingModule(Type requestContextType, Type websocketContextType) {
         return new SpincastHttpClientWithWebsocketPluginGuiceModule(requestContextType, websocketContextType);
     }
 
@@ -64,11 +71,6 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
         super.afterClass();
 
         stopServer();
-    }
-
-    @Before
-    public void beforeTest() {
-        // nothing for now here  
     }
 
     protected void stopServer() {

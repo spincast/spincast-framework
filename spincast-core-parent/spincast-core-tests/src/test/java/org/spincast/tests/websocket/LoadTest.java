@@ -28,7 +28,7 @@ import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 
 import com.google.common.collect.Sets;
 
-public class LoadTest extends DefaultWebsocketTestBase {
+public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     protected final int nbrWebsocketControllers = 3;
     protected final int nbrEndpointByController = 3;

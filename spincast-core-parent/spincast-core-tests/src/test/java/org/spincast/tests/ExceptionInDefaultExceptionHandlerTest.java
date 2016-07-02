@@ -14,12 +14,14 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.exchange.IRequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.guice.SpincastRequestScope;
+import org.spincast.core.json.IJsonManager;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.core.xml.IXmlManager;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -27,7 +29,7 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.Module;
 
-public class ExceptionInDefaultExceptionHandlerTest extends DefaultIntegrationTestingBase {
+public class ExceptionInDefaultExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     public static class CustomFrontController extends SpincastFrontController<IDefaultRequestContext, IDefaultWebsocketContext> {
 
@@ -38,14 +40,18 @@ public class ExceptionInDefaultExceptionHandlerTest extends DefaultIntegrationTe
                                      IServer server,
                                      IRequestContextFactory<IDefaultRequestContext> requestCreationFactory,
                                      SpincastRequestScope spincastRequestScope,
-                                     @RequestContextType Type requestContextType) {
+                                     @RequestContextType Type requestContextType,
+                                     IJsonManager jsonManager,
+                                     IXmlManager xmlManager) {
             super(router,
                   spincastConfig,
                   spincastDictionary,
                   server,
                   requestCreationFactory,
                   spincastRequestScope,
-                  requestContextType);
+                  requestContextType,
+                  jsonManager,
+                  xmlManager);
         }
 
         @Override
@@ -56,7 +62,7 @@ public class ExceptionInDefaultExceptionHandlerTest extends DefaultIntegrationTe
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

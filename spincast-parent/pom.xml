@@ -2,57 +2,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.spincast</groupId>
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-parent-pom</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
     <artifactId>spincast-parent</artifactId>
     <version>0.9.22-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>The parent POM for Spincast artifacts.</description>
+    <description>The parent POM for Spincast framework's artifacts.</description>
     <url>https://www.spincast.org</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <guice.version>4.0</guice.version>
         <slf4j.version>1.7.13</slf4j.version>
         <jsr305.version>3.0.1</jsr305.version> 
     </properties>
     
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    
-    <developers>
-        <developer>
-            <name>Julien Lamarre</name>
-            <email>julien@spincast.org</email>
-            <organization>Spincast</organization>
-            <organizationUrl>https://www.spincast.org</organizationUrl>
-        </developer>
-    </developers>
-    
     <scm>
         <connection>scm:git:git@github.com:spincast</connection>
         <developerConnection>scm:git:git@github.com:spincast</developerConnection>
         <url>git@github.com:spincast</url>
-      <tag>HEAD</tag>
     </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
     
     <dependencyManagement>
         <dependencies>
@@ -115,168 +89,5 @@
         
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-            
-                <!--=================================== 
-                Java 7 by default.
-                ====================================-->
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-                
-                <!--=================================== 
-                This adds the artifact version to the jar Manifest 
-                so it can be read using:
-                "getClass().getPackage().getImplementationVersion()".
-                ====================================-->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <configuration>
-                        <archive>                   
-                            <manifest>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-                
-            </plugins>
-        </pluginManagement>
-        
-        <plugins>
-        
-            <!--=================================== 
-            Deploy to Maven Central staging
-            ====================================-->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-        
-             <!--=================================== 
-             Release plugin
-             ====================================-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>@{project.version}</tagNameFormat>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <releaseProfiles>release</releaseProfiles>
-                    <goals>deploy</goals>
-                </configuration>
-            </plugin>  
-
-        </plugins>
-        
-        
-    </build>
-    
-    <profiles>
-    
-         <!--=================================== 
-         Disable doclint on Java 8.
-         ====================================-->
-        <profile>
-            <id>doclint-java8-disable</id>
-            <activation>
-                <jdk>[1.8,)</jdk>
-            </activation>
-            <properties>
-                <javadoc.opts>-Xdoclint:none</javadoc.opts>
-            </properties>
-        </profile>
-        
-         <!--=================================== 
-         Release profile.
-         Generates sources, Javadoc and signs the
-         artifacts.
-         ====================================-->
-        <profile> 
-            <id>release</id>
-            <build> 
-                <plugins>  
-                
-                    <!--===================================
-                    Generate source bundles, in a way this
-                    error is prevented : 
-                    @see http://stackoverflow.com/a/10794985/843699 
-                    ====================================-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.4</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    
-                    <!--=================================== 
-                    Generate Javadoc
-                    ====================================-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.3</version>
-                        <configuration>
-                            <!-- See the previous "doclint-java8-disable" profile -->
-                            <additionalparam>${javadoc.opts}</additionalparam>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    
-                     <!--=================================== 
-                     Sign the artifacts
-                     ====================================-->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>  
-                     
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
     
 </project>

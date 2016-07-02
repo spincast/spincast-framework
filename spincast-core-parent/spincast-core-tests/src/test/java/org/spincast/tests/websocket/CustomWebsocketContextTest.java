@@ -9,7 +9,7 @@ import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.core.websocket.IWebsocketPeerManager;
 import org.spincast.core.websocket.WebsocketContextBase;
 import org.spincast.core.websocket.WebsocketContextBaseDeps;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.WebsocketClientTest;
@@ -20,7 +20,7 @@ import com.google.inject.Module;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class CustomWebsocketContextTest extends WebsocketTestBase<IDefaultRequestContext, IAppWebsocketContext> {
+public class CustomWebsocketContextTest extends SpincastWebsocketNoAppIntegrationTestBase<IDefaultRequestContext, IAppWebsocketContext> {
 
     public static interface IAppWebsocketContext extends IWebsocketContext<IAppWebsocketContext> {
 
@@ -49,7 +49,7 @@ public class CustomWebsocketContextTest extends WebsocketTestBase<IDefaultReques
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected Class<? extends IWebsocketContext<?>> getWebsocketContextImplementationClass() {

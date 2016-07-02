@@ -44,11 +44,11 @@
         </dependency>
 
         <!--=================================== 
-        Spincast Testing utilities
+        Spincast Junit Runner
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-testing-utils</artifactId>
+            <artifactId>spincast-testing-junit-runner</artifactId>
             <version>${project.version}</version>
         </dependency>
 

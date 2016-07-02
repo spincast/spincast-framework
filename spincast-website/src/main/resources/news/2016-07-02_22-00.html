@@ -1,0 +1,27 @@
+<!-- META_START
+id=8
+dateUTC=2016-07-02 22:00
+title=Spincast testing utilities
+META_END -->
+
+<p>
+    There is a new section in the documentation about <a href="{{appUrlPrefix}}/documentation#testing">testing your application 
+    using Spincast</a>. 
+</p>
+<p>
+    Spincast testing is first and foremost about <em>using a Guice context to run the tests</em>. We developed a 
+    <a href="{{appUrlPrefix}}/documentation#testing_runner">custom JUnit runner</a> to make this
+    process very easy. This allows any dependency you need to be injected into your test classes.
+</p>
+<p>
+    Even cooler (in our opinion!), have a look the <a href="{{appUrlPrefix}}/documentation#testing_app_example">Integration test example</a>
+    to see how Spincast testing utilities can help you run tests <em>on your actual application</em>. 
+    No mocks, no simulation. This approach leads to very trustworthy tests since they are run on your real application, 
+    and not on a version where many components have been mocked.
+</p>
+
+
+
+
+
+

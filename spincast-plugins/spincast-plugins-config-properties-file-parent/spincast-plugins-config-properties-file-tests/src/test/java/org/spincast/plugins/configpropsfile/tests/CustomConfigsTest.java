@@ -14,8 +14,8 @@ import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.configpropsfile.IFreeKeyConfig;
 import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
@@ -27,7 +27,7 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class CustomConfigsTest extends DefaultIntegrationTestingBase {
+public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IAppConfig appConfig;
@@ -145,7 +145,7 @@ public class CustomConfigsTest extends DefaultIntegrationTestingBase {
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule(getMainArgsToUse()) {
+        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
 
             @Override
             protected void bindConfigPlugin() {

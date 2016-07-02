@@ -13,13 +13,13 @@ import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class PebbleTest extends DefaultIntegrationTestingBase {
+public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected ITemplatingEngine templatingEngine;

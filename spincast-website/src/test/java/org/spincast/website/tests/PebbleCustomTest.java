@@ -8,7 +8,7 @@ import org.spincast.core.utils.SpincastStatics;
 
 import com.google.inject.Inject;
 
-public class PebbleCustomTest extends AppIntegrationTestBase {
+public class PebbleCustomTest extends WebsiteIntegrationTestBase {
 
     @Inject
     protected ITemplatingEngine templatingEngine;

@@ -9,7 +9,7 @@ import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 
-public class StoppingServerTest extends DefaultWebsocketTestBase {
+public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     //==========================================
     // By default we disable the "closed" events sent

@@ -7,14 +7,14 @@ import org.junit.Test;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.xml.IXmlManager;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.jacksonxml.ISpincastXmlManagerConfig;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class XmlPrettyPrintConfigTest extends DefaultIntegrationTestingBase {
+public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IJsonManager jsonManager;
@@ -24,7 +24,7 @@ public class XmlPrettyPrintConfigTest extends DefaultIntegrationTestingBase {
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule(getMainArgsToUse()) {
+        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
 
             @Override
             protected void configure() {

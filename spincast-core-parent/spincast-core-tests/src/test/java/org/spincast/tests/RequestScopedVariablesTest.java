@@ -15,14 +15,14 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
-public class RequestScopedVariablesTest extends DefaultIntegrationTestingBase {
+public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Test
     public void variables() throws Exception {

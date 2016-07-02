@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
@@ -20,7 +20,7 @@ import com.google.common.net.HttpHeaders;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class ValidCustomFilterPositionTest extends DefaultIntegrationTestingBase {
+public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
 
@@ -32,7 +32,7 @@ public class ValidCustomFilterPositionTest extends DefaultIntegrationTestingBase
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

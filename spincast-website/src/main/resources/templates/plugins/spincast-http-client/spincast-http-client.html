@@ -54,7 +54,7 @@ Spincast HTTP Client plugin
                 <li class="openable"><a href="#installation">Installation</a></li>
                 <li class="openable"><a href="#usage">Usage</a></li>
                 <li class="openable"><a href="#http_client"><code>IHttpClient</code></a></li>
-                <li class="openable"><a href="#request_builder_base"><code>IRequestBuilderBase</code></a></li>
+                <li class="openable"><a href="#request_builder_base"><code>IHttpRequestBuilder</code></a></li>
                 <li class="openable"><a href="#entity_sender_builder_base"><code>IEntitySenderRequest-<br/>BuilderBase</code></a></li>
                 <li class="openable"><a href="#http_response"><code>IHttpResponse</code></a></li>
             </ul>
@@ -384,10 +384,10 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
             <section id="request_builder_base">
                 <h3>
                     <a class="anchor" href="#request_builder_base" title="permanent link"></a>
-                    <code>IRequestBuilderBase</code>'s methods
+                    <code>IHttpRequestBuilder</code>'s methods
                 </h3>
                 <p>
-                    The <code>IRequestBuilderBase</code> is the interface that <em>all</em> request builders
+                    The <code>IHttpRequestBuilder</code> is the interface that <em>all</em> request builders
                     implements: 
                     <code>IGetRequestBuilder</code>, <code>IPostRequestBuilder</code>, etc.
                 </p>
@@ -397,11 +397,10 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                         <ul class="apiList">
           
           
-                        
 <li>
     <code class="apiItem">T <span>addHeaderValue</span>(String key, String value)</code>
     <div class="well">
-        Adds a value to the specified header. Existing values will
+         Adds a value to the specified header. Existing values will
  be kept.
 
     </div>
@@ -410,7 +409,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>addHeaderValues</span>(String key, List&lt;String&gt; values)</code>
     <div class="well">
-        Adds some values to the specified header. Existing values will
+         Adds some values to the specified header. Existing values will
  be kept.
 
     </div>
@@ -419,7 +418,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>setHeaders</span>(Map&lt;String, List&lt;String&gt;&gt; headers)</code>
     <div class="well">
-        Sets the headers. Existing headers will be overwritten.
+         Sets the headers. Existing headers will be overwritten.
 
     </div>
 </li>
@@ -427,8 +426,40 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>setHeaderValues</span>(String key, List&lt;String&gt; values)</code>
     <div class="well">
-        Sets the values of the specified header. Existing values
+         Sets the values of the specified header. Existing values
  of this header will be overwritten.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addJsonAcceptHeader</span>()</code>
+    <div class="well">
+         Adds an <code>Accept</code> head for <code>Json</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addXMLAcceptHeader</span>()</code>
+    <div class="well">
+         Adds an <code>Accept</code> head for <code>XML</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addHTMLAcceptHeader</span>()</code>
+    <div class="well">
+         Adds an <code>Accept</code> head for <code>HTML</code>.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">T <span>addPlainTextAcceptHeader</span>()</code>
+    <div class="well">
+         Adds an <code>Accept</code> head for <code>plain text</code>.
 
     </div>
 </li>
@@ -436,7 +467,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>addCookie</span>(String name, String value)</code>
     <div class="well">
-        Adds a cookie.
+         Adds a cookie.
 
     </div>
 </li>
@@ -444,7 +475,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>addCookie</span>(ICookie cookie)</code>
     <div class="well">
-        Adds a cookie.
+         Adds a cookie.
 
     </div>
 </li>
@@ -452,7 +483,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>addCookies</span>(Collection&lt;ICookie&gt; cookies)</code>
     <div class="well">
-        Adds some cookies.
+         Adds some cookies.
 
     </div>
 </li>
@@ -460,7 +491,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>setRequestConfig</span>(RequestConfig requestConfig)</code>
     <div class="well">
-        Sets a custom <code>RequestConfig</code> to use. If not provided,
+         Sets a custom <code>RequestConfig</code> to use. If not provided,
  a default one will be used.
 
     </div>
@@ -469,7 +500,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>setHttpClientBuilder</span>(HttpClientBuilder httpClientBuilder)</code>
     <div class="well">
-        Sets a specific <code>HttpClientBuilder</code> to use. If not provided,
+         Sets a specific <code>HttpClientBuilder</code> to use. If not provided,
  a default one will be used.
 
     </div>
@@ -478,10 +509,10 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>disableSslCertificateErrors</span>()</code>
     <div class="well">
-        Disables <code>SSL</code> certificates errors (such as self-signed
+         Disables <code>SSL</code> certificates errors (such as self-signed
  certificate errors).
  <code>SSL</code> certificate errors are not disabled by default.
-<br />Be sure you know what you are doing if you disable this! It may lead to
+ Be sure you know what you are doing if you disable this! It may lead to
  some security concerns.
 
     </div>
@@ -490,7 +521,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">T <span>setHttpAuthCredentials</span>(String username, String password)</code>
     <div class="well">
-        Set HTTP authentication credentials.
+         Set HTTP authentication credentials.
 
     </div>
 </li>
@@ -498,7 +529,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 <li>
     <code class="apiItem">IHttpResponse <span>send</span>()</code>
     <div class="well">
-        Sends the request and gets the response.
+         Sends the request and gets the HTTP response.
 
     </div>
 </li>

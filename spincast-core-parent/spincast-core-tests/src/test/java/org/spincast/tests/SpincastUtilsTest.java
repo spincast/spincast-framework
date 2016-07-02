@@ -10,16 +10,24 @@ import java.io.File;
 
 import org.junit.Test;
 import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.defaults.tests.DefaultTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.testing.core.SpincastTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
-public class SpincastUtilsTest extends DefaultTestingBase {
+public class SpincastUtilsTest extends SpincastTestBase {
 
     @Inject
     private ISpincastUtils spincastUtils;
+
+    @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(new SpincastDefaultTestingModule());
+    }
 
     protected ISpincastUtils getSpincastUtils() {
         return this.spincastUtils;

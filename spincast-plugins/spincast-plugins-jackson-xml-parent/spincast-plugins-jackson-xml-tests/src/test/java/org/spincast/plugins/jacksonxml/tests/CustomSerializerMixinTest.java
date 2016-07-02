@@ -7,21 +7,23 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.spincast.core.xml.IXmlManager;
-import org.spincast.defaults.tests.DefaultTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.jacksonxml.IXmlMixinInfo;
 import org.spincast.plugins.jacksonxml.XmlMixinInfo;
+import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-public class CustomSerializerMixinTest extends DefaultTestingBase {
+public class CustomSerializerMixinTest extends SpincastTestBase {
 
     @Inject
     IXmlManager xmlManager;
@@ -57,8 +59,12 @@ public class CustomSerializerMixinTest extends DefaultTestingBase {
     }
 
     @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(getTestingModule());
+    }
+
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

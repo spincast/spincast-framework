@@ -21,24 +21,25 @@ import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
-import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
+import org.spincast.testing.core.SpincastTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 
-public class JsonObjectsTest extends SpincastGuiceModuleBasedTestBase {
+public class JsonObjectsTest extends SpincastTestBase {
 
     @Inject
     protected IJsonManager jsonManager;
 
     @Override
-    public Module getTestingModule() {
-        return new DefaultTestingModule();
+    protected Injector createInjector() {
+        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
     @Test
@@ -159,21 +160,21 @@ public class JsonObjectsTest extends SpincastGuiceModuleBasedTestBase {
     @Test
     public void fromJsonString() throws Exception {
 
-        String str = "{\"innerObj\":{\"someBoolean\":true,\"someInt\":123},\"anotherBoolean\":true,\"anotherInt\":44444}";
+        String str = "{\"innerObj\":{\"someBoolean\":true,\"someInt\":123}," +
+                     "\"anotherBoolean\":true,\"anotherInt\":44444}";
 
-        IJsonObject jsonObj = this.jsonManager.fromJsonString(str, IJsonObject.class);
+        IJsonObject jsonObj = this.jsonManager.create(str);
         assertNotNull(jsonObj);
         assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
-        assertEquals((Integer)44444, jsonObj.getInteger("anotherInt"));
+        assertEquals(new Integer(44444), jsonObj.getInteger("anotherInt"));
 
         IJsonObject jsonObj2 = jsonObj.getJsonObject("innerObj");
         assertNotNull(jsonObj2);
         assertEquals(true, jsonObj2.getBoolean("someBoolean"));
-        assertEquals((Integer)123, jsonObj2.getInteger("someInt"));
+        assertEquals(new Integer(123), jsonObj2.getInteger("someInt"));
 
         String jsonString = jsonObj.toJsonString();
         assertEquals(str.length(), jsonString.length());
-
     }
 
     @Test

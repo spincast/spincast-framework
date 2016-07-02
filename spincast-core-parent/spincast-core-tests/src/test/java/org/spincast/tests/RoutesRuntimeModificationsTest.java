@@ -10,11 +10,11 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRoute;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class RoutesRuntimeModificationsTest extends DefaultIntegrationTestingBase {
+public class RoutesRuntimeModificationsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Test
     public void idsAreUnique() throws Exception {

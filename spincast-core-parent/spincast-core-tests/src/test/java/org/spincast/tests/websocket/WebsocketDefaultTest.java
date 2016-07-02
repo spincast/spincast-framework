@@ -24,7 +24,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
-public class WebsocketDefaultTest extends DefaultWebsocketTestBase {
+public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     @Test
     public void handshakeWithHeadersAndCookies() throws Exception {

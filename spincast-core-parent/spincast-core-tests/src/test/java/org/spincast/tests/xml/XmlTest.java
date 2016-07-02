@@ -16,12 +16,12 @@ import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.xml.IXmlManager;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
-public class XmlTest extends DefaultIntegrationTestingBase {
+public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IJsonManager jsonManager;

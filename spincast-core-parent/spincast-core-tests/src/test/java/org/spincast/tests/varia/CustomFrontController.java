@@ -10,9 +10,11 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.exchange.IRequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.guice.SpincastRequestScope;
+import org.spincast.core.json.IJsonManager;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.server.IServer;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.xml.IXmlManager;
 
 import com.google.inject.Inject;
 
@@ -26,14 +28,18 @@ public class CustomFrontController extends SpincastFrontController<IDefaultReque
                                  IServer server,
                                  IRequestContextFactory<IDefaultRequestContext> requestCreationFactory,
                                  SpincastRequestScope spincastRequestScope,
-                                 @RequestContextType Type requestContextType) {
+                                 @RequestContextType Type requestContextType,
+                                 IJsonManager jsonManager,
+                                 IXmlManager xmlManager) {
         super(router,
               spincastConfig,
               spincastDictionary,
               server,
               requestCreationFactory,
               spincastRequestScope,
-              requestContextType);
+              requestContextType,
+              jsonManager,
+              xmlManager);
     }
 
     @Override

@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class FileUploadTest extends DefaultIntegrationTestingBase {
+public class FileUploadTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Test
     public void oneFile() throws Exception {

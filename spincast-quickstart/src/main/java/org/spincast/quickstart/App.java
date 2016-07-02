@@ -62,8 +62,8 @@ public class App {
             guice = Guice.createInjector(getAppModules(args));
         }
 
-        App website = guice.getInstance(App.class);
-        website.start();
+        App app = guice.getInstance(App.class);
+        app.start();
 
         return guice;
     }
@@ -183,6 +183,19 @@ public class App {
                 // Call a method we added on our
                 // custom request context type...
                 context.customGreetingMethod();
+            }
+        });
+
+        //==========================================
+        // A POST route. 
+        // This route in used in Spincast documentation
+        // to demonstrate how to write a test.
+        //==========================================
+        getRouter().POST("/sum").save(new IAppHandler() {
+
+            @Override
+            public void handle(IAppRequestContext context) {
+                getAppController().sumRoute(context);
             }
         });
 

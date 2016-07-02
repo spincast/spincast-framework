@@ -7,7 +7,7 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class PluginsTest extends AppIntegrationTestBase {
+public class PluginsTest extends WebsiteIntegrationTestBase {
 
     @Test
     public void pluginValid() throws Exception {

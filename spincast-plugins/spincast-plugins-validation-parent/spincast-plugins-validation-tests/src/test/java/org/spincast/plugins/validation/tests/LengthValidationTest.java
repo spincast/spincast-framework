@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.validation.IValidationError;
 import org.spincast.plugins.validation.IValidator;
 import org.spincast.plugins.validation.IValidatorFactory;
@@ -18,16 +18,18 @@ import org.spincast.plugins.validation.SpincastValidatorBaseDeps;
 import org.spincast.plugins.validation.tests.utils.IUser;
 import org.spincast.plugins.validation.tests.utils.User;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
-import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
+import org.spincast.testing.core.SpincastTestBase;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
-public class LengthValidationTest extends SpincastGuiceModuleBasedTestBase {
+public class LengthValidationTest extends SpincastTestBase {
 
     @Inject
     protected IValidatorFactory<IUser> userValidatorFactory;
@@ -65,8 +67,12 @@ public class LengthValidationTest extends SpincastGuiceModuleBasedTestBase {
     }
 
     @Override
+    protected Injector createInjector() {
+        return Guice.createInjector(getTestingModule());
+    }
+
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

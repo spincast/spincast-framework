@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -14,7 +14,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class MethodReferenceAsHandlersOrLambdasTest extends DefaultIntegrationTestingBase {
+public class MethodReferenceAsHandlersOrLambdasTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     public static class MyController {
 
@@ -25,7 +25,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends DefaultIntegrationTe
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

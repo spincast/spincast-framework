@@ -7,15 +7,15 @@ import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
 
 import com.google.inject.Module;
 
-public class RequestBodyMaxSizeTest extends DefaultIntegrationTestingBase {
+public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected static class TestingSpincastConfig2 extends SpincastTestConfig {
 
@@ -30,7 +30,7 @@ public class RequestBodyMaxSizeTest extends DefaultIntegrationTestingBase {
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected Class<? extends ISpincastConfig> getSpincastConfigClass() {

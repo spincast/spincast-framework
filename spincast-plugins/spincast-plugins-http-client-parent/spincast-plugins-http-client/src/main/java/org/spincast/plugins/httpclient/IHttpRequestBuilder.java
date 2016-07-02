@@ -37,6 +37,26 @@ public interface IHttpRequestBuilder<T extends IHttpRequestBuilder<?>> {
     public T setHeaderValues(String key, List<String> values);
 
     /**
+     * Adds an <code>Accept</code> head for <code>Json</code>.
+     */
+    public T addJsonAcceptHeader();
+
+    /**
+     * Adds an <code>Accept</code> head for <code>XML</code>.
+     */
+    public T addXMLAcceptHeader();
+
+    /**
+     * Adds an <code>Accept</code> head for <code>HTML</code>.
+     */
+    public T addHTMLAcceptHeader();
+
+    /**
+     * Adds an <code>Accept</code> head for <code>plain text</code>.
+     */
+    public T addPlainTextAcceptHeader();
+
+    /**
      * Adds a cookie.
      */
     public T addCookie(String name, String value);

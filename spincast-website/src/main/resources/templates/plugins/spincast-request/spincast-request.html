@@ -166,12 +166,13 @@ Spincast Request plugin
 		            <p>
 		                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
 		                <ul class="apiList">
-                        
-                        
+                     
+                     
+                     
 <li>
     <code class="apiItem">HttpMethod <span>getHttpMethod</span>()</code>
     <div class="well">
-        Gets the request's <code>HTTP method</code>.
+         Gets the request's <code>HTTP method</code>.
 
     </div>
 </li>
@@ -179,7 +180,7 @@ Spincast Request plugin
 <li>
     <code class="apiItem">ContentTypeDefaults <span>getContentTypeBestMatch</span>()</code>
     <div class="well">
-        Finds the best <code>Content-Type</code> to use for a response
+         Finds the best <code>Content-Type</code> to use for a response
  using the <code>"Accept"</code> header of the request. It will
  fallback to <code>ContentTypeDefaults.TEXT</code> if nothing more specific
  is found.
@@ -188,10 +189,41 @@ Spincast Request plugin
 </li>
 
 <li>
-    <code class="apiItem">boolean <span>isJsonRequest</span>()</code>
+    <code class="apiItem">boolean <span>isJsonShouldBeReturn</span>()</code>
     <div class="well">
-        Will return <code>true</code> if the request specifies
- that <code>Json</code> should be returned.
+         Will return <code>true</code> if the request specifies
+ that <code>Json</code> is the most appropriate format
+ to return.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isHTMLShouldBeReturn</span>()</code>
+    <div class="well">
+         Will return <code>true</code> if the request specifies
+ that <code>HTML</code> is the most appropriate format
+ to return.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isXMLShouldBeReturn</span>()</code>
+    <div class="well">
+         Will return <code>true</code> if the request specifies
+ that <code>XML</code> is the most appropriate format
+ to return.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">boolean <span>isPlainTextShouldBeReturn</span>()</code>
+    <div class="well">
+         Will return <code>true</code> if the request specifies
+ that <code>plain-text</code> is the most appropriate format
+ to return.
 
     </div>
 </li>
@@ -199,10 +231,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Locale <span>getLocaleBestMatch</span>()</code>
     <div class="well">
-        Find the best <code>Locale</code> to use for a response
+         Find the best <code>Locale</code> to use for a response
  using the <code>"Accept-Language"</code> header of
  the request.
-<br />Returns the default <code>Locale</code> (taken from the configurations)
+ Returns the default <code>Locale</code> (taken from the configurations)
  if nothing more specific is found.
 
     </div>
@@ -211,9 +243,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getHeaders</span>()</code>
     <div class="well">
-        Returns all headers of the current request. A single header can have multiple values.
-<br />The implementation is a <code>TreeMap</code> which is<i>case insensitive</i> for the keys.
-<br />The map is immutable.
+         Returns all headers of the current request. A single header can have multiple values.
+ The implementation is a <code>TreeMap</code> which is<i>case insensitive</i> for the keys.
+ The map is immutable.
 
     </div>
 </li>
@@ -221,10 +253,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">List&lt;String&gt; <span>getHeader</span>(String name)</code>
     <div class="well">
-        Returns the values of the specified header from the current request or
+         Returns the values of the specified header from the current request or
  an empty list if not found.
-<br />The <code>name</code> is <i>case insensitive</i>.
-<br />The list is immutable.
+ The <code>name</code> is <i>case insensitive</i>.
+ The list is immutable.
 
     </div>
 </li>
@@ -232,9 +264,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getHeaderFirst</span>(String name)</code>
     <div class="well">
-        The first value of the specified header from the current request.
-<br />The <code>name</code> is <i>case insensitive</i>.
-<br />Returns <code>null</code> if the header is not found.
+         The first value of the specified header from the current request.
+ The <code>name</code> is <i>case insensitive</i>.
+ Returns <code>null</code> if the header is not found.
 
     </div>
 </li>
@@ -242,7 +274,7 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getContentType</span>()</code>
     <div class="well">
-        The Content-Type of the request, if any.
+         The Content-Type of the request, if any.
 
         <div class="apiItemFooter">
             @return the <code>Content-Type</code> of the request or <code>null</code>
@@ -255,7 +287,7 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getFullUrl</span>()</code>
     <div class="well">
-        Returns the full URL, including the queryString.
+         Returns the full URL, including the queryString.
 
     </div>
 </li>
@@ -263,9 +295,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getOriginalFullUrl</span>()</code>
     <div class="well">
-        If the request has been forwarded, <code>getFullUrl()</code> is
+         If the request has been forwarded, <code>getFullUrl()</code> is
  going to return the new, forwarded, url.
-<br />This method will always return the <i>original</i> url.
+ This method will always return the <i>original</i> url.
 
     </div>
 </li>
@@ -273,7 +305,7 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getRequestPath</span>()</code>
     <div class="well">
-        The path of the request (no querystring).
+         The path of the request (no querystring).
 
     </div>
 </li>
@@ -281,8 +313,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, String&gt; <span>getPathParams</span>()</code>
     <div class="well">
-        The values parsed from the dynamic parameters of the route path.
-<br />The map is immutable.
+         The values parsed from the dynamic parameters of the route path.
+ The map is immutable.
 
     </div>
 </li>
@@ -290,8 +322,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getPathParam</span>(String name)</code>
     <div class="well">
-        A specific value parsed from a dynamic parameter of the route path.
-<br />The <code>name</code> is <i>case sensitive</i>, since you have easy control over it.
+         A specific value parsed from a dynamic parameter of the route path.
+ The <code>name</code> is <i>case sensitive</i>, since you have easy control over it.
 
     </div>
 </li>
@@ -299,8 +331,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getQueryString</span>()</code>
     <div class="well">
-        The queryString of the request, without the "?".
-<br />Returns an empty String if there is no querystring.
+         The queryString of the request, without the "?".
+ Returns an empty String if there is no querystring.
 
     </div>
 </li>
@@ -308,10 +340,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getQueryStringParams</span>()</code>
     <div class="well">
-        The parameters taken from the queryString of the request.
-<br />A queryString parameter may have multiple values.
-<br />Returns an empty list if there is no queryString.
-<br />The map is immutable.
+         The parameters taken from the queryString of the request.
+ A queryString parameter may have multiple values.
+ Returns an empty list if there is no queryString.
+ The map is immutable.
 
     </div>
 </li>
@@ -319,10 +351,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">List&lt;String&gt; <span>getQueryStringParam</span>(String name)</code>
     <div class="well">
-        A specific parameter taken from the queryString of the request.
-<br />A queryString parameter may have multiple values.
-<br />Returns an empty list if the parameter doesn't exist.
-<br />The list is immutable.
+         A specific parameter taken from the queryString of the request.
+ A queryString parameter may have multiple values.
+ Returns an empty list if the parameter doesn't exist.
+ The list is immutable.
 
     </div>
 </li>
@@ -330,9 +362,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getQueryStringParamFirst</span>(String name)</code>
     <div class="well">
-        The first (and often only) value of a specific parameter taken from the
+         The first (and often only) value of a specific parameter taken from the
  queryString of the request.
-<br />Returns <code>null</code> if the parameter doesn't exist.
+ Returns <code>null</code> if the parameter doesn't exist.
 
     </div>
 </li>
@@ -340,8 +372,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">InputStream <span>getBodyAsInputStream</span>()</code>
     <div class="well">
-        The raw InputStream of the request's body.
-<br />Note that what's read from the InputStream cannot be read again!
+         The raw InputStream of the request's body.
+ Note that what's read from the InputStream cannot be read again!
 
     </div>
 </li>
@@ -349,8 +381,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">byte[] <span>getBodyAsByteArray</span>()</code>
     <div class="well">
-        The bytes of the request's body.
-<br />Note that the bytes read cannot be read again!
+         The bytes of the request's body.
+ Note that the bytes read cannot be read again!
 
     </div>
 </li>
@@ -358,8 +390,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getBodyAsString</span>()</code>
     <div class="well">
-        The request's body as a String, using the <code>UTF-8</code> encoding.
-<br />Note that the characters read cannot be read again!
+         The request's body as a String, using the <code>UTF-8</code> encoding.
+ Note that the characters read cannot be read again!
 
     </div>
 </li>
@@ -367,8 +399,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getBodyAsString</span>(String encoding)</code>
     <div class="well">
-        The request's body as a String, using the specified encoding.
-<br />Note that the characters read cannot be read again!
+         The request's body as a String, using the specified encoding.
+ Note that the characters read cannot be read again!
 
     </div>
 </li>
@@ -376,9 +408,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">IJsonObject <span>getJsonBodyAsJsonObject</span>()</code>
     <div class="well">
-        The request's body deserialized to a <code>IJsonObject</code>. A valid <code>Json</code> body
+         The request's body deserialized to a <code>IJsonObject</code>. A valid <code>Json</code> body
  is expected.
-<br />Note that this can only be called once.
+ Note that this can only be called once.
 
     </div>
 </li>
@@ -386,9 +418,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, Object&gt; <span>getJsonBodyAsMap</span>()</code>
     <div class="well">
-        The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>Json</code> body
+         The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>Json</code> body
  is expected.
-<br />Note that this can only be called once.
+ Note that this can only be called once.
 
     </div>
 </li>
@@ -396,9 +428,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">&lt;T&gt; T <span>getJsonBody</span>(Class&lt;T&gt; clazz)</code>
     <div class="well">
-        The request's body deserialized to the specified <code>class</code>. A valid <code>Json</code> body
+         The request's body deserialized to the specified <code>class</code>. A valid <code>Json</code> body
  is expected.
-<br />Note that this can only be called once.
+ Note that this can only be called once.
 
     </div>
 </li>
@@ -406,9 +438,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">IJsonObject <span>getXmlBodyAsJsonObject</span>()</code>
     <div class="well">
-        The request's body deserialized to a <code>IJsonObject</code>. A valid <code>XML</code> body
+         The request's body deserialized to a <code>IJsonObject</code>. A valid <code>XML</code> body
  is expected.
-<br />Note that this can only be called once.
+ Note that this can only be called once.
 
     </div>
 </li>
@@ -416,9 +448,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, Object&gt; <span>getXmlBodyAsMap</span>()</code>
     <div class="well">
-        The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>XML</code> body
+         The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>XML</code> body
  is expected.
-<br />Note that this can only be called once.
+ Note that this can only be called once.
 
     </div>
 </li>
@@ -426,9 +458,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">&lt;T&gt; T <span>getXmlBody</span>(Class&lt;T&gt; clazz)</code>
     <div class="well">
-        The request's body deserialized to the specified <code>class</code>. A valid <code>XML</code> body
+         The request's body deserialized to the specified <code>class</code>. A valid <code>XML</code> body
  is expected.
-<br />Note that this can only be called once.
+ Note that this can only be called once.
 
     </div>
 </li>
@@ -436,10 +468,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getFormDatas</span>()</code>
     <div class="well">
-        The parameters submitted from a <code>FORM</code> via a <code>POST</code> method.
-<br />More than one value with the same <code>key</code> is possible.
-<br />The names are <i>case sensitive</i>.
-<br />The map is immutable.
+         The parameters submitted from a <code>FORM</code> via a <code>POST</code> method.
+ More than one value with the same <code>key</code> is possible.
+ The names are <i>case sensitive</i>.
+ The map is immutable.
 
     </div>
 </li>
@@ -447,10 +479,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">List&lt;String&gt; <span>getFormData</span>(String name)</code>
     <div class="well">
-        A specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
-<br />More than one value with the same <code>name</code> is possible.
-<br />The <code>name</code> is <i>case sensitive</i>.
-<br />The list is immutable.
+         A specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
+ More than one value with the same <code>name</code> is possible.
+ The <code>name</code> is <i>case sensitive</i>.
+ The list is immutable.
 
     </div>
 </li>
@@ -458,9 +490,9 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getFormDataFirst</span>(String name)</code>
     <div class="well">
-        The first (and often only) value of a specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
-<br />The <code>name</code> is <i>case sensitive</i>.
-<br />Returns <code>null</code> if the parameter doesn't exist.
+         The first (and often only) value of a specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
+ The <code>name</code> is <i>case sensitive</i>.
+ Returns <code>null</code> if the parameter doesn't exist.
 
     </div>
 </li>
@@ -468,10 +500,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">Map&lt;String, List&lt;File&gt;&gt; <span>getUploadedFiles</span>()</code>
     <div class="well">
-        The uploaded files, with their names as the keys.
-<br />More than one uploaded file with the same name is possible.
-<br />The map is immutable.
-<br />Returns an empty map if there are no uploadded file.
+         The uploaded files, with their names as the keys.
+ More than one uploaded file with the same name is possible.
+ The map is immutable.
+ Returns an empty map if there are no uploadded file.
 
     </div>
 </li>
@@ -479,10 +511,10 @@ Spincast Request plugin
 <li>
     <code class="apiItem">List&lt;File&gt; <span>getUploadedFiles</span>(String name)</code>
     <div class="well">
-        The uploaded files of the specified name.
-<br />More than one uploaded file with the same <code>name</code> is possible.
-<br />The list is immutable.
-<br />Returns an empty list if no uploaded files of this name exists.
+         The uploaded files of the specified name.
+ More than one uploaded file with the same <code>name</code> is possible.
+ The list is immutable.
+ Returns an empty list if no uploaded files of this name exists.
 
     </div>
 </li>
@@ -490,8 +522,8 @@ Spincast Request plugin
 <li>
     <code class="apiItem">File <span>getUploadedFileFirst</span>(String name)</code>
     <div class="well">
-        The first (and often only) uploaded file of the specified name.
-<br />Returns <code>null</code> if no uploaded file of this name exists.
+         The first (and often only) uploaded file of the specified name.
+ Returns <code>null</code> if no uploaded file of this name exists.
 
     </div>
 </li>

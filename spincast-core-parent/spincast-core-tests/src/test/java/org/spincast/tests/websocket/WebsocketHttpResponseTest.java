@@ -21,7 +21,7 @@ import org.spincast.tests.varia.DefaultWebsocketControllerTest;
  * Test HTTP responses from the server for Websocket upgrade
  * requests but without the upgrade to actually be made.
  */
-public class WebsocketHttpResponseTest extends DefaultWebsocketTestBase {
+public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     int[] nbr = new int[]{0};
 

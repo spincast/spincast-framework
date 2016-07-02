@@ -9,13 +9,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.spincast.core.config.ISpincastDictionary;
+import org.spincast.core.exceptions.NotFoundException;
+import org.spincast.core.exceptions.PublicException;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -24,13 +27,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 
-public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase {
+public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     private IJsonManager jsonManager;
 
     @Inject
     private IXmlManager xmlManager;
+
+    @Inject
+    private ISpincastDictionary spincastDictionary;
 
     protected IJsonManager getJsonManager() {
         return this.jsonManager;
@@ -40,8 +46,16 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
         return this.xmlManager;
     }
 
+    protected String getDefaultExceptionMessage() {
+        return this.spincastDictionary.exception_default_message();
+    }
+
+    protected String getDefaultNotFoundMessage() {
+        return this.spincastDictionary.route_notFound_default_message();
+    }
+
     @Test
-    public void notFound() throws Exception {
+    public void notFoundDefault() throws Exception {
 
         getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
 
@@ -53,6 +67,156 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
 
         IHttpResponse response = GET("/two").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        // Default content-type for a Not Found
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(getDefaultNotFoundMessage(), response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundPlainText() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        IHttpResponse response = GET("/two").addPlainTextAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(getDefaultNotFoundMessage(), response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundPlainTextCustomMessage() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                throw new NotFoundException("Custom message");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addPlainTextAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("Custom message", response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundJson() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        IHttpResponse response = GET("/two").addJsonAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("{\"error\":\"" + getDefaultNotFoundMessage() + "\"}", response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundJsonCustomMessage() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                throw new NotFoundException("Custom message");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addJsonAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("{\"error\":\"Custom message\"}", response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundXml() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        IHttpResponse response = GET("/two").addXMLAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<JsonObject><error>" + getDefaultNotFoundMessage() + "</error></JsonObject>",
+                     response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundXmlCustomMessage() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                throw new NotFoundException("Custom message");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addXMLAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<JsonObject><error>Custom message</error></JsonObject>", response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundHtml() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        IHttpResponse response = GET("/two").addHTMLAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<pre>" + getDefaultNotFoundMessage() + "</pre>",
+                     response.getContentAsString());
+    }
+
+    @Test
+    public void notFoundHtmlCustomMessage() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                throw new NotFoundException("Custom message");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addHTMLAcceptHeader().send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<pre>Custom message</pre>", response.getContentAsString());
     }
 
     @Test
@@ -63,7 +227,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                assertFalse(context.request().isJsonRequest());
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertTrue(context.request().isPlainTextShouldBeReturn());
 
                 throw new RuntimeException("Some exception");
             }
@@ -74,6 +241,57 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
 
         // Default content-type for an exception
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(getDefaultExceptionMessage(), response.getContentAsString());
+    }
+
+    @Test
+    public void serverErrorDefaultPublic() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertTrue(context.request().isPlainTextShouldBeReturn());
+
+                // Public message!
+                throw new PublicException("Some exception");
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+
+        // Default content-type for an exception
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("Some exception", response.getContentAsString());
+    }
+
+    @Test
+    public void serverErrorDedicatedMethod() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertTrue(context.request().isPlainTextShouldBeReturn());
+
+                throw new RuntimeException("Some exception");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addPlainTextAcceptHeader().send();
+        assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(getDefaultExceptionMessage(), response.getContentAsString());
     }
 
     @Test
@@ -84,7 +302,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                assertFalse(context.request().isJsonRequest());
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertTrue(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertFalse(context.request().isPlainTextShouldBeReturn());
 
                 throw new RuntimeException("Some exception");
             }
@@ -95,6 +316,31 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<pre>" + getDefaultExceptionMessage() + "</pre>", response.getContentAsString());
+    }
+
+    @Test
+    public void serverErrorHtmlDedicatedMethod() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertTrue(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertFalse(context.request().isPlainTextShouldBeReturn());
+                throw new RuntimeException("Some exception");
+            }
+        });
+
+        IHttpResponse response =
+                GET("/one").addHTMLAcceptHeader().send();
+        assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<pre>" + getDefaultExceptionMessage() + "</pre>", response.getContentAsString());
     }
 
     @Test
@@ -105,7 +351,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                assertTrue(context.request().isJsonRequest());
+                assertTrue(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertFalse(context.request().isPlainTextShouldBeReturn());
 
                 throw new RuntimeException("Some exception");
             }
@@ -115,6 +364,31 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("{\"error\":\"" + getDefaultExceptionMessage() + "\"}", response.getContentAsString());
+    }
+
+    @Test
+    public void serverErrorJsonDedicatedMethod() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                assertTrue(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertFalse(context.request().isXMLShouldBeReturn());
+                assertFalse(context.request().isPlainTextShouldBeReturn());
+
+                throw new RuntimeException("Some exception");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addJsonAcceptHeader().send();
+        assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("{\"error\":\"" + getDefaultExceptionMessage() + "\"}", response.getContentAsString());
     }
 
     @Test
@@ -125,7 +399,10 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                assertFalse(context.request().isJsonRequest());
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertTrue(context.request().isXMLShouldBeReturn());
+                assertFalse(context.request().isPlainTextShouldBeReturn());
 
                 throw new RuntimeException("Some exception");
             }
@@ -135,6 +412,33 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<JsonObject><error>" + getDefaultExceptionMessage() + "</error></JsonObject>",
+                     response.getContentAsString());
+    }
+
+    @Test
+    public void serverErrorXmlDedicatedMethod() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                assertFalse(context.request().isJsonShouldBeReturn());
+                assertFalse(context.request().isHTMLShouldBeReturn());
+                assertTrue(context.request().isXMLShouldBeReturn());
+                assertFalse(context.request().isPlainTextShouldBeReturn());
+
+                throw new RuntimeException("Some exception");
+            }
+        });
+
+        IHttpResponse response = GET("/one").addHeaderValue("Accept", "application/xml").send();
+        assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+
+        assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("<JsonObject><error>" + getDefaultExceptionMessage() + "</error></JsonObject>",
+                     response.getContentAsString());
     }
 
     @Test
@@ -144,6 +448,7 @@ public class HttpStatusAndContentTypesTest extends DefaultIntegrationTestingBase
 
             @Override
             public void handle(IDefaultRequestContext context) {
+
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });

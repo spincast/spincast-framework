@@ -30,9 +30,31 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
 
     /**
      * Will return <code>true</code> if the request specifies
-     * that <code>Json</code> should be returned.
+     * that <code>Json</code> is the most appropriate format 
+     * to return.
      */
-    public boolean isJsonRequest();
+    public boolean isJsonShouldBeReturn();
+
+    /**
+     * Will return <code>true</code> if the request specifies
+     * that <code>HTML</code> is the most appropriate format 
+     * to return.
+     */
+    public boolean isHTMLShouldBeReturn();
+
+    /**
+     * Will return <code>true</code> if the request specifies
+     * that <code>XML</code> is the most appropriate format 
+     * to return.
+     */
+    public boolean isXMLShouldBeReturn();
+
+    /**
+     * Will return <code>true</code> if the request specifies
+     * that <code>plain-text</code> is the most appropriate format 
+     * to return.
+     */
+    public boolean isPlainTextShouldBeReturn();
 
     /**
      * Find the best <code>Locale</code> to use for a response 

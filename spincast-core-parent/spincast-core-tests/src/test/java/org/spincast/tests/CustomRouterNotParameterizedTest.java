@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.spincast.tests.varia.CustomRouter2;
 import com.google.inject.Key;
 import com.google.inject.Module;
 
-public class CustomRouterNotParameterizedTest extends DefaultIntegrationTestingBase {
+public class CustomRouterNotParameterizedTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Override
     protected void clearRoutes() {
@@ -24,7 +24,7 @@ public class CustomRouterNotParameterizedTest extends DefaultIntegrationTestingB
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void bindRoutingPlugin() {

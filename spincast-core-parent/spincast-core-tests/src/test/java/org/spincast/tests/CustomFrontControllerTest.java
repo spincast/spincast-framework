@@ -3,8 +3,8 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.tests.varia.CustomFrontController;
@@ -12,14 +12,14 @@ import org.spincast.tests.varia.CustomFrontController;
 import com.google.inject.Key;
 import com.google.inject.Module;
 
-public class CustomFrontControllerTest extends DefaultIntegrationTestingBase {
+public class CustomFrontControllerTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     /**
      * Custom module
      */
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected Key<?> getFrontControllerKey() {

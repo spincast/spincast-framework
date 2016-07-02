@@ -7,7 +7,7 @@ import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.website.AppConfig;
 
-public class AdminProtectionTest extends AppIntegrationTestBase {
+public class AdminProtectionTest extends WebsiteIntegrationTestBase {
 
     @Override
     protected String getAppConfigPropertiesFileContent() {

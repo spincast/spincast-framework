@@ -20,7 +20,7 @@
         The shaded dependencies used 
         by the framework. 
 
-        This project is built separatly
+        This project is built separately
         from the framework because it leads to errors
         when imported in an IDE with the other projects.
          
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.spincast</groupId>
             <artifactId>spincast-shaded-dependencies</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>

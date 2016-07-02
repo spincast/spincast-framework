@@ -17,7 +17,7 @@ import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
-public class CorsBeforeFilterTest extends DefaultIntegrationTestingBase {
+public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected ISpincastFilters<IDefaultRequestContext> spincastFilters;

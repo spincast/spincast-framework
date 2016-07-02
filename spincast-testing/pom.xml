@@ -17,7 +17,7 @@
     <url>https://www.spincast.org</url>
 
     <modules>
-        <module>spincast-testing-utils</module>
+        <module>spincast-testing-junit-runner</module>
         <module>spincast-testing-core</module>
         <module>spincast-testing-default</module>
     </modules>

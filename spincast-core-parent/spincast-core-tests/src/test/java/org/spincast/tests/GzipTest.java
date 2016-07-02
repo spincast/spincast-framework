@@ -10,12 +10,12 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class GzipTest extends DefaultIntegrationTestingBase {
+public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Test
     public void gzipped() throws Exception {

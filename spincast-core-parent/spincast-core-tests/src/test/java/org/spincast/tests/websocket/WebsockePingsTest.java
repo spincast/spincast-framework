@@ -26,7 +26,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 import io.undertow.websockets.core.WebSocketChannel;
 
-public class WebsockePingsTest extends DefaultWebsocketTestBase {
+public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     public static class SpincastUndertowWebsocketEndpointWriterTest extends SpincastUndertowWebsocketEndpointWriter {
 

@@ -4,12 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import org.junit.Test;
+import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,7 @@ import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.google.inject.util.Modules;
 
-public class FeedTest extends AppIntegrationTestBase {
+public class FeedTest extends WebsiteIntegrationTestBase {
 
     @Inject
     private IXmlManager xmlManager;
@@ -70,9 +71,10 @@ public class FeedTest extends AppIntegrationTestBase {
      * Overriding Guice module
      */
     @Override
-    protected Module getTestOverridingModule(Type requestContextType, Type websocketContextType) {
+    protected Module getTestOverridingModule(Class<? extends IRequestContext<?>> requestContextType,
+                                             Class<? extends IWebsocketContext<?>> websocketContextType) {
 
-        Module baseModule = super.getTestOverridingModule(requestContextType, websocketContextType);
+        Module baseModule = super.getDefaultOverridingModule(requestContextType, websocketContextType);
 
         Module localModule = new AbstractModule() {
 

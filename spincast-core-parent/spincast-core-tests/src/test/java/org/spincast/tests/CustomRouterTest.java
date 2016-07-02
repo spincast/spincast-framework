@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -22,14 +22,14 @@ import com.google.inject.Module;
  * Custom router that will be configured with the default request context
  * object.
  */
-public class CustomRouterTest extends DefaultIntegrationTestingBase {
+public class CustomRouterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     /**
      * Custom module
      */
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void bindRoutingPlugin() {

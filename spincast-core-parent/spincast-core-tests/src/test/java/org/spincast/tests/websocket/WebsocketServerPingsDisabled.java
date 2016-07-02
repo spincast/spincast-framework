@@ -14,7 +14,7 @@ import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 
-public class WebsocketServerPingsDisabled extends DefaultWebsocketTestBase {
+public class WebsocketServerPingsDisabled extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     @Override
     protected Module getOverridingModule() {

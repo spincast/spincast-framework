@@ -11,7 +11,7 @@ import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.routing.IDefaultHandler;
 import org.spincast.plugins.routing.IDefaultRouter;
@@ -20,7 +20,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class DefaultComponentsTest extends DefaultIntegrationTestingBase {
+public class DefaultComponentsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     // IDefaultRouter
     @Inject

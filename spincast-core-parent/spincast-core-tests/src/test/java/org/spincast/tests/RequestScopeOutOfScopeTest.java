@@ -7,15 +7,15 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.defaults.tests.DefaultIntegrationTestingBase;
-import org.spincast.defaults.tests.DefaultTestingModule;
+import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.ProvisionException;
 import com.google.inject.Scopes;
 
-public class RequestScopeOutOfScopeTest extends DefaultIntegrationTestingBase {
+public class RequestScopeOutOfScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     public static class ServiceClass {
 
@@ -32,7 +32,7 @@ public class RequestScopeOutOfScopeTest extends DefaultIntegrationTestingBase {
 
     @Override
     public Module getTestingModule() {
-        return new DefaultTestingModule() {
+        return new SpincastDefaultTestingModule() {
 
             @Override
             protected void configure() {

@@ -13,14 +13,15 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IRoutingResult;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.defaults.tests.DefaultTestingModule;
-import org.spincast.testing.core.SpincastGuiceModuleBasedTestBase;
+import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.testing.core.SpincastTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 
-public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
+public class RoutingHttpMethodsTest extends SpincastTestBase {
 
     @Inject
     IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router;
@@ -35,8 +36,8 @@ public class RoutingHttpMethodsTest extends SpincastGuiceModuleBasedTestBase {
     }
 
     @Override
-    public Module getTestingModule() {
-        return new DefaultTestingModule();
+    protected Injector createInjector() {
+        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
     protected IDefaultRequestContext getRequestContextMock(HttpMethod httpMethod, String url) {
