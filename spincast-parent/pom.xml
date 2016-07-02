@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>spincast-parent</artifactId>
-    <version>0.9.22</version>
+    <version>0.9.23-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>${project.groupId}:${project.artifactId}</name>
@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:spincast</connection>
         <developerConnection>scm:git:git@github.com:spincast</developerConnection>
         <url>git@github.com:spincast</url>
-      <tag>0.9.22</tag>
+      <tag>HEAD</tag>
   </scm>
     
     <dependencyManagement>
