@@ -23,7 +23,7 @@ Contributions are very welcome! Please read the [Contribution Guide](https://www
 
 ### Help / News ###
 
-We have a dedicated page for Spincast news: ![](https://www.spincast.org/public/images/fire.png)[What's new?](https://www.spincast.org/news).
+We have a dedicated page for Spincast news: ![](http://i.imgur.com/OiymQrH.png)[What's new?](https://www.spincast.org/news).
 
 You can subscribe to our [rss feed](https://www.spincast.org/rss).
 
