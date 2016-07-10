@@ -21,9 +21,9 @@ import org.spincast.website.services.INewsService;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public class AppController {
+public class MainPagesController {
 
-    protected final Logger logger = LoggerFactory.getLogger(AppController.class);
+    protected final Logger logger = LoggerFactory.getLogger(MainPagesController.class);
 
     private final String[] mainArgs;
     private final IJsonManager jsonManager;
@@ -32,11 +32,11 @@ public class AppController {
     private final IAppConfig appConfig;
 
     @Inject
-    public AppController(@MainArgs String[] mainArgs,
-                         IJsonManager jsonManager,
-                         ISpincastUtils spincastUtils,
-                         INewsService newsService,
-                         IAppConfig appConfig) {
+    public MainPagesController(@MainArgs String[] mainArgs,
+                               IJsonManager jsonManager,
+                               ISpincastUtils spincastUtils,
+                               INewsService newsService,
+                               IAppConfig appConfig) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
@@ -68,6 +68,10 @@ public class AppController {
         context.response().sendHtmlTemplate("/templates/index.html", null);
     }
 
+    public void presentation(IAppRequestContext context) {
+        context.response().sendHtmlTemplate("/templates/presentation.html", null);
+    }
+
     public void documentation(IAppRequestContext context) {
         context.response().sendHtmlTemplate("/templates/documentation.html", null);
     }
@@ -86,6 +90,10 @@ public class AppController {
 
     public void about(IAppRequestContext context) {
         context.response().sendHtmlTemplate("/templates/about.html", null);
+    }
+
+    public void more(IAppRequestContext context) {
+        context.response().sendHtmlTemplate("/templates/more.html", null);
     }
 
     /**
@@ -131,7 +139,7 @@ public class AppController {
 
         String pluginDocTemplatePath = "/templates/plugins/" + pluginName + "/" + pluginName + ".html";
 
-        URL url = AppController.class.getResource(pluginDocTemplatePath);
+        URL url = MainPagesController.class.getResource(pluginDocTemplatePath);
         if(url == null) {
             return null;
         }

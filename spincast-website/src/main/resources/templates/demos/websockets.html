@@ -1,18 +1,18 @@
 {#==========================================
-Showcase - WebSockets
+Demos - WebSockets
 ==========================================#}
-{% extends "../layout.html" %}
+{% extends "../demos.html" %}
 
-{% block sectionClasses %}showcase showcase_websockets{% endblock %}
-{% block meta_title %}showcase - WebSockets{% endblock %}
-{% block meta_description %}Showcase - WebSockets example{% endblock %}
+{% block subSectionClasses %}demo_websockets{% endblock %}
+{% block meta_title %}Demo - WebSockets{% endblock %}
+{% block meta_description %}WebSockets demo and tutorial using Spincast{% endblock %}
 
 {% block scripts %}
 <script>
   
     app.addMessage = function(message) {
         var messages = $("#messages").val();
-        $("#messages").val('').val(messages  + "- " + message + "\n");
+        $("#messages").val('').val(messages  +  message + "\n");
     }
     
     app.showcaseWebsocket = null;
@@ -23,7 +23,7 @@ Showcase - WebSockets
             return;
         }
 
-        app.showcaseWebsocket = new WebSocket("wss://" + location.host + "/showcase/websockets/echo-all-endpoint");
+        app.showcaseWebsocket = new WebSocket("{{ isHttps ? "wss" : "ws" }}://" + location.host + "/demos-tutorials/websockets/echo-all-endpoint");
         
         app.showcaseWebsocket.onopen = function(event) {
             app.addMessage("WebSocket connection established!"); 
@@ -35,18 +35,28 @@ Showcase - WebSockets
         
         app.showcaseWebsocket.onmessage = function(event) {
             app.addMessage(event.data); 
-        };   
+        }; 
+        
+        $("#msgForm").on("submit", function() {
+            var $msgField = $("#message");
+            app.sendWebsocketMessage($msgField.val()); 
+            $msgField.val(""); 
+            $msgField.focus();
+            return false;
+        });
+        
+        $("#message").focus();
     };
     
-    app.sendWebsocketMessage = function sendWebsocketMessage(message) {
+    app.sendWebsocketMessage = function(message) {
         
         if(!window.WebSocket || !app.showcaseWebsocket) {
             return;
         }
         
         if(app.showcaseWebsocket.readyState != WebSocket.OPEN) {
-        	app.addMessage("The WebSocket connection is not open.");
-        	return;
+            app.addMessage("The WebSocket connection is not open.");
+            return;
         }
         
         app.showcaseWebsocket.send(message);
@@ -57,15 +67,15 @@ Showcase - WebSockets
 </script>
 {% endblock %}
 
-{% block body %}
+
+{% block subBody %}
 
 <div class="container">
 
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
             <h2 class="shortTop">
-                <a class="anchor" href="#download" id="download" title="permanent link"></a>
-                WebSockets example
+                WebSockets demo
             </h2>
         </div>
     </div>
@@ -73,39 +83,31 @@ Showcase - WebSockets
     <div class="row"> 
         <div class="col-xs-12">
             <p>
-                Try opening more multiple browser windows on this very page and then send some messages. You will see the messages sent
-                by all peers connected to this WebSocket endpoint. You can even ask a friend to do so at the same time: you should see his messages
-                too!
+                Try opening multiple browser windows on this very page and then send some messages.
+                You can even ask a friend to do so at the same time: you should see his messages...
             </p>
         </div>
     </div>
 
     <div class="row"> 
         <div class="col-xs-4">
-        
             <p>
-                Send a message:
+                <strong>Send a message:</strong>
             </p>
-            
-            <form onsubmit="return false;">
-                <input type="text" id="message" name="message" value="Hi!"/>
-                <input type="button" value="send" onclick="app.sendWebsocketMessage(this.form.message.value); this.form.message.value=''; this.form.message.focus();"/>
+            <form id="msgForm">
+                <input type="text" id="message" value="Hi!"/>
+                <input type="submit" id="sendBtn" value="send" />
             </form>
             
         </div>
         <div class="col-xs-8">
-        
             <p>
-                Messages:
+                <strong>Messages:</strong>
             </p>
-            
             <textarea id="messages" readonly></textarea>
-            
         </div>
      </div>
-     
+   
 </div>
-
-
 
 {% endblock %}

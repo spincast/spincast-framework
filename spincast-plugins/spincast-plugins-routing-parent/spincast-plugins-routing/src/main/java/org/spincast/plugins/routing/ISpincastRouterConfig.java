@@ -27,4 +27,11 @@ public interface ISpincastRouterConfig {
      */
     public int getCorsFilterPosition();
 
+    /**
+     * The default position  for a <code>redirect</code> "before" filter.
+     * Must be &lt; 0 and should probably be one of the very, very
+     * first filter to run! 
+     */
+    public int getRedirectFilterPosition();
+
 }

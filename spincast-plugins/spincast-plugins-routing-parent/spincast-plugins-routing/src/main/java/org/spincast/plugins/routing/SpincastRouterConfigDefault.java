@@ -26,4 +26,9 @@ public class SpincastRouterConfigDefault implements ISpincastRouterConfig {
         return -100;
     }
 
+    @Override
+    public int getRedirectFilterPosition() {
+        return -1000;
+    }
+
 }

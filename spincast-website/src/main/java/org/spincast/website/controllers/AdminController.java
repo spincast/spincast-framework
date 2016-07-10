@@ -57,10 +57,6 @@ public class AdminController {
         return this.appConfig;
     }
 
-    public void example(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/admin/protection_example.html", null);
-    }
-
     public void index(IAppRequestContext context) {
         context.response().sendHtmlTemplate("/templates/admin/adminIndex.html", null);
     }

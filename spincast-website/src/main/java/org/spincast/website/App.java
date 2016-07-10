@@ -11,11 +11,11 @@ import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.website.controllers.AdminController;
-import org.spincast.website.controllers.AppController;
+import org.spincast.website.controllers.DemosTutorialsController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
-import org.spincast.website.controllers.ShowcaseController;
-import org.spincast.website.controllers.ShowcaseWebsocketEchoAllController;
+import org.spincast.website.controllers.MainPagesController;
+import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
 import org.spincast.website.exchange.IAppRequestContext;
 import org.spincast.website.exchange.IAppRouter;
 import org.spincast.website.filters.GlobalTemplateVariablesAdderFilter;
@@ -87,27 +87,27 @@ public class App {
     private final IServer server;
     private final IAppConfig appConfig;
     private final IAppRouter router;
-    private final AppController appController;
+    private final MainPagesController appController;
     private final ErrorController errorController;
     private final FeedController feedController;
     private final AdminController adminController;
-    private final ShowcaseController showcaseController;
+    private final DemosTutorialsController demosTutorialsControllerController;
     private final ISpincastFilters<IAppRequestContext> spincastFilters;
     private final GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter;
-    private final ShowcaseWebsocketEchoAllController showcaseWebsocketEchoAllController;
+    private final WebsocketsDemoEchoAllController websocketsDemoEchoAllController;
 
     @Inject
     public App(IServer server,
                IAppConfig config,
                IAppRouter router,
-               AppController appController,
+               MainPagesController appController,
                ErrorController errorController,
                FeedController feedController,
                AdminController adminController,
-               ShowcaseController showcaseController,
+               DemosTutorialsController demosTutorialsControllerController,
                ISpincastFilters<IAppRequestContext> spincastFilters,
                GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter,
-               ShowcaseWebsocketEchoAllController showcaseWebsocketEchoAllController) {
+               WebsocketsDemoEchoAllController websocketsDemoEchoAllController) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
@@ -115,10 +115,10 @@ public class App {
         this.errorController = errorController;
         this.feedController = feedController;
         this.adminController = adminController;
-        this.showcaseController = showcaseController;
+        this.demosTutorialsControllerController = demosTutorialsControllerController;
         this.spincastFilters = spincastFilters;
         this.globalTemplateVariablesAdderFilter = globalTemplateVariablesAdderFilter;
-        this.showcaseWebsocketEchoAllController = showcaseWebsocketEchoAllController;
+        this.websocketsDemoEchoAllController = websocketsDemoEchoAllController;
     }
 
     protected IServer getServer() {
@@ -133,7 +133,7 @@ public class App {
         return this.router;
     }
 
-    protected AppController getAppController() {
+    protected MainPagesController getAppController() {
         return this.appController;
     }
 
@@ -149,8 +149,8 @@ public class App {
         return this.adminController;
     }
 
-    protected ShowcaseController getShowcaseController() {
-        return this.showcaseController;
+    protected DemosTutorialsController getDemosTutorialsController() {
+        return this.demosTutorialsControllerController;
     }
 
     protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
@@ -161,8 +161,8 @@ public class App {
         return this.globalTemplateVariablesAdderFilter;
     }
 
-    protected ShowcaseWebsocketEchoAllController getShowcaseWebsocketEchoAllController() {
-        return this.showcaseWebsocketEchoAllController;
+    protected WebsocketsDemoEchoAllController getWebsocketsDemoEchoAllController() {
+        return this.websocketsDemoEchoAllController;
     }
 
     /**
@@ -252,7 +252,8 @@ public class App {
 
         IAppRouter router = getRouter();
 
-        AppController appCtl = getAppController();
+        MainPagesController appCtl = getAppController();
+        DemosTutorialsController demoCtl = getDemosTutorialsController();
 
         //==========================================
         // Public resources
@@ -294,12 +295,6 @@ public class App {
         router.file("/rss").fileSystem(feedDir + "/rss.xml").save(getFeedController()::rss);
 
         //==========================================
-        // Protected area example
-        //==========================================
-        router.httpAuth("/protected_example", AppConstants.HTTP_AUTH_REALM_NAME_EXAMPLE);
-        router.GET("/protected_example").save(getAdminController()::example);
-
-        //==========================================
         // Admin - protected area
         //==========================================
         router.httpAuth("/admin", AppConstants.HTTP_AUTH_REALM_NAME_ADMIN);
@@ -307,15 +302,10 @@ public class App {
         router.GET("/admin/news").save(getAdminController()::news);
 
         //==========================================
-        // Showcase - Websockets
-        //==========================================
-        router.GET("/showcase/websockets/echo-all").save(getShowcaseController()::websockets);
-        router.websocket("/showcase/websockets/echo-all-endpoint").save(getShowcaseWebsocketEchoAllController());
-
-        //==========================================
         // Pages
         //==========================================
         router.GET("/").save(appCtl::index);
+        router.GET("/presentation").save(appCtl::presentation);
         router.GET("/news").save(appCtl::news);
         router.GET("/news/${newsId:<N>}").save(appCtl::newsEntry);
         router.GET("/documentation").save(appCtl::documentation);
@@ -324,6 +314,25 @@ public class App {
         router.GET("/community").save(appCtl::community);
         router.GET("/about").save(appCtl::about);
         router.GET("/plugins/${pluginName}").save(appCtl::plugin);
+        router.GET("/more").save(appCtl::more);
+
+        //==========================================
+        // Demos/Tutorials
+        //==========================================
+        router.redirect("/demos-tutorials").temporarily().to("/demos-tutorials/hello-world");
+        router.GET("/demos-tutorials/hello-world").save(demoCtl::helloWorld);
+        router.GET("/demos-tutorials/full-website").save(demoCtl::fullWebsite);
+        router.GET("/demos-tutorials/todo-list").save(demoCtl::todoList);
+
+        router.GET("/demos-tutorials/http-authentication").save(demoCtl::httpAuthentication);
+        router.httpAuth("/demos-tutorials/http-authentication/protected", AppConstants.HTTP_AUTH_REALM_NAME_EXAMPLE);
+        router.GET("/demos-tutorials/http-authentication/protected").save(demoCtl::httpAuthenticationProtectedPage);
+        router.redirect("/protected_example").to("/demos-tutorials/http-authentication/protected");
+
+        router.GET("/demos-tutorials/websockets").save(demoCtl::webSockets);
+        router.websocket("/demos-tutorials/websockets/echo-all-endpoint").save(getWebsocketsDemoEchoAllController());
+        router.redirect("/showcase/websockets/echo-all").to("/demos-tutorials/websockets");
+        router.redirect("/showcase/websockets/echo-all-endpoint").to("/demos-tutorials/websockets/echo-all-endpoint");
 
     }
 

@@ -23,8 +23,14 @@ Contributions are very welcome! Please read the [Contribution Guide](https://www
 
 ### Help / News ###
 
+We have a dedicated page for Spincast news: ![](https://www.spincast.org/public/images/fire.png)[What's new?](https://www.spincast.org/news).
+
+You can subscribe to our [rss feed](https://www.spincast.org/rss).
+
 Ask question or make suggestions using the [Spincast Google Group](https://groups.google.com/forum/#!forum/spincast).
 
-We're also scanning for questions using the *#spincast* tag on [Stack Overflow](http://stackoverflow.com).
+We're also scanning for questions using the "*#spincast*" tag on [Stack Overflow](http://stackoverflow.com).
 
 You can follow us on [Twitter](https://twitter.com/spincast).
+
+

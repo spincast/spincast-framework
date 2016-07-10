@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -44,6 +45,7 @@ import org.xnio.Options;
 import org.xnio.Pool;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
+import org.xnio.http.RedirectException;
 import org.xnio.ssl.JsseXnioSsl;
 import org.xnio.ssl.XnioSsl;
 
@@ -409,45 +411,95 @@ public class WebsocketRequestBuilder extends SpincastHttpRequestBuilderBase<IWeb
 
     protected WebSocketChannel createWebSocketChannel() {
 
+        XnioWorker worker = createXnioWorker();
+        Pool<ByteBuffer> bufferPool = createByteBufferPool();
+
+        return createWebSocketChannel(worker, bufferPool, getUrl(), 0);
+    }
+
+    protected WebSocketChannel createWebSocketChannel(XnioWorker worker,
+                                                      Pool<ByteBuffer> bufferPool,
+                                                      String url,
+                                                      int redirectionNbr) {
+
         try {
 
-            XnioWorker worker = createXnioWorker();
-            Pool<ByteBuffer> bufferPool = createByteBufferPool();
+            ConnectionBuilder connectionBuilder = createConnectionBuilder(worker, bufferPool, url);
 
-            URI uri = createWebsocketUri();
+            WebSocketChannel webSocketChannel = null;
+            try {
+                webSocketChannel = connectionBuilder.connect().get();
+            } catch(RedirectException ex) {
 
-            ConnectionBuilder connectionBuilder = WebSocketClient.connectionBuilder(worker, bufferPool, uri);
+                redirectionNbr++;
 
-            addSslContext(connectionBuilder);
+                //==========================================
+                // Undertow 1.2.X doesn't follow redirects on
+                // WebSocket requests. This won't be fixed in 
+                // an Undertow version compatible with Java 7,
+                // so we manage the redirection by ourself.
+                //
+                // https://issues.jboss.org/browse/UNDERTOW-760
+                //==========================================
 
-            connectionBuilder.setClientNegotiation(new WebSocketClientNegotiation(createSupportedSubProtocols(),
-                                                                                  createSupportedExtensions()) {
-
-                @Override
-                public void beforeRequest(final Map<String, List<String>> headers) {
-
-                    //==========================================
-                    // Add custom headers
-                    //==========================================
-                    addCustomHeaders(headers);
-
-                    //==========================================
-                    // Add cookies
-                    //==========================================
-                    addCustomCookies(headers);
-
-                    //==========================================
-                    // Add HTTP authenticatiin headers
-                    //==========================================
-                    addHttpAuthHeaders(headers);
+                if(redirectionNbr > getMaxRedirectionNbr()) {
+                    throw new RuntimeException("Maximum number of redirections reached " +
+                                               "(" + getMaxRedirectionNbr() + "). The redirection URL is: " +
+                                               ((RedirectException)ex).getLocation());
                 }
 
-            });
+                String newUrl = ((RedirectException)ex).getLocation();
+                return createWebSocketChannel(worker, bufferPool, newUrl, redirectionNbr);
+            }
 
-            return connectionBuilder.connect().get();
+            return webSocketChannel;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    /**
+     * The maximum number of allowed redirections.
+     */
+    protected int getMaxRedirectionNbr() {
+        // @see https://tools.ietf.org/html/rfc2068#section-10.3
+        return 5;
+    }
+
+    protected ConnectionBuilder createConnectionBuilder(XnioWorker worker,
+                                                        Pool<ByteBuffer> bufferPool,
+                                                        String url) {
+
+        URI uri = createWebsocketUri(url);
+
+        ConnectionBuilder connectionBuilder = WebSocketClient.connectionBuilder(worker, bufferPool, uri);
+
+        addSslContext(connectionBuilder);
+
+        connectionBuilder.setClientNegotiation(new WebSocketClientNegotiation(createSupportedSubProtocols(),
+                                                                              createSupportedExtensions()) {
+
+            @Override
+            public void beforeRequest(final Map<String, List<String>> headers) {
+
+                //==========================================
+                // Add custom headers
+                //==========================================
+                addCustomHeaders(headers);
+
+                //==========================================
+                // Add cookies
+                //==========================================
+                addCustomCookies(headers);
+
+                //==========================================
+                // Add HTTP authenticatiin headers
+                //==========================================
+                addHttpAuthHeaders(headers);
+            }
+        });
+
+        return connectionBuilder;
     }
 
     protected void addSslContext(ConnectionBuilder connectionBuilder) {
@@ -457,7 +509,9 @@ public class WebsocketRequestBuilder extends SpincastHttpRequestBuilderBase<IWeb
         connectionBuilder.setSsl(xnioSsl);
     }
 
-    protected URI createWebsocketUri() {
+    protected URI createWebsocketUri(String url) {
+
+        Objects.requireNonNull(url, "The url can't be NULL");
 
         //==========================================
         // The WebSocketClient's ConnectionBuilder
@@ -465,7 +519,7 @@ public class WebsocketRequestBuilder extends SpincastHttpRequestBuilderBase<IWeb
         // not "https://".
         //==========================================
         try {
-            String url = getUrl().trim();
+            url = url.trim();
             if(url.toLowerCase().startsWith("https://")) {
                 url = "wss://" + url.substring("https://".length());
             }

@@ -1,0 +1,59 @@
+{#==========================================
+Demos - TODO List
+==========================================#}
+{% extends "../demos.html" %}
+
+{% block subSectionClasses %}demo_todo_list{% endblock %}
+{% block meta_title %}Demo - TODO list{% endblock %}
+{% block meta_description %}TODO list demo using Spincast{% endblock %}
+
+{% block subBody %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                TODO List demo
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+        	<p>
+        	    Here you will find a Spincast implementation of the <a href="http://www.todobackend.com">Todo-Backend</a> specifications. Todobackend.com
+        	    showcases various backend tech stacks, by requiring them to implement a set of specifications in the form of
+        	    a classic <code>TODO List</code> application. This is a very good example of Spincast being used as a
+        	    <code>REST</code> web service.
+        	</p>
+            <p>
+            	<ul>
+            		<li>
+		               You can try a live demo of the Spincast implementation here: 
+		               <a href="http://www.todobackend.com/client/index.html?https://todobackend-inmemory.spincast.org/">
+		               <i class="glyphicon glyphicon-hand-right"></i> Spincast Todo-Backend app</a>
+            		</li>
+            		<li>
+            			You can <a href="http://www.todobackend.com/specs/index.html?https://todobackend-inmemory.spincast.org/">
+            			<i class="glyphicon glyphicon-hand-right"></i> Run the specification tests</a>.
+            		</li>
+            		<li>
+		               The code 
+		               <a href="https://github.com/spincast/spincast-todobackend/tree/master/spincast-todobackend-inmemory">is on Github</a>.
+            		</li>
+            	</ul>
+            </p>
+
+
+            <p class="center">
+            	<a href="http://www.todobackend.com"><img id="todback" src="/public/images/todoBackend.png" /></a>
+            </p>
+
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}

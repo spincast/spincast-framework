@@ -34,6 +34,7 @@ import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.locale.ILocaleResolver;
 import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
+import org.spincast.core.routing.IRedirectRuleBuilderFactory;
 import org.spincast.core.routing.IRouteBuilderFactory;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IRoutingRequestContextAddon;
@@ -199,6 +200,8 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(parameterizeWithContextInterfaces(IRouter.class));
         requireBinding(Key.get(new TypeLiteral<IRouter<?, ?>>() {}));
         requireBinding(parameterizeWithContextInterfaces(IRouteBuilderFactory.class));
+        requireBinding(parameterizeWithContextInterfaces(IRedirectRuleBuilderFactory.class));
+        requireBinding(parameterizeWithContextInterfaces(IWebsocketRouteBuilderFactory.class));
         requireBinding(ITemplatingEngine.class);
         requireBinding(IJsonManager.class);
         requireBinding(IXmlManager.class);
@@ -212,8 +215,6 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(parameterizeWithRequestContext(ICookiesRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(ITemplatingRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(IVariablesRequestContextAddon.class));
-
-        requireBinding(parameterizeWithContextInterfaces(IWebsocketRouteBuilderFactory.class));
     }
 
     protected void bindMainArgs() {

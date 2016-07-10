@@ -557,4 +557,9 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         return contentType;
     }
 
+    @Override
+    public boolean isHttps() {
+        return getFullUrl().trim().toLowerCase().startsWith("https://");
+    }
+
 }

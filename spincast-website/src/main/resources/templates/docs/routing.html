@@ -962,7 +962,7 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
             framework or a protected resource unless the correct username/password is given.
         </p>
         <p>
-            Here's a <a href="/protected_example"><i class="glyphicon glyphicon-hand-right"></i> Protected page example</a>. To access it, you have
+            Here's a <a href="/demos-tutorials/http-authentication/protected"><i class="glyphicon glyphicon-hand-right"></i> Protected page example</a>. To access it, you have
             to provide the correct username/password combination: <code>Stromgol</code>/<code>Laroche</code>.
         </p>
         <p>
@@ -1023,6 +1023,100 @@ getServer().addHttpAuthentication("Protected Admin Section", "Stromgol", "Laroch
             of your application but, if you need more control, a <code>form based</code> authentication may be
             preferred.
         </p>
+        
+    </div>
+    
+    
+    {#==========================================
+    Section "routing / Redirection rules"
+    ==========================================#}
+    <div id="redirections">
+        <h4>
+            <a class="anchor_small" href="#redirections" title="permanent link"></a>
+            Redirection rules
+        </h4>
+
+        <p>
+            Using the router, you can specify that a route must be redirected another one. This is
+            useful, for example, when you change the URL of a resource but don't want the
+             existing links to break.
+        </p>
+        <p>
+            To add a redirection rule, simply use the <code>redirect(...)</code> method on the router:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+router.redirect("/the-original-route").to("/the-new-route");
+</pre> 
+
+                </p>
+            </div>
+        </p> 
+        <p>
+            Here are the available options when creating such redirection rule:
+            
+            <ul>
+            	<li>
+            		<code>redirect(<em>originalRoute</em>)</code>: starts the creation of the direction rule
+            		by specifying the original route.
+            	</li>
+            	<li>
+            		<code>permanently()</code>: specify that the redirection must be permanent (<code>301</code>). This
+            		is the default and it is not required to specify it.
+            	</li>
+            	<li>
+            		<code>temporarily()</code>: specify that the redirection must be temporary (<code>302</code>).
+            	</li>
+            	<li>
+            		<code>to(<em>newRoute</em>)</code>: saves the redirection rule by specifying the new route.
+            	</li>
+            </ul>
+        </p> 
+        <p>
+        	<i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Note that if the original route contains <a href="#dynamic_parameters">dynamic parameters</a>
+            (splat parameters included), you can use those in the definition of the new route. 
+            For example, this redirection rule will redirect
+            <code class="block">"/books/42"</code> to <code>"/catalog/item/42"</code>:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+router.redirect("/books/${bookId}").to("/catalog/item/${bookId}");
+</pre> 
+
+                </p>
+            </div>
+        </p> 
+        <p>
+        	Those dynamic parameters can be used <em>anywhere</em> in the new route definition, not
+        	just as full tokens! For example, this redirection rule will redirect
+            <code class="block">"/types/books/42"</code> to <code>"/catalog-books/42"</code>:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+router.redirect("/types/${typeId}/${itemId}").to("/catalog-${typeId}/${itemId}");
+</pre> 
+
+                </p>
+            </div>
+        </p> 
+        <p>
+        	<i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            Finally, note that a redirection rule is implemented as a "before" filter and
+            must, in general, be the very first one to run. Its position is configurable using
+            <code>ISpincastRouterConfig</code> and its default value is <code>-1000</code>.
+            When this filter runs, any other filters or route handlers are skipped, 
+            and the redirection header is returned to the client immediately.
+        </p> 
         
     </div>
 

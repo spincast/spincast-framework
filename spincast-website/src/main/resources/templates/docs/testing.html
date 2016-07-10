@@ -928,7 +928,7 @@ Spincast JUnit runner
         This way of running the tests works very well when a Guice context is involved.
         The Guice context is created when the test class is initialized, and then this context is used to run all the tests
         of the class. If <a href="#testing_app_example">integration testing</a> is used, then the application
-        is started when the test class is initialised and both its Guice context and its HTTP server are used to run
+        is started when the test class is initialized and both its Guice context and its HTTP server are used to run
         all the tests of the class.
     </p>
     <p>
@@ -997,6 +997,14 @@ Spincast JUnit runner
                 if you don't use a base class provided by Spincast because the <code>beforeClass()</code> method 
                 is the only way to initialize the test class before 
                 the tests are run. But for very simple tests, you may not need it.
+            </li>
+            <li>
+                If your test class is annotated with
+                <a href="/public/javadoc/org/spincast/testing/utils/ExpectingBeforeClassException.html"><code>@ExpectingBeforeClassException</code></a>
+                then the <code>beforeClass()</code> method is expected to throw an exception! In other words, the test class will be
+                shown by JUnit as a "success" only of the <code>beforeClass()</code> method throws an exception. This is useful,
+                in integration testing, to validate that your application refuses some invalid configuration when 
+                it starts, for example.
             </li>
             <li>
                 If your test class (or a parent) implements

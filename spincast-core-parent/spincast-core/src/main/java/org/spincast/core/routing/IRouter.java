@@ -508,4 +508,13 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      */
     public void addWebsocketRoute(IWebsocketRoute<R, W> websocketRoute);
 
+    /**
+     * Starts the creation of a redirection rule.
+     * 
+     * @param oldPath The old path that needs to be redirected.
+     */
+    public IRedirectRuleBuilder redirect(String oldPath);
+    
+    
+    
 }

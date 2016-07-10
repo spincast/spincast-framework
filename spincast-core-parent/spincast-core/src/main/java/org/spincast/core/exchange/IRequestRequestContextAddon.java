@@ -265,4 +265,9 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
      */
     public File getUploadedFileFirst(String name);
 
+    /**
+     * Is the request a secure HTTPS one?
+     */
+    public boolean isHttps();
+
 }

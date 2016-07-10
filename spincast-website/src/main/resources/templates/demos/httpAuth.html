@@ -1,0 +1,95 @@
+{#==========================================
+Demos - HTTP Authentication
+==========================================#}
+{% extends "../demos.html" %}
+
+{% block subSectionClasses %}demo_http_auth{% endblock %}
+{% block meta_title %}Demo - HTTP Authentication{% endblock %}
+{% block meta_description %}HTTP Authentication protection demo using Spincast{% endblock %}
+
+{% block subBody %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                HTTP Authentication demo
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+		    <h4>
+		        <a class="anchor_small" href="#demo" id="demo" title="permanent link"></a>
+		        Demo
+		    </h4>
+            <p>
+                The following page is protected using HTTP authentication: 
+                <strong><a href="/demos-tutorials/http-authentication/protected"><i class="glyphicon glyphicon-lock"></i> protected page</a></strong>
+            </p>
+            <p>
+                To access it, use the following credentials:
+                <ul>
+                    <li>
+                        <strong>Username:</strong> Stromgol
+                    </li>
+                    <li>
+                        <strong>Password:</strong> Laroche
+                    </li>
+                </ul>
+            </p>
+            
+		    <h4>
+		        <a class="anchor_small" href="#how_to" id="how_to" title="permanent link"></a>
+		        How to
+		    </h4>
+            <p>
+                Protecting a resource or a set of resources with HTTP authentication 
+                is very easy. You simply use the <code>httpAuth(...)</code> method
+                of the router. You specify the route to protect and a name to identify that "realm" 
+                (the protected section).
+            </p>
+		    <p>
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>router.httpAuth("/route/to/protect", "protected example");</pre> 
+            		</p>  
+		        </div>
+		    </p> 
+            <p>
+                The resource is then protected! 
+		    </p> 
+            <p>
+                But how do you specify which <code>username</code>/<code>password</code> combinations
+                are allowed to access that realm? You use the <code>addHttpAuthentication(...)</code> method
+                of the <em>server</em> instance. You specify the name of the realm and a <code>username</code>/<code>password</code>
+                allowed to access it. Of course, you can add more that one credential for the same realm!
+            </p>
+		    <p>
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>server.addHttpAuthentication("protected example", "Stromgol", "Laroche")</pre> 
+            		</p>  
+		        </div>
+		    </p> 
+
+		    <h4>
+		        <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
+		        More info
+		    </h4>
+            <p>
+                Learn more about <a href="/documentation#http_auth">HTTP Authentication </a> in the
+                documentation.
+            </p>
+            
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}

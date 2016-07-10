@@ -1,0 +1,38 @@
+{#==========================================
+Demos
+==========================================#}
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}demos {% block subSectionClasses %}{% endblock %}{% endblock %}
+{% block meta_title %}Demos / Tutorials / Showcase{% endblock %}
+{% block meta_description %}Demos, tutorials and examples{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div class="left menu subMenu" id="demosMenu">
+        <ul>
+            <li id="menu_demos_hello_world"><a href="/demos-tutorials/hello-world">Hello World!</a></li>
+            <li id="menu_demos_websockets"><a href="/demos-tutorials/websockets">WebSockets</a></li>
+            <li id="menu_demos_http_auth"><a href="/demos-tutorials/http-authentication">HTTP Authentication</a></li>
+            <li id="menu_demos_todo_list"><a href="/demos-tutorials/todo-list">TODO List</a></li>
+            <li id="menu_demos_full_website"><a href="/demos-tutorials/full-website">Full Website</a></li>
+        </ul>
+        <div class="clear">&nbsp;</div>
+    </div>
+
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+            {#==========================================
+            SubBody block
+            ==========================================#}
+            {% block subBody %}{% endblock %}
+        
+        </div>
+    </div>
+    
+</div> 
+
+{% endblock %}

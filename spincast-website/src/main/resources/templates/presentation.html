@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="{{langAbrv}}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Spincast -Presentation</title>
+    <meta name="description" content="Presentation of Spincast and its features">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    
+    <link rel="stylesheet" href="/public/js/letterfx/jquery-letterfx.min.css">
+    <link rel="stylesheet" href="/public/css/impress-demo.css">
+    <link rel="stylesheet" href="/public/css/presentation.css">
+    
+    <base target="_blank">
+    
+</head>
+<body class="impress-not-supported">
+  
+	<div id="impress">
+	
+	    <div id="pre01" class="step" style="display:block;" data-x="0" data-y="0" data-rotate-x="0" data-rotate-y="0" data-scale="2">
+	    	<div class="stepContent">
+		        <h1>Spincast</h1>
+		        <div>Feature Tour</div>
+		        <div id="playPresentation"><img src="/public/images/presentation/play.png" /></div>
+	    	</div>
+	    </div>
+
+	    <div id="pre10" class="step" data-x="1100" data-y="400" data-rotate-x="180"  data-scale="1">
+	    	<div class="stepContent">
+		        <p id="spincast">Spincast...</p> 
+		        <p>is a framework to serve as a backend for Single Page Applications (<code>SPA</code>),
+		        to develop old-school <code>HTML</code> generated websites or 
+		        even to be a <code>REST</code> web service / microservice platform.</p>
+	    	</div>
+	    </div>
+	    
+	    <div id="pre20" class="step" data-x="2000" data-y="0" data-rotate-x="180" data-rotate-z="-90" data-scale="1">
+	        <div id="pre20text">
+	        	<p>
+	        		It is based on <a href="https://github.com/google/guice">Guice</a> from the ground up.
+			    </p>
+	        	<p>
+	        		It is <em>very</em> flexible: each part can be tweaked/overridden, even 
+			        the core classes.
+			    </p>
+	        	<p>
+	        		There are no static methods and 
+			        <a href="/about#private_methods">no private methods</a>.
+			    </p>
+				<p id="power">
+					Power to the
+		        </p>
+				<p id="developers">
+					developers!
+		        </p>
+		    </div>
+	    </div>
+	    
+	    <div id="pre25" class="step" data-x="2000" data-y="3800" data-rotate-x="180" data-rotate-y="-360" data-scale="1">
+	    	<div class="stepContent">
+	        	<p>
+	        		It aims to feel more like a <em>library</em> than like a framework.
+	         		It is <strong>not opinionated</strong> and favors configuration over convention. 
+         		</p>
+	        </div>
+	    </div>
+	    
+	    <div id="pre30" class="step" data-x="2000" data-y="2300" data-rotate-y="-360">
+	        <div class="stepContent">
+		        <p class="center">
+		        	Spincast is composed of a small <strong>core</strong> 
+		        	and a <a href="/plugins">plugins</a> ecosystem.
+		        </p>
+		        <p class="center">
+		        	<img src="/public/images/presentation/plugins.png" />
+		        </p>
+		    </div>
+	    </div>
+	    
+	    <div id="pre40" class="step" data-x="2000" data-y="2300" data-rotate-x="0" data-rotate-y="-360" data-scale="3">
+	    	<div class="stepContent">
+	        	<p><strong>WebSockets</strong> are fully supported.</p>
+	        </div>
+	    </div>
+	    
+	    <div id="pre50" class="step" data-x="2000" data-y="2500" data-rotate-x="0" data-rotate-y="-360" data-scale="3">
+	    	<div class="stepContent">
+		        <p>... even by the <a href="/plugins/spincast-http-client-with-websocket">Spincast HTTP client</a>*</p>
+	        </div>
+	        <div class="smallNotes">* The popular Apache's 
+	        <a href="https://hc.apache.org/httpcomponents-client-ga/index.html">HttpClient</a> does not!</div>
+	    </div>
+	    
+	    <div id="pre60" class="step" data-x="-1000" data-y="3400" data-rotate="180" data-rotate-y="-360" data-scale="1">
+	    	<div class="stepContent">
+		        <p>The <strong>embedded server</strong></p>
+		        <p>makes everything easy to develop, test and deploy...</p>
+		    </div>
+	    </div>
+	    
+	    <div id="pre65" class="step" data-x="-1000" data-y="3200" data-rotate="180" data-rotate-y="-360" data-scale="1">
+	    	<div class="stepContent">
+   				<div id="pointer">
+   					<img src="/public/images/presentation/hand.gif" style="width:300px;" />
+   				</div>
+   				<div id="pre65text">
+			        <p>... think <code>Node.js</code> + <code>Express</code>, but easier to develop 
+			        (no asynchronous code)
+			        and using a better language than Javascript!</p>
+   				</div>
+   				<br />
+	        </div>
+	    </div>
+	    
+	    <div id="pre70" class="step" data-x="-1000" data-y="4200" data-rotate="90" data-scale="4">
+	    	<div class="stepContent">
+		        <p>Spincast's <strong>powerful router</strong> is injectable 
+		        and dynamic...
+	        </div>
+	    </div>
+	    
+	    <div id="pre80" class="step" data-x="-1600" data-y="4200" data-rotate="90" data-scale="4">
+	    	<div class="stepContent">
+		        <p class="center">... which means you can add and remove 
+		        	<code>routes</code> from anywhere in your application, at any time.
+		        </p>
+		        <p class="center"><img src="/public/images/presentation/routes.png" /></p>
+	        </div>
+	    </div>
+	    
+	    <div id="pre90" class="step" data-x="-3000" data-y="2200" data-rotate-x="180" data-rotate-y="0" data-rotate="0" data-scale="1">
+	    	<div class="stepContent">
+		        <p>Spincast is Java 7 compatible.</p>
+	        </div>
+	    </div>
+	    
+	    <div id="pre100" class="step" data-x="-3000" data-y="2000" data-rotate-x="180" data-rotate-y="0" data-rotate="0" data-scale="1">
+	    	<div class="stepContent">
+		        <p>... and is validated using more than 700 tests.</p>
+	        </div>
+	    </div>
+
+	    <div id="pre110" class="step" data-x="-3000" data-y="2000" data-rotate-x="180" data-rotate-y="0" data-rotate="0" data-scale="3">
+	        <img src="/public/images/presentation/pong.gif" />
+	    </div>
+	    
+	    <div id="pre120" class="step" data-x="-3000" data-y="2000" data-rotate-x="180"  data-rotate="0" data-scale="2">
+	    	<div class="stepContent">
+		        <p>
+		        	Learn more:
+		        </p>
+		        <ul>
+		        	<li>
+		        		<a href="/demos-tutorials">Demos and tutorials</a>
+		        	</li>
+		        	<li>
+		        		<a href="/documentation#quick_start">Quick Start application</a>
+		        	</li>
+		        	<li>
+		        		<a href="/documentation">Documentation</a>
+		        	</li>
+		        	<li>
+		        		<a href="/about">Why Spincast?</a>
+		        	</li>
+		        </ul>   
+	        </div>
+	    </div>
+
+	</div>
+
+	<script src="/public/js/jquery-1.12.0.min.js"></script>
+	<script src="/public/js/letterfx/jquery-letterfx.min.js"></script>
+	<script src="/public/js/impress.js"></script>
+
+	<script>
+		$(function() {  
+		    impress().init();
+		    $(document).on('impress:stepenter', function(e) {
+		        var stepId = $(e.target).attr("id");
+				if(stepId === "pre01") {
+					// For IE which display slides before fading them
+					// when the page loads.
+				    $(".step").css("display", "block");  
+				}
+		    });
+		    
+		    $(document).on('impress:stepleave', function(e) {
+		        var stepId = $(e.target).attr("id");
+				if(stepId === "pre01") {
+				    $("#pre01 h1").letterfx({fx:'spin', fx_duration:"3s"});  
+				}
+		    });
+		    
+		    $("#playPresentation img")
+	        .mouseover(function() { 
+	            $(this).attr("src", "/public/images/presentation/play_over.png");
+	        })
+	        .mouseout(function() {
+	        	$(this).attr("src", "/public/images/presentation/play.png");
+	        });
+
+		}); 
+	</script>
+
+</body>
+</html>
+

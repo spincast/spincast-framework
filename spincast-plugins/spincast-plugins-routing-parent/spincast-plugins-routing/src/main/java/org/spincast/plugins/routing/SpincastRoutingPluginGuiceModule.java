@@ -7,6 +7,8 @@ import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.IRedirectRuleBuilder;
+import org.spincast.core.routing.IRedirectRuleBuilderFactory;
 import org.spincast.core.routing.IRoute;
 import org.spincast.core.routing.IRouteBuilder;
 import org.spincast.core.routing.IRouteBuilderFactory;
@@ -64,6 +66,11 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         // The assisted factory to create route builders
         //==========================================
         bindRouteBuilderFactory();
+
+        //==========================================
+        // The assisted factory to create redirect rules builders
+        //==========================================
+        bindRedirectRuleBuilderFactory();
 
         //==========================================
         // The assisted factory to create route handler matches
@@ -252,6 +259,20 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
     @SuppressWarnings("rawtypes")
     protected Class<? extends IRouteBuilder> getRouteBuilderImplClass() {
         return RouteBuilder.class;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected void bindRedirectRuleBuilderFactory() {
+
+        Key implementationKey = parameterizeWithContextInterfaces(getRedirectRuleBuilderImplClass());
+        Key factoryKey = parameterizeWithContextInterfaces(IRedirectRuleBuilderFactory.class);
+
+        install(new FactoryModuleBuilder().implement(IRedirectRuleBuilder.class, implementationKey.getTypeLiteral())
+                                          .build(factoryKey));
+    }
+
+    protected Class<? extends IRedirectRuleBuilder> getRedirectRuleBuilderImplClass() {
+        return RedirectRuleBuilder.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

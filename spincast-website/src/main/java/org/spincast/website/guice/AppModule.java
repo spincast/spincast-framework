@@ -13,7 +13,8 @@ import org.spincast.website.AppConfigPropsFileBasedConfig;
 import org.spincast.website.AppPebbleTemplatingEngineConfig;
 import org.spincast.website.HttpAuthInit;
 import org.spincast.website.IAppConfig;
-import org.spincast.website.controllers.AppController;
+import org.spincast.website.controllers.MainPagesController;
+import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
 import org.spincast.website.exchange.AppRequestContext;
@@ -69,9 +70,10 @@ public class AppModule extends SpincastDefaultGuiceModule {
         //==========================================
         // The application controllers
         //==========================================
-        bind(AppController.class).in(Scopes.SINGLETON);
+        bind(MainPagesController.class).in(Scopes.SINGLETON);
         bind(ErrorController.class).in(Scopes.SINGLETON);
         bind(FeedController.class).in(Scopes.SINGLETON);
+        bind(WebsocketsDemoEchoAllController.class).asEagerSingleton(); // init() method
 
         //==========================================
         // The application services and repositories

@@ -42,6 +42,7 @@ import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 
+import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
 import io.undertow.Undertow;
@@ -671,8 +672,29 @@ public class SpincastUndertowServer implements IServer {
             } else {
                 queryString = "?" + queryString;
             }
-
-            return exchange.getRequestURL() + queryString;
+            
+            
+            String requestURL = exchange.getRequestURL();
+            
+            //==========================================
+            // If we are behind a reverse-proxy, the original
+            // scheme can be different.
+            //==========================================
+            HeaderValues protoHeader = exchange.getRequestHeaders().get(HttpHeaders.X_FORWARDED_PROTO);
+            if(protoHeader != null && protoHeader.getFirst() != null) {
+                String protoHeaderStr = protoHeader.getFirst().toLowerCase();
+                
+                int pos = requestURL.indexOf(":");
+                if(pos < 0) {
+                    throw new RuntimeException("':' not found: " + requestURL);  
+                } 
+                
+                if(!(requestURL.substring(0, pos).toLowerCase().equals(protoHeaderStr))) {
+                    requestURL = protoHeaderStr + requestURL.substring(pos);
+                }
+            }
+            
+            return requestURL + queryString;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
