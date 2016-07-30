@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.exchange.IRequestContext;
@@ -22,6 +25,8 @@ import org.spincast.core.exchange.IRequestRequestContextAddon;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.routing.IETag;
+import org.spincast.core.routing.IETagFactory;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.ISpincastUtils;
@@ -31,6 +36,7 @@ import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.NameValuePair;
+import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 import org.spincast.shaded.org.apache.http.client.utils.URLEncodedUtils;
 
 import com.google.inject.Inject;
@@ -38,11 +44,32 @@ import com.google.inject.Inject;
 public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
                                                implements IRequestRequestContextAddon<R> {
 
-    private String fullUrlRaw = null;
-    private String fullUrl = null;
-    private String requestPath = null;
-    private String queryStringRaw = "";
-    private String queryString = "";
+    protected final Logger logger = LoggerFactory.getLogger(SpincastRequestRequestContextAddon.class);
+
+    private String fullUrlOriginalWithCacheBustersNonDecoded = null;
+    private String fullUrlOriginalNoCacheBustersNonDecoded = null;
+    private String fullUrlProxiedWithCacheBustersNonDecoded = null;
+    private String fullUrlProxiedNoCacheBustersNonDecoded = null;
+
+    private String fullUrlWithCacheBustersNonDecoded = null;
+    private String fullUrlWithCacheBustersDecoded = null;
+    private String fullUrlNoCacheBustersDecoded = null;
+
+    private String requestPathNoCacheBusters = null;
+    private String requestPathWithCacheBusters = null;
+    private String queryStringNonDecoded = "";
+    private String queryStringDecoded = "";
+
+    private List<IETag> ifMatchETags = null;
+    private Object ifMatchETagsLock = new Object();
+    private List<IETag> ifNoneMatchETags = null;
+    private Object ifNoneMatchETagsLock = new Object();
+
+    private Date ifModifiedSinceDate = null;
+    private Object ifModifiedSinceDateLock = new Object();
+
+    private Date ifUnmodifiedSinceDate = null;
+    private Object ifUnmodifiedSinceDateLock = new Object();
 
     private Map<String, List<String>> queryStringParams;
     private Map<String, List<String>> formDatas;
@@ -55,6 +82,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     private final IXmlManager xmlManager;
     private final ISpincastUtils spincastUtils;
     private final ISpincastConfig spincastConfig;
+    private final IETagFactory etagFactory;
 
     @Inject
     public SpincastRequestRequestContextAddon(R requestContext,
@@ -62,13 +90,15 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
                                               IJsonManager jsonManager,
                                               IXmlManager xmlManager,
                                               ISpincastUtils spincastUtils,
-                                              ISpincastConfig spincastConfig) {
+                                              ISpincastConfig spincastConfig,
+                                              IETagFactory etagFactory) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
         this.xmlManager = xmlManager;
         this.spincastUtils = spincastUtils;
         this.spincastConfig = spincastConfig;
+        this.etagFactory = etagFactory;
     }
 
     protected R getRequestContext() {
@@ -93,6 +123,10 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
 
     protected ISpincastConfig getSpincastConfig() {
         return this.spincastConfig;
+    }
+
+    protected IETagFactory getEtagFactory() {
+        return this.etagFactory;
     }
 
     protected Object getExchange() {
@@ -182,25 +216,111 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         return null;
     }
 
-    protected void validateUrlInfoCache() {
+    protected String getFullUrlOriginalNoCacheBustersNonDecoded() {
+        if(this.fullUrlOriginalNoCacheBustersNonDecoded == null) {
+            this.fullUrlOriginalNoCacheBustersNonDecoded = getServer().getFullUrlOriginal(getExchange(), false);
+        }
+        return this.fullUrlOriginalNoCacheBustersNonDecoded;
+    }
 
-        String url = getRequestContext().variables().getAsString(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_URL);
-        if(url == null) {
-            // The original not-forwarded URL route can't change.
-            if(this.fullUrlRaw != null) {
+    protected String getFullUrlOriginalWithCacheBustersNonDecoded() {
+        if(this.fullUrlOriginalWithCacheBustersNonDecoded == null) {
+            this.fullUrlOriginalWithCacheBustersNonDecoded = getServer().getFullUrlOriginal(getExchange(), true);
+        }
+        return this.fullUrlOriginalWithCacheBustersNonDecoded;
+    }
+
+    protected String getFullUrlProxiedNoCacheBustersNonDecoded() {
+        if(this.fullUrlProxiedNoCacheBustersNonDecoded == null) {
+            this.fullUrlProxiedNoCacheBustersNonDecoded = getServer().getFullUrlProxied(getExchange(), false);
+        }
+        return this.fullUrlProxiedNoCacheBustersNonDecoded;
+    }
+
+    protected String getFullUrlProxiedWithCacheBustersNonDecoded() {
+        if(this.fullUrlProxiedWithCacheBustersNonDecoded == null) {
+            this.fullUrlProxiedWithCacheBustersNonDecoded = getServer().getFullUrlProxied(getExchange(), true);
+        }
+        return this.fullUrlProxiedWithCacheBustersNonDecoded;
+    }
+
+    @Override
+    public String getFullUrlOriginal() {
+        return getFullUrlOriginal(false);
+    }
+
+    @Override
+    public String getFullUrlOriginal(boolean keepCacheBusters) {
+
+        if(keepCacheBusters) {
+            return getFullUrlOriginalWithCacheBustersNonDecoded();
+        } else {
+            return getFullUrlOriginalNoCacheBustersNonDecoded();
+        }
+    }
+
+    @Override
+    public String getFullUrlProxied() {
+        return getFullUrlProxied(false);
+    }
+
+    @Override
+    public String getFullUrlProxied(boolean keepCacheBusters) {
+        if(keepCacheBusters) {
+            return getFullUrlProxiedWithCacheBustersNonDecoded();
+        } else {
+            return getFullUrlProxiedNoCacheBustersNonDecoded();
+        }
+    }
+
+    @Override
+    public String getFullUrl() {
+        return getFullUrl(false);
+    }
+
+    @Override
+    public String getFullUrl(boolean keepCacheBusters) {
+
+        validateFullUrlInfoCache();
+        if(keepCacheBusters) {
+            return this.fullUrlWithCacheBustersDecoded;
+        } else {
+            return this.fullUrlNoCacheBustersDecoded;
+        }
+    }
+
+    protected void validateFullUrlInfoCache() {
+
+        try {
+            String urlToUse;
+
+            //==========================================
+            // If the URL has been forwarded, we use it
+            // as the regular "full Url".
+            //==========================================
+            String forwardUrl =
+                    getRequestContext().variables().getAsString(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_URL);
+            if(forwardUrl != null) {
+                urlToUse = forwardUrl;
+            } else {
+                urlToUse = getFullUrlOriginalWithCacheBustersNonDecoded();
+            }
+
+            //==========================================
+            // The regular "full URL" is already up-to-date.
+            //==========================================
+            if(this.fullUrlWithCacheBustersNonDecoded != null && this.fullUrlWithCacheBustersNonDecoded.equals(urlToUse)) {
                 return;
             }
-            url = getServer().getFullUrl(getExchange());
-        }
 
-        if(!url.equals(this.fullUrlRaw)) {
-            this.fullUrlRaw = url;
-            try {
-                this.fullUrl = URLDecoder.decode(url, "UTF-8");
-            } catch(Exception ex) {
-                throw SpincastStatics.runtimize(ex);
-            }
+            this.fullUrlWithCacheBustersNonDecoded = urlToUse;
+            this.fullUrlWithCacheBustersDecoded = URLDecoder.decode(urlToUse, "UTF-8");
+            this.fullUrlNoCacheBustersDecoded = getSpincastUtils().removeCacheBusterCodes(this.fullUrlWithCacheBustersDecoded);
+
             parseUrl();
+
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
         }
     }
 
@@ -212,8 +332,12 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
 
     protected void parseRequestPath() {
         try {
-            URL url = new URL(this.fullUrlRaw);
-            this.requestPath = url.getPath();
+            URL url = new URL(this.fullUrlWithCacheBustersDecoded);
+            this.requestPathWithCacheBusters = url.getPath();
+
+            url = new URL(this.fullUrlNoCacheBustersDecoded);
+            this.requestPathNoCacheBusters = url.getPath();
+
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
@@ -222,13 +346,13 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     protected void parseQueryString() {
 
         try {
-            URL url = new URL(this.fullUrlRaw);
+            URL url = new URL(this.fullUrlWithCacheBustersNonDecoded);
             String qs = url.getQuery();
             if(qs == null) {
                 qs = "";
             }
-            this.queryStringRaw = qs;
-            this.queryString = URLDecoder.decode(qs, "UTF-8");
+            this.queryStringNonDecoded = qs;
+            this.queryStringDecoded = URLDecoder.decode(qs, "UTF-8");
 
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -240,10 +364,10 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         try {
             Map<String, List<String>> paramsFinal = new HashMap<String, List<String>>();
 
-            String qs = this.queryStringRaw;
+            String qs = this.queryStringNonDecoded;
             if(qs == null) {
                 parseQueryString();
-                qs = this.queryStringRaw;
+                qs = this.queryStringNonDecoded;
             }
 
             List<NameValuePair> params = URLEncodedUtils.parse(qs, Charset.forName("UTF-8"));
@@ -275,35 +399,37 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public String getFullUrl() {
-
-        validateUrlInfoCache();
-        return this.fullUrl;
-    }
-
-    @Override
-    public String getOriginalFullUrl() {
-        return getServer().getFullUrl(getExchange());
-    }
-
-    @Override
     public String getRequestPath() {
-
-        validateUrlInfoCache();
-        return this.requestPath;
+        return getRequestPath(false);
     }
 
     @Override
-    public String getQueryString() {
+    public String getRequestPath(boolean keepCacheBusters) {
 
-        validateUrlInfoCache();
-        return this.queryString;
+        validateFullUrlInfoCache();
+
+        if(keepCacheBusters) {
+            return this.requestPathWithCacheBusters;
+        } else {
+            return this.requestPathNoCacheBusters;
+        }
+    }
+
+    @Override
+    public String getQueryString(boolean withQuestionMark) {
+
+        validateFullUrlInfoCache();
+
+        if(StringUtils.isBlank(this.queryStringDecoded)) {
+            return "";
+        }
+        return (withQuestionMark ? "?" : "") + this.queryStringDecoded;
     }
 
     @Override
     public Map<String, List<String>> getQueryStringParams() {
 
-        validateUrlInfoCache();
+        validateFullUrlInfoCache();
         return this.queryStringParams;
     }
 
@@ -560,6 +686,102 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     @Override
     public boolean isHttps() {
         return getFullUrl().trim().toLowerCase().startsWith("https://");
+    }
+
+    @Override
+    public List<IETag> getEtagsFromIfMatchHeader() {
+
+        if(this.ifMatchETags == null) {
+            synchronized(this.ifMatchETagsLock) {
+                if(this.ifMatchETags == null) {
+                    this.ifMatchETags = parseETagHeader(HttpHeaders.IF_MATCH);
+                }
+            }
+        }
+
+        return this.ifMatchETags;
+    }
+
+    @Override
+    public List<IETag> getEtagsFromIfNoneMatchHeader() {
+
+        if(this.ifNoneMatchETags == null) {
+            synchronized(this.ifNoneMatchETagsLock) {
+                if(this.ifNoneMatchETags == null) {
+                    this.ifNoneMatchETags = parseETagHeader(HttpHeaders.IF_NONE_MATCH);
+                }
+            }
+        }
+
+        return this.ifNoneMatchETags;
+    }
+
+    protected List<IETag> parseETagHeader(String headerName) {
+
+        List<IETag> etags = new ArrayList<IETag>();
+
+        List<String> eTagHeaders = getHeader(headerName);
+        if(eTagHeaders != null) {
+
+            for(String eTagHeader : eTagHeaders) {
+
+                // Thanks to http://stackoverflow.com/a/1757107/843699
+                String[] tokens = eTagHeader.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                for(String eTagStr : tokens) {
+                    try {
+                        IETag eTag = getEtagFactory().deserializeHeaderValue(eTagStr);
+                        etags.add(eTag);
+                    } catch(Exception ex) {
+                        this.logger.info("Invalid " + headerName + " ETag header value received: " + eTagStr);
+                    }
+                }
+            }
+        }
+        return etags;
+    }
+
+    @Override
+    public Date getDateFromIfModifiedSinceHeader() {
+
+        if(this.ifModifiedSinceDate == null) {
+            synchronized(this.ifModifiedSinceDateLock) {
+                if(this.ifModifiedSinceDate == null) {
+                    this.ifModifiedSinceDate = parseDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
+                }
+            }
+        }
+        return this.ifModifiedSinceDate;
+    }
+
+    @Override
+    public Date getDateFromIfUnmodifiedSinceHeader() {
+
+        if(this.ifUnmodifiedSinceDate == null) {
+            synchronized(this.ifUnmodifiedSinceDateLock) {
+                if(this.ifUnmodifiedSinceDate == null) {
+                    this.ifUnmodifiedSinceDate = parseDateHeader(HttpHeaders.IF_UNMODIFIED_SINCE);
+                }
+            }
+        }
+        return this.ifUnmodifiedSinceDate;
+    }
+
+    /**
+     * Returns NULL if the date is not there or not parsable.
+     */
+    protected Date parseDateHeader(String headerName) {
+        String value = getHeaderFirst(headerName);
+        if(value == null) {
+            return null;
+        }
+
+        try {
+            Date date = DateUtils.parseDate(value);
+            return date;
+        } catch(Exception ex) {
+            this.logger.info("Invalid '" + headerName + "' date received: " + value);
+        }
+        return null;
     }
 
 }

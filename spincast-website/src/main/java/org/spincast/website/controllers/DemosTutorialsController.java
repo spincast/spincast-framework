@@ -32,9 +32,8 @@ public class DemosTutorialsController {
     public void fullWebsite(IAppRequestContext context) {
         context.response().sendHtmlTemplate("/templates/demos/fullWebsite.html", null);
     }
-    
+
     public void todoList(IAppRequestContext context) {
         context.response().sendHtmlTemplate("/templates/demos/todoList.html", null);
     }
-
 }

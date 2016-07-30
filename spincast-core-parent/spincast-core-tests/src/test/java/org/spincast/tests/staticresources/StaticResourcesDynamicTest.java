@@ -3,6 +3,7 @@ package org.spincast.tests.staticresources;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
@@ -12,24 +13,43 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
+import com.google.inject.Inject;
+
 public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationTestBase {
+
+    @Inject
+    protected ISpincastRouterConfig spincastRouterConfig;
+
+    protected ISpincastRouterConfig getSpincastRouterConfig() {
+        return this.spincastRouterConfig;
+    }
+
+    @Override
+    public void beforeTest() {
+        super.beforeTest();
+
+        try {
+            FileUtils.cleanDirectory(getTestingWritableDir());
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
 
     @Test
     public void dynamicFileSavedByMainHandler() throws Exception {
 
         String generatedCssFilePath = createTestingFilePath("generated.css");
         final File generatedCssFile = new File(generatedCssFilePath);
-        if(generatedCssFile.isFile()) {
-            generatedCssFile.delete();
-        }
+        assertFalse(generatedCssFile.isFile());
 
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").fileSystem(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -77,14 +97,12 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         String generatedCssFilePath = createTestingFilePath("generated.css");
         final File generatedCssFile = new File(generatedCssFilePath);
-        if(generatedCssFile.isFile()) {
-            generatedCssFile.delete();
-        }
+        assertFalse(generatedCssFile.isFile());
 
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").fileSystem(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -125,14 +143,12 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         String generatedCssFilePath = createTestingFilePath("generated.css");
         final File generatedCssFile = new File(generatedCssFilePath);
-        if(generatedCssFile.isFile()) {
-            generatedCssFile.delete();
-        }
+        assertFalse(generatedCssFile.isFile());
 
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").fileSystem(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -174,13 +190,11 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         String dynamicDirPath = createTestingFilePath("generated");
         final File dynamicDir = new File(dynamicDirPath);
-        if(dynamicDir.isDirectory()) {
-            FileUtils.deleteQuietly(dynamicDir);
-        }
+        assertFalse(dynamicDir.exists());
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().dir("/generated/*{resourcePath}").fileSystem(dynamicDir.getAbsolutePath())
+        getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
                    .save(new IHandler<IDefaultRequestContext>() {
 
                        @Override
@@ -237,13 +251,11 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         String dynamicDirPath = createTestingFilePath("generated");
         final File dynamicDir = new File(dynamicDirPath);
-        if(dynamicDir.isDirectory()) {
-            FileUtils.deleteQuietly(dynamicDir);
-        }
+        assertFalse(dynamicDir.exists());
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().dir("/generated/*{resourcePath}").fileSystem(dynamicDir.getAbsolutePath())
+        getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
                    .save(new IHandler<IDefaultRequestContext>() {
 
                        @Override
@@ -276,13 +288,11 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         String dynamicDirPath = createTestingFilePath("generated");
         final File dynamicDir = new File(dynamicDirPath);
-        if(dynamicDir.isDirectory()) {
-            FileUtils.deleteQuietly(dynamicDir);
-        }
+        assertFalse(dynamicDir.isFile());
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().dir("/generated/*{resourcePath}").fileSystem(dynamicDir.getAbsolutePath())
+        getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
                    .save(new IHandler<IDefaultRequestContext>() {
 
                        @Override
@@ -325,7 +335,252 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         assertEquals("path : someDir/test2.css", response.getContentAsString());
         // Still 2!
         assertEquals(2, nbrTimeCalled[0]);
+    }
 
+    @Test
+    public void dynamicDirSplatParamUsedInTargetPath() throws Exception {
+
+        try {
+            getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/*{splat}")
+                       .save(new IHandler<IDefaultRequestContext>() {
+
+                           @Override
+                           public void handle(IDefaultRequestContext context) {
+                               fail();
+                           }
+                       });
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void dynamicDirDynParamUserdInTargetPath() throws Exception {
+
+        try {
+            getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/${splat}")
+                       .save(new IHandler<IDefaultRequestContext>() {
+
+                           @Override
+                           public void handle(IDefaultRequestContext context) {
+                               fail();
+                           }
+                       });
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void dynamicFileWithDynParams() throws Exception {
+
+        final int[] nbrTimeCalled = new int[]{0};
+        final String content = "body{ font-size:12px;}";
+
+        File file = new File(getTestingWritableDir() + "/somepath/test1.css");
+        assertFalse(file.exists());
+
+        getRouter().file("/test/${name}")
+                   .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
+                   .save(new IHandler<IDefaultRequestContext>() {
+
+                       @Override
+                       public void handle(IDefaultRequestContext context) {
+                           nbrTimeCalled[0]++;
+                           context.response().sendCharacters(content, "text/css");
+                       }
+                   });
+
+        IHttpResponse response = GET("/test/test1.css").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+
+        response = GET("/test/test1.css").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        // Still called only once!
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+    }
+
+    @Test
+    public void dynamicFileWithDynParamNotLast() throws Exception {
+
+        final int[] nbrTimeCalled = new int[]{0};
+        final String content = "body{ font-size:12px;}";
+
+        File file = new File(getTestingWritableDir() + "/somepath/test1.css");
+        assertFalse(file.exists());
+
+        getRouter().file("/test/${name}/coco")
+                   .pathAbsolute(getTestingWritableDir() + "/somepath/${name}.css")
+                   .save(new IHandler<IDefaultRequestContext>() {
+
+                       @Override
+                       public void handle(IDefaultRequestContext context) {
+                           nbrTimeCalled[0]++;
+                           context.response().sendCharacters(content, "text/css");
+                       }
+                   });
+
+        IHttpResponse response = GET("/test/test1").send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        response = GET("/test/test1/coco").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+
+        response = GET("/test/test1/coco").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        // Still called only once!
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+    }
+
+    @Test
+    public void dynamicFileWithTwoDynParams() throws Exception {
+
+        final int[] nbrTimeCalled = new int[]{0};
+        final String content = "body{ font-size:12px;}";
+
+        File file = new File(getTestingWritableDir() + "/somepath/test2/test1.css");
+        assertFalse(file.exists());
+
+        getRouter().file("/${param1}/${param2}")
+                   .pathAbsolute(getTestingWritableDir() + "/somepath/${param2}/${param1}.css")
+                   .save(new IHandler<IDefaultRequestContext>() {
+
+                       @Override
+                       public void handle(IDefaultRequestContext context) {
+                           nbrTimeCalled[0]++;
+                           context.response().sendCharacters(content, "text/css");
+                       }
+                   });
+
+        IHttpResponse response = GET("/test1/test2").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+
+        response = GET("/test1/test2").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        // Still called only once!
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+    }
+
+    @Test
+    public void dynamicFileWithTwoDynParamButSpecificTargetFile() throws Exception {
+
+        final int[] nbrTimeCalled = new int[]{0};
+        final String content = "body{ font-size:12px;}";
+
+        File file = new File(getTestingWritableDir() + "/somepath/toto.css");
+        assertFalse(file.exists());
+
+        getRouter().file("/${param1}")
+                   .pathAbsolute(getTestingWritableDir() + "/somepath/toto.css")
+                   .save(new IHandler<IDefaultRequestContext>() {
+
+                       @Override
+                       public void handle(IDefaultRequestContext context) {
+                           nbrTimeCalled[0]++;
+                           context.response().sendCharacters(content, "text/css");
+                       }
+                   });
+
+        IHttpResponse response = GET("/test").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+
+        response = GET("/test").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("text/css", response.getContentType());
+        assertEquals(content, response.getContentAsString());
+
+        // Still called only once!
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(file.isFile());
+    }
+
+    @Test
+    public void dynamicFileWithDynParamsInvalid() throws Exception {
+
+        final int[] nbrTimeCalled = new int[]{0};
+        final String content = "body{ font-size:12px;}";
+
+        File file = new File(getTestingWritableDir() + "/somepath/test1.css");
+        assertFalse(file.exists());
+
+        File file2 = new File(getTestingWritableDir() + "/somepath/nope/test1.css");
+        assertFalse(file2.exists());
+
+        getRouter().file("/test/${name}")
+                   .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
+                   .save(new IHandler<IDefaultRequestContext>() {
+
+                       @Override
+                       public void handle(IDefaultRequestContext context) {
+                           nbrTimeCalled[0]++;
+                           context.response().sendCharacters(content, "text/css");
+                       }
+                   });
+
+        IHttpResponse response = GET("/test/nope/test1.css").send();
+
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        assertEquals(0, nbrTimeCalled[0]);
+        assertFalse(file.isFile());
+        assertFalse(file2.isFile());
+    }
+
+    @Test
+    public void dynamicFileWithSplatParams() throws Exception {
+
+        try {
+            getRouter().file("/test/*{name}")
+                       .pathAbsolute(getTestingWritableDir() + "/somepath/titi")
+                       .save(new IHandler<IDefaultRequestContext>() {
+
+                           @Override
+                           public void handle(IDefaultRequestContext context) {
+                               fail();
+                           }
+                       });
+            fail();
+        } catch(Exception ex) {
+        }
     }
 
 }

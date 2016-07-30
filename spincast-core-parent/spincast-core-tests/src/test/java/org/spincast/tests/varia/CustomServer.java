@@ -91,8 +91,23 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public String getFullUrl(Object exchange) {
+    public String getFullUrlOriginal(Object exchange) {
+        return getFullUrlOriginal(exchange, false);
+    }
+
+    @Override
+    public String getFullUrlOriginal(Object exchange, boolean keepCacheBusters) {
         return ((CustomExchange)exchange).fullUrl;
+    }
+
+    @Override
+    public String getFullUrlProxied(Object exchange) {
+        return getFullUrlProxied(exchange, false);
+    }
+
+    @Override
+    public String getFullUrlProxied(Object exchange, boolean keepCacheBusters) {
+        return getFullUrlOriginal(exchange, keepCacheBusters);
     }
 
     @Override

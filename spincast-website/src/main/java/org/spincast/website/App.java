@@ -1,6 +1,5 @@
 package org.spincast.website;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.DemosTutorialsController;
 import org.spincast.website.controllers.ErrorController;
@@ -18,7 +16,6 @@ import org.spincast.website.controllers.MainPagesController;
 import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
 import org.spincast.website.exchange.IAppRequestContext;
 import org.spincast.website.exchange.IAppRouter;
-import org.spincast.website.filters.GlobalTemplateVariablesAdderFilter;
 import org.spincast.website.guice.AppModule;
 
 import com.google.common.collect.Lists;
@@ -93,7 +90,6 @@ public class App {
     private final AdminController adminController;
     private final DemosTutorialsController demosTutorialsControllerController;
     private final ISpincastFilters<IAppRequestContext> spincastFilters;
-    private final GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter;
     private final WebsocketsDemoEchoAllController websocketsDemoEchoAllController;
 
     @Inject
@@ -106,7 +102,6 @@ public class App {
                AdminController adminController,
                DemosTutorialsController demosTutorialsControllerController,
                ISpincastFilters<IAppRequestContext> spincastFilters,
-               GlobalTemplateVariablesAdderFilter globalTemplateVariablesAdderFilter,
                WebsocketsDemoEchoAllController websocketsDemoEchoAllController) {
         this.server = server;
         this.appConfig = config;
@@ -117,7 +112,6 @@ public class App {
         this.adminController = adminController;
         this.demosTutorialsControllerController = demosTutorialsControllerController;
         this.spincastFilters = spincastFilters;
-        this.globalTemplateVariablesAdderFilter = globalTemplateVariablesAdderFilter;
         this.websocketsDemoEchoAllController = websocketsDemoEchoAllController;
     }
 
@@ -155,10 +149,6 @@ public class App {
 
     protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
         return this.spincastFilters;
-    }
-
-    protected GlobalTemplateVariablesAdderFilter getGlobalTemplateVariablesAdderFilter() {
-        return this.globalTemplateVariablesAdderFilter;
     }
 
     protected WebsocketsDemoEchoAllController getWebsocketsDemoEchoAllController() {
@@ -225,27 +215,6 @@ public class App {
     }
 
     /**
-     * Return an empty directory for the feeds.
-     */
-    protected File getEmptyFeedDir() {
-
-        try {
-            File feedDir = new File(getConfig().getSpincastWritableDir().getAbsolutePath() + "/feeds");
-            FileUtils.deleteDirectory(feedDir);
-
-            boolean result = feedDir.mkdirs();
-            if(!result) {
-                throw new RuntimeException("Unable to create the feed directory: " + feedDir.getAbsolutePath());
-            }
-
-            return feedDir;
-
-        } catch(Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
-    }
-
-    /**
      * The application's routes
      */
     protected void addRoutes() {
@@ -273,12 +242,6 @@ public class App {
         router.before(getSpincastFilters()::addSecurityHeaders);
 
         //==========================================
-        // Filter that will add some global variables that will be 
-        // available to any following templating engine evaluation.
-        //==========================================
-        router.before(getGlobalTemplateVariablesAdderFilter()::apply);
-
-        //==========================================
         // Not Found (404) handler
         //==========================================
         router.notFound(getErrorController()::notFoundHandler);
@@ -291,49 +254,62 @@ public class App {
         //==========================================
         // News Feed, as a dynamic resouce
         //==========================================
-        File feedDir = getEmptyFeedDir();
-        router.file("/rss").fileSystem(feedDir + "/rss.xml").save(getFeedController()::rss);
+        router.file("/rss").pathRelative("/feed/rss.xml").save(getFeedController()::rss);
 
         //==========================================
         // Admin - protected area
         //==========================================
         router.httpAuth("/admin", AppConstants.HTTP_AUTH_REALM_NAME_ADMIN);
-        router.GET("/admin").save(getAdminController()::index);
+        router.GET("/admin").noCache().save(getAdminController()::index);
         router.GET("/admin/news").save(getAdminController()::news);
 
         //==========================================
-        // Pages
+        // Static Pages
         //==========================================
-        router.GET("/").save(appCtl::index);
-        router.GET("/presentation").save(appCtl::presentation);
-        router.GET("/news").save(appCtl::news);
-        router.GET("/news/${newsId:<N>}").save(appCtl::newsEntry);
-        router.GET("/documentation").save(appCtl::documentation);
-        router.GET("/download").save(appCtl::download);
-        router.GET("/plugins").save(appCtl::plugins);
-        router.GET("/community").save(appCtl::community);
-        router.GET("/about").save(appCtl::about);
-        router.GET("/plugins/${pluginName}").save(appCtl::plugin);
-        router.GET("/more").save(appCtl::more);
+        router.file("/").pathRelative("/pages/index.html").save(appCtl::index);
+        router.file("/presentation").pathRelative("/pages/presentation.html").save(appCtl::presentation);
+        router.file("/news").pathRelative("/pages/news.html").save(appCtl::news);
+        router.file("/news").pathRelative("/pages/news.html").save(appCtl::news);
+        router.file("/news/${newsId:<N>}").pathRelative("/pages/news/${newsId:<N>}.html").save(appCtl::newsEntry);
+        router.file("/documentation").pathRelative("/pages/documentation.html").save(appCtl::documentation);
+        router.file("/download").pathRelative("/pages/download.html").save(appCtl::download);
+        router.file("/plugins").pathRelative("/pages/plugins.html").save(appCtl::plugins);
+        router.file("/plugins/${pluginName}").pathRelative("/pages/plugins/${pluginName}.html").save(appCtl::plugin);
+        router.file("/community").pathRelative("/pages/community.html").save(appCtl::community);
+        router.file("/about").pathRelative("/pages/about.html").save(appCtl::about);
+        router.file("/more").pathRelative("/pages/more.html").save(appCtl::about);
 
         //==========================================
         // Demos/Tutorials
         //==========================================
         router.redirect("/demos-tutorials").temporarily().to("/demos-tutorials/hello-world");
-        router.GET("/demos-tutorials/hello-world").save(demoCtl::helloWorld);
-        router.GET("/demos-tutorials/full-website").save(demoCtl::fullWebsite);
-        router.GET("/demos-tutorials/todo-list").save(demoCtl::todoList);
 
-        router.GET("/demos-tutorials/http-authentication").save(demoCtl::httpAuthentication);
+        router.file("/demos-tutorials/hello-world")
+              .pathRelative("/pages/demos-tutorials/hello-world.html")
+              .save(demoCtl::helloWorld);
+
+        router.file("/demos-tutorials/full-website")
+              .pathRelative("/pages/demos-tutorials/full-website.html")
+              .save(demoCtl::fullWebsite);
+
+        router.file("/demos-tutorials/todo-list")
+              .pathRelative("/pages/demos-tutorials/todo-list.html")
+              .save(demoCtl::todoList);
+
+        router.file("/demos-tutorials/http-authentication")
+              .pathRelative("/pages/demos-tutorials/http-authentication.html")
+              .save(demoCtl::httpAuthentication);
         router.httpAuth("/demos-tutorials/http-authentication/protected", AppConstants.HTTP_AUTH_REALM_NAME_EXAMPLE);
-        router.GET("/demos-tutorials/http-authentication/protected").save(demoCtl::httpAuthenticationProtectedPage);
         router.redirect("/protected_example").to("/demos-tutorials/http-authentication/protected");
+        router.file("/demos-tutorials/http-authentication/protected")
+              .pathRelative("/pages/demos-tutorials/http-authentication/protected.html")
+              .save(demoCtl::httpAuthenticationProtectedPage);
 
-        router.GET("/demos-tutorials/websockets").save(demoCtl::webSockets);
+        router.file("/demos-tutorials/websockets")
+              .pathRelative("/pages/demos-tutorials/websockets.html")
+              .save(demoCtl::webSockets);
         router.websocket("/demos-tutorials/websockets/echo-all-endpoint").save(getWebsocketsDemoEchoAllController());
         router.redirect("/showcase/websockets/echo-all").to("/demos-tutorials/websockets");
         router.redirect("/showcase/websockets/echo-all-endpoint").to("/demos-tutorials/websockets/echo-all-endpoint");
-
     }
-
 }

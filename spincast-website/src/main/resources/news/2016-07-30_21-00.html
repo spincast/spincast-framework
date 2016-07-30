@@ -1,0 +1,43 @@
+<!-- META_START
+id=10
+dateUTC=2016-07-30 21:00
+title=Etags / Cache headers / No cache / Cache busting
+META_END -->
+
+<p>
+	You can guess it from the title : this new release is all about HTTP Caching! HTTP Caching is a fundamental
+	part of any web framework and was obviously a required step before Spincast 1.0.0.
+</p>
+<p>
+	<ul>
+		<li>
+			You can find all the documentation in the new <a href="{{appUrlPrefix}}/documentation#http_caching">HTTP Caching</a> section.
+		</li>
+		<li>
+			Most of the tests can be found in the 
+			<a href="https://github.com/spincast/spincast-framework/blob/master/spincast-core-parent/spincast-core-tests/src/test/java/org/spincast/tests/CacheHeadersTest.java">CacheHeadersTest.java</a> class.
+		</li>
+	</ul>
+</p>
+<p>
+	Many frameworks only manage a very little part of the <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">HTTP specification</a>
+	regarding caching. In general, they limit their support to <code>GET</code> requests by returning a <code>304 - Not Modified</code> response
+	instead of the requested resource if this resource hasn't changed, and they validate this by hashing the generated resource and setting the result
+	as an <code>ETag</code> header. This is useful in some cases, but is in fact very limited... HTTP caching is <em>way</em> more sophisticated than this!
+</p>
+<p>
+	At the core of HTTP Caching management using Spincast, there is a new 
+	request context add-on : <code>"httpHeaders()"</code>. This add-on helps to create very compliant <code>REST</code> endpoints. 
+	Most of the "freshness" headers are managed : <code>If-Match</code>, <code>If-None-Match</code>, 
+	<code>If-Modified-Since</code> and <code>If-Unmodified-Since</code>. In the other direction, the add-on helps to send
+	<code>Cache-Control</code>, <code>ETag</code> and <code>Last-Modified</code> headers. It is also possible to send 
+	"no cache" headers to tell a client that it should never cache the resource, at all. Some of those cache headers
+	can also be specified on the <code>routes</code>, directly. 
+</p>
+<p>
+	Finally, a <code>Cache Busting</code> mechanism has been added. By adding a special code to the URL of a resource, you
+	can easily invalidate the cached versions clients may have of it. Read more about it 
+	<a href="{{appUrlPrefix}}/documentation#http_caching_cache_busting">here</a>.
+</p>
+
+

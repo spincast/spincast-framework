@@ -185,10 +185,14 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
 
     /**
      * Start the creation of a <code>static resource</code> file.
-     * 
+     * <p>
+     * Only a <code>GET</code> or a <code>HEAD</code> request will be able
+     * to access this resource.
+     * </p>
+     * <p>
      * No "before" and "after" filters will be applied to those, since the request
      * won't even reach the framework.
-     * 
+     * </p>
      * @param url The url which will trigger the output of this
      *            static resource.
      */
@@ -196,10 +200,14 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
 
     /**
      * Start the creation of a <code>static resource</code> directory.
-     * 
+     * <p>
+     * Only a <code>GET</code> or a <code>HEAD</code> request will be able
+     * to access the resources below this directory.
+     * </p>
+     * <p>
      * No "before" and "after" filters will be applied to those, since the request
      * won't even reach the framework.
-     * 
+     * </p>
      * @param url The url which will trigger the output of this
      *            static resource.
      */
@@ -514,7 +522,5 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * @param oldPath The old path that needs to be redirected.
      */
     public IRedirectRuleBuilder redirect(String oldPath);
-    
-    
-    
+
 }

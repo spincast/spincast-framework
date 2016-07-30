@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+import org.spincast.core.routing.IStaticResourceCacheConfig;
+
 /**
  * The configurations required by Spincast.
  */
@@ -144,11 +146,15 @@ public interface ISpincastConfig {
     public List<String> getContentTypesToSkipGziping();
 
     /**
-     * A directory where generated files and temporary files 
+     * A directory where temporary generated files 
      * can be written by Spincast.
-     * 
+     * <p>
+     * This directory will be emptied each time the application starts.
+     * </p>
+     * <p>
      * The default value uses <code>System.getProperty("java.io.tmpdir")</code>
-     * to create a temporary directory.
+     * to create the directory.
+     * </p>
      * 
      * @return a directory with write permissions for Spincast.
      */
@@ -174,5 +180,67 @@ public interface ISpincastConfig {
      * 
      */
     public int getRouteForwardingMaxNumber();
+
+    /**
+     * When using the <code>.cache()</code> method on
+     * a route builder, this is the default number of
+     * seconds to use.
+     */
+    public int getDefaultRouteCacheFilterSecondsNbr();
+
+    /**
+     * When using the <code>.cache()</code> method on
+     * a route builder, is the cache private by default?
+     */
+    public boolean isDefaultRouteCacheFilterPrivate();
+
+    /**
+     * When using the <code>.cache()</code> method on
+     * a route builder, this is the default number of
+     * seconds to use by the CDNs.
+     */
+    public Integer getDefaultRouteCacheFilterSecondsNbrCdns();
+
+    /**
+     * The default cache configurations for the static resource.
+     * <p>
+     * This will be used if no <code>cache(...)</code> method is
+     * used when building the static resource's route.
+     * </p>
+     * 
+     * @param isDynamicResource if <code>true</code>, a generator is 
+     * use when the resource doesn't exist. Those kind of generated resources
+     * may be modified more often then trully static resources, so we may
+     * want to use a different caching period.
+     * 
+     * @return the default cache configuration to use or <code>null</code>
+     * so no cache headers are sent at all.
+     */
+    public IStaticResourceCacheConfig getDefaultStaticResourceCacheConfig(boolean isDynamicResource);
+
+    /**
+     * If <code>true</code>, the dynamic resources (static resource
+     * which have a generator in case they don't exist) won't be
+     * saved to disk. THhis means that the generator will always be called,
+     * so chnages during development will be picked up.
+     */
+    public boolean isDisableWriteToDiskDynamicStaticResource();
+
+    /**
+     * Should the GlobalTemplateVariablesAdderFilter be automatically
+     * added to all routes?
+     * <p>
+     * This filter bind some default variables to be used by the 
+     * templating engine.
+     * </p>
+     */
+    public boolean isAddDefaultTemplateVariablesFilter();
+
+    /**
+     * If {@link #isAddDefaultTemplateVariablesFilter() addGlobalTemplateVariablesAdderFilter}
+     * erturns <code>true/code>, then this is the position at
+     * which the filter will be added.
+     */
+    public int getDefaultTemplateVariablesFilterPosition();
 
 }

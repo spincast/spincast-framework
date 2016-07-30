@@ -21,12 +21,12 @@ import javax.net.ssl.SSLContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.httpclient.IHttpResponseFactory;
 import org.spincast.plugins.httpclient.builders.SpincastHttpRequestBuilderBase;
-import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils.HttpHeadersExtra;
 import org.spincast.plugins.httpclient.websocket.ISpincastHttpClientWithWebsocketConfig;
 import org.spincast.plugins.httpclient.websocket.ISpincastWebsocketClientWriter;
 import org.spincast.plugins.httpclient.websocket.IWebsocketClientHandler;
@@ -38,11 +38,9 @@ import org.spincast.shaded.org.apache.http.client.methods.HttpRequestBase;
 import org.spincast.shaded.org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.spincast.shaded.org.apache.http.cookie.Cookie;
 import org.spincast.shaded.org.apache.http.ssl.SSLContexts;
-import org.xnio.ByteBufferSlicePool;
 import org.xnio.OptionMap;
 import org.xnio.OptionMap.Builder;
 import org.xnio.Options;
-import org.xnio.Pool;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 import org.xnio.http.RedirectException;
@@ -53,6 +51,7 @@ import com.google.common.net.HttpHeaders;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
+import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.websockets.WebSocketExtension;
 import io.undertow.websockets.client.WebSocketClient;
 import io.undertow.websockets.client.WebSocketClient.ConnectionBuilder;
@@ -405,20 +404,20 @@ public class WebsocketRequestBuilder extends SpincastHttpRequestBuilderBase<IWeb
         return this.sslContext;
     }
 
-    protected Pool<ByteBuffer> createByteBufferPool() {
-        return new ByteBufferSlicePool(1024, 1024);
+    protected DefaultByteBufferPool createByteBufferPool() {
+        return new DefaultByteBufferPool(false, 2048);
     }
 
     protected WebSocketChannel createWebSocketChannel() {
 
         XnioWorker worker = createXnioWorker();
-        Pool<ByteBuffer> bufferPool = createByteBufferPool();
+        DefaultByteBufferPool bufferPool = createByteBufferPool();
 
         return createWebSocketChannel(worker, bufferPool, getUrl(), 0);
     }
 
     protected WebSocketChannel createWebSocketChannel(XnioWorker worker,
-                                                      Pool<ByteBuffer> bufferPool,
+                                                      DefaultByteBufferPool bufferPool,
                                                       String url,
                                                       int redirectionNbr) {
 
@@ -467,7 +466,7 @@ public class WebsocketRequestBuilder extends SpincastHttpRequestBuilderBase<IWeb
     }
 
     protected ConnectionBuilder createConnectionBuilder(XnioWorker worker,
-                                                        Pool<ByteBuffer> bufferPool,
+                                                        DefaultByteBufferPool bufferPool,
                                                         String url) {
 
         URI uri = createWebsocketUri(url);

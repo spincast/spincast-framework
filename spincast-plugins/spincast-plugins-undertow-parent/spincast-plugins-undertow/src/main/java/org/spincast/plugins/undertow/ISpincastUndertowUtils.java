@@ -11,14 +11,15 @@ import io.undertow.websockets.spi.WebSocketHttpExchange;
 public interface ISpincastUndertowUtils {
 
     /**
-     * Get the custom variables Map associated with the
+     * Gets the custom variables Map associated with the
      * specified exchange object.
      */
     public Map<String, String> getRequestCustomVariables(HttpServerExchange exchange);
 
     /**
-     * Get the custom variables Map associated with the
+     * Gets the custom variables Map associated with the
      * specified exchange object (when wrpped inside a WebSocketHttpExchange).
      */
     public Map<String, String> getRequestCustomVariables(WebSocketHttpExchange exchange);
+
 }

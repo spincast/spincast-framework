@@ -50,6 +50,11 @@ public interface IRequestContext<R extends IRequestContext<?>> {
     public IVariablesRequestContextAddon<R> variables();
 
     /**
+     * Cache headers related methods.
+     */
+    public ICacheHeadersRequestContextAddon<R> cacheHeaders();
+
+    /**
      * Easy access to the <code>IJsonManager</code>,
      * Json related methods.
      */

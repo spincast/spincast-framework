@@ -197,6 +197,11 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
                     setCurrentClassLoopPosition(i + 1);
 
+                    if(loopsNbr > 1) {
+                        this.logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopsNbr + " of " +
+                                         "test class " + getTestClass().getJavaClass().getName());
+                    }
+
                     //==========================================
                     // We set the test class instance to null so 
                     // a new instance is created for each loop.
@@ -322,6 +327,12 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         int sleep = getMethodLoopsSleep(method.getMethod());
         int loopsNbr = getMethodLoopsNbr(method.getMethod());
         for(int i = 0; i < loopsNbr; i++) {
+
+            if(loopsNbr > 1) {
+                this.logger.info("Execution " + (i + 1) + "/" + loopsNbr + " of " +
+                                 "test " + method.getMethod().getName() + " from " +
+                                 "test class " + getTestClass().getJavaClass().getName());
+            }
 
             super.runChild(method, notifier);
 

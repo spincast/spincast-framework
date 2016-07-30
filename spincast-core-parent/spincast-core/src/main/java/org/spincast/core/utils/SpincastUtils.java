@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +35,9 @@ import com.google.inject.Inject;
 public class SpincastUtils implements ISpincastUtils {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastUtils.class);
+
+    private String cacheBusterCode;
+    private final Object cacheBusterCodeLock = new Object();
 
     private final ISpincastConfig spincastConfig;
 
@@ -74,6 +78,40 @@ public class SpincastUtils implements ISpincastUtils {
             }
         }
         return false;
+    }
+
+    @Override
+    public String getMimeTypeFromMultipleSources(String responseContentTypeHeader,
+                                                 String resourcePath,
+                                                 String requestPath) {
+
+        //==========================================
+        // Content-Type header defined, we use this.
+        //==========================================
+        if(responseContentTypeHeader != null) {
+            return responseContentTypeHeader;
+        }
+
+        //==========================================
+        // Check the target file extension.
+        //==========================================
+        if(resourcePath != null) {
+            String mimeType = getMimeTypeFromPath(resourcePath);
+            if(mimeType != null) {
+                return mimeType;
+            }
+        }
+
+        //==========================================
+        // Check the URL file extension, if any (not required,
+        // "/image" for example can point to an ".png".
+        //==========================================
+        String contentTypeFound = getMimeTypeFromPath(requestPath);
+        if(contentTypeFound != null) {
+            return contentTypeFound;
+        }
+
+        return null;
     }
 
     @Override
@@ -500,6 +538,34 @@ public class SpincastUtils implements ISpincastUtils {
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    @Override
+    public String getCacheBusterCode() {
+
+        if(this.cacheBusterCode == null) {
+            synchronized(this.cacheBusterCodeLock) {
+                if(this.cacheBusterCode == null) {
+                    //==========================================
+                    // By default, the cache buster code change
+                    // everytime the application is restarted.
+                    //==========================================
+                    this.cacheBusterCode = "spincastcb_" + new Date().getTime() + "_";
+                }
+            }
+        }
+        return this.cacheBusterCode;
+    }
+
+    @Override
+    public String removeCacheBusterCodes(String text) {
+
+        if(StringUtils.isBlank(text)) {
+            return text;
+        }
+
+        String result = text.replaceAll("spincastcb_[\\d]{13}_", "");
+        return result;
     }
 
 }

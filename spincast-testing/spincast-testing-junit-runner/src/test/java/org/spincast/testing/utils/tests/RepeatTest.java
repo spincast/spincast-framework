@@ -42,7 +42,7 @@ public class RepeatTest implements IBeforeAfterClassMethodsProvider, IRepeatedCl
             this.test2CalledTime = System.currentTimeMillis();
         } else if(this.test2Called == 1) {
             long sleep = System.currentTimeMillis() - this.test2CalledTime;
-            assertTrue(sleep >= 500);
+            assertTrue(sleep + "", sleep >= 400);
         }
 
         this.test2Called++;

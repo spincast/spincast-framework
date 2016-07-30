@@ -1,8 +1,5 @@
 package org.spincast.plugins.routing;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.exceptions.RedirectException;
@@ -11,6 +8,8 @@ import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRedirectRuleBuilder;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.plugins.routing.utils.IReplaceDynamicParamsResult;
+import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.assistedinject.Assisted;
@@ -26,16 +25,19 @@ public class RedirectRuleBuilder<R extends IRequestContext<?>, W extends IWebsoc
     private final IRouter<R, W> router;
     private final String oldPath;
     private final ISpincastRouterConfig spincastRouterConfig;
+    private final ISpincastRoutingUtils spincastRoutingUtils;
 
     private boolean permanently = true;
 
     @AssistedInject
     public RedirectRuleBuilder(@Assisted IRouter<R, W> router,
                                @Assisted String oldPath,
-                               ISpincastRouterConfig spincastRouterConfig) {
+                               ISpincastRouterConfig spincastRouterConfig,
+                               ISpincastRoutingUtils spincastRoutingUtils) {
         this.router = router;
         this.oldPath = oldPath;
         this.spincastRouterConfig = spincastRouterConfig;
+        this.spincastRoutingUtils = spincastRoutingUtils;
     }
 
     protected IRouter<R, W> getRouter() {
@@ -48,6 +50,10 @@ public class RedirectRuleBuilder<R extends IRequestContext<?>, W extends IWebsoc
 
     protected ISpincastRouterConfig getSpincastRouterConfig() {
         return this.spincastRouterConfig;
+    }
+
+    protected ISpincastRoutingUtils getSpincastRoutingUtils() {
+        return this.spincastRoutingUtils;
     }
 
     protected boolean isPermanently() {
@@ -82,34 +88,19 @@ public class RedirectRuleBuilder<R extends IRequestContext<?>, W extends IWebsoc
                        @Override
                        public void handle(R context) {
 
-                           String newPathOrFullUrl = newPathOrFullUrlFinal;
-
                            //==========================================
                            // If the current route contains dynamic parameters,
                            // we may have to use them in the new URL!
                            //==========================================
-                           Map<String, String> pathParams = context.request().getPathParams();
-                           if(pathParams != null) {
-                               for(Entry<String, String> entry : pathParams.entrySet()) {
-
-                                   String paramName = entry.getKey();
-                                   String paramValue = entry.getValue();
-
-                                   //==========================================
-                                   // In the new URL, the value of the dynamic parameters
-                                   // can be used anywhere, and can be or format "${paramName}"
-                                   // or "*{paramName}" without distinction.
-                                   //==========================================
-                                   newPathOrFullUrl = newPathOrFullUrl.replace("${" + paramName + "}", paramValue);
-                                   newPathOrFullUrl = newPathOrFullUrl.replace("*{" + paramName + "}", paramValue);
-                               }
-                           }
+                           IReplaceDynamicParamsResult result =
+                                   getSpincastRoutingUtils().replaceDynamicParamsInPath(newPathOrFullUrlFinal,
+                                                                                        context.request().getPathParams());
 
                            //==========================================
                            // Throwing a "RedirectException" make sure nothing
                            // more is executed after this handler.
                            //==========================================
-                           throw new RedirectException(newPathOrFullUrl, isPermanently());
+                           throw new RedirectException(result.getPath(), isPermanently());
                        }
                    });
     }

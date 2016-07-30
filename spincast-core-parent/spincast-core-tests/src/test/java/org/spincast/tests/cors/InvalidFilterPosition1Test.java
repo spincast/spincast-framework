@@ -1,11 +1,13 @@
 package org.spincast.tests.cors;
 
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.routing.ISpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
+import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
@@ -13,6 +15,11 @@ import com.google.inject.Scopes;
 public class InvalidFilterPosition1Test extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
+
+        @Inject
+        public TestRoutingConfig(ISpincastConfig spincastConfig) {
+            super(spincastConfig);
+        }
 
         @Override
         public int getCorsFilterPosition() {

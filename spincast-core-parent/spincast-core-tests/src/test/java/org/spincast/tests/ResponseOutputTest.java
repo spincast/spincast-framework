@@ -270,4 +270,26 @@ public class ResponseOutputTest extends SpincastDefaultNoAppIntegrationTestBase 
         assertEquals("Le bœuf et l'éléphant!", response.getContentAsString());
     }
 
+    @Test
+    public void responseFluent() throws Exception {
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                context.response()
+                       .setStatusCode(HttpStatus.SC_LOCKED)
+                       .addHeaderValue("titi", "toto")
+                       .sendPlainText(SpincastTestUtils.TEST_STRING);
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_LOCKED, response.getStatus());
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals("toto", response.getHeaderFirst("titi"));
+    }
+
 }

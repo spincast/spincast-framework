@@ -3,7 +3,9 @@ package org.spincast.testing.core.utils;
 import java.io.File;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -21,6 +23,8 @@ public class SpincastTestUtils {
     public static final String TEST_STRING = "‛'ïœ𣎴𠀋ᚡŠšÈÆæÐð𝅘𝅥𝅯’";
     public static final String TEST_STRING_LONG =
             "‛'ïœ𣎴𠀋ᚡŠšÈÆæÐð𝅘𝅥𝅯’0123456789asasdnalfh23uio4y4213ralksfan394u2348902ursdfjsdfj2534tuuegjdfgjdfgdgjmelfj234i2jsdjfsdjgdlkgjdlkfgjdgj9dgh09fgdhfdgksdjfasdfkasdf858656";
+
+    private static Date testDate;
 
     public static final IHandler<IDefaultRequestContext> dummyRouteHandler = new IHandler<IDefaultRequestContext>() {
 
@@ -224,6 +228,24 @@ public class SpincastTestUtils {
             }
 
         }, maxMillisecToWait);
+    }
+
+    /**
+     * Get a test date without time. 
+     */
+    public static Date getTestDateNoTime() {
+
+        if(testDate == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            testDate = cal.getTime();
+        }
+
+        return testDate;
     }
 
 }

@@ -25,20 +25,20 @@ Spincast Undertow plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Undertow plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Undertow <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Undertow <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/undertow/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/undertow/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-                <div class="pluginBadgeCore hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div> 
         </div>
@@ -57,6 +57,7 @@ Spincast Undertow plugin
                 <li class="openable"><a href="#installation">Installation</a></li>
                 <li class="openable"><a href="#methods">Methods</a></li>
                 <li class="openable"><a href="#config">Configurations</a></li>
+                <li class="openable"><a href="#reverse_proxy">Reverse Proxy</a></li>
             </ul>
         </nav>
         
@@ -88,7 +89,7 @@ Spincast Undertow plugin
 	                you have nothing more to do!
 	            </p>
 	            <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
 	                plugin by adding this artifact to your project:
 	                <div>
@@ -103,7 +104,7 @@ Spincast Undertow plugin
 	                </div>  
 	            </p>
 	            <p>
-	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
 	                <div>
 	                    <p>
@@ -414,6 +415,37 @@ Spincast Undertow plugin
                         
                     </p>
                 </div> 
+            </section>
+            
+            <section id="reverse_proxy">
+            
+                <h3>
+                    <a class="anchor" href="#reverse_proxy" title="permanent link"></a>
+                    Reverse Proxy
+                </h3>
+	            <p>
+	                If you use a reverse proxy, such as <a href="https://www.nginx.com/">Nginx</a> or
+	                <a href="https://httpd.apache.org/">Apache</a>, make sure you set those headers
+	                if the forwarded <code>scheme</code>, <code>host</code> or <code>port</code> are different then the
+	                original ones:
+	            </p>
+                <ul>
+                	<li>
+                		<code>X-Forwarded-Proto</code>: The original scheme (<code>http</code> or <code>https</code>)
+                	</li>
+                	<li>
+                		<code>X-Forwarded-Host</code>: The original host.
+                	</li>
+                	<li>
+                		<code>X-Forwarded-Port</code>: The original port.
+                	</li>
+                </ul>  
+	            <p>
+	                The Undertow plugin will use those headers to provide the correct information
+	                when <a href="/public/javadoc/org/spincast/core/server/IServer.html#getFullUrlOriginal-java.lang.Object-"><code>getFullUrlOriginal()</code></a>
+	                is called.
+	            </p>
+                
             </section>
 
 

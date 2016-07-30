@@ -48,7 +48,7 @@ Demos - Hello World
                 <em>1. A quick and dirty version</em>
             </h4>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 First, you add the latest version of the <code>org.spincast:spincast-default</code>
                 Maven artifact to your <code>pom.xml</code> (or <code>build.gradle</code>):
                 <div>
@@ -65,7 +65,7 @@ Demos - Hello World
                 </div>
             </p>
             <p class="subSection">
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Then you bootstrap everything using a <code>main(...)</code> method :
                 <div>
                     <p>
@@ -120,7 +120,7 @@ Demos - Hello World
                 </div>
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Here's the exact same example but using Java 7, so without <code>lambdas</code>. We prefer this version
                 for a first example because the types of the various components are more obvious!:
             </p>
@@ -194,7 +194,7 @@ Demos - Hello World
             </p>
 
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 If you look carefully, in the previous example we used a lot of <code><em>Default</em></code> components
                 (<code>"IDefaultRouter"</code> for example). 
                 Those <code>Default</code> components are useful to have a quick up and running Spincast application. 
@@ -237,7 +237,7 @@ Demos - Hello World
                     </p>  
             </div>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 In our first "Hello World" example, the <code>request context</code> type was <code>IDefaultRequestContext</code>, 
                 which is the default.
                 In Spincast, this default type <em>can be extended</em>, you can add extra
@@ -275,7 +275,7 @@ Demos - Hello World
                 This is what being able to extend the <code>request context</code> allows.
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 So in this new and improved "Hello world!" example, we're going to use a <em>custom</em>
                 <code>request context</code> type: <code>IAppRequestContext</code>. We're going to add a simple method 
                 to it : <code><em>translate(String sentence, Locale from, Locale to)</em></code>,
@@ -284,13 +284,13 @@ Demos - Hello World
                 easy access to it.
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Note that, for this second example, we still have to include the <code>org.spincast:spincast-default</code>
                 Maven artifact because, even if we'll use a custom <code>request context</code> type,  we'll still be
                 using all the other default components (the default <code>HTTP server</code>, for example).
             </p>
             <p class="subSection">
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Let's first have a look at what our new <code>App</code> class will be. We'll create the other
                 required components after.
                 
@@ -396,7 +396,7 @@ Demos - Hello World
             </p>  
 
             <p class="subSection">
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Now that we looked at the new <code>App</code> class, let's create our custom <code>IAppRequestContext</code> 
                 type in which the new <code>translate(...)</code> method will be defined :
                 <div>
@@ -428,7 +428,7 @@ Demos - Hello World
             </p>
              
             <p class="subSection">
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Then, let's add an implementation for this interface :
                 <div>
                     <p>
@@ -478,7 +478,7 @@ Demos - Hello World
             </p>
             
             <p class="subSection">
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Finally, we bind everything together by creating a custom 
                 Guice module,  <code>AppModule</code>. This module is the one
                 used by our <code>App</code> class to create the Guice context.

@@ -16,13 +16,19 @@ import org.spincast.core.websocket.IWebsocketEndpointManager;
 
 /**
  * The interface a HTTP server implementation must implement.
- * 
+ * <p>
  * The "exchange" object is a request scoped object provided by the
  * HTTP server to identify the request.
- * 
+ * </p>
+ * <p>
  * A IServer implementation has to receive {@link org.spincast.core.controllers.IFrontController IFrontController} as
  * a dependency and call {@link org.spincast.core.controllers.IFrontController#handle(Object) handle(...)} on it when
  * a new request is made.
+ * </p>
+ * <p>
+ * Note that the server will automatically remove any <code>cache buster codes</code>
+ * from the request's path.
+ * </p>
  */
 public interface IServer {
 
@@ -67,11 +73,68 @@ public interface IServer {
     public HttpMethod getHttpMethod(Object exchange);
 
     /**
-     * The full encoded URL of the original request, including the queryString. 
+     * The full encoded URL of the original, non proxied, request, including the queryString. 
+     * Cache buster codes are removed, if there were any.
+     * <p>
+     * This is going to be the *original* URL, as seen by the user, even if 
+     * a reverse proxy is used (such as Nginx or Apache).
+     * </p>
+     * <p>
      * Even if the request is forwarded elsewhere in the framework, this
      * URL won't change, it will still be the original one.
+     * </p>
      */
-    public String getFullUrl(Object exchange);
+    public String getFullUrlOriginal(Object exchange);
+
+    /**
+     * The full encoded URL of the original, non proxied, request, including the queryString. 
+     * <p>
+     * This is going to be the *original* URL, as seen by the user, even if 
+     * a reverse proxy is used (such as Nginx or Apache).
+     * </p>
+     * <p>
+     * Even if the request is forwarded elsewhere in the framework, this
+     * URL won't change, it will still be the original one.
+     * </p>
+     * 
+     * @param keepCacheBusters if <code>true</code>, the returned URL will contain
+     * the cache buster codes, if there were any. The default behavior is to 
+     * automatically remove them.
+     */
+    public String getFullUrlOriginal(Object exchange, boolean keepCacheBusters);
+
+    /**
+     * The full encoded URL of the potentially proxied request, including the queryString. 
+     * Cache buster codes are removed, if there were any.
+     * <p>
+     * Is a reverse proxy is used (such as Nginx or Apache), this is going to be the
+     * proxied URL, as forwarded by the reverse proxy. If no reverse proxy is used,
+     * this is going to be the original URL, as seen by the user.
+     * </p>
+     * <p>
+     * Even if the request is forwarded elsewhere in the framework, this
+     * URL won't change, it will still be the original one.
+     * </p>
+     */
+    public String getFullUrlProxied(Object exchange);
+
+    /**
+     * The full encoded URL of the potentially proxied request, including the queryString. 
+     * <p>
+     * Is a reverse proxy is used (such as Nginx or Apache), this is going to be the
+     * proxied URL, as forwarded by the reverse proxy. If no reverse proxy is used,
+     * this is going to be the original URL, as seen by the user.
+     * </p>
+     * <p>
+     * Even if the request is forwarded elsewhere in the framework, this
+     * URL won't change, it will still be the original one.
+     * </p>
+     * 
+     * @param keepCacheBusters if <code>true</code>, the returned URL will contain
+     * the cache buster codes, if there were any. The default behavior is to 
+     * automatically remove them.
+     */
+    public String getFullUrlProxied(Object exchange, boolean keepCacheBusters);
 
     /**
      * Gets the best <code>Content-Type</code> to use for the current request.

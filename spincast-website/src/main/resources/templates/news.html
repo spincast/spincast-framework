@@ -50,7 +50,7 @@ Moment.js, for dates formatting
 
     {% if currentPage > 1 %}
         <ol class="breadcrumb">
-            <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/news">News</a></li>
+            <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/news">News</a></li>
             <li class="active">page {{currentPage}} of {{nbrPageTotal}}</li>
         </ol>
     {% endif %}
@@ -120,9 +120,9 @@ Moment.js, for dates formatting
                             <a class="anchor" href="/news/{{newsEntry.id}}" title="permanent link"></a>
                             <a href="/news/{{newsEntry.id}}">{{newsEntry.title | raw }}</a>
                         </h3>
-                        <p class="news_date">
-                            <span>{{newsEntry.publishedDate}}</span>
-                        </p>
+                        <div class="news_date_div">
+                            <img class="inlineIcon alignMin3" src="/public/images/icons/date.png" /> <div class="news_date">{{newsEntry.publishedDate}}</div>
+                        </div>
     
                         <div class="news_text">
                             {{newsEntry.description | raw }}

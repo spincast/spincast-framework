@@ -213,7 +213,7 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
                 String path = context.request().getRequestPath();
                 assertEquals("/two", path);
 
-                String queryString = context.request().getQueryString();
+                String queryString = context.request().getQueryString(false);
                 assertEquals("q=two", queryString);
             }
         });
@@ -251,13 +251,13 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
 
                 // The original url
                 String expected = createTestUrl("/one?q=one");
-                String originalFullUrl = context.request().getOriginalFullUrl();
+                String originalFullUrl = context.request().getFullUrlOriginal();
                 assertEquals(expected, originalFullUrl);
 
                 // The server getFullUrl() also still returns the original
                 // URL.
                 IServer server = context.guice().getInstance(IServer.class);
-                String originalUrl = server.getFullUrl(context.exchange());
+                String originalUrl = server.getFullUrlOriginal(context.exchange());
                 assertEquals(expected, originalUrl);
             }
         });

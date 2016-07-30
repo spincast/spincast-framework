@@ -262,7 +262,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
             if(alreadyTried) {
                 throw new RuntimeException("The method prepareNotFoundRouting was already tried, we called addDefaultNotFoundRoute() " +
                                            "but there's still no Not Found route!! Full url: " +
-                                           getServer().getFullUrl(exchange));
+                                           getServer().getFullUrlOriginal(exchange));
             }
 
             addDefaultNotFoundRoute();

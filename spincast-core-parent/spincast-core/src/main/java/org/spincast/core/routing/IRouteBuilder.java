@@ -239,4 +239,52 @@ public interface IRouteBuilder<R extends IRequestContext<?>> {
      */
     public IRoute<R> create(IHandler<R> mainHandler);
 
+    /**
+     * Automatically adds "no-cache" headers to the response.
+     */
+    public IRouteBuilder<R> noCache();
+
+    /**
+     * Adds cache headers.
+     * <p>
+     * Uses the default cache configurations, provided
+     * by {@link org.spincast.core.config.ISpincastConfig ISpincastConfig}
+     * </p>
+     */
+    public IRouteBuilder<R> cache();
+
+    /**
+     * Adds public cache headers.
+     * 
+     * @param seconds The number of seconds the resource associated with
+     * this route should be cached.
+     */
+    public IRouteBuilder<R> cache(int seconds);
+
+    /**
+     * Adds cache headers.
+     * 
+     * @param seconds The number of seconds the resource associated with
+     * this route should be cached.
+     * 
+     * @param isPrivate should the cache be private?
+     * (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+     */
+    public IRouteBuilder<R> cache(int seconds, boolean isPrivate);
+
+    /**
+     * Adds cache headers.
+     * 
+     * @param seconds The number of seconds the resource associated with
+     * this route should be cached.
+     * 
+     * @param isPrivate should the cache be private?
+     * (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+     * 
+     * @param secondsCdn The number of seconds the resource associated with
+     * this route should be cached by a CDN/proxy. If <code>null</code>, it
+     * won't be used.
+     */
+    public IRouteBuilder<R> cache(int seconds, boolean isPrivate, Integer secondsCdn);
+
 }

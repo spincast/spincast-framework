@@ -53,7 +53,7 @@ Routing
             we enter the <code>Not Found</code> routing type.
         </p> 
         <p> 
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             We'll see in the <a href="#routing_types"><code>Routing Types</code></a> section that we can declare some routes
             as supporting this <code>Not Found</code> routing type. Those routes are the only ones going to be considered
             when the <code>Not Found</code> routing type is active.
@@ -68,7 +68,7 @@ Routing
             will be triggered.
         </p> 
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             The third and final routing type is <code>Exception</code>.
             If an exception occures during a <code>Found</code> or a <code>Not Found</code>
             routing process, the response is reset, and a new <code>Exception</code> routing process starts.
@@ -81,7 +81,7 @@ Routing
             handlers, and this is highly recommended, but there are some basic provided ones, if you don't.
         </p>
         <p> 
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             There are two important things to remember about the routing process:
             
             <ul>
@@ -104,7 +104,7 @@ Routing
             </ul>
         </p> 
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, Spincast also supports <a href="#websockets"><em>WebSockets</em></a>. Make sure you read the dedicated section about
             WebSockets since it diverges from standard routing!
         </p>
@@ -206,7 +206,7 @@ router.SOME("/books", HttpMethod.POST, HttpMethod.PUT) ...
             example.
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Note that this <code>"/users/${userId}"</code> example will only match
             URLs of exactly <em>two</em> tokens! An URL like <code>"/users/42/book/123"</code> 
             won't match!
@@ -235,7 +235,7 @@ router.SOME("/books", HttpMethod.POST, HttpMethod.PUT) ...
             a splat parameter syntax is <code>*{paramName}</code>.
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             A dynamic parameter can also contain a regular expression <code><em>pattern</em></code>. The
             syntax is <code>${paramName:pattern}</code>, where "pattern" is the regular expression
             to use.
@@ -255,7 +255,7 @@ router.SOME("/books", HttpMethod.POST, HttpMethod.PUT) ...
             </div>
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, a dynamic parameter can also contain what we call a <code><em>pattern alias</em></code>.
             Instead of having to type the pattern each time you need it, you can 
             use an <em>alias</em> for it. The syntax is <code>${paramName:&lt;alias&gt;}</code>.
@@ -340,7 +340,7 @@ router.GET("/${param1:&lt;USERS&gt;}/${userId}")
             </li>
         </ul> 
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             If no <code>route type</code> is specified when creating a route, <code>Found</code> is used,
             so the route won't be considered during a <code>Not Found</code> or <code>Exception</code> routing process.
         </p> 
@@ -441,6 +441,73 @@ router.GET("/users").acceptAsString("application/pdf") ...
                 </p>
             </div>
         </p>     
+    </div>
+
+    {#==========================================
+    Section "routing / HTTP Caching"
+    ==========================================#}
+    <div id="route_http_caching">
+        <h4>
+            <a class="anchor_small" href="#route_http_caching" title="permanent link"></a>
+            HTTP Caching route options
+        </h4>
+        
+        <p>
+            Later in the documentation, you will find a dedicated <a href="#http_caching">HTTP Caching</a> section, 
+            containing all the information about HTTP caching using Spincast. Here, we're only going to list the options 
+            that can be used when building a route.
+        </p> 
+        <p>
+            For both regular routes and static resources routes, you can use the
+            <code>cache(...)</code> method to send appropriate cache headers 
+            to the client :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+// Default cache headers will be sent (the default is configurable).
+router.GET("/test").cache().save(handler);
+
+// Sends headers so the client caches the resource for 60 seconds.
+router.GET("/test").cache(60).save(handler);
+
+// Sends headers so the client caches the resource for 60 seconds.
+// Also specifies that this cache should be *private*.
+// See : https://goo.gl/VotTdD
+router.GET("/test").cache(60, true).save(handler);
+
+// Sends headers so the client caches the resource for 60 seconds,
+// but so a CDN (proxy) caches it for 30 seconds only.
+router.GET("/test").cache(60, false, 30).save(handler);
+
+// The "cache()" method is available on static resources routes too!
+router.file("/favicon.ico").cache(86400).classpath("/public/favicon.ico").save();</pre> 
+                </p>
+            </div>
+        </p>   
+        <p>
+        	<img class="inlineIcon" src="/public/images/icons/para.png" />
+            On a standard route, it is also possible to use the <code>noCache()</code> 
+            method to send headers asking the client to disable <em>any</em> caching 
+            of the associated resource :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+router.GET("/test").noCache().save(handler);
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+        	
+            Again, make sure you read the dedicated <a href="#http_caching">HTTP Caching</a> section for
+            the full documentation.
+        </p> 
     </div>
 
     {#==========================================
@@ -554,7 +621,7 @@ router.GET("/").pos(100).save(ctl::filter3);
             </div>
         </p>  
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             There also are shortcuts that you can use if you don't need to
             specify fine grain information and just want to add a quick before
             or after filter:
@@ -593,7 +660,7 @@ router.beforeAndAfter(ctl::filter);
             </div>
         </p>  
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             You can also add inline filters to be run only on
             on a <em>specific route</em>:
         </p>  
@@ -625,7 +692,7 @@ router.GET("/users/${userId}")
         </p> 
         
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, note that a filter can decide if it needs to run or not,
             at runtime. Using the <code>routing()</code> add-on,
             a filter can know if the current route type is <code>Found</code>, <code>Not Found</code>
@@ -720,49 +787,83 @@ router.GET("/users/${userId}")
 // directory "/public_files".
 router.dir("/public").classpath("/public_files").save();
 
-// Uses a file system directory (instead of a classpath
-// directory) as a static resources root.
-router.dir("/public").fileSystem("/user/www/myprojet/public_files").save();
+// Uses an absolute path on the file system directory 
+// as a static resources root.
+router.dir("/public").pathAbsolute("/user/www/myprojet/public_files").save();
+
+// Uses a path relative to the Spincast writable directory, 
+// on the file system, as a static resources root.
+router.dir("/public").pathRelative("/public_files").save();
 
 // Will serve the requests for a specific file,
 // here "/favicon.ico", with a file from the classpath.
 router.file("/favicon.ico").classpath("/public/favicon.ico").save();
 
-// Uses a file system file (instead of a classpath
-// file) as the static resource target.
-router.file("/favicon.ico").fileSystem("/user/www/myprojet/public_files/favicon.ico").save();
+// Uses an absolute path on the file system file
+// as the static resource target.
+router.file("/favicon.ico").pathAbsolute("/user/www/myprojet/public_files/favicon.ico").save();
+
+// Uses a path relative to the Spincast writable directory, 
+// on the file system, as the static resource target.
+router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").save();
+
 </pre> 
                 </p>
             </div>
         </p> 
         <p>
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Be aware that since requests for static resources don't reach the framework, <em>filters don't apply to them</em>! Even a
             "catch all" filter such as <code>router.ALL("/*{path}").pos(-1).save(handler)</code> 
             won't be applied.
         </p> 
         <p>
-            For the same reason, there are also some limitations about the <code>dynamic parameters</code> the 
-            route of a static resource can contain. Only a <code>splat parameter</code> is allowed and only at the very end of
-            the path. For example :
+            For the same reason, there are some limitations about the <code>dynamic parameters</code> the 
+            route of a static resource can contain. For plain static resource (no generator), only a <code>dir</code>
+            can contains a dynamic parameter and it can only be
+            a <code>splat parameter</code> at the very end of its route. For example :
             <ul>
                 <li>
-                    This is valid : <code>/one/two/*{remaining}</code>
+                    This is valid : <code>dir(/one/two/*{remaining})</code>
                 </li>
                 <li>
-                    This is <em>invalid</em> : <code>/one/*{remaining}/two</code>
+                    This is <em>invalid</em> : <code>dir(/one/*{remaining}/two)</code>
                 </li>
                 <li>
-                    This is <em>invalid</em> : <code>/${param}</code>
+                    This is <em>invalid</em> : <code>dir(/${param})</code>
                 </li>
+                <li>
+                    This is <em>invalid</em> : <code>file(/one/two/*{remaining})</code>
+                </li> 
             </ul>
+        </p>
+        <p>
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Note that a <code>file</code> resource has priority over of a <code>dir</code> resource since
+            it is more precise. For example, let's take those two routes :
         </p> 
         <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+router.dir("/public").cache(3600).classpath("/public_files").save();
+router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").save();
+</pre> 
+                </p>
+            </div>
+        </p> 
+        <p>
+            Even if the <code>"test.txt"</code> file is under the <code>"/public"</code> directory,
+            a cache of <code>60</code> seconds will be applied, not <code>3600</code>.
+        </p> 
+        <p>
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, note that the static resource routes have <em>precedence</em> over all other
             routes, so if you declare <code>router.dir("/", "/public")</code> for example, then
             <em>no route at all</em> would ever reach the framework, everything would be considered
             as static. This is, by the way, a quick way to serve a static website using Spincast!
         </p> 
-  
     </div>
     
     {#==========================================
@@ -787,7 +888,7 @@ router.file("/favicon.ico").fileSystem("/user/www/myprojet/public_files/favicon.
             <div>
                 <p>
                     <pre class="ace ace-java"
->router.dir("/images/tags/${tagId}").fileSystem("/generated_tags")
+>router.dir("/images/tags/${tagId}").pathAbsolute("/generated_tags")
       .save(new IDefaultHandler() {
 
           @Override
@@ -810,7 +911,7 @@ router.file("/favicon.ico").fileSystem("/user/www/myprojet/public_files/favicon.
                 <p>
                     <pre class="ace ace-java"
 >router.file("/css/generated.css")
-      .fileSystem("/user/www/myprojet/public_files/css/generated.css")
+      .pathAbsolute("/user/www/myprojet/public_files/css/generated.css")
       .save(new IDefaultHandler() {
 
           @Override
@@ -824,10 +925,69 @@ router.file("/favicon.ico").fileSystem("/user/www/myprojet/public_files/favicon.
             </div>
         </p> 
         <p>
-            Dynamic resources only work when <code>.fileSystem(...)</code> is used, not
+            Dynamic resources only work when <code>.pathAbsolute(...)</code> or 
+            <code>.pathRelative(...)</code> are used, not
             <code>.classpath(...)</code>, and Spincast must have write permissions on the
             target directory.
         </p>
+        <p>
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Like for plain static resources, the route of a dynamic resource can contain
+            <code>dynamic parameters</code>, but the rules are a little bit different :
+        </p> 
+        <p>
+        	<ul>
+        		<li>
+        			The route of a <code>file</code> dynamic resource can contain <code>dynamic parameters</code> but no <code>splat parameter</code>.
+        			For example :
+			        <p>
+			            <div>
+			                <p>
+			                    <pre class="ace ace-java" data-ace-hi="0,19,0,30"
+>router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").save(generator);</pre> 
+			                </p>
+			            </div>
+			        </p> 
+        		</li>
+        		<li>
+        			The route of a <code>dir</code>  dynamic resource can only contain a <code>splat parameter</code>, at its end.
+        			For example :
+			        <p>
+			            <div>
+			                <p>
+			                    <pre class="ace ace-java" data-ace-hi="0,23,0,31"
+>router.dir("/generated/*{splat}").pathRelative("/someDir").save(generator);</pre> 
+			                </p>
+			            </div>
+			        </p> 
+        		</li>
+        		<li>
+        			The target <em>path</em> of a <code>file</code> dynamic resource can use the <code>dynamic parameter</code>
+        			from the associated route. For example this is valid :
+			        <p>
+			            <div>
+			                <p>
+			                    <pre class="ace ace-java" data-ace-hi="0,60,0,71"
+>router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").save(generator);</pre> 
+			                </p>
+			            </div>
+			        </p> 
+        		</li>
+        		<li>
+        			The target <em>path</em> of a <code>dir</code> dynamic resource <em>can not</em> use the <code>splat parameter</code>
+        			from the associated route. For example this is not valid :
+			        <p>
+			            <div>
+			                <p>
+			                    <pre class="ace ace-java" data-ace-hi="1,57,1,65"
+>// This is not valid
+router.dir("/generated/*{splat}").pathAbsolute("/someDir/*{splat}").save(generator);</pre> 
+			                </p>
+			            </div>
+			        </p> 
+        		</li>
+        	</ul>
+        </p> 
         
     </div>
     
@@ -962,11 +1122,11 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
             framework or a protected resource unless the correct username/password is given.
         </p>
         <p>
-            Here's a <a href="/demos-tutorials/http-authentication/protected"><i class="glyphicon glyphicon-hand-right"></i> Protected page example</a>. To access it, you have
+            Here's a <img class="inlineIcon" src="/public/images/icons/run.png" /><a href="/demos-tutorials/http-authentication/protected">Protected page example</a>. To access it, you have
             to provide the correct username/password combination: <code>Stromgol</code>/<code>Laroche</code>.
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             You enable <code>HTTP Authentication</code> by specifying the base
             path of the URL associated with the section to protect, and a <code>realm</code> name 
             (The term <code>"realm"</code> is a synonym for <em>"a protected section"</em>). Note that
@@ -994,7 +1154,7 @@ router.httpAuth("/admin", "Protected Admin Section");
             will be intercepted and a username/password will be required to access the requested page or resource.
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Of course, you also have to associate some username/password combinations to a <code>realm</code>, otherwise no one
             will have access to the protected resources. You add such credentials using the <code>server</code> 
             object itself. This can
@@ -1018,7 +1178,7 @@ getServer().addHttpAuthentication("Protected Admin Section", "Stromgol", "Laroch
             to see all methods related to <code>HTTP Authentication</code>.
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, note that <code>HTTP Authentication</code> is a quick and easy way to protect a section
             of your application but, if you need more control, a <code>form based</code> authentication may be
             preferred.
@@ -1076,7 +1236,7 @@ router.redirect("/the-original-route").to("/the-new-route");
             </ul>
         </p> 
         <p>
-        	<i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Note that if the original route contains <a href="#dynamic_parameters">dynamic parameters</a>
             (splat parameters included), you can use those in the definition of the new route. 
             For example, this redirection rule will redirect
@@ -1110,7 +1270,7 @@ router.redirect("/types/${typeId}/${itemId}").to("/catalog-${typeId}/${itemId}")
             </div>
         </p> 
         <p>
-        	<i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, note that a redirection rule is implemented as a "before" filter and
             must, in general, be the very first one to run. Its position is configurable using
             <code>ISpincastRouterConfig</code> and its default value is <code>-1000</code>.

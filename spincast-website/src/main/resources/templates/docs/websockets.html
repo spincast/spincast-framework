@@ -30,7 +30,7 @@ Docs : "WebSockets"
         </ul>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         WebSockets's terminology is quite simple: an <code><em>endpoint</em></code> is a group
         of <code><em>peers</em></code> (users) connected together and that your application manages. 
         A WebSocket <code>endpoint</code> can receive and send <code><em>text messages</em></code>
@@ -58,7 +58,7 @@ Quick Example
     <p>
         Here's a quick example on how to use WebSockets. Each part of this example will be explained in more details
         in following sections. You can try this example live on the 
-        <a href="/demos-tutorials/websockets"><em><i class="glyphicon glyphicon-hand-right"></i> WebSockets demo</em></a> page.
+        <img class="inlineIcon" src="/public/images/icons/run.png" /><a href="/demos-tutorials/websockets"><em>WebSockets demo</em></a> page.
     </p>
     <p>
         The source code for this example is:
@@ -72,7 +72,7 @@ Quick Example
         </ul>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         First, we define a <code>WebSocket route</code>:
     </p>
     <p>
@@ -179,7 +179,7 @@ Quick Example
         </div>  
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Here's a quick client-side <code>HTML/javascript</code> code example, for a user to connect 
         to this endpoint:
     </p>  
@@ -270,7 +270,7 @@ WebSocket Routing
         the available ones...
     </p>
     <p> 
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         You can set
         an <code>id</code> for the route. This allows you to identify the route so you can refer to it
         later on, delete it, etc:
@@ -285,7 +285,7 @@ WebSocket Routing
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         You can also add "before" <code>filters</code>, inline. Note that you can <em>not</em> add
         "after" <code>filters</code> to a WebSocket route because, as soon as the
         WebSocket connection is established, the <code>HTTP</code> request is over.
@@ -311,7 +311,7 @@ WebSocket Routing
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Finally, like you do during the creating of a regular route, you <em>save</em> the WebSocket route. The 
         <code>save(...)</code> method for a WebSocket route takes a <a href="#websockets_controllers"><code>WebSocket controller</code></a>, 
         not a <code>route handler</code> as regular HTTP routes do.
@@ -545,7 +545,7 @@ WebSocket Controllers
     </h5>
 
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Once you decided that a user can connect to a WebSocket endpoint, you return an instance of
         <code><em>IWebsocketConnectionConfig</em></code> from the <code>onPeerPreConnect(...)</code> method. 
     </p>
@@ -586,7 +586,7 @@ WebSocket Controllers
         receive it.
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         If your controller creates more than one endpoint, you have to keep the <code>managers</code> for
         each of those endpoints!
     </p>
@@ -694,7 +694,7 @@ WebSocket Controllers
         </div>
     </p> 
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Finally, note that a controller can manage multiple WebSocket endpoints, but only one controller
         can create and manage a given WebSocket endpoint! If a controller tries to connect a peer to an endpoint
         that is already managed by another controller, an exception is thrown.
@@ -718,7 +718,7 @@ WebSocket Controllers
         events from him.
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         You may be tempted to start some kind of <em>loop</em> in this  <code>onEndpointReady(...)</code> method, to
         send messages to the connected peers, at some interval. Instead, start 
         a new <code>Thread</code> to run the loop, and let the current thread continue.
@@ -869,7 +869,7 @@ Extending the WebSocket context
         contains more details and the process of extending the WebSocket context is very similar!
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         The first thing to do is to create a custom interface for the new <code>WebSocket context</code> type:
     </p>
     <p>
@@ -893,7 +893,7 @@ Extending the WebSocket context
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Then, we provide an implementation for that custom interface:
     </p>
     <p>
@@ -945,7 +945,7 @@ Extending the WebSocket context
         </div>
     </p> 
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Finally, you must let Spincast know about your custom <code>WebSocket context</code> type. You do this by overriding the 
         <code>getWebsocketContextImplementationClass()</code> method defined in Spincast's 
         <code>SpincastCoreGuiceModule</code> Guice module. For example, in a custom <code>AppModule</code>:
@@ -962,7 +962,7 @@ protected Class&lt;? extends IWebsocketContext&lt;?&gt;&gt; getWebsocketContextI
         </div>
     </p> 
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         If you both extended the <code>request context</code> type and the <code>WebSocket context</code> type, the
         parameterized version of your router would look like:
         <code>IRouter&lt;IAppRequestContext, IAppWebsocketContext&gt;</code>.

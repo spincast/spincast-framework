@@ -38,7 +38,7 @@ Docs : "installation"
     <div id="quick_start">
         <h4>
             <a class="anchor_small" href="#quick_start" title="permanent link"></a>
-            <i class="glyphicon glyphicon-flash"></i> Quick Start application
+            <img id="quickIcon" class="inlineIcon" src="/public/images/icons/flash.png" /> Quick Start application
         </h4>
         
 		{% if spincastCurrrentVersionIsSnapshot  %}
@@ -126,7 +126,7 @@ Docs : "installation"
         {% if spincastCurrrentVersionIsSnapshot  %}
 
              <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Since this is a <code>SNAPSHOT</code> version, you first have to add this repository
                 to your <code>pom.xml</code>:
                 <br />
@@ -146,7 +146,7 @@ Docs : "installation"
         <p>
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     Add the 
                     <code>org.spincast:spincast-default:{{spincastCurrrentVersion}}</code> 
                     dependency to your <code>pom.xml</code> :
@@ -172,7 +172,7 @@ Docs : "installation"
         <p>
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Then, create a Guice context using that module, in general inside a <code>main(...)</code> 
                     method:
                     <br />
@@ -210,7 +210,7 @@ Docs : "installation"
                     </ul>
                 </p>  
     	        <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
     	            Run this application and point a browser at : <code><a href="http://localhost:44419">http://localhost:44419</a></code>.
     	            You'll see that the server works, but since no route have been defined, you'll always get
                     a <code>404 Not Found</code> response!

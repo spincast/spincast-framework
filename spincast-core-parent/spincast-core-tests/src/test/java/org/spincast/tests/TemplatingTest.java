@@ -112,7 +112,7 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         // When using router.file(...) and a generator, the generated
         // resource will automatically be saved.
         //==========================================
-        getRouter().file("/test.css").fileSystem(generatedFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

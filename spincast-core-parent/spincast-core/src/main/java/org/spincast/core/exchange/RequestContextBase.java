@@ -51,6 +51,7 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
     private final Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
     private final Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider;
     private final Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
+    private final Provider<ICacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider;
 
     private ICookiesRequestContextAddon<R> cookiesRequestContextAddon;
     private IVariablesRequestContextAddon<R> variablesRequestContextAddon;
@@ -58,6 +59,7 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
     private IRoutingRequestContextAddon<R> routingRequestContextAddon;
     private IRequestRequestContextAddon<R> requestRequestContextRequestAddon;
     private ITemplatingRequestContextAddon<R> templatingRequestContextAddon;
+    private ICacheHeadersRequestContextAddon<R> cacheHeadersRequestContextAddon;
 
     private Map<Key<?>, Object> instanceFromGuiceCache;
 
@@ -77,6 +79,7 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
         this.responseRequestContextAddonProvider = requestContextBaseDeps.getResponseRequestContextAddonProvider();
         this.routingRequestContextAddonProvider = requestContextBaseDeps.getRoutingRequestContextAddonProvider();
         this.templatingRequestContextAddonProvider = requestContextBaseDeps.getTemplatingRequestContextAddonProvider();
+        this.cacheHeadersRequestContextAddonProvider = requestContextBaseDeps.getCacheHeadersRequestContextAddonProvider();
     }
 
     public Injector guice() {
@@ -125,6 +128,10 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
 
     protected Provider<ITemplatingRequestContextAddon<R>> getTemplatingRequestContextAddonProvider() {
         return this.templatingRequestContextAddonProvider;
+    }
+
+    protected Provider<ICacheHeadersRequestContextAddon<R>> getCacheHeadersRequestContextAddonProvider() {
+        return this.cacheHeadersRequestContextAddonProvider;
     }
 
     protected Map<Key<?>, Object> getInstanceFromGuiceCache() {
@@ -176,6 +183,13 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
         return this.templatingRequestContextAddon;
     }
 
+    public ICacheHeadersRequestContextAddon<R> cacheHeaders() {
+        if(this.cacheHeadersRequestContextAddon == null) {
+            this.cacheHeadersRequestContextAddon = getCacheHeadersRequestContextAddonProvider().get();
+        }
+        return this.cacheHeadersRequestContextAddon;
+    }
+
     public IJsonManager json() {
         return getJsonManager();
     }
@@ -213,6 +227,11 @@ public abstract class RequestContextBase<R extends IRequestContext<R>> {
             obj = asT;
         }
         return obj;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + request().getHttpMethod() + "] " + request().getFullUrl();
     }
 
 }

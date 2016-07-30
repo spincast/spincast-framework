@@ -35,7 +35,7 @@ Docs : "overview"
         </p> 
         <div class="archZoom">
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                 Here's what using Spincast looks like at a very high level:
             </p>
             <p class="center">
@@ -51,7 +51,7 @@ Docs : "overview"
                 data provider (<code>JSON</code> or <code>XML</code>) for the SPA.
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                 Spincast is also a good platform to build <code>REST</code> web services or <code>microservices</code>,
                 without any user interface, since it "talks" <code>JSON</code> and <code>XML</code> natively.
             </p>
@@ -137,7 +137,7 @@ Docs : "overview"
             </p>
 
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 First, the embedded HTTP <code>Server</code> receives a request from a user. This server consists of an <code>IServer</code> interface and an
                 implementation. The default implementation is provided by 
                 the <a href="/plugins/spincast-undertow"><code>spincast-plugins-undertow</code></a>
@@ -153,7 +153,7 @@ Docs : "overview"
                 the generated resource and won't reach the framework anymore!
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 If the request is not for a <code>static resource</code>, the server passes it to the first true
                 Spincast component: the <code>front controller</code>. The <code>front controller</code> is at the very center
                 of Spincast! This is one of the very few components which is not provided by a <code>plugin</code>, but
@@ -191,7 +191,7 @@ Docs : "overview"
                 </ul>
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 The job of the <code>router</code> (interface <code><em>IRouter</em></code>) is to determine the appropriate 
                 route to use, given the URL of the request, its <code>HTTP method</code>, etc. It will also
                 extract the value of the dynamic path tokens, if any. For example, a route path could be
@@ -200,7 +200,7 @@ Docs : "overview"
                 framework.
             </p>
             <p>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
                 Finally:
                 <ul>
                     <li>
@@ -238,7 +238,7 @@ Docs : "overview"
             Guice module which is provided by the <code>spincast-default</code> Maven artifact.
         </p>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
             What are those required components and what are the default implementations?
         </p>
         <p>
@@ -349,7 +349,7 @@ Docs : "overview"
             <code>org.spincast.shaded</code> package, so they won't conflit with your own dependencies.
         </p> 
         <p> 
-            <i class="subIcon glyphicon glyphicon-share-alt"></i>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
             That said, each <a href="/plugins">plugin</a> also adds some more dependencies! If you start with
             the <code>spincast-default</code> Maven artifact, a bunch of transitive dependencies
             will be included. If you need full control over the transitives dependencies added to

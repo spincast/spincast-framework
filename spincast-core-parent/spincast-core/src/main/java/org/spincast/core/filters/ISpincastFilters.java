@@ -13,8 +13,10 @@ public interface ISpincastFilters<R extends IRequestContext<?>> {
     /**
      * Used by Spincast to save a "dynamic resource" once it is
      * generated.
+     * 
+     * @return true if the resource was succesfully saved on disk.
      */
-    public void saveGeneratedResource(R context, String pathForGeneratedResource);
+    public boolean saveGeneratedResource(R context, String pathForGeneratedResource);
 
     /**
      * Adds some recommended security headers.
@@ -303,5 +305,19 @@ public interface ISpincastFilters<R extends IRequestContext<?>> {
                      boolean allowCookies,
                      Set<HttpMethod> allowedMethods,
                      int maxAgeInSeconds);
+
+    public void cache(R context);
+
+    public void cache(R context, int seconds);
+
+    public void cache(R context, int seconds, boolean isPrivate);
+
+    public void cache(R context, int seconds, boolean isPrivate, Integer cdnSeconds);
+
+    /**
+     * Adds some default variables so they are available
+     * by default to the templating engine (in a request scope).
+     */
+    public void addDefaultGlobalTemplateVariables(R context);
 
 }

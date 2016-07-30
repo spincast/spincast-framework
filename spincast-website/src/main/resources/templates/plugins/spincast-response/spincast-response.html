@@ -25,20 +25,20 @@ Spincast Response plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Response plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Response <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Response <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/response/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/response/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-                <div class="pluginBadgeCore hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div> 
         </div>
@@ -92,7 +92,7 @@ Spincast Response plugin
 	                you have nothing more to do!
 	            </p>
 	            <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
 	                plugin by adding this artifact to your project:
 	                <div>
@@ -107,7 +107,7 @@ Spincast Response plugin
 	                </div>  
 	            </p>
 	            <p>
-	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
 	                <div>
 	                    <p>
@@ -151,7 +151,7 @@ Spincast Response plugin
 		            <p>
 		                <div>
 		                    <p>
-		                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Quick example :</h4>
+		                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
 		                        <pre class="ace ace-java" data-ace-hi="1,11,1,22|2,11,2,22"
 >public void myHandler(IAppRequestContext context) {
     context.response().setStatusCode(418);
@@ -163,14 +163,13 @@ Spincast Response plugin
 	            </div>
                 <div id="request_context_methods">
 		            <p>
-		                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
+		                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Add-on methods :</h4>
 		                <ul class="apiList">
                         
-             
 <li>
     <code class="apiItem">boolean <span>isClosed</span>()</code>
     <div class="well">
-        Is the response closed? If so, nothing more can be sent...
+         Is the response closed? If so, nothing more can be sent...
 
     </div>
 </li>
@@ -178,8 +177,8 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>end</span>()</code>
     <div class="well">
-        Flushes everything and closes the response.
-<br />Nothing more can be sent after this (but the
+         Flushes everything and closes the response.
+ Nothing more can be sent after this (but the
  remaining <code>route handlers</code> will still
  be called).
 
@@ -189,7 +188,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">boolean <span>isHeadersSent</span>()</code>
     <div class="well">
-        Are the response headers sent? If this is the case,
+         Are the response headers sent? If this is the case,
  then the headers can't be changed anymore.
 
     </div>
@@ -198,7 +197,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendBytes</span>(byte[] bytes)</code>
     <div class="well">
-        Sends some <code>bytes</code>, without flushing.
+         Sends some <code>bytes</code>, without flushing.
 
     </div>
 </li>
@@ -206,7 +205,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendBytes</span>(byte[] bytes, String contentType)</code>
     <div class="well">
-        Sends some <code>bytes</code> using the specified <code>Content-Type</code>,
+         Sends some <code>bytes</code> using the specified <code>Content-Type</code>,
  without flushing.
 
     </div>
@@ -215,9 +214,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendBytes</span>(byte[] bytes, String contentType, boolean flush)</code>
     <div class="well">
-        Sends some <code>bytes</code> using the specified <code>Content-Type</code> and flushes,
+         Sends some <code>bytes</code> using the specified <code>Content-Type</code> and flushes,
  if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -225,18 +224,18 @@ Spincast Response plugin
 <li>
     <code class="apiItem">String <span>getCharactersCharsetName</span>()</code>
     <div class="well">
-        The charset to use to convert characters to bytes.
-<br />Defaults to <code>"UTF-8"</code>.
+         The charset to use to convert characters to bytes.
+ Defaults to <code>"UTF-8"</code>.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>setCharactersCharsetName</span>(String name)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>setCharactersCharsetName</span>(String name)</code>
     <div class="well">
-        Sets the charset to use to convert characters to bytes.
-<br />Defaults to <code>"UTF-8"</code>.
-<br />Make sure you use the same charset here
+         Sets the charset to use to convert characters to bytes.
+ Defaults to <code>"UTF-8"</code>.
+ Make sure you use the same charset here
  than the one that is sent as the <code>"Content-Type"</code> header (which
  is also <code>"UTF-8"</code> by default, if you send data using
  <code>sendPlainText()</code>, <code>sendHtml()</code> or <code>sendJson()</code>).
@@ -247,7 +246,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendCharacters</span>(String content)</code>
     <div class="well">
-        Sends a String, using the encoding returned by <code>getCharactersCharsetName</code>,
+         Sends a String, using the encoding returned by <code>getCharactersCharsetName</code>,
  without flushing.
 
     </div>
@@ -256,7 +255,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendCharacters</span>(String content, String contentType)</code>
     <div class="well">
-        Sends a String, using the encoding returned by <code>getCharactersCharsetName</code> and
+         Sends a String, using the encoding returned by <code>getCharactersCharsetName</code> and
  using the specified <code>Content-Type</code>, without flushing.
 
     </div>
@@ -265,9 +264,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendCharacters</span>(String content, String contentType, boolean flush)</code>
     <div class="well">
-        Sends a String, using the encoding returned by <code>getCharactersCharsetName</code>
+         Sends a String, using the encoding returned by <code>getCharactersCharsetName</code>
  and using the specified <code>Content-Type</code>. Flushes the response, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -275,7 +274,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendPlainText</span>(String string)</code>
     <div class="well">
-        Sends a String as <code>text/plain</code>, <code>UTF-8</code> encoded, without flushing.
+         Sends a String as <code>text/plain</code>, <code>UTF-8</code> encoded, without flushing.
 
     </div>
 </li>
@@ -283,9 +282,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendPlainText</span>(String string, boolean flush)</code>
     <div class="well">
-        Sends a String as <code>text/plain</code>, <code>UTF-8</code> encoded,
+         Sends a String as <code>text/plain</code>, <code>UTF-8</code> encoded,
  and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -293,10 +292,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendJson</span>(String jsonString)</code>
     <div class="well">
-        Sends a <code>Json</code> String using the <code>application/json</code> Content-Type,
+         Sends a <code>Json</code> String using the <code>application/json</code> Content-Type,
  without flushing.
  <p>
-<br />Synonym of : <code>sendCharacters(jsonString, "application/json")</code>
+ Synonym of : <code>sendCharacters(jsonString, "application/json")</code>
  </p>
 
     </div>
@@ -305,13 +304,13 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendJson</span>(String jsonString, boolean flush)</code>
     <div class="well">
-        Sends a <code>Json</code> String using the <code>application/json</code> Content-Type,
+         Sends a <code>Json</code> String using the <code>application/json</code> Content-Type,
  and flushes, if specified.
  <p>
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
  </p>
  <p>
-<br />Synonym of : <code>sendCharacters(jsonString, "application/json", flush)</code>
+ Synonym of : <code>sendCharacters(jsonString, "application/json", flush)</code>
  </p>
 
     </div>
@@ -320,7 +319,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendJsonObj</span>(Object obj)</code>
     <div class="well">
-        Serializes the object to <code>Json</code> and sends as <code>application/json</code>, without flushing.
+         Serializes the object to <code>Json</code> and sends as <code>application/json</code>, without flushing.
 
     </div>
 </li>
@@ -328,9 +327,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendJsonObj</span>(Object obj, boolean flush)</code>
     <div class="well">
-        Serializes the object to <code>Json</code>, sends as <code>application/json</code>,
+         Serializes the object to <code>Json</code>, sends as <code>application/json</code>,
  and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -338,10 +337,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendXml</span>(String xml)</code>
     <div class="well">
-        Sends some <code>XML</code> using the <code>application/xml</code> Content-Type,
+         Sends some <code>XML</code> using the <code>application/xml</code> Content-Type,
  without flushing.
  <p>
-<br />Synonym of : <code>sendCharacters(xml, "application/xml")</code>
+ Synonym of : <code>sendCharacters(xml, "application/xml")</code>
  </p>
 
     </div>
@@ -350,13 +349,13 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendXml</span>(String xml, boolean flush)</code>
     <div class="well">
-        Sends some <code>XML</code> using the <code>application/xml</code> Content-Type,
+         Sends some <code>XML</code> using the <code>application/xml</code> Content-Type,
  and flushes, if specified.
  <p>
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
  </p>
  <p>
-<br />Synonym of : <code>sendCharacters(xml, "application/xml", flush)</code>
+ Synonym of : <code>sendCharacters(xml, "application/xml", flush)</code>
  </p>
 
     </div>
@@ -365,7 +364,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendXmlObj</span>(Object obj)</code>
     <div class="well">
-        Serializes the object to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
+         Serializes the object to <code>XML</code> and sends as <code>application/xml</code>, without flushing.
 
     </div>
 </li>
@@ -373,8 +372,8 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendXmlObj</span>(Object obj, boolean flush)</code>
     <div class="well">
-        Serializes the object to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+         Serializes the object to <code>XML</code>, sends as <code>application/xml</code>, and flushes, if specified.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -382,7 +381,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtml</span>(String html)</code>
     <div class="well">
-        Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+         Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
 
     </div>
 </li>
@@ -390,9 +389,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtml</span>(String html, boolean flush)</code>
     <div class="well">
-        Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded,
+         Sends a String as <code>text/html</code>, <code>UTF-8</code> encoded,
  and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -400,7 +399,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtmlParse</span>(String html, Map&lt;String, Object&gt; params)</code>
     <div class="well">
-        Parses the given String using the <code>ITemplatingEngine</code> and
+         Parses the given String using the <code>ITemplatingEngine</code> and
  the given parameters, then sends the result as <code>text/html</code>,
  <code>UTF-8</code> encoded, without flushing.
 
@@ -410,10 +409,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtmlParse</span>(String html, Map&lt;String, Object&gt; params, boolean flush)</code>
     <div class="well">
-        Parses the given String using the <code>ITemplatingEngine</code> and
+         Parses the given String using the <code>ITemplatingEngine</code> and
  the given parameters, then sends the result as <code>text/html</code>,
  <code>UTF-8</code> encoded, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -421,7 +420,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendParse</span>(String content, String contentType, Map&lt;String, Object&gt; params)</code>
     <div class="well">
-        Parses the given String using the <code>ITemplatingEngine</code> and
+         Parses the given String using the <code>ITemplatingEngine</code> and
  the given parameters, then sends the result using the specified
  <code>Content-Type</code>, without flushing.
 
@@ -431,10 +430,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendParse</span>(String content, String contentType, Map&lt;String, Object&gt; params, boolean flush)</code>
     <div class="well">
-        Parses the given String using the <code>ITemplatingEngine</code> and
+         Parses the given String using the <code>ITemplatingEngine</code> and
  the given parameters, then sends the result using the specified
  <code>Content-Type</code>, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -442,7 +441,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, Map&lt;String, Object&gt; params)</code>
     <div class="well">
-        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
 
@@ -456,10 +455,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, Map&lt;String, Object&gt; params, boolean flush)</code>
     <div class="well">
-        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
         <div class="apiItemFooter">
             @param templatePath must be a classpath's relative path.
@@ -471,7 +470,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendTemplate</span>(String templatePath, String contentType, Map&lt;String, Object&gt; params)</code>
     <div class="well">
-        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result using the given <code>contentType</code>, without flushing.
 
@@ -485,10 +484,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendTemplate</span>(String templatePath, String contentType, Map&lt;String, Object&gt; params, boolean flush)</code>
     <div class="well">
-        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result using the given <code>contentType</code>, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
         <div class="apiItemFooter">
             @param templatePath must be a classpath's relative path.
@@ -500,7 +499,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params)</code>
     <div class="well">
-        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
 
@@ -516,10 +515,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendHtmlTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params, boolean flush)</code>
     <div class="well">
-        Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
         <div class="apiItemFooter">
             @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
@@ -533,7 +532,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendTemplate</span>(String templatePath, boolean isClasspathPath, String contentType, Map&lt;String, Object&gt; params)</code>
     <div class="well">
-        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result using the given <code>contentType</code>, without flushing.
 
@@ -549,10 +548,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>sendTemplate</span>(String templatePath, boolean isClasspathPath, String contentType, Map&lt;String, Object&gt; params,                              boolean flush)</code>
     <div class="well">
-        Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+         Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
  the given parameters, then sends the
  result using the given <code>contentType</code>, and flushes, if specified.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
         <div class="apiItemFooter">
             @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
@@ -566,9 +565,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>flush</span>()</code>
     <div class="well">
-        Flushes the current response. If not already specified,
+         Flushes the current response. If not already specified,
  a default <code>status code</code> and <code>Content-Type</code> will be added.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
     </div>
 </li>
@@ -576,9 +575,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>flush</span>(boolean end)</code>
     <div class="well">
-        Flushes the current response. If not already specified on the response,
+         Flushes the current response. If not already specified on the response,
  a default <code>status code</code> and <code>content-type</code> will be added.
-<br />Note that once the response is flushed, no header can be added or changed anymore.
+ Note that once the response is flushed, no header can be added or changed anymore.
 
         <div class="apiItemFooter">
             @param end If <code>true</code>, the exchange will be closed and no more data
@@ -589,11 +588,11 @@ Spincast Response plugin
 </li>
 
 <li>
-    <code class="apiItem">void <span>setStatusCode</span>(int statusCode)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>setStatusCode</span>(int statusCode)</code>
     <div class="well">
-        Sets the response's <code>status code</code> to use. Uses <code>200</code>
+         Sets the response's <code>status code</code> to use. Uses <code>200</code>
  by default.
-<br />Note that this <code>status code</code> can be changed automatically
+ Note that this <code>status code</code> can be changed automatically
  if an exception is thrown.
 
     </div>
@@ -602,15 +601,15 @@ Spincast Response plugin
 <li>
     <code class="apiItem">int <span>getStatusCode</span>()</code>
     <div class="well">
-        The current <code>status code</code> sent or to be send.
+         The current <code>status code</code> sent or to be send.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>setContentType</span>(String responseContentType)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>setContentType</span>(String responseContentType)</code>
     <div class="well">
-        The <code>Content-Type</code> header to use for the response. Most
+         The <code>Content-Type</code> header to use for the response. Most
  <code>sendXXX()</code> methods will set this automatically.
 
     </div>
@@ -619,7 +618,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">String <span>getContentType</span>()</code>
     <div class="well">
-        The current <code>Content-Type</code> sent or to be send.
+         The current <code>Content-Type</code> sent or to be send.
 
     </div>
 </li>
@@ -627,9 +626,9 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>redirect</span>(String newUrl, boolean permanently)</code>
     <div class="well">
-        Sets a redirection header.
-<br />This will NOT close the response and will NOT skip the remaining handlers!
-<br />Throw a <code>RedirectException</code> instead if you want to redirect the user
+         Sets a redirection header.
+ This will NOT close the response and will NOT skip the remaining handlers!
+ Throw a <code>RedirectException</code> instead if you want to redirect the user
  immediately.
 
         <div class="apiItemFooter">
@@ -644,60 +643,60 @@ Spincast Response plugin
 <li>
     <code class="apiItem">void <span>redirect</span>(String newUrl, int specific3xxCode)</code>
     <div class="well">
-        Sets the redirection headers with a specified <code>3xx</code> status code.
-<br />This will NOT close the response and will NOT skip the remaining handlers!
-<br />Throw a <code>RedirectException</code> instead if you want to redirect the user
+         Sets the redirection headers with a specified <code>3xx</code> status code.
+ This will NOT close the response and will NOT skip the remaining handlers!
+ Throw a <code>RedirectException</code> instead if you want to redirect the user
  immediately.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>addHeaderValue</span>(String name, String value)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>addHeaderValue</span>(String name, String value)</code>
     <div class="well">
-        Adds a value to a response header. If the header already
+         Adds a value to a response header. If the header already
  has values, the new one is added.
-<br />If the value is <code>null</code>, it won't be added.
+ If the value is <code>null</code>, it won't be added.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>addHeaderValues</span>(String name, List&lt;String&gt; values)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>addHeaderValues</span>(String name, List&lt;String&gt; values)</code>
     <div class="well">
-        Adds a list of values to a response header. If the header already
+         Adds a list of values to a response header. If the header already
  has values, the new ones are added.
-<br />If the values are <code>null</code>, nothing will be added.
+ If the values are <code>null</code>, nothing will be added.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>setHeader</span>(String name, String value)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>setHeader</span>(String name, String value)</code>
     <div class="well">
-        Set the value to a response header. If the header already
+         Set the value to a response header. If the header already
  exists, its current values are <i>overwritten</i>.
-<br />If the value is <code>null</code>, the header will be
+ If the value is <code>null</code>, the header will be
  removed (same behavior as <code>removeHeader(String name)</code>)
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>setHeader</span>(String name, List&lt;String&gt; values)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>setHeader</span>(String name, List&lt;String&gt; values)</code>
     <div class="well">
-        Set multiple values to a response header. If the header already
+         Set multiple values to a response header. If the header already
  exists, its current values are <i>overwritten</i>.
-<br />If the lists is <code>null</code> or empty, the header will be
+ If the lists is <code>null</code> or empty, the header will be
  removed (same behavior as <code>removeHeader(String name)</code>)
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>removeHeader</span>(String name)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>removeHeader</span>(String name)</code>
     <div class="well">
-        Removes an header by its name.
+         Removes an header by its name.
 
     </div>
 </li>
@@ -705,8 +704,8 @@ Spincast Response plugin
 <li>
     <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getHeaders</span>()</code>
     <div class="well">
-        The currently set response headers.
-<br />The map is mutable! Also the returned implementation is a
+         The currently set response headers.
+ The map is mutable! Also the returned implementation is a
  <code>TreeMap</code> with <i>case insensitive</i> keys.
 
     </div>
@@ -715,10 +714,10 @@ Spincast Response plugin
 <li>
     <code class="apiItem">List&lt;String&gt; <span>getHeader</span>(String name)</code>
     <div class="well">
-        The values of a specific response header.
-<br />The list is mutable!
-<br />The name is <i>case insensitive</i>.
-<br />Returns an empty list if the header was not found.
+         The values of a specific response header.
+ The list is mutable!
+ The name is <i>case insensitive</i>.
+ Returns an empty list if the header was not found.
 
     </div>
 </li>
@@ -726,25 +725,25 @@ Spincast Response plugin
 <li>
     <code class="apiItem">String <span>getHeaderFirst</span>(String name)</code>
     <div class="well">
-        The first value of a specific header.
-<br />The name is <i>case insensitive</i>.
-<br />Returns <code>null</code> if the header is not found.
+         The first value of a specific header.
+ The name is <i>case insensitive</i>.
+ Returns <code>null</code> if the header is not found.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>resetBuffer</span>()</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>resetBuffer</span>()</code>
     <div class="well">
-        Clears the buffer (the <i>unsent</i> buffer, of course).
+         Clears the buffer (the <i>unsent</i> buffer, of course).
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>resetEverything</span>()</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>resetEverything</span>()</code>
     <div class="well">
-        Clears the buffer (the <i>unsent</i> buffer, of course), resets the cookies,
+         Clears the buffer (the <i>unsent</i> buffer, of course), resets the cookies,
  the headers, the <code>Content-Type</code> and
  sets the <code>status code</code> back to <code>200</code>.
 
@@ -754,7 +753,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">byte[] <span>getUnsentBytes</span>()</code>
     <div class="well">
-        Gets the current unsent bytes (AKA the buffer).
+         Gets the current unsent bytes (AKA the buffer).
 
     </div>
 </li>
@@ -762,7 +761,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">String <span>getUnsentCharacters</span>()</code>
     <div class="well">
-        Gets the current unsent characters (AKA the buffer), using the
+         Gets the current unsent characters (AKA the buffer), using the
  <code>UTF-8</code> encoding.
 
     </div>
@@ -771,17 +770,17 @@ Spincast Response plugin
 <li>
     <code class="apiItem">String <span>getUnsentCharacters</span>(String encoding)</code>
     <div class="well">
-        Gets the current unsent characters (AKA the buffer), using the
+         Gets the current unsent characters (AKA the buffer), using the
  specified encoding.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">void <span>setGzipOption</span>(GzipOption gzipOption)</code>
+    <code class="apiItem">IResponseRequestContextAddon&lt;R&gt; <span>setGzipOption</span>(GzipOption gzipOption)</code>
     <div class="well">
-        Enable or disable gzipping of the response.
-<br />The default is <code>GzipOption.DEFAULT</code> which
+         Enable or disable gzipping of the response.
+ The default is <code>GzipOption.DEFAULT</code> which
  will gzip the response only for some <code>Content-Types</code>
  and only if a <code>gzip 'Accept-Encoding'</code> header
  has been received from the client.
@@ -792,7 +791,7 @@ Spincast Response plugin
 <li>
     <code class="apiItem">GzipOption <span>getGzipOption</span>()</code>
     <div class="well">
-        The currently set gzip options.
+         The currently set gzip options.
 
     </div>
 </li>

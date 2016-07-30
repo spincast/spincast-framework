@@ -19,6 +19,7 @@ import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.IResponseRequestContextAddon;
 import org.spincast.core.json.IJsonManager;
+import org.spincast.core.routing.IETagFactory;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
@@ -45,6 +46,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     private final IXmlManager xmlManager;
     private final ISpincastConfig spincastConfig;
     private final ISpincastUtils spincastUtils;
+    private final IETagFactory etagFactory;
 
     private String responseContentType = null;
     private int responseStatusCode = HttpStatus.SC_OK;
@@ -65,13 +67,15 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                                                IJsonManager jsonManager,
                                                IXmlManager xmlManager,
                                                ISpincastConfig spincastConfig,
-                                               ISpincastUtils spincastUtils) {
+                                               ISpincastUtils spincastUtils,
+                                               IETagFactory etagFactory) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
         this.xmlManager = xmlManager;
         this.spincastConfig = spincastConfig;
         this.spincastUtils = spincastUtils;
+        this.etagFactory = etagFactory;
     }
 
     protected R getRequestContext() {
@@ -102,6 +106,10 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         return this.spincastUtils;
     }
 
+    protected IETagFactory getEtagFactory() {
+        return this.etagFactory;
+    }
+
     protected ByteArrayOutputStream getBuffer() {
         return this.byteArrayOutputStreamIn;
     }
@@ -130,7 +138,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void setGzipOption(GzipOption gzipOption) {
+    public IResponseRequestContextAddon<R> setGzipOption(GzipOption gzipOption) {
 
         if(gzipOption == null) {
             gzipOption = GzipOption.DEFAULT;
@@ -138,10 +146,12 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
         if(isHeadersSent() && gzipOption != getGzipOption()) {
             this.logger.warn("The headers are sent, you can't change the gzip options.");
-            return;
+            return this;
         }
 
         this.gzipOption = gzipOption;
+
+        return this;
     }
 
     @Override
@@ -155,7 +165,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void setStatusCode(int responseStatusCode) {
+    public IResponseRequestContextAddon<R> setStatusCode(int responseStatusCode) {
 
         if(isHeadersSent()) {
             if(responseStatusCode != getStatusCode()) {
@@ -164,6 +174,8 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         } else {
             this.responseStatusCode = responseStatusCode;
         }
+
+        return this;
     }
 
     @Override
@@ -172,7 +184,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void setContentType(String responseContentType) {
+    public IResponseRequestContextAddon<R> setContentType(String responseContentType) {
 
         if(isHeadersSent()) {
             if(responseContentType != null && !responseContentType.equals(getContentType())) {
@@ -194,6 +206,8 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             }
             this.responseContentType = responseContentType;
         }
+
+        return this;
     }
 
     /**
@@ -370,7 +384,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void setCharactersCharsetName(String charactersCharsetName) {
+    public IResponseRequestContextAddon<R> setCharactersCharsetName(String charactersCharsetName) {
 
         Objects.requireNonNull(charactersCharsetName, "charactersCharsetName can't be NULL");
 
@@ -378,6 +392,8 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             this.logger.warn("Some data have already been send, it may not be a good idea to change the Charset now.");
         }
         this.charactersCharsetName = charactersCharsetName;
+
+        return this;
     }
 
     @Override
@@ -469,8 +485,14 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                              boolean flush) {
 
         if(StringUtils.isBlank(contentType)) {
-            sendHtmlTemplate(templatePath, isClasspathPath, params, flush);
-            return;
+
+            contentType = getSpincastUtils().getMimeTypeFromPath(templatePath);
+            if(contentType == null) {
+                this.logger.warn("The Content-Type was not specified and can't be determined from the template path '" +
+                                 templatePath +
+                                 "': 'text/plain' will be used");
+                contentType = ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset();
+            }
         }
 
         String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, params);
@@ -520,7 +542,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void resetBuffer() {
+    public IResponseRequestContextAddon<R> resetBuffer() {
 
         try {
             getBuffer().reset();
@@ -531,10 +553,12 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+
+        return this;
     }
 
     @Override
-    public void resetEverything() {
+    public IResponseRequestContextAddon<R> resetEverything() {
 
         resetBuffer();
 
@@ -546,6 +570,8 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             setContentType(null);
             setStatusCode(HttpStatus.SC_OK);
         }
+
+        return this;
     }
 
     @Override
@@ -569,70 +595,78 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void removeHeader(String name) {
+    public IResponseRequestContextAddon<R> removeHeader(String name) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
-            return;
+            return this;
         }
 
         getHeaders().remove(name);
+
+        return this;
     }
 
     @Override
-    public void setHeader(String name, String value) {
+    public IResponseRequestContextAddon<R> setHeader(String name, String value) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
-            return;
+            return this;
         }
 
         if(value == null) {
             removeHeader(name);
-            return;
+            return this;
         }
         setHeader(name, Arrays.asList(value));
+
+        return this;
     }
 
     @Override
-    public void setHeader(String name, List<String> values) {
+    public IResponseRequestContextAddon<R> setHeader(String name, List<String> values) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
-            return;
+            return this;
         }
 
         if(values == null) {
             removeHeader(name);
-            return;
+            return this;
         }
         getHeaders().put(name, values);
+
+        return this;
     }
 
     @Override
-    public void addHeaderValue(String name, String value) {
+    public IResponseRequestContextAddon<R> addHeaderValue(String name, String value) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
-            return;
+            return this;
         }
 
         if(value == null) {
-            return;
+            return this;
         }
         addHeaderValues(name, Arrays.asList(value));
+
+        return this;
     }
 
     @Override
-    public void addHeaderValues(String name, List<String> values) {
+    public IResponseRequestContextAddon<R> addHeaderValues(String name, List<String> values) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
-            return;
+            return this;
         }
 
         if(values == null) {
-            return;
+            return this;
         }
         List<String> currentValues = getHeaders().get(name);
         if(currentValues == null) {
@@ -640,6 +674,8 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             getHeaders().put(name, currentValues);
         }
         currentValues.addAll(values);
+
+        return this;
     }
 
     @Override
@@ -913,6 +949,36 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    @Override
+    public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds) {
+        return setCacheSeconds(cacheSeconds, false);
+    }
+
+    @Override
+    public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache) {
+
+        if(cacheSeconds <= 0) {
+            this.logger.warn("A number of seconds below 1 doesn't send any cache headers: " + cacheSeconds);
+            return this;
+        }
+
+        if(isHeadersSent()) {
+            this.logger.error("The headers are sent, you can't add cache headers.");
+            return this;
+        }
+
+        String cacheControl = "max-age=" + cacheSeconds;
+        if(isPrivateCache) {
+            cacheControl = "private, " + cacheControl;
+        } else {
+            cacheControl = "public, " + cacheControl;
+        }
+
+        setHeader(HttpHeaders.CACHE_CONTROL, cacheControl);
+
+        return this;
     }
 
 }

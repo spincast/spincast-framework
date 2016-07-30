@@ -63,7 +63,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * is also <code>"UTF-8"</code> by default, if you send data using 
      * <code>sendPlainText()</code>, <code>sendHtml()</code> or <code>sendJson()</code>).
      */
-    public void setCharactersCharsetName(String name);
+    public IResponseRequestContextAddon<R> setCharactersCharsetName(String name);
 
     /**
      * Sends a String, using the encoding returned by {@link #getCharactersCharsetName() getCharactersCharsetName},
@@ -330,7 +330,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * Note that this <code>status code</code> can be changed automatically
      * if an exception is thrown.
      */
-    public void setStatusCode(int statusCode);
+    public IResponseRequestContextAddon<R> setStatusCode(int statusCode);
 
     /**
      * The current <code>status code</code> sent or to be send.
@@ -341,7 +341,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * The <code>Content-Type</code> header to use for the response. Most 
      * <code>sendXXX()</code> methods will set this automatically.
      */
-    public void setContentType(String responseContentType);
+    public IResponseRequestContextAddon<R> setContentType(String responseContentType);
 
     /**
      * The current <code>Content-Type</code> sent or to be send.
@@ -376,7 +376,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * If the value is <code>null</code>, it won't be added.
      */
-    public void addHeaderValue(String name, String value);
+    public IResponseRequestContextAddon<R> addHeaderValue(String name, String value);
 
     /**
      * Adds a list of values to a response header. If the header already
@@ -384,7 +384,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * If the values are <code>null</code>, nothing will be added.
      */
-    public void addHeaderValues(String name, List<String> values);
+    public IResponseRequestContextAddon<R> addHeaderValues(String name, List<String> values);
 
     /**
      * Set the value to a response header. If the header already
@@ -393,7 +393,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * If the value is <code>null</code>, the header will be 
      * removed (same behavior as {@link #removeHeader(String) removeHeader(String name)})
      */
-    public void setHeader(String name, String value);
+    public IResponseRequestContextAddon<R> setHeader(String name, String value);
 
     /**
      * Set multiple values to a response header. If the header already
@@ -402,12 +402,12 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * If the lists is <code>null</code> or empty, the header will be 
      * removed (same behavior as {@link #removeHeader(String) removeHeader(String name)})
      */
-    public void setHeader(String name, List<String> values);
+    public IResponseRequestContextAddon<R> setHeader(String name, List<String> values);
 
     /**
      * Removes an header by its name.
      */
-    public void removeHeader(String name);
+    public IResponseRequestContextAddon<R> removeHeader(String name);
 
     /**
      * The currently set response headers.
@@ -439,14 +439,14 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
     /**
      * Clears the buffer (the <i>unsent</i> buffer, of course).
      */
-    public void resetBuffer();
+    public IResponseRequestContextAddon<R> resetBuffer();
 
     /**
      * Clears the buffer (the <i>unsent</i> buffer, of course), resets the cookies,
      * the headers, the <code>Content-Type</code> and 
      * sets the <code>status code</code> back to <code>200</code>.
      */
-    public void resetEverything();
+    public IResponseRequestContextAddon<R> resetEverything();
 
     /**
      * Gets the current unsent bytes (AKA the buffer).
@@ -472,11 +472,30 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * and only if a <code>gzip 'Accept-Encoding'</code> header 
      * has been received from the client.
      */
-    public void setGzipOption(GzipOption gzipOption);
+    public IResponseRequestContextAddon<R> setGzipOption(GzipOption gzipOption);
 
     /**
      * The currently set gzip options.
      */
     public GzipOption getGzipOption();
+
+    /**
+     * Adds caching headers.
+     * 
+     * @param seconds the number of seconds this response should be cached.
+     */
+    public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds);
+
+    /**
+     * Adds caching headers for the specified number
+     * of seconds.
+     * 
+     * Adds caching headers.
+     * 
+     * @param seconds the number of seconds this response should be cached.
+     * @param isPrivateCache if <code>true</code>, the cache will
+     * be flagged as "private".
+     */
+    public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache);
 
 }

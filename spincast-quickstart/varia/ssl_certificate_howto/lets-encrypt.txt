@@ -24,6 +24,9 @@ If you're using Nginx as a reverse proxy
     ssl_certificate      /etc/letsencrypt/live/spincast.org/cert.pem;
     ssl_certificate_key  /etc/letsencrypt/live/spincast.org/privkey.pem;
 
+( As a side note, don't forget to read this since you use a reverse proxy:
+https://www.spincast.org/plugins/spincast-undertow#reverse_proxy )
+
 -----------------------------------
 If you're using Apache as a reverse proxy
 -----------------------------------
@@ -48,6 +51,10 @@ If you're using Apache as a reverse proxy
 3. Make sure the mod_ssl module is loaded :
 
     LoadModule ssl_module /PATH/TO/modules/mod_ssl.so
+
+
+( As a side note, don't forget to read this since you use a reverse proxy:
+ https://www.spincast.org/plugins/spincast-undertow#reverse_proxy )
 
 -----------------------------------
 SSL managed directly by your Spincast application

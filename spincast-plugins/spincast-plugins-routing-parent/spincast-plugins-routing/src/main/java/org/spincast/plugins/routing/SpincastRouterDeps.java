@@ -7,10 +7,12 @@ import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.routing.IRedirectRuleBuilderFactory;
 import org.spincast.core.routing.IRouteBuilderFactory;
 import org.spincast.core.routing.IStaticResourceBuilderFactory;
+import org.spincast.core.routing.IStaticResourceFactory;
 import org.spincast.core.server.IServer;
 import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
 import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
+import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
 
 import com.google.inject.Inject;
 
@@ -49,6 +51,7 @@ public class SpincastRouterDeps<R extends IRequestContext<?>, W extends IWebsock
     private final IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
     private final IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
     private final IServer server;
+    private final ISpincastRoutingUtils spincastRoutingUtils;
 
     /**
      * Constructor
@@ -66,7 +69,8 @@ public class SpincastRouterDeps<R extends IRequestContext<?>, W extends IWebsock
                               IRouteHandlerMatchFactory<R> routeHandlerMatchFactory,
                               IStaticResourceFactory<R> staticResourceFactory,
                               IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory,
-                              IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory) {
+                              IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory,
+                              ISpincastRoutingUtils spincastRoutingUtils) {
 
         this.spincastRouterConfig = spincastRouterConfig;
         this.routeFactory = routeFactory;
@@ -81,6 +85,7 @@ public class SpincastRouterDeps<R extends IRequestContext<?>, W extends IWebsock
         this.staticResourceFactory = staticResourceFactory;
         this.websocketRouteBuilderFactory = websocketRouteBuilderFactory;
         this.websocketRouteHandlerFactory = websocketRouteHandlerFactory;
+        this.spincastRoutingUtils = spincastRoutingUtils;
     }
 
     public IRouteHandlerMatchFactory<R> getRouteHandlerMatchFactory() {
@@ -133,6 +138,10 @@ public class SpincastRouterDeps<R extends IRequestContext<?>, W extends IWebsock
 
     public IServer getServer() {
         return this.server;
+    }
+
+    public ISpincastRoutingUtils getSpincastRoutingUtils() {
+        return this.spincastRoutingUtils;
     }
 
 }

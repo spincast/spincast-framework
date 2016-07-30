@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IStaticResource;
+import org.spincast.core.routing.IStaticResourceCacheConfig;
 import org.spincast.core.routing.IStaticResourceCorsConfig;
 import org.spincast.core.routing.StaticResourceType;
 
@@ -21,18 +22,21 @@ public class StaticResource<R extends IRequestContext<?>> implements IStaticReso
     private final String resourcePath;
     private final IHandler<R> generator;
     private final IStaticResourceCorsConfig corsConfig;
+    private final IStaticResourceCacheConfig cacheConfig;
 
     @AssistedInject
     public StaticResource(@Assisted StaticResourceType staticResourceType,
                           @Assisted("url") String urlPath,
                           @Assisted("path") String resourcePath,
                           @Assisted @Nullable IHandler<R> generator,
-                          @Assisted @Nullable IStaticResourceCorsConfig corsConfig) {
+                          @Assisted @Nullable IStaticResourceCorsConfig corsConfig,
+                          @Assisted @Nullable IStaticResourceCacheConfig cacheConfig) {
         this.staticResourceType = staticResourceType;
         this.urlPath = urlPath;
         this.resourcePath = resourcePath;
         this.generator = generator;
         this.corsConfig = corsConfig;
+        this.cacheConfig = cacheConfig;
     }
 
     @Override
@@ -66,6 +70,11 @@ public class StaticResource<R extends IRequestContext<?>> implements IStaticReso
     }
 
     @Override
+    public IStaticResourceCacheConfig getCacheConfig() {
+        return this.cacheConfig;
+    }
+
+    @Override
     public boolean isFileResource() {
         return getStaticResourceType() == StaticResourceType.FILE ||
                getStaticResourceType() == StaticResourceType.FILE_FROM_CLASSPATH;
@@ -85,6 +94,11 @@ public class StaticResource<R extends IRequestContext<?>> implements IStaticReso
     @Override
     public boolean isFileSytem() {
         return !isClasspath();
+    }
+
+    @Override
+    public String toString() {
+        return getResourcePath();
     }
 
 }

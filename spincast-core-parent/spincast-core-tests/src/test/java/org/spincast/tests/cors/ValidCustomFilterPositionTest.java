@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -17,12 +18,18 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.common.net.HttpHeaders;
+import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
 public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
+
+        @Inject
+        public TestRoutingConfig(ISpincastConfig spincastConfig) {
+            super(spincastConfig);
+        }
 
         @Override
         public int getCorsFilterPosition() {

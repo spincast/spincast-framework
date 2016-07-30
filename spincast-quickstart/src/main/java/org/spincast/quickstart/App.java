@@ -161,7 +161,7 @@ public class App {
         // getRouter().GET("/").save(context -> getAppController().indexPage(context));
         //
         //==========================================
-        getRouter().GET("/").save(new IAppHandler() {
+        getRouter().GET("/").cache(3600).save(new IAppHandler() {
 
             @Override
             public void handle(IAppRequestContext context) {

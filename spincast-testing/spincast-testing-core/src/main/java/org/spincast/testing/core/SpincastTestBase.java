@@ -49,8 +49,8 @@ import com.google.inject.Injector;
 @RunWith(SpincastJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class SpincastTestBase implements IBeforeAfterClassMethodsProvider,
-                                          ITestFailureListener,
-                                          IRepeatedClassAfterMethodProvider {
+                                       ITestFailureListener,
+                                       IRepeatedClassAfterMethodProvider {
 
     private Injector guice;
     private File testingWritableDir;
@@ -127,7 +127,13 @@ public abstract class SpincastTestBase implements IBeforeAfterClassMethodsProvid
             //==========================================
             //this.testingWritableDir = new File(getSpincastConfig().getSpincastWritableDir().getAbsolutePath() +
             //                                   "/testing");
-            this.testingWritableDir = new File(getTestingWritableDirBasePath() + "/spincast/testing");
+
+            File baseDir = new File(System.getProperty("java.io.tmpdir"));
+            if(!baseDir.isDirectory()) {
+                throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
+            }
+
+            this.testingWritableDir = new File(baseDir, "/spincast/testing");
             if(!this.testingWritableDir.isDirectory()) {
                 boolean mkdirs = this.testingWritableDir.mkdirs();
                 assertTrue(mkdirs);
@@ -135,14 +141,6 @@ public abstract class SpincastTestBase implements IBeforeAfterClassMethodsProvid
             assertTrue(this.testingWritableDir.canWrite());
         }
         return this.testingWritableDir;
-    }
-
-    protected String getTestingWritableDirBasePath() {
-        File baseDir = new File(System.getProperty("java.io.tmpdir"));
-        if(!baseDir.isDirectory()) {
-            throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
-        }
-        return baseDir.getAbsolutePath();
     }
 
     /**

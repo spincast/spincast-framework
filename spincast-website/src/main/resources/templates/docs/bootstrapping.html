@@ -14,7 +14,7 @@ Docs : "bootstrapping"
         the basics, you could very well invent your own structure...
     </p> 
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Note that, except if specified otherwise, the following examples all use <code>SpincastDefaultGuiceModule</code>,
         so this Maven artifact must be added to your project:
     </p> 
@@ -207,7 +207,7 @@ Docs : "bootstrapping"
 
         <p>
             <div>
-                <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                 First let's create a custom configuration class for our application. 
                 The goal is to override some of the Spincast default
                 configurations and to add some extra configurations, specific to our application.
@@ -268,7 +268,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div class="subSection">
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     Now that our custom configuration interface and implementation classes are ready, let's create a 
                     custom Guice module to tweak some bindings.
                     
@@ -353,7 +353,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div>
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
 	                And, finally, here's our bootstrapping <code>App</code> class:
 	                <pre class="ace ace-java"
 >public class App {
@@ -465,7 +465,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <p>
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     Let's first create a custom configuration class which changes the <code>port</code> the
                     server will use :
                     <br />
@@ -497,7 +497,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div class="subSection">
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     We then create a custom Guice module for our application:
                     <br />
                     
@@ -540,7 +540,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div class="subSection">
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     Finally, we create our bootstrapping <code>App</code> class and tell Guice we want to use
                     the default bindings provided by the <code>SpincastDefaultGuiceModule</code> module, but that
                     we also want to add/override some bindings using our custom <code>AppModule</code> module!
@@ -700,7 +700,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div class="subSection">
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     We ajust our custom <code>AppModule</code> Guice module:
                     
                     <pre class="ace ace-java"
@@ -782,7 +782,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             </p>
         </div>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Here's a possible implementation for this controller. Note that
             we inject an <code>"IUserService"</code> <em>service</em>, and we use it
             to actually get the user from our system. The implementation of this service
@@ -846,7 +846,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             </p>   
         </div>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             As in the previous examples, let's once again define our routes directly in the <code>App</code> class
             (this is not <em>required</em>, by the way! You can inject the <code>router</code> anywhere to add
             routes to it...). 
@@ -917,7 +917,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             </p>  
         </div>
         <p>
-            <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, we bind everything in our custom Guice module:
         </p>
         <div>
@@ -978,7 +978,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <p>
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     To start a Spincast application from scratch, start with the <code>spincast-core</code> Maven artifact instead 
                     of <code>spincast-default</code>:
                     <br />
@@ -1000,7 +1000,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div>
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     For example, to provide an implementation for the <code>IServer</code> 
                     and for the <code>ITemplatingEngine</code> components, you could use:
                     
@@ -1025,7 +1025,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div class="subSection">
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     And then install their Guice modules:
                     
                     <pre class="ace ace-java" data-ace-hi="10,8,10,100|11,8,11,100|12,8,12,100|13,8,13,100"
@@ -1052,7 +1052,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <div class="subSection">
             <div>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     If you fail to provide an implementation for a required component,
                     you will get this kind of error when trying to start the application:
                     

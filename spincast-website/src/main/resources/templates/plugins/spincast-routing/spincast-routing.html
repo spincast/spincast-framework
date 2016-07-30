@@ -25,22 +25,22 @@ Spincast Routing plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Routing plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12"> 
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Routing <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Routing <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/routing/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/routing/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-                <div class="pluginBadgeCore hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -124,7 +124,7 @@ Spincast Routing plugin
                     you have nothing more to do!
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     If you start from scratch using the <code>spincast-core</code> artifact, you can use the
                     plugin by adding this Maven artifact to your project:
                     <div>
@@ -139,7 +139,7 @@ Spincast Routing plugin
                     </div>  
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
@@ -188,8 +188,10 @@ Spincast Routing plugin
                 
                 <div id="router_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Router Methods :</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Router Methods :</h4>
                         <ul class="apiList">
+                        
+                        
            
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>GET</span>(String path)</code>
@@ -768,16 +770,15 @@ Spincast Routing plugin
                 
                 <div id="routebuilder_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods:</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods:</h4>
                         <ul class="apiList">
-                        
-                 
-                 
+                      
+                      
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>id</span>(String id)</code>
     <div class="well">
-        An id that can be used to identify the route.
-<br />Must be unique.
+         An id that can be used to identify the route.
+ Must be unique.
 
     </div>
 </li>
@@ -785,7 +786,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>path</span>(String path)</code>
     <div class="well">
-        The path of the route.
+         The path of the route.
 
     </div>
 </li>
@@ -793,19 +794,19 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>pos</span>(int position)</code>
     <div class="well">
-        The position of the handler. If "0", the handler is considered
+         The position of the handler. If "0", the handler is considered
  as the *main* handler. Only one main handler per request
  is run (the first one found)! The main handler is usually where
  the body of the response is created.
-<br />A route with a position less than "0" is considered as a "before" filter and
+ A route with a position less than "0" is considered as a "before" filter and
  will be run before the main handler. A route with a position greater than
  "0" is considered as an "after" filter and will be run after the
  main handler. All the matching before and after filters are run,
  from the lower position to the higher. If two filters have the
  same position, they will be run in order they have been added to
  the router.
-<br />More than one position is allowed.
-<br />If not specified, "0" is used.
+ More than one position is allowed.
+ If not specified, "0" is used.
 
     </div>
 </li>
@@ -813,7 +814,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>found</span>()</code>
     <div class="well">
-        This route will be considered during a <code>Found</code> routing process.
+         This route will be considered during a <code>Found</code> routing process.
 
     </div>
 </li>
@@ -821,7 +822,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>notFound</span>()</code>
     <div class="well">
-        This route will be considered during a <code>Not Found</code> routing process.
+         This route will be considered during a <code>Not Found</code> routing process.
 
     </div>
 </li>
@@ -829,7 +830,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>exception</span>()</code>
     <div class="well">
-        This route will be considered during an <code>Exception</code> routing process.
+         This route will be considered during an <code>Exception</code> routing process.
 
     </div>
 </li>
@@ -837,7 +838,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>allRoutingTypes</span>()</code>
     <div class="well">
-        This route will be considered for all routing types.
+         This route will be considered for all routing types.
 
     </div>
 </li>
@@ -845,8 +846,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>before</span>(IHandler&lt;R&gt; beforeFilter)</code>
     <div class="well">
-        Adds a "before" filter which will only be applied to this particular route.
-<br />If more than one filter is added, they will be run in order they have been
+         Adds a "before" filter which will only be applied to this particular route.
+ If more than one filter is added, they will be run in order they have been
  added.
 
     </div>
@@ -855,8 +856,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>after</span>(IHandler&lt;R&gt; afterFilter)</code>
     <div class="well">
-        Adds an "after" filter which will only be applied to this particular route.
-<br />If more than one filter is added, they will be run in order they have been
+         Adds an "after" filter which will only be applied to this particular route.
+ If more than one filter is added, they will be run in order they have been
  added.
 
     </div>
@@ -865,8 +866,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>acceptAsString</span>(String... acceptedContentTypes)</code>
     <div class="well">
-        Sets the accepted <code>Content-Types</code>.
-<br />This route will only be considered for requests specifying those
+         Sets the accepted <code>Content-Types</code>.
+ This route will only be considered for requests specifying those
  <code>Content-Types</code> as being accepted
  (using the <code>Accept</code> header).
 
@@ -876,8 +877,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>acceptAsString</span>(Set&lt;String&gt; acceptedContentTypes)</code>
     <div class="well">
-        Sets the accepted <code>Content-Types</code>.
-<br />This route will only be considered for requests specifying those
+         Sets the accepted <code>Content-Types</code>.
+ This route will only be considered for requests specifying those
  <code>Content-Types</code> as being accepted
  (using the <code>Accept</code> header).
 
@@ -887,8 +888,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>accept</span>(ContentTypeDefaults... acceptedContentTypes)</code>
     <div class="well">
-        Sets the accepted <code>Content-Types</code>.
-<br />This route will only be considered for requests specifying those
+         Sets the accepted <code>Content-Types</code>.
+ This route will only be considered for requests specifying those
  <code>Content-Types</code> as being accepted
  (using the <code>Accept</code> header).
 
@@ -898,8 +899,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>accept</span>(Set&lt;ContentTypeDefaults&gt; acceptedContentTypes)</code>
     <div class="well">
-        Sets the accepted <code>Content-Types</code>.
-<br />This route will only be considered for requests specifying those
+         Sets the accepted <code>Content-Types</code>.
+ This route will only be considered for requests specifying those
  <code>Content-Types</code> as being accepted
  (using the <code>Accept</code> header).
 
@@ -909,7 +910,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>html</span>()</code>
     <div class="well">
-        Adds <code>application/html</code> as an accepted <code>Content-Type</code>.
+         Adds <code>application/html</code> as an accepted <code>Content-Type</code>.
 
     </div>
 </li>
@@ -917,7 +918,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>json</span>()</code>
     <div class="well">
-        Adds <code>application/json</code> as an accepted <code>Content-Type</code>.
+         Adds <code>application/json</code> as an accepted <code>Content-Type</code>.
 
     </div>
 </li>
@@ -925,7 +926,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>xml</span>()</code>
     <div class="well">
-        Adds <code>application/xml</code> as an accepted <code>Content-Type</code>.
+         Adds <code>application/xml</code> as an accepted <code>Content-Type</code>.
 
     </div>
 </li>
@@ -933,8 +934,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>GET</span>()</code>
     <div class="well">
-        Addss <code>GET</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Addss <code>GET</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -944,8 +945,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>POST</span>()</code>
     <div class="well">
-        Adds <code>POST</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>POST</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -955,8 +956,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>PUT</span>()</code>
     <div class="well">
-        Adds <code>PUT</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>PUT</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -966,8 +967,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>DELETE</span>()</code>
     <div class="well">
-        Adds <code>DELETE</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>DELETE</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -977,8 +978,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>OPTIONS</span>()</code>
     <div class="well">
-        Adds <code>OPTIONS</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>OPTIONS</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -988,8 +989,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>TRACE</span>()</code>
     <div class="well">
-        Adds <code>TRACE</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>TRACE</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -999,8 +1000,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>HEAD</span>()</code>
     <div class="well">
-        Adds <code>HEAD</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>HEAD</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -1010,8 +1011,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>PATCH</span>()</code>
     <div class="well">
-        Adds <code>PATCH</code> as a supported HTTP method.
-<br />If you started the creation of the route from an
+         Adds <code>PATCH</code> as a supported HTTP method.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. This one will simply be added.
 
@@ -1021,8 +1022,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>ALL</span>()</code>
     <div class="well">
-        Adds all HTTP methods as being supported.
-<br />If you started the creation of the route from an
+         Adds all HTTP methods as being supported.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. By calling this method, all
  methods will now be suported.
@@ -1033,8 +1034,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>SOME</span>(Set&lt;HttpMethod&gt; httpMethods)</code>
     <div class="well">
-        Adds the specified HTTP methods as being supported.
-<br />If you started the creation of the route from an
+         Adds the specified HTTP methods as being supported.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. Those new ones will simply be added.
 
@@ -1044,8 +1045,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRouteBuilder&lt;R&gt; <span>SOME</span>(HttpMethod... httpMethods)</code>
     <div class="well">
-        Adds the specified HTTP methods as being supported.
-<br />If you started the creation of the route from an
+         Adds the specified HTTP methods as being supported.
+ If you started the creation of the route from an
  <code>IRouter</code> object, you already specified some
  supported HTTP methods. Those new ones will simply be added.
 
@@ -1055,8 +1056,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">void <span>save</span>(IHandler&lt;R&gt; mainHandler)</code>
     <div class="well">
-        Creates the route and saves it to the router.
-<br />If the creation of the route was not started using
+         Creates the route and saves it to the router.
+ If the creation of the route was not started using
  an <code>IRouter</code> object, an exception will be
  thrown.
 
@@ -1066,16 +1067,82 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IRoute&lt;R&gt; <span>create</span>(IHandler&lt;R&gt; mainHandler)</code>
     <div class="well">
-        Creates and returns the route without adding it to
+         Creates and returns the route without adding it to
  the router.
-<br />NOTE : use <code>save(...)</code> instead to save the route
+ NOTE : use <code>save(...)</code> instead to save the route
  to the router at the end of the build process!
 
     </div>
 </li>
 
+<li>
+    <code class="apiItem">IRouteBuilder&lt;R&gt; <span>noCache</span>()</code>
+    <div class="well">
+         Automatically adds "no-cache" headers to the response.
 
-    
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IRouteBuilder&lt;R&gt; <span>cache</span>()</code>
+    <div class="well">
+         Adds cache headers.
+ <p>
+ Uses the default cache configurations, provided
+ by <code>org.spincast.core.config.ISpincastConfig ISpincastConfig</code>
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IRouteBuilder&lt;R&gt; <span>cache</span>(int seconds)</code>
+    <div class="well">
+         Adds public cache headers.
+
+        <div class="apiItemFooter">
+            @param seconds The number of seconds the resource associated with
+ this route should be cached.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IRouteBuilder&lt;R&gt; <span>cache</span>(int seconds, boolean isPrivate)</code>
+    <div class="well">
+         Adds cache headers.
+
+        <div class="apiItemFooter">
+            @param seconds The number of seconds the resource associated with
+ this route should be cached.
+<br />@param isPrivate should the cache be private?
+ (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IRouteBuilder&lt;R&gt; <span>cache</span>(int seconds, boolean isPrivate, Integer secondsCdn)</code>
+    <div class="well">
+         Adds cache headers.
+
+        <div class="apiItemFooter">
+            @param seconds The number of seconds the resource associated with
+ this route should be cached.
+<br />@param isPrivate should the cache be private?
+ (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+<br />@param secondsCdn The number of seconds the resource associated with
+ this route should be cached by a CDN/proxy. If <code>null</code>, it
+ won't be used.
+
+        </div>
+    </div>
+</li>
+
+
+
     
     
 
@@ -1101,15 +1168,14 @@ Spincast Routing plugin
                 
                 <div id="static_resource_builder_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods:</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods:</h4>
                         <ul class="apiList">
-               
-               
-               
+              
+              
 <li>
     <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>url</span>(String url)</code>
     <div class="well">
-        The URL pointing to the resource.
+         The URL pointing to the resource.
 
     </div>
 </li>
@@ -1117,23 +1183,47 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>classpath</span>(String path)</code>
     <div class="well">
-        The path to the resource, on the classpath.
+         The path to the resource, on the classpath.
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>fileSystem</span>(String path)</code>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>pathAbsolute</span>(String absolutePath)</code>
     <div class="well">
-        The path to the resource, on the file system.
+         The absolute path to the resource, on the file system.
 
+        <div class="apiItemFooter">
+            @param absolutePath the absolute path to the resource. If this is a file
+ and not a directory, remember that it will be served as a static resource,
+ so its extension is important for the
+ correct <code>Content-Type</code> to be sent!
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>pathRelative</span>(String relativePath)</code>
+    <div class="well">
+         The path to the resource, on the file system, relative to the
+ temp Spincast directory, as returned by
+ <code>ISpincastConfig::getSpincastTempDir()</code>
+
+        <div class="apiItemFooter">
+            @param relativePath the relative path to the resource. If this is a file
+ and not a directory, remember that it will be served as a static resource,
+ so its extension is important for the
+ correct <code>Content-Type</code> to be sent!
+
+        </div>
     </div>
 </li>
 
 <li>
     <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>()</code>
     <div class="well">
-        Enables Cross-Origin Resource Sharing (Cors)
+         Enables Cross-Origin Resource Sharing (Cors)
 
         <div class="apiItemFooter">
             @see org.spincast.core.filters.ISpincastFilters#cors(R)
@@ -1144,7 +1234,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>(Set&lt;String&gt; allowedOrigins)</code>
     <div class="well">
-        Enables Cross-Origin Resource Sharing (Cors)
+         Enables Cross-Origin Resource Sharing (Cors)
 
         <div class="apiItemFooter">
             @see org.spincast.core.filters.ISpincastFilters#cors(R, Set)
@@ -1155,7 +1245,7 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>(Set&lt;String&gt; allowedOrigins,                                           Set&lt;String&gt; extraHeadersAllowedToBeRead)</code>
     <div class="well">
-        Enables Cross-Origin Resource Sharing (Cors)
+         Enables Cross-Origin Resource Sharing (Cors)
 
         <div class="apiItemFooter">
             @see org.spincast.core.filters.ISpincastFilters#cors(R, Set, Set)
@@ -1164,9 +1254,9 @@ Spincast Routing plugin
 </li>
 
 <li>
-    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>(Set&lt;String&gt; allowedOrigins,                                           Set&lt;String&gt; extraHeadersAllowedToBeRead,                                           boolean allowCookies)</code>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>(Set&lt;String&gt; allowedOrigins,                                           Set&lt;String&gt; extraHeadersAllowedToBeRead,                                           Set&lt;String&gt; extraHeadersAllowedToBeSent)</code>
     <div class="well">
-        Enables Cross-Origin Resource Sharing (Cors)
+         Enables Cross-Origin Resource Sharing (Cors)
 
         <div class="apiItemFooter">
             @see org.spincast.core.filters.ISpincastFilters#cors(R, Set, Set, Set, boolean)
@@ -1175,10 +1265,78 @@ Spincast Routing plugin
 </li>
 
 <li>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>(Set&lt;String&gt; allowedOrigins,                                           Set&lt;String&gt; extraHeadersAllowedToBeRead,                                           Set&lt;String&gt; extraHeadersAllowedToBeSent,                                           boolean allowCookies)</code>
+    <div class="well">
+         Enables Cross-Origin Resource Sharing (Cors)
+
+        <div class="apiItemFooter">
+            @see org.spincast.core.filters.ISpincastFilters#cors(R, Set, Set, Set, boolean)
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cors</span>(Set&lt;String&gt; allowedOrigins,                                           Set&lt;String&gt; extraHeadersAllowedToBeRead,                                           Set&lt;String&gt; extraHeadersAllowedToBeSent,                                           boolean allowCookies,                                           int maxAgeInSeconds)</code>
+    <div class="well">
+         Enables Cross-Origin Resource Sharing (Cors)
+
+        <div class="apiItemFooter">
+            @see org.spincast.core.filters.ISpincastFilters#cors(R, Set, Set, Set, boolean)
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cache</span>(int seconds)</code>
+    <div class="well">
+         Adds public cache headers.
+
+        <div class="apiItemFooter">
+            @param seconds The number of seconds the resource associated with
+ this route should be cached.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cache</span>(int seconds, boolean isPrivate)</code>
+    <div class="well">
+         Adds cache headers.
+
+        <div class="apiItemFooter">
+            @param seconds The number of seconds the resource associated with
+ this route should be cached.
+<br />@param isPrivate should the cache be private?
+ (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">IStaticResourceBuilder&lt;R&gt; <span>cache</span>(int seconds, boolean isPrivate, Integer secondsCdn)</code>
+    <div class="well">
+         Adds cache headers.
+
+        <div class="apiItemFooter">
+            @param seconds The number of seconds the resource associated with
+ this route should be cached.
+<br />@param isPrivate should the cache be private?
+ (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+<br />@param secondsCdn The number of seconds the resource associated with
+ this route should be cached by a CDN/proxy. If <code>null</code>, it
+ won't be used.
+
+        </div>
+    </div>
+</li>
+
+<li>
     <code class="apiItem">void <span>save</span>()</code>
     <div class="well">
-        Saves the static resource route to the router.
-<br />If the creation of the resource was not started using
+         Saves the static resource route to the router.
+ If the creation of the resource was not started using
  an <code>IRouter</code> object, an exception will be
  thrown.
 
@@ -1188,8 +1346,8 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">void <span>save</span>(IHandler&lt;R&gt; generator)</code>
     <div class="well">
-        Saves the static resource route.
-<br />If the creation of the resource was not started using
+         Saves the static resource route.
+ If the creation of the resource was not started using
  an <code>IRouter</code> object, an exception will be
  thrown.
 
@@ -1205,14 +1363,13 @@ Spincast Routing plugin
 <li>
     <code class="apiItem">IStaticResource&lt;R&gt; <span>create</span>()</code>
     <div class="well">
-        Creates and returns the static resource without adding it to
+         Creates and returns the static resource without adding it to
  the router.
-<br />NOTE : use <code>save(...)</code> instead to save the static resource
+ NOTE : use <code>save(...)</code> instead to save the static resource
  to the router at the end of the build process!
 
     </div>
 </li>
-
 
 
 
@@ -1240,7 +1397,7 @@ Spincast Routing plugin
                 
                 <div id="websocketroutebuilder_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods:</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods:</h4>
                         <ul class="apiList">
                         
                  
@@ -1360,7 +1517,7 @@ Spincast Routing plugin
                     <p>
                         <div>
                             <p>
-                                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Quick example :</h4>
+                                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
                                 <pre class="ace ace-java" data-ace-hi="4,62,4,72"
 >public void myHandler(IAppRequestContext context) {
 
@@ -1375,7 +1532,7 @@ Spincast Routing plugin
 
                 <div id="request_context_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Add-on methods :</h4>
                         <ul class="apiList">
                         
                         

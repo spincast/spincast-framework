@@ -8,9 +8,10 @@ import com.google.inject.ImplementedBy;
 
 /**
  * Configurations for the Spincast Router.
- * 
+ * <p>
  * We use "@ImplementedBy" to specify the default configurations
  * to use if none is specified in a Guice module.
+ * </p>
  */
 @ImplementedBy(SpincastRouterConfigDefault.class)
 public interface ISpincastRouterConfig {
@@ -22,13 +23,13 @@ public interface ISpincastRouterConfig {
     public Set<RoutingType> getFilterDefaultRoutingTypes();
 
     /**
-     * The default position  for a <code>cors</code> "before" filter.
+     * The default position for a <code>cors</code> "before" filter.
      * Must be &lt; 0 ! 
      */
     public int getCorsFilterPosition();
 
     /**
-     * The default position  for a <code>redirect</code> "before" filter.
+     * The default position for a <code>redirect</code> "before" filter.
      * Must be &lt; 0 and should probably be one of the very, very
      * first filter to run! 
      */

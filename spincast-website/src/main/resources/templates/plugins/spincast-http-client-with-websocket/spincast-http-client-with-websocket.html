@@ -25,19 +25,20 @@ Spincast HTTP Client with WebSockets support plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast HTTP Client with WebSockets support plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast HTTP Client (with WebSockets) <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HTTP Client (with WebSockets) <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/httpclient/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/org/spincast/plugins/httpclient/websocket/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-            </div> 
+                <span class="clear"></span>
+            </div>    
         </div>
     </div>
     
@@ -77,7 +78,7 @@ Spincast HTTP Client with WebSockets support plugin
                     based on Undertow, so you already pull those dependencies!
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Make sure you read the documentation of the regular <a href="/plugins/spincast-http-client">HTTP Client</a>
                     since most of the functionalities are documented there. Here, we're only going to focus on the 
                     <code>WebSockets</code> specificities.
@@ -91,7 +92,7 @@ Spincast HTTP Client with WebSockets support plugin
                 </h3>              
 
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Add this artifact to your project:
 	                <div>
 	                    <p>
@@ -105,7 +106,7 @@ Spincast HTTP Client with WebSockets support plugin
 	                </div>  
 	            </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>

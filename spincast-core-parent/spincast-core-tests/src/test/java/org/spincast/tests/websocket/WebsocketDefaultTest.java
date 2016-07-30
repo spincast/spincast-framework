@@ -129,8 +129,8 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         controller.getEndpointManager("endpoint1").closeEndpoint();
 
-        assertTrue(client.waitForConnectionClosed());
         assertTrue(controller.waitForEndpointClosed("endpoint1"));
+        assertTrue(client.waitForConnectionClosed());
     }
 
     @Test

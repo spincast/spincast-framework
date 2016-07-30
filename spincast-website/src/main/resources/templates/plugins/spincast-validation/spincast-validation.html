@@ -25,19 +25,20 @@ Spincast Properties File Config
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Validation plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Validation <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Validation <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/validation/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/validation/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-            </div> 
+                <span class="clear"></span>
+            </div>    
         </div>
     </div>
     
@@ -91,7 +92,7 @@ Spincast Properties File Config
                     Installation
                 </h3>              
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Add this artifact to your project:
                     <div>
                         <p>
@@ -106,7 +107,7 @@ Spincast Properties File Config
                 </p>
                 
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
@@ -143,7 +144,7 @@ Spincast Properties File Config
                     </div>   
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     When this is in place, you can create validator classes. 
                     For example, a <code>UserValidator</code>, to validate a user:
                 </p>
@@ -168,7 +169,7 @@ Spincast Properties File Config
                     following <a href="#usage">Usage</a> section.
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     You also have to bind a <a href="https://github.com/google/guice/wiki/AssistedInject"><code>assisted factory</code></a> for your new validator. 
                     A factory is required because
                     a validator is <em>stateful</em>, it keeps informations about the current object being 
@@ -269,7 +270,7 @@ Spincast Properties File Config
                 </p>
                 
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Let's now have a look at the <code>IUserService</code> service, where the user object is validated:
                     <div>
                         <p>
@@ -348,7 +349,7 @@ Spincast Properties File Config
                     </div>   
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Here is what the validator itself would look like:
                     <div>
                         <p>
@@ -679,7 +680,7 @@ Spincast Properties File Config
                     </p>
                 </div> 
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     In addition to those validation methods, <code>SpincastValidatorBase</code>
                     also provides methods to add your own errors when you define <a href="#custom_validation">custom validation</a> rules:
                 </p>

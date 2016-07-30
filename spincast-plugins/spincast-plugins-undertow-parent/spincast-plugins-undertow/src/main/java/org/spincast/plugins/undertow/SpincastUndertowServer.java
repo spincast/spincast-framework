@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.BindException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -25,6 +26,7 @@ import javax.net.ssl.SSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.controllers.IFrontController;
 import org.spincast.core.cookies.ICookie;
 import org.spincast.core.cookies.ICookieFactory;
@@ -69,7 +71,6 @@ import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.HttpString;
@@ -91,6 +92,8 @@ public class SpincastUndertowServer implements IServer {
     private final ICookieFactory cookieFactory;
     private final ICorsHandlerFactory corsHandlerFactory;
     private final IGzipCheckerHandlerFactory gzipCheckerHandlerFactory;
+    private final ISpincastResourceHandlerFactory spincastResourceHandlerFactory;
+    private final ICacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory;
     private final IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
     private final ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
     private final ISSLContextFactory sslContextFactory;
@@ -115,6 +118,7 @@ public class SpincastUndertowServer implements IServer {
     private HttpHandler spincastFrontControllerHandler;
     private PathHandler staticResourcesPathHandler;
     private PathHandler httpAuthenticationHandler;
+    private ICacheBusterRemovalHandler cacheBusterRemovalHandler;
 
     private FormParserFactory formParserFactory;
 
@@ -132,6 +136,8 @@ public class SpincastUndertowServer implements IServer {
                                   ICookieFactory cookieFactory,
                                   ICorsHandlerFactory corsHandlerFactory,
                                   IGzipCheckerHandlerFactory gzipCheckerHandlerFactory,
+                                  ISpincastResourceHandlerFactory spincastResourceHandlerFactory,
+                                  ICacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
                                   IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                   ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                   IWebsocketEndpointFactory spincastWebsocketEndpointFactory,
@@ -143,6 +149,8 @@ public class SpincastUndertowServer implements IServer {
         this.cookieFactory = cookieFactory;
         this.corsHandlerFactory = corsHandlerFactory;
         this.gzipCheckerHandlerFactory = gzipCheckerHandlerFactory;
+        this.spincastResourceHandlerFactory = spincastResourceHandlerFactory;
+        this.cacheBusterRemovalHandlerFactory = cacheBusterRemovalHandlerFactory;
         this.fileClassPathResourceManagerFactory = fileClassPathResourceManagerFactory;
         this.spincastHttpAuthIdentityManagerFactory = spincastHttpAuthIdentityManagerFactory;
         this.spincastWebsocketEndpointFactory = spincastWebsocketEndpointFactory;
@@ -175,6 +183,14 @@ public class SpincastUndertowServer implements IServer {
 
     protected IGzipCheckerHandlerFactory getGzipCheckerHandlerFactory() {
         return this.gzipCheckerHandlerFactory;
+    }
+
+    protected ISpincastResourceHandlerFactory getSpincastResourceHandlerFactory() {
+        return this.spincastResourceHandlerFactory;
+    }
+
+    protected ICacheBusterRemovalHandlerFactory getCacheBusterRemovalHandlerFactory() {
+        return this.cacheBusterRemovalHandlerFactory;
     }
 
     protected IFileClassPathResourceManagerFactory getFileClassPathResourceManagerFactory() {
@@ -238,7 +254,7 @@ public class SpincastUndertowServer implements IServer {
                 this.undertowServer.start();
                 break;
             } catch(Exception ex) {
-                if(ex instanceof BindException || ex.getCause() != null && ex.getCause() instanceof BindException) {
+                if((ex instanceof BindException) || (ex.getCause() != null && ex.getCause() instanceof BindException)) {
                     this.logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
                                      "...");
                     if(i == (serverStartTryNbr - 1)) {
@@ -330,7 +346,17 @@ public class SpincastUndertowServer implements IServer {
      * The very first handler considered by Undertow.
      */
     protected HttpHandler getFinalHandler() {
-        return getHttpAuthenticationHandler();
+        return getCacheBusterRemovalHandler();
+    }
+
+    /**
+     * Handler to remove cache busters from the request's URL.
+     */
+    protected ICacheBusterRemovalHandler getCacheBusterRemovalHandler() {
+        if(this.cacheBusterRemovalHandler == null) {
+            this.cacheBusterRemovalHandler = getCacheBusterRemovalHandlerFactory().create(getHttpAuthenticationHandler());
+        }
+        return this.cacheBusterRemovalHandler;
     }
 
     /**
@@ -338,7 +364,7 @@ public class SpincastUndertowServer implements IServer {
      */
     protected PathHandler getHttpAuthenticationHandler() {
         if(this.httpAuthenticationHandler == null) {
-            this.httpAuthenticationHandler = new PathHandler(getHttpAuthHandlerNextHandler());
+            this.httpAuthenticationHandler = new FullPathMatchingPathHandler(getHttpAuthHandlerNextHandler());
         }
         return this.httpAuthenticationHandler;
     }
@@ -485,7 +511,7 @@ public class SpincastUndertowServer implements IServer {
             // If no static resource path match, we
             // call the framework.
             //==========================================
-            this.staticResourcesPathHandler = new PathHandler(getSpincastFrontControllerHandler());
+            this.staticResourcesPathHandler = new FullPathMatchingPathHandler(getSpincastFrontControllerHandler());
         }
         return this.staticResourcesPathHandler;
     }
@@ -520,7 +546,11 @@ public class SpincastUndertowServer implements IServer {
             HttpHandler next = staticResource.isCanBeGenerated() ? getSpincastFrontControllerHandler()
                                                                  : ResponseCodeHandler.HANDLE_404;
 
-            ResourceHandler resourceHandler = new ResourceHandler(new FileResourceManager(file, 1024), next);
+            ISpincastResourceHandler resourceHandler =
+                    getSpincastResourceHandlerFactory().create(new FileResourceManager(file, 1024),
+                                                               staticResource,
+                                                               next);
+
             IGzipCheckerHandler gzipCheckerHandler =
                     getGzipCheckerHandlerFactory().create(resourceHandler, file.getAbsolutePath());
             ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
@@ -535,7 +565,18 @@ public class SpincastUndertowServer implements IServer {
                 classpathPath = classpathPath.substring(1);
             }
 
-            ResourceHandler resourceHandler = new ResourceHandler(getFileClassPathResourceManagerFactory().create(classpathPath));
+            URL resource = getClass().getClassLoader().getResource(classpathPath);
+            if(resource == null) {
+                throw new RuntimeException("The classpath file doesn't exist so it can't be served : " + classpathPath);
+            }
+
+            IFileClassPathResourceManager fileClassPathResourceManager =
+                    getFileClassPathResourceManagerFactory().create(classpathPath);
+
+            ISpincastResourceHandler resourceHandler =
+                    getSpincastResourceHandlerFactory().create(fileClassPathResourceManager,
+                                                               staticResource);
+
             IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, classpathPath);
             ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
@@ -555,13 +596,18 @@ public class SpincastUndertowServer implements IServer {
             HttpHandler next = staticResource.isCanBeGenerated() ? getSpincastFrontControllerHandler()
                                                                  : ResponseCodeHandler.HANDLE_404;
 
-            ResourceHandler resourceHandler = new ResourceHandler(new FileResourceManager(dir, 1024), next);
+            ISpincastResourceHandler resourceHandler =
+                    getSpincastResourceHandlerFactory().create(new FileResourceManager(dir, 1024),
+                                                               staticResource,
+                                                               next);
+
             IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
             ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
 
         } else if(staticResourceType == StaticResourceType.DIRECTORY_FROM_CLASSPATH) {
+
             String classpathPath = staticResource.getResourcePath();
             if(classpathPath == null) {
                 classpathPath = "";
@@ -569,9 +615,19 @@ public class SpincastUndertowServer implements IServer {
                 classpathPath = classpathPath.substring(1);
             }
 
-            ResourceHandler resourceHandler =
-                    new ResourceHandler(new ClassPathResourceManager(SpincastUndertowServer.class.getClassLoader(),
-                                                                     classpathPath));
+            URL resource = getClass().getClassLoader().getResource(classpathPath);
+            if(resource == null) {
+                throw new RuntimeException("The classpath directory doesn't exist so it can't be used to serve static resources : " +
+                                           classpathPath);
+            }
+
+            ClassPathResourceManager classPathResourceManager =
+                    new ClassPathResourceManager(SpincastUndertowServer.class.getClassLoader(), classpathPath);
+
+            ISpincastResourceHandler resourceHandler =
+                    getSpincastResourceHandlerFactory().create(classPathResourceManager,
+                                                               staticResource);
+
             IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
             ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
@@ -662,8 +718,12 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public String getFullUrl(Object exchangeObj) {
+    public String getFullUrlProxied(Object exchangeObj) {
+        return getFullUrlProxied(exchangeObj, false);
+    }
 
+    @Override
+    public String getFullUrlProxied(Object exchangeObj, boolean keepCacheBusters) {
         try {
             HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
             String queryString = exchange.getQueryString();
@@ -672,29 +732,78 @@ public class SpincastUndertowServer implements IServer {
             } else {
                 queryString = "?" + queryString;
             }
-            
-            
-            String requestURL = exchange.getRequestURL();
-            
+
+            //==========================================
+            // Cache buster are removed by the CacheBusterRemovalHandler. 
+            // To return the original URL, potentially containing cache
+            // busters, we should call 
+            // ICacheBusterRemovalHandler#getOrigninalRequestUrlWithPotentialCacheBusters(...)
+            //==========================================
+            if(keepCacheBusters) {
+                return getCacheBusterRemovalHandler().getOrigninalRequestUrlWithPotentialCacheBusters(exchange) + queryString;
+            } else {
+                return exchange.getRequestURL() + queryString;
+            }
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public String getFullUrlOriginal(Object exchangeObj) {
+        return getFullUrlOriginal(exchangeObj, false);
+    }
+
+    @Override
+    public String getFullUrlOriginal(Object exchangeObj, boolean keepCacheBusters) {
+        try {
+
+            String fullUrl = getFullUrlProxied(exchangeObj, keepCacheBusters);
+
+            HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
+
             //==========================================
             // If we are behind a reverse-proxy, the original
-            // scheme can be different.
+            // scheme/host/port can be different.
             //==========================================
             HeaderValues protoHeader = exchange.getRequestHeaders().get(HttpHeaders.X_FORWARDED_PROTO);
-            if(protoHeader != null && protoHeader.getFirst() != null) {
-                String protoHeaderStr = protoHeader.getFirst().toLowerCase();
-                
-                int pos = requestURL.indexOf(":");
-                if(pos < 0) {
-                    throw new RuntimeException("':' not found: " + requestURL);  
-                } 
-                
-                if(!(requestURL.substring(0, pos).toLowerCase().equals(protoHeaderStr))) {
-                    requestURL = protoHeaderStr + requestURL.substring(pos);
+            HeaderValues hostHeader = exchange.getRequestHeaders().get(HttpHeadersExtra.X_FORWARDED_HOST);
+            HeaderValues portHeader = exchange.getRequestHeaders().get(HttpHeadersExtra.X_FORWARDED_PORT);
+
+            if(protoHeader != null || hostHeader != null || portHeader != null) {
+
+                URL proxiedUrl = new URL(fullUrl);
+                StringBuilder builder = new StringBuilder();
+
+                if(protoHeader != null) {
+                    builder.append(protoHeader.getFirst());
+                } else {
+                    builder.append(proxiedUrl.getProtocol());
                 }
+                builder.append("://");
+
+                if(hostHeader != null) {
+                    builder.append(hostHeader.getFirst());
+                } else {
+                    builder.append(proxiedUrl.getHost());
+                }
+
+                if(portHeader != null) {
+                    builder.append(":").append(portHeader.getFirst());
+                } else {
+                    builder.append(proxiedUrl.getPort() > -1 ? ":" + proxiedUrl.getPort() : "");
+                }
+
+                builder.append(proxiedUrl.getPath());
+                String queryString = proxiedUrl.getQuery();
+                if(!StringUtils.isBlank(queryString)) {
+                    builder.append("?").append(queryString);
+                }
+                fullUrl = builder.toString();
             }
-            
-            return requestURL + queryString;
+
+            return fullUrl;
+
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
@@ -703,7 +812,7 @@ public class SpincastUndertowServer implements IServer {
     @Override
     public void setResponseHeader(Object exchangeObj, String name, List<String> values) {
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
-        HeaderMap responseHeaderMap = ((HttpServerExchange)exchange).getResponseHeaders();
+        HeaderMap responseHeaderMap = exchange.getResponseHeaders();
         responseHeaderMap.putAll(new HttpString(name), values);
     }
 
@@ -755,7 +864,7 @@ public class SpincastUndertowServer implements IServer {
 
     @Override
     public void setResponseStatusCode(Object exchange, int statusCode) {
-        ((HttpServerExchange)exchange).setResponseCode(statusCode);
+        ((HttpServerExchange)exchange).setStatusCode(statusCode);
     }
 
     protected IoCallback getDoNothingCallback() {
@@ -1024,7 +1133,7 @@ public class SpincastUndertowServer implements IServer {
                         if(!formValue.isFile()) {
                             continue;
                         }
-                        File file = formValue.getFile();
+                        File file = formValue.getPath().toFile();
                         if(file != null) {
                             finalFiles.add(file);
                         }

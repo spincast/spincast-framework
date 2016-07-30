@@ -41,7 +41,7 @@ Moment.js, for dates formatting
 <div class="container">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/news">News</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/news">News</a></li>
         <li class="active">{{newsEntry.title | raw }}</li>
     </ol>
 
@@ -50,9 +50,9 @@ Moment.js, for dates formatting
         
             <h2>{{newsEntry.title | raw }}</h2>
         
-            <p class="news_date">
-                <span>{{newsEntry.publishedDate}}</span>
-            </p>
+            <div class="news_date_div">
+                <img class="inlineIcon alignMin3" src="/public/images/icons/date.png" /> <div class="news_date">{{newsEntry.publishedDate}}</div>
+            </div>
 
             <div class="news_text">
                 {{newsEntry.description | raw }}

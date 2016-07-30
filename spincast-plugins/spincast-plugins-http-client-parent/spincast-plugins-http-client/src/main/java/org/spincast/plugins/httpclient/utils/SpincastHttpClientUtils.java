@@ -4,6 +4,7 @@ import java.net.HttpCookie;
 import java.util.Date;
 import java.util.Objects;
 
+import org.spincast.core.config.SpincastConstants;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.codec.digest.DigestUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -14,7 +15,7 @@ public class SpincastHttpClientUtils implements ISpincastHttpClientUtils {
     @Override
     public String generateExpectedWebsocketV13AcceptHeaderValue(String secWebSocketKey) {
 
-        String expected = secWebSocketKey + WEBSOCKET_V13_MAGIC_NUMBER;
+        String expected = secWebSocketKey + SpincastConstants.WEBSOCKET_V13_MAGIC_NUMBER;
 
         byte[] expectedBytes = DigestUtils.sha1(expected);
         expected = Base64.encodeBase64String(expectedBytes);

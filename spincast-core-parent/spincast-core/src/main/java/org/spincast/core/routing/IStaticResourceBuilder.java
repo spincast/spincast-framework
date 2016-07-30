@@ -2,6 +2,7 @@ package org.spincast.core.routing;
 
 import java.util.Set;
 
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 
 /**
@@ -20,9 +21,26 @@ public interface IStaticResourceBuilder<R extends IRequestContext<?>> {
     public IStaticResourceBuilder<R> classpath(String path);
 
     /**
-     * The path to the resource, on the file system.
+     * The absolute path to the resource, on the file system.
+     * 
+     * @param absolutePath the absolute path to the resource. If this is a file
+     * and not a directory, remember that it will be served as a static resource, 
+     * so its extension is important for the
+     * correct <code>Content-Type</code> to be sent!
      */
-    public IStaticResourceBuilder<R> fileSystem(String path);
+    public IStaticResourceBuilder<R> pathAbsolute(String absolutePath);
+
+    /**
+     * The path to the resource, on the file system, relative to the
+     * temp Spincast directory, as returned by
+     * {@link ISpincastConfig#getSpincastTempDir() ISpincastConfig::getSpincastTempDir()}
+     * 
+     * @param relativePath the relative path to the resource. If this is a file
+     * and not a directory, remember that it will be served as a static resource, 
+     * so its extension is important for the
+     * correct <code>Content-Type</code> to be sent!
+     */
+    public IStaticResourceBuilder<R> pathRelative(String relativePath);
 
     /**
      * Enables Cross-Origin Resource Sharing (Cors)
@@ -97,6 +115,40 @@ public interface IStaticResourceBuilder<R extends IRequestContext<?>> {
                                           Set<String> extraHeadersAllowedToBeSent,
                                           boolean allowCookies,
                                           int maxAgeInSeconds);
+
+    /**
+     * Adds public cache headers.
+     * 
+     * @param seconds The number of seconds the resource associated with
+     * this route should be cached.
+     */
+    public IStaticResourceBuilder<R> cache(int seconds);
+
+    /**
+     * Adds cache headers.
+     * 
+     * @param seconds The number of seconds the resource associated with
+     * this route should be cached.
+     * 
+     * @param isPrivate should the cache be private?
+     * (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+     */
+    public IStaticResourceBuilder<R> cache(int seconds, boolean isPrivate);
+
+    /**
+     * Adds cache headers.
+     * 
+     * @param seconds The number of seconds the resource associated with
+     * this route should be cached.
+     * 
+     * @param isPrivate should the cache be private?
+     * (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
+     * 
+     * @param secondsCdn The number of seconds the resource associated with
+     * this route should be cached by a CDN/proxy. If <code>null</code>, it
+     * won't be used.
+     */
+    public IStaticResourceBuilder<R> cache(int seconds, boolean isPrivate, Integer secondsCdn);
 
     /**
      * Saves the static resource route to the router.

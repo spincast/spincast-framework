@@ -25,19 +25,20 @@ Spincast HTTP Client plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast HTTP Client plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast HTTP Client <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HTTP Client <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/httpclient/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/httpclient/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-            </div> 
+                <span class="clear"></span>
+            </div>  
         </div>
     </div>
     
@@ -146,7 +147,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
 	                </div>  
 	            </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
@@ -224,7 +225,7 @@ if(response.getStatus() == 200) { // or use: HttpStatus.SC_OK
                     </div>   
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     You can also <a href="/documentation#extending_request_context">extend your custom request context</a> objects to add 
                     <code>IHttpClient</code> as an <code>add-on</code>. To do that, let's tweak some components:
                 </p>

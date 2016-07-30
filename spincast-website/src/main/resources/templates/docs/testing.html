@@ -75,7 +75,7 @@ Docs : "Testing"
         </ul>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         In other words, there are two types of Spincast testing: 
         
         <ul>
@@ -94,7 +94,7 @@ Docs : "Testing"
         </ul>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Of course, when you run some tests against a <em>real</em> application, you first have to mock
         some parts. Tests must be without side effects! The classic example is a database: a test
         database must be used when tests are run or otherwise it would be total craziness. Another example is
@@ -134,7 +134,7 @@ Installation
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         If you really don't want any dependencies to be pulled from the <code>spincast-default</code>
         artifact, and even if only the <code>test</code> scope is affected here, you can
         use the <code>spincast-testing-core</code> artifact instead. Note that, 
@@ -142,7 +142,7 @@ Installation
         to create a testing Guice context, though.
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Also, it's good to know that the <a href="#testing_runner"><code>Spincast JUnit Runner</code></a>, at which we'll
         have a look in a next section, can easily be used outside a Spincast
         application. It has its own artifact, <code>org.spincast:spincast-testing-junit-runner:{{spincastCurrrentVersion}}</code>, 
@@ -192,7 +192,7 @@ Integration test example
     </p>  
     
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         Before we start writing the test class, let's have another look at the 
         <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-quickstart/src/main/java/org/spincast/quickstart/App.java">App</a> 
         class, the main class of the Quick Start application. Notice that the <code>main(...)</code> method 
@@ -281,11 +281,11 @@ public static Injector createApp(String[] args, Module overridingModule) {
         invalid requests, for edge cases scenarios, etc.
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
-        Now, are we going to implement this test to validate a web API?
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Now, how are we going to implement this test to validate a web API?
     </p>
     <p>
-        Without using integration testing as Spincast allows, we may have to:
+        Without using integration testing, as Spincast allows, we may have to:
         <ul>
             <li>
                 Test the <code>controller</code> by:
@@ -324,7 +324,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
         start your real application, as it would be started in production, and you run your tests against it... Let's see how!
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         First, let's make our test class extend <code>SpincastIntegrationTestBase</code>, which is the base class
         Spincast provides for integration testing:
     </p>
@@ -474,7 +474,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
         Let's now write the test...
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         The <code>SpincastIntegrationTestBase</code>
         base class provides methods to easily use a <a href="/plugins/spincast-http-client-with-websocket"><code>Spincast HTTP Client</code></a>
         instance. We will use this client to create and send a request to the <code>"/sum"</code> route that we want to test. 
@@ -540,7 +540,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
         </div>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Let's now add some <code>assertions</code> to validate the response:
     </p>
     <p>
@@ -677,7 +677,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
         of a better custom base class!
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Finally, note that if you use the <a href="#quick_start">Quick Start</a> as a start for your application, a
         base class has already been created for you: 
         <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-quickstart/src/test/java/org/spincast/quickstart/tests/AppIntegrationTestBase.java">AppIntegrationTestBase</a>.
@@ -802,7 +802,7 @@ Custom context test example
         some components will be very easy.
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Let's see an example of this kind of tests by looking at a real Spincast test class:
         <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-core-parent/spincast-core-tests/src/test/java/org/spincast/tests/json/JsonObjectsTest.java"><code>JsonObjectsTest.java</code></a>.
         As you can see, this test class extends <code>SpincastTestBase</code> instead of <code>SpincastIntegrationTestBase</code> and 
@@ -843,7 +843,7 @@ Custom context test example
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Exactly as we were able to do in the <a href="#testing_app_example">Integration test example</a>, we can 
         inject any dependency we need in this test class:
     </p>
@@ -932,7 +932,7 @@ Spincast JUnit runner
         all the tests of the class.
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Let's see in more details how the Spincast JUnit runner works:
     </p>
     <p>
@@ -1033,7 +1033,7 @@ Spincast JUnit runner
         </ul>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         A quick note about the <code>@Repeat</code></a> annotation: this annotation should probably only be used 
         for debugging purpose! A test should always be reproducible and should probably not have
         to be run multiple times. But this annotation, in association with the 

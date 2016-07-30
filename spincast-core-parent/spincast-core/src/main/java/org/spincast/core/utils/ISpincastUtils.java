@@ -28,6 +28,21 @@ public interface ISpincastUtils {
     public void zipExtract(File zipFile, File targetDir);
 
     /**
+     * Gets the <code>mime type</code> using multiple sources of information.
+     * 
+     * @param contentTypeHeader an already existing Content-Type header on the
+     * response. Can be null.
+     * @param resourcePath the path (absolute or relative) to the target resource. Can be null.
+     * @param requestPath the path of the current request. Can be null.
+     *
+     * @return the <code>mime type</code> or <code>null</code> if it can't be
+     * decided.
+     */
+    public String getMimeTypeFromMultipleSources(String responseContentTypeHeader,
+                                                 String resourcePath,
+                                                 String requestPath);
+
+    /**
      * Gets the <code>mime type</code> from a path, using its extension.
      * 
      * @return the <code>mime type</code> or <code>null</code> if it can't be
@@ -69,5 +84,38 @@ public interface ISpincastUtils {
      * Gets the current Spincast version.
      */
     public String getSpincastCurrentVersion();
+
+    /**
+     * The cache buster to use. 
+     * <p>
+     * This should probably change each time
+     * the application is restarted or at least redeployed.
+     * </p>
+     * <p>
+     * It should also be in such a format that it's possible to
+     * remove it from a given text.
+     * </p>
+     * <p>
+     * This must be kept in sync with 
+     * {@link #removeCacheBusterCode() removeCacheBusterCode}!
+     * </p>
+     */
+    public String getCacheBusterCode();
+
+    /**
+     * Removes the cache buster code occurences from the
+     * given text.
+     * <p>
+     * Note that this won't simply remove the <em>current</em>
+     * cache busting code, it will remove <em>any</em> valid cache busting code...
+     * This is what we want since we don't want a client sending a request
+     * containing an old cache busting code to break!
+     * </p>
+     * <p>
+     * This must be kept in sync with 
+     * {@link #getCacheBusterCode() getCacheBusterCode}!
+     * </p>
+     */
+    public String removeCacheBusterCodes(String text);
 
 }

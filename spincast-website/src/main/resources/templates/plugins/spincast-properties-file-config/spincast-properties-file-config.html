@@ -25,19 +25,20 @@ Spincast Properties File Config
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Properties File Config plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Properties File Config <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Properties File Config <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/configpropsfile/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/configpropsfile/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-            </div> 
+                <span class="clear"></span>
+            </div>   
         </div>
     </div>
     
@@ -90,12 +91,12 @@ Spincast Properties File Config
                     at an <code>environment variable</code>).
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     If no explicit path is provided, the plugin tries to find an <code>app.properties</code>
                     file in the same directory where the application's <code>.jar</code> is running.
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     If no <code>app.properties</code> file is found next to the <code>.jar</code>, or if the application is not
                     running from a <code>.jar</code> file (the code is running inside an IDE, for example), then the 
                     <a href="/plugins/spincast-config#spincast_config">default configurations</a> are used.
@@ -116,7 +117,7 @@ Spincast Properties File Config
                     Installation
                 </h3>
 	            <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                Add this artifact to your project:
 	                <div>
 	                    <p>
@@ -130,7 +131,7 @@ Spincast Properties File Config
 	                </div>  
 	            </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     If you use a custom configuration class (which
                     is probably the case), you don't have to install any Guice module 
                     for this plugin, and you simply make your configuration class extend 
@@ -187,7 +188,7 @@ Spincast Properties File Config
                     </div>   
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     If your application doesn't have a custom configuration class and you simply want 
                     to be able to externally override some of Spincast default configurations (for
                     example the server port), then bind the provided

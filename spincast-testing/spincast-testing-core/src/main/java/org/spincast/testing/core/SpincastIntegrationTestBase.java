@@ -1,6 +1,8 @@
 package org.spincast.testing.core;
 
 import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.Objects;
 
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.exchange.IRequestContext;
@@ -20,6 +22,7 @@ import org.spincast.plugins.httpclient.websocket.IHttpClient;
 import org.spincast.plugins.httpclient.websocket.SpincastHttpClientWithWebsocketPluginGuiceModule;
 import org.spincast.plugins.httpclient.websocket.builders.IWebsocketRequestBuilder;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -608,6 +611,22 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
             client.disableSslCertificateErrors();
         }
         return client;
+    }
+
+    /**
+     * Format a date so it can be used in a HTTP header.
+     */
+    protected String formatDate(Date date) {
+        Objects.requireNonNull(date, "The date can't be NULL");
+        return DateUtils.formatDate(date);
+    }
+
+    /**
+     * Parse a date from a HTTP header to a Date object.
+     */
+    protected Date parseDate(String dateHeaderValue) {
+        Objects.requireNonNull(dateHeaderValue, "The dateHeaderValue can't be NULL");
+        return DateUtils.parseDate(dateHeaderValue);
     }
 
 }

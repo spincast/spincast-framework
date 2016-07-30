@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
+import org.spincast.core.routing.IETagFactory;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRedirectRuleBuilder;
 import org.spincast.core.routing.IRedirectRuleBuilderFactory;
@@ -18,13 +19,17 @@ import org.spincast.core.routing.IRoutingRequestContextAddon;
 import org.spincast.core.routing.IStaticResource;
 import org.spincast.core.routing.IStaticResourceBuilder;
 import org.spincast.core.routing.IStaticResourceBuilderFactory;
+import org.spincast.core.routing.IStaticResourceCacheConfig;
 import org.spincast.core.routing.IStaticResourceCorsConfig;
+import org.spincast.core.routing.IStaticResourceFactory;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.core.websocket.IWebsocketRoute;
 import org.spincast.core.websocket.IWebsocketRouteBuilder;
 import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
 import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
 import org.spincast.core.websocket.WebsocketRouteHandler;
+import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
+import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -95,6 +100,12 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         bindStaticResourceCorsConfigFactory();
 
         //==========================================
+        // The assisted factory to create static resources
+        // cache config
+        //==========================================
+        bindStaticResourceCacheConfigFactory();
+
+        //==========================================
         // The request context add-on
         //==========================================
         bindRequestContextAddon();
@@ -114,6 +125,17 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         // Websocket route handler.
         //==========================================
         bindWebsocketRouteHandlerFactory();
+
+        //==========================================
+        // The ETag factory
+        //==========================================
+        bindETagFactory();
+
+        //==========================================
+        // The Spincast routing utils
+        //==========================================
+        bindSpincastRoutingUtils();
+
     }
 
     protected void validateRequirements() {
@@ -373,9 +395,33 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         return StaticResourceCorsConfig.class;
     }
 
+    protected void bindStaticResourceCacheConfigFactory() {
+        install(new FactoryModuleBuilder().implement(IStaticResourceCacheConfig.class, getStaticResourceCacheConfigImplClass())
+                                          .build(IStaticResourceCacheConfigFactory.class));
+    }
+
+    protected Class<? extends IStaticResourceCacheConfig> getStaticResourceCacheConfigImplClass() {
+        return StaticResourceCacheConfig.class;
+    }
+
     protected void bindRequestContextAddon() {
         bind(parameterizeWithRequestContext(IRoutingRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastRoutingRequestContextAddon.class))
                                                                                .in(SpincastGuiceScopes.REQUEST);
     }
 
+    protected void bindETagFactory() {
+        bind(IETagFactory.class).to(getETagFactoryImplClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends IETagFactory> getETagFactoryImplClass() {
+        return ETagFactory.class;
+    }
+
+    protected void bindSpincastRoutingUtils() {
+        bind(ISpincastRoutingUtils.class).to(getSpincastRoutingUtilsImplClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ISpincastRoutingUtils> getSpincastRoutingUtilsImplClass() {
+        return SpincastRoutingUtils.class;
+    }
 }

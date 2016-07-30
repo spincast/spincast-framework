@@ -664,7 +664,6 @@
 
     // Flag that can be used in JS to check if browser have passed the support test
     impress.supported = impressSupported;
-
 } )( document, window );
 
 // NAVIGATION EVENTS
@@ -754,7 +753,9 @@
             }
         }, false );
 
-
+        // Spincast
+        window.impress.api = api;
+        
         // Spincast
         document.addEventListener( "click", function( event ) {
             var target = event.target;

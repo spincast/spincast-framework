@@ -48,6 +48,16 @@ public interface IStaticResource<R extends IRequestContext<?>> {
     public IStaticResourceCorsConfig getCorsConfig();
 
     /**
+     * The cache configurations for the static resource.
+     * 
+     * If <code>null</code>, no caching headers will be sent,
+     * but the last modification-date of the resource will be
+     * validated and <code>304 - Not modified</code> will be
+     * returned if applicable.
+     */
+    public IStaticResourceCacheConfig getCacheConfig();
+
+    /**
      * Is the resource on the classpath?
      */
     public boolean isClasspath();

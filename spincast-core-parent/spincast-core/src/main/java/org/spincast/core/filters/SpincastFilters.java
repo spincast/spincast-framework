@@ -6,10 +6,13 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.cookies.ICookie;
 import org.spincast.core.exceptions.SkipRemainingHandlersException;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.server.IServer;
+import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -24,22 +27,49 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastFilters.class);
 
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV = "langAbrv";
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION = "spincastCurrrentVersion";
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT =
+            "spincastCurrrentVersionIsSnapshot";
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER = "cacheBuster";
+
     private final ICorsFilter corsFilter;
+    private final ISpincastConfig spincastConfig;
+    private final IServer server;
+    private final ISpincastUtils spincastUtils;
 
     /**
      * Constructor
      */
     @Inject
-    public SpincastFilters(ICorsFilter corsFilter) {
+    public SpincastFilters(ICorsFilter corsFilter,
+                           ISpincastConfig spincastConfig,
+                           IServer server,
+                           ISpincastUtils spincastUtils) {
         this.corsFilter = corsFilter;
+        this.spincastConfig = spincastConfig;
+        this.server = server;
+        this.spincastUtils = spincastUtils;
     }
 
     protected ICorsFilter getCorsFilter() {
         return this.corsFilter;
     }
 
+    protected ISpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
+    }
+
+    protected IServer getServer() {
+        return this.server;
+    }
+
+    protected ISpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
+    }
+
     @Override
-    public void saveGeneratedResource(R context, String pathForGeneratedResource) {
+    public boolean saveGeneratedResource(R context, String pathForGeneratedResource) {
 
         try {
 
@@ -51,36 +81,41 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
             //==========================================
             if(resourceFile.exists()) {
                 this.logger.info("The resource already exists. We don't save it here.");
-                return;
+                return true;
             }
 
             if(HttpStatus.SC_OK != context.response().getStatusCode()) {
                 this.logger.info("Nothing will be saved since the response code is not " + HttpStatus.SC_OK);
-                return;
+                return false;
             }
 
             if(context.response().isHeadersSent()) {
                 this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
                                  "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
                                  "request!");
-                return;
+                return false;
             }
 
             byte[] unsentBytes = context.response().getUnsentBytes();
 
             FileUtils.writeByteArrayToFile(resourceFile, unsentBytes);
 
+            return true;
+
         } catch(Exception ex) {
             this.logger.error("Unable to save the generated resource '" + pathForGeneratedResource + "' :\n" +
                               SpincastStatics.getStackTrace(ex));
 
-            // we still let the reponse being sent...
+            // We still let the reponse being sent...
+            return false;
         }
     }
 
     @Override
     public void addSecurityHeaders(R context) {
-        //context.response().addHeaderValue("Content-Security-Policy", "default-src 'self'");
+
+        //context.response().addHeaderValue("Content-Security-Policy", "default-src: 'self'");
+        context.response().addHeaderValue("X-Xss-Protection", "1; mode=block");
         context.response().addHeaderValue("X-Frame-Options", "SAMEORIGIN");
         context.response().addHeaderValue("x-content-type-options", "nosniff");
     }
@@ -386,6 +421,64 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
         // All methods
         //==========================================
         return Sets.newHashSet(HttpMethod.values());
+    }
+
+    @Override
+    public void cache(R context) {
+        cache(context, getCacheSecondsByDefault());
+    }
+
+    @Override
+    public void cache(R context, int seconds) {
+        cache(context, seconds, isCachePrivateByDefault());
+    }
+
+    @Override
+    public void cache(R context, int seconds, boolean isPrivate) {
+        cache(context, seconds, isPrivate, getCacheCdnSecondsByDefault());
+    }
+
+    @Override
+    public void cache(R context, int seconds, boolean isPrivate, Integer cdnSeconds) {
+        context.cacheHeaders().cache(seconds, isPrivate, cdnSeconds);
+    }
+
+    protected int getCacheSecondsByDefault() {
+        return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbr();
+    }
+
+    protected boolean isCachePrivateByDefault() {
+        return getSpincastConfig().isDefaultRouteCacheFilterPrivate();
+    }
+
+    protected Integer getCacheCdnSecondsByDefault() {
+        return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbrCdns();
+    }
+
+    @Override
+    public void addDefaultGlobalTemplateVariables(R context) {
+
+        //==========================================
+        // The Language abreviation
+        //==========================================
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV,
+                                                         context.getLocaleToUse().getLanguage());
+
+        //==========================================
+        // The current Spincast version
+        //==========================================
+        String currentVersion = getSpincastUtils().getSpincastCurrentVersion();
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION,
+                                                         currentVersion);
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT,
+                                                         currentVersion.contains("-SNAPSHOT"));
+
+        //==========================================
+        // Cache buster
+        //==========================================
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER,
+                                                         getSpincastUtils().getCacheBusterCode());
+
     }
 
 }

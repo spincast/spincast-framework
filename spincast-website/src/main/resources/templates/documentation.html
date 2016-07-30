@@ -27,12 +27,13 @@ Documentation
 
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom">Documentation</h2></a>
+            <h2 class="shortTop noBottom"><a href="#top">Documentation</a></h2>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Browse Spincast Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Browse Spincast Javadoc">
+                     <a href="/public/javadoc/"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
+                <span class="clear"></span>
             </div>
         </div>
     </div>
@@ -53,7 +54,7 @@ Documentation
                     <a href="#top">Installation</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#requirements">Requirements</a></li>
-                        <li><a href="#quick_start"><i class="glyphicon glyphicon-flash"></i> Quick Start application</a></li>
+                        <li><a href="#quick_start"><img id="quickIconSmall" class="inlineIcon" src="/public/images/icons/flash.png" /> Quick Start application</a></li>
                         <li><a href="#using_default_module">Using SpincastDefaultGuiceModule</a></li>
                     </ul>
                 </li>
@@ -96,6 +97,7 @@ Documentation
                         <li><a href="#dynamic_parameters">Dynamic parameters</a></li>
                         <li><a href="#routing_types">Routing Types</a></li>
                         <li><a href="#route_content-type">Content-Types</a></li>
+                        <li><a href="#route_http_caching">HTTP Caching route options</a></li>
                         <li><a href="#route_saving">Saving the route</a></li>
                         <li><a href="#filters">Filters</a></li>
                         <li><a href="#routing_websockets">WebSockets</a></li>
@@ -106,6 +108,16 @@ Documentation
                         <li><a href="#redirections">Redirection rules</a></li>
                         <li><a href="#special_exceptions">Special exceptions</a></li>
                         <li><a href="#router_dynamic">The router is dynamic</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#http_caching">HTTP Caching</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#http_caching_cache_control">Cache-Control</a></li>
+                        <li><a href="#http_caching_default">Default Caching</a></li>
+                        <li><a href="#http_caching_no_cache">No Cache</a></li>
+						<li><a href="#http_caching_cache_busting">Cache busting</a></li>
+                        <li><a href="#http_caching_etag_last_modified">ETag and Last Modified</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -175,6 +187,11 @@ Documentation
             Section "Routing"
             ==========================================#}
             {% include "./docs/routing.html" %}
+
+            {#==========================================
+            Section "HTTP Caching"
+            ==========================================#}
+            {% include "./docs/httpCaching.html" %}
 
             {#==========================================
             Section "WebsSockets"

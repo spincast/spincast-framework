@@ -96,4 +96,28 @@ public abstract class SpincastConstants {
         public static final String ROUTE_FORWARDED_NBR = RequestScopedVariables.class.getName() + "FORWARDED_NBR";
     }
 
+    /**
+     * Do not change that, it is an official value.
+     */
+    public static final String WEBSOCKET_V13_MAGIC_NUMBER = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+    /**
+     * Some HTTP headers that are not defined in Guava's
+     * com.google.common.net.HttpHeaders
+     */
+    public static final class HttpHeadersExtra {
+
+        private HttpHeadersExtra() {
+        }
+
+        public static final String SEC_WEBSOCKET_LOCATION = "Sec-WebSocket-Location";
+        public static final String SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
+        public static final String SEC_WEBSOCKET_KEY = "Sec-WebSocket-Key";
+        public static final String SEC_WEBSOCKET_ACCEPT = "Sec-WebSocket-Accept";
+
+        public static final String X_FORWARDED_HOST = "X-Forwarded-Host";
+        public static final String X_FORWARDED_PORT = "X-Forwarded-Port";
+
+    }
+
 }

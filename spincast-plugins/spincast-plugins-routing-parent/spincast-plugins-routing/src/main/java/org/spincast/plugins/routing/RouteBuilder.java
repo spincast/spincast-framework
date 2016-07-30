@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.routing.HttpMethod;
@@ -31,6 +32,7 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
     private final IRouteFactory<R> routeFactory;
     private final ISpincastRouterConfig spincastRouterConfig;
     private final ISpincastFilters<R> spincastFilters;
+    private final ISpincastConfig spincastConfig;
 
     private Set<HttpMethod> httpMethods;
     private String id = null;
@@ -45,19 +47,22 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
     @AssistedInject
     public RouteBuilder(IRouteFactory<R> routeFactory,
                         ISpincastRouterConfig spincastRouterConfig,
-                        ISpincastFilters<R> spincastFilters) {
-        this(null, routeFactory, spincastRouterConfig, spincastFilters);
+                        ISpincastFilters<R> spincastFilters,
+                        ISpincastConfig spincastConfig) {
+        this(null, routeFactory, spincastRouterConfig, spincastFilters, spincastConfig);
     }
 
     @AssistedInject
     public RouteBuilder(@Assisted IRouter<R, W> router,
                         IRouteFactory<R> routeFactory,
                         ISpincastRouterConfig spincastRouterConfig,
-                        ISpincastFilters<R> spincastFilters) {
+                        ISpincastFilters<R> spincastFilters,
+                        ISpincastConfig spincastConfig) {
         this.router = router;
         this.routeFactory = routeFactory;
         this.spincastRouterConfig = spincastRouterConfig;
         this.spincastFilters = spincastFilters;
+        this.spincastConfig = spincastConfig;
     }
 
     protected IRouter<R, W> getRouter() {
@@ -74,6 +79,10 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
 
     protected ISpincastFilters<R> getSpincastFilters() {
         return this.spincastFilters;
+    }
+
+    protected ISpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
     }
 
     public String getId() {
@@ -352,6 +361,62 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
                                                         getPositions(),
                                                         getAcceptedContentTypes());
         return route;
+    }
+
+    @Override
+    public IRouteBuilder<R> noCache() {
+
+        before(new IHandler<R>() {
+
+            @Override
+            public void handle(R context) {
+                context.cacheHeaders().noCache();
+            }
+        });
+
+        return this;
+    }
+
+    @Override
+    public IRouteBuilder<R> cache() {
+        return cache(getCacheSecondsByDefault());
+    }
+
+    @Override
+    public IRouteBuilder<R> cache(int seconds) {
+        return cache(seconds, isCachePrivateByDefault());
+    }
+
+    @Override
+    public IRouteBuilder<R> cache(int seconds, boolean isPrivate) {
+        return cache(seconds, isPrivate, getCacheCdnSecondsByDefault());
+    }
+
+    @Override
+    public IRouteBuilder<R> cache(final int seconds,
+                                  final boolean isPrivate,
+                                  final Integer secondsCdn) {
+
+        before(new IHandler<R>() {
+
+            @Override
+            public void handle(R context) {
+                getSpincastFilters().cache(context, seconds, isPrivate, secondsCdn);
+            }
+        });
+        return this;
+    }
+
+    protected int getCacheSecondsByDefault() {
+        return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbr();
+    }
+
+    protected boolean isCachePrivateByDefault() {
+        return getSpincastConfig().isDefaultRouteCacheFilterPrivate();
+    }
+
+    protected Integer getCacheCdnSecondsByDefault() {
+        return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbrCdns();
     }
 
 }

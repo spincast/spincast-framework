@@ -253,4 +253,64 @@ public class SpincastUtilsTest extends SpincastTestBase {
 
     }
 
+    @Test
+    public void removeCacheBusterCodeNoCode() throws Exception {
+
+        String result = getSpincastUtils().removeCacheBusterCodes("test");
+        assertNotNull(result);
+        assertEquals("test", result);
+    }
+
+    @Test
+    public void removeCacheBusterCodeOneOccurence() throws Exception {
+
+        String code = getSpincastUtils().getCacheBusterCode();
+
+        String result = getSpincastUtils().removeCacheBusterCodes("111" + code + "222");
+        assertNotNull(result);
+        assertEquals("111222", result);
+    }
+
+    @Test
+    public void removeCacheBusterCodeMultipleOccurences() throws Exception {
+
+        String code = getSpincastUtils().getCacheBusterCode();
+
+        String result = getSpincastUtils().removeCacheBusterCodes(code + "111" + code + "222" + code);
+        assertNotNull(result);
+        assertEquals("111222", result);
+    }
+
+    @Test
+    public void removeCacheBusterCodeInvalid() throws Exception {
+
+        String result = getSpincastUtils().removeCacheBusterCodes("111spincastcb_a_222");
+        assertNotNull(result);
+        assertEquals("111spincastcb_a_222", result);
+    }
+
+    @Test
+    public void removeCacheBusterCodeInvalid2() throws Exception {
+
+        String result = getSpincastUtils().removeCacheBusterCodes("111spincastcb_012345678901_222");
+        assertNotNull(result);
+        assertEquals("111spincastcb_012345678901_222", result);
+    }
+
+    @Test
+    public void removeCacheBusterCodeInvalid3() throws Exception {
+
+        String result = getSpincastUtils().removeCacheBusterCodes("111spincastcb_01234567890123_222");
+        assertNotNull(result);
+        assertEquals("111spincastcb_01234567890123_222", result);
+    }
+
+    @Test
+    public void removeCacheBusterCodeValidEvenIfNotCurrentCode() throws Exception {
+
+        String result = getSpincastUtils().removeCacheBusterCodes("111spincastcb_0123456789012_222");
+        assertNotNull(result);
+        assertEquals("111222", result);
+    }
+
 }

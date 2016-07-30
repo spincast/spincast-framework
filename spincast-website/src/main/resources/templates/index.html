@@ -21,12 +21,47 @@ Index
 		if(window.impress.supported) {
 			$("#noPresentation").css("display", "none");
 			$("#presentationIframe").css("display", "block");
-			$("#presentationShowAsText").css("display", "inline");
+			$("#presentationControls").css("display", "inline");
 			
-			$("#presentationShowAsText").on("click", function(event) {
+			$("#showText").on("click", function(event) {
 				event.preventDefault();
 				$("#noPresentation").toggle();
 			});	
+			
+			$("#previousBtn").on("click", function(event) {
+				event.preventDefault();
+				document.getElementById("presentationIframe").contentWindow.impress.api.prev();
+			});	
+			
+			$("#nextBtn").on("click", function(event) {
+				event.preventDefault();
+				document.getElementById("presentationIframe").contentWindow.impress.api.next();
+			});	
+			
+		    $("#previousBtn img")
+	        .mouseover(function() { 
+	            $(this).attr("src", "/public/images/presentation/previous_over.png");
+	        })
+	        .mouseout(function() {
+	        	$(this).attr("src", "/public/images/presentation/previous.png");
+	        });
+		    
+		    $("#nextBtn img")
+	        .mouseover(function() { 
+	            $(this).attr("src", "/public/images/presentation/next_over.png");
+	        })
+	        .mouseout(function() {
+	        	$(this).attr("src", "/public/images/presentation/next.png");
+	        });
+		    
+		    $("#showText img")
+	        .mouseover(function() { 
+	            $(this).attr("src", "/public/images/presentation/text_over.png");
+	        })
+	        .mouseout(function() {
+	        	$(this).attr("src", "/public/images/presentation/text.png");
+	        });
+			
 		} else {
 			$("#noPresentation").css("display", "block");	
 		}
@@ -63,10 +98,17 @@ Index
 			        Impress presentation
 			        ==========================================#}
 					<iframe id="presentationIframe" style="display:none;" src="/presentation"></iframe> 
-					<div id="presentationShowAsText" class="col-sm-12" style="display:none;">
-						<a href="#" class="hint--bottom-left hint--bounce" data-hint="Display the features as text">
-							<i class="subIcon glyphicon glyphicon-text-size"></i> 
-						</a>
+
+					<div id="presentationControls" class="pointerCursor col-sm-12" style="display:none;">
+						<span id="previousBtn" class="hint--bottom-left hint--bounce" data-hint="Previous slide">
+							<img src="/public/images/presentation/previous.png" />
+						</span>
+						<span id="showText" class="pointerCursor hint--bottom hint--bounce" data-hint="Display the features as text">
+							<img src="/public/images/presentation/text.png" />
+						</span>
+						<span id="nextBtn" class="pointerCursor hint--bottom-right hint--bounce" data-hint="Next slide">
+							<img src="/public/images/presentation/next.png" />
+						</span>
 				    </div>
 					
 			        {#==========================================
@@ -194,7 +236,7 @@ Index
 					                    </p>
 					                    <h4>Compatible and tested</h4>
 					                    <p class="featureContent">
-									       Spincast is Java 7 compatible and is validated using more than 700 tests.
+									       Spincast is Java 7 compatible and is validated using more than 800 tests.
 									    </p>
 					                </div>
 					            </div>
@@ -245,7 +287,7 @@ Index
         
             <div class="quickStartWrapper">
                 <a href="/documentation#quick_start" class="btn btn-lg hvr-radial-out">
-                <i class="glyphicon glyphicon-flash"></i> Quick Start application</a>
+                <img id="quickIcon" class="inlineIcon" src="/public/images/icons/flashHome.png" /> Quick Start application</a>
             </div>
         
 	        {#==========================================

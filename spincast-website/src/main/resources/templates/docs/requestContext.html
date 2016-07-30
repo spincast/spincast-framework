@@ -58,6 +58,9 @@ Docs : "Request Context"
     // Get the best locale to use given the current request
     Locale localeToUse = context.getLocaleToUse();
     
+    // Send cache headers
+    context.cacheHeaders().cache(3600);
+    
     // ...
 }
 </pre>{% endverbatim %} 
@@ -65,7 +68,7 @@ Docs : "Request Context"
         </div>
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         Again, the main job of the <code>request context</code> is to allow the <code>route handlers </code>to deal with the
         <em>request</em> and the <em>response</em>. But it's also a container where various functionalities can be added 
         to help the <code>route handlers</code> do their job! Take the <code><em>templating()</em></code> add-on, for example:
@@ -152,7 +155,7 @@ Docs : "Request Context"
     </p>
     
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         Imagine a <code>plugin</code> which job is to manage <em>authentification</em> and <em>autorization</em>. 
         Wouldn't it be nice if this plugin could add some extra functionalities to the <code>request context</code>? 
         For example :   
@@ -176,7 +179,7 @@ Docs : "Request Context"
     </p>  
 
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         There is some boilerplate code to write to get
         a custom <code>request context</code> type but, when it's done, it's pretty easy to tweak
         and extend.
@@ -407,6 +410,37 @@ context.variables().add("someKey", "someValue");
             </li>
         </ul>
     </p>
+    
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>cacheHeaders</span>()</code>
+                <p class="well">
+                    The <code>cacheHeaders()</code> add-on allows you to validate the cache headers sent by the client and
+                    to add up-to-date cache headers for the requested resource. Have a look at the <a href="#http_caching">HTTP Caching</a>
+                    section for more information.
+                    
+                    <h5 class="examples">Examples :</h5>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>// Tell the client to cache the resource for 3600 seconds
+context.cacheHeaders().cache(3600);
+
+// Tell the client to disable any cache for this resource
+context.cacheHeaders().noCache();
+
+// ETag and last modification date validation
+if(context.cacheHeaders().eTag(resourceEtag).lastModified(modifDate).validate(true)) {
+    return;
+}</pre>
+                        </p> 
+                    </div>   
+                </p>
+            </li>
+        </ul>
+    </p>
+    
 </section>   
 
 
@@ -499,7 +533,7 @@ Section "Request Context / Extending the request context type"
         reading.
     </p>
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         First, let's quickly repeat why we could want to extend the default <code>request context</code> type...
         We may have a "<code>translate(...)</code>" method which is frequently use by our various
         <code>route handlers</code>. Let's say this is a method helping translate a sentence from one language

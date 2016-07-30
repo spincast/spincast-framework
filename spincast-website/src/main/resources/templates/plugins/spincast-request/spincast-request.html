@@ -25,20 +25,20 @@ Spincast Request plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Request plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Request <span>plugin</span></h2></a>
+            <h2 class="shortTop noBottom"><a href="#top"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Request <span>plugin</span></a></h2>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/request/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/request/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-                <div class="pluginBadgeCore hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div> 
         </div>
@@ -91,7 +91,7 @@ Spincast Request plugin
 	                you have nothing more to do!
 	            </p>
 	            <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
 	                plugin by adding this artifact to your project:
 	                <div>
@@ -106,7 +106,7 @@ Spincast Request plugin
 	                </div>  
 	            </p>
 	            <p>
-	                <i class="subIcon glyphicon glyphicon-share-alt"></i>
+	                <img class="inlineIcon" src="/public/images/icons/para.png" />
 	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
 	                <div>
 	                    <p>
@@ -152,7 +152,7 @@ Spincast Request plugin
 		            <p>
 		                <div>
 		                    <p>
-		                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Quick example :</h4>
+		                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
 		                        <pre class="ace ace-java" data-ace-hi="1,27,1,37"
 >public void myHandler(IAppRequestContext context) {
     String userId = context.request().getPathParam("userId");
@@ -164,10 +164,10 @@ Spincast Request plugin
 	            </div>
                 <div id="request_context_methods">
 		            <p>
-		                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Add-on methods :</h4>
+		                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Add-on methods :</h4>
 		                <ul class="apiList">
-                     
-                     
+           
+           
                      
 <li>
     <code class="apiItem">HttpMethod <span>getHttpMethod</span>()</code>
@@ -287,18 +287,136 @@ Spincast Request plugin
 <li>
     <code class="apiItem">String <span>getFullUrl</span>()</code>
     <div class="well">
-         Returns the full URL, including the queryString.
+         Returns the current full URL, including the queryString, if any.
+ Cache buster codes are removed, if there were any.
+ <p>
+ In case the request has been forwarded, this will be the *new*,
+ the current URL. Use <code>getFullUrlOriginal()</code>
+ to get the original URL, before the request was forwarded.
+ </p>
+ <p>
+ If a reverse proxy has been used, this URL will contain the
+ <code>scheme</code>, <code>host</code> and <code>port</code> from the
+ <em>original</em> URL, as seen by the user.
+ In general, this is what you want to use in your application.
+ </p>
 
     </div>
 </li>
 
 <li>
-    <code class="apiItem">String <span>getOriginalFullUrl</span>()</code>
+    <code class="apiItem">String <span>getFullUrl</span>(boolean keepCacheBusters)</code>
     <div class="well">
-         If the request has been forwarded, <code>getFullUrl()</code> is
- going to return the new, forwarded, url.
- This method will always return the <i>original</i> url.
+         Returns the current full URL, including the queryString, if any.
+ <p>
+ In case the request has been forwarded, this will be the *new*,
+ the current URL. Use <code>getFullUrlOriginal()</code>
+ to get the original URL, before the request was forwarded.
+ </p>
+ <p>
+ If a reverse proxy has been used, this URL will contain the
+ <code>scheme</code>, <code>host</code> and <code>port</code> from the
+ <em>original</em> URL, as seen by the user.
+ In general, this is what you want to use in your application.
+ </p>
 
+        <div class="apiItemFooter">
+            @param keepCacheBusters if <code>true</code>, the returned URL will contain
+ the cache buster codes, if there were any. The default behavior is to
+ automatically remove them.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getFullUrlOriginal</span>()</code>
+    <div class="well">
+         If the request has been forwarded, this is going to return the original
+ URL, not the current, forwarded, one.
+ Cache buster codes are removed, if there were any.
+ <p>
+ Use <code>getFullUrl()</code> to get the current, potentially
+ forwarded URL.
+ </p>
+ <p>
+ If a reverse proxy has been used, this URL will contain the
+ <code>scheme</code>, <code>host</code> and <code>port</code> from the
+ <em>original</em> URL, as seen by the user.
+ In general, this is what you want to use in your application.
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getFullUrlOriginal</span>(boolean keepCacheBusters)</code>
+    <div class="well">
+         If the request has been forwarded, this is going to return the original
+ URL, not the current, forwarded, one.
+ <p>
+ Use <code>getFullUrl()</code> to get the current, potentially
+ forwarded URL.
+ </p>
+ <p>
+ If a reverse proxy has been used, this URL will contain the
+ <code>scheme</code>, <code>host</code> and <code>port</code> from the
+ <em>original</em> URL, as seen by the user.
+ In general, this is what you want to use in your application.
+ </p>
+
+        <div class="apiItemFooter">
+            @param keepCacheBusters if <code>true</code>, the returned URL will contain
+ the cache buster codes, if there were any. The default behavior is to
+ automatically remove them.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getFullUrlProxied</span>()</code>
+    <div class="well">
+         If a reverse proxy has been used, this URL will contain the
+ <code>scheme</code>, <code>host</code> and <code>port</code>
+ as forwarded by the reserve proxy, <em>not as seen by the user</em>.
+ Cache buster codes are removed, if there were any.
+ <p>
+ If the request has been forwarded, this is going to return the original
+ URL, not the current, forwarded, one.
+ </p>
+ <p>
+ In general, you should probably use <code>getFullUrl()</code>
+ or <code>getFullUrlOriginal()</code> instead of this
+ one.
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getFullUrlProxied</span>(boolean keepCacheBusters)</code>
+    <div class="well">
+         If a reverse proxy has been used, this URL will contain the
+ <code>scheme</code>, <code>host</code> and <code>port</code>
+ as forwarded by the reserve proxy, <em>not as seen by the user</em>.
+ Cache buster codes are removed, if there were any.
+ <p>
+ If the request has been forwarded, this is going to return the original
+ URL, not the current, forwarded, one.
+ </p>
+ <p>
+ In general, you should probably use <code>getFullUrl()</code>
+ or <code>getFullUrlOriginal()</code> instead of this
+ one.
+ </p>
+
+        <div class="apiItemFooter">
+            @param keepCacheBusters if <code>true</code>, the returned URL will contain
+ the cache buster codes, if there were any. The default behavior is to
+ automatically remove them.
+
+        </div>
     </div>
 </li>
 
@@ -307,6 +425,20 @@ Spincast Request plugin
     <div class="well">
          The path of the request (no querystring).
 
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>getRequestPath</span>(boolean keepCacheBusters)</code>
+    <div class="well">
+         The path of the request (no querystring).
+
+        <div class="apiItemFooter">
+            @param keepCacheBusters if <code>true</code>, the returned path will contain
+ the cache buster codes, if there were any. The default behavior is to
+ automatically remove them.
+
+        </div>
     </div>
 </li>
 
@@ -329,11 +461,16 @@ Spincast Request plugin
 </li>
 
 <li>
-    <code class="apiItem">String <span>getQueryString</span>()</code>
+    <code class="apiItem">String <span>getQueryString</span>(boolean withQuestionMark)</code>
     <div class="well">
-         The queryString of the request, without the "?".
- Returns an empty String if there is no querystring.
+         The queryString of the request.
+ Returns an empty String if there is no queryString.
 
+        <div class="apiItemFooter">
+            @param withQuestionMark if <code>true</code> and the queryString
+ is not empty, the result will be prefixed with "?".
+
+        </div>
     </div>
 </li>
 
@@ -532,9 +669,58 @@ Spincast Request plugin
     <code class="apiItem">boolean <span>isHttps</span>()</code>
     <div class="well">
          Is the request a secure HTTPS one?
+
     </div>
 </li>
-  
+
+<li>
+    <code class="apiItem">List&lt;IETag&gt; <span>getEtagsFromIfNoneMatchHeader</span>()</code>
+    <div class="well">
+         Returns the <code>ETags</code> from
+ the <code>If-None-Match</code> header, if any.
+
+        <div class="apiItemFooter">
+            @return the <code>If-None-Match</code> ETags or an empty
+ list if there is none.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">List&lt;IETag&gt; <span>getEtagsFromIfMatchHeader</span>()</code>
+    <div class="well">
+         Returns the <code>ETags</code> from
+ the <code>If-Match</code> header, if any.
+
+        <div class="apiItemFooter">
+            @return the <code>If-Match</code> ETags or an empty list
+ if there is none.
+
+        </div>
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Date <span>getDateFromIfModifiedSinceHeader</span>()</code>
+    <div class="well">
+         Return the value of the <code>If-Modified-Since</code>
+ header as a Date or <code>null</code> if it doesn't
+ exist.
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">Date <span>getDateFromIfUnmodifiedSinceHeader</span>()</code>
+    <div class="well">
+         Return the value of the <code>If-Unmodified-Since</code>
+ header as a Date or <code>null</code> if it doesn't
+ exist.
+
+    </div>
+</li>
+
 
     
  

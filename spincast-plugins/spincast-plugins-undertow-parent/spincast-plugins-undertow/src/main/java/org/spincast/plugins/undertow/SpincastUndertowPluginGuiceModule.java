@@ -25,6 +25,8 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
         bindSpincastUndertowUtils();
         bindCorsHandlerFactory();
         bindGzipCheckerHandlerFactory();
+        bindSpincastResourceHandlerFactory();
+        bindCacheBusterRemovalHandlerFactory();
         bindFileClassPathResourceManagerFactory();
         bindHttpAuthIdentityManagerFactory();
         bindUndertowWebsocketEndpointWriterFactory();
@@ -60,6 +62,24 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
 
     protected Class<? extends IGzipCheckerHandler> getGzipCheckerHandlerClass() {
         return GzipCheckerHandler.class;
+    }
+
+    protected void bindSpincastResourceHandlerFactory() {
+        install(new FactoryModuleBuilder().implement(ISpincastResourceHandler.class, getSpincastResourceHandlerClass())
+                                          .build(ISpincastResourceHandlerFactory.class));
+    }
+
+    protected Class<? extends ISpincastResourceHandler> getSpincastResourceHandlerClass() {
+        return SpincastResourceHandler.class;
+    }
+
+    protected void bindCacheBusterRemovalHandlerFactory() {
+        install(new FactoryModuleBuilder().implement(ICacheBusterRemovalHandler.class, getCacheBusterRemovalHandlerClass())
+                                          .build(ICacheBusterRemovalHandlerFactory.class));
+    }
+
+    protected Class<? extends ICacheBusterRemovalHandler> getCacheBusterRemovalHandlerClass() {
+        return CacheBusterRemovalHandler.class;
     }
 
     protected void bindFileClassPathResourceManagerFactory() {

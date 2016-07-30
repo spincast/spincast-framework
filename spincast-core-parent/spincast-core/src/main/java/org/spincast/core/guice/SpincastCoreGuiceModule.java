@@ -15,6 +15,7 @@ import org.spincast.core.controllers.SpincastFrontController;
 import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.cookies.ICookiesRequestContextAddon;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.ICacheHeadersRequestContextAddon;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.IRequestContextFactory;
 import org.spincast.core.exchange.IRequestRequestContextAddon;
@@ -34,10 +35,12 @@ import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.locale.ILocaleResolver;
 import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
+import org.spincast.core.routing.IETagFactory;
 import org.spincast.core.routing.IRedirectRuleBuilderFactory;
 import org.spincast.core.routing.IRouteBuilderFactory;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IRoutingRequestContextAddon;
+import org.spincast.core.routing.IStaticResourceFactory;
 import org.spincast.core.server.IServer;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.templating.ITemplatingRequestContextAddon;
@@ -58,7 +61,6 @@ import org.spincast.core.websocket.WebsocketEndpointToControllerManager;
 import org.spincast.core.xml.IXmlManager;
 
 import com.google.inject.Key;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -200,8 +202,10 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(parameterizeWithContextInterfaces(IRouter.class));
         requireBinding(Key.get(new TypeLiteral<IRouter<?, ?>>() {}));
         requireBinding(parameterizeWithContextInterfaces(IRouteBuilderFactory.class));
+        requireBinding(parameterizeWithRequestContext(IStaticResourceFactory.class));
         requireBinding(parameterizeWithContextInterfaces(IRedirectRuleBuilderFactory.class));
         requireBinding(parameterizeWithContextInterfaces(IWebsocketRouteBuilderFactory.class));
+        requireBinding(IETagFactory.class);
         requireBinding(ITemplatingEngine.class);
         requireBinding(IJsonManager.class);
         requireBinding(IXmlManager.class);
@@ -215,6 +219,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         requireBinding(parameterizeWithRequestContext(ICookiesRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(ITemplatingRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(IVariablesRequestContextAddon.class));
+        requireBinding(parameterizeWithRequestContext(ICacheHeadersRequestContextAddon.class));
     }
 
     protected void bindMainArgs() {
@@ -244,7 +249,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
 
         Key key = Key.get(getRequestContextType());
         bind(key)
-                 .toProvider((Provider)SpincastRequestScope.getSeedErrorProvider(key))
+                 .toProvider(SpincastRequestScope.getSeedErrorProvider(key))
                  .in(SpincastGuiceScopes.REQUEST);
 
         //==========================================
@@ -252,7 +257,7 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         //==========================================
         TypeLiteral typeLiteral = new TypeLiteral<IRequestContext<?>>() {};
         bind(Key.get(typeLiteral))
-                                  .toProvider((Provider)SpincastRequestScope.getSeedErrorProvider(Key.get(typeLiteral)))
+                                  .toProvider(SpincastRequestScope.getSeedErrorProvider(Key.get(typeLiteral)))
                                   .in(SpincastGuiceScopes.REQUEST);
     }
 

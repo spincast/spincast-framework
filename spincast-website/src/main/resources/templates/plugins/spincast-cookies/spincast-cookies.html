@@ -25,20 +25,20 @@ Spincast Cookies plugin
 <div class="container pluginDoc">
 
     <ol class="breadcrumb">
-        <li><span class="glyphicon glyphicon-menu-right"> </span> <a href="/plugins">Plugins</a></li>
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
         <li class="active">Spincast Cookies plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop shortBottom"> Spincast Cookies <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Cookies <span>plugin</span></h2></a>
             <div class="pluginBadges">
-                <div class="pluginBadgeJavadoc hint--bottom-left hint--bounce" 
-                     data-hint="Plugin's Javadoc"><span class="glyphicon glyphicon-pencil"></span> 
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/cookies/package-summary.html">Javadoc</a>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a href="/public/javadoc/index.html?org/spincast/plugins/cookies/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
-                <div class="pluginBadgeCore hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><span class="glyphicon glyphicon-check"></span> default</div>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div> 
         </div>
@@ -108,7 +108,7 @@ Spincast Cookies plugin
                     you have nothing more to do!
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     If you start from scratch using the <code>spincast-core</code> artifact, you can use the
                     plugin by adding this artifact to your project:
                     <div>
@@ -123,7 +123,7 @@ Spincast Cookies plugin
                     </div>  
                 </p>
                 <p>
-                    <i class="subIcon glyphicon glyphicon-share-alt"></i>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
                     You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
                     <div>
                         <p>
@@ -167,7 +167,7 @@ Spincast Cookies plugin
                     <p>
                         <div>
                             <p>
-                                <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Quick example :</h4>
+                                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
                                 <pre class="ace ace-java" data-ace-hi="1,30,1,40"
 >public void myHandler(IAppRequestContext context) {
     ICookie myCookie = context.cookies().getCookie("myCookie");
@@ -183,7 +183,7 @@ Spincast Cookies plugin
 
                 <div id="request_context_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods :</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
                         <ul class="apiList">
                         
                         
@@ -278,7 +278,7 @@ Spincast Cookies plugin
                 </h3>
                 <div id="cookie_creation_addon">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Using the <code>add-on</code></h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Using the <code>add-on</code></h4>
                         You can create a new cookie directly from your <code>request context</code> object. This is by far the
                         easiest way to do it:
                     
@@ -290,7 +290,7 @@ Spincast Cookies plugin
                 </div>
                 <div id="cookie_creation_factory">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Using the <code>ICookieFactory</code> factory</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Using the <code>ICookieFactory</code> factory</h4>
                         When you don't have access to the <code>request context</code> object directly, for example if you have
                         some kind of service which creates the cookie and passes it back to your
                         <code>route handler</code>, you can use the <code>ICookieFactory</code> factory. Why a factory and not simply
@@ -327,7 +327,7 @@ Spincast Cookies plugin
 
                 <div id="cookie_factory_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Factory methods :</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Factory methods :</h4>
                         <ul class="apiList">
                         
                         
@@ -377,7 +377,7 @@ Spincast Cookies plugin
                 </p>
                 <div id="cookie_methods">
                     <p>
-                        <h4><i class="subIcon glyphicon glyphicon-share-alt"></i> Methods :</h4>
+                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
                         <ul class="apiList">
                         
                         

@@ -23,8 +23,8 @@ import org.spincast.core.websocket.IWebsocketConnectionConfig;
 import org.spincast.core.websocket.IWebsocketEndpointManager;
 import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.RandomUtils;
-import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
 
 import com.google.common.collect.Sets;
 
@@ -320,7 +320,8 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
             Controller controller = getController(createControllerId(controllerPos));
             for(int endpointPos = 1; endpointPos <= getNbrEndpointByController(); endpointPos++) {
                 assertTrue(controller.waitNrbPeerConnected(createEndpointId(controllerPos, endpointPos),
-                                                           getNbrPeerByEndpoint()));
+                                                           getNbrPeerByEndpoint(),
+                                                           20000));
             }
         }
 

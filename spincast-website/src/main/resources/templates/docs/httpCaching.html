@@ -1,0 +1,625 @@
+{#==========================================
+Docs : "HTTP Caching"
+==========================================#}
+
+<section id="http_caching">
+    <h3>
+        <a class="anchor_small" href="#http_caching" title="permanent link"></a>
+        HTTP Caching
+    </h3>
+    
+    <p>
+        Spincast supports many HTTP caching features, as described in the
+        <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">HTTP 1.1 specification</a> :
+        <ul>
+        	<li>
+        		<code>Cache-Control</code> headers
+        	</li>
+        	<li>
+        		Last modification dates
+        	</li>
+        	<li>
+        		<code>Etag</code> headers
+        	</li>
+        	<li>
+        		"No Cache" headers
+        	</li>
+        </ul>
+        Finally, Spincast also provides a mechanism for <a href="#http_caching_cache_busting"><code>Cache Busting</code></a>.
+    </p>
+</section>
+
+<section id="http_caching_cache_control">
+    <h4>
+        <a class="anchor_small" href="#http_caching_cache_control" id="" title="permanent link"></a>
+        Cache-Control
+    </h4>
+    <p>
+    	The <code>Cache-Control</code> header (and the similar, but older, <code>Expires</code> header) is used to
+    	tell a client how much time (in seconds) it should use its cached copy of a resource
+    	before asking the server for a fresh copy.
+    </p>
+    <p>
+    	This <code>Cache-Control</code> header can first be specified when you build a route (see 
+    	<a href="#route_http_caching">HTTP Caching route options</a>), using the <code>cache(...)</code>
+    	method. 
+    </p>
+    <p>
+        <div>
+        	For example :
+            <p>
+                <pre class="ace ace-java"
+>router.GET("/test").cache(3600).save(handler);</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>	
+    	There are three available options when using this <code>cache(...)</code> method :
+        <ul>
+        	<li>
+        		The number of seconds the client should uses its cached version without
+        		asking the server again.
+        	</li>
+        	<li>
+        		Is the cache <code>public</code> (default) or <code>private</code>. The <code>private</code>
+        		option means an end client can cache the resource but not an intermediate proxy/CDN
+        		(<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">more information</a>).
+        	</li>
+        	<li>
+        		The number of seconds a proxy/CDN should use its cached version without
+        		asking the server again. Only use this option if it must be different than the
+        		number of seconds for regular end clients.
+        	</li>
+        </ul>
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	This <code>cache(...)</code> method can also be used dynamically, 
+    	in a route handler, using the <code>cacheHeaders()</code> 
+    	add-on :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>@Override
+public void myHandler(IAppRequestContext context) {
+    context.cacheHeaders().cache(3600);
+    context.response().sendPlainText("This will be cached for 3600 seconds!");
+}</pre> 
+            </p> 
+        </div>
+    </p> 
+    
+    
+</section>
+
+<section id="http_caching_default">
+    <h4>
+        <a class="anchor_small" href="#http_caching_default" title="permanent link"></a>
+        Default caching
+    </h4>
+    <p>
+    	When you do not explicitly set any caching options for a <code>static resource</code>, some defaults are automatically used. Those
+    	defaults are configurable using the <a href="/public/javadoc/org/spincast/core/config/ISpincastConfig.html"><code>ISpincastConfig</code></a> 
+   		class.
+    </p>
+
+   	<p>
+		There are two variations for those static resources default caching configurations :
+	</p>
+	<ul>
+		<li>
+			One for plain static resources. The default is to send headers so the resource
+			is  cached for <code>86400</code> seconds (1 day).
+		</li>
+		<li>
+			One for <a href="#dynamic_resources"><em>dynamic</em> resources</a>. The default is to send headers so the resource
+			is cached for <code>3600</code> seconds (1 hour).
+		
+			When a resource can be generated, it often means that the resource may change more frequently. This is why
+			dynamic resources have their own default caching configuration.
+		</li>
+	</ul>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+		When a static/dynamic resource is served, a <code>Last-Modified</code> header is also automatically
+		sent. This means that even when the client <em>does</em> ask for a fresh copy of a resource, it will often
+		receive a <code>"304 - Not Modified"</code> response and will therefore again use its
+		cached copy, without unnecessary data being transferred over the network.
+	</p>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+		Finally, note that no default caching headers are sent for regular routes. You have to explictly use 
+		<code>cache(...)</code> to send some. But if you use <code>cache()</code> as is, without any parameter, then
+		default values will be used (still configurable using the <a href="/public/javadoc/org/spincast/core/config/ISpincastConfig.html"><code>ISpincastConfig</code></a> 
+		class).
+	</p>
+</section>
+
+<section id="http_caching_no_cache">
+    <h4>
+        <a class="anchor_small" href="#http_caching_no_cache" title="permanent link"></a>
+        No Cache
+    </h4>
+    <p>
+    	Even when no explicit caching headers are sent, some clients (browsers, proxies, etc.) may use a default 
+    	caching strategy for the resources they download. For example, if you press the "back" button, 
+    	many browsers will display a cached version of the previous page, without requesting
+    	the server for a fresh copy... Even if no caching headers were sent for that page!
+    </p>
+    <p>
+    	If you want to tell the client that it should disable <em>any</em> kind of caching for a resource,
+    	you can use the <code>noCache(...)</code> method. This can be done when building a route :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>router.GET("/test").noCache().save(handler);</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+    	Or can be used dynamically, in a route handler :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>@Override
+public void myHandler(IAppRequestContext context) {
+    context.cacheHeaders().noCache();
+    context.response().sendPlainText("This will be never be cached!");
+}</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	Finally, note that you can not use the <code>noCache()</code> options on a <code>static resource</code> since
+    	this would defeat the notion of a "static" resource.
+    </p>
+</section>
+
+<section id="http_caching_cache_busting">
+    <h4>
+        <a class="anchor_small" href="#http_caching_cache_busting" title="permanent link"></a>
+        Cache Busting
+    </h4>
+    <p>
+    	Cache busting is the process of adding a special token to the URL of a resource in a way that simply
+    	by changing this token you invalidate any cache a client may have.	
+    </p>
+    <p>
+    	For example, let's say that in a HTML page you reference a <code>.css</code> file that you want 
+    	the client to cache (since it won't frequently change) :	
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-html"
+>&lt;link rel="stylesheet" href="/public/css/main.css"&gt;</pre> 
+            </p> 
+        </div>
+    </p>
+    <p>
+    	The associated route may be :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>router.file("/public/css/main.css").cache(86400).classpath("/css/main.css").save();</pre> 
+            </p> 
+        </div>
+    </p>
+    <p>
+    	As you now know, when this resource is served a <code>Cache-Control</code> header will
+    	be sent to the client so it caches it for 24 hours. And this is great! But what happens if you release
+    	a new version of your application? You may then have changed <code>"main.css"</code> and you want all clients
+    	to use the new, fresh, version. How can you do that if many clients already have the old version in cache
+    	and you specified them that they can use that cached version for 24 hours? This is where <code>cache busting</code> become handy!
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	To enable cache busting for a particular resource, you add the <code><em>"cacheBuster"</em></code> template
+    	variable to its URL. This template variable is provided by Spincast, you simply need to add
+    	it in your HTML pages. For example, if you use <a href="/plugins/spincast-pebble">Pebble</a>, 
+    	which is the default
+    	templating engine provided with Spincast, you need to use 
+    	<code><em>"{% verbatim %}{{cacheBuster}}{% endverbatim %}"</em></code> as the cache buster token. 
+    	We recommend that you add this token right before the file name of the resource :
+    </p>
+    <p>
+        <div>
+            <p>
+            	{% verbatim %}
+                <pre class="ace ace-html" data-ace-hi="0,41,0,56"
+>&lt;link rel="stylesheet" href="/public/css/{{cacheBuster}}main.css"&gt;</pre> 
+				{% endverbatim %}
+            </p> 
+        </div>
+    </p>
+    <p>
+    	
+    </p>
+    <p>
+    	When the HTML is rendered, the result will look something like this :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-html" data-ace-hi="0,41,0,66"
+>&lt;link rel="stylesheet" href="/public/css/spincastcb_1469634250814_main.css"&gt;</pre> 
+            </p> 
+        </div>
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	When Spincast receives a request, it automatically removes any cache busters from the URL. So
+    	
+    	<ul>
+    		<li>
+    			<code>"/public/css/spincastcb_1111111111111_main.css"</code> 
+    		</li>
+    		<li>
+    			<code>"/public/css/spincastcb_2222222222222_main.css"</code>
+    		</li>
+    	</ul>
+
+    	will both result in the exact same URL, and will both target the same resource : 
+    	
+    	<ul>
+    		<li>
+    			<code>"/public/css/main.css"</code>
+    		</li>
+    	</ul>
+    </p>
+    <p>
+    	But (and that's the trick!) the client will consider both URLs as <em>different</em>, targeting <em>different</em> resources, so
+    	it won't use any cached version when a cache buster is changed!
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	By default, the cache busting code provided by Spincast will change every time the application is restarted. You can modify
+    	this behavior and/or the format of the token by overriding the <code>getCacheBusterCode()</code> and
+    	<code>removeCacheBusterCodes(...)</code> methods from 
+    	<a href="/public/javadoc/org/spincast/core/utils/ISpincastUtils.html">ISpincastUtils</a>.	
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	Finally, note that the cache busting tokens are removed <em>before</em> the routing is done, so they don't affect it in any way.
+    </p>
+</section>
+    
+<section id="http_caching_etag_last_modified">
+    <h4>
+        <a class="anchor_small" href="#http_caching_etag_last_modified" title="permanent link"></a>
+        Etag and Last Modification date
+    </h4>
+    <p>
+    	The <code>Etag</code> and <code>Last modification date</code> headers are two ways of validating if the cached version
+    	a client already has of a resource is still valid or not. We will call them <code>"Freshness headers"</code>. 
+    </p>
+    <p>
+    	The client, when it wants to retrieve/modify/delete a resource it already has a copy of, sends a request
+    	for that resource by passing the <code>Etags</code> and/or <code>Last modification date</code> it currently has for that
+    	resource. The server validates those values with the current information of the resource and decides if the
+    	current resource should be retrieved/modified/deleted. Some variations using those headers are even used to
+    	validate if a client can <em>create</em> a new resource.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+    	Note that freshness headers management is not required on <em>all</em> endpoints. For example, an endpoint that would compute
+    	the sum of two numbers has no use for cache headers or for freshness validation! But when a <code>REST</code> endpoint deal with
+    	a <em>resource</em>, by Creating, Retrieving, Updating or Deleting it, then freshness validation is a must
+    	to respect the HTTP specification.
+    </p>
+    <h5>
+        <a class="anchor_small" href="#http_caching_not_trivial" id="http_caching_not_trivial" title="permanent link"></a>
+        Proper use of the freshness headers is not trivial
+    </h5>
+    
+    <p>
+		The most popular use for freshness headers is to return a <code>304 - Not Modified</code> response when a
+		client asks for a fresh copy of a resource, but that resource has not changed. Doing so, the response 
+		is very fast since no unnecessary data is actually transmitted over the network : the client simply continue to use its 
+		cached copy.
+    </p>
+    <p>
+		This <code>"304"</code> use case if often the only one managed by web frameworks. The reason is that it can
+		be <em>automated</em>, to some extent. A popular way of automating it is
+		to use an "after" filter to generate a <em>hash</em> from the body of a resource returned as the response to a
+		<code>GET</code> request. This hash is used as an <code>ETag</code> header and compared with any existing
+		<code>If-None-Match</code> header sent by the client. If the <code>ETag</code> matches, then the generated resource is
+		not sent, a <code>"304 - Not Modified"</code> response is sent instead.
+    </p>
+    <p>
+    	This approach may be attractive at first because it is very simple and doesn't require you to do anything
+    	except registering a filter. The problem is that this HTTP caching management is very, very, limited
+    	and only addresses <em>one</em> aspect of the caching mechanism described in the
+    	<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">HTTP specification</a>.
+    </p>
+    <p>
+    	First, it only addresses <code>GET</code> requests. Its only purpose is to return a <code>304 - Not Modified</code>
+    	response instead of the actual resource on a <code>GET</code> request. But, freshness headers should be used 
+    	for a lot more than that. For example :
+    	
+    	<ul>
+    		<li>
+    			If a request is received with an <code>"If-Match"</code> (Etag) or an <code>"If-Unmodified-Since"</code> 
+    			(Last modification date) header, and the resource <em>has</em> changed, then the request must fail 
+    			and a <code>412 - Precondition Failed</code> response must be
+    			returned. (<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24">specification</a>)
+    		</li>
+    		<li>
+    			If a request with an <code>"If-None-Match: *"</code> header is received on a <code>PUT</code>
+    			request, the resource must not be created if any version of it already exists. 
+    			(<a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26">specification</a>)
+    		</li>
+    	</ul>
+    </p>
+    <p>
+    	Also, to hash the body of the resource to create an <code>ETag</code> may not always be 
+    	appropriate. First, the resource must be generated for this hash to be computed.
+    	But maybe you shouldn't have let the request access the resource in the first place! Also, maybe there is
+    	a far better way to generate a unique <code>ETag</code> for your resource than to hash its body, using one of its
+    	property for example. Finally, what happens if you need to "stream" that resource? 
+    	If you need to <em>flush</em> the response more than once when
+    	serving it? In that case, the "after" filter wouldn't be able to hash the body properly and 
+    	send it as an <code>ETag</code> header.
+    </p>
+    <p>
+		<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+		All this to say that <code>Etags</code> and <code>Last modification date</code> may seem easy to manage
+		at first, but in fact, they require some work from you. If you simply want to manage the <code>GET</code>
+		use case where a <code>304 - Not Modified</code> response can be returned instead of the resource itself,
+		then creating your own "after" filter should be quite easy (we may even provide one in a future release). But if you want
+		your <code>REST</code> endpoints to be more compliant with the HTTP specification, then keep reading 
+		to learn how to use the <code>cacheHeaders()</code> add-on and its <code>validate()</code> method!
+    </p>
+    
+    <h5>
+        <a class="anchor_small" href="#http_caching_etag_addon" id="http_caching_etag_addon" title="permanent link"></a>
+        Freshness management using the cacheHeaders() add-on 
+    </h5>
+    <p>
+		There are three methods on the <code>cacheHeaders()</code> add-on made to deal with freshness headers :
+		
+    	<ul>
+    		<li>
+    			<code>.etag(...)</code>
+    		</li>
+    		<li>
+    			<code>.lastModified(...)</code>
+    		</li>
+    		<li>
+    			<code>.validate(...)</code>
+    		</li>
+    	</ul>
+    </p>
+    <p>
+		 The
+		first two are used to set the <code>Etag</code> and <code>Last modification date</code> headers
+		for the current version of the resource. For example :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>// Set the ETag
+context.cacheHeaders().eTag(resourceEtag);
+
+// Set the Last modification date
+context.cacheHeaders().lastModified(resourceModificationDate);</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+		But setting those freshness headers doesn't make sense if you do not validate them when they are sent
+		back by a client! This is what the <code>.validate(...)</code> method is made for. It validates the current
+		<code>ETag</code> and/or <code>Last modification date</code> of the resource to the ones sent by the client.
+		Here's an example of what using this method looks like :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>if(context.cacheHeaders().eTag(resourceEtag)
+                         .lastModified(resourceModificationDate)
+                         .validate(resource != null)) {
+    return;
+}</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+		We will look in details how to use the <code>validate()</code> method, but the important thing to remember is 
+		that if this method returns <code>true</code>, then your route handler <em>should return immediately</em>, 
+		without returning/modifying/creating
+		or deleting the associated resource. It also
+		means that the response to return to the client has already been set and should be returned as is : you
+		don't have to do anything more.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+		Note that, in general, you will use <code>ETags</code> <em>or</em> <code>Last modification dates</code>,
+		not both. Since <code>ETags</code>  are more generic (you can even use a modification date as an <code>ETag</code>!), our following
+		example will only focus on <code>ETags</code>. But using the <code>validate(...)</code> method is the same, that you use
+		<code>ETags</code> or <code>Last modification dates</code>.
+    </p>
+    
+    <h5>
+        <a class="anchor_small" href="#http_caching_validation" id="http_caching_validation" title="permanent link"></a>
+        Using the "validate(...)" method
+    </h5>
+    <p>
+		Let's first repeat that, as we <a href="#http_caching_default">previously said</a>, 
+		the <code>static resources</code> have their
+		<code>Last modification date</code> automatically managed. The server simply validates the modification
+		date of the resource's file on disk and use this information to decide if a new copy of the resource should be
+		returned or not. In other words, the validation pattern we are going to explain here only concerns <em>regular routes</em>, where
+		<code>route handlers</code> manage the target resources.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" />
+		The freshness validation pattern looks like this, in a route handler :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(IAppRequestContext context) {
+
+	// 1. Gets the current resource, if any
+    IMyResource resource = getMyResource();
+    String resourceEtag = computeEtag(resource);
+
+	// 2. Sets the current ETag and validates the freshness of the
+	// headers sent by the client
+	if(context.cacheHeaders().eTag(resourceEtag)
+	                         .validate(resource != null)) {
+	    return;
+	}
+
+	// 3. Validation done! 
+	// Now the core of the handler can run :
+	// it can create/return/update/delete the resource.
+	
+    // ...
+    
+};</pre> 
+            </p> 
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">4</span> : We get the actual resource (from a 
+                        service for example). Note that
+                        it can be <code>null</code> if it doesn't exist or if it has been deleted.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">5</span> : We compute the <code>ETag</code>
+                        for the resource. The <code>ETag</code>
+                        can be anything : it is specific to your application how to generate it.
+                        Note that the <code>ETag</code> can be <code>null</code> if the resource doesn't exist!
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">9</span> : By using the <code>cacheHeaders()</code>
+                        add-on, we set the <code>ETag</code>
+                        of the current resource. This will add the appropriate headers to the response : 
+                        those headers will be sent, whatever the result of the <code>validate(...)</code>
+                        method is.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">10</span> : We call the <code>validate(...)</code> method.
+                        This method takes one parameter : a boolean indicating if the resource currently exists
+                        or not. The method will validate the current <code>ETag</code> and/or the <code>Last modification date</code>
+                        with the ones received by the client. If any HTTP freshness rule is matched, some appropriate headers
+                        are set in the response (<code>"304 - Not Modified"</code> or <code>"412 - Precondition Failed"</code>)
+                        and <code>true</code> is returned. If no freshness rule is matched, <code>false</code> is returned.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">11</span> : If the <code>validate(...)</code> method returns
+                        <code>true</code>, our route handler should return immediately, without further processing!
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">14-18</span> : If the <code>validate(...)</code> method returns
+                        <code>false</code>, the main part of our route handler can run, as usual.
+                    </li>
+                    
+                </ul>
+            </p>  
+        </div>
+    </p> 
+    <p>
+		As you can see, the validation pattern consists in comparing the <code>ETag</code> and/or 
+		<code>Last modification date</code> of the actual resource to the headers
+		sent by the client. A lot of validations are done in that <code>validate(...)</code> method,
+		we try to follow as much as possible the full HTTP specification.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+		Note that if the resource <em>doesn't currently exist</em>, you should <em>not</em> create it before calling
+		the <code>validate(...)</code> method! You should instead pass <code>false</code> to the <code>validate(...)</code> method. 
+		If the request is a <code>PUT</code> asking to create the resource,
+		this creation can be done <em>after</em> the cache headers validation, and only if the <code>validate(false)</code>
+		method returns <code>false</code>. In that case, the <code>ETag</code>
+		and/or <code>Last modification date</code> will have to be added to the response by calling <code>eTag(...)</code>
+		and/or <code>lastModified(...)</code> again :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void createHandler(IAppRequestContext context) {
+
+	// Let's say the resource is "null" here.
+	IMyResource resource = getMyResource();
+	
+	// The ETag will be "null" too.
+	String resourceEtag = computeEtag(resource);
+
+	if(context.cacheHeaders().eTag(resourceEtag)
+	                         .validate(resource != null)) {
+	    return;
+	}
+	
+	// The validation returned "false" so we can 
+	// create the resource!
+	resource = createResourceUsingInforFromTheRequest(context);
+	
+	// We add the new ETag to the response.
+	resourceEtag = computeEtag(resource);
+	context.cacheHeaders().eTag(resourceEtag);
+}</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+		If the resource doesn't exist and the request is a <code>GET</code>, you can return
+		a <code>404 - Not Found</code> <em>after</em> the freshness validation. In fact, once the
+		validation is done, your handler can be processed as usual, as if there was no prior validation...
+		For example :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void getHandler(IAppRequestContext context) {
+
+	IMyResource resource = getMyResource();
+	String resourceEtag = computeEtag(resource);
+	if(context.cacheHeaders().eTag(resourceEtag)
+	                         .validate(resource != null)) {
+	    return;
+	}
+	
+    if(resource == null) {
+        throw new NotFoundException();
+    }
+    
+    return context.response().sendJsonObj(resource);
+}</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/para.png" />
+		To conclude, you may now see that proper management of HTTP freshness headers 
+		sadly can't be fully automated. A filter is simply not enough!
+		But, by using the 
+		<code>cacheHeaders()</code> add-on and its <code>validate(...)</code> method, a
+		<code>REST</code> endpoint can follow the HTTP specification and be very
+		performant. Remember that not all endpoints require that freshness validation, though! You can
+		start your application without any freshness validation at all and add it on endpoints
+		where it makes sense.
+    </p>
+ 
+</section>
+
+
+            
+            

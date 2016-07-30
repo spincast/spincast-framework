@@ -42,7 +42,7 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
             @Override
             public void handle(IDefaultRequestContext context) {
 
-                String queryString = context.request().getQueryString();
+                String queryString = context.request().getQueryString(false);
                 assertNotNull(queryString);
                 assertEquals("test=one two" + SpincastTestUtils.TEST_STRING, queryString);
             }

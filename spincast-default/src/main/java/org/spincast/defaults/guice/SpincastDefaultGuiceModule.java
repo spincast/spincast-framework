@@ -4,6 +4,7 @@ import org.spincast.core.guice.SpincastCoreGuiceModule;
 import org.spincast.plugins.config.SpincastConfigPluginGuiceModule;
 import org.spincast.plugins.cookies.SpincastCookiesPluginGuiceModule;
 import org.spincast.plugins.dictionary.SpincastDictionaryPluginGuiceModule;
+import org.spincast.plugins.httpcaching.SpincastHttpCachingPluginGuiceModule;
 import org.spincast.plugins.jacksonjson.SpincastJacksonJsonPluginGuiceModule;
 import org.spincast.plugins.jacksonxml.SpincastJacksonXmlPluginGuiceModule;
 import org.spincast.plugins.localeresolver.SpincastLocaleResolverPluginGuiceModule;
@@ -79,6 +80,7 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         bindTemplatingPlugin();
         bindVariablesPlugin();
         bindLocaleResolverPlugin();
+        bindHttpCachingPlugin();
     }
 
     protected void bindConfigPlugin() {
@@ -184,6 +186,14 @@ public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
         // Spincast Locale Resolver plugin
         //==========================================
         install(new SpincastLocaleResolverPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
+    }
+
+    protected void bindHttpCachingPlugin() {
+
+        //==========================================
+        // Spincast HTTP Caching plugin
+        //==========================================
+        install(new SpincastHttpCachingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
     }
 
 }

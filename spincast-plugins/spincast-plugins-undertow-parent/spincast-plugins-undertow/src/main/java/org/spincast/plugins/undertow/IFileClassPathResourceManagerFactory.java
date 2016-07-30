@@ -1,7 +1,7 @@
 package org.spincast.plugins.undertow;
 
 /**
- * Factory to create GzipCheckerHandlers
+ * Factory to create IFileClassPathResourceManager
  */
 public interface IFileClassPathResourceManagerFactory {
 

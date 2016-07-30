@@ -1,14 +1,22 @@
 package org.spincast.plugins.routing;
 
+import java.io.File;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.IStaticResource;
 import org.spincast.core.routing.IStaticResourceBuilder;
+import org.spincast.core.routing.IStaticResourceCacheConfig;
 import org.spincast.core.routing.IStaticResourceCorsConfig;
+import org.spincast.core.routing.IStaticResourceFactory;
 import org.spincast.core.routing.StaticResourceType;
+import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.IWebsocketContext;
 
 import com.google.common.collect.Sets;
@@ -18,32 +26,58 @@ import com.google.inject.assistedinject.AssistedInject;
 public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
                                   implements IStaticResourceBuilder<R> {
 
+    protected final Logger logger = LoggerFactory.getLogger(StaticResourceBuilder.class);
+
+    private final ISpincastConfig spincastConfig;
+    private final ISpincastUtils spincastUtils;
     private final IRouter<R, W> router;
     private final boolean isDir;
     private String url = null;
     private String path = null;
     private boolean isClasspath = false;
     private IStaticResourceCorsConfig corsConfig;
+    private IStaticResourceCacheConfig cacheConfig;
     private IHandler<R> generator;
     private final IStaticResourceFactory<R> staticResourceFactory;
     private final IStaticResourceCorsConfigFactory staticResourceCorsConfigFactory;
+    private final IStaticResourceCacheConfigFactory staticResourceCacheConfigFactory;
+    private final ISpincastRouterConfig spincastRouterConfig;
 
     @AssistedInject
     public StaticResourceBuilder(@Assisted boolean isDir,
                                  IStaticResourceFactory<R> staticResourceFactory,
-                                 IStaticResourceCorsConfigFactory staticResourceCorsConfigFactory) {
-        this(null, isDir, staticResourceFactory, staticResourceCorsConfigFactory);
+                                 IStaticResourceCorsConfigFactory staticResourceCorsConfigFactory,
+                                 IStaticResourceCacheConfigFactory staticResourceCacheConfigFactory,
+                                 ISpincastConfig spincastConfig,
+                                 ISpincastUtils spincastUtils,
+                                 ISpincastRouterConfig spincastRouterConfig) {
+        this(null,
+             isDir,
+             staticResourceFactory,
+             staticResourceCorsConfigFactory,
+             staticResourceCacheConfigFactory,
+             spincastConfig,
+             spincastUtils,
+             spincastRouterConfig);
     }
 
     @AssistedInject
     public StaticResourceBuilder(@Assisted IRouter<R, W> router,
                                  @Assisted boolean isDir,
                                  IStaticResourceFactory<R> staticResourceFactory,
-                                 IStaticResourceCorsConfigFactory staticResourceCorsConfigFactory) {
+                                 IStaticResourceCorsConfigFactory staticResourceCorsConfigFactory,
+                                 IStaticResourceCacheConfigFactory staticResourceCacheConfigFactory,
+                                 ISpincastConfig spincastConfig,
+                                 ISpincastUtils spincastUtils,
+                                 ISpincastRouterConfig spincastRouterConfig) {
         this.router = router;
         this.isDir = isDir;
         this.staticResourceFactory = staticResourceFactory;
         this.staticResourceCorsConfigFactory = staticResourceCorsConfigFactory;
+        this.staticResourceCacheConfigFactory = staticResourceCacheConfigFactory;
+        this.spincastConfig = spincastConfig;
+        this.spincastUtils = spincastUtils;
+        this.spincastRouterConfig = spincastRouterConfig;
     }
 
     protected boolean isDir() {
@@ -60,6 +94,22 @@ public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebs
 
     protected IStaticResourceCorsConfigFactory getStaticResourceCorsConfigFactory() {
         return this.staticResourceCorsConfigFactory;
+    }
+
+    protected IStaticResourceCacheConfigFactory getStaticResourceCacheConfigFactory() {
+        return this.staticResourceCacheConfigFactory;
+    }
+
+    protected ISpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
+    }
+
+    protected ISpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
+    }
+
+    protected ISpincastRouterConfig getSpincastRouterConfig() {
+        return this.spincastRouterConfig;
     }
 
     public String getUrl() {
@@ -82,6 +132,10 @@ public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebs
         return this.corsConfig;
     }
 
+    public IStaticResourceCacheConfig getCacheConfig() {
+        return this.cacheConfig;
+    }
+
     @Override
     public IStaticResourceBuilder<R> url(String url) {
         this.url = url;
@@ -96,10 +150,22 @@ public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebs
     }
 
     @Override
-    public IStaticResourceBuilder<R> fileSystem(String path) {
-        this.path = path;
+    public IStaticResourceBuilder<R> pathAbsolute(String absolutePath) {
+        this.path = absolutePath;
         this.isClasspath = false;
         return this;
+    }
+
+    @Override
+    public IStaticResourceBuilder<R> pathRelative(String relativePath) {
+
+        try {
+            this.path = new File(getSpincastConfig().getSpincastWritableDir(), relativePath).getCanonicalPath();
+            this.isClasspath = false;
+            return this;
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
     }
 
     @Override
@@ -168,62 +234,6 @@ public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebs
         return this;
     }
 
-    @Override
-    public void save() {
-        save(null);
-    }
-
-    @Override
-    public void save(IHandler<R> generator) {
-
-        if(getRouter() == null) {
-            throw new RuntimeException("No router specified, can't save the static resource!");
-        }
-
-        if(isClasspath() && generator != null) {
-            throw new RuntimeException("A resource generator can only be specified when a file system " +
-                                       "path is used, not a classpath path.");
-        }
-        this.generator = generator;
-
-        if(getUrl() == null) {
-            throw new RuntimeException("The URL to the resource must be specified!");
-        }
-
-        if(getPath() == null) {
-            throw new RuntimeException("A classpath or a file system path must be specified!");
-        }
-
-        IStaticResource<R> staticResource = create();
-        getRouter().addStaticResource(staticResource);
-    }
-
-    @Override
-    public IStaticResource<R> create() {
-
-        StaticResourceType type;
-        if(isDir()) {
-            if(isClasspath()) {
-                type = StaticResourceType.DIRECTORY_FROM_CLASSPATH;
-            } else {
-                type = StaticResourceType.DIRECTORY;
-            }
-        } else {
-            if(isClasspath()) {
-                type = StaticResourceType.FILE_FROM_CLASSPATH;
-            } else {
-                type = StaticResourceType.FILE;
-            }
-        }
-
-        IStaticResource<R> staticResource = getStaticResourceFactory().create(type,
-                                                                              getUrl(),
-                                                                              getPath(),
-                                                                              getGenerator(),
-                                                                              getCorsConfig());
-        return staticResource;
-    }
-
     /**
      * If &lt;= 0, the "Access-Control-Max-Age" header
      * won't be sent.
@@ -274,6 +284,109 @@ public class StaticResourceBuilder<R extends IRequestContext<?>, W extends IWebs
         // Cookies allowed.
         //==========================================
         return true;
+    }
+
+    /**
+     * Is the cache private by default?
+     */
+    protected boolean isCachePrivateDefault() {
+        return false;
+    }
+
+    protected Integer getCacheCdnSecondsDefault() {
+        return null;
+    }
+
+    @Override
+    public IStaticResourceBuilder<R> cache(int seconds) {
+        return cache(seconds, isCachePrivateDefault());
+    }
+
+    @Override
+    public IStaticResourceBuilder<R> cache(int seconds, boolean isCachePrivate) {
+        return cache(seconds, isCachePrivate, getCacheCdnSecondsDefault());
+    }
+
+    @Override
+    public IStaticResourceBuilder<R> cache(int seconds, boolean isCachePrivate, Integer cdnSeconds) {
+        this.cacheConfig = getStaticResourceCacheConfigFactory().create(seconds, isCachePrivate, cdnSeconds);
+        return this;
+    }
+
+    @Override
+    public void save() {
+        save((IHandler<R>)null);
+    }
+
+    @Override
+    public void save(IHandler<R> generator) {
+
+        if(getRouter() == null) {
+            throw new RuntimeException("No router specified, can't save the static resource!");
+        }
+
+        if(isClasspath() && generator != null) {
+            throw new RuntimeException("A resource generator can only be specified when a file system " +
+                                       "path is used, not a classpath path.");
+        }
+        this.generator = generator;
+
+        if(getUrl() == null) {
+            throw new RuntimeException("The URL to the resource must be specified!");
+        }
+
+        if(getPath() == null) {
+            throw new RuntimeException("A classpath or a file system path must be specified!");
+        }
+
+        IStaticResource<R> staticResource = create();
+        getRouter().addStaticResource(staticResource);
+    }
+
+    @Override
+    public IStaticResource<R> create() {
+
+        StaticResourceType type;
+        if(isDir()) {
+            if(isClasspath()) {
+                type = StaticResourceType.DIRECTORY_FROM_CLASSPATH;
+            } else {
+                type = StaticResourceType.DIRECTORY;
+            }
+        } else {
+            if(isClasspath()) {
+                type = StaticResourceType.FILE_FROM_CLASSPATH;
+            } else {
+                type = StaticResourceType.FILE;
+            }
+        }
+
+        IStaticResourceCacheConfig cacheConfig = getCacheConfig();
+        if(cacheConfig == null) {
+            cacheConfig = getDefaultCacheConfig();
+        }
+
+        IStaticResource<R> staticResource = getStaticResourceFactory().create(type,
+                                                                              getUrl(),
+                                                                              getPath(),
+                                                                              getGenerator(),
+                                                                              getCorsConfig(),
+                                                                              cacheConfig);
+        return staticResource;
+    }
+
+    /**
+     * The default cache configurations to use if it is
+     * not specified. It can still be <code>null</code> and,
+     * in that case, no cache header will be used.
+     */
+    protected IStaticResourceCacheConfig getDefaultCacheConfig() {
+
+        //==========================================
+        // If a generator is specified, we use a
+        // shorter cache period.
+        //==========================================
+        return getSpincastConfig().getDefaultStaticResourceCacheConfig(getGenerator() != null);
     }
 
 }

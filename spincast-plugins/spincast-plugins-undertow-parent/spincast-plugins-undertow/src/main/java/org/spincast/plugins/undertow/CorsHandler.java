@@ -153,7 +153,7 @@ public class CorsHandler implements ICorsHandler {
 
             @Override
             public void setStatusCode(int code) {
-                exchange.setResponseCode(code);
+                exchange.setStatusCode(code);
             }
 
             @Override

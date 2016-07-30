@@ -42,6 +42,7 @@ public class RequestContextBaseDeps<R extends IRequestContext<R>> {
     private final Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
     private final Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider;
     private final Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
+    private final Provider<ICacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider;
     private final Provider<Injector> injectorProvider;
 
     /**
@@ -55,6 +56,7 @@ public class RequestContextBaseDeps<R extends IRequestContext<R>> {
                                   Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider,
                                   Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider,
                                   Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider,
+                                  Provider<ICacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider,
                                   Provider<Injector> injectorProvider) {
 
         this.localeResolver = localeResolver;
@@ -66,6 +68,7 @@ public class RequestContextBaseDeps<R extends IRequestContext<R>> {
         this.responseRequestContextAddonProvider = responseRequestContextAddonProvider;
         this.variablesRequestContextAddonProvider = variablesRequestContextAddonProvider;
         this.templatingRequestContextAddonProvider = templatingRequestContextAddonProvider;
+        this.cacheHeadersRequestContextAddonProvider = cacheHeadersRequestContextAddonProvider;
         this.injectorProvider = injectorProvider;
     }
 
@@ -103,6 +106,10 @@ public class RequestContextBaseDeps<R extends IRequestContext<R>> {
 
     public Provider<ITemplatingRequestContextAddon<R>> getTemplatingRequestContextAddonProvider() {
         return this.templatingRequestContextAddonProvider;
+    }
+
+    public Provider<ICacheHeadersRequestContextAddon<R>> getCacheHeadersRequestContextAddonProvider() {
+        return this.cacheHeadersRequestContextAddonProvider;
     }
 
     public Provider<Injector> getInjectorProvider() {

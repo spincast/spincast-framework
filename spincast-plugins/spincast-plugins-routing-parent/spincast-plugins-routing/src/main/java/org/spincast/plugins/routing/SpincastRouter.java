@@ -35,6 +35,8 @@ import org.spincast.core.routing.IRoutingResult;
 import org.spincast.core.routing.IStaticResource;
 import org.spincast.core.routing.IStaticResourceBuilder;
 import org.spincast.core.routing.IStaticResourceBuilderFactory;
+import org.spincast.core.routing.IStaticResourceCacheConfig;
+import org.spincast.core.routing.IStaticResourceFactory;
 import org.spincast.core.routing.RoutingType;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
@@ -43,7 +45,10 @@ import org.spincast.core.websocket.IWebsocketRoute;
 import org.spincast.core.websocket.IWebsocketRouteBuilder;
 import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
 import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
+import org.spincast.plugins.routing.utils.IReplaceDynamicParamsResult;
+import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -69,6 +74,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
     private final ISpincastFilters<R> spincastFilters;
     private final IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
     private final IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
+    private final ISpincastRoutingUtils spincastRoutingUtils;
 
     private TreeMap<Integer, List<IRoute<R>>> globalBeforeFiltersPerPosition;
     private TreeMap<Integer, List<IRoute<R>>> globalAfterFiltersPerPosition;
@@ -98,11 +104,13 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
         this.staticResourceFactory = spincastRouterDeps.getStaticResourceFactory();
         this.websocketRouteBuilderFactory = spincastRouterDeps.getWebsocketRouteBuilderFactory();
         this.websocketRouteHandlerFactory = spincastRouterDeps.getWebsocketRouteHandlerFactory();
+        this.spincastRoutingUtils = spincastRouterDeps.getSpincastRoutingUtils();
     }
 
     @Inject
     protected void init() {
         validation();
+        addDefaultFilters();
     }
 
     protected void validation() {
@@ -111,6 +119,25 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
             throw new RuntimeException("The position of the Cors filter must be less than 0. " +
                                        "Currently : " + corsFilterPosition);
         }
+    }
+
+    protected void addDefaultFilters() {
+
+        //==========================================
+        // Default variables for the templating engine.
+        //==========================================
+        if(getSpincastConfig().isAddDefaultTemplateVariablesFilter()) {
+            ALL(DEFAULT_ROUTE_PATH).pos(getSpincastConfig().getDefaultTemplateVariablesFilterPosition())
+                                   .found().notFound().exception()
+                                   .save(new IHandler<R>() {
+
+                                       @Override
+                                       public void handle(R context) {
+                                           getSpincastFilters().addDefaultGlobalTemplateVariables(context);
+                                       }
+                                   });
+        }
+
     }
 
     protected ISpincastRouterConfig getSpincastRouterConfig() {
@@ -163,6 +190,10 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
 
     protected IStaticResourceFactory<R> getStaticResourceFactory() {
         return this.staticResourceFactory;
+    }
+
+    protected ISpincastRoutingUtils getSpincastRoutingUtils() {
+        return this.spincastRoutingUtils;
     }
 
     protected Pattern getPattern(String patternStr) {
@@ -1327,154 +1358,234 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
             throw new RuntimeException("A classpath or a file system path must be specified!");
         }
 
+        if(staticResource.isDirResource() &&
+           getSpincastRoutingUtils().isPathContainDynamicParams(staticResource.getResourcePath())) {
+            throw new RuntimeException("You can't use a dynamic (or splat) parameters in the path of the " +
+                                       "target resource when using 'dir()'. The resulting path must be fixed, since " +
+                                       "the server will try to find the resource in it. It cannot depend on the " +
+                                       "current request since the server doesn't know about dynamic parameters and how to " +
+                                       "replace them.");
+        }
+
         if(staticResource.isClasspath() && staticResource.getGenerator() != null) {
             throw new RuntimeException("A resource generator can only be specified when a file system " +
                                        "path is used, not a classpath path.");
         }
 
-        String urlPath = staticResource.getUrlPath();
-
-        //==========================================
-        // A file resource can't contains any dynamic parameters.
-        // The serving handler of the HTTP server may not understand them.
-        //
-        // For a dir resource, we still allow them in the url path, but those 
-        // dynamic parameters must all
-        // be *after* the regular tokens. This way, we can remove 
-        // the dynamic part and the result is the prefix path to be used
-        // by the server.
-        //==========================================
+        boolean dynParamFound = false;
         boolean splatParamFound = false;
-        StringBuilder urlPathForServerBuilder = new StringBuilder("");
+
+        StringBuilder urlWithoutEndingSplatParamBuilder = new StringBuilder("");
         String[] tokens = staticResource.getUrlPath().split("/");
         for(String token : tokens) {
+
             token = token.trim();
+            if(StringUtils.isBlank(token)) {
+                continue;
+            }
+
+            boolean isDynParam = false;
+            boolean isSplatParam = false;
+
+            if(token.startsWith("${")) {
+                isDynParam = true;
+            } else if(token.startsWith("*{")) {
+                isSplatParam = true;
+            }
+
+            if(!isSplatParam) {
+                urlWithoutEndingSplatParamBuilder.append("/").append(token);
+            }
+
             if(staticResource.isFileResource()) {
-                if(token.startsWith("${") || token.startsWith("*{")) {
-                    throw new RuntimeException("A file resource path can't contain dynamic parameters. Use 'dir()' instead or " +
-                                               "a regular route which won't be considered as a static resource.");
-                }
-            } else {
-                if(StringUtils.isBlank(token)) {
-                    continue;
+
+                if(isSplatParam) {
+                    throw new RuntimeException("A file resource path can't contain a splat parameter. " +
+                                               "Use 'dir()' instead!");
                 }
 
-                if(token.startsWith("${")) {
-                    throw new RuntimeException("A dir static resource path can't contains any standard dynamic parameter. It can only contain " +
-                                               "a splat parameter, at the very end of the path : " + token);
-                } else if(token.startsWith("*{")) {
-                    splatParamFound = true;
-                } else {
-                    if(splatParamFound) {
-                        throw new RuntimeException("A dir resource path can contain a splat parameter, only at the very end of the path! " +
-                                                   "For example, this is invalid as a path : '/one/*{param1}/two', but this is valid : '/one/two/*{param1}'.");
-                    } else {
-                        urlPathForServerBuilder.append("/").append(token);
-                    }
+                if(!staticResource.isCanBeGenerated() && isDynParam) {
+                    throw new RuntimeException("A file resource path can't contain dynamic parameters if no generator " +
+                                               "is used. Use 'dir()', add a generator or use " +
+                                               "a regular route instead.");
                 }
+            } else {
+
+                if(isDynParam) {
+                    throw new RuntimeException("A dir static resource route can't contains any standard dynamic parameter. It can only contain " +
+                                               "a splat parameter, at the very end of the path. Invalid token : " + token);
+                } else if(splatParamFound) { // Another splat param already found...
+                    throw new RuntimeException("A dir resource path can contain one splat parameter, and only at the very end of the path! " +
+                                               "For example, this is invalid as a path : '/one/*{param1}/two', but this is valid : '/one/two/*{param1}'.");
+                }
+            }
+
+            if(isDynParam) {
+                dynParamFound = true;
+            } else if(isSplatParam) {
+                splatParamFound = true;
             }
         }
 
-        //==========================================
-        // We remove the splat parameters from the
-        // url path for the server.
-        //==========================================
-        String urlPathPrefixWithoutSplatParameter = staticResource.getUrlPath();
-        if(splatParamFound) {
+        String urlWithoutSplatParam = urlWithoutEndingSplatParamBuilder.toString();
+        if(StringUtils.isBlank(urlWithoutSplatParam)) {
+            urlWithoutSplatParam = "/";
+        }
 
-            urlPathPrefixWithoutSplatParameter = urlPathForServerBuilder.toString();
-            if(staticResource.isDirResource()) {
-                urlPathPrefixWithoutSplatParameter = urlPathForServerBuilder.toString();
-                if(StringUtils.isBlank(urlPathPrefixWithoutSplatParameter)) {
-                    urlPathPrefixWithoutSplatParameter = "/";
-                }
-            }
+        //==========================================
+        // We directly register the static resource on the server, but only if:
+        // - It doesn't contain any dynamic or splat params.
+        // - It is a dir resource and contains a splat param. In that
+        //   case, we strip the splat part before adding the static resource.
+        //==========================================
+        if(staticResource.isDirResource() && splatParamFound) {
 
             IStaticResource<R> staticResourceNoDynParams =
                     getStaticResourceFactory().create(staticResource.getStaticResourceType(),
-                                                      urlPathPrefixWithoutSplatParameter,
+                                                      urlWithoutSplatParam,
                                                       staticResource.getResourcePath(),
                                                       staticResource.getGenerator(),
-                                                      staticResource.getCorsConfig());
+                                                      staticResource.getCorsConfig(),
+                                                      staticResource.getCacheConfig());
             getServer().addStaticResourceToServe(staticResourceNoDynParams);
-        } else {
+        } else if(!splatParamFound && !dynParamFound) {
             getServer().addStaticResourceToServe(staticResource);
         }
 
         //==========================================
-        // If the resource is dynamic, add its generator 
+        // If the resource is dynamic, we add its generator 
         // as a route for the same path! 
         // We also add an "after" filter which will try to
         // automatically save the generated resource. The headers
         // shouln't have been sent for that to work!
         //==========================================
-        IRoute<R> route = null;
-        IHandler<R> saveResourceFilter = null;
+        final boolean mustBeRegisteredOnServer = staticResource.isFileResource() && (splatParamFound || dynParamFound);
         if(staticResource.getGenerator() != null) {
 
-            if(staticResource.isFileResource()) {
-                saveResourceFilter = new IHandler<R>() {
+            IRoute<R> route = null;
+            IHandler<R> saveResourceFilter = null;
 
-                    @Override
-                    public void handle(R context) {
-                        getSpincastFilters().saveGeneratedResource(context, staticResource.getResourcePath());
-                    }
-                };
-            } else {
+            //==========================================
+            // We add a filter to save the generated resource on disk.
+            //
+            // In debug mode, we may not want to create the resource on disk : the
+            // generator will always be called so new modifications will
+            // be picked up.
+            //==========================================
+            if(isCreateStaticResourceOnDisk()) {
 
-                //==========================================
-                // We make the route listen on anything under
-                // the specified path! The path may already contain
-                // a splat param though!
-                //==========================================
-                if(!splatParamFound) {
-                    urlPath = StringUtils.stripEnd(urlPath, "/") + DEFAULT_ROUTE_PATH;
-                }
-
-                final String urlPathPrefixWithoutDynamicParametersFinal = urlPathPrefixWithoutSplatParameter;
+                final String urlWithoutSplatParamFinal = urlWithoutSplatParam;
                 saveResourceFilter = new IHandler<R>() {
 
                     @Override
                     public void handle(R context) {
 
-                        String urlPathPrefix = StringUtils.stripStart(urlPathPrefixWithoutDynamicParametersFinal, "/");
-
-                        String requestPath = context.request().getRequestPath();
-                        requestPath = StringUtils.stripStart(requestPath, "/");
-
-                        if(!requestPath.startsWith(urlPathPrefix)) {
-                            throw new RuntimeException("The requestPath '" + requestPath +
-                                                       "' should starts with the urlPathPrefix '" + urlPathPrefix +
-                                                       "' here!");
+                        if(HttpStatus.SC_OK != context.response().getStatusCode()) {
+                            SpincastRouter.this.logger.info("Nothing will be saved since the response code is not " +
+                                                            HttpStatus.SC_OK);
+                            return;
                         }
 
-                        requestPath = requestPath.substring(urlPathPrefix.length());
+                        if(context.response().isHeadersSent()) {
+                            SpincastRouter.this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
+                                                            "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
+                                                            "request!");
+                            return;
+                        }
 
-                        // Make sure the path of the resource to generate is safe!
-                        String resourceToGeneratePath;
-                        try {
-                            resourceToGeneratePath =
-                                    new File(staticResource.getResourcePath() + "/" + requestPath).getCanonicalFile()
-                                                                                                  .getAbsolutePath();
-                            String resourcesRoot =
-                                    new File(staticResource.getResourcePath()).getCanonicalFile().getAbsolutePath();
+                        if(staticResource.isDirResource()) {
 
-                            if(!resourceToGeneratePath.startsWith(resourcesRoot)) {
-                                throw new RuntimeException("The requestPath '" + resourceToGeneratePath +
-                                                           "' should be inside the root resources folder : " + resourcesRoot);
+                            String urlPathPrefix = StringUtils.stripStart(urlWithoutSplatParamFinal, "/");
+
+                            String requestPath = context.request().getRequestPath();
+                            requestPath = StringUtils.stripStart(requestPath, "/");
+
+                            if(!requestPath.startsWith(urlPathPrefix)) {
+                                throw new RuntimeException("The requestPath '" + requestPath +
+                                                           "' should starts with the urlPathPrefix '" + urlPathPrefix +
+                                                           "' here!");
                             }
-                        } catch(Exception ex) {
-                            throw SpincastStatics.runtimize(ex);
+                            requestPath = requestPath.substring(urlPathPrefix.length());
+
+                            // Make sure the path of the resource to generate is safe!
+                            String resourceToGeneratePath;
+                            try {
+                                resourceToGeneratePath =
+                                        new File(staticResource.getResourcePath() + "/" + requestPath).getCanonicalFile()
+                                                                                                      .getAbsolutePath();
+                                String resourcesRoot =
+                                        new File(staticResource.getResourcePath()).getCanonicalFile().getAbsolutePath();
+
+                                if(!resourceToGeneratePath.startsWith(resourcesRoot)) {
+                                    throw new RuntimeException("The requestPath '" + resourceToGeneratePath +
+                                                               "' should be inside the root resources folder : " + resourcesRoot);
+                                }
+
+                                //==========================================
+                                // Save the resource in the dynamic dir.
+                                //==========================================
+                                if(!StringUtils.isBlank(requestPath)) {
+                                    getSpincastFilters().saveGeneratedResource(context, resourceToGeneratePath);
+                                }
+                            } catch(Exception ex) {
+                                throw SpincastStatics.runtimize(ex);
+                            }
+                        } else {
+
+                            //==========================================
+                            // We build the target file path to generate using
+                            // dynamic params on the route URL, if any
+                            //==========================================
+                            String targetPath = staticResource.getResourcePath();
+                            IReplaceDynamicParamsResult result =
+                                    getSpincastRoutingUtils().replaceDynamicParamsInPath(targetPath,
+                                                                                         context.request().getPathParams());
+                            if(result.isPlaceholdersRemaining()) {
+                                throw new RuntimeException("Not supposed : there are some remaining placeholders in the " +
+                                                           "target path for the generated static resource file : " +
+                                                           result.getPath());
+                            }
+
+                            targetPath = result.getPath();
+
+                            @SuppressWarnings("unused")
+                            boolean resourceSaved = getSpincastFilters().saveGeneratedResource(context, targetPath);
+
+                            //==========================================
+                            // Do we have to register this new static resource
+                            // on the server? it may not already be.
+                            //==========================================
+                            if(mustBeRegisteredOnServer) {
+
+                                IStaticResource<R> newStaticResource =
+                                        getStaticResourceFactory().create(staticResource.getStaticResourceType(),
+                                                                          context.request().getRequestPath(),
+                                                                          targetPath,
+                                                                          staticResource.getGenerator(),
+                                                                          staticResource.getCorsConfig(),
+                                                                          staticResource.getCacheConfig());
+                                getServer().addStaticResourceToServe(newStaticResource);
+                            }
                         }
 
-                        getSpincastFilters().saveGeneratedResource(context, resourceToGeneratePath);
+                        //==========================================
+                        // Some Caching headers to send?
+                        //==========================================
+                        IStaticResourceCacheConfig cacheConfig = staticResource.getCacheConfig();
+                        if(cacheConfig != null) {
+                            getSpincastFilters().cache(context,
+                                                       cacheConfig.getCacheSeconds(),
+                                                       cacheConfig.isCachePrivate(),
+                                                       cacheConfig.getCacheSecondsCdn());
+                        }
+
                     }
                 };
             }
 
             route = getRouteFactory().createRoute(null,
                                                   Sets.newHashSet(HttpMethod.GET),
-                                                  urlPath,
+                                                  staticResource.getUrlPath(),
                                                   Sets.newHashSet(RoutingType.FOUND),
                                                   null,
                                                   staticResource.getGenerator(),
@@ -1484,6 +1595,10 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
 
             addRoute(route);
         }
+    }
+
+    protected boolean isCreateStaticResourceOnDisk() {
+        return !getSpincastConfig().isDisableWriteToDiskDynamicStaticResource();
     }
 
     @Override

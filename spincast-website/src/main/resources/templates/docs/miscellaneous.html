@@ -7,9 +7,7 @@ Docs : "Miscellaneous"
         <a class="anchor" href="#miscellaneous" title="permanent link"></a>
         Miscellaneous
     </h3>
-    
-    <p>
-    </p>
+</section>
    
 {#==========================================
 Default Configurations
@@ -139,7 +137,7 @@ Templating engine
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Here's an example template file which would be on the classpath 
         (for example, at <code>src/resources/templates/user.html</code>, in the
         project). Note that the syntax used inside your templates depends on the 
@@ -167,7 +165,7 @@ Templating engine
         </div>
     </p>  
     <p>
-        <i class="subIcon glyphicon glyphicon-share-alt"></i> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Finally, note that you can also access the <code>templating engine</code> via its own <code><em>"templating()"</em></code>
         <code>add-on</code>, on the <code>request context</code> objects. 
         This can be useful when you need to generate some dynamic content
@@ -327,11 +325,10 @@ Spincast Utilities
     <p>
         <ul class="apiList">
 
-
 <li>
     <code class="apiItem">void <span>zipDirectory</span>(File directoryToZip, File targetZipFile, boolean includeDirItself)</code>
     <div class="well">
-        Zips a directory.
+         Zips a directory.
 
         <div class="apiItemFooter">
             @param targetZipFile the target .zip file. If the parent directories don't
@@ -346,7 +343,7 @@ Spincast Utilities
 <li>
     <code class="apiItem">void <span>zipExtract</span>(File zipFile, File targetDir)</code>
     <div class="well">
-        Extracts a .zip file to the specified directory.
+         Extracts a .zip file to the specified directory.
 
         <div class="apiItemFooter">
             @param targetDir The target directory. If it doesn't exist, tried to
@@ -357,9 +354,26 @@ Spincast Utilities
 </li>
 
 <li>
+    <code class="apiItem">String <span>getMimeTypeFromMultipleSources</span>(String responseContentTypeHeader,                                                  String resourcePath,                                                  String requestPath)</code>
+    <div class="well">
+         Gets the <code>mime type</code> using multiple sources of information.
+
+        <div class="apiItemFooter">
+            @param contentTypeHeader an already existing Content-Type header on the
+ response. Can be null.
+<br />@param resourcePath the path (absolute or relative) to the target resource. Can be null.
+<br />@param requestPath the path of the current request. Can be null.
+<br />@return the <code>mime type</code> or <code>null</code> if it can't be
+ decided.
+
+        </div>
+    </div>
+</li>
+
+<li>
     <code class="apiItem">String <span>getMimeTypeFromPath</span>(String path)</code>
     <div class="well">
-        Gets the <code>mime type</code> from a path, using its extension.
+         Gets the <code>mime type</code> from a path, using its extension.
 
         <div class="apiItemFooter">
             @return the <code>mime type</code> or <code>null</code> if it can't be
@@ -372,7 +386,7 @@ Spincast Utilities
 <li>
     <code class="apiItem">String <span>getMimeTypeFromExtension</span>(String extension)</code>
     <div class="well">
-        Gets the <code>mime type</code> from the extension.
+         Gets the <code>mime type</code> from the extension.
 
         <div class="apiItemFooter">
             @return the <code>mime type</code> or <code>null</code> if it can't be
@@ -385,7 +399,7 @@ Spincast Utilities
 <li>
     <code class="apiItem">Locale <span>getLocaleBestMatchFromAcceptLanguageHeader</span>(String acceptLanguageHeader)</code>
     <div class="well">
-        Gets the best Locale to use given a "Accept-Language" HTTP header.
+         Gets the best Locale to use given a "Accept-Language" HTTP header.
 
         <div class="apiItemFooter">
             @return the best Locale to use or <code>null</code>
@@ -398,7 +412,7 @@ Spincast Utilities
 <li>
     <code class="apiItem">boolean <span>isContentTypeToSkipGziping</span>(String contentType)</code>
     <div class="well">
-        Should the specified <code>Content-Type</code> be gzipped?
+         Should the specified <code>Content-Type</code> be gzipped?
 
     </div>
 </li>
@@ -406,7 +420,7 @@ Spincast Utilities
 <li>
     <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
     <div class="well">
-        Returns the working directory: the directory
+         Returns the working directory: the directory
  in which the executable .jar is located.
 
         <div class="apiItemFooter">
@@ -420,10 +434,50 @@ Spincast Utilities
 <li>
     <code class="apiItem">String <span>getSpincastCurrentVersion</span>()</code>
     <div class="well">
-        Gets the current Spincast version.
+         Gets the current Spincast version.
 
     </div>
 </li>
+
+<li>
+    <code class="apiItem">String <span>getCacheBusterCode</span>()</code>
+    <div class="well">
+         The cache buster to use.
+ <p>
+ This should probably change each time
+ the application is restarted or at least redeployed.
+ </p>
+ <p>
+ It should also be in such a format that it's possible to
+ remove it from a given text.
+ </p>
+ <p>
+ This must be kept in sync with
+ <code>removeCacheBusterCode</code>!
+ </p>
+
+    </div>
+</li>
+
+<li>
+    <code class="apiItem">String <span>removeCacheBusterCodes</span>(String text)</code>
+    <div class="well">
+         Removes the cache buster code occurences from the
+ given text.
+ <p>
+ Note that this won't simply remove the <em>current</em>
+ cache busting code, it will remove <em>any</em> valid cache busting code...
+ This is what we want since we don't want a client sending a request
+ containing an old cache busting code to break!
+ </p>
+ <p>
+ This must be kept in sync with
+ <code>getCacheBusterCode</code>!
+ </p>
+
+    </div>
+</li>
+
 
 
 

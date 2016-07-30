@@ -1,15 +1,20 @@
 package org.spincast.plugins.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.routing.IStaticResourceCacheConfig;
+import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
 public class SpincastConfig implements ISpincastConfig {
 
-    private File spincastDir;
+    private File spincastBaseWritableDir;
+    private IStaticResourceCacheConfig staticResourceCacheConfig;
+    private IStaticResourceCacheConfig dynamicResourceCacheConfig;
 
     @Override
     public String getEnvironmentName() {
@@ -88,22 +93,41 @@ public class SpincastConfig implements ISpincastConfig {
     @Override
     public File getSpincastWritableDir() {
 
-        if(this.spincastDir == null) {
+        if(this.spincastBaseWritableDir == null) {
+
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             if(!baseDir.isDirectory()) {
                 throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
             }
+
             File spincastDir = new File(baseDir, "spincast");
+
             if(!spincastDir.isDirectory()) {
                 boolean result = spincastDir.mkdirs();
                 if(!result) {
                     throw new RuntimeException("Unable to create the Spincast writable directory : " +
                                                spincastDir.getAbsolutePath());
                 }
+            } else {
+                cleanWritableSpincastDir(spincastDir);
             }
-            this.spincastDir = spincastDir;
+
+            this.spincastBaseWritableDir = spincastDir;
         }
-        return this.spincastDir;
+        return this.spincastBaseWritableDir;
+    }
+
+    protected String getSpincastTempDirName() {
+        return "temp";
+    }
+
+    protected void cleanWritableSpincastDir(File spincastTempDir) {
+        try {
+            FileUtils.cleanDirectory(spincastTempDir);
+        } catch(IOException e) {
+            throw new RuntimeException("Unable to clean the Spincast writable directory: " +
+                                       spincastTempDir.getAbsolutePath());
+        }
     }
 
     @Override
@@ -114,6 +138,90 @@ public class SpincastConfig implements ISpincastConfig {
     @Override
     public int getRouteForwardingMaxNumber() {
         return 2;
+    }
+
+    @Override
+    public int getDefaultRouteCacheFilterSecondsNbr() {
+        return 3600; // == 1 hour
+    }
+
+    @Override
+    public boolean isDefaultRouteCacheFilterPrivate() {
+        return false;
+    }
+
+    @Override
+    public Integer getDefaultRouteCacheFilterSecondsNbrCdns() {
+        return null; // option not used by default
+    }
+
+    @Override
+    public boolean isDisableWriteToDiskDynamicStaticResource() {
+        return isDebugEnabled();
+    }
+
+    @Override
+    public boolean isAddDefaultTemplateVariablesFilter() {
+        return true;
+    }
+
+    @Override
+    public int getDefaultTemplateVariablesFilterPosition() {
+        //==========================================
+        // "-1", before filter, so default values
+        // can be modified by the main handler.
+        //==========================================
+        return -1;
+    }
+
+    @Override
+    public IStaticResourceCacheConfig getDefaultStaticResourceCacheConfig(boolean isDynamicResource) {
+
+        if(this.staticResourceCacheConfig == null) {
+            this.staticResourceCacheConfig = new IStaticResourceCacheConfig() {
+
+                @Override
+                public int getCacheSeconds() {
+                    return 86400; // 86400 => 1 day
+                }
+
+                @Override
+                public boolean isCachePrivate() {
+                    return false;
+                }
+
+                @Override
+                public Integer getCacheSecondsCdn() {
+                    return null;
+                }
+            };
+        }
+
+        if(this.dynamicResourceCacheConfig == null) {
+            this.dynamicResourceCacheConfig = new IStaticResourceCacheConfig() {
+
+                @Override
+                public int getCacheSeconds() {
+                    return 3600; // 3600 => 1 hour
+                }
+
+                @Override
+                public boolean isCachePrivate() {
+                    return false;
+                }
+
+                @Override
+                public Integer getCacheSecondsCdn() {
+                    return null;
+                }
+            };
+        }
+
+        if(isDynamicResource) {
+            return this.dynamicResourceCacheConfig;
+        } else {
+            return this.staticResourceCacheConfig;
+        }
     }
 
 }

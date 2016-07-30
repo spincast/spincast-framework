@@ -2,12 +2,14 @@ package org.spincast.core.exchange;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.routing.IETag;
 import org.spincast.core.utils.ContentTypeDefaults;
 
 /**
@@ -96,22 +98,130 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
     public String getContentType();
 
     /**
-     * Returns the full URL, including the queryString.
+     * Returns the current full URL, including the queryString, if any.
+     * Cache buster codes are removed, if there were any.
+     * <p>
+     * In case the request has been forwarded, this will be the *new*,
+     * the current URL. Use {@link #getFullUrlOriginal() getFullUrlOriginal()}
+     * to get the original URL, before the request was forwarded.
+     * </p>
+     * <p>
+     * If a reverse proxy has been used, this URL will contain the 
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
+     * <em>original</em> URL, as seen by the user. 
+     * In general, this is what you want to use in your application.
+     * </p>
      */
     public String getFullUrl();
 
     /**
-     * If the request has been forwarded, {@link #getFullUrl() getFullUrl()} is
-     * going to return the new, forwarded, url. 
+     * Returns the current full URL, including the queryString, if any.
+     * <p>
+     * In case the request has been forwarded, this will be the *new*,
+     * the current URL. Use {@link #getFullUrlOriginal() getFullUrlOriginal()}
+     * to get the original URL, before the request was forwarded.
+     * </p>
+     * <p>
+     * If a reverse proxy has been used, this URL will contain the 
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
+     * <em>original</em> URL, as seen by the user. 
+     * In general, this is what you want to use in your application.
+     * </p>
      * 
-     * This method will always return the <i>original</i> url.
+     * @param keepCacheBusters if <code>true</code>, the returned URL will contain
+     * the cache buster codes, if there were any. The default behavior is to 
+     * automatically remove them.
      */
-    public String getOriginalFullUrl();
+    public String getFullUrl(boolean keepCacheBusters);
+
+    /**
+     * If the request has been forwarded, this is going to return the original
+     * URL, not the current, forwarded, one.
+     * Cache buster codes are removed, if there were any.
+     * <p>
+     * Use {@link #getFullUrl() getFullUrl()} to get the current, potentially
+     * forwarded URL.
+     * </p>
+     * <p>
+     * If a reverse proxy has been used, this URL will contain the 
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
+     * <em>original</em> URL, as seen by the user. 
+     * In general, this is what you want to use in your application.
+     * </p>
+     */
+    public String getFullUrlOriginal();
+
+    /**
+     * If the request has been forwarded, this is going to return the original
+     * URL, not the current, forwarded, one.
+     * <p>
+     * Use {@link #getFullUrl() getFullUrl()} to get the current, potentially
+     * forwarded URL.
+     * </p>
+     * <p>
+     * If a reverse proxy has been used, this URL will contain the 
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
+     * <em>original</em> URL, as seen by the user. 
+     * In general, this is what you want to use in your application.
+     * </p>
+     * 
+     * @param keepCacheBusters if <code>true</code>, the returned URL will contain
+     * the cache buster codes, if there were any. The default behavior is to 
+     * automatically remove them.
+     */
+    public String getFullUrlOriginal(boolean keepCacheBusters);
+
+    /**
+     * If a reverse proxy has been used, this URL will contain the 
+     * <code>scheme</code>, <code>host</code> and <code>port</code> 
+     * as forwarded by the reserve proxy, <em>not as seen by the user</em>.
+     * Cache buster codes are removed, if there were any.
+     * <p>
+     * If the request has been forwarded, this is going to return the original
+     * URL, not the current, forwarded, one.
+     * </p>
+     * <p>
+     * In general, you should probably use {@link #getFullUrl() getFullUrl()}
+     * or {@link #getFullUrlOriginal() getFullUrlOriginal()} instead of this
+     * one.
+     * </p>
+     */
+    public String getFullUrlProxied();
+
+    /**
+     * If a reverse proxy has been used, this URL will contain the 
+     * <code>scheme</code>, <code>host</code> and <code>port</code> 
+     * as forwarded by the reserve proxy, <em>not as seen by the user</em>.
+     * Cache buster codes are removed, if there were any.
+     * <p>
+     * If the request has been forwarded, this is going to return the original
+     * URL, not the current, forwarded, one.
+     * </p>
+     * <p>
+     * In general, you should probably use {@link #getFullUrl() getFullUrl()}
+     * or {@link #getFullUrlOriginal() getFullUrlOriginal()} instead of this
+     * one.
+     * </p>
+     * 
+     * @param keepCacheBusters if <code>true</code>, the returned URL will contain
+     * the cache buster codes, if there were any. The default behavior is to 
+     * automatically remove them.
+     */
+    public String getFullUrlProxied(boolean keepCacheBusters);
 
     /**
      * The path of the request (no querystring).
      */
     public String getRequestPath();
+
+    /**
+     * The path of the request (no querystring).
+     * 
+     * @param keepCacheBusters if <code>true</code>, the returned path will contain
+     * the cache buster codes, if there were any. The default behavior is to 
+     * automatically remove them.
+     */
+    public String getRequestPath(boolean keepCacheBusters);
 
     /**
      * The values parsed from the dynamic parameters of the route path. 
@@ -126,10 +236,13 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
     public String getPathParam(String name);
 
     /**
-     * The queryString of the request, without the "?".
-     * Returns an empty String if there is no querystring.
+     * The queryString of the request.
+     * Returns an empty String if there is no queryString.
+     * 
+     * @param withQuestionMark if <code>true</code> and the queryString
+     * is not empty, the result will be prefixed with "?".
      */
-    public String getQueryString();
+    public String getQueryString(boolean withQuestionMark);
 
     /**
      * The parameters taken from the queryString of the request. 
@@ -269,5 +382,37 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
      * Is the request a secure HTTPS one?
      */
     public boolean isHttps();
+
+    /**
+     * Returns the <code>ETags</code> from
+     * the <code>If-None-Match</code> header, if any.
+     * 
+     * @return the <code>If-None-Match</code> ETags or an empty
+     * list if there is none.
+     */
+    public List<IETag> getEtagsFromIfNoneMatchHeader();
+
+    /**
+     * Returns the <code>ETags</code> from
+     * the <code>If-Match</code> header, if any.
+     * 
+     * @return the <code>If-Match</code> ETags or an empty list
+     * if there is none.
+     */
+    public List<IETag> getEtagsFromIfMatchHeader();
+
+    /**
+     * Return the value of the <code>If-Modified-Since</code>
+     * header as a Date or <code>null</code> if it doesn't
+     * exist.
+     */
+    public Date getDateFromIfModifiedSinceHeader();
+
+    /**
+     * Return the value of the <code>If-Unmodified-Since</code>
+     * header as a Date or <code>null</code> if it doesn't
+     * exist.
+     */
+    public Date getDateFromIfUnmodifiedSinceHeader();
 
 }
