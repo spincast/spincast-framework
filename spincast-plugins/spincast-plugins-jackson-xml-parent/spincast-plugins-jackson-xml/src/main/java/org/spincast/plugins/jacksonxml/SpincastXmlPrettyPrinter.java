@@ -1,5 +1,9 @@
 package org.spincast.plugins.jacksonxml;
 
+import javax.xml.stream.XMLStreamException;
+
+import org.codehaus.stax2.XMLStreamWriter2;
+
 import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -10,18 +14,25 @@ public class SpincastXmlPrettyPrinter extends DefaultXmlPrettyPrinter {
 
     private final Provider<SpincastXmlPrettyPrinter> spincastXmlPrettyPrinterProvider;
     private final Indenter spincastXmlIndenter;
+    private final ISpincastXmlManagerConfig spincastXmlManagerConfig;
 
     @Inject
     public SpincastXmlPrettyPrinter(Provider<SpincastXmlPrettyPrinter> spincastXmlPrettyPrinterProvider,
-                                    Indenter spincastXmlIndenter) {
+                                    Indenter spincastXmlIndenter,
+                                    ISpincastXmlManagerConfig spincastXmlManagerConfig) {
         this.spincastXmlPrettyPrinterProvider = spincastXmlPrettyPrinterProvider;
         this.spincastXmlIndenter = spincastXmlIndenter;
+        this.spincastXmlManagerConfig = spincastXmlManagerConfig;
     }
 
     @Inject
     protected void init() {
         indentObjectsWith(getSpincastXmlIndenter());
         indentArraysWith(getSpincastXmlIndenter());
+    }
+
+    protected ISpincastXmlManagerConfig getSpincastXmlManagerConfig() {
+        return this.spincastXmlManagerConfig;
     }
 
     protected Provider<SpincastXmlPrettyPrinter> getSpincastXmlPrettyPrinterProvider() {
@@ -35,6 +46,11 @@ public class SpincastXmlPrettyPrinter extends DefaultXmlPrettyPrinter {
     @Override
     public SpincastXmlPrettyPrinter createInstance() {
         return getSpincastXmlPrettyPrinterProvider().get();
+    }
+
+    @Override
+    public void writePrologLinefeed(XMLStreamWriter2 sw) throws XMLStreamException {
+        sw.writeRaw(getSpincastXmlManagerConfig().getPrettyPrinterNewlineChars());
     }
 
 }

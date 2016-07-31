@@ -5,7 +5,7 @@ import java.util.Map;
 import org.spincast.core.exchange.IRequestContext;
 
 /**
- * Reprensents a match found by the router.
+ * Represents a match found by the router.
  */
 public interface IRouteHandlerMatch<R extends IRequestContext<?>> {
 
@@ -23,7 +23,7 @@ public interface IRouteHandlerMatch<R extends IRequestContext<?>> {
      * The values parsed from the URL, given
      * the dynamic parameters of the route's path, if any.
      */
-    public Map<String, String> getParameters();
+    public Map<String, String> getPathParams();
 
     /**
      * The position the handler should be run at.

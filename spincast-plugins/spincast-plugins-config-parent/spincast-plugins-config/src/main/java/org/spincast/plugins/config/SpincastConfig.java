@@ -168,10 +168,10 @@ public class SpincastConfig implements ISpincastConfig {
     @Override
     public int getDefaultTemplateVariablesFilterPosition() {
         //==========================================
-        // "-1", before filter, so default values
+        // "-10", before filter, so default values
         // can be modified by the main handler.
         //==========================================
-        return -1;
+        return -10;
     }
 
     @Override

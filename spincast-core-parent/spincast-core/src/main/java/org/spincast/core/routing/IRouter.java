@@ -82,7 +82,7 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL("/*{path}").pos(-1).save(handler)</code>
+     * <code>ALL("/*{path}").pos(-10).save(handler)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
@@ -93,7 +93,7 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL(path).pos(-1).save(handler)</code>
+     * <code>ALL(path).pos(-10).save(handler)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
@@ -104,7 +104,7 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL("/*{path}").pos(1).save(handler)</code>
+     * <code>ALL("/*{path}").pos(10).save(handler)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
@@ -115,7 +115,7 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL(path).pos(1).save(handler)</code>
+     * <code>ALL(path).pos(10).save(handler)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
@@ -126,9 +126,9 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL("/*{path}").pos(-1).save(handler)</code>
+     * <code>ALL("/*{path}").pos(-10).save(handler)</code>
      * and
-     * <code>ALL("/*{path}").pos(1).save(handler)</code>
+     * <code>ALL("/*{path}").pos(10).save(handler)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
@@ -139,9 +139,9 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL(path).pos(-1).save(handler)</code>
+     * <code>ALL(path).pos(-10).save(handler)</code>
      * and
-     * <code>ALL(path).pos(1).save(handler)</code>
+     * <code>ALL(path).pos(10).save(handler)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */

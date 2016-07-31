@@ -1043,7 +1043,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1068,7 +1068,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(0, parameters.size());
     }
@@ -1089,7 +1089,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(2, parameters.size());
 
@@ -1148,7 +1148,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(2, parameters.size());
 
@@ -1272,7 +1272,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(0, routeMatch.getPosition());
 
         // We don't collect params without a name...
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(0, parameters.size());
     }
@@ -1293,7 +1293,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1305,7 +1305,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1317,7 +1317,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1329,7 +1329,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1354,7 +1354,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1366,7 +1366,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1378,7 +1378,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1390,7 +1390,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1415,7 +1415,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(3, parameters.size());
 
@@ -1448,7 +1448,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(2, parameters.size());
 
@@ -1478,7 +1478,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(2, parameters.size());
 
@@ -1507,7 +1507,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(2, parameters.size());
 
@@ -1536,7 +1536,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(3, parameters.size());
 
@@ -1569,7 +1569,7 @@ public class RoutingTest extends SpincastTestBase {
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(3, parameters.size());
 
@@ -1598,7 +1598,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        Map<String, String> parameters = routeMatch.getParameters();
+        Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1610,7 +1610,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 
@@ -1622,7 +1622,7 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        parameters = routeMatch.getParameters();
+        parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
         assertEquals(1, parameters.size());
 

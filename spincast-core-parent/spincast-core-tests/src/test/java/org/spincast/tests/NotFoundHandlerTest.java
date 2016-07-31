@@ -352,7 +352,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         });
 
         // "after" filter F
-        getRouter().GET("/*{any}").pos(1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -455,7 +455,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     public void notFoundExceptionWithFiltersNoResetButSkipOneBefore() throws Exception {
 
         // "before" filter A
-        getRouter().GET("/*{any}").pos(-1).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-10).save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -507,7 +507,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
                    });
 
         // "after" filter E
-        getRouter().GET("/*{any}").pos(1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

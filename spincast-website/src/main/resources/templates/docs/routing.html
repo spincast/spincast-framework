@@ -632,28 +632,28 @@ router.GET("/").pos(100).save(ctl::filter3);
                     <pre class="ace ace-java"
 >
 
-// Will be applied to any request, at position "-1".
+// Will be applied to any request, at position "-10".
 //
 // Synonym of : 
-// router.ALL("/*{path}").pos(-1).save(ctl::filter)
+// router.ALL("/*{path}").pos(-10).save(ctl::filter)
 router.before(ctl::filter);
 
 // Will be applied to any request starting with "/users", 
-// at position "-1".
+// at position "-10".
 //
 // Synonym of : 
-// router.ALL("/users").pos(-1).save(ctl::filter)
+// router.ALL("/users").pos(-10).save(ctl::filter)
 router.before("/users", ctl::filter);
 
-// Will be applied to any request, at position "1".
+// Will be applied to any request, at position "10".
 //
 // Synonym of : 
-// router.ALL("/*{path}").pos(1).save(ctl::filter)
+// router.ALL("/*{path}").pos(10).save(ctl::filter)
 router.after(ctl::filter);
 
 // This actually generates two filters.
 // Will be applied to any request, both at
-// position "-1" and position "1".
+// position "-10" and position "10".
 router.beforeAndAfter(ctl::filter);
 </pre> 
                 </p>

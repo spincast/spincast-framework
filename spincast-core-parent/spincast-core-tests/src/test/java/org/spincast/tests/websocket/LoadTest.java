@@ -319,7 +319,9 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
         for(int controllerPos = 1; controllerPos <= getNbrWebsocketControllers(); controllerPos++) {
             Controller controller = getController(createControllerId(controllerPos));
             for(int endpointPos = 1; endpointPos <= getNbrEndpointByController(); endpointPos++) {
-                assertTrue(controller.waitNrbPeerConnected(createEndpointId(controllerPos, endpointPos),
+                assertTrue(controller.getEndpointManager(createEndpointId(controllerPos, endpointPos)).getPeersIds().size() +
+                           " / " + getNbrPeerByEndpoint(),
+                           controller.waitNrbPeerConnected(createEndpointId(controllerPos, endpointPos),
                                                            getNbrPeerByEndpoint(),
                                                            20000));
             }

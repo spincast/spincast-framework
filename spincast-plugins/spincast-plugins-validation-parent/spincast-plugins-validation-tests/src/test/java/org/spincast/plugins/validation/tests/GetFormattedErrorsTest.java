@@ -306,7 +306,7 @@ public class GetFormattedErrorsTest extends SpincastTestBase {
         expected.append("            <type>VALIDATION_TYPE_MIN_LENGTH</type>\n");
         expected.append("        </item>\n");
         expected.append("    </name>\n");
-        expected.append("</JsonObject>");
+        expected.append("</JsonObject>\n");
 
         StringBuilder expected2 = new StringBuilder();
         expected2.append("<JsonObject>\n");
@@ -329,7 +329,7 @@ public class GetFormattedErrorsTest extends SpincastTestBase {
         expected2.append("            <type>VALIDATION_TYPE_EMAIL</type>\n");
         expected2.append("        </item>\n");
         expected2.append("    </email>\n");
-        expected2.append("</JsonObject>");
+        expected2.append("</JsonObject>\n");
 
         StringBuilder expected3 = new StringBuilder();
         expected3.append("<JsonObject>\n");
@@ -352,7 +352,7 @@ public class GetFormattedErrorsTest extends SpincastTestBase {
         expected3.append("            <type>VALIDATION_ERROR_APP_NO_SPACE</type>\n");
         expected3.append("        </item>\n");
         expected3.append("    </name>\n");
-        expected3.append("</JsonObject>");
+        expected3.append("</JsonObject>\n");
 
         StringBuilder expected4 = new StringBuilder();
         expected4.append("<JsonObject>\n");
@@ -375,7 +375,7 @@ public class GetFormattedErrorsTest extends SpincastTestBase {
         expected4.append("            <type>VALIDATION_TYPE_EMAIL</type>\n");
         expected4.append("        </item>\n");
         expected4.append("    </email>\n");
-        expected4.append("</JsonObject>");
+        expected4.append("</JsonObject>\n");
 
         assertTrue(expected.toString().equals(errorsFormatted) ||
                    expected2.toString().equals(errorsFormatted) ||

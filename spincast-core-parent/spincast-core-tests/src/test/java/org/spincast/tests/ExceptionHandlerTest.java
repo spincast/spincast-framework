@@ -416,10 +416,10 @@ public class ExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBas
                 // Access the path parameters from the original 
                 // route
                 //==========================================
-                originalRouteHandlerMatch.getParameters();
-                assertEquals(2, originalRouteHandlerMatch.getParameters().size());
-                assertEquals("aaa", originalRouteHandlerMatch.getParameters().get("first"));
-                assertEquals("bbb", originalRouteHandlerMatch.getParameters().get("second"));
+                originalRouteHandlerMatch.getPathParams();
+                assertEquals(2, originalRouteHandlerMatch.getPathParams().size());
+                assertEquals("aaa", originalRouteHandlerMatch.getPathParams().get("first"));
+                assertEquals("bbb", originalRouteHandlerMatch.getPathParams().get("second"));
 
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-http-caching-parent</artifactId>
-        <version>0.9.25</version>
+        <version>0.9.26-SNAPSHOT</version>
     </parent>
 	
 	<artifactId>spincast-plugins-http-caching-tests</artifactId>

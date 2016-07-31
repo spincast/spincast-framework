@@ -347,7 +347,7 @@ public class RoutingTypesAllByDefaultTest extends SpincastDefaultNoAppIntegratio
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).pos(1).found().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-10).pos(10).found().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -355,7 +355,7 @@ public class RoutingTypesAllByDefaultTest extends SpincastDefaultNoAppIntegratio
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).pos(1).notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-10).pos(10).notFound().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -363,7 +363,7 @@ public class RoutingTypesAllByDefaultTest extends SpincastDefaultNoAppIntegratio
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).pos(1).exception().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-10).pos(10).exception().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -371,7 +371,7 @@ public class RoutingTypesAllByDefaultTest extends SpincastDefaultNoAppIntegratio
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).pos(1).found().notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-10).pos(10).found().notFound().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -379,7 +379,7 @@ public class RoutingTypesAllByDefaultTest extends SpincastDefaultNoAppIntegratio
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).pos(1).found().exception().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-10).pos(10).found().exception().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -387,7 +387,7 @@ public class RoutingTypesAllByDefaultTest extends SpincastDefaultNoAppIntegratio
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).pos(1).notFound().exception().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-10).pos(10).notFound().exception().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

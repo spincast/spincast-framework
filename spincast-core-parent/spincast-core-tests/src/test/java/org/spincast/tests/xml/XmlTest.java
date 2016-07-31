@@ -67,9 +67,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         StringBuilder expected = new StringBuilder();
         expected.append("<JsonObject>\n");
         expected.append("    <someInt>123</someInt>\n");
-        expected.append("</JsonObject>");
+        expected.append("</JsonObject>\n");
 
-        assertEquals(expected.toString(), xml);
+        String expectedStr = expected.toString();
+        assertEquals(expectedStr, xml);
     }
 
     protected static class User {
@@ -93,7 +94,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         expected.append("<User>\n");
         expected.append("    <name>Stromgol</name>\n");
         expected.append("    <age>42</age>\n");
-        expected.append("</User>");
+        expected.append("</User>\n");
 
         assertEquals(expected.toString(), xml);
     }

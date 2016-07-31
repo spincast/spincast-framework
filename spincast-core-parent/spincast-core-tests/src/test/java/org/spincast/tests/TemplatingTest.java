@@ -5,15 +5,19 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.spincast.core.cookies.ICookie;
 import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -46,6 +50,24 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IJsonManager jsonManager;
+
+    @Inject
+    protected ISpincastUtils spincastUtils;
+
+    protected ISpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
+    }
+
+    @Override
+    protected void clearRoutes() {
+        //==========================================
+        // We do not remove the routes before each test
+        // since we want to test a filter that is
+        // automatically added.
+        // But we remove any route which id is "test".
+        //==========================================
+        getRouter().removeRoute("test");
+    }
 
     @Test
     public void htmlTemplate() throws Exception {
@@ -192,6 +214,80 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         String result = this.templatingEngine.fromTemplate(testFile.getAbsolutePath(), false, jsonObj);
         assertNotNull(result);
         assertEquals("<p>test : Stromgol</p>", result);
+    }
+
+    @Test
+    public void defaultTemplateVariables() throws Exception {
+
+        getRouter().GET("/one/${param1}").id("test").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                context.variables().add("oneVar", "oneVal");
+
+                Map<String, Object> vars = context.templating().getTemplatingGlobalVariables();
+                assertNotNull(vars);
+                assertEquals("en", vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV));
+                assertEquals(getSpincastUtils().getSpincastCurrentVersion(),
+                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION));
+
+                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT));
+
+                assertEquals(getSpincastUtils().getCacheBusterCode(),
+                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER));
+
+                assertNotNull(getSpincastUtils().getCacheBusterCode(),
+                              vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES));
+
+                @SuppressWarnings("unchecked")
+                Map<String, Object> requestScopedVars =
+                        (Map<String, Object>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES);
+
+                assertEquals("oneVal", requestScopedVars.get("oneVar"));
+
+                assertEquals("test",
+                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID));
+
+                assertEquals("http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                             "/one/test1?key1=val1",
+                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL));
+
+                assertEquals(false, vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS));
+
+                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS));
+
+                @SuppressWarnings("unchecked")
+                Map<String, String> pathParams =
+                        (Map<String, String>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS);
+
+                assertEquals("test1", pathParams.get("param1"));
+
+                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS));
+
+                @SuppressWarnings("unchecked")
+                Map<String, List<String>> queryStringParams =
+                        (Map<String, List<String>>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS);
+
+                assertEquals("val1", queryStringParams.get("key1").get(0));
+
+                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES));
+
+                @SuppressWarnings("unchecked")
+                Map<String, ICookie> cookies =
+                        (Map<String, ICookie>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES);
+
+                assertEquals("cookie1Val", cookies.get("cookie1").getValue());
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        IHttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("ok", response.getContentAsString());
     }
 
 }

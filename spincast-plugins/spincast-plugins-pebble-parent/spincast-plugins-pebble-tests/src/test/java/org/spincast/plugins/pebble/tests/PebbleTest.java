@@ -13,6 +13,8 @@ import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.IHandler;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -26,6 +28,24 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
     protected IJsonManager jsonManager;
+
+    @Inject
+    protected ISpincastUtils spincastUtils;
+
+    protected ISpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
+    }
+
+    @Override
+    protected void clearRoutes() {
+        //==========================================
+        // We do not remove the routes before each test
+        // since we want to test a filter that is
+        // automatically added.
+        // But we remove any route which id is "test".
+        //==========================================
+        getRouter().removeRoute("test");
+    }
 
     @Test
     public void htmlTemplate() throws Exception {
@@ -151,6 +171,50 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
         String result = this.templatingEngine.fromTemplate("template.html", jsonObj);
         assertNotNull(result);
         assertEquals("<p>test : Stromgol</p>", result);
+    }
+
+    @Test
+    public void defaultVariables() throws Exception {
+
+        getRouter().GET("/one/${param1}").id("test").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+
+                context.variables().add("oneVar", "oneVal");
+
+                context.response().sendHtmlTemplate("/templateDefaultVars.html",
+                                                    SpincastStatics.params("extraParam1", "extraParam1Val"));
+            }
+        });
+
+        IHttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
+
+        String spincastCurrentVersion = getSpincastUtils().getSpincastCurrentVersion();
+        boolean isSnapshot = spincastCurrentVersion.endsWith("-SNAPSHOT");
+        String cacheBuster = getSpincastUtils().getCacheBusterCode();
+        String fullUrl = "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                         "/one/test1?key1=val1";
+
+        StringBuilder expected = new StringBuilder();
+        expected.append("en").append("|");
+        expected.append(spincastCurrentVersion).append("|");
+        expected.append(isSnapshot).append("|");
+        expected.append(cacheBuster).append("|");
+        expected.append("test").append("|");
+        expected.append(fullUrl).append("|");
+        expected.append("false").append("|");
+        expected.append("test1").append("|");
+        expected.append("val1").append("|");
+        expected.append("cookie1Val").append("|");
+        expected.append("oneVal").append("|");
+        expected.append("extraParam1Val").append("|");
+
+        String result = response.getContentAsString();
+        assertEquals(expected.toString(), result);
     }
 
 }

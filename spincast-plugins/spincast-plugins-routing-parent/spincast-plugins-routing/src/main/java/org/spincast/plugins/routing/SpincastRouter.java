@@ -736,7 +736,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
 
         IRouteHandlerMatch<R> routeHandlerMatch = getRouteHandlerMatchFactory().create(mainRouteHandlerMatch.getSourceRoute(),
                                                                                        beforeOrAfterMethod,
-                                                                                       mainRouteHandlerMatch.getParameters(),
+                                                                                       mainRouteHandlerMatch.getPathParams(),
                                                                                        position);
         return routeHandlerMatch;
     }
@@ -1066,11 +1066,19 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
 
         IRouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.ALL();
-        builder = builder.pos(-1);
+        builder = builder.pos(getBeforeFilterDefaultPosition());
         builder = builder.path(path);
         builder = addFilterDefaultRoutingTypes(builder);
 
         builder.save(handler);
+    }
+
+    protected int getBeforeFilterDefaultPosition() {
+        return -10;
+    }
+
+    protected int getAfterFilterDefaultPosition() {
+        return 10;
     }
 
     @Override
@@ -1082,7 +1090,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
     public void after(String path, IHandler<R> handler) {
         IRouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.ALL();
-        builder = builder.pos(1);
+        builder = builder.pos(getAfterFilterDefaultPosition());
         builder = builder.path(path);
         builder = addFilterDefaultRoutingTypes(builder);
 

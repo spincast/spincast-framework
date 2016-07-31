@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>spincast-parent</artifactId>
-    <version>0.9.25</version>
+    <version>0.9.26-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>${project.groupId}:${project.artifactId}</name>
@@ -17,16 +17,17 @@
     <url>https://www.spincast.org</url>
 
     <properties>
-        <guice.version>4.0</guice.version>
-        <slf4j.version>1.7.13</slf4j.version>
+        <guice.version>4.1.0</guice.version>
+        <slf4j.version>1.7.21</slf4j.version>
         <jsr305.version>3.0.1</jsr305.version> 
+        <undertow.version>1.3.23.Final</undertow.version> 
     </properties>
     
     <scm>
         <connection>scm:git:git@github.com:spincast</connection>
         <developerConnection>scm:git:git@github.com:spincast</developerConnection>
         <url>git@github.com:spincast</url>
-      <tag>0.9.25</tag>
+      <tag>HEAD</tag>
   </scm>
     
     <dependencyManagement>
@@ -85,7 +86,7 @@
             <dependency>
                 <groupId>io.undertow</groupId>
                 <artifactId>undertow-core</artifactId>
-                <version>1.3.23.Final</version>
+                <version>${undertow.version}</version>
             </dependency> 
         
         </dependencies>

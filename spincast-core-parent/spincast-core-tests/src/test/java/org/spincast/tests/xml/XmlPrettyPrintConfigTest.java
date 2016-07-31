@@ -61,7 +61,7 @@ public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTes
         StringBuilder expected = new StringBuilder();
         expected.append("<JsonObject>\r\n");
         expected.append("  <someInt>123</someInt>\r\n");
-        expected.append("</JsonObject>");
+        expected.append("</JsonObject>\r\n");
 
         assertEquals(expected.toString(), xml);
     }

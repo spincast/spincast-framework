@@ -459,7 +459,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         //==========================================
         // We make sure everything is immutable
         //==========================================
-        Map<String, String> pathParams = getRequestContext().routing().getCurrentRouteHandlerMatch().getParameters();
+        Map<String, String> pathParams = getRequestContext().routing().getCurrentRouteHandlerMatch().getPathParams();
         if(pathParams == null) {
             pathParams = Collections.emptyMap();
         } else {

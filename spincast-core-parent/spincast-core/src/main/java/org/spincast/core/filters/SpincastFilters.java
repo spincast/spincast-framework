@@ -28,10 +28,27 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
     protected final Logger logger = LoggerFactory.getLogger(SpincastFilters.class);
 
     public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV = "langAbrv";
+
     public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION = "spincastCurrrentVersion";
+
     public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT =
             "spincastCurrrentVersionIsSnapshot";
+
     public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER = "cacheBuster";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID = "routeId";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL = "fullUrl";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS = "isHttps";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS = "pathParams";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS = "qsParams";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES = "cookies";
+
+    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES = "requestScopedVars";
 
     private final ICorsFilter corsFilter;
     private final ISpincastConfig spincastConfig;
@@ -478,6 +495,29 @@ public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastF
         //==========================================
         context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER,
                                                          getSpincastUtils().getCacheBusterCode());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES,
+                                                         context.variables().getAll());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID,
+                                                         context.routing().getRoutingResult().getMainRouteHandlerMatch()
+                                                                .getSourceRoute().getId());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL,
+                                                         context.request().getFullUrl());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS,
+                                                         context.request().isHttps());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS,
+                                                         context.routing().getRoutingResult().getMainRouteHandlerMatch()
+                                                                .getPathParams());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS,
+                                                         context.request().getQueryStringParams());
+
+        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES,
+                                                         context.cookies().getCookies());
 
     }
 

@@ -402,7 +402,7 @@ public class SpincastUtils implements ISpincastUtils {
             File parent = file.getParentFile();
             File pomFile = new File(parent.getAbsolutePath() + "/pom.xml");
             if(pomFile.isFile()) {
-                String content = FileUtils.readFileToString(pomFile);
+                String content = FileUtils.readFileToString(pomFile, "UTF-8");
                 int pos = content.indexOf("<version>");
                 if(pos > 0) {
                     int pos2 = content.indexOf("</version>", pos);

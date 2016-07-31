@@ -166,7 +166,7 @@ Templating engine
     </p>  
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Finally, note that you can also access the <code>templating engine</code> via its own <code><em>"templating()"</em></code>
+        Note that you can also access the <code>templating engine</code> via its own <code><em>"templating()"</em></code>
         <code>add-on</code>, on the <code>request context</code> objects. 
         This can be useful when you need to generate some dynamic content
         without sending it as the <code>response</code> for the current request:
@@ -189,6 +189,53 @@ Templating engine
             </p> 
         </div>
     </p>  
+    
+    <h5>
+        <a class="anchor_small" href="#templating_default_vars" id="templating_default_vars" title="permanent link"></a>
+        Default templating variables
+    </h5>
+    <p>
+        Spincast automatically adds some variables that can be used by the templating engine, in the scope of
+        a request. Those variables are added by the "before" filter 
+        <a href="/public/javadoc/org/spincast/core/filters/ISpincastFilters.html#addDefaultGlobalTemplateVariables-R-"><code>addDefaultGlobalTemplateVariables(...)</code></a>
+    </p>
+    <p>
+        <ul>
+        	<li>
+        		<strong><em>langAbrv</em></strong> : The abreviation of the current Locale to use. For example : <code>"en"</code>.
+        	</li>
+        	<li>
+        		<strong><em>cacheBuster</em></strong> : The current <a href="#http_caching_cache_busting">cache buster</a> code.
+        	</li>
+        	<li>
+        		<strong><em>routeId</em></strong> : The id of the current route (its main handler).
+        	</li>
+        	<li>
+        		<strong><em>fullUrl</em></strong> : The full URL of the current request.
+        	</li>
+        	<li>
+        		<strong><em>isHttps</em></strong> : Is the current URL secure (HTTPS)?
+        	</li>
+        	<li>
+        		<strong><em>pathParams</em></strong> : The parameters parsed from the path of the request. To be used
+        		like {% verbatim %}<code>{{pathParams.myParam}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>qsParams</em></strong> : The parameters parsed from the queryString of the request. Note that
+        		a queryString parameter can contain more than one values. To access the first value, use something like :
+        		 {% verbatim %}<code>{{qsParams.myParam[0]}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>cookies</em></strong> : The current cookies <em>objects</em>. To be used
+        		like {% verbatim %}<code>{{cookies.myCookie.value}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>requestScopedVars</em></strong> : The request scoped variables added by the various handlers. To be used
+        		like {% verbatim %}<code>{{requestScopedVars.myVar}}</code>{% endverbatim %}.
+        	</li>
+        	
+        </ul>
+    </p>
    
 </section>
    

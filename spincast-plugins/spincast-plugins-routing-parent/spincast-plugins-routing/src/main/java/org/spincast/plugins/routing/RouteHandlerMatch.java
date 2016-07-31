@@ -52,7 +52,7 @@ public class RouteHandlerMatch<R extends IRequestContext<?>> implements IRouteHa
     }
 
     @Override
-    public Map<String, String> getParameters() {
+    public Map<String, String> getPathParams() {
         return this.params;
     }
 
