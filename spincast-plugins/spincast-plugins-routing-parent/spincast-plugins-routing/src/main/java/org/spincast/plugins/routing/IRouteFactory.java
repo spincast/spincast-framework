@@ -14,12 +14,13 @@ import com.google.inject.assistedinject.Assisted;
 public interface IRouteFactory<R extends IRequestContext<?>> {
 
     public IRoute<R> createRoute(@Assisted("id") String id,
-                                 Set<HttpMethod> httpMethods,
+                                 @Assisted("httpMethods") Set<HttpMethod> httpMethods,
                                  @Assisted("path") String path,
-                                 Set<RoutingType> routingTypes,
+                                 @Assisted("routingTypes") Set<RoutingType> routingTypes,
                                  @Assisted("before") List<IHandler<R>> beforeFilters,
                                  @Assisted("main") IHandler<R> mainHandler,
                                  @Assisted("after") List<IHandler<R>> afterFilters,
-                                 Set<Integer> positions,
-                                 Set<String> acceptedContextTypes);
+                                 @Assisted("positions") Set<Integer> positions,
+                                 @Assisted("acceptedContentTypes") Set<String> acceptedContentTypes,
+                                 @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip);
 }

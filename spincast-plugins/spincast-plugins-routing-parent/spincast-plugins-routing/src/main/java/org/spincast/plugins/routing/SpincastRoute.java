@@ -29,20 +29,22 @@ public class SpincastRoute<R extends IRequestContext<?>> implements IRoute<R> {
     private final IHandler<R> mainHandler;
     private final List<IHandler<R>> afterFilters;
     private final List<Integer> positions;
+    private final Set<String> filterIdsToSkip;
 
     /**
      * Constructor
      */
     @AssistedInject
     public SpincastRoute(@Assisted("id") @Nullable String id,
-                         @Assisted Set<HttpMethod> httpMethods,
+                         @Assisted("httpMethods") Set<HttpMethod> httpMethods,
                          @Assisted("path") String path,
-                         @Assisted Set<RoutingType> routingTypes,
+                         @Assisted("routingTypes") Set<RoutingType> routingTypes,
                          @Assisted("before") @Nullable List<IHandler<R>> beforeFilters,
                          @Assisted("main") IHandler<R> mainHandler,
                          @Assisted("after") @Nullable List<IHandler<R>> afterFilters,
-                         @Assisted Set<Integer> positions,
-                         @Assisted @Nullable Set<String> acceptedContentTypes) {
+                         @Assisted("positions") Set<Integer> positions,
+                         @Assisted("acceptedContentTypes") @Nullable Set<String> acceptedContentTypes,
+                         @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip) {
         this.id = id;
 
         this.positions = new ArrayList<Integer>(positions);
@@ -74,6 +76,10 @@ public class SpincastRoute<R extends IRequestContext<?>> implements IRoute<R> {
             }
         }
 
+        if(filterIdsToSkip == null) {
+            filterIdsToSkip = new HashSet<String>();
+        }
+        this.filterIdsToSkip = filterIdsToSkip;
     }
 
     @Override
@@ -119,6 +125,11 @@ public class SpincastRoute<R extends IRequestContext<?>> implements IRoute<R> {
     @Override
     public List<Integer> getPositions() {
         return this.positions;
+    }
+
+    @Override
+    public Set<String> getFilterIdsToSkip() {
+        return this.filterIdsToSkip;
     }
 
     @Override

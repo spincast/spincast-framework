@@ -307,7 +307,7 @@ public class ExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBas
                        }
                    });
 
-        getRouter().before("/*{before}", new IHandler<IDefaultRequestContext>() {
+        getRouter().before("/*{before}").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -315,7 +315,7 @@ public class ExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBas
             }
         });
 
-        getRouter().after("/*{after}", new IHandler<IDefaultRequestContext>() {
+        getRouter().after("/*{after}").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

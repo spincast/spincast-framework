@@ -80,8 +80,7 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
     protected void addCommonLoaderFeatures(Builder builder) {
         if(getSpincastConfig().isDebugEnabled()) {
             builder.strictVariables(true);
-            builder.tagCache(null);
-            builder.templateCache(null);
+            builder.cacheActive(false);
         }
 
         //==========================================

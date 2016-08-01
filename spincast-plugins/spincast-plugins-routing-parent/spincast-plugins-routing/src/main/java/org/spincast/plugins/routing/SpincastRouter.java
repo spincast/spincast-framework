@@ -514,6 +514,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
             // We only keep the first match here!
             //==========================================
             List<IRouteHandlerMatch<R>> mainRouteHandlerMatches = null;
+            IRoute<R> matchingRoute = null;
             for(IRoute<R> route : getMainRoutes()) {
 
                 List<IRouteHandlerMatch<R>> routeHandlerMatch = createRegularHandlerMatches(routingType,
@@ -524,6 +525,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
                                                                                             0);
                 if(routeHandlerMatch != null && routeHandlerMatch.size() > 0) {
                     mainRouteHandlerMatches = routeHandlerMatch;
+                    matchingRoute = route;
                     break;
                 }
             }
@@ -532,12 +534,19 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
             // No main matches? Then no "before" or "after"
             // filters either!
             //==========================================
-            if(mainRouteHandlerMatches != null) {
+            if(matchingRoute != null) {
 
                 //==========================================
                 // First, the global "before" filters.
                 //==========================================
                 for(IRoute<R> route : getGlobalBeforeFiltersRoutes()) {
+
+                    //==========================================
+                    // Should this before filter be skipped?
+                    //==========================================
+                    if(route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
+                        continue;
+                    }
 
                     if(!isRoutingTypeMatch(routingType, route)) {
                         continue;
@@ -563,6 +572,13 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
                 // Finally, the global "after" filters.
                 //==========================================
                 for(IRoute<R> route : getGlobalAfterFiltersRoutes()) {
+
+                    //==========================================
+                    // Should this after filter be skipped?
+                    //==========================================
+                    if(route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
+                        continue;
+                    }
 
                     if(!isRoutingTypeMatch(routingType, route)) {
                         continue;
@@ -1057,12 +1073,12 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
     }
 
     @Override
-    public void before(IHandler<R> handler) {
-        before(DEFAULT_ROUTE_PATH, handler);
+    public IRouteBuilder<R> before() {
+        return before(DEFAULT_ROUTE_PATH);
     }
 
     @Override
-    public void before(String path, IHandler<R> handler) {
+    public IRouteBuilder<R> before(String path) {
 
         IRouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.ALL();
@@ -1070,7 +1086,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
         builder = builder.path(path);
         builder = addFilterDefaultRoutingTypes(builder);
 
-        builder.save(handler);
+        return builder;
     }
 
     protected int getBeforeFilterDefaultPosition() {
@@ -1082,30 +1098,34 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
     }
 
     @Override
-    public void after(IHandler<R> handler) {
-        after(DEFAULT_ROUTE_PATH, handler);
+    public IRouteBuilder<R> after() {
+        return after(DEFAULT_ROUTE_PATH);
     }
 
     @Override
-    public void after(String path, IHandler<R> handler) {
+    public IRouteBuilder<R> after(String path) {
         IRouteBuilder<R> builder = getRouteBuilderFactory().create(this);
+        return after(builder, path);
+    }
+
+    protected IRouteBuilder<R> after(IRouteBuilder<R> builder, String path) {
         builder = builder.ALL();
         builder = builder.pos(getAfterFilterDefaultPosition());
         builder = builder.path(path);
         builder = addFilterDefaultRoutingTypes(builder);
 
-        builder.save(handler);
+        return builder;
     }
 
     @Override
-    public void beforeAndAfter(IHandler<R> handler) {
-        beforeAndAfter(DEFAULT_ROUTE_PATH, handler);
+    public IRouteBuilder<R> beforeAndAfter() {
+        return beforeAndAfter(DEFAULT_ROUTE_PATH);
     }
 
     @Override
-    public void beforeAndAfter(String path, IHandler<R> handler) {
-        before(path, handler);
-        after(path, handler);
+    public IRouteBuilder<R> beforeAndAfter(String path) {
+        IRouteBuilder<R> builder = before(path);
+        return after(builder, path);
     }
 
     protected IRouteBuilder<R> addFilterDefaultRoutingTypes(IRouteBuilder<R> builder) {
@@ -1599,6 +1619,7 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
                                                   staticResource.getGenerator(),
                                                   saveResourceFilter != null ? Arrays.asList(saveResourceFilter) : null,
                                                   Sets.newHashSet(0),
+                                                  null,
                                                   null);
 
             addRoute(route);
@@ -1731,6 +1752,11 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
                 // Websocket routes can't be used as filters.
                 //==========================================
                 return Lists.newArrayList(0);
+            }
+
+            @Override
+            public Set<String> getFilterIdsToSkip() {
+                return websocketRoute.getFilterIdsToSkip();
             }
         };
 

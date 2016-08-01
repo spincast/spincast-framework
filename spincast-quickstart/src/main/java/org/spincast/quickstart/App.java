@@ -242,7 +242,7 @@ public class App {
         //==========================================
         // Add some security headers on every route.
         //==========================================
-        getRouter().before(new IAppHandler() {
+        getRouter().before().save(new IAppHandler() {
 
             @Override
             public void handle(IAppRequestContext context) {

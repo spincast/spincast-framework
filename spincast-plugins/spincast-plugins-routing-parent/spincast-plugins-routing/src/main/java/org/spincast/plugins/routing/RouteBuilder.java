@@ -19,6 +19,7 @@ import org.spincast.core.routing.IRouter;
 import org.spincast.core.routing.RoutingType;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Sets;
 import com.google.inject.assistedinject.Assisted;
@@ -43,6 +44,7 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
     private IHandler<R> mainHandler;
     private List<IHandler<R>> afterFilters;
     private Set<String> acceptedContentTypes;
+    private Set<String> filterIdsToSkip;
 
     @AssistedInject
     public RouteBuilder(IRouteFactory<R> routeFactory,
@@ -137,6 +139,13 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
             this.acceptedContentTypes = new HashSet<>();
         }
         return this.acceptedContentTypes;
+    }
+
+    public Set<String> getFilterIdsToSkip() {
+        if(this.filterIdsToSkip == null) {
+            this.filterIdsToSkip = new HashSet<>();
+        }
+        return this.filterIdsToSkip;
     }
 
     @Override
@@ -359,7 +368,8 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
                                                         mainHandler,
                                                         getAfterFilters(),
                                                         getPositions(),
-                                                        getAcceptedContentTypes());
+                                                        getAcceptedContentTypes(),
+                                                        getFilterIdsToSkip());
         return route;
     }
 
@@ -417,6 +427,18 @@ public class RouteBuilder<R extends IRequestContext<?>, W extends IWebsocketCont
 
     protected Integer getCacheCdnSecondsByDefault() {
         return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbrCdns();
+    }
+
+    @Override
+    public IRouteBuilder<R> skip(String filterId) {
+
+        if(StringUtils.isBlank(filterId)) {
+            throw new RuntimeException("The filterId can't be empty.");
+        }
+
+        getFilterIdsToSkip().add(filterId);
+
+        return this;
     }
 
 }

@@ -8,6 +8,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -16,6 +18,7 @@ import org.spincast.core.config.ISpincastDictionary;
 import org.spincast.core.cookies.ICookie;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.json.IJsonObject;
+import org.spincast.core.routing.IHandler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.core.websocket.IWebsocketConnectionConfig;
@@ -1108,4 +1111,66 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
     }
 
+    @Test
+    public void skipFilters() throws Exception {
+
+        final Set<String> inFilters = new HashSet<>();
+
+        getRouter().before().id("myBeforeFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                inFilters.add("before");
+            }
+        });
+
+        getRouter().before().id("myBeforeFilter2").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                inFilters.add("before2");
+            }
+        });
+
+        getRouter().after().id("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                inFilters.add("after");
+            }
+        });
+
+        DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
+
+            @Override
+            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+
+                return new IWebsocketConnectionConfig() {
+
+                    @Override
+                    public String getEndpointId() {
+                        return "endpoint1";
+                    }
+
+                    @Override
+                    public String getPeerId() {
+                        return "peer1";
+                    }
+                };
+            }
+
+        };
+        getRouter().websocket("/ws").skip("myBeforeFilter").save(controller);
+
+        assertNull(controller.getEndpointManager("endpoint1"));
+
+        WebsocketClientTest client1 = new WebsocketClientTest();
+        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        assertNotNull(writer1);
+
+        assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
+
+        assertTrue(inFilters.size() == 1);
+        assertTrue(inFilters.contains("before2"));
+    }
 }

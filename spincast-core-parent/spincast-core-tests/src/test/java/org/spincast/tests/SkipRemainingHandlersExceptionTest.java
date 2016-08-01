@@ -16,7 +16,7 @@ public class SkipRemainingHandlersExceptionTest extends SpincastDefaultNoAppInte
     @Test
     public void skipRemainingHandlersExceptionInMainHandler() throws Exception {
 
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -43,7 +43,7 @@ public class SkipRemainingHandlersExceptionTest extends SpincastDefaultNoAppInte
     @Test
     public void skipRemainingHandlersExceptionInFilter() throws Exception {
 
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -52,7 +52,7 @@ public class SkipRemainingHandlersExceptionTest extends SpincastDefaultNoAppInte
             }
         });
 
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -60,7 +60,7 @@ public class SkipRemainingHandlersExceptionTest extends SpincastDefaultNoAppInte
             }
         });
 
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

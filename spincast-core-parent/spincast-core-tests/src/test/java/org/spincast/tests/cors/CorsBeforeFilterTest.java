@@ -36,7 +36,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void corsFilterButNoCorsHeaders() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -78,7 +78,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void sameOriginWithCorsHeaders() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -122,7 +122,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void corsFilterDefault() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -172,7 +172,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void corsFilterSpecificOriginOnlyValid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -224,7 +224,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void corsFilterSpecificOriginOnlyInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -269,7 +269,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void corsFilterSpecificOriginOnlyInvalidProtocole() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -314,7 +314,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void extraHeadersAllowedToBeRead() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -368,7 +368,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void noCookies() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -423,7 +423,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void allowedMethodsNotIncludedInSimpleCorsRequests() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -480,7 +480,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void simpleRequestWithPost() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -539,7 +539,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
         final boolean[] inHandler = new boolean[]{false};
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -597,7 +597,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightDefault() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -652,7 +652,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightNoMainHandler() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -699,7 +699,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightDefaultAllExtraHeadersToBeSentAreAllowed() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -757,7 +757,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightSpecificOriginValid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -814,7 +814,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightSpecificOriginInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -860,7 +860,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightExtraHeadersToBeSentValid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -923,7 +923,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightExtraHeadersToBeSentWildcard() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -989,7 +989,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightExtraHeadersToSentInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1039,7 +1039,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightRequestForExtraHeadersToBeSentButNoneAllowed() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1091,7 +1091,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflighNoCookies() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1152,7 +1152,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightHttpMethodsValid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1215,7 +1215,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightHttpMethodsInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1266,7 +1266,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightMaxAge() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1330,7 +1330,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightMaxAgeZero() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1393,7 +1393,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightMaxAgeLessThanZero() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1456,7 +1456,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void wildcardNotValidWhenThereAreCookies() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1515,7 +1515,7 @@ public class CorsBeforeFilterTest extends SpincastDefaultNoAppIntegrationTestBas
     public void preflightNoOptionsMethod() throws Exception {
 
         // Cors filter
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

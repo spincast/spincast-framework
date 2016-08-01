@@ -1,8 +1,10 @@
 package org.spincast.plugins.routing;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.IHandler;
@@ -11,6 +13,7 @@ import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.core.websocket.IWebsocketController;
 import org.spincast.core.websocket.IWebsocketRoute;
 import org.spincast.core.websocket.IWebsocketRouteBuilder;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -24,6 +27,7 @@ public class WebsocketRouteBuilder<R extends IRequestContext<?>, W extends IWebs
     private String id;
     private List<IHandler<R>> beforeFilters;
     private IWebsocketController<R, W> websocketController;
+    private Set<String> beforeFilterIdsToSkip;
 
     @AssistedInject
     public WebsocketRouteBuilder(IWebsocketRouteFactory<R, W> websocketRouteFactory) {
@@ -51,6 +55,13 @@ public class WebsocketRouteBuilder<R extends IRequestContext<?>, W extends IWebs
 
     public String getId() {
         return this.id;
+    }
+
+    public Set<String> getBeforeFilterIdsToSkip() {
+        if(this.beforeFilterIdsToSkip == null) {
+            this.beforeFilterIdsToSkip = new HashSet<>();
+        }
+        return this.beforeFilterIdsToSkip;
     }
 
     public IWebsocketController<R, W> getWebsocketController() {
@@ -104,8 +115,21 @@ public class WebsocketRouteBuilder<R extends IRequestContext<?>, W extends IWebs
         IWebsocketRoute<R, W> websocketRoute = getWebsocketRouteFactory().createRoute(getId(),
                                                                                       getPath(),
                                                                                       getBeforeFilters(),
+                                                                                      getBeforeFilterIdsToSkip(),
                                                                                       websocketController);
         return websocketRoute;
+    }
+
+    @Override
+    public IWebsocketRouteBuilder<R, W> skip(String beforeFilterId) {
+
+        if(StringUtils.isBlank(beforeFilterId)) {
+            throw new RuntimeException("The beforeFilterId can't be empty.");
+        }
+
+        getBeforeFilterIdsToSkip().add(beforeFilterId);
+
+        return this;
     }
 
 }

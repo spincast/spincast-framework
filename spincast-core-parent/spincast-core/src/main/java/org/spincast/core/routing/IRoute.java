@@ -60,4 +60,10 @@ public interface IRoute<R extends IRequestContext<?>> {
      */
     public List<Integer> getPositions();
 
+    /**
+     * The ids of the filters that should be skipped for this
+     * route.
+     */
+    public Set<String> getFilterIdsToSkip();
+
 }

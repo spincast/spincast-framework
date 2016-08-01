@@ -163,7 +163,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/", this.beforeFilter);
+        router.before("/").save(this.beforeFilter);
         router.GET("/").save(this.mainHandler);
 
         IHttpResponse response = GET("/").send();
@@ -177,7 +177,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(this.mainHandler);
-        router.before("/", this.beforeFilter);
+        router.before("/").save(this.beforeFilter);
 
         IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -189,7 +189,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/one", this.beforeFilter);
+        router.before("/one").save(this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
         router.GET("/two").save(this.mainHandler);
 
@@ -208,7 +208,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/*{path}", this.beforeFilter);
+        router.before("/*{path}").save(this.beforeFilter);
         router.GET("/").save(this.mainHandler);
 
         IHttpResponse response = GET("/").send();
@@ -221,7 +221,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/*{path}", this.beforeFilter);
+        router.before("/*{path}").save(this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -234,7 +234,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/*{path}", this.beforeFilter);
+        router.before("/*{path}").save(this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -247,7 +247,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/*{path}", this.beforeFilter);
+        router.before("/*{path}").save(this.beforeFilter);
         router.GET("/one/two/three").save(this.mainHandler);
 
         IHttpResponse response = GET("/one/two/three").send();
@@ -260,7 +260,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/*{path}", this.beforeFilter);
+        router.before("/*{path}").save(this.beforeFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
 
         IHttpResponse response = GET("/one/two/three").send();
@@ -273,7 +273,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/one/*{path}", this.beforeFilter);
+        router.before("/one/*{path}").save(this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
         router.GET("/one/*{path}").save(this.mainHandler);
 
@@ -297,7 +297,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.before("/", this.beforeFilter);
+        router.before("/").save(this.beforeFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -310,7 +310,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/", this.afterFilter);
+        router.after("/").save(this.afterFilter);
         router.GET("/").save(this.mainHandler);
 
         IHttpResponse response = GET("/").send();
@@ -324,7 +324,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(this.mainHandler);
-        router.after("/", this.afterFilter);
+        router.after("/").save(this.afterFilter);
 
         IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -336,7 +336,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/one", this.afterFilter);
+        router.after("/one").save(this.afterFilter);
         router.GET("/one").save(this.mainHandler);
         router.GET("/two").save(this.mainHandler);
 
@@ -355,7 +355,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/*{path}", this.afterFilter);
+        router.after("/*{path}").save(this.afterFilter);
         router.GET("/").save(this.mainHandler);
 
         IHttpResponse response = GET("/").send();
@@ -368,7 +368,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/*{path}", this.afterFilter);
+        router.after("/*{path}").save(this.afterFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -381,7 +381,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/*{path}", this.afterFilter);
+        router.after("/*{path}").save(this.afterFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -394,7 +394,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/*{path}", this.afterFilter);
+        router.after("/*{path}").save(this.afterFilter);
         router.GET("/one/two/three").save(this.mainHandler);
 
         IHttpResponse response = GET("/one/two/three").send();
@@ -407,7 +407,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/*{path}", this.afterFilter);
+        router.after("/*{path}").save(this.afterFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
 
         IHttpResponse response = GET("/one/two/three").send();
@@ -420,7 +420,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/one/*{path}", this.afterFilter);
+        router.after("/one/*{path}").save(this.afterFilter);
         router.GET("/one").save(this.mainHandler);
         router.GET("/one/*{path}").save(this.mainHandler);
         router.GET("/one/*{param}").save(this.mainHandler);
@@ -446,7 +446,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/", this.afterFilter);
+        router.after("/").save(this.afterFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -459,7 +459,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/").save(this.beforeAndAfterFilter);
         router.GET("/").save(this.mainHandler);
 
         IHttpResponse response = GET("/").send();
@@ -473,7 +473,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
         router.GET("/").save(this.mainHandler);
-        router.beforeAndAfter("/", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/").save(this.beforeAndAfterFilter);
 
         IHttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -485,7 +485,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
         router.GET("/two").save(this.mainHandler);
 
@@ -504,7 +504,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/*{path}").save(this.beforeAndAfterFilter);
         router.GET("/").save(this.mainHandler);
 
         IHttpResponse response = GET("/").send();
@@ -517,7 +517,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/*{path}").save(this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -530,7 +530,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/*{path}").save(this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -543,7 +543,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/*{path}").save(this.beforeAndAfterFilter);
         router.GET("/one/two/three").save(this.mainHandler);
 
         IHttpResponse response = GET("/one/two/three").send();
@@ -556,7 +556,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/*{path}", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/*{path}").save(this.beforeAndAfterFilter);
         router.GET("/one/*{param1}").save(this.mainHandler);
 
         IHttpResponse response = GET("/one/two/three").send();
@@ -569,7 +569,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/one/*{path}", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/one/*{path}").save(this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
         router.GET("/one/*{path}").save(this.mainHandler);
 
@@ -593,7 +593,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.beforeAndAfter("/", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/").save(this.beforeAndAfterFilter);
         router.GET("/one").save(this.mainHandler);
 
         IHttpResponse response = GET("/one").send();
@@ -608,8 +608,8 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.before("/one", this.beforeFilter);
-        router.before("/one", this.beforeFilter2);
+        router.before("/one").save(this.beforeFilter);
+        router.before("/one").save(this.beforeFilter2);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -623,8 +623,8 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.before("/one", this.beforeFilter2);
-        router.before("/one", this.beforeFilter);
+        router.before("/one").save(this.beforeFilter2);
+        router.before("/one").save(this.beforeFilter);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -638,8 +638,8 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.after("/one", this.afterFilter);
-        router.after("/one", this.afterFilter2);
+        router.after("/one").save(this.afterFilter);
+        router.after("/one").save(this.afterFilter2);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -653,8 +653,8 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.after("/one", this.afterFilter2);
-        router.after("/one", this.afterFilter);
+        router.after("/one").save(this.afterFilter2);
+        router.after("/one").save(this.afterFilter);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -668,8 +668,8 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter);
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter2);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -683,8 +683,8 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter2);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -698,12 +698,12 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         router.GET("/one").save(this.mainHandler);
 
-        router.before("/one", this.beforeFilter);
-        router.before("/one", this.beforeFilter2);
-        router.after("/one", this.afterFilter);
-        router.after("/one", this.afterFilter2);
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter);
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
+        router.before("/one").save(this.beforeFilter);
+        router.before("/one").save(this.beforeFilter2);
+        router.after("/one").save(this.afterFilter);
+        router.after("/one").save(this.afterFilter2);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter2);
 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -716,12 +716,12 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
 
-        router.after("/one", this.afterFilter2);
-        router.before("/one", this.beforeFilter);
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter2);
-        router.after("/one", this.afterFilter);
-        router.before("/one", this.beforeFilter2);
-        router.beforeAndAfter("/one", this.beforeAndAfterFilter);
+        router.after("/one").save(this.afterFilter2);
+        router.before("/one").save(this.beforeFilter);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter2);
+        router.after("/one").save(this.afterFilter);
+        router.before("/one").save(this.beforeFilter2);
+        router.beforeAndAfter("/one").save(this.beforeAndAfterFilter);
 
         router.GET("/one").save(this.mainHandler);
 
@@ -735,7 +735,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
 
         // The filter will be called with its own IDefaultRequestContext,
         // containing its parameters.
-        getRouter().before("/${paramFilter1}/*{anything}", new IHandler<IDefaultRequestContext>() {
+        getRouter().before("/${paramFilter1}/*{anything}").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -820,7 +820,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
     @Test
     public void validateRouteHandlers() throws Exception {
 
-        getRouter().before("/*{before}", new IHandler<IDefaultRequestContext>() {
+        getRouter().before("/*{before}").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -842,7 +842,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
             }
         });
 
-        getRouter().after("/*{after}", new IHandler<IDefaultRequestContext>() {
+        getRouter().after("/*{after}").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -864,7 +864,7 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
             }
         });
 
-        getRouter().beforeAndAfter("/*{beforeAfter}", new IHandler<IDefaultRequestContext>() {
+        getRouter().beforeAndAfter("/*{beforeAfter}").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -1023,6 +1023,172 @@ public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase 
         IHttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
         assertEquals("ABCmainDEF", response.getContentAsString());
+    }
+
+    @Test
+    public void deleteFilter() throws Exception {
+
+        getRouter().ALL("/*{path}").id("myFilter").pos(-10).save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("before");
+            }
+        });
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("main");
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("beforemain", response.getContentAsString());
+
+        getRouter().removeRoute("myFilter");
+
+        response = GET("/one").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("main", response.getContentAsString());
+    }
+
+    @Test
+    public void skipFilter() throws Exception {
+
+        getRouter().ALL("/*{path}").id("myBeforeFilter").pos(-10).save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("before");
+            }
+        });
+
+        getRouter().ALL("/*{path}").id("myAfterFilter").pos(10).save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("after");
+            }
+        });
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("one");
+            }
+        });
+
+        getRouter().GET("/two").skip("myBeforeFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("two");
+            }
+        });
+
+        getRouter().GET("/three").skip("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("three");
+            }
+        });
+
+        getRouter().GET("/four").skip("myBeforeFilter").skip("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("four");
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("beforeoneafter", response.getContentAsString());
+
+        response = GET("/two").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("twoafter", response.getContentAsString());
+
+        response = GET("/three").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("beforethree", response.getContentAsString());
+
+        response = GET("/four").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("four", response.getContentAsString());
+    }
+
+    @Test
+    public void skipFiltersKeywords() throws Exception {
+
+        getRouter().before().id("myBeforeFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("before");
+            }
+        });
+
+        getRouter().after().id("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("after");
+            }
+        });
+
+        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("one");
+            }
+        });
+
+        getRouter().GET("/two").skip("myBeforeFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("two");
+            }
+        });
+
+        getRouter().GET("/three").skip("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("three");
+            }
+        });
+
+        getRouter().GET("/four").skip("myBeforeFilter").skip("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+
+            @Override
+            public void handle(IDefaultRequestContext context) {
+                context.response().sendPlainText("four");
+            }
+        });
+
+        IHttpResponse response = GET("/one").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("beforeoneafter", response.getContentAsString());
+
+        response = GET("/two").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("twoafter", response.getContentAsString());
+
+        response = GET("/three").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("beforethree", response.getContentAsString());
+
+        response = GET("/four").send();
+        assertEquals(200, response.getStatus());
+        assertEquals("four", response.getContentAsString());
     }
 
 }

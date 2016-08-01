@@ -1,6 +1,7 @@
 package org.spincast.plugins.routing;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -19,6 +20,7 @@ public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWeb
     private final String id;
     private final String path;
     private final List<IHandler<R>> beforeFilters;
+    private final Set<String> filterIdsToSkip;
     private final IWebsocketController<R, W> websocketController;
 
     /**
@@ -28,11 +30,13 @@ public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWeb
     public SpincastWebsocketRoute(@Assisted("id") @Nullable String id,
                                   @Assisted("path") String path,
                                   @Assisted("before") @Nullable List<IHandler<R>> beforeFilters,
+                                  @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip,
                                   @Assisted("controller") IWebsocketController<R, W> websocketController) {
 
         this.id = id;
         this.path = path;
         this.beforeFilters = beforeFilters;
+        this.filterIdsToSkip = filterIdsToSkip;
         this.websocketController = websocketController;
     }
 
@@ -49,6 +53,11 @@ public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWeb
     @Override
     public List<IHandler<R>> getBeforeFilters() {
         return this.beforeFilters;
+    }
+
+    @Override
+    public Set<String> getFilterIdsToSkip() {
+        return this.filterIdsToSkip;
     }
 
     @Override

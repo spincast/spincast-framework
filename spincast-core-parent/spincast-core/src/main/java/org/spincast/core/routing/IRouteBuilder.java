@@ -287,4 +287,13 @@ public interface IRouteBuilder<R extends IRequestContext<?>> {
      */
     public IRouteBuilder<R> cache(int seconds, boolean isPrivate, Integer secondsCdn);
 
+    /**
+     * Skip a "before" and "after" filter for this route.
+     * <p>
+     * This is useful when you set a global filter but want to skip
+     * it one a specific route only.
+     * </p>
+     */
+    public IRouteBuilder<R> skip(String filterId);
+
 }

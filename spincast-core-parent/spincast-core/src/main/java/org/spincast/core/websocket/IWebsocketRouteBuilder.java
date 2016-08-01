@@ -31,6 +31,16 @@ public interface IWebsocketRouteBuilder<R extends IRequestContext<?>, W extends 
     public IWebsocketRouteBuilder<R, W> before(IHandler<R> beforeFilter);
 
     /**
+     * Skip a "before" filter for this WebSocket route 
+     * ("after" filters are never run).
+     * <p>
+     * This is useful when you set a global filter but want to skip
+     * it one a specific route only.
+     * </p>
+     */
+    public IWebsocketRouteBuilder<R, W> skip(String beforeFilterId);
+
+    /**
      * Saves the WebSocket route on the router.
      */
     public void save(IWebsocketController<R, W> websocketController);

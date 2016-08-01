@@ -69,7 +69,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundCustomWithFilters() throws Exception {
 
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -343,7 +343,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
                    });
 
         // "after" filter E
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -372,7 +372,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     public void notFoundExceptionWithFiltersNoReset() throws Exception {
 
         // "before" filter A
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -381,7 +381,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         });
 
         // "before" filter B
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -417,7 +417,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
                    });
 
         // "after" filter E
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -426,7 +426,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         });
 
         // "after" filter F
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -470,7 +470,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         });
 
         // "before" filter B
-        getRouter().before(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {
@@ -516,7 +516,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         });
 
         // "after" filter F
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext context) {

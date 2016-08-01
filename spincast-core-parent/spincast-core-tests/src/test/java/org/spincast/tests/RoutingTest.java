@@ -75,17 +75,17 @@ public class RoutingTest extends SpincastTestBase {
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(0, router.getGlobalAfterFiltersRoutes().size());
 
-        router.before("/", SpincastTestUtils.dummyRouteHandler);
+        router.before("/").save(SpincastTestUtils.dummyRouteHandler);
         assertEquals(1, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(0, router.getGlobalAfterFiltersRoutes().size());
 
-        router.after("/", SpincastTestUtils.dummyRouteHandler);
+        router.after("/").save(SpincastTestUtils.dummyRouteHandler);
         assertEquals(1, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(1, router.getGlobalAfterFiltersRoutes().size());
 
-        router.beforeAndAfter("/", SpincastTestUtils.dummyRouteHandler);
+        router.beforeAndAfter("/").save(SpincastTestUtils.dummyRouteHandler);
         assertEquals(2, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(2, router.getGlobalAfterFiltersRoutes().size());
@@ -1187,21 +1187,21 @@ public class RoutingTest extends SpincastTestBase {
                 handlerCalled.put("handlerCalled", "route");
             }
         });
-        router.before("/", new IHandler<IDefaultRequestContext>() {
+        router.before("/").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "before");
             }
         });
-        router.after("/", new IHandler<IDefaultRequestContext>() {
+        router.after("/").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "after");
             }
         });
-        router.beforeAndAfter("/", new IHandler<IDefaultRequestContext>() {
+        router.beforeAndAfter("/").save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext exchange) {

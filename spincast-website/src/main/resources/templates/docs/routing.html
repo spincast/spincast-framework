@@ -636,25 +636,46 @@ router.GET("/").pos(100).save(ctl::filter3);
 //
 // Synonym of : 
 // router.ALL("/*{path}").pos(-10).save(ctl::filter)
-router.before(ctl::filter);
+router.before().save(ctl::filter);
 
 // Will be applied to any request starting with "/users", 
 // at position "-10".
 //
 // Synonym of : 
 // router.ALL("/users").pos(-10).save(ctl::filter)
-router.before("/users", ctl::filter);
+router.before("/users").save(ctl::filter);
 
 // Will be applied to any request, at position "10".
 //
 // Synonym of : 
-// router.ALL("/*{path}").pos(10).save(ctl::filter)
-router.after(ctl::filter);
+// router.ALL("/*{path}").pos(10)
+router.after().save(ctl::filter);
 
 // This actually generates two filters.
 // Will be applied to any request, both at
 // position "-10" and position "10".
-router.beforeAndAfter(ctl::filter);
+router.beforeAndAfter().save(ctl::filter);
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            A route can disable a filter that would otherwise be run for it 
+            using the <code>skip(...)</code> method. The filter must have
+            an <code>"id"</code> so it can be targetted, though.
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// This "myFilter" filter will be applied on any route...
+router.before().id("myFilter").save(ctl::filter);
+
+// ... except on this one!
+router.GET("/test").skip("myFilter").save(ctl::testHandler);
 </pre> 
                 </p>
             </div>
@@ -690,7 +711,6 @@ router.GET("/users/${userId}")
             the same <code>request</code> properties than their associated <code>main handler</code>: same 
             <code>path parameters</code>, same <code>queryString parameters</code>, etc.
         </p> 
-        
         <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, note that a filter can decide if it needs to run or not,

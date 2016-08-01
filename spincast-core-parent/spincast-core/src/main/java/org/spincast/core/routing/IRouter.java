@@ -82,70 +82,70 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
      * 
      * Synonym of : 
      * 
-     * <code>ALL("/*{path}").pos(-10).save(handler)</code>
+     * <code>ALL("/*{path}").pos(-10)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
-    public void before(IHandler<R> handler);
+    public IRouteBuilder<R> before();
 
     /**
      * Creates a "before" filter.
      * 
      * Synonym of : 
      * 
-     * <code>ALL(path).pos(-10).save(handler)</code>
+     * <code>ALL(path).pos(-10)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
-    public void before(String path, IHandler<R> handler);
+    public IRouteBuilder<R> before(String path);
 
     /**
      * Creates an "after" filter.
      * 
      * Synonym of : 
      * 
-     * <code>ALL("/*{path}").pos(10).save(handler)</code>
+     * <code>ALL("/*{path}").pos(10)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
-    public void after(IHandler<R> handler);
+    public IRouteBuilder<R> after();
 
     /**
      * Creates an "after" filter.
      * 
      * Synonym of : 
      * 
-     * <code>ALL(path).pos(10).save(handler)</code>
+     * <code>ALL(path).pos(10))</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
-    public void after(String path, IHandler<R> handler);
+    public IRouteBuilder<R> after(String path);
 
     /**
      * Creates a "before" and an "after" filters.
      * 
      * Synonym of : 
      * 
-     * <code>ALL("/*{path}").pos(-10).save(handler)</code>
+     * <code>ALL("/*{path}").pos(-10)</code>
      * and
-     * <code>ALL("/*{path}").pos(10).save(handler)</code>
+     * <code>ALL("/*{path}").pos(10)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
-    public void beforeAndAfter(IHandler<R> handler);
+    public IRouteBuilder<R> beforeAndAfter();
 
     /**
      * Creates a "before" and an "after" filters.
      * 
      * Synonym of : 
      * 
-     * <code>ALL(path).pos(-10).save(handler)</code>
+     * <code>ALL(path).pos(-10)</code>
      * and
-     * <code>ALL(path).pos(10).save(handler)</code>
+     * <code>ALL(path).pos(10)</code>
      * and with the Routing types as returned by
      * ISpincastRouterConfig#getFilterDefaultRoutingTypes()
      */
-    public void beforeAndAfter(String path, IHandler<R> handler);
+    public IRouteBuilder<R> beforeAndAfter(String path);
 
     /**
      * Creates a route considered during an "Exception" routing process.

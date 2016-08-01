@@ -419,7 +419,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends SpincastDefaultNoAppI
     @Test
     public void standardRedirectionDoesntSkipRemainingFilters() throws Exception {
 
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext spincast) {
@@ -447,7 +447,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends SpincastDefaultNoAppI
     @Test
     public void standardRedirectCanBeCancelled() throws Exception {
 
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext spincast) {
@@ -476,7 +476,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends SpincastDefaultNoAppI
     @Test
     public void redirectExceptionDoesSkipRemainingFilters() throws Exception {
 
-        getRouter().after(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
 
             @Override
             public void handle(IDefaultRequestContext spincast) {

@@ -163,7 +163,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
             }
         };
 
-        getRouter().before("/*{path}", beforeFilter);
+        getRouter().before("/*{path}").save(beforeFilter);
 
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
@@ -243,7 +243,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
                 fail();
             }
         };
-        getRouter().after("/*{path}", afterFilter);
+        getRouter().after("/*{path}").save(afterFilter);
 
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()));
 
@@ -267,7 +267,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
                 filterCalled[0] = true;
             }
         };
-        getRouter().after("/*{path}", afterFilter);
+        getRouter().after("/*{path}").save(afterFilter);
 
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 

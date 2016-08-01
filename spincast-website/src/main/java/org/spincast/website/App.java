@@ -239,7 +239,7 @@ public class App {
         //==========================================
         // Add some security headers.
         //==========================================
-        router.before(getSpincastFilters()::addSecurityHeaders);
+        router.before().save(getSpincastFilters()::addSecurityHeaders);
 
         //==========================================
         // Not Found (404) handler

@@ -1,6 +1,7 @@
 package org.spincast.plugins.routing;
 
 import java.util.List;
+import java.util.Set;
 
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.routing.IHandler;
@@ -15,5 +16,6 @@ public interface IWebsocketRouteFactory<R extends IRequestContext<?>, W extends 
     public IWebsocketRoute<R, W> createRoute(@Assisted("id") String id,
                                              @Assisted("path") String path,
                                              @Assisted("before") List<IHandler<R>> beforeFilters,
+                                             @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip,
                                              @Assisted("controller") IWebsocketController<R, W> websocketController);
 }
