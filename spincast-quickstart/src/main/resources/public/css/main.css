@@ -1,12 +1,194 @@
 
+
 body {
-    padding:100px;
-    text-align:center;
+	margin-top: 50px;
+	margin-bottom: 50px;
+	background: none;
+    height: 100%;
+    overflow: hidden;
 }
 
-footer {
-    margin-top:20px;
-    padding-top:20px;
-    border-top:1px solid #C0C0C0;
+.full {
+  background: url(/public/images/bg.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
+.navbar-brand img {
+	display:inline;
+}
+
+#quickText {
+	background-color:#FFFFFF;
+	text-align:center;
+	border:solid #000000 3px;
+}
+
+#quickText p {
+	text-decoration:underline;
+}
+
+/*
+Butterfly from :
+http://www.michaelbromley.co.uk/blog/236/css-javascript-3d-butterfly-case-study
+*/
+@keyframes flap {
+    0% {
+        transform: rotateY(80deg);
+    }
+    100% {
+        transform: rotateY(-80deg);
+    }
+}
+
+@keyframes hover {
+    0% {
+        margin-top: 0;
+        margin-left: 0;
+    }
+    10% {
+        margin-top: 11px;
+        margin-left: -4px;
+    }
+    20% {
+        margin-top: 20px;
+        margin-left: -10px;
+    }
+    30% {
+        margin-top: 23px;
+        margin-left: -4px;
+    }
+    40% {
+        margin-top: 3px;
+        margin-left: -14px;
+    }
+    50% {
+        margin-top: -6px;
+        margin-left: 4px;
+    }
+    60% {
+        margin-top: -18px;
+        margin-left: 26px;
+    }
+    70% {
+        margin-top: -13px;
+        margin-left: 10px;
+    }
+    80% {
+        margin-top: 1px;
+        margin-left: 15px;
+    }
+    90% {
+        margin-top: 6px;
+        margin-left: 2px;
+    }
+    100% {
+        margin-top: 12px;
+        margin-left: -4px;
+    }
+}
+
+.butterflyCon {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    z-index:1000;
+    transform: rotateX(90deg);
+    transform-style: preserve-3d;
+    overflow: visible;
+
+    transition:
+    top 3s cubic-bezier(.34,.63,.26,.94),
+    left 3s cubic-bezier(.34,.63,.26,.94),
+    transform 1s linear;
+}
+
+.hover-container {
+    position: relative;
+    animation: hover 3s linear infinite alternate;
+    transform-style: preserve-3d;
+}
+
+.wing {
+    position: absolute;
+    transform-style: preserve-3d;
+    animation: flap 0.3s linear infinite alternate;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(ellipse at center, rgba(252,227,100,0.9) 65%,rgba(255,0,0,0.9) 100%);
+    border-bottom: 3px solid red;
+}
+.wing:after {
+    content: ' ';
+    position: absolute;
+    width: 74px;
+    height: 88px;
+    top: -76px;
+    left: 25px;
+    /*background-color: rgba(252, 227, 100, 0.69);*/
+    background: radial-gradient(ellipse at center, rgba(228, 203, 125, 0.9) 24%,rgba(248, 237, 110, 0.9) 27%,rgba(252,227,100,0.9) 64%,rgba(255, 0, 0, 0.9) 100%);
+    border-radius: 50% 114%;
+}
+.left {
+    transform-origin: right center;
+    border-radius: 177% 50%;
+}
+.right {
+    transform-origin: left center;
+    border-radius: 50% 177%;
+    left: 110px;
+    animation-direction: alternate-reverse;
+}
+
+.left:after {
+    left: 25px;
+    border-radius: 50% 114%;
+}
+
+.right:after {
+    left: 0;
+    border-radius: 114% 50%;
+}
+
+.body {
+    width: 10px;
+    height: 80px;
+    border-radius: 5px;
+    background-color: #333;
+    position: absolute;
+    left: 100px;
+    top: -30px;
+}
+
+.head {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #333;
+    left: 95px;
+    top: 32px;
+}
+.head:before {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    width: 1px;
+    height: 40px;
+    background-color: #333;
+    transform: rotateX(34deg) rotateZ(20deg) translateY(20px);
+    top: -7px;
+}
+.head:after {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    width: 1px;
+    height: 40px;
+    background-color: #333;
+    transform: rotateX(34deg) rotateZ(-20deg) translateY(20px);
+    top: -7px;
+    left: 15px;
+}

@@ -9,6 +9,6 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 
     @Override
     public String getAppName() {
-        return "Spincast quick start";
+        return "Spincast Quick Start";
     }
 }

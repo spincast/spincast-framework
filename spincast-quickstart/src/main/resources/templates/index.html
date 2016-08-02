@@ -1,17 +1,17 @@
 {% extends "./layout.html" %}
 
-{% block meta_title %}Spincast quick start{% endblock %}
-{% block meta_description %}Spincast quick start application{% endblock %}
+{% block meta_title %}Quick Start Application{% endblock %}
+{% block meta_description %}Spincast Quick Start Application{% endblock %}
 
 {% block body %}
 
 <div class="container">
-
-    <div id="jumb" class="jumbotron">
-        <h1>{{appName}}</h1>
-        <p>Application started on port {{serverPort}}</p>
+    <div class="row">
+        <div id="quickText" class="col-md-5 col-sm-12">
+            <h1>{{appName}}</h1>
+            <p>started on port {{serverPort}}</p>
+        </div>
     </div>
-    
-</div> 
+</div>
 
 {% endblock %}
