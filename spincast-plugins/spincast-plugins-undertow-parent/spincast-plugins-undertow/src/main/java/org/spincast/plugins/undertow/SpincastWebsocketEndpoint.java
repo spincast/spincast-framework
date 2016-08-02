@@ -222,14 +222,29 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
     }
 
     @Override
-    public void closeEndpoint() {
-        int closingCode = getSpincastUndertowConfig().getWebsocketDefaultClosingCode();
-        String closingReason = getSpincastUndertowConfig().getWebsocketDefaultClosingReason();
-        closeEndpoint(closingCode, closingReason);
+    public boolean isClosed() {
+        return this.endpointIsClosed;
     }
 
     @Override
-    public synchronized void closeEndpoint(int closingCode, String closingReason) {
+    public void closeEndpoint() {
+        closeEndpoint(true);
+    }
+
+    @Override
+    public void closeEndpoint(boolean sendClosingMessageToPeers) {
+        int closingCode = getSpincastUndertowConfig().getWebsocketDefaultClosingCode();
+        String closingReason = getSpincastUndertowConfig().getWebsocketDefaultClosingReason();
+        closeEndpoint(closingCode, closingReason, sendClosingMessageToPeers);
+    }
+
+    @Override
+    public void closeEndpoint(int closingCode, String closingReason) {
+        closeEndpoint(closingCode, closingReason, true);
+    }
+
+    @Override
+    public synchronized void closeEndpoint(int closingCode, String closingReason, boolean sendClosingMessageToPeers) {
 
         validateWebsocketClosingCode(closingCode);
 
@@ -245,7 +260,7 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
 
         //==========================================
         // Try to send a "closing connection" message
-        // to the peers before closing their connection...
+        // to the peers before closing their connection?
         //==========================================
         IClosedEventSentCallback callback = new IClosedEventSentCallback() {
 
@@ -269,10 +284,14 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
             }
         };
 
-        getUndertowWebsocketWriter().sendClosingConnection(closingCode,
-                                                           closingReason,
-                                                           getWebSocketChannelByPeerId().keySet(),
-                                                           callback);
+        if(sendClosingMessageToPeers) {
+            getUndertowWebsocketWriter().sendClosingConnection(closingCode,
+                                                               closingReason,
+                                                               getWebSocketChannelByPeerId().keySet(),
+                                                               callback);
+        } else {
+            callback.done();
+        }
     }
 
     /**

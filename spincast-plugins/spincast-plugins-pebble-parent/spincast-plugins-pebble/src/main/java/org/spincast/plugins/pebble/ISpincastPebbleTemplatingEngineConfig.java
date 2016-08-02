@@ -18,4 +18,33 @@ public interface ISpincastPebbleTemplatingEngineConfig {
      */
     public Extension getExtension();
 
+    /**
+     * The number of template item to keep in cache.
+     * 
+     * @return the max number of items to cache. If <code>&lt;= 0</code>,
+     * thi cache will be disabled.
+     */
+    public int getTemplateCacheItemNbr();
+
+    /**
+     * The number of "cache" tag item to keep in cache.
+     * <a href="http://www.mitchellbosecke.com/pebble/documentation/tag/cache">more info</a>
+     * 
+     * @return the max number of items to cache. If <code>&lt;= 0</code>,
+     * thi cache will be disabled.
+     */
+    public int getTagCacheTypeItemNbr();
+
+    /**
+     * Is the strict variable policy on?
+     * <p>
+     * From the doc : "If set to true, Pebble will throw an exception 
+     * if you try to access a variable or attribute that does not exist 
+     * (or an attribute of a null variable). If set to false, 
+     * your template will treat non-existing variables/attributes 
+     * as null without ever skipping a beat."
+     * </p>
+     */
+    public boolean isStrictVariablesEnabled();
+
 }

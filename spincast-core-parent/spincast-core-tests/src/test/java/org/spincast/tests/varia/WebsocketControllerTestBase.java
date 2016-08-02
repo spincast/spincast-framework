@@ -205,7 +205,7 @@ public abstract class WebsocketControllerTestBase<R extends IRequestContext<?>, 
     }
 
     public boolean isEndpointOpen(String endpointId) {
-        return getEndpointManager(endpointId) != null;
+        return getEndpointManager(endpointId) != null && !getEndpointManager(endpointId).isClosed();
     }
 
     public boolean waitForEndpointClosed(String endpointId) {
@@ -219,7 +219,7 @@ public abstract class WebsocketControllerTestBase<R extends IRequestContext<?>, 
 
             @Override
             public boolean check() {
-                return getEndpointManager(endpointId) == null;
+                return !isEndpointOpen(endpointId);
             }
 
         }, maxMillisecToWait);

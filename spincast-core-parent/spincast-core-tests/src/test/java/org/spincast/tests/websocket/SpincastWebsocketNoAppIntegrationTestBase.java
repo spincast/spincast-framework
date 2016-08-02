@@ -141,7 +141,7 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
 
         List<IWebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
         for(IWebsocketEndpointManager manager : websocketEndpointManagers) {
-            manager.closeEndpoint();
+            manager.closeEndpoint(false);
         }
         assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
 

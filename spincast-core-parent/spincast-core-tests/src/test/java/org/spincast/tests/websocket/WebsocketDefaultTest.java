@@ -24,6 +24,7 @@ import org.spincast.core.websocket.IDefaultWebsocketContext;
 import org.spincast.core.websocket.IWebsocketConnectionConfig;
 import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
@@ -128,7 +129,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         WebsocketClientTest client = new WebsocketClientTest();
         IWebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
-        assertTrue(controller.isEndpointOpen("endpoint1"));
+        assertTrue(controller.waitPeerConnected("endpoint1", "peer1"));
 
         controller.getEndpointManager("endpoint1").closeEndpoint();
 
@@ -1026,7 +1027,15 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         // Close "peer1"
         //==========================================
         controller.getEndpointManager("endpoint1").closePeer("peer1");
-        assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
+
+        //assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
+        SpincastTestUtils.waitForTrue(new TrueChecker() {
+
+            @Override
+            public boolean check() {
+                return getServer().getWebsocketEndpointManager("endpoint1").getPeersIds().size() == 1;
+            }
+        }, 5000);
 
         //==========================================
         // Now "peer1" id is free again

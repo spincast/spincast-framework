@@ -1,5 +1,6 @@
 package org.spincast.website;
 
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.website.pebble.AppPebbleExtension;
 
@@ -14,7 +15,9 @@ public class AppPebbleTemplatingEngineConfig extends SpincastPebbleTemplatingEng
     private final AppPebbleExtension appPebbleExtension;
 
     @Inject
-    public AppPebbleTemplatingEngineConfig(AppPebbleExtension appPebbleExtension) {
+    public AppPebbleTemplatingEngineConfig(AppPebbleExtension appPebbleExtension,
+                                           ISpincastConfig spincastConfig) {
+        super(spincastConfig);
         this.appPebbleExtension = appPebbleExtension;
     }
 

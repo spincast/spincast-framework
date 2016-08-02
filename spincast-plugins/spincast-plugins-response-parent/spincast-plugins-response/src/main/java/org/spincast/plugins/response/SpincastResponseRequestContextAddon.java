@@ -21,6 +21,7 @@ import org.spincast.core.exchange.IResponseRequestContextAddon;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.routing.IETagFactory;
 import org.spincast.core.server.IServer;
+import org.spincast.core.utils.Bool;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
 import org.spincast.core.utils.ISpincastUtils;
@@ -53,7 +54,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     private final ByteArrayOutputStream byteArrayOutputStreamIn = new ByteArrayOutputStream(256);
     private final ByteArrayOutputStream byteArrayOutputStreamOut = new ByteArrayOutputStream(256);
     private GZIPOutputStream gzipOutputStream = null;
-    private Boolean isShouldGzip = null;
+    private Bool isShouldGzip = null;
 
     private String charactersCharsetName = "UTF-8";
     private boolean isResponseCharactersBased = IS_RESPONSE_CHARACTERS_BASED_BY_DEFAULT;
@@ -201,7 +202,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                 //==========================================
                 GzipOption gzipOption = getGzipOption();
                 if(gzipOption == GzipOption.DEFAULT) {
-                    setIsShouldGzip(null);
+                    this.isShouldGzip = null;
                 }
             }
             this.responseContentType = responseContentType;
@@ -722,7 +723,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         return getServer().isResponseHeadersSent(getExchange());
     }
 
-    protected void setIsShouldGzip(Boolean isShouldGzip) {
+    protected void setIsShouldGzip(boolean isShouldGzip) {
 
         GzipOption gzipOption = getGzipOption();
         if(gzipOption != GzipOption.DEFAULT) {
@@ -732,7 +733,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
         try {
             if(isHeadersSent()) {
-                if(this.isShouldGzip != isShouldGzip) {
+                if(this.isShouldGzip != null && this.isShouldGzip.getBoolean() != isShouldGzip) {
                     this.logger.warn("Can't turn on/off the gzip feature since headers are already sent.");
                 }
                 return;
@@ -742,7 +743,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             // If we turn off the gziping, we have to
             // change the buffer.
             //==========================================
-            if(this.isShouldGzip != null && this.isShouldGzip && (isShouldGzip == null || !isShouldGzip)) {
+            if(this.isShouldGzip != null && this.isShouldGzip.getBoolean() && !isShouldGzip) {
 
                 this.byteArrayOutputStreamIn.reset();
 
@@ -756,7 +757,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                 this.gzipOutputStream = null;
             }
 
-            this.isShouldGzip = isShouldGzip;
+            this.isShouldGzip = Bool.from(isShouldGzip);
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
@@ -810,17 +811,23 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             // shouldn't use gzip.
             //==========================================
             if(responseContentType != null) {
-                setIsShouldGzip(!getSpincastUtils().isContentTypeToSkipGziping(responseContentType));
+                if(!getSpincastUtils().isContentTypeToSkipGziping(responseContentType)) {
+                    if(!hasGzipAcceptHeader) {
+                        this.logger.debug("No gzip 'Accept-Encoding' header, we won't gzip the response.");
+                        setIsShouldGzip(false);
+                    } else {
+                        setIsShouldGzip(true);
+                    }
+                }
             } else {
                 setIsShouldGzip(false);
             }
-
-            if(this.isShouldGzip && !hasGzipAcceptHeader) {
-                this.logger.debug("No gzip 'Accept-Encoding' header, we won't gzip the response.");
-                setIsShouldGzip(false);
-            }
         }
-        return this.isShouldGzip;
+
+        if(this.isShouldGzip == null) {
+            return false;
+        }
+        return this.isShouldGzip.getBoolean();
     }
 
     @Override

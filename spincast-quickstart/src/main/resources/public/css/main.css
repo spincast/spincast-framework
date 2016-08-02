@@ -98,6 +98,7 @@ http://www.michaelbromley.co.uk/blog/236/css-javascript-3d-butterfly-case-study
     transform: rotateX(90deg);
     transform-style: preserve-3d;
     overflow: visible;
+    visibility:hidden;
 
     transition:
     top 3s cubic-bezier(.34,.63,.26,.94),

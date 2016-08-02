@@ -1,6 +1,7 @@
 package org.spincast.plugins.pebble.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.pebble.ISpincastPebbleTemplatingEngineConfig;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -27,6 +29,9 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     protected ITemplatingEngine templatingEngine;
 
     @Inject
+    protected ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
+
+    @Inject
     protected IJsonManager jsonManager;
 
     @Inject
@@ -34,6 +39,10 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     protected ISpincastUtils getSpincastUtils() {
         return this.spincastUtils;
+    }
+
+    protected ISpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
+        return this.spincastPebbleTemplatingEngineConfig;
     }
 
     @Override
@@ -215,6 +224,13 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String result = response.getContentAsString();
         assertEquals(expected.toString(), result);
+    }
+
+    @Test
+    public void cacheValuesNotDebugMode() throws Exception {
+        assertEquals(0, getSpincastPebbleTemplatingEngineConfig().getTemplateCacheItemNbr());
+        assertEquals(200, getSpincastPebbleTemplatingEngineConfig().getTagCacheTypeItemNbr());
+        assertFalse(getSpincastPebbleTemplatingEngineConfig().isStrictVariablesEnabled());
     }
 
 }

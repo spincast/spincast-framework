@@ -1,4 +1,9 @@
 
+
+/*
+Butterfly from :
+http://www.michaelbromley.co.uk/blog/236/css-javascript-3d-butterfly-case-study
+*/
 var timer;
 var butterflyWingspan = 100;
 var rotationDamping = 10;
@@ -12,6 +17,8 @@ function moveTo(e) {
 }
 
 function moveToXY(x, y) {
+	
+	container.style.visibility = 'visible';
 	
     var currentX = parseInt(container.style.left, 10);
     var currentY = parseInt(container.style.top, 10);

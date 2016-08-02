@@ -34,6 +34,10 @@ public interface IWebsocketEndpointManager extends IWebsocketEndpointWriter {
      * Closes the entire WebSocket endpoint. 
      * All peer connections of this endpoint will be
      * closed and the endpoint will be removed.
+     * <p>
+     * Will try to send a "closing" message to the peers
+     * before closing their connection.
+     * </p>
      */
     public void closeEndpoint();
 
@@ -41,6 +45,37 @@ public interface IWebsocketEndpointManager extends IWebsocketEndpointWriter {
      * Closes the entire WebSocket endpoint. 
      * All peer connections of this endpoint will be
      * closed and the endpoint will be removed.
+     * 
+     * @param sendClosingMessageToPeers if <code>true</code>,
+     * Spincast will try to send a "closing" message to the peers
+     * before closing their connections.
+     */
+    public void closeEndpoint(boolean sendClosingMessageToPeers);
+
+    /**
+     * Closes the entire WebSocket endpoint. 
+     * All peer connections of this endpoint will be
+     * closed and the endpoint will be removed.
+     * <p>
+     * Will try to send a "closing" message to the peers
+     * before closing their connection.
+     * </p>
      */
     public void closeEndpoint(int closingCode, String closingReason);
+
+    /**
+     * Closes the entire WebSocket endpoint. 
+     * All peer connections of this endpoint will be
+     * closed and the endpoint will be removed.
+     * 
+     * @param sendClosingMessageToPeers if <code>true</code>,
+     * Spincast will try to send a "closing" message to the peers
+     * before closing their connections.
+     */
+    public void closeEndpoint(int closingCode, String closingReason, boolean sendClosingMessageToPeers);
+
+    /**
+     * Is this endpoint closed?
+     */
+    public boolean isClosed();
 }
