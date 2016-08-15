@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.website.IAppConfig;
 import org.spincast.website.exchange.IAppRequestContext;
@@ -58,10 +59,14 @@ public class AdminController {
     }
 
     public void index(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/admin/adminIndex.html", null);
+        context.response().sendTemplateHtml("/templates/admin/adminIndex.html", (IJsonObject)null);
     }
 
     public void news(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/admin/adminNews.html", null);
+
+        IJsonObject formDatas = context.request().getFormDatas();
+        //formDatas.put(key, value, clone)
+
+        context.response().sendTemplateHtml("/templates/admin/adminNews.html", (IJsonObject)null);
     }
 }

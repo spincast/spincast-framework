@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -238,6 +239,11 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
+    public boolean isRunning() {
+        return this.undertowServer != null;
+    }
+
+    @Override
     public synchronized void start() {
 
         if(this.undertowServer != null) {
@@ -254,16 +260,18 @@ public class SpincastUndertowServer implements IServer {
                 this.undertowServer.start();
                 break;
             } catch(Exception ex) {
+
                 if((ex instanceof BindException) || (ex.getCause() != null && ex.getCause() instanceof BindException)) {
                     this.logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
                                      "...");
-                    if(i == (serverStartTryNbr - 1)) {
+
+                    if(i < serverStartTryNbr) {
                         try {
                             Thread.sleep(getStartServerSleepMilliseconds());
                         } catch(InterruptedException e) {
                         }
+                        continue;
                     }
-                    continue;
                 }
                 this.undertowServer = null;
                 throw ex;
@@ -469,17 +477,23 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public synchronized void stop() {
+    public void stop() {
+        stop(true);
+    }
 
+    @Override
+    public synchronized void stop(boolean sendClosingMessageToPeers) {
         if(this.undertowServer != null) {
 
             //==========================================
             // If there are some active Websocket endpoints,
             // we try to send a "close" event to the peers before
-            // closing the server.
+            // actually closing the server.
             //==========================================
             try {
-                sendWebsocketEnpointsClosedWhenServerStops();
+                if(sendClosingMessageToPeers) {
+                    sendWebsocketEnpointsClosedWhenServerStops();
+                }
             } finally {
                 try {
                     this.undertowServer.stop();
@@ -491,15 +505,80 @@ public class SpincastUndertowServer implements IServer {
         }
     }
 
+    protected int getSecondsToWaitForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer() {
+        return getSpincastUndertowConfig().getSecondsToWaitForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
+    }
+
+    protected int getMilliSecondsIncrementWhenWaitingForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer() {
+        return getSpincastUndertowConfig().getMilliSecondsIncrementWhenWaitingForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
+    }
+
     protected void sendWebsocketEnpointsClosedWhenServerStops() {
+
         Collection<IWebsocketEndpoint> websocketEndpointsMap = getWebsocketEndpointsMap().values();
         List<IWebsocketEndpoint> websocketEndpoints = new ArrayList<IWebsocketEndpoint>(websocketEndpointsMap);
+
+        Set<String> unclosedEndpoints = new HashSet<String>(getWebsocketEndpointsMap().keySet());
+
+        this.logger.debug("We wait for those endpoints to be finished closing : " +
+                          Arrays.toString(unclosedEndpoints.toArray()));
+
         for(IWebsocketEndpoint websocketEndpoint : websocketEndpoints) {
             try {
-                websocketEndpoint.closeEndpoint();
+                websocketEndpoint.closeEndpoint(true);
             } catch(Exception ex) {
                 this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
                                  ex.getMessage());
+            }
+        }
+
+        //==========================================
+        // Wait for endpoints to be closed...
+        //==========================================
+        int millisecondsWaited = 0;
+        int millisecondsToWait =
+                1000 * getSecondsToWaitForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
+        int incrementsMilliseconds =
+                getMilliSecondsIncrementWhenWaitingForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
+
+        outer : while(millisecondsWaited < millisecondsToWait) {
+
+            try {
+                for(IWebsocketEndpoint websocketEndpoint : websocketEndpoints) {
+
+                    try {
+                        if(unclosedEndpoints.contains(websocketEndpoint.getEndpointId()) &&
+                           websocketEndpoint.isClosed()) {
+                            this.logger.debug("Endpoint '" + websocketEndpoint.getEndpointId() +
+                                              "' finished closing!");
+                            unclosedEndpoints.remove(websocketEndpoint.getEndpointId());
+                            if(unclosedEndpoints.size() == 0) {
+                                this.logger.debug("All endpoints finished closing!");
+                                break outer;
+                            }
+                        }
+                    } catch(Exception ex) {
+                        this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
+                                         ex.getMessage());
+                    }
+                }
+            } catch(Exception ex) {
+                this.logger.warn("Error while checking if all endpoints are closed : " + ex.getMessage());
+            }
+
+            this.logger.debug("Some endpoints are not finished closing. Remaining : " +
+                              Arrays.toString(unclosedEndpoints.toArray()));
+
+            try {
+                Thread.sleep(incrementsMilliseconds);
+            } catch(InterruptedException e) {
+            }
+            millisecondsWaited += incrementsMilliseconds;
+
+            if(millisecondsWaited >= millisecondsToWait) {
+                this.logger.debug("Some endpoints are still not finished closing, even after waiting for " +
+                                  millisecondsWaited + " milliseconds. We'll stop the server as is. Remaining : " +
+                                  Arrays.toString(unclosedEndpoints.toArray()));
             }
         }
     }
@@ -1068,6 +1147,7 @@ public class SpincastUndertowServer implements IServer {
             if(formDataParser == null) {
                 return null;
             }
+            formDataParser.setCharacterEncoding(getSpincastUndertowConfig().getHtmlFormEncoding());
 
             if(!exchange.isBlocking()) {
                 exchange.startBlocking();

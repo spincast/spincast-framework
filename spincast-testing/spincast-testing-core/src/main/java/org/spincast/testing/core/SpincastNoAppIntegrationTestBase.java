@@ -98,8 +98,12 @@ public abstract class SpincastNoAppIntegrationTestBase<R extends IRequestContext
     }
 
     protected void clearRoutes() {
-        getRouter().removeAllRoutes();
+        getRouter().removeAllRoutes(removeSpincastRoutesToo());
         getServer().removeAllStaticResourcesServed();
+    }
+
+    protected boolean removeSpincastRoutesToo() {
+        return false;
     }
 
 }

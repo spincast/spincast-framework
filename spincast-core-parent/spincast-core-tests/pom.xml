@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-core-parent</artifactId>
-        <version>0.9.27</version>
+        <version>0.9.28-SNAPSHOT</version>
     </parent>
     
 	<artifactId>spincast-core-tests</artifactId>
@@ -32,7 +32,14 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.9.2</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--=================================== 
         Logback - Logging implementation.
         ====================================-->

@@ -21,6 +21,14 @@ import org.spincast.plugins.httpclient.IHttpResponse;
 
 public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase {
 
+    //==========================================
+    // Remove all routes, even Spincast ones
+    //==========================================
+    @Override
+    protected boolean removeSpincastRoutesToo() {
+        return true;
+    }
+
     protected String flag = "";
     protected IHandler<IDefaultRequestContext> mainHandler = new IHandler<IDefaultRequestContext>() {
 

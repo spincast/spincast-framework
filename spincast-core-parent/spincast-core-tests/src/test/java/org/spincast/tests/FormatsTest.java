@@ -160,9 +160,9 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                     IJsonObject jsonObject = context.json().create(byteArrayInputStream);
                     assertNotNull(jsonObject);
-                    assertEquals(true, (boolean)jsonObject.get("anotherBoolean"));
-                    assertNotNull(jsonObject.get("innerObj"));
-                    assertTrue(jsonObject.get("innerObj") instanceof IJsonObject);
+                    assertEquals(true, jsonObject.getBoolean("anotherBoolean"));
+                    assertNotNull(jsonObject.getJsonObject("innerObj"));
+                    assertTrue(jsonObject.getJsonObject("innerObj") instanceof IJsonObject);
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent</artifactId>
-        <version>0.9.27</version>
+        <version>0.9.28-SNAPSHOT</version>
         <relativePath>../spincast-parent</relativePath>
     </parent>
 
@@ -32,6 +32,15 @@
         <dependency>
             <groupId>org.spincast</groupId>
             <artifactId>spincast-plugins-config-properties-file</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
+        Spincast validation plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-validation</artifactId>
             <version>${project.version}</version>
         </dependency>
         

@@ -87,4 +87,22 @@ public interface ISpincastUndertowConfig {
      */
     public ThreadFactory getWebsocketThreadExecutorForAppEventsThreadFactory();
 
+    /**
+     * The number of seconds max to wait for all endpoints to be closed properly
+     * before calling the killing server.stop() method.
+     */
+    public int getSecondsToWaitForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
+
+    /**
+     * The number of milliseconds to sleep between two validations that all
+     * endpoints are closed properly before calling the killing server.stop() method.
+     */
+    public int getMilliSecondsIncrementWhenWaitingForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
+
+    /**
+     * The encoding the use to parse the data from HTML forms.
+     * Default to <code>UTF-8</code>.
+     */
+    public String getHtmlFormEncoding();
+
 }

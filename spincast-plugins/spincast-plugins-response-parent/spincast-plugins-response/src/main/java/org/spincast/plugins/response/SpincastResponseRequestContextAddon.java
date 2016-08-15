@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.IResponseRequestContextAddon;
 import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.IETagFactory;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.Bool;
@@ -61,6 +63,14 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     private boolean requestSizeValidated = false;
     private Map<String, List<String>> headers;
     private GzipOption gzipOption = GzipOption.DEFAULT;
+
+    private List<String> globalErrors;
+    private List<String> globalConfirms;
+    private List<String> globalWarnings;
+
+    private Map<String, List<IFieldMessage>> fieldsErrors;
+    private Map<String, List<IFieldMessage>> fieldsConfirms;
+    private Map<String, List<IFieldMessage>> fieldsWarnings;
 
     @Inject
     public SpincastResponseRequestContextAddon(R requestContext,
@@ -117,6 +127,50 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
     protected ByteArrayOutputStream getOut() {
         return this.byteArrayOutputStreamOut;
+    }
+
+    protected List<String> getGlobalErrors() {
+        if(this.globalErrors == null) {
+            this.globalErrors = new ArrayList<String>();
+        }
+        return this.globalErrors;
+    }
+
+    protected List<String> getGlobalConfirms() {
+
+        if(this.globalConfirms == null) {
+            this.globalConfirms = new ArrayList<String>();
+        }
+        return this.globalConfirms;
+    }
+
+    protected List<String> getGlobalWarnings() {
+
+        if(this.globalWarnings == null) {
+            this.globalWarnings = new ArrayList<String>();
+        }
+        return this.globalWarnings;
+    }
+
+    protected Map<String, List<IFieldMessage>> getFieldsErrors() {
+        if(this.fieldsErrors == null) {
+            this.fieldsErrors = new HashMap<String, List<IFieldMessage>>();
+        }
+        return this.fieldsErrors;
+    }
+
+    protected Map<String, List<IFieldMessage>> getFieldsConfirms() {
+        if(this.fieldsConfirms == null) {
+            this.fieldsConfirms = new HashMap<String, List<IFieldMessage>>();
+        }
+        return this.fieldsConfirms;
+    }
+
+    protected Map<String, List<IFieldMessage>> getFieldsWarnings() {
+        if(this.fieldsWarnings == null) {
+            this.fieldsWarnings = new HashMap<String, List<IFieldMessage>>();
+        }
+        return this.fieldsWarnings;
     }
 
     public GZIPOutputStream getGzipBuffer() {
@@ -418,13 +472,46 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendHtmlParse(String html, Map<String, Object> params) {
-        sendHtmlParse(html, params, false);
+    public void sendParseHtml(String html, Map<String, Object> params) {
+        sendParseHtml(html, params, false);
     }
 
     @Override
-    public void sendHtmlParse(String html, Map<String, Object> params, boolean flush) {
-        String evaluated = getRequestContext().templating().evaluate(html, params);
+    public void sendParseHtml(String html, Map<String, Object> params, boolean flush) {
+
+        IJsonObject model = getJsonManager().create(params);
+        sendParseHtml(html, model, flush);
+    }
+
+    @Override
+    public void sendParseHtml(String html, IJsonObject model) {
+        sendParseHtml(html, model, false);
+    }
+
+    @Override
+    public void sendParseHtml(String html, IJsonObject model, boolean flush) {
+        String evaluated = getRequestContext().templating().evaluate(html, model);
+        sendHtml(evaluated, flush);
+    }
+
+    @Override
+    public void sendTemplateHtml(String templatePath, IJsonObject model) {
+        sendTemplateHtml(templatePath, true, model, false);
+    }
+
+    @Override
+    public void sendTemplateHtml(String templatePath, IJsonObject model, boolean flush) {
+        sendTemplateHtml(templatePath, true, model, flush);
+    }
+
+    @Override
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, IJsonObject model) {
+        sendTemplateHtml(templatePath, isClasspathPath, model, false);
+    }
+
+    @Override
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, IJsonObject model, boolean flush) {
+        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, model);
         sendHtml(evaluated, flush);
     }
 
@@ -436,32 +523,56 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     @Override
     public void sendParse(String content, String contentType, Map<String, Object> params, boolean flush) {
 
+        if(params == null) {
+            params = new HashMap<String, Object>();
+        }
+        IJsonObject model = getJsonManager().create(params);
+
+        sendParse(content, contentType, model, flush);
+    }
+
+    @Override
+    public void sendParse(String content, String contentType, IJsonObject model) {
+        sendParse(content, contentType, model, false);
+    }
+
+    @Override
+    public void sendParse(String content, String contentType, IJsonObject model, boolean flush) {
+
         if(StringUtils.isBlank(contentType)) {
-            sendHtmlParse(content, params, flush);
+            sendParseHtml(content, model, flush);
             return;
         }
 
-        String evaluated = getRequestContext().templating().evaluate(content, params);
+        String evaluated = getRequestContext().templating().evaluate(content, model);
         sendCharacters(evaluated, contentType, flush);
     }
 
+    /*
     @Override
-    public void sendHtmlTemplate(String templatePath, Map<String, Object> params) {
-        sendHtmlTemplate(templatePath, true, params, false);
+    public void sendTemplateHtml(String templatePath) {
+        IJsonObject responseJsonObject = generateJsonObjectResponse();
+        sendTemplateHtml(templatePath, true, responseJsonObject, false);
+    }
+    */
+
+    @Override
+    public void sendTemplateHtml(String templatePath, Map<String, Object> params) {
+        sendTemplateHtml(templatePath, true, params, false);
     }
 
     @Override
-    public void sendHtmlTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params) {
-        sendHtmlTemplate(templatePath, isClasspathPath, params, false);
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, Map<String, Object> params) {
+        sendTemplateHtml(templatePath, isClasspathPath, params, false);
     }
 
     @Override
-    public void sendHtmlTemplate(String templatePath, Map<String, Object> params, boolean flush) {
-        sendHtmlTemplate(templatePath, true, params, flush);
+    public void sendTemplateHtml(String templatePath, Map<String, Object> params, boolean flush) {
+        sendTemplateHtml(templatePath, true, params, flush);
     }
 
     @Override
-    public void sendHtmlTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, boolean flush) {
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, Map<String, Object> params, boolean flush) {
         String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, params);
         sendHtml(evaluated, flush);
     }
@@ -485,6 +596,32 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, Map<String, Object> params,
                              boolean flush) {
 
+        if(params == null) {
+            params = new HashMap<String, Object>();
+        }
+        IJsonObject model = getJsonManager().create(params);
+
+        sendTemplate(templatePath, isClasspathPath, contentType, model, flush);
+    }
+
+    @Override
+    public void sendTemplate(String templatePath, String contentType, IJsonObject model) {
+        sendTemplate(templatePath, true, contentType, model, false);
+    }
+
+    @Override
+    public void sendTemplate(String templatePath, String contentType, IJsonObject model, boolean flush) {
+        sendTemplate(templatePath, true, contentType, model, flush);
+    }
+
+    @Override
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, IJsonObject model) {
+        sendTemplate(templatePath, isClasspathPath, contentType, model, false);
+    }
+
+    @Override
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, IJsonObject model, boolean flush) {
+
         if(StringUtils.isBlank(contentType)) {
 
             contentType = getSpincastUtils().getMimeTypeFromPath(templatePath);
@@ -496,7 +633,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             }
         }
 
-        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, params);
+        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, model);
         sendCharacters(evaluated, contentType, flush);
     }
 
@@ -687,7 +824,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             // We use a TreeMap with String.CASE_INSENSITIVE_ORDER so the
             // "get" is case insensitive!
             TreeMap<String, List<String>> treeMap = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
-            if(headersFromServer == null) {
+            if(headersFromServer != null) {
                 treeMap.putAll(headersFromServer);
             }
 
@@ -987,5 +1124,280 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
         return this;
     }
+
+    /*
+    @Override
+    public void addErrorGlobal(String globalErrorMessage) {
+    
+        if(StringUtils.isBlank(globalErrorMessage)) {
+            throw new RuntimeException("The error message can't be empty.");
+        }
+    
+        getGlobalErrors().add(globalErrorMessage);
+    }
+    
+    @Override
+    public void addErrorField(String fieldName, String fieldErrorMessage) {
+        addErrorField(fieldName, null, null, fieldErrorMessage);
+    }
+    
+    @Override
+    public void addErrorField(String fieldName, int valuePosition, String fieldErrorMessage) {
+        addErrorField(fieldName, null, valuePosition, fieldErrorMessage);
+    }
+    
+    @Override
+    public void addErrorField(String fieldName, String value, String fieldErrorMessage) {
+        addErrorField(fieldName, value, null, fieldErrorMessage);
+    }
+    
+    protected void addErrorField(String fieldName, String value, Integer valuePosition, String fieldErrorMessage) {
+    
+        if(StringUtils.isBlank(fieldName)) {
+            throw new RuntimeException("The field name can't be empty.");
+        }
+        if(StringUtils.isBlank(fieldErrorMessage)) {
+            throw new RuntimeException("The error message can't be empty.");
+        }
+    
+        List<IFieldMessage> errors = getFieldsErrors().get(fieldName);
+        if(errors == null) {
+            errors = new ArrayList<IFieldMessage>();
+            getFieldsErrors().put(fieldName, errors);
+        }
+        errors.add(createFieldMessage(FieldMessageType.ERROR, fieldName, value, valuePosition, fieldErrorMessage));
+    }
+    
+    protected IFieldMessage createFieldMessage(FieldMessageType messageType, String fieldName, String value,
+                                               Integer valuePosition, String fieldErrorMessage) {
+        return new FieldMessage(messageType, fieldName, value, valuePosition, fieldErrorMessage);
+    }
+    
+    @Override
+    public void addWarningGlobal(String globalWarningMessage) {
+    
+        if(StringUtils.isBlank(globalWarningMessage)) {
+            throw new RuntimeException("The warning message can't be empty.");
+        }
+    
+        getGlobalWarnings().add(globalWarningMessage);
+    }
+    
+    @Override
+    public void addWarningField(String fieldName, String fieldWarningMessage) {
+    
+        if(StringUtils.isBlank(fieldName)) {
+            throw new RuntimeException("The field name can't be empty.");
+        }
+        if(StringUtils.isBlank(fieldWarningMessage)) {
+            throw new RuntimeException("The warning message can't be empty.");
+        }
+    
+        List<IFieldMessage> warnings = getFieldsWarnings().get(fieldName);
+        if(warnings == null) {
+            warnings = new ArrayList<IFieldMessage>();
+            getFieldsWarnings().put(fieldName, warnings);
+        }
+        warnings.add(createFieldMessage(FieldMessageType.WARNING, fieldName, null, null, fieldWarningMessage));
+    }
+    
+    @Override
+    public void addConfirmGlobal(String globalConfirmationMessage) {
+    
+        if(StringUtils.isBlank(globalConfirmationMessage)) {
+            throw new RuntimeException("The confirmation message can't be empty.");
+        }
+    
+        getGlobalConfirms().add(globalConfirmationMessage);
+    }
+    
+    @Override
+    public void addConfirmField(String fieldName, String fieldConfirmationMessage) {
+    
+        if(StringUtils.isBlank(fieldName)) {
+            throw new RuntimeException("The field name can't be empty.");
+        }
+        if(StringUtils.isBlank(fieldConfirmationMessage)) {
+            throw new RuntimeException("The confirmation message can't be empty.");
+        }
+    
+        List<IFieldMessage> confirms = getFieldsConfirms().get(fieldName);
+        if(confirms == null) {
+            confirms = new ArrayList<IFieldMessage>();
+            getFieldsConfirms().put(fieldName, confirms);
+        }
+        confirms.add(createFieldMessage(FieldMessageType.CONFIRM, fieldName, null, null, fieldConfirmationMessage));
+    }
+    
+    protected IJsonObject generateJsonObjectResponse() {
+    
+        IJsonObject jsonObj = getJsonManager().create();
+    
+    
+        IJsonObject fields = getJsonManager().create();
+        
+        Map<String, List<String>> formDatas = getRequestContext().request().getFormDatas();
+        if(formDatas != null) {
+            for(Entry<String, List<String>> entry : formDatas.entrySet()) {
+        
+                String fieldName = entry.getKey().trim();
+        
+                IJsonObject field = getJsonManager().create();
+                fields.put(fieldName, field);
+        
+                //==========================================
+                // Field level messages
+                //==========================================
+                List<IFieldMessage> allFieldErrors = getFieldsErrors().get(fieldName);
+                if(allFieldErrors == null) {
+                    allFieldErrors = new ArrayList<IFieldMessage>();
+                }
+        
+                List<IFieldMessage> fieldLevelErrors = new ArrayList<IFieldMessage>();
+                for(IFieldMessage error : allFieldErrors) {
+                    if(error.getValuePosition() == null && error.getValue() == null) {
+                        fieldLevelErrors.add(error);
+                    }
+                }
+                field.put("errors", fieldLevelErrors);
+                field.put("isError", allFieldErrors.size() > 0);
+        
+                List<IFieldMessage> allFieldWarnings = getFieldsWarnings().get(fieldName);
+                if(allFieldWarnings == null) {
+                    allFieldWarnings = new ArrayList<IFieldMessage>();
+                }
+                List<IFieldMessage> fieldLevelWarnings = new ArrayList<IFieldMessage>();
+                for(IFieldMessage warning : allFieldWarnings) {
+                    if(warning.getValuePosition() == null && warning.getValue() == null) {
+                        fieldLevelWarnings.add(warning);
+                    }
+                }
+                field.put("warnings", fieldLevelWarnings);
+                field.put("isWarning", allFieldWarnings.size() > 0 && allFieldErrors.size() == 0);
+        
+                List<IFieldMessage> allFieldConfirms = getFieldsConfirms().get(fieldName);
+                if(allFieldConfirms == null) {
+                    allFieldConfirms = new ArrayList<IFieldMessage>();
+                }
+                List<IFieldMessage> fieldLevelConfirms = new ArrayList<IFieldMessage>();
+                for(IFieldMessage confirm : allFieldConfirms) {
+                    if(confirm.getValuePosition() == null && confirm.getValue() == null) {
+                        fieldLevelConfirms.add(confirm);
+                    }
+                }
+                field.put("confirms", fieldLevelConfirms);
+                field.put("isConfirm", allFieldConfirms.size() > 0 && allFieldErrors.size() == 0 && allFieldWarnings.size() == 0);
+        
+                //==========================================
+                // Field values
+                //==========================================
+                List<IJsonObject> fieldValues = new ArrayList<>();
+                field.put("values", fieldValues);
+        
+                List<String> submittedValues = entry.getValue();
+        
+                for(int i = 0; i < submittedValues.size(); i++) {
+        
+                    IJsonObject fieldValue = getJsonManager().create();
+                    fieldValues.add(fieldValue);
+        
+                    fieldValue.put("value", submittedValues.get(i));
+        
+                    //==========================================
+                    // FieldValue level messages
+                    //==========================================
+                    fieldValue.put("errors", getJsonManager().createArray());
+                    fieldValue.put("warnings", getJsonManager().createArray());
+                    fieldValue.put("confirms", getJsonManager().createArray());
+                }
+            }
+        }
+        
+        //==========================================
+        // Some groups may need some messages without any fields
+        // present in the request. For example a group of
+        // checkbox with no option checked.
+        //==========================================
+        for(Entry<String, List<IFieldMessage>> entry : getFieldsErrors().entrySet()) {
+        
+            String fieldName = entry.getKey();
+            if(!fields.isKeyExists(fieldName)) {
+        
+                IJsonObject field = getJsonManager().create();
+        
+                List<IFieldMessage> errors = entry.getValue();
+                if(errors == null) {
+                    errors = new ArrayList<IFieldMessage>();
+                }
+                field.put("errors", errors);
+                field.put("isError", errors.size() > 0);
+        
+                List<IFieldMessage> warnings = getFieldsWarnings().get(fieldName);
+                if(warnings == null) {
+                    warnings = new ArrayList<IFieldMessage>();
+                }
+                field.put("warnings", warnings);
+                field.put("isWarning", warnings.size() > 0 && errors.size() == 0);
+        
+                List<IFieldMessage> confirms = getFieldsConfirms().get(fieldName);
+                if(confirms == null) {
+                    confirms = new ArrayList<IFieldMessage>();
+                }
+                field.put("confirms", confirms);
+                field.put("isConfirm", confirms.size() > 0 && errors.size() == 0 && warnings.size() == 0);
+        
+                fields.put(fieldName, field);
+            }
+        }
+        
+        for(Entry<String, List<IFieldMessage>> entry : getFieldsWarnings().entrySet()) {
+        
+            String fieldName = entry.getKey();
+            if(!fields.isKeyExists(fieldName)) {
+        
+                IJsonObject field = getJsonManager().create();
+        
+                List<IFieldMessage> warnings = entry.getValue();
+                if(warnings == null) {
+                    warnings = new ArrayList<IFieldMessage>();
+                }
+                field.put("warnings", warnings);
+                field.put("isWarning", warnings.size() > 0);
+        
+                List<IFieldMessage> confirms = getFieldsConfirms().get(fieldName);
+                if(confirms == null) {
+                    confirms = new ArrayList<IFieldMessage>();
+                }
+                field.put("confirms", confirms);
+                field.put("isConfirm", confirms.size() > 0 && warnings.size() == 0);
+        
+                fields.put(fieldName, field);
+            }
+        }
+        
+        for(Entry<String, List<IFieldMessage>> entry : getFieldsConfirms().entrySet()) {
+        
+            String fieldName = entry.getKey();
+            if(!fields.isKeyExists(fieldName)) {
+        
+                IJsonObject field = getJsonManager().create();
+        
+                List<IFieldMessage> confirms = entry.getValue();
+                if(confirms == null) {
+                    confirms = new ArrayList<IFieldMessage>();
+                }
+                field.put("confirms", confirms);
+                field.put("isConfirm", confirms.size() > 0);
+        
+                fields.put(fieldName, field);
+            }
+        }
+        
+        jsonObj.put("fields", fields);
+    
+        return jsonObj;
+    }
+    
+    */
 
 }

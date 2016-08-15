@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.exceptions.ICustomStatusCodeException;
 import org.spincast.core.exceptions.IPublicException;
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
@@ -52,7 +53,7 @@ public class ErrorController {
         }
         params.put("htmlSectionClasses", htmlSectionClasses);
 
-        context.response().sendHtmlTemplate("/templates/errorNotFound.html", params);
+        context.response().sendTemplateHtml("/templates/errorNotFound.html", params);
     }
 
     /**
@@ -81,14 +82,14 @@ public class ErrorController {
             if(context.request().isJsonShouldBeReturn()) {
                 context.response().sendJsonObj(exception.getMessage());
             } else {
-                context.response().sendHtmlTemplate("/templates/exceptionPublic.html",
+                context.response().sendTemplateHtml("/templates/exceptionPublic.html",
                                                     SpincastStatics.params("message", exception.getMessage()));
             }
         } else {
             if(context.request().isJsonShouldBeReturn()) {
                 context.response().sendJsonObj("Server error");
             } else {
-                context.response().sendHtmlTemplate("/templates/exception.html", null);
+                context.response().sendTemplateHtml("/templates/exception.html", (IJsonObject)null);
             }
         }
 

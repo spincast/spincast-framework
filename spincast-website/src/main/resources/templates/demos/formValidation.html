@@ -1,0 +1,193 @@
+{#==========================================
+Demos - Form Validation
+==========================================#}
+{% extends "../demos.html" %}
+
+{% block subSectionClasses %}demo_form_validation{% endblock %}
+{% block meta_title %}Demo - Form Validation{% endblock %}
+{% block meta_description %}For Validation demo using Spincast{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+    $(function() {
+    	
+        $("#email").focus();
+        
+        $("#fillEmail").on("click", function() {
+        	$("#email").val("test@example.com");
+        	$("#email").focus();
+        	return false;
+        });  
+    }); 
+    
+ 
+</script>
+{% endblock %}
+
+{% block subBody %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                Form Validation demo
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+            <h3>
+                <a class="anchor_small" href="#demo" id="demo" title="permanent link"></a>
+                Demo
+            </h3>
+            
+            <p>
+                The following form contains fields with various validation rules. There is <em>no client-side validation</em>
+                except on the first field, since we want to show how the server-side validation is done. In a real application, you
+                should probably add client-side validation on most field.
+            </p>
+            <p>
+                Things you can try to test the validation :
+                <ul>
+                	<li>
+                		Leave all fields blank.
+                	</li>
+                	<li>
+                		Only fill the first email field.
+                	</li>
+                	<li>
+                		Use a password which is too short.
+                	</li>
+                	<li>
+                		Uses non matching passwords.
+                	</li>
+                	
+                </ul>
+            </p>
+
+            <div class="row">     
+                <div class="col-sm-12">
+                       
+                    <form class="form-horizontal" method="post" accept-charset="UTF-8">
+                    
+                        <div class="form-group {{fieldSectionErrorClass('email')}}">
+                            <label for="email" class="col-sm-2 control-label">Email *</label>
+                        <div class="col-sm-4">
+                                <input type="email" required class="form-control" id="email" name="email"  placeholder="Email"
+                                value="{{fieldValue('email')}}">
+                                <div class="right"><a href="#" id="fillEmail">Fill it!</a></div>
+                                {{fieldErrors('email')}}
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <div class="col-sm-1 colImg">
+                                        <img src="/public/images/icons/arrowRight.png" />
+                                    </div>
+                                    <div class="col-sm-11">
+                                        This field can't be empty and required a well formatted email. This is a
+                                        <code>type="email"</code> field with a <code>required</code> attribute,
+                                        so some client-side validation is done. In our demo, this is the only field
+                                        with client-side validation.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group {{fieldSectionErrorClass('tag')}}">
+                            <label class="col-sm-2 control-label">Tags *</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="tag1" name="tag" placeholder="Tag 1"
+                                       value="{{fieldValue('tag', 0)}}" />
+                                {{fieldErrors('tag', 0)}}
+                                <input type="text" class="form-control" id="tag2" name="tag" placeholder="Tag 2"
+                                       value="{{fieldValue('tag', 1)}}">
+                                {{fieldErrors('tag', 1)}}
+                                <input type="text" class="form-control" id="tag3" name="tag" placeholder="Tag 3"
+                                       value="{{fieldValue('tag', 2)}}">
+                                {{fieldErrors('tag', 2)}}
+                                
+                                {{fieldErrors('tag')}}
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <div class="col-sm-1 colImg">
+                                        <img src="/public/images/icons/arrowRight.png" />
+                                    </div>
+                                    <div class="col-sm-11">
+                                    	Three random tags. They are required and should all be different.
+                                        Those fields all have the same <code>name</code> : <em>"tag"</em>. Their values
+                                        can be accessed together on the server using :
+                                        <br />
+                                        <code>List&lt;String&gt; tags = context.request().getFormData("tag");</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </div>
+                        </div>
+                        
+                    </form>
+    
+                </div>
+            </div>
+
+            <h3>
+                <a class="anchor_small" href="#how_to" id="how_to" title="permanent link"></a>
+                How to
+            </h3>
+            <p>
+                Protecting a resource or a set of resources with HTTP authentication 
+                is very easy. You simply use the <code>httpAuth(...)</code> method
+                of the router. You specify the route to protect and a name to identify that "realm" 
+                (the protected section).
+            </p>
+            <p>
+                <div>
+                    <p>
+                        <pre class="ace ace-java"
+>router.httpAuth("/route/to/protect", "protected example");</pre> 
+                    </p>  
+                </div>
+            </p> 
+            <p>
+                The resource is then protected! 
+            </p> 
+            <p>
+                But how do you specify which <code>username</code>/<code>password</code> combinations
+                are allowed to access that realm? You use the <code>addHttpAuthentication(...)</code> method
+                of the <em>server</em> instance. You specify the name of the realm and a <code>username</code>/<code>password</code>
+                allowed to access it. Of course, you can add more that one credential for the same realm!
+            </p>
+            <p>
+                <div>
+                    <p>
+                        <pre class="ace ace-java"
+>server.addHttpAuthentication("protected example", "Stromgol", "Laroche")</pre> 
+                    </p>  
+                </div>
+            </p> 
+
+            <h3>
+                <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
+                More info
+            </h3>
+            <p>
+                Learn more about <a href="/documentation#http_auth">HTTP Authentication </a> in the
+                documentation.
+            </p>
+            
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}

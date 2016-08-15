@@ -17,6 +17,14 @@ import com.google.common.net.HttpHeaders;
 
 public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
 
+    //==========================================
+    // Remove all routes, even Spincast ones
+    //==========================================
+    @Override
+    protected boolean removeSpincastRoutesToo() {
+        return true;
+    }
+
     @Test
     public void createRoute() throws Exception {
 

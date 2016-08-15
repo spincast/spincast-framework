@@ -39,8 +39,26 @@ public interface IServer {
 
     /**
      * Stops the server
+     * <p>
+     * Will try to send a "closing" message to any
+     * WebSocket peer before closing their connections.
+     * </p>
      */
     public void stop();
+
+    /**
+     * Stops the server
+     * 
+     * @param sendClosingMessageToPeers if <code>true</code>,
+     * Spincast will try to send a "closing" message to any 
+     * WebSocket peer before closing their connections.
+     */
+    public void stop(boolean sendClosingMessageToPeers);
+
+    /**
+     * Is this server running (started)?
+     */
+    public boolean isRunning();
 
     /**
      * Adds a static resource to serve directly by the server.

@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.locale.ILocaleResolver;
 import org.spincast.core.templating.ITemplatingEngine;
 import org.spincast.core.templating.ITemplatingRequestContextAddon;
@@ -17,15 +19,18 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
     private final R requestContext;
     private final ITemplatingEngine templatingEngine;
     private final ILocaleResolver localeResolver;
+    private final IJsonManager jsonManager;
     private Map<String, Object> templatingGlobalVariables;
 
     @Inject
     public SpincastTemplatingRequestContextAddon(R requestContext,
                                                  ITemplatingEngine templatingEngine,
-                                                 ILocaleResolver localeResolver) {
+                                                 ILocaleResolver localeResolver,
+                                                 IJsonManager jsonManager) {
         this.requestContext = requestContext;
         this.templatingEngine = templatingEngine;
         this.localeResolver = localeResolver;
+        this.jsonManager = jsonManager;
     }
 
     protected R getRequestContext() {
@@ -38,6 +43,10 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
 
     protected ILocaleResolver getLocaleResolver() {
         return this.localeResolver;
+    }
+
+    protected IJsonManager getJsonManager() {
+        return this.jsonManager;
     }
 
     protected Locale getLocaleToUse() {
@@ -64,10 +73,42 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
             params = new HashMap<String, Object>();
         }
 
-        // We also add the global variables!
-        params.putAll(getTemplatingGlobalVariables());
+        IJsonObject model = getJsonManager().create(params);
 
-        return getTemplatingEngine().evaluate(content, params, locale);
+        return evaluate(content, model, locale);
+    }
+
+    @Override
+    public String evaluate(String content, IJsonObject model) {
+        return evaluate(content, model, getLocaleToUse());
+    }
+
+    @Override
+    public String evaluate(String content, IJsonObject model, Locale locale) {
+
+        if(model == null) {
+            model = getJsonManager().create();
+        }
+
+        // We also add the global variables!
+        model.merge(getTemplatingGlobalVariables());
+
+        return getTemplatingEngine().evaluate(content, model, locale);
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, IJsonObject model) {
+        return fromTemplate(templatePath, true, model, getLocaleToUse());
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, IJsonObject model, Locale locale) {
+        return fromTemplate(templatePath, true, model, locale);
+    }
+
+    @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject model) {
+        return fromTemplate(templatePath, isClasspathPath, model, getLocaleToUse());
     }
 
     @Override
@@ -86,7 +127,18 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject model, Locale locale) {
+
+        if(model == null) {
+            model = getJsonManager().create();
+        }
+
+        return fromTemplate(templatePath, isClasspathPath, model.convertToPlainMap(), locale);
+    }
+
+    @Override
     public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale) {
+
         if(params == null) {
             params = new HashMap<String, Object>();
         }

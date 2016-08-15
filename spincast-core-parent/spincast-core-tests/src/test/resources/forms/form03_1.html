@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <form method="post">
+            {% for book in books %}
+                <input type="checkbox" name="books" {{checked(book.selected)}} value="{{book.value}}" />
+            {% endfor %}
+            <input type="submit" value="Submit!" />
+        </form>
+    </body>
+</html>

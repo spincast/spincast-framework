@@ -127,7 +127,8 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
         // Default variables for the templating engine.
         //==========================================
         if(getSpincastConfig().isAddDefaultTemplateVariablesFilter()) {
-            ALL(DEFAULT_ROUTE_PATH).pos(getSpincastConfig().getDefaultTemplateVariablesFilterPosition())
+            ALL(DEFAULT_ROUTE_PATH).id("spincast_default_template_variables")
+                                   .pos(getSpincastConfig().getDefaultTemplateVariablesFilterPosition())
                                    .found().notFound().exception()
                                    .save(new IHandler<R>() {
 
@@ -439,11 +440,73 @@ public class SpincastRouter<R extends IRequestContext<?>, W extends IWebsocketCo
 
     @Override
     public void removeAllRoutes() {
-        getGlobalBeforeFiltersPerPosition().clear();
+        removeAllRoutes(false);
+    }
+
+    @Override
+    public void removeAllRoutes(boolean removeSpincastRoutesToo) {
+
         this.globalBeforeFilters = null; // reset cache
-        getMainRoutes().clear();
-        getGlobalAfterFiltersPerPosition().clear();
         this.globalAfterFilters = null; // reset cache
+
+        if(removeSpincastRoutesToo) {
+
+            getGlobalBeforeFiltersPerPosition().clear();
+            getMainRoutes().clear();
+            getGlobalAfterFiltersPerPosition().clear();
+
+        } else {
+
+            Collection<List<IRoute<R>>> routeLists = getGlobalBeforeFiltersPerPosition().values();
+            for(List<IRoute<R>> routes : routeLists) {
+                for(int i = routes.size() - 1; i >= 0; i--) {
+                    IRoute<R> route = routes.get(i);
+                    if(!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                        routes.remove(i);
+                    }
+                }
+            }
+
+            routeLists = getGlobalAfterFiltersPerPosition().values();
+            for(List<IRoute<R>> routes : routeLists) {
+                for(int i = routes.size() - 1; i >= 0; i--) {
+                    IRoute<R> route = routes.get(i);
+                    if(!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                        routes.remove(i);
+                    }
+                }
+            }
+
+            List<IRoute<R>> routes = getMainRoutes();
+            for(int i = routes.size() - 1; i >= 0; i--) {
+                IRoute<R> route = routes.get(i);
+                if(!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                    routes.remove(i);
+                }
+            }
+        }
+    }
+
+    /**
+     * The route with ids starting with those prefixes won't be removed
+     * by default when removeAllRoutes() is called without the
+     * "delete all" parameter.
+     */
+    protected Set<String> getRouteIdsPrefixToKeepByDefaultWhenRemovingAll() {
+        return Sets.newHashSet("spincast_");
+    }
+
+    protected boolean startsWithAnyOf(String id, Set<String> prefixes) {
+
+        if(id == null || prefixes == null || prefixes.size() == 0) {
+            return false;
+        }
+        for(String prefix : prefixes) {
+            if(id.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

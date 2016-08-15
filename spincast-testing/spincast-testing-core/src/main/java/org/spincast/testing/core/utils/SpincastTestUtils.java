@@ -1,8 +1,10 @@
 package org.spincast.testing.core.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -78,6 +80,21 @@ public class SpincastTestUtils {
             return port;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    /**
+     * Is the specified port available?
+     * 
+     * Note that this will be true at the time the method run,
+     * but may be false a couple of milliseconds after...
+     */
+    public static boolean isPortAvailable(String host, int port) {
+        try {
+            (new Socket(host, port)).close();
+            return true;
+        } catch(IOException e) {
+            return false;
         }
     }
 

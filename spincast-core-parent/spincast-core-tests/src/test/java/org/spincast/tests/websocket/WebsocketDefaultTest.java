@@ -268,7 +268,8 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
-        assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
+        assertTrue("Peers number : " + controller.getEndpointManager("endpoint1").getPeersIds().size(),
+                   controller.waitNrbPeerConnected("endpoint1", 1));
 
         controller.getEndpointManager("endpoint1").closeEndpoint(1000, "some reason");
 

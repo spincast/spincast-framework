@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <form method="post">
+            <select name="books" multiple>
+                {% for book in user2.child2.books %}
+                    <option {{selected(book.selected)}} value="{{book.value}}">{{book.text}}</option>
+                {% endfor %}
+            </select>
+            
+            <input type="text" name="title" value="{{user2.child2.books[1].info.title}}" />
+            <input type="text" name="year" value="{{user2.child2.books[1].info.year}}" />
+            
+            <input type="submit" value="Submit!" />
+        </form>
+    </body>
+</html>

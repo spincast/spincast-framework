@@ -23,6 +23,14 @@ import com.google.inject.Scopes;
  */
 public class CustomServerTest extends SpincastDefaultNoAppIntegrationTestBase {
 
+    //==========================================
+    // Remove all routes, even Spincast ones
+    //==========================================
+    @Override
+    protected boolean removeSpincastRoutesToo() {
+        return true;
+    }
+
     protected static String testFlag = "";
 
     @Override

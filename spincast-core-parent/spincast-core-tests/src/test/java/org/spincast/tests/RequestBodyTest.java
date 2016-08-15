@@ -164,10 +164,9 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
                     IJsonObject json = context.request().getJsonBodyAsJsonObject();
                     assertNotNull(json);
 
-                    Object name = json.get("name");
+                    String name = json.getString("name");
                     assertNotNull(name);
-                    assertTrue(name instanceof String);
-                    assertEquals(SpincastTestUtils.TEST_STRING, (String)name);
+                    assertEquals(SpincastTestUtils.TEST_STRING, name);
 
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -196,7 +195,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
                     Object name = map.get("name");
                     assertNotNull(name);
                     assertTrue(name instanceof String);
-                    assertEquals(SpincastTestUtils.TEST_STRING, (String)name);
+                    assertEquals(SpincastTestUtils.TEST_STRING, name);
 
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -252,10 +251,9 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
                     IJsonObject json = context.request().getXmlBodyAsJsonObject();
                     assertNotNull(json);
 
-                    Object name = json.get("name");
+                    String name = json.getString("name");
                     assertNotNull(name);
-                    assertTrue(name instanceof String);
-                    assertEquals(SpincastTestUtils.TEST_STRING, (String)name);
+                    assertEquals(SpincastTestUtils.TEST_STRING, name);
 
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -285,7 +283,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
                     Object name = map.get("name");
                     assertNotNull(name);
                     assertTrue(name instanceof String);
-                    assertEquals(SpincastTestUtils.TEST_STRING, (String)name);
+                    assertEquals(SpincastTestUtils.TEST_STRING, name);
 
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);

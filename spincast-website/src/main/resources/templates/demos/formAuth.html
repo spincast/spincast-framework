@@ -1,0 +1,159 @@
+{#==========================================
+Demos - Form Authentication
+==========================================#}
+{% extends "../demos.html" %}
+
+{% block subSectionClasses %}demo_form_auth{% endblock %}
+{% block meta_title %}Demo - Form Authentication{% endblock %}
+{% block meta_description %}Form Authentication demo using Spincast{% endblock %}
+
+{% block subBody %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+                Form Authentication demo
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+		    <h4>
+		        <a class="anchor_small" href="#demo" id="demo" title="permanent link"></a>
+		        Demo
+		    </h4>
+		    
+		    <p>
+		    	You can register using a temporary account usin a "<span class="authEmail"><span>[anything]</span>@example.com</span>" email. This will create an account 
+		    	which will be valid for 24 hours.
+		    </p>
+		    <p>
+		    	Once the account is created, you will be able to login, logout, use the 
+		    	<code>"remember me"</code> feature
+		    	and save some preferences to test the <code>session</code> feature.
+		    </p>
+
+			<div class="row">
+			
+				<div class="col-sm-5">
+					<div class="form-box">
+                		<div class="form-top">
+                			<div class="form-top-left">
+                				<h3>Login to our site</h3>
+                    			<p>Enter username and password to log on:</p>
+                			</div>
+                			<div class="form-top-right">
+                				<i class="fa fa-key"></i>
+                			</div>
+                    	</div>
+                    	<div class="form-bottom">
+                    		<form role="form" action="" method="post" class="login-form">
+                    			<div class="form-group">
+                    				<label class="sr-only" for="form-username">Username</label>
+                        			<input type="text" name="form-username" placeholder="Username..." class="form-username form-control" id="form-username">
+                        		</div>
+                        		<div class="form-group">
+                        			<label class="sr-only" for="form-password">Password</label>
+                        			<input type="password" name="form-password" placeholder="Password..." class="form-password form-control" id="form-password">
+                        		</div>
+                        		<button type="submit" class="btn">Sign in!</button>
+                    		</form>
+                   		</div>
+                    </div>
+                </div>
+                   
+                <div class="col-sm-1"></div>
+                   	
+                <div class="col-sm-6">
+                   	<div class="form-box">
+                   		<div class="form-top">
+                     		<div class="form-top-left">
+                     			<h3>Sign up now</h3>
+                         		<p>Fill in the form below to get instant access:</p>
+                     		</div>
+                     		<div class="form-top-right">
+                     			<i class="fa fa-pencil"></i>
+                     		</div>
+						</div>
+						<div class="form-bottom">
+	                    	<form role="form" action="" method="post" class="registration-form">
+		                    	<div class="form-group">
+		                    		<label class="sr-only" for="form-first-name">First name</label>
+		                        	<input type="text" name="form-first-name" placeholder="First name..." class="form-first-name form-control" id="form-first-name">
+		                        </div>
+		                        <div class="form-group">
+		                        	<label class="sr-only" for="form-last-name">Last name</label>
+		                        	<input type="text" name="form-last-name" placeholder="Last name..." class="form-last-name form-control" id="form-last-name">
+		                        </div>
+		                        <div class="form-group">
+		                        	<label class="sr-only" for="form-email">Email</label>
+		                        	<input type="text" name="form-email" placeholder="Email..." class="form-email form-control" id="form-email">
+		                        </div>
+		                        <div class="form-group">
+		                        	<label class="sr-only" for="form-about-yourself">About yourself</label>
+		                        	<textarea name="form-about-yourself" placeholder="About yourself..." 
+		                        				class="form-about-yourself form-control" id="form-about-yourself"></textarea>
+		                        </div>
+		                        <button type="submit" class="btn">Sign me up!</button>
+	                    	</form>
+                   		</div>
+                   	</div>	
+            	</div>
+            </div>
+
+
+		    <h4>
+		        <a class="anchor_small" href="#how_to" id="how_to" title="permanent link"></a>
+		        How to
+		    </h4>
+            <p>
+                Protecting a resource or a set of resources with HTTP authentication 
+                is very easy. You simply use the <code>httpAuth(...)</code> method
+                of the router. You specify the route to protect and a name to identify that "realm" 
+                (the protected section).
+            </p>
+		    <p>
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>router.httpAuth("/route/to/protect", "protected example");</pre> 
+            		</p>  
+		        </div>
+		    </p> 
+            <p>
+                The resource is then protected! 
+		    </p> 
+            <p>
+                But how do you specify which <code>username</code>/<code>password</code> combinations
+                are allowed to access that realm? You use the <code>addHttpAuthentication(...)</code> method
+                of the <em>server</em> instance. You specify the name of the realm and a <code>username</code>/<code>password</code>
+                allowed to access it. Of course, you can add more that one credential for the same realm!
+            </p>
+		    <p>
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>server.addHttpAuthentication("protected example", "Stromgol", "Laroche")</pre> 
+            		</p>  
+		        </div>
+		    </p> 
+
+		    <h4>
+		        <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
+		        More info
+		    </h4>
+            <p>
+                Learn more about <a href="/documentation#http_auth">HTTP Authentication </a> in the
+                documentation.
+            </p>
+            
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}

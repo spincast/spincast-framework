@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.json.IJsonObject;
 
 /**
  * Provides methods to deal with templating.
@@ -93,6 +94,58 @@ public interface ITemplatingRequestContextAddon<R extends IRequestContext<?>> {
      * system path.
      */
     public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale);
+
+    /**
+     * Evaluates some content using the given parameters.
+     * 
+     * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
+     */
+    public String evaluate(String content, IJsonObject model);
+
+    /**
+     * Evaluates some content using the given parameters.
+     * 
+     * Uses the specified <code>Locale</code>.
+     */
+    public String evaluate(String content, IJsonObject model, Locale locale);
+
+    /**
+     * Renders a template using the given parameters.
+     * 
+     * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    public String fromTemplate(String templatePath, IJsonObject model);
+
+    /**
+     * Renders a template usgin the given parameters.
+     * Uses the <code>Locale</code> specified.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    public String fromTemplate(String templatePath, IJsonObject model, Locale locale);
+
+    /**
+     * Renders a template using the given parameters.
+     * 
+     * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject model);
+
+    /**
+     * Renders a template usgin the given parameters.
+     * Uses the <code>Locale</code> specified.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject model, Locale locale);
 
     /**
      * Creates a placeholder using the current templating engine

@@ -78,7 +78,11 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
 
     protected void stopServer() {
         if(getServer() != null) {
-            getServer().stop();
+            //==========================================
+            // No "closing" message to the peers by default
+            // for the tests.
+            //==========================================
+            getServer().stop(false);
         }
     }
 

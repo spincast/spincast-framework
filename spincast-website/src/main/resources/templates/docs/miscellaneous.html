@@ -117,7 +117,7 @@ Templating engine
                             <span class="code-line-nbr">12</span> : We pass a <code>user</code>
                             object to the <code>templating engine</code> so it can use it to
                             generate the final <code>HTML</code>. Here, we do so using a classic 
-                            <code>Map&ltString, Object&gt;</code> structure (<span class="code-line-nbr">7-8</span>).
+                            <code>Map&lt;String, Object&gt;</code> structure (<span class="code-line-nbr">7-8</span>).
                         </li>
                         <li>
                             <span class="code-line-nbr">15-16</span> : By passing <code>false</code> as
@@ -128,7 +128,7 @@ Templating engine
                         <li>
                             <span class="code-line-nbr">17</span> : <code>SpincastStatics.params(...)</code>
                             is a utility method provided by Spincast to easily create 
-                            <code>Map&ltString, Object&gt;</code> parameters, <em>inline</em>. It is equivalent to
+                            <code>Map&lt;String, Object&gt;</code> parameters, <em>inline</em>. It is equivalent to
                             creating a <code>new HashMap&lt;String, Object&gt;()</code> as in the first example (<span class="code-line-nbr">7-8</span>).
                         </li>
                         
@@ -277,58 +277,23 @@ SSL
 </section>
 
 {#==========================================
-JsonObject
+IJsonObject
 ==========================================#}     
 <section id="jsonobject">
     <h4>
         <a class="anchor_small" href="#jsonobject" title="permanent link"></a>
-        JsonObject
+        IJsonObject / IJsonArray
     </h4>
     
     <p>
-        The <code>JsonObject</code> (interface <code>IJsonObject</code>) is a class
-        provided by Spincast to mimic a real <code>Json</code> object. It is, essentially,
-        a <em>typed</em> <code>Map&ltString, Object&gt;</code>. So there is a <code>put(String key, Object value)</code>
-        method, but the getters are typed: 
-        
-        <ul>
-            <li>
-                <code>String getString(String key)</code>
-            </li>
-            <li>
-                <code>Integer getInteger(String key)</code>
-            </li> 
-            <li>
-                <code>IJsonObject getJsonObject(String key)</code>
-            </li> 
-            <li>
-                ...
-            </li> 
-        </ul>  
+        The <code>IJsonObject</code> and <code>IJsonArray</code>
+        are components provided by Spincast to mimic real <code>Json</code> objects and arrays. 
     </p>
-    <p>
-        You can create a <code>JsonObject</code>, or a <code>JsonArray</code>, using the <code>IJsonManager</code>
-        component. This component can be injected by Guice, or it can be accessed through the
-        <code>json()</code> add-on:
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public void myHandler(IAppRequestContext context) {
-
-    IJsonObject obj = context.json().create();
-    obj.put("name", "Stromgol");
-    obj.put("lastName", "Laroche");
-
-    context.response().sendJsonObj(obj);
-}</pre> 
-            </p>
-        </div>
-    </p>   
     
     <p>
-        Spincast uses <code>JsonObject</code> objects in many places. For example,
+        Spincast uses those objects in many places. For example,
         to get the content of a request for which a <code>Json</code> body has been sent
-        via <code>ajax</code> :
+        via <code>Ajax</code> :
     </p>
     <p>
         <div>
@@ -342,17 +307,384 @@ JsonObject
         </div>
     </p>   
     <p>
-        Or even when <code>XML</code> is sent :
+        Or to get submitted <code>Form Datas</code> :
         <div>
             <p>
                 <pre class="ace ace-java"
 >public void myHandler(IAppRequestContext context) {
-    IJsonObject json = context.request().getXmlBodyAsJsonObject();
+    IJsonObject formDatas = context.request().getFormDatas();
     // ...
-}}</pre> 
+}</pre> 
+            </p>
+        </div>
+    </p> 
+    
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        <code>IJsonObject</code> and <code>IJsonArray</code> expose <code>put(...)</code> / <code>add(...)</code>
+        methods for all the types they manage natively, 
+        and a <code>putConvert(...)</code> / <code>addConvert(...)</code>
+        method to add any other type. 
+    </p>
+    <p>
+        When adding an object of a type that is not managed natively, this object is converted to an <code>IJsonObject</code> (or an <code>IJsonArray</code>,
+        if the source is an <code>array</code> or a <code>Collection</code>) by serializing and deserializing it
+        using 
+        <a href="/public/javadoc/org/spincast/core/json/IJsonManager.html#toJsonString-java.lang.Object-"><code>IJsonManager#toJsonString(...)</code></a>
+        and <a href="/public/javadoc/org/spincast/core/json/IJsonManager.html#create-java.lang.String-"><code>IJsonManager#create(...)</code></a>.
+        By default, this is done using <a href="/plugins/spincast-jackson-json">Jackson</a>.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        The <code>IJsonObject</code> and <code>IJsonArray</code> objects also have getters. 
+        For example, on <code>IJsonObject</code> :
+        <ul>
+            <li>
+                <code>String getString(String key)</code>
+            </li>
+            <li>
+                <code>String getString(String key, String defaultValue)</code>
+            </li> 
+            <li>
+                <code>Integer getInteger(String key)</code>
+            </li> 
+            <li>
+                <code>IJsonObject getJsonObject(String key)</code>
+            </li> 
+            <li>
+                ...
+            </li> 
+        </ul> 
+        
+        On <code>IJsonArray</code>, getters require an <em>index</em> instead of a key :
+        
+        <ul>
+            <li>
+                <code>String getString(int index)</code>
+            </li>
+            <li>
+                <code>String getString(int index, String defaultValue)</code>
+            </li> 
+            <li>
+                ...
+            </li> 
+        </ul> 
+        
+        Every getter has an overloaded version that you can use to provide a <code>default value</code> in case
+        the requested element if not found. By default <code>null</code> is returned if the element is not found.
+    </p>
+    
+    <h5>
+        <a class="anchor_small" href="#jsonobject_creation" id="jsonobject_creation" title="permanent link"></a>
+        Creating an <em>IJsonObject</em> or an <em>IJsonArray</em>
+    </h5>
+    
+    <p>
+        You can create an <code>IJsonObject</code> or an <code>IJsonArray</code> using the <code>IJsonManager</code>
+        component. This component can be injected by Guice, or it can be accessed through the
+        <code>json()</code> add-on, when you are inside a route handler :
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myHandler(IAppRequestContext context) {
+
+    // IJsonArray creation
+    IJsonArray array = context.json().createArray();
+    array.add(111);
+    array.add(222);
+
+    // IJsonObject creation
+    IJsonObject obj = context.json().create();
+    obj.put("name", "Stromgol");
+    obj.put("lastName", "Laroche");
+    
+    // Or, using the IJsonManager directly :
+    IJsonObject obj2 = getJsonManager().create();
+
+    context.response().sendJsonObj(obj);
+}</pre> 
+            </p>
+        </div>
+    </p>     
+    
+    <h5>
+        <a class="anchor_small" href="#jsonobject_cloning_immutability" id="jsonobject_cloning_immutability" title="permanent link"></a>
+        Cloning and Immutability
+    </h5>
+    <p>
+        By default, any element added to an <code>IJsonObject</code> or an <code>IJsonArray</code> is added <em>as is</em>, without
+        being cloned. 
+        This means that if you add an <code>IJsonObject</code> or an <code>IJsonArray</code> element, any external modification
+        <em>will</em> affect the added element, and vice-versa, since they both refere to the same instance. This allows you to do
+        something like :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>IJsonArray colors = getJsonManager().createArray();
+IJsonObject obj = getJsonManager().create();
+
+// Add the array to the obj :
+obj.put("colors", colors);
+
+// Later... add elements to the array :
+colors.add("red");
+colors.add("blue");
+
+// This returns "red" : the array inside the IJsonObject
+// is the same instance than the external one.
+String firstColor = obj.getJsonArray("colors").getString(0);
+</pre> 
             </p>
         </div>
     </p>   
+    <p>
+        But sometimes this behavior is not wanted. You may need the external object and the added object
+        to be two <em>distinct</em> instances, so modifications to one don't affect the other! 
+        In those cases, you can call the <code><em>"clone()"</em></code> method on the original 
+        <code>IJsonObject</code> or <code>IJsonArray</code> object. You can also use <code>"true"</code>
+        as the <code>"clone"</code> parameter when using <code>put(...)</code>/<code>add(...)</code> methods,
+        to achieve the same result :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="4,26,4,30|6,24,6,32"
+>IJsonArray colors = getJsonManager().createArray();
+IJsonObject obj = getJsonManager().create();
+
+// Add a *clone* of the array to the object :
+obj.put("colors", colors, true);
+// Or, same result :
+obj.put("colors", colors.clone());
+
+// Add elements to the array :
+colors.add("red");
+colors.add("blue");
+
+// This will now return null since a *new* instance of the 
+// array has been added to the IJsonObject!
+String firstColor = obj.getJsonArray("colors").getString(0);
+</pre> 
+            </p>
+        </div>
+    </p>  
+    <p>
+        The generated clones is a <em>deep copy</em> of the original object, which means the root
+        object and <em>all the children</em> are cloned.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+        We also decided to make <code>IJsonObject</code> and <code>IJsonArray</code> objects 
+        <em>mutable</em> by default. This is a 
+        conscious decision to make those objects easier to work with : you can add and remove elements from them at any time.
+    </p>
+    <p>
+        If you need more safety, if you work with a complex multi-threaded application, or if you simply prefer to have an 
+        immutable version of those objects, you
+        can get one using their <code><em>.clone(false)</em></code> method, by making sure the <code>"mutable"</code> parameter
+        is set to <code>false</code> :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,32,3,45"
+>IJsonObject obj = getJsonManager().create();
+obj.put("name", "Stromgol");
+
+IJsonObject immutableClone = obj.clone(false);
+
+// This will now throw an exception! :
+immutableClone.put("nope", "doesn't work");
+</pre> 
+            </p>
+        </div>
+    </p>
+    When you create such immutable clones, the root element and <em>all the children</em> are cloned as immutable.
+    In fact, <code>IJsonObject</code> and <code>IJsonArray</code> objects are always <em>fully</em> mutable or <em>fully</em>
+    immutable... Note that if you try to add an immutable object to a mutable one, 
+    a mutable clone will be created from the immutable object before being added.
+    </p>
+    <p>
+        At runtime, you can validate if your object is mutable or not using : 
+        <em><code>if(obj instanceof <a href="/public/javadoc/org/spincast/core/json/Immutable.html">Immutable</a>)</code></em>.
+    </p>
+    
+    <h5>
+        <a class="anchor_small" href="#jsonobject_methods" id="jsonobject_methods" title="permanent link"></a>
+        <em>IJsonObject</em> methods
+    </h5>
+    <p>
+        Have a look at the <a href="/public/javadoc/org/spincast/core/json/IJsonObject.html"><code>IJsonObject</code></a> 
+        Javadoc for a complete list of available methods. Here are some interesting ones, other than <code>put(...)</code>,
+        <code>getXXX(...)</code> and <code>clone(...)</code>, that we already introduced : 
+    </p>
+    <p>
+        <ul class="apiList">
+            
+            <li>
+                <code class="apiItem">IJsonObject <span>merge</span>(Map&lt;String, Object&gt; map, boolean clone)</code>
+                <div class="well">
+                     Merges a <code>Map&lt;String, Object&gt;</code> into the <code>IJsonObject</code>. 
+                     You can specify if the added elements must be cloned or
+                     not (in case some are <code>IJsonObject</code> or <code>IJsonArray</code>).
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">IJsonObject <span>merge</span>(IJsonObject jsonObj, boolean clone)</code>
+                <div class="well">
+                     Merges an external <code>IJsonObject</code> into the <code>IJsonObject</code>.                      
+                     You can specify if the added elements must be cloned or
+                     not (in case some are <code>IJsonObject</code> or <code>IJsonArray</code>).
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isKeyExists</span>(String key)</code>
+                <div class="well">
+                     Does the <code>IJsonObject</code> contain the specified <code>key</code>?
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">IJsonObject <span>remove</span>(String key)</code>
+                <div class="well">
+                     Removes an element using its <code>key</code>.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">IJsonObject <span>getJsonObjectOrEmpty</span>(String key)</code>
+                <div>and</div>
+                <code class="apiItem">IJsonArray <span>getJsonArrayOrEmpty</span>(String key)</code>
+                <div class="well">
+                     Gets an <code>IJsonObject</code> or <code>IJsonArray</code> or returns an empty
+                     instance if it's not found. This allows you to try to get a deep element or use a default
+                     value if this element is not found, without any potential <code>NullPointerException</code>. For 
+                     example :
+                     
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>// This won't throw any NPE, even if the "myArrayKey"
+// array or its first element don't exist :
+String value = obj.getJsonArrayOrEmpty("myArrayKey")
+                  .getJsonObjectOrEmpty(0)
+                  .getString("someKey", "defaultValue");
+</pre> 
+                            </p>
+                        </div>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">XXX <span>getArrayFirstXXX</span>(String key, String defaultValue)</code>
+                <div class="well">
+                     For all types managed by <code>IJsonObject</code>, a <code>getArrayFirstXXX(...)</code>
+                     method exists. With those methods, you can get an <code>IJsonArray</code> 
+                     using the specified <code>key</code> and returns the first element of the array.
+                     <p>
+                     This is useful in situations where you know an array only contains a single element : 
+                     
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>// This :
+String value = obj.getArrayFirstString("myArrayKey", "defaultValue")
+
+// ... is a shortcut for :
+String value = obj.getJsonArrayOrEmpty("myArrayKey").getString(0, "defaultValue")
+</pre> 
+                            </p>
+                        </div>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>toJsonString</span>(boolean pretty)</code>
+                <div class="well">
+                     Converts the <code>IJsonObject</code> object to a <code>Json</code> string.
+                     If <code>pretty</code> is true, the resulting <code>Json</code> will be formatted.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">Map&lt;String, Object&gt; <span>convertToPlainMap</span>()</code>
+                <div class="well">
+                     If you need to use the elements from an <code>IJsonObject</code> in a class that doesn't
+                     know how to handle this type, you can convert it to a plain <code>Map&lt;String, Object&gt;</code>.
+                     For example, Spincast uses this to pass the elements of an <code>IJsonObject</code> to the default <code>Pebble</code>
+                     templating engine, as the variables to use to render a template. Pebble doesn't know about
+                     <code>IJsonObject</code> objects but knows how to deal with
+                     a plain <code>Map&lt;String, Object&gt;</code>.
+                     <p>
+                         Any <code>IJsonObject</code> element will be converted to
+                         a <code>Map&lt;String, Object&gt;</code> and any <code>IJsonArray</code> element to
+                         a <code>List&lt;Object&gt;</code>.
+                     </p>
+                </div>
+            </li>
+            
+        </ul>
+    </p>
+    
+    <h5>
+        <a class="anchor_small" href="#jsonobject_array_methods" id="jsonobject_array_methods" title="permanent link"></a>
+        <em>IJsonArray</em> methods
+    </h5>
+    <p>
+        Have a look at the <a href="/public/javadoc/org/spincast/core/json/IJsonArray.html"><code>IJsonArray</code></a> Javadoc
+        for a complete list of available methods. Here are some interesting ones, other than <code>add(...)</code>,
+        <code>getXXX(...)</code> and <code>clone(...)</code>, that we already introduced : 
+    </p>
+    <p>
+        <ul class="apiList">
+            
+            <li>
+                <code class="apiItem">IJsonArray <span>remove</span>(int index)</code>
+                <div class="well">
+                     Removes an element at the specified index.
+                </div>
+            </li>
+            <li>
+                <code class="apiItem">int <span>size</span>()</code>
+                <div class="well">
+                     Returns the size of the array.
+                </div>
+            </li>
+            <li>
+                <code class="apiItem">String <span>toJsonString</span>(boolean pretty)</code>
+                <div class="well">
+                     Converts the <code>IJsonArray</code> object to a <code>Json</code> string.
+                     If <code>pretty</code> is <code>true</code>, the resulting <code>Json</code> will be formatted.
+                </div>
+            </li>
+            <li>
+                <code class="apiItem">List&lt;Object&gt; <span>convertToPlainList</span>()</code>
+                <div class="well">
+                    Converts the <code>IJsonArray</code> to a plain <code>List&lt;Object&gt;</code>. 
+                    Any <code>IJsonObject</code> element will be converted to
+                    a <code>Map&lt;String, Object&gt;</code> and any <code>IJsonArray</code> element to
+                    a <code>List&lt;Object&gt;</code>.
+                </div>
+            </li>
+            <li>
+                <code class="apiItem">List&lt;String&gt; <span>convertToStringList</span>()</code>
+                <div class="well">
+                    Converts the <code>IJsonArray</code> to a <code>List&lt;String&gt;</code>.
+                    The <code>toString()</code> method will be called on any non null
+                    element.
+                </div>
+            </li>
+            
+        </ul>
+    </p>
 
 </section>
 

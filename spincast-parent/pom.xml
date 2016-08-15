@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>spincast-parent</artifactId>
-    <version>0.9.27</version>
+    <version>0.9.28-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>${project.groupId}:${project.artifactId}</name>
@@ -20,14 +20,14 @@
         <guice.version>4.1.0</guice.version>
         <slf4j.version>1.7.21</slf4j.version>
         <jsr305.version>3.0.1</jsr305.version> 
-        <undertow.version>1.3.23.Final</undertow.version> 
+        <undertow.version>1.4.0.CR4</undertow.version> 
     </properties>
     
     <scm>
         <connection>scm:git:git@github.com:spincast</connection>
         <developerConnection>scm:git:git@github.com:spincast</developerConnection>
         <url>git@github.com:spincast</url>
-      <tag>0.9.27</tag>
+      <tag>HEAD</tag>
   </scm>
     
     <dependencyManagement>
@@ -79,9 +79,6 @@
             Undertow.
             May be used for the IServer component
             and the Http Client plugin.
-            
-            We currently use version 1.3.X because
-            1.4.X+ requires Java 8.
             ====================================-->
             <dependency>
                 <groupId>io.undertow</groupId>

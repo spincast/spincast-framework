@@ -2,6 +2,7 @@ package org.spincast.core.json;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,9 +22,22 @@ public interface IJsonManager {
     public IJsonObject create(String jsonString);
 
     /**
+     * Creates an empty <code>JsonObject</code> based on the specified Map.
+     * An attempt will be made to create a deep copy of every elements so
+     * a modification won't affect any external referecen and vice-versa.
+     */
+    public IJsonObject create(Map<String, ?> params);
+
+    /**
      * Creates a <code>JsonObject</code> from an inputStream.
      */
     public IJsonObject create(InputStream inputStream);
+
+    /**
+     * Make a <code>IJsonObject</code> immutable, no element
+     * could be added or removed on it.
+     */
+    public IJsonObjectImmutable createImmutable(IJsonObject jsonObject);
 
     /**
      * Creates an empty <code>JsonArray</code>.
@@ -37,9 +51,21 @@ public interface IJsonManager {
     public IJsonArray createArray(String jsonString);
 
     /**
+     * Creates a <code>JsonArray</code> from a <code>List</code>
+     * of elements.
+     */
+    public IJsonArray createArray(List<?> elements);
+
+    /**
      * Creates a <code>JsonArray</code> from an inputStream.
      */
     public IJsonArray createArray(InputStream inputStream);
+
+    /**
+     * Make a <code>IJsonArray</code> immutable, no element
+     * could be added or removed on it.
+     */
+    public IJsonArrayImmutable createArrayImmutable(IJsonArray jsonArray);
 
     /**
      * Gets the <code>Json</code> String representation of 
@@ -82,5 +108,111 @@ public interface IJsonManager {
      * Converts a <code>Json</code> date to a Java <code>UTC</code> date. 
      */
     public Date parseDateFromJson(String str);
+
+    /**
+     * Convert a random object to a valid native Json type, if
+     * it's not already.
+     */
+    public Object convertToNativeType(Object originalObject);
+
+    /**
+     * Tries to clone an object to a <code>IJsonObject</code> or
+     * a <code>IJsonArray</code>, if the object is not of
+     * a primitive type (or <code>BigDecimal</code>).
+     * <p>
+     * The cloning is made by serializing the Object to a
+     * Json string, and deserializing back. So any (de)serialization
+     * rules apply.
+     * </p>
+     * <p>
+     * The non primitive object will be cloned to a <code>IJsonArray</code>
+     * if it is a :
+     * <ul>
+     * <li>
+     * IJsonArray
+     * </li>
+     * <li>
+     * Collection
+     * </li>
+     * <li>
+     * Array
+     * </li>
+     * </ul>
+     * </p>
+     */
+    public Object clone(Object originalObject);
+
+    /**
+     * Tries to clone an object to a <code>IJsonObject</code> or
+     * a <code>IJsonArray</code>, if the object is not of
+     * a primitive type (or <code>BigDecimal</code>).
+     * <p>
+     * The cloning is made by serializing the Object to a
+     * Json string, and deserializing back. So any (de)serialization
+     * rules apply.
+     * </p>
+     * <p>
+     * The non primitive object will be cloned to a <code>IJsonArray</code>
+     * if it is a :
+     * <ul>
+     * <li>
+     * IJsonArray
+     * </li>
+     * <li>
+     * Collection
+     * </li>
+     * <li>
+     * Array
+     * </li>
+     * </ul>
+     * </p>
+     * 
+     * @param mutable if <code>false</code>, the resulting
+     * Object and all its potential children 
+     * will be immutable.
+     */
+    public Object clone(Object originalObject, boolean mutable);
+
+    /**
+     * Deep copy of the <code>IJsonObject</code>, so any
+     * modification to the original won't affect the
+     * clone, and vice-versa.
+     * <p>
+     * The resulting <code>IJsonObject</code> is mutable.
+     * </p>
+     */
+    public IJsonObject cloneJsonObject(IJsonObject jsonObject);
+
+    /**
+     * Deep copy of the <code>IJsonObject</code>, so any
+     * modification to the original won't affect the
+     * clone, and vice-versa.
+     * 
+     * @param mutable if <code>false</code>, the resulting
+     * <code>IJsonArray</code> and all its children 
+     * will be immutable.
+     */
+    public IJsonObject cloneJsonObject(IJsonObject jsonObject, boolean mutable);
+
+    /**
+     * Deep copy of the <code>IJsonArray</code>, so any
+     * modification to the original won't affect the
+     * clone, and vice-versa.
+     * <p>
+     * The resulting <code>IJsonArray</code> is mutable.
+     * </p>
+     */
+    public IJsonArray cloneJsonArray(IJsonArray jsonArray);
+
+    /**
+     * Deep copy of the <code>IJsonArray</code>, so any
+     * modification to the original won't affect the
+     * clone, and vice-versa.
+     * 
+     * @param mutable if <code>false</code>, the resulting
+     * <code>IJsonArray</code> and all its children 
+     * will be immutable.
+     */
+    public IJsonArray cloneJsonArray(IJsonArray jsonArray, boolean mutable);
 
 }

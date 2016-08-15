@@ -148,16 +148,16 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
                 @Override
                 public void writeErrors(Set<String> peerIds) {
                     if(peerIds != null && peerIds.size() > 0) {
-                        SpincastUndertowWebsocketEndpointWriter.this.logger.debug("error sending Closed event to " +
+                        SpincastUndertowWebsocketEndpointWriter.this.logger.debug("Error sending 'Closed' messages to " +
                                                                                   peerIds.size() +
                                                                                   " peers.");
                     }
 
-                    callback.done(); // don't care...
+                    callback.done();
                 }
             });
         } catch(Exception ex) {
-            this.logger.error("Exception trying to send 'Closed' events to peers: " + ex.getMessage());
+            this.logger.error("Exception trying to send 'Closed' messages to peers : " + ex.getMessage());
             callback.done();
             return;
         }
@@ -187,7 +187,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
             if(channel == null) {
                 peerIdsRemaining.remove(peerId);
                 if(peerIdsRemaining.size() == 0) {
-                    executor.writeErrors(new HashSet<String>());
+                    executor.writeErrors(peerIdsWriteErrors);
                     return;
                 }
                 continue;

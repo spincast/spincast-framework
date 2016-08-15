@@ -7,4 +7,5 @@ import io.undertow.server.HttpServerExchange;
 public interface IWebsocketEndpoint extends IWebsocketEndpointManager {
 
     public void handleConnectionRequest(HttpServerExchange exchange, String peerId);
+
 }

@@ -15,6 +15,7 @@ import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 
@@ -48,11 +49,465 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String xml = this.xmlManager.toXml(jsonObj2);
         assertNotNull(xml);
-        assertEquals(("<JsonObject>" + "<innerObj>" + "<someBoolean>true</someBoolean>" + "<someInt>123</someInt>" +
-                      "</innerObj>" + "<anotherBoolean>true</anotherBoolean>" + "<someArray isArray=\"true\">" +
-                      "<element>toto</element>" + "<element>123</element>" + "</someArray>" +
-                      "<anotherInt>44444</anotherInt>" + "</JsonObject>").length(),
+
+        // @formatter:off
+        assertEquals(("<JsonObject>" + 
+                          "<innerObj>" + 
+                              "<someBoolean>true</someBoolean>" + 
+                              "<someInt>123</someInt>" +
+                          "</innerObj>" + 
+                          "<anotherBoolean>true</anotherBoolean>" + 
+                          "<someArray isArray=\"true\">" +
+                              "<element>toto</element>" + 
+                              "<element>123</element>" + 
+                          "</someArray>" +
+                          "<anotherInt>44444</anotherInt>" + 
+                      "</JsonObject>").length(),
                      xml.length());
+         // @formatter:on
+    }
+
+    @Test
+    public void toXmlArrayElementIsJsonObject() throws Exception {
+
+        IJsonObject jsonObject = this.jsonManager.create();
+        IJsonArray array = this.jsonManager.createArray();
+        jsonObject.put("someArray", array);
+        IJsonObject inner = this.jsonManager.create();
+        inner.put("fieldName", "email");
+        inner.put("message", "Not a valid email address.");
+        inner.put("type", "VALIDATION_TYPE_EMAIL");
+        array.add(inner);
+
+        String xml = this.xmlManager.toXml(jsonObject, true);
+
+        // @formatter:off
+        String expected = "<JsonObject>\n" + 
+                          "    <someArray isArray=\"true\">\n" + 
+                          "        <element>\n" + 
+                          "            <obj>\n" +  
+                          "                <fieldName>email</fieldName>\n" + 
+                          "                <message>Not a valid email address.</message>\n" + 
+                          "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                          "            </obj>\n" +  
+                          "        </element>\n" + 
+                          "    </someArray>\n" + 
+                          "</JsonObject>\n";
+
+        String expected2 = "<JsonObject>\n" + 
+                "    <someArray isArray=\"true\">\n" + 
+                "        <element>\n" + 
+                "            <obj>\n" +  
+                "                <fieldName>email</fieldName>\n" + 
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                "                <message>Not a valid email address.</message>\n" + 
+                "            </obj>\n" +  
+                "        </element>\n" + 
+                "    </someArray>\n" + 
+                "</JsonObject>\n";
+        
+        String expected3 = "<JsonObject>\n" + 
+                "    <someArray isArray=\"true\">\n" + 
+                "        <element>\n" + 
+                "            <obj>\n" +  
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                "                <fieldName>email</fieldName>\n" + 
+                "                <message>Not a valid email address.</message>\n" + 
+                "            </obj>\n" +  
+                "        </element>\n" + 
+                "    </someArray>\n" + 
+                "</JsonObject>\n";
+        
+        String expected4 = "<JsonObject>\n" + 
+                "    <someArray isArray=\"true\">\n" + 
+                "        <element>\n" + 
+                "            <obj>\n" +  
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                "                <message>Not a valid email address.</message>\n" + 
+                "                <fieldName>email</fieldName>\n" + 
+                "            </obj>\n" +  
+                "        </element>\n" + 
+                "    </someArray>\n" + 
+                "</JsonObject>\n";
+        
+        String expected5 = "<JsonObject>\n" + 
+                "    <someArray isArray=\"true\">\n" + 
+                "        <element>\n" + 
+                "            <obj>\n" +  
+                "                <message>Not a valid email address.</message>\n" + 
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                "                <fieldName>email</fieldName>\n" + 
+                "            </obj>\n" +  
+                "        </element>\n" + 
+                "    </someArray>\n" + 
+                "</JsonObject>\n";
+        
+        String expected6 = "<JsonObject>\n" + 
+                "    <someArray isArray=\"true\">\n" + 
+                "        <element>\n" + 
+                "            <obj>\n" +  
+                "                <message>Not a valid email address.</message>\n" + 
+                "                <fieldName>email</fieldName>\n" + 
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                "            </obj>\n" +  
+                "        </element>\n" + 
+                "    </someArray>\n" + 
+                "</JsonObject>\n";
+
+        // @formatter:on
+
+        assertTrue(xml.equals(expected) ||
+                   xml.equals(expected2) ||
+                   xml.equals(expected3) ||
+                   xml.equals(expected4) ||
+                   xml.equals(expected5) ||
+                   xml.equals(expected6));
+    }
+
+    @Test
+    public void toXmlArrayElementIsAnotherArray() throws Exception {
+
+        IJsonObject jsonObject = this.jsonManager.create();
+        IJsonArray array = this.jsonManager.createArray();
+        jsonObject.put("someArray", array);
+
+        IJsonArray inner = this.jsonManager.createArray();
+        inner.add("aaa");
+        inner.add("bbb");
+        inner.add("ccc");
+        array.add(inner);
+
+        String xml = this.xmlManager.toXml(jsonObject, true);
+
+        IJsonObject resultObj = this.xmlManager.fromXml(xml);
+        assertNotNull(resultObj);
+        IJsonArray arr1 = resultObj.getJsonArray("someArray");
+        assertNotNull(arr1);
+        IJsonArray arr2 = arr1.getJsonArray(0);
+        assertNotNull(arr2);
+        assertEquals("aaa", arr2.getString(0));
+        assertEquals("bbb", arr2.getString(1));
+        assertEquals("ccc", arr2.getString(2));
+    }
+
+    @Test
+    public void toXmlArrayElementsAreJsonObjectAnotherArray() throws Exception {
+
+        IJsonObject jsonObject = this.jsonManager.create();
+
+        IJsonObject innerObj = this.jsonManager.create();
+        innerObj.put("name", "Stromgol");
+        jsonObject.put("inner1", innerObj);
+
+        IJsonArray array = this.jsonManager.createArray();
+        jsonObject.put("someArray", array);
+
+        IJsonArray inner = this.jsonManager.createArray();
+        inner.add("aaa");
+        inner.add("bbb");
+        inner.add("ccc");
+        IJsonObject innerObj2 = this.jsonManager.create();
+        innerObj2.put("name", "Stromgol2");
+        inner.add(innerObj2);
+        array.add(inner);
+
+        String xml = this.xmlManager.toXml(jsonObject, true);
+
+        IJsonObject resultObj = this.xmlManager.fromXml(xml);
+        assertNotNull(resultObj);
+
+        IJsonObject in1 = resultObj.getJsonObject("inner1");
+        assertNotNull(in1);
+        assertEquals("Stromgol", in1.getString("name"));
+
+        IJsonArray arr1 = resultObj.getJsonArray("someArray");
+        assertNotNull(arr1);
+        IJsonArray arr2 = arr1.getJsonArray(0);
+        assertNotNull(arr2);
+        assertEquals("aaa", arr2.getString(0));
+        assertEquals("bbb", arr2.getString(1));
+        assertEquals("ccc", arr2.getString(2));
+        IJsonObject in2 = arr2.getJsonObject(3);
+        assertNotNull(in2);
+        assertEquals("Stromgol2", in2.getString("name"));
+    }
+
+    @Test
+    public void fromXml() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <obj>\n" + 
+                     "                <fieldName>email</fieldName>\n" + 
+                     "                <message>Not a valid email address.</message>\n" + 
+                     "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
+                     "            </obj>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        assertNotNull(jsonObject);
+
+        IJsonArray array = jsonObject.getJsonArray("someArray");
+        assertNotNull(array);
+        assertEquals(1, array.size());
+
+        IJsonObject inner = array.getJsonObject(0);
+        assertNotNull(inner);
+        assertEquals("email", inner.getString("fieldName"));
+        assertEquals("Not a valid email address.", inner.getString("message"));
+        assertEquals("VALIDATION_TYPE_EMAIL", inner.getString("type"));
+    }
+
+    @Test
+    public void fromXmlOneChild() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        assertNotNull(jsonObject);
+
+        IJsonArray array = jsonObject.getJsonArray("someArray");
+        assertNotNull(array);
+        assertEquals(1, array.size());
+
+        IJsonObject inner = array.getJsonObject(0);
+        assertNotNull(inner);
+        assertEquals("email", inner.getString("fieldName"));
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "            <message>Not a valid email address.</message>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild2() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "            <obj>\n" + 
+                     "                <color>red</color>\n" +
+                     "                <size>big</size>\n" +
+                     "            </obj>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild3() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <obj>\n" + 
+                     "                <color>red</color>\n" +
+                     "                <size>big</size>\n" +
+                     "            </obj>\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild4() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <obj>\n" + 
+                     "                <color>red</color>\n" +
+                     "                <size>big</size>\n" +
+                     "            </obj>\n" + 
+                     "            <obj2>\n" + 
+                     "                <color>red</color>\n" +
+                     "                <size>big</size>\n" +
+                     "            </obj2>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild5() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <obj>\n" + 
+                     "                <color>red</color>\n" +
+                     "                <size>big</size>\n" +
+                     "            </obj>\n" + 
+                     "            <empty />\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild6() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <empty />\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlInvalidArrayElementMoreThanOneChild7() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            directValue\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlArrayElementDirectValueAtTheEnd() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "            directValue\n" + 
+                     "        </element>\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        //==========================================
+        // It seems Jackson ignore the "directValue"
+        // value here.
+        //==========================================
+        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        assertNotNull(jsonObject);
+
+        IJsonArray array = jsonObject.getJsonArray("someArray");
+        assertNotNull(array);
+        assertEquals(1, array.size());
+
+        IJsonObject inner = array.getJsonObject(0);
+        assertNotNull(inner);
+        assertEquals("email", inner.getString("fieldName"));
+    }
+
+    @Test
+    public void fromXmlInvalidArrayDirectValue() throws Exception {
+
+        // @formatter:off
+        String xml = "<JsonObject>\n" + 
+                     "    <someArray isArray=\"true\">\n" + 
+                     "        <element>\n" + 
+                     "            <fieldName>email</fieldName>\n" + 
+                     "        </element>\n" + 
+                     "        directValue\n" + 
+                     "    </someArray>\n" + 
+                     "</JsonObject>\n";
+        // @formatter:on
+
+        //==========================================
+        // It seems Jackson ignore the "directValue"
+        // value here.
+        //==========================================
+        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        assertNotNull(jsonObject);
+
+        IJsonArray array = jsonObject.getJsonArray("someArray");
+        assertNotNull(array);
+        assertEquals(1, array.size());
+
+        IJsonObject inner = array.getJsonObject(0);
+        assertNotNull(inner);
+        assertEquals("email", inner.getString("fieldName"));
     }
 
     @Test
@@ -102,10 +557,20 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromXmlToJsonObject() throws Exception {
 
-        String xml = "<JsonObject>" + "<innerObj>" + "<someBoolean>true</someBoolean>" + "<someInt>123</someInt>" +
-                     "</innerObj>" + "<anotherBoolean>true</anotherBoolean>" + "<someArray isArray=\"true\">" +
-                     "<element>toto</element>" + "<element>123</element>" + "</someArray>" +
-                     "<anotherInt>44444</anotherInt>" + "</JsonObject>";
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<innerObj>" + 
+                             "<someBoolean>true</someBoolean>" + 
+                             "<someInt>123</someInt>" +
+                         "</innerObj>" + 
+                         "<anotherBoolean>true</anotherBoolean>" + 
+                         "<someArray isArray=\"true\">" +
+                             "<element>toto</element>" + 
+                             "<element>123</element>" + 
+                         "</someArray>" +
+                         "<anotherInt>44444</anotherInt>" + 
+                     "</JsonObject>";
+        // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
@@ -125,7 +590,11 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromXmlToJsonObjectEmtpyObject() throws Exception {
 
-        String xml = "<JsonObject>" + "<innerObj></innerObj>" + "</JsonObject>";
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<innerObj></innerObj>" + 
+                     "</JsonObject>";
+        // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
@@ -138,21 +607,35 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromXmlToJsonObjectEmtpyArray() throws Exception {
 
-        String xml = "<JsonObject>" + "<someArray isArray=\"true\"></someArray>" + "</JsonObject>";
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<someArray isArray=\"true\"></someArray>" + 
+                     "</JsonObject>";
+        // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         IJsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
-
     }
 
     @Test
     public void fromXmlToJsonObjectInObjects() throws Exception {
 
-        String xml = "<JsonObject>" + "<someObj>" + "<tutu>222</tutu>" + "<otherObj>" + "<coco>333</coco>" +
-                     "<thirdObj>" + "<kiki>444</kiki>" + "</thirdObj>" + "</otherObj>" + "</someObj>" + "</JsonObject>";
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<someObj>" + 
+                             "<tutu>222</tutu>" + 
+                             "<otherObj>" + 
+                                 "<coco>333</coco>" +
+                                 "<thirdObj>" + 
+                                     "<kiki>444</kiki>" + 
+                                 "</thirdObj>" + 
+                             "</otherObj>" + 
+                         "</someObj>" + 
+                     "</JsonObject>";
+        // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
@@ -172,23 +655,33 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromXmlToJsonObjectNotRealArray() throws Exception {
 
-        String xml = "<JsonObject>" + "<someArray isArray=\"nope\">" + "<element>123</element>" + "</someArray>" +
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<someArray isArray=\"nope\">" + 
+                             "<element>123</element>" + 
+                         "</someArray>" +
                      "</JsonObject>";
+         // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         IJsonObject falseArray = jsonObject.getJsonObject("someArray");
         assertNotNull(falseArray);
-        assertEquals("nope", falseArray.get("isArray"));
-        assertEquals("123", falseArray.get("element"));
+        assertEquals("nope", falseArray.getString("isArray"));
+        assertEquals("123", falseArray.getString("element"));
     }
 
     @Test
     public void fromXmlToJsonObjectWithArray() throws Exception {
 
-        String xml = "<JsonObject>" + "<someArray isArray=\"true\">" + "<element>111</element>" + "</someArray>" +
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<someArray isArray=\"true\">" + 
+                             "<element>111</element>" + 
+                         "</someArray>" +
                      "</JsonObject>";
+        // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
@@ -196,14 +689,22 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         IJsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
-        assertEquals("111", array.get(0));
+        assertEquals("111", array.getString(0));
     }
 
     @Test
     public void fromXmlToJsonObjectWith2Arrays() throws Exception {
 
-        String xml = "<JsonObject>" + "<someArray isArray=\"true\">" + "<element>111</element>" + "</someArray>" +
-                     "<otherArray isArray=\"true\">" + "<element>222</element>" + "</otherArray>" + "</JsonObject>";
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<someArray isArray=\"true\">" + 
+                             "<element>111</element>" + 
+                         "</someArray>" +
+                         "<otherArray isArray=\"true\">" + 
+                             "<element>222</element>" + 
+                         "</otherArray>" + 
+                     "</JsonObject>";
+        // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
@@ -211,19 +712,28 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         IJsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
-        assertEquals("111", array.get(0));
+        assertEquals("111", array.getString(0));
 
         array = jsonObject.getJsonArray("otherArray");
         assertNotNull(array);
         assertEquals(1, array.size());
-        assertEquals("222", array.get(0));
+        assertEquals("222", array.getString(0));
     }
 
     @Test
     public void fromXmlToJsonObjectWithArrayInArray() throws Exception {
 
-        String xml = "<JsonObject>" + "<someArray isArray=\"true\">" + "<element>" + "<otherArray isArray=\"true\">" +
-                     "<element>222</element>" + "</otherArray>" + "</element>" + "</someArray>" + "</JsonObject>";
+        // @formatter:off
+        String xml = "<JsonObject>" + 
+                         "<someArray isArray=\"true\">" + 
+                             "<element>" + 
+                                 "<otherArray isArray=\"true\">" +
+                                     "<element>222</element>" + 
+                                 "</otherArray>" + 
+                             "</element>" + 
+                         "</someArray>" + 
+                     "</JsonObject>";
+         // @formatter:on
 
         IJsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
@@ -235,15 +745,52 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         array = array.getJsonArray(0);
         assertNotNull(array);
         assertEquals(1, array.size());
-        assertEquals("222", array.get(0));
+        assertEquals("222", array.getString(0));
+    }
+
+    @Test
+    public void toXmlMultiFieldElementInArray() throws Exception {
+
+        IJsonObject jsonObject = this.jsonManager.create();
+
+        IJsonArray array = this.jsonManager.createArray();
+        jsonObject.put("someArray", array);
+
+        IJsonObject inner = this.jsonManager.create();
+        inner.put("fieldName", "email");
+        inner.put("message", "Not a valid email address.");
+        inner.put("type", "VALIDATION_TYPE_EMAIL");
+        array.add(inner);
+
+        String xml = this.xmlManager.toXml(jsonObject, true);
+
+        IJsonObject result = this.xmlManager.fromXml(xml);
+        assertNotNull(result);
+
+        IJsonArray resultArray = result.getJsonArray("someArray");
+        assertNotNull(resultArray);
+        assertEquals(1, resultArray.size());
+
+        IJsonObject resultInner = resultArray.getJsonObject(0);
+        assertNotNull(resultInner);
+        assertEquals("email", resultInner.getString("fieldName"));
+        assertEquals("Not a valid email address.", resultInner.getString("message"));
+        assertEquals("VALIDATION_TYPE_EMAIL", resultInner.getString("type"));
     }
 
     @Test
     public void fromXmlToJsonArray() throws Exception {
 
-        String xml = "<someArray isArray=\"true\">" + "<element>" + "<otherArray isArray=\"true\">" +
-                     "<element>222</element>" + "</otherArray>" + "</element>" + "<element>123</element>" +
+        // @formatter:off
+        String xml = "<someArray isArray=\"true\">" + 
+                         "<element>" + 
+                             "<otherArray isArray=\"true\">" +
+                                 "<element>222</element>" + 
+                             "</otherArray>" + 
+                         "</element>" + 
+                         "<element>123</element>" +
                      "</someArray>";
+        // @formatter:on
 
         IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
@@ -252,9 +799,57 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         IJsonArray otherArray = jsonArray.getJsonArray(0);
         assertNotNull(otherArray);
         assertEquals(1, otherArray.size());
-        assertEquals("222", otherArray.get(0));
+        assertEquals("222", otherArray.getString(0));
 
         assertEquals(new Integer(123), jsonArray.getInteger(1));
+    }
+
+    @Test
+    public void fromXmlJsonObjectOnePropOnly() throws Exception {
+
+        String xml = "<root><name>coco</name></root>";
+
+        IJsonObject obj = this.xmlManager.fromXml(xml);
+        assertNotNull(obj);
+        assertEquals("coco", obj.getString("name"));
+    }
+
+    @Test
+    public void fromXmlJsonObjectOnePropAndDirectValue() throws Exception {
+
+        String xml = "<root>directValue<name>coco</name></root>";
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void fromXmlJsonObjectOnePropAndDirectValue2() throws Exception {
+
+        String xml = "<root><name>coco</name>directValue</root>";
+
+        //==========================================
+        // It seems Jackson ignore the "directValue"
+        // value here.
+        //==========================================
+        IJsonObject obj = this.xmlManager.fromXml(xml);
+        assertNotNull(obj);
+        assertEquals("coco", obj.getString("name"));
+    }
+
+    @Test
+    public void fromXmlDirectValue() throws Exception {
+
+        String xml = "<root>coco</root>";
+
+        try {
+            this.xmlManager.fromXml(xml);
+            fail();
+        } catch(Exception ex) {
+        }
     }
 
     @Test
@@ -268,21 +863,6 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         } catch(Exception ex) {
             System.out.println();
         }
-    }
-
-    @Test
-    public void fromXmlDirectValue() throws Exception {
-
-        //@formatter:off
-        String xml = "<directValue>coco</directValue>";
-        //@formatter:on
-
-        IJsonObject obj = this.xmlManager.fromXml(xml);
-        assertNotNull(obj);
-
-        // For now, we considere this returns a IJsonObject
-        // with an empty key pointing to the value.
-        assertEquals("coco", obj.getString(""));
     }
 
     @Test
@@ -341,7 +921,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         IJsonArray otherArray = jsonArray.getJsonArray(0);
         assertNotNull(otherArray);
         assertEquals(3, otherArray.size());
-        assertEquals("222", otherArray.get(0));
+        assertEquals("222", otherArray.getString(0));
         IJsonObject someObj = otherArray.getJsonObject(1);
         assertNotNull(someObj);
         assertEquals("tutu", someObj.getString("titi"));
@@ -365,23 +945,36 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromXmlToJsonArrayNoSpecialAttributeAtRoot1() throws Exception {
 
-        String xml = "<someArray>" + "<element>111</element>" + "<element>222</element>" + "</someArray>";
+        // @formatter:off
+        String xml = "<someArray>" + 
+                         "<element>111</element>" + 
+                         "<element>222</element>" + 
+                     "</someArray>";
+        // @formatter:on
 
         IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
-        assertEquals("111", jsonArray.get(0));
-        assertEquals("222", jsonArray.get(1));
+        assertEquals("111", jsonArray.getString(0));
+        assertEquals("222", jsonArray.getString(1));
     }
 
     @Test
     public void fromXmlToJsonArrayNoSpecialAttributeAtRoot2() throws Exception {
 
-        String xml = "<someArray>" + "<element>111</element>" + "<element>" + "<obj>" + "<titi>toto</titi>" + "</obj>" +
-                     "</element>" + "</someArray>";
+        // @formatter:off
+        String xml = "<someArray>" + 
+                         "<element>111</element>" + 
+                         "<element>" + 
+                             "<obj>" + 
+                                 "<titi>toto</titi>" + 
+                             "</obj>" +
+                         "</element>" + 
+                     "</someArray>";
+        // @formatter:on
 
         IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
-        assertEquals("111", jsonArray.get(0));
+        assertEquals("111", jsonArray.getString(0));
 
         IJsonObject obj = jsonArray.getJsonObject(1);
         assertNotNull(obj);
@@ -464,7 +1057,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         assertTrue(obj instanceof JsonObject);
 
-        Field jsonManagerField = obj.getClass().getDeclaredField("jsonManager");
+        Field jsonManagerField = JsonObjectArrayBase.class.getDeclaredField("jsonManager");
         assertNotNull(jsonManagerField);
 
         jsonManagerField.setAccessible(true);

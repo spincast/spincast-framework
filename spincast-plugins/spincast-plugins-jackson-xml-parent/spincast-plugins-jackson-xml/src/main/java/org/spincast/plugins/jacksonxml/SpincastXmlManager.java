@@ -15,6 +15,7 @@ import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.IXmlManager;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -207,9 +208,26 @@ public class SpincastXmlManager implements IXmlManager {
                     xmlGen.setNextIsAttribute(false);
 
                     for(Object element : jsonArray) {
+
                         xmlGen.writeFieldName("element");
-                        xmlGen.writeObject(element);
+
+                        if(element == null) {
+                            xmlGen.writeNull();
+                        } else if(element instanceof IJsonObject) {
+                            xmlGen.writeStartObject();
+                            xmlGen.writeFieldName("obj");
+                            xmlGen.writeObject(element);
+                            xmlGen.writeEndObject();
+                        } else if(element instanceof IJsonArray) {
+                            xmlGen.writeStartObject();
+                            xmlGen.writeFieldName("array");
+                            xmlGen.writeObject(element);
+                            xmlGen.writeEndObject();
+                        } else {
+                            xmlGen.writeObject(element);
+                        }
                     }
+
                     xmlGen.writeEndObject();
                 }
             };
@@ -381,41 +399,74 @@ public class SpincastXmlManager implements IXmlManager {
                     firstElementSkipped = false;
                 }
 
+                //==========================================
+                // The element is an Object or another array.
+                //==========================================
                 if(token == JsonToken.START_OBJECT) {
-                    token = xmlParser.nextToken(); // Skip the field name in an array!
 
+                    //==========================================
+                    // The fieldName of the array element.
+                    // This will be used in case the element is something
+                    // like : <someKey>titi</someKey>. In that case, the
+                    // element will be a JSonObject of one property "someKey".
+                    // If the element is a complex object, for example
+                    // <someKey><color>red</color><size>big</size></someKey>,
+                    // then this "someKey" fieldName won't be used.
+                    //==========================================
+                    token = xmlParser.nextToken();
                     if(token != JsonToken.FIELD_NAME) {
                         throw new RuntimeException("Expecting a FIELD_NAME token here, got : " + token);
                     }
                     String fieldName = xmlParser.getValueAsString();
 
                     token = xmlParser.nextToken();
-
                     if(token == JsonToken.VALUE_NULL) {
+                        //==========================================
+                        // Empty object
+                        //==========================================
                         jsonArray.add(getJsonManager().create());
-                        token = xmlParser.nextToken();
                     } else if(token == JsonToken.START_OBJECT) {
-                        jsonArray.add(deserializeObjectOrArray(xmlParser, context));
+                        //==========================================
+                        // The array element is a complexe object such as
+                        // <someKey><color>red</color><size>big</size></someKey>
+                        // or is an array in the array.
+                        //==========================================
+                        jsonArray.addConvert(deserializeObjectOrArray(xmlParser, context));
                     } else {
 
                         //==========================================
-                        // Direct value like <someObj>titi</someObj>
+                        // The array element is a something like <someKey>titi</someKey>.
+                        // We considere this as a IJsonObject with one property.
                         //==========================================
                         IJsonObject jsonObject = getJsonManager().create();
                         Object value = xmlParser.readValueAs(Object.class);
-                        jsonObject.put(fieldName, value);
+                        jsonObject.putConvert(fieldName, value);
 
                         jsonArray.add(jsonObject);
-                        token = xmlParser.nextToken();
                     }
+
+                    token = xmlParser.nextToken();
+
+                    //==========================================
+                    // An array element can only contain a simple value
+                    // or a single object/array. It can't contain multiple
+                    // children.
+                    //==========================================
+                    if(token != JsonToken.END_OBJECT) {
+                        throw new RuntimeException("An array element can't contain more than one child! The current array already contains " +
+                                                   "one : " + jsonArray.toJsonString());
+                    }
+
                 } else {
+                    //==========================================
+                    // The array element is a simple value
+                    //==========================================
                     Object value = xmlParser.readValueAs(Object.class);
-                    jsonArray.add(value);
+                    jsonArray.addConvert(value);
                 }
 
                 token = xmlParser.nextToken();
             }
-            token = xmlParser.nextToken();
 
             return jsonArray;
         } catch(Exception ex) {
@@ -432,27 +483,31 @@ public class SpincastXmlManager implements IXmlManager {
             IJsonObject jsonObject = getJsonManager().create();
 
             if(firstProperty != null) {
-                jsonObject.put(firstProperty.getKey(), firstProperty.getValue());
+                jsonObject.putConvert(firstProperty.getKey(), firstProperty.getValue());
             }
 
             JsonToken token = xmlParser.getCurrentToken();
             while(token == JsonToken.FIELD_NAME) {
 
                 String fieldName = xmlParser.getValueAsString();
+                if(StringUtils.isBlank(fieldName)) {
+                    throw new RuntimeException("A Json object can't have a property with an empty name. " +
+                                               "For example, this is invalid : <root>someValue</root>, a " +
+                                               "name must be specified : <root><someKey>someValue</someKey></root>");
+                }
+
                 token = xmlParser.nextToken();
 
                 if(token == JsonToken.VALUE_NULL) {
                     jsonObject.put(fieldName, getJsonManager().create());
                 } else if(token == JsonToken.START_OBJECT) {
-                    jsonObject.put(fieldName, deserializeObjectOrArray(xmlParser, context));
+                    jsonObject.putConvert(fieldName, deserializeObjectOrArray(xmlParser, context));
                 } else {
                     Object value = xmlParser.readValueAs(Object.class);
-                    jsonObject.put(fieldName, value);
-                    token = xmlParser.nextToken();
+                    jsonObject.putConvert(fieldName, value);
                 }
-                token = xmlParser.getCurrentToken();
+                token = xmlParser.nextToken();
             }
-            token = xmlParser.nextToken();
             return jsonObject;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);

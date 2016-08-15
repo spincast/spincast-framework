@@ -1,10 +1,13 @@
 package org.spincast.plugins.validation.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.spincast.core.json.IJsonObject;
+import org.spincast.core.xml.IXmlManager;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.validation.FormatType;
 import org.spincast.plugins.validation.IValidator;
@@ -28,6 +31,13 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 public class GetFormattedErrorsTest extends SpincastTestBase {
 
     public static final String APP_VALIDATION_ERROR_NO_SPACE = "VALIDATION_ERROR_APP_NO_SPACE";
+
+    @Inject
+    protected IXmlManager xmlManager;
+
+    protected IXmlManager getXmlManager() {
+        return this.xmlManager;
+    }
 
     @Inject
     protected IValidatorFactory<IUser> userValidatorFactory;
@@ -285,102 +295,12 @@ public class GetFormattedErrorsTest extends SpincastTestBase {
         String errorsFormatted = userValidator.getErrorsFormatted(FormatType.XML);
         assertNotNull(errorsFormatted);
 
-        StringBuilder expected = new StringBuilder();
-        expected.append("<JsonObject>\n");
-        expected.append("    <email>\n");
-        expected.append("        <item>\n");
-        expected.append("            <fieldName>email</fieldName>\n");
-        expected.append("            <message>Not a valid email address.</message>\n");
-        expected.append("            <type>VALIDATION_TYPE_EMAIL</type>\n");
-        expected.append("        </item>\n");
-        expected.append("    </email>\n");
-        expected.append("    <name>\n");
-        expected.append("        <item>\n");
-        expected.append("            <fieldName>name</fieldName>\n");
-        expected.append("            <message>No space allowed!</message>\n");
-        expected.append("            <type>VALIDATION_ERROR_APP_NO_SPACE</type>\n");
-        expected.append("        </item>\n");
-        expected.append("        <item>\n");
-        expected.append("            <fieldName>name</fieldName>\n");
-        expected.append("            <message>Minimum length of 3 characters. Currently: 2 characters.</message>\n");
-        expected.append("            <type>VALIDATION_TYPE_MIN_LENGTH</type>\n");
-        expected.append("        </item>\n");
-        expected.append("    </name>\n");
-        expected.append("</JsonObject>\n");
-
-        StringBuilder expected2 = new StringBuilder();
-        expected2.append("<JsonObject>\n");
-        expected2.append("    <name>\n");
-        expected2.append("        <item>\n");
-        expected2.append("            <fieldName>name</fieldName>\n");
-        expected2.append("            <message>No space allowed!</message>\n");
-        expected2.append("            <type>VALIDATION_ERROR_APP_NO_SPACE</type>\n");
-        expected2.append("        </item>\n");
-        expected2.append("        <item>\n");
-        expected2.append("            <fieldName>name</fieldName>\n");
-        expected2.append("            <message>Minimum length of 3 characters. Currently: 2 characters.</message>\n");
-        expected2.append("            <type>VALIDATION_TYPE_MIN_LENGTH</type>\n");
-        expected2.append("        </item>\n");
-        expected2.append("    </name>\n");
-        expected2.append("    <email>\n");
-        expected2.append("        <item>\n");
-        expected2.append("            <fieldName>email</fieldName>\n");
-        expected2.append("            <message>Not a valid email address.</message>\n");
-        expected2.append("            <type>VALIDATION_TYPE_EMAIL</type>\n");
-        expected2.append("        </item>\n");
-        expected2.append("    </email>\n");
-        expected2.append("</JsonObject>\n");
-
-        StringBuilder expected3 = new StringBuilder();
-        expected3.append("<JsonObject>\n");
-        expected3.append("    <email>\n");
-        expected3.append("        <item>\n");
-        expected3.append("            <fieldName>email</fieldName>\n");
-        expected3.append("            <message>Not a valid email address.</message>\n");
-        expected3.append("            <type>VALIDATION_TYPE_EMAIL</type>\n");
-        expected3.append("        </item>\n");
-        expected3.append("    </email>\n");
-        expected3.append("    <name>\n");
-        expected3.append("        <item>\n");
-        expected3.append("            <fieldName>name</fieldName>\n");
-        expected3.append("            <message>Minimum length of 3 characters. Currently: 2 characters.</message>\n");
-        expected3.append("            <type>VALIDATION_TYPE_MIN_LENGTH</type>\n");
-        expected3.append("        </item>\n");
-        expected3.append("        <item>\n");
-        expected3.append("            <fieldName>name</fieldName>\n");
-        expected3.append("            <message>No space allowed!</message>\n");
-        expected3.append("            <type>VALIDATION_ERROR_APP_NO_SPACE</type>\n");
-        expected3.append("        </item>\n");
-        expected3.append("    </name>\n");
-        expected3.append("</JsonObject>\n");
-
-        StringBuilder expected4 = new StringBuilder();
-        expected4.append("<JsonObject>\n");
-        expected4.append("    <name>\n");
-        expected4.append("        <item>\n");
-        expected4.append("            <fieldName>name</fieldName>\n");
-        expected4.append("            <message>Minimum length of 3 characters. Currently: 2 characters.</message>\n");
-        expected4.append("            <type>VALIDATION_TYPE_MIN_LENGTH</type>\n");
-        expected4.append("        </item>\n");
-        expected4.append("        <item>\n");
-        expected4.append("            <fieldName>name</fieldName>\n");
-        expected4.append("            <message>No space allowed!</message>\n");
-        expected4.append("            <type>VALIDATION_ERROR_APP_NO_SPACE</type>\n");
-        expected4.append("        </item>\n");
-        expected4.append("    </name>\n");
-        expected4.append("    <email>\n");
-        expected4.append("        <item>\n");
-        expected4.append("            <fieldName>email</fieldName>\n");
-        expected4.append("            <message>Not a valid email address.</message>\n");
-        expected4.append("            <type>VALIDATION_TYPE_EMAIL</type>\n");
-        expected4.append("        </item>\n");
-        expected4.append("    </email>\n");
-        expected4.append("</JsonObject>\n");
-
-        assertTrue(expected.toString().equals(errorsFormatted) ||
-                   expected2.toString().equals(errorsFormatted) ||
-                   expected3.toString().equals(errorsFormatted) ||
-                   expected4.toString().equals(errorsFormatted));
+        IJsonObject jsonObject = getXmlManager().fromXml(errorsFormatted);
+        assertNotNull(jsonObject);
+        IJsonObject emailObj = jsonObject.getArrayFirstJsonObject("email");
+        assertNotNull(emailObj);
+        assertEquals("Not a valid email address.", emailObj.getString("message"));
+        assertEquals("VALIDATION_TYPE_EMAIL", emailObj.getString("type"));
 
     }
 

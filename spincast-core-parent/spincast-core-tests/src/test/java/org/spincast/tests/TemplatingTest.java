@@ -58,17 +58,6 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         return this.spincastUtils;
     }
 
-    @Override
-    protected void clearRoutes() {
-        //==========================================
-        // We do not remove the routes before each test
-        // since we want to test a filter that is
-        // automatically added.
-        // But we remove any route which id is "test".
-        //==========================================
-        getRouter().removeRoute("test");
-    }
-
     @Test
     public void htmlTemplate() throws Exception {
 
@@ -83,7 +72,7 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("param1", "Hello!");
-                context.response().sendHtmlTemplate(testFile.getAbsolutePath(), false, params);
+                context.response().sendTemplateHtml(testFile.getAbsolutePath(), false, params);
             }
         });
 

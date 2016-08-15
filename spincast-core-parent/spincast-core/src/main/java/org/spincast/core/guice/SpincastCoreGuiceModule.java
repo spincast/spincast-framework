@@ -28,11 +28,15 @@ import org.spincast.core.filters.ICorsFilter;
 import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.json.IJsonArray;
+import org.spincast.core.json.IJsonArrayImmutable;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.IJsonObjectFactory;
+import org.spincast.core.json.IJsonObjectImmutable;
 import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonArrayImmutable;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.json.JsonObjectImmutable;
 import org.spincast.core.locale.ILocaleResolver;
 import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
 import org.spincast.core.routing.IETagFactory;
@@ -366,55 +370,14 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         bind(ISpincastUtils.class).to(key).in(Scopes.SINGLETON);
     }
 
-    @SuppressWarnings("unchecked")
     protected void bindJsonObjectFactory() {
 
-        @SuppressWarnings("rawtypes")
-        Key jsonObjectKey = getJsonObjectKey();
-        try {
-            jsonObjectKey.getTypeLiteral().getSupertype(IJsonObject.class);
-        } catch(Exception ex) {
-            throw new RuntimeException("The json object Key must implement " + IJsonObject.class.getName() + " : " +
-                                       jsonObjectKey);
-        }
-
-        @SuppressWarnings("rawtypes")
-        Key jsonArrayKey = getJsonArrayKey();
-        try {
-            jsonArrayKey.getTypeLiteral().getSupertype(IJsonArray.class);
-        } catch(Exception ex) {
-            throw new RuntimeException("The json array Key must implement " + IJsonArray.class.getName() + " : " +
-                                       jsonArrayKey);
-        }
-
-        Annotation jsonObjectKeyAnnotation = jsonObjectKey.getAnnotation();
-        Annotation jsonArrayKeyAnnotation = jsonArrayKey.getAnnotation();
-
-        if(jsonObjectKeyAnnotation != null && jsonArrayKeyAnnotation != null) {
-            install(new FactoryModuleBuilder().implement(IJsonObject.class,
-                                                         jsonObjectKeyAnnotation,
-                                                         jsonObjectKey.getTypeLiteral())
-                                              .implement(IJsonArray.class,
-                                                         jsonArrayKeyAnnotation,
-                                                         jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectFactory.class));
-        } else if(jsonObjectKeyAnnotation != null) {
-            install(new FactoryModuleBuilder().implement(IJsonObject.class,
-                                                         jsonObjectKeyAnnotation,
-                                                         jsonObjectKey.getTypeLiteral())
-                                              .implement(IJsonArray.class, jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectFactory.class));
-        } else if(jsonArrayKeyAnnotation != null) {
-            install(new FactoryModuleBuilder().implement(IJsonObject.class, jsonObjectKey.getTypeLiteral())
-                                              .implement(IJsonArray.class,
-                                                         jsonArrayKeyAnnotation,
-                                                         jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectFactory.class));
-        } else {
-            install(new FactoryModuleBuilder().implement(IJsonObject.class, jsonObjectKey.getTypeLiteral())
-                                              .implement(IJsonArray.class, jsonArrayKey.getTypeLiteral())
-                                              .build(IJsonObjectFactory.class));
-        }
+        install(new FactoryModuleBuilder()
+                                          .implement(IJsonObject.class, getJsonObjectImplClass())
+                                          .implement(IJsonObjectImmutable.class, getJsonObjectImmutableImplClass())
+                                          .implement(IJsonArrayImmutable.class, getJsonArrayImmutableImplClass())
+                                          .implement(IJsonArray.class, getJsonArrayImplClass())
+                                          .build(IJsonObjectFactory.class));
     }
 
     /**
@@ -447,12 +410,20 @@ public class SpincastCoreGuiceModule extends SpincastGuiceModuleBase {
         return Key.get(SpincastUtils.class);
     }
 
-    protected Key<?> getJsonObjectKey() {
-        return Key.get(JsonObject.class);
+    protected Class<? extends IJsonObject> getJsonObjectImplClass() {
+        return JsonObject.class;
     }
 
-    protected Key<?> getJsonArrayKey() {
-        return Key.get(JsonArray.class);
+    protected Class<? extends IJsonObjectImmutable> getJsonObjectImmutableImplClass() {
+        return JsonObjectImmutable.class;
+    }
+
+    protected Class<? extends IJsonArray> getJsonArrayImplClass() {
+        return JsonArray.class;
+    }
+
+    protected Class<? extends IJsonArrayImmutable> getJsonArrayImmutableImplClass() {
+        return JsonArrayImmutable.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -5,6 +5,9 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.annotation.Nullable;
 
 import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.json.IJsonObject;
@@ -31,15 +34,18 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     private final ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
     private final ISpincastConfig spincastConfig;
+    private final ISpincastPebbleExtension spincastPebbleExtension;
     private PebbleEngine pebbleEngineString;
     private PebbleEngine pebbleEngineTemplateClasspath;
     private PebbleEngine pebbleEngineTemplateFileSystem;
 
     @Inject
     public SpincastPebbleTemplatingEngine(ISpincastConfig spincastConfig,
-                                          ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig) {
+                                          ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig,
+                                          @Nullable ISpincastPebbleExtension spincastPebbleExtension) {
         this.spincastConfig = spincastConfig;
         this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
+        this.spincastPebbleExtension = spincastPebbleExtension;
     }
 
     protected ISpincastConfig getSpincastConfig() {
@@ -48,6 +54,10 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     protected ISpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
         return this.spincastPebbleTemplatingEngineConfig;
+    }
+
+    protected ISpincastPebbleExtension getSpincastPebbleExtension() {
+        return this.spincastPebbleExtension;
     }
 
     protected PebbleEngine getPebbleEngineString() {
@@ -99,12 +109,20 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
         builder.tagCache(tagCache);
 
         //==========================================
-        // Some extension to add?
+        // Spincast Pebble extension
+        //==========================================
+        if(getSpincastPebbleExtension() != null) {
+            builder.extension(getSpincastPebbleExtension());
+        }
+
+        //==========================================
+        // Some custom extension to add?
         //==========================================
         Extension extension = getSpincastPebbleTemplatingEngineConfig().getExtension();
         if(extension != null) {
             builder.extension(extension);
         }
+
     }
 
     protected Loader<String> getClasspathTemplateLoader() {
@@ -129,12 +147,12 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     @Override
     public String evaluate(String content, IJsonObject jsonObject) {
-        return evaluate(content, jsonObject.getUnderlyingMap(), null);
+        return evaluate(content, convertJsonObjectToMap(jsonObject), null);
     }
 
     @Override
     public String evaluate(String content, IJsonObject jsonObject, Locale locale) {
-        return evaluate(content, jsonObject.getUnderlyingMap(), locale);
+        return evaluate(content, convertJsonObjectToMap(jsonObject), locale);
     }
 
     @Override
@@ -144,12 +162,12 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     @Override
     public String fromTemplate(String templatePath, IJsonObject jsonObject) {
-        return fromTemplate(templatePath, jsonObject.getUnderlyingMap(), null);
+        return fromTemplate(templatePath, convertJsonObjectToMap(jsonObject), null);
     }
 
     @Override
     public String fromTemplate(String templatePath, IJsonObject jsonObject, Locale locale) {
-        return fromTemplate(templatePath, jsonObject.getUnderlyingMap(), locale);
+        return fromTemplate(templatePath, convertJsonObjectToMap(jsonObject), locale);
     }
 
     @Override
@@ -169,12 +187,29 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
 
     @Override
     public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject jsonObject) {
-        return parse(templatePath, jsonObject.getUnderlyingMap(), true, isClasspathPath, null);
+        return parse(templatePath, convertJsonObjectToMap(jsonObject), true, isClasspathPath, null);
     }
 
     @Override
     public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject jsonObject, Locale locale) {
-        return parse(templatePath, jsonObject.getUnderlyingMap(), true, isClasspathPath, locale);
+        return parse(templatePath, convertJsonObjectToMap(jsonObject), true, isClasspathPath, locale);
+    }
+
+    /**
+     * Converts a IJsonObject to a Map&lt;String, Object&gt;, but only
+     * the first level, only so it can be pass to the Pebble templating
+     * engine which requires a Map&lt;String, Object&gt;.
+     */
+    protected Map<String, Object> convertJsonObjectToMap(IJsonObject jsonObject) {
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        if(jsonObject != null) {
+            for(Entry<String, Object> entry : jsonObject) {
+                map.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return map;
     }
 
     protected String parse(String htmlOrPath,
@@ -210,8 +245,8 @@ public class SpincastPebbleTemplatingEngine implements ITemplatingEngine {
             PebbleTemplate template = pebbleEngine.getTemplate(htmlOrPath);
 
             Writer writer = new StringWriter();
-            template.evaluate(writer, params, locale);
 
+            template.evaluate(writer, params, locale);
             String result = writer.toString();
 
             return result;

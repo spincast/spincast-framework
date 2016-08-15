@@ -88,7 +88,7 @@ public abstract class WebsiteIntegrationTestBase extends
     protected Module getTestOverridingModule(Class<? extends IRequestContext<?>> requestContextClass,
                                              Class<? extends IWebsocketContext<?>> websocketContextClass) {
 
-        // No extra overrding bindings required by default.
+        // No extra overriding bindings required by default.
         return getDefaultOverridingModule(requestContextClass, websocketContextClass);
     }
 }

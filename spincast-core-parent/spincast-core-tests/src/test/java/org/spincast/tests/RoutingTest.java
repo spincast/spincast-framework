@@ -36,7 +36,7 @@ public class RoutingTest extends SpincastTestBase {
 
     @Before
     public void before() {
-        getRouter().removeAllRoutes();
+        getRouter().removeAllRoutes(true);
     }
 
     protected IRouter<IDefaultRequestContext, IDefaultWebsocketContext> getRouter() {

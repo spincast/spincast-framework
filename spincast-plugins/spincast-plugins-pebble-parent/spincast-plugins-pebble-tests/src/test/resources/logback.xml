@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--===================================
+    Appender - Console
+    ====================================-->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+		    <charset>UTF-8</charset>
+		    <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %msg ~ %caller{1}</pattern>
+		</encoder>
+    </appender>
+
+    <!--===================================
+    Appender Level, default
+    ====================================-->
+    <root level="warn">
+        <appender-ref ref="stdout"/>
+    </root>
+    
+    <!--===================================
+    Appender Level, for the application
+    ====================================-->
+    <logger name="org.spincast" level="debug" additivity="false">
+        <appender-ref ref="stdout" />
+    </logger>
+
+</configuration>

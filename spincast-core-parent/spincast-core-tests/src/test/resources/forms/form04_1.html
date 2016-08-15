@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <form method="post">
+            <select name="books">
+                {% for book in books %}
+                    <option {{selected(book.selected)}} value="{{book.value}}">{{book.text}}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Submit!" />
+        </form>
+    </body>
+</html>

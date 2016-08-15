@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">  
+    </head>
+    <body>
+        <form method="post">
+            <input type="text" name="email" value="{{email}}" />
+            <input type="text" name="obj1.name" value="{{obj1.name}}" />
+            <input type="checkbox" name="obj1.books" value="{{obj1.books[0]}}" />
+            <input type="checkbox" name="obj1.books" value="{{obj1.books[1]}}" />
+            <input type="checkbox" name="obj1.books" value="{{obj1.books[2]}}" />
+            <input type="text" name="obj1.books[3].name" value="{{obj1.books[3].name}}" />
+            <input type="submit" value="Submit!" />
+        </form>
+    </body>
+</html>

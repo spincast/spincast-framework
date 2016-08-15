@@ -10,28 +10,14 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
-import org.spincast.core.controllers.IFrontController;
-import org.spincast.core.cookies.ICookieFactory;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.server.IServer;
-import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.core.utils.ssl.ISSLContextFactory;
 import org.spincast.core.websocket.IWebsocketContext;
 import org.spincast.core.websocket.IWebsocketEndpointManager;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils;
 import org.spincast.plugins.httpclient.websocket.builders.IWebsocketRequestBuilder;
-import org.spincast.plugins.undertow.ICacheBusterRemovalHandlerFactory;
-import org.spincast.plugins.undertow.ICorsHandlerFactory;
-import org.spincast.plugins.undertow.IFileClassPathResourceManagerFactory;
-import org.spincast.plugins.undertow.IGzipCheckerHandlerFactory;
-import org.spincast.plugins.undertow.ISpincastHttpAuthIdentityManagerFactory;
-import org.spincast.plugins.undertow.ISpincastResourceHandlerFactory;
-import org.spincast.plugins.undertow.IWebsocketEndpointFactory;
-import org.spincast.plugins.undertow.SpincastUndertowServer;
 import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
 import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
@@ -42,7 +28,6 @@ import com.google.common.net.HttpHeaders;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Module;
-import com.google.inject.Scopes;
 
 /**
  * Base class for WebSocket tests without an existing
@@ -70,39 +55,6 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
         closeAllWebsocketEndpoints();
     }
 
-    public static class ServerTest extends SpincastUndertowServer {
-
-        @Inject
-        public ServerTest(ISpincastConfig config, ISpincastUndertowConfig spincastUndertowConfig,
-                          IFrontController frontController, ISpincastUtils spincastUtils, ICookieFactory cookieFactory,
-                          ICorsHandlerFactory corsHandlerFactory, IGzipCheckerHandlerFactory gzipCheckerHandlerFactory,
-                          ISpincastResourceHandlerFactory spincastResourceHandlerFactory,
-                          ICacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
-                          IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
-                          ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
-                          IWebsocketEndpointFactory spincastWebsocketEndpointFactory, ISSLContextFactory sslContextFactory) {
-            super(config,
-                  spincastUndertowConfig,
-                  frontController,
-                  spincastUtils,
-                  cookieFactory,
-                  corsHandlerFactory,
-                  gzipCheckerHandlerFactory,
-                  spincastResourceHandlerFactory,
-                  cacheBusterRemovalHandlerFactory,
-                  fileClassPathResourceManagerFactory,
-                  spincastHttpAuthIdentityManagerFactory,
-                  spincastWebsocketEndpointFactory,
-                  sslContextFactory);
-        }
-
-        @Override
-        protected void sendWebsocketEnpointsClosedWhenServerStops() {
-            // No "endpoint closed" events sent to the peers
-            // when we close the server, so the tests are faster.
-        }
-    }
-
     @Override
     protected Module getOverridingModule() {
 
@@ -121,16 +73,8 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
                         return getServerPingIntervalSeconds();
                     }
                 });
-
-                if(isUseTestServer()) {
-                    bind(IServer.class).to(ServerTest.class).in(Scopes.SINGLETON);
-                }
             }
         };
-    }
-
-    protected boolean isUseTestServer() {
-        return true;
     }
 
     protected int getServerPingIntervalSeconds() {

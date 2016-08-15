@@ -52,6 +52,10 @@ a:hover {
     text-align:center;
 }
 
+.underline {
+	text-decoration: underline;
+}
+
 img {
     max-width:100%;
 }
@@ -382,7 +386,9 @@ a.love:hover::after {
 .demo_websockets #menu_demos_websockets a, 
 .demo_http_auth #menu_demos_http_auth a,
 .demo_full_website #menu_demos_full_website a,
-.demo_todo_list #menu_demos_todo_list a
+.demo_todo_list #menu_demos_todo_list a,
+.demo_form_auth #menu_demos_form_auth a,
+.demo_form_validation #menu_demos_form_validation a
 {
     font-size:17px; 
     color: #FBFFF4;
@@ -1369,6 +1375,25 @@ ul.tutoBullets li {
 	width:10px;
 	vertical-align:0% !important;
 }
+
+.authEmail {
+	font-style: italic;
+}
+.authEmail span {
+	font-weight: bold;
+}
+
+.colImg img {
+	max-width: none !important;
+}
+
+.demo_form_validation form textarea {
+	min-height:140px;
+}
+.forCheckable {
+	font-weight: normal;
+}
+
 
 
 

@@ -25,6 +25,14 @@ import com.google.inject.Module;
 
 public class RoutingCaseSensitiveTest extends SpincastDefaultNoAppIntegrationTestBase {
 
+    //==========================================
+    // Remove all routes, even Spincast ones
+    //==========================================
+    @Override
+    protected boolean removeSpincastRoutesToo() {
+        return true;
+    }
+
     public static class TestingSpincastConfigCaseSensitive extends SpincastTestConfig {
 
         @Override

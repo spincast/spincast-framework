@@ -28,7 +28,7 @@ public interface IUndertowWebsocketEndpointWriter {
     /**
      * Sends a "closing connection" message to specified peers.
      * 
-     * No exception thrown is the message can't be sent.
+     * No exception thrown if the message can't be sent.
      */
     public void sendClosingConnection(int closingCode, String closingReason, Set<String> peerIds,
                                       IClosedEventSentCallback callback);

@@ -50,12 +50,22 @@ public class CustomServer implements IServer {
     }
 
     @Override
+    public boolean isRunning() {
+        return this.serverFlag.contains("start") && !this.serverFlag.contains("stop");
+    }
+
+    @Override
     public void start() {
         this.serverFlag += "start";
     }
 
     @Override
     public void stop() {
+        stop(true);
+    }
+
+    @Override
+    public void stop(boolean sendClosingMessageToPeers) {
         this.serverFlag += "stop";
     }
 

@@ -3,6 +3,7 @@ package org.spincast.core.exchange;
 import java.util.List;
 import java.util.Map;
 
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.GzipOption;
 
 /**
@@ -187,7 +188,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * the given parameters, then sends the result as <code>text/html</code>, 
      * <code>UTF-8</code> encoded, without flushing.
      */
-    public void sendHtmlParse(String html, Map<String, Object> params);
+    public void sendParseHtml(String html, Map<String, Object> params);
 
     /**
      * Parses the given String using the <code>ITemplatingEngine</code> and
@@ -196,7 +197,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * Note that once the response is flushed, no header can be added or changed anymore.
      */
-    public void sendHtmlParse(String html, Map<String, Object> params, boolean flush);
+    public void sendParseHtml(String html, Map<String, Object> params, boolean flush);
 
     /**
      * Parses the given String using the <code>ITemplatingEngine</code> and
@@ -216,12 +217,21 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
 
     /**
      * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the parameters that have been added to the response, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    //public void sendTemplateHtml(String templatePath);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
      * the given parameters, then sends the 
      * result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
      * 
      * @param templatePath must be a classpath's relative path.
      */
-    public void sendHtmlTemplate(String templatePath, Map<String, Object> params);
+    public void sendTemplateHtml(String templatePath, Map<String, Object> params);
 
     /**
      * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
@@ -232,7 +242,32 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * @param templatePath must be a classpath's relative path.
      */
-    public void sendHtmlTemplate(String templatePath, Map<String, Object> params, boolean flush);
+    public void sendTemplateHtml(String templatePath, Map<String, Object> params, boolean flush);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, Map<String, Object> params);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     * 
+     */
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, Map<String, Object> params, boolean flush);
 
     /**
      * Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
@@ -253,31 +288,6 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * @param templatePath must be a classpath's relative path.
      */
     public void sendTemplate(String templatePath, String contentType, Map<String, Object> params, boolean flush);
-
-    /**
-     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
-     * the given parameters, then sends the 
-     * result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
-     * 
-     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
-     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
-     * system path.
-     */
-    public void sendHtmlTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params);
-
-    /**
-     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
-     * the given parameters, then sends the 
-     * result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
-     * 
-     * Note that once the response is flushed, no header can be added or changed anymore.
-     * 
-     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
-     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
-     * system path.
-     * 
-     */
-    public void sendHtmlTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, boolean flush);
 
     /**
      * Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
@@ -302,6 +312,128 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * system path.
      */
     public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, Map<String, Object> params,
+                             boolean flush);
+
+    /**
+     * Parses the given String using the <code>ITemplatingEngine</code> and
+     * the given parameters, then sends the result as <code>text/html</code>, 
+     * <code>UTF-8</code> encoded, without flushing.
+     */
+    public void sendParseHtml(String html, IJsonObject model);
+
+    /**
+     * Parses the given String using the <code>ITemplatingEngine</code> and
+     * the given parameters, then sends the result as <code>text/html</code>, 
+     * <code>UTF-8</code> encoded, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     */
+    public void sendParseHtml(String html, IJsonObject model, boolean flush);
+
+    /**
+     * Parses the given String using the <code>ITemplatingEngine</code> and
+     * the given parameters, then sends the result using the specified 
+     * <code>Content-Type</code>, without flushing.
+     */
+    public void sendParse(String content, String contentType, IJsonObject model);
+
+    /**
+     * Parses the given String using the <code>ITemplatingEngine</code> and
+     * the given parameters, then sends the result using the specified 
+     * <code>Content-Type</code>, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     */
+    public void sendParse(String content, String contentType, IJsonObject model, boolean flush);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    public void sendTemplateHtml(String templatePath, IJsonObject model);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    public void sendTemplateHtml(String templatePath, IJsonObject model, boolean flush);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, without flushing.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, IJsonObject model);
+
+    /**
+     * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result as <code>text/html</code>, <code>UTF-8</code> encoded, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     * 
+     */
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, IJsonObject model, boolean flush);
+
+    /**
+     * Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result using the given <code>contentType</code>, without flushing.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    public void sendTemplate(String templatePath, String contentType, IJsonObject model);
+
+    /**
+     * Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result using the given <code>contentType</code>, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * 
+     * @param templatePath must be a classpath's relative path.
+     */
+    public void sendTemplate(String templatePath, String contentType, IJsonObject model, boolean flush);
+
+    /**
+     * Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result using the given <code>contentType</code>, without flushing.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, IJsonObject model);
+
+    /**
+     * Finds the specified template using the <code>ITemplatingEngine</code>, evaluates it using
+     * the given parameters, then sends the 
+     * result using the given <code>contentType</code>, and flushes, if specified.
+     * 
+     * Note that once the response is flushed, no header can be added or changed anymore.
+     * 
+     * @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
+     * a classpath's relative path. If <code>false</code>, it is considered as an absolute file
+     * system path.
+     */
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, IJsonObject model,
                              boolean flush);
 
     /**
@@ -497,5 +629,99 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * be flagged as "private".
      */
     public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache);
+
+    /**
+     * Adds a global error message.
+     * 
+     * <p>
+     * This is an error message that is general and not associated with a specific field.
+     * In an HTML interface, those error messages are often displayed at the top of the page.
+     * </p>
+     */
+    //public void addErrorGlobal(String globalErrorMessage);
+
+    /**
+     * Adds a field error message.
+     * 
+     * <p>
+     * This is an error message that is going to be associated with a specific field.
+     * In an HTML interface, those error messages are often displayed next to their
+     * associated field.
+     * </p>
+     */
+    //public void addErrorField(String fieldName, String fieldErrorMessage);
+
+    /**
+     * Adds a field value error message. Multiple fields may have the same
+     * name. When this is the case, those field can be differenciate by their
+     * value, or bu their position.
+     * 
+     * <p>
+     * This is an error message that is going to be associated with a specific field.
+     * In an HTML interface, those error messages are often displayed next to their
+     * associated field.
+     * </p>
+     * 
+     * @param valuePosition The 0-based position of this field amongs all fields of the
+     * same name.
+     */
+    // public void addErrorField(String fieldName, int valuePosition, String fieldErrorMessage);
+
+    /**
+     * Adds a field value error message. Multiple fields may have the same
+     * name. When this is the case, those field can be differenciate by their
+     * value, or bu their position.
+     * 
+     * <p>
+     * This is an error message that is going to be associated with a specific field.
+     * In an HTML interface, those error messages are often displayed next to their
+     * associated field.
+     * </p>
+     * 
+     * @param value The value of this field.
+     */
+    //public void addErrorField(String fieldName, String value, String fieldErrorMessage);
+
+    /**
+     * Adds a global warning message.
+     * 
+     * <p>
+     * This is an warning message that is general and not associated with a specific field.
+     * In an HTML interface, those warning messages are often displayed at the top of the page.
+     * </p>
+     */
+    //public void addWarningGlobal(String globalWarningMessage);
+
+    /**
+     * Adds a field warning message.
+     * 
+     * <p>
+     * This is an warning message that is going to be associated with a specific field.
+     * In an HTML interface, those warning message are often displayed next to their
+     * associated field.
+     * </p>
+     */
+    //public void addWarningField(String fieldName, String fieldWarningMessage);
+
+    /**
+     * Adds a global confirmation message.
+     * 
+     * <p>
+     * This is an confirmation message that is general and not associated with a specific field.
+     * In an HTML interface, those confirmation messages are often displayed at the top of the page.
+     * </p>
+     */
+    //public void addConfirmGlobal(String globalConfirmationMessage);
+
+    /**
+     * Adds a field confirmation message.
+     * 
+     * <p>
+     * This is an confirmation message that is going to be associated with a specific field.
+     * In an HTML interface, those confirmation message are often displayed next to their
+     * associated field.
+     * </p>
+     */
+    //public void addConfirmField(String fieldName, String fieldConfirmationMessage);
 
 }

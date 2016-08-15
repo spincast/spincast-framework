@@ -55,4 +55,19 @@ public class SpincastUndertowConfigDefault implements ISpincastUndertowConfig {
         return null;
     }
 
+    @Override
+    public int getSecondsToWaitForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer() {
+        return 30;
+    }
+
+    @Override
+    public int getMilliSecondsIncrementWhenWaitingForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer() {
+        return 200;
+    }
+
+    @Override
+    public String getHtmlFormEncoding() {
+        return "UTF-8";
+    }
+
 }

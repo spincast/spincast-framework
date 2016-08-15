@@ -22,6 +22,7 @@ import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.exchange.IRequestContext;
 import org.spincast.core.exchange.IRequestRequestContextAddon;
+import org.spincast.core.json.IJsonArray;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.routing.HttpMethod;
@@ -72,7 +73,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     private Object ifUnmodifiedSinceDateLock = new Object();
 
     private Map<String, List<String>> queryStringParams;
-    private Map<String, List<String>> formDatas;
+    private Map<String, List<String>> formDatasAsImmutableMap;
     private Map<String, List<File>> uploadedFiles;
     private Map<String, List<String>> headers;
 
@@ -572,12 +573,9 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public Map<String, List<String>> getFormDatas() {
-        if(this.formDatas == null) {
+    public Map<String, List<String>> getFormDatasAsMap() {
+        if(this.formDatasAsImmutableMap == null) {
 
-            //==========================================
-            // We make sure everything is immutable
-            //==========================================
             Map<String, List<String>> formDatasServer = getServer().getFormDatas(getExchange());
             Map<String, List<String>> formDatasFinal = new HashMap<String, List<String>>();
 
@@ -594,18 +592,23 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
                 }
                 formDatasFinal = Collections.unmodifiableMap(formDatasFinal);
             }
-            this.formDatas = formDatasFinal;
+            this.formDatasAsImmutableMap = formDatasFinal;
         }
-        return this.formDatas;
+        return this.formDatasAsImmutableMap;
+    }
+
+    @Override
+    public IJsonObject getFormDatas() {
+        return getJsonManager().create(getFormDatasAsMap());
     }
 
     @Override
     public List<String> getFormData(String name) {
-        List<String> values = getFormDatas().get(name);
-        if(values == null) {
-            values = Collections.emptyList();
+        IJsonArray arr = getFormDatas().getJsonArray(name, null);
+        if(arr == null) {
+            return new ArrayList<String>();
         }
-        return values;
+        return arr.convertToStringList();
     }
 
     @Override

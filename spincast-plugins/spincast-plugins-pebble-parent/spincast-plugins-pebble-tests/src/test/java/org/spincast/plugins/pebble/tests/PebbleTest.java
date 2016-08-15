@@ -1,13 +1,14 @@
 package org.spincast.plugins.pebble.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.spincast.core.config.ISpincastConfig;
 import org.spincast.core.exchange.IDefaultRequestContext;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
@@ -19,11 +20,44 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.plugins.httpclient.IHttpResponse;
 import org.spincast.plugins.pebble.ISpincastPebbleTemplatingEngineConfig;
+import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import com.google.inject.Module;
+import com.google.inject.Scopes;
 
 public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
+
+    public static class SpincastPebbleTemplatingEngineConfigDefaultTest extends SpincastPebbleTemplatingEngineConfigDefault {
+
+        @Inject
+        public SpincastPebbleTemplatingEngineConfigDefaultTest(ISpincastConfig spincastConfig) {
+            super(spincastConfig);
+        }
+
+        @Override
+        public boolean isStrictVariablesEnabled() {
+            return true;
+        }
+
+    }
+
+    /**
+     * We enable strict variables
+     */
+    @Override
+    protected Module getOverridingModule() {
+        return new AbstractModule() {
+
+            @Override
+            protected void configure() {
+                bind(ISpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigDefaultTest.class)
+                                                                 .in(Scopes.SINGLETON);
+            }
+        };
+    }
 
     @Inject
     protected ITemplatingEngine templatingEngine;
@@ -45,17 +79,6 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
         return this.spincastPebbleTemplatingEngineConfig;
     }
 
-    @Override
-    protected void clearRoutes() {
-        //==========================================
-        // We do not remove the routes before each test
-        // since we want to test a filter that is
-        // automatically added.
-        // But we remove any route which id is "test".
-        //==========================================
-        getRouter().removeRoute("test");
-    }
-
     @Test
     public void htmlTemplate() throws Exception {
 
@@ -66,7 +89,7 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("param1", "Hello!");
-                context.response().sendHtmlTemplate("/template.html", params);
+                context.response().sendTemplateHtml("/template.html", params);
             }
         });
 
@@ -192,7 +215,7 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                 context.variables().add("oneVar", "oneVal");
 
-                context.response().sendHtmlTemplate("/templateDefaultVars.html",
+                context.response().sendTemplateHtml("/templateDefaultVars.html",
                                                     SpincastStatics.params("extraParam1", "extraParam1Val"));
             }
         });
@@ -230,7 +253,7 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     public void cacheValuesNotDebugMode() throws Exception {
         assertEquals(0, getSpincastPebbleTemplatingEngineConfig().getTemplateCacheItemNbr());
         assertEquals(200, getSpincastPebbleTemplatingEngineConfig().getTagCacheTypeItemNbr());
-        assertFalse(getSpincastPebbleTemplatingEngineConfig().isStrictVariablesEnabled());
+        assertTrue(getSpincastPebbleTemplatingEngineConfig().isStrictVariablesEnabled());
     }
 
 }

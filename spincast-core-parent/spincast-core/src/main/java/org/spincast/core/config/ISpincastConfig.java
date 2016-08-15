@@ -238,7 +238,7 @@ public interface ISpincastConfig {
 
     /**
      * If {@link #isAddDefaultTemplateVariablesFilter() addGlobalTemplateVariablesAdderFilter}
-     * erturns <code>true/code>, then this is the position at
+     * erturns <code>true</code>, then this is the position at
      * which the filter will be added.
      */
     public int getDefaultTemplateVariablesFilterPosition();

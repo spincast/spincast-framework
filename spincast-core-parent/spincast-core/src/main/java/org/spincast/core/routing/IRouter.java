@@ -458,9 +458,18 @@ public interface IRouter<R extends IRequestContext<?>, W extends IWebsocketConte
     public void addRoute(IRoute<R> route);
 
     /**
-     * Removes all routes.
+     * Removes all routes, except the one Spincast
+     * addds automatically (their ids start with "spincast_").
      */
     public void removeAllRoutes();
+
+    /**
+     * Removes all routes.
+     * 
+     * @param removeSpincastRoutesToo Should the routes added by 
+     * Spincast be removed too?
+     */
+    public void removeAllRoutes(boolean removeSpincastRoutesToo);
 
     /**
      * Removes a route using its <code>routeId</code>.

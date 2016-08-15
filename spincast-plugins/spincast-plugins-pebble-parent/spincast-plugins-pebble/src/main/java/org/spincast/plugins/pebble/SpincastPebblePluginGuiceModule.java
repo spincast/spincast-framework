@@ -21,10 +21,15 @@ public class SpincastPebblePluginGuiceModule extends SpincastPluginGuiceModuleBa
     protected void configure() {
 
         bind(ITemplatingEngine.class).to(getSpincastPebbleTemplatingEngineClass()).in(Scopes.SINGLETON);
+        bind(ISpincastPebbleExtension.class).to(getSpincastPebbleExtensionClass()).in(Scopes.SINGLETON);
     }
 
     protected Class<? extends ITemplatingEngine> getSpincastPebbleTemplatingEngineClass() {
         return SpincastPebbleTemplatingEngine.class;
+    }
+
+    protected Class<? extends ISpincastPebbleExtension> getSpincastPebbleExtensionClass() {
+        return SpincastPebbleExtension.class;
     }
 
 }

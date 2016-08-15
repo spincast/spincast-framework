@@ -334,18 +334,37 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
     public <T> T getXmlBody(Class<T> clazz);
 
     /**
-     * The parameters submitted from a <code>FORM</code> via a <code>POST</code> method.
+     * The datas submitted from a <code>FORM</code> via a <code>POST</code> method, as
+     * a <code>Map</code>.
      * More than one value with the same <code>key</code> is possible.
-     * The names are <i>case sensitive</i>.
-     * The map is immutable.
+     * The names are <em>case sensitive</em>.
+     * <p>
+     * This returns an <em>immutable</em> object! You won't
+     * be able to add or remove elements.
+     * </p>
      */
-    public Map<String, List<String>> getFormDatas();
+    public Map<String, List<String>> getFormDatasAsMap();
+
+    /**
+     * The datas submitted from a <code>FORM</code> via a <code>POST</code> method.
+     * More than one value with the same <code>key</code> is possible.
+     * The names are <em>case sensitive</em>.
+     * <p>
+     * This returns a new instance of <code>IJsonObject</code>. Any modification
+     * to the object or to one of its <code>IJsonArray</code> property won't affect the
+     * original form datas.
+     * </p>
+     */
+    public IJsonObject getFormDatas();
 
     /**
      * A specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
      * More than one value with the same <code>name</code> is possible.
      * The <code>name</code> is <i>case sensitive</i>.
-     * The list is immutable.
+     * <p>
+     * This returns a new instance of <code>List</code>. Any modification
+     * to the list won't affect the original form datas.
+     * </p>
      */
     public List<String> getFormData(String name);
 

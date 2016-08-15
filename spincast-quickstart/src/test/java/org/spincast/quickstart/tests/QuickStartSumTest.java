@@ -59,7 +59,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
         assertNotNull(resultObj);
 
         assertEquals(new Integer(1066), resultObj.getInteger("result"));
-        assertNull(resultObj.get("error", null));
+        assertNull(resultObj.getString("error", null));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
         IJsonObject resultObj = this.jsonManager.create(content);
         assertNotNull(resultObj);
 
-        assertNull(resultObj.get("result", null));
+        assertNull(resultObj.getString("result", null));
         assertEquals("The 'second' post parameter is required.", resultObj.getString("error"));
     }
 
@@ -101,7 +101,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
         IJsonObject resultObj = this.jsonManager.create(content);
         assertNotNull(resultObj);
 
-        assertNull(resultObj.get("result", null));
+        assertNull(resultObj.getString("result", null));
         assertEquals("The sum overflows the maximum integer value, " + Integer.MAX_VALUE, resultObj.getString("error"));
     }
 

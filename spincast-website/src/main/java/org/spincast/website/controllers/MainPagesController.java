@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.IJsonObject;
 import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -65,35 +66,35 @@ public class MainPagesController {
     }
 
     public void index(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/index.html", null);
+        context.response().sendTemplateHtml("/templates/index.html", (IJsonObject)null);
     }
 
     public void presentation(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/presentation.html", null);
+        context.response().sendTemplateHtml("/templates/presentation.html", (IJsonObject)null);
     }
 
     public void documentation(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/documentation.html", null);
+        context.response().sendTemplateHtml("/templates/documentation.html", (IJsonObject)null);
     }
 
     public void download(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/download.html", null);
+        context.response().sendTemplateHtml("/templates/download.html", (IJsonObject)null);
     }
 
     public void plugins(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/plugins.html", null);
+        context.response().sendTemplateHtml("/templates/plugins.html", (IJsonObject)null);
     }
 
     public void community(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/community.html", null);
+        context.response().sendTemplateHtml("/templates/community.html", (IJsonObject)null);
     }
 
     public void about(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/about.html", null);
+        context.response().sendTemplateHtml("/templates/about.html", (IJsonObject)null);
     }
 
     public void more(IAppRequestContext context) {
-        context.response().sendHtmlTemplate("/templates/more.html", null);
+        context.response().sendTemplateHtml("/templates/more.html", (IJsonObject)null);
     }
 
     /**
@@ -116,7 +117,7 @@ public class MainPagesController {
             throw new NotFoundException("Plugin not found");
         }
 
-        context.response().sendHtmlTemplate(pluginDocTemplatePath, null);
+        context.response().sendTemplateHtml(pluginDocTemplatePath, (IJsonObject)null);
     }
 
     /**
@@ -183,7 +184,7 @@ public class MainPagesController {
         int nbrPageTotal = (int)Math.floor((newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() - 1) / nbrNewsEntriesPerPage) + 1;
 
         // @formatter:off
-        context.response().sendHtmlTemplate("/templates/news.html",
+        context.response().sendTemplateHtml("/templates/news.html",
                                             SpincastStatics.params("newsEntries", newsEntriesAndTotalNbr.getNewsEntries(),
                                                                    "currentPage", page,
                                                                    "nextPage", nextPage,
@@ -205,7 +206,7 @@ public class MainPagesController {
             throw new NotFoundException("The news entry '" + newsId + "' was not found.");
         }
 
-        context.response().sendHtmlTemplate("/templates/newsEntry.html",
+        context.response().sendTemplateHtml("/templates/newsEntry.html",
                                             SpincastStatics.params("newsEntry", newsEntry));
     }
 

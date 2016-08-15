@@ -2,18 +2,27 @@ package org.spincast.plugins.jacksonjson;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
 import org.spincast.core.json.IJsonArray;
+import org.spincast.core.json.IJsonArrayImmutable;
 import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.IJsonObjectFactory;
+import org.spincast.core.json.IJsonObjectImmutable;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
@@ -196,12 +205,8 @@ public class SpincastJsonManager implements IJsonManager {
                         return;
                     }
 
-                    //==========================================
-                    // Serialize using the underlying map...
-                    // Jackson automatically convert byte[] to a
-                    // base64 encoded String.
-                    //==========================================
-                    gen.writeObject(jsonObject.getUnderlyingMap());
+                    Map<String, Object> asMap = jsonObject.convertToPlainMap();
+                    gen.writeObject(asMap);
                 }
             };
         }
@@ -223,10 +228,8 @@ public class SpincastJsonManager implements IJsonManager {
                         return;
                     }
 
-                    //==========================================
-                    // Serialize using the underlying list...
-                    //==========================================
-                    gen.writeObject(jsonArray.getUnderlyingList());
+                    List<Object> asList = jsonArray.convertToPlainList();
+                    gen.writeObject(asList);
                 }
             };
         }
@@ -289,10 +292,10 @@ public class SpincastJsonManager implements IJsonManager {
                             jsonObject.put(name, getJsonArrayDeserializer().deserialize(jsonParser, context));
 
                         } else if(jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
-                            jsonObject.put(name, jsonParser.getEmbeddedObject());
+                            jsonObject.putConvert(name, jsonParser.getEmbeddedObject());
 
                         } else if(jsonToken == JsonToken.VALUE_NULL) {
-                            jsonObject.put(name, null);
+                            jsonObject.putConvert(name, null);
 
                         } else if(jsonToken == JsonToken.VALUE_STRING) {
                             jsonObject.put(name, jsonParser.getText());
@@ -305,7 +308,7 @@ public class SpincastJsonManager implements IJsonManager {
 
                         } else if(jsonToken == JsonToken.VALUE_NUMBER_INT ||
                                   jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
-                            jsonObject.put(name, jsonParser.getNumberValue());
+                            jsonObject.putConvert(name, jsonParser.getNumberValue());
 
                         } else {
                             throw new RuntimeException("Unmanaged json token type : " + jsonToken);
@@ -352,10 +355,10 @@ public class SpincastJsonManager implements IJsonManager {
                             jsonArray.add(deserialize(jsonParser, context));
 
                         } else if(jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
-                            jsonArray.add(jsonParser.getEmbeddedObject());
+                            jsonArray.addConvert(jsonParser.getEmbeddedObject());
 
                         } else if(jsonToken == JsonToken.VALUE_NULL) {
-                            jsonArray.add(null);
+                            jsonArray.addConvert(null);
 
                         } else if(jsonToken == JsonToken.VALUE_STRING) {
                             jsonArray.add(jsonParser.getText());
@@ -368,7 +371,7 @@ public class SpincastJsonManager implements IJsonManager {
 
                         } else if(jsonToken == JsonToken.VALUE_NUMBER_INT ||
                                   jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
-                            jsonArray.add(jsonParser.getNumberValue());
+                            jsonArray.addConvert(jsonParser.getNumberValue());
 
                         } else {
                             throw new RuntimeException("Unmanaged json token type : " + jsonToken);
@@ -499,6 +502,11 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
+    public IJsonObject create(Map<String, ?> params) {
+        return getJsonObjectFactory().create(params);
+    }
+
+    @Override
     public IJsonObject create(InputStream inputStream) {
         try {
             IJsonObject obj = getObjectMapper().readValue(inputStream, IJsonObject.class);
@@ -506,6 +514,22 @@ public class SpincastJsonManager implements IJsonManager {
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    @Override
+    public IJsonObjectImmutable createImmutable(IJsonObject jsonObject) {
+
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        if(jsonObject != null) {
+            for(Entry<String, Object> entry : jsonObject) {
+                Object elementClone = clone(entry.getValue(), false);
+                map.put(entry.getKey(), elementClone);
+            }
+        }
+        map = Collections.unmodifiableMap(map);
+
+        return getJsonObjectFactory().createImmutable(map);
     }
 
     @Override
@@ -524,6 +548,18 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
+    public IJsonArray createArray(List<?> elements) {
+        IJsonArray array = createArray();
+        if(elements != null) {
+            for(Object element : elements) {
+                array.addConvert(element);
+            }
+        }
+
+        return array;
+    }
+
+    @Override
     public IJsonArray createArray(InputStream inputStream) {
         try {
             IJsonArray obj = getObjectMapper().readValue(inputStream, IJsonArray.class);
@@ -531,6 +567,22 @@ public class SpincastJsonManager implements IJsonManager {
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    @Override
+    public IJsonArrayImmutable createArrayImmutable(IJsonArray jsonArray) {
+
+        List<Object> elements = new ArrayList<Object>();
+
+        if(jsonArray != null) {
+            for(Object element : jsonArray) {
+                Object elementClone = clone(element, false);
+                elements.add(elementClone);
+            }
+        }
+        elements = Collections.unmodifiableList(elements);
+
+        return getJsonObjectFactory().createArrayImmutable(elements);
     }
 
     /**
@@ -567,6 +619,163 @@ public class SpincastJsonManager implements IJsonManager {
             return date;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public IJsonObject cloneJsonObject(IJsonObject jsonObject) {
+        return cloneJsonObject(jsonObject, true);
+    }
+
+    @Override
+    public IJsonObject cloneJsonObject(IJsonObject jsonObject, boolean mutable) {
+        return (IJsonObject)clone(jsonObject, mutable);
+    }
+
+    @Override
+    public IJsonArray cloneJsonArray(IJsonArray jsonArray) {
+        return cloneJsonArray(jsonArray, true);
+    }
+
+    @Override
+    public IJsonArray cloneJsonArray(IJsonArray jsonArray, boolean mutable) {
+        return (IJsonArray)clone(jsonArray, mutable);
+    }
+
+    @Override
+    public Object convertToNativeType(Object originalObject) {
+
+        if(originalObject == null) {
+            return null;
+        }
+
+        //==========================================
+        // Already a native type
+        //==========================================
+        if((originalObject instanceof String) ||
+           (originalObject instanceof Integer) ||
+           (originalObject instanceof Long) ||
+           (originalObject instanceof Float) ||
+           (originalObject instanceof Double) ||
+           (originalObject instanceof Boolean) ||
+           (originalObject instanceof BigDecimal) ||
+           (originalObject instanceof byte[]) ||
+           (originalObject instanceof Date) ||
+           (originalObject instanceof IJsonObject) ||
+           (originalObject instanceof IJsonArray)) {
+
+            return originalObject;
+        }
+
+        //==========================================
+        // Array or Collection
+        //==========================================
+        if(originalObject instanceof Collection<?>) {
+
+            IJsonArray array = createArray();
+            for(Object element : (Collection<?>)originalObject) {
+                array.addConvert(element);
+            }
+            return array;
+
+        } else if(originalObject instanceof Object[]) {
+
+            IJsonArray array = createArray();
+            for(Object element : (Object[])originalObject) {
+                array.addConvert(element);
+            }
+            return array;
+
+        } else if(originalObject instanceof Map) {
+
+            IJsonObject obj = create();
+
+            Map<?, ?> map = (Map<?, ?>)originalObject;
+            for(Entry<?, ?> entry : map.entrySet()) {
+                if(entry.getKey() == null) {
+                    throw new RuntimeException("Cannot convert a Map to a IJsonObject when a key is NULL.");
+                }
+                obj.putConvert(String.valueOf(entry.getKey()),
+                               entry.getValue());
+            }
+
+            return obj;
+        }
+
+        //==========================================
+        // Converts to a IJsonObject
+        //==========================================
+        String jsonStr = toJsonString(originalObject);
+        IJsonObject jsonObject = create(jsonStr);
+        return jsonObject;
+    }
+
+    @Override
+    public Object clone(Object originalObject) {
+        return clone(originalObject, true);
+    }
+
+    @Override
+    public Object clone(Object originalObject, boolean mutable) {
+
+        if(originalObject == null) {
+            return null;
+        }
+
+        if((originalObject instanceof String) ||
+           (originalObject instanceof Integer) ||
+           (originalObject instanceof Long) ||
+           (originalObject instanceof Float) ||
+           (originalObject instanceof Double) ||
+           (originalObject instanceof Boolean) ||
+           (originalObject instanceof BigDecimal) ||
+           (originalObject instanceof byte[]) ||
+           (originalObject instanceof Date)) {
+            return originalObject;
+
+        } else if(originalObject instanceof IJsonObject) {
+
+            if(!mutable) {
+
+                //==========================================
+                // Already immutable!
+                //==========================================
+                if(originalObject instanceof IJsonObjectImmutable) {
+                    return originalObject;
+                }
+
+                return createImmutable((IJsonObject)originalObject);
+            }
+
+            IJsonObject clone = create();
+            for(Entry<String, Object> entry : (IJsonObject)originalObject) {
+                clone.putConvert(entry.getKey(), clone(entry.getValue(), true));
+            }
+
+            return clone;
+
+        } else if(originalObject instanceof IJsonArray) {
+
+            if(!mutable) {
+
+                //==========================================
+                // Already immutable!
+                //==========================================
+                if(originalObject instanceof IJsonArrayImmutable) {
+                    return originalObject;
+                }
+
+                return createArrayImmutable((IJsonArray)originalObject);
+            }
+
+            IJsonArray clone = createArray();
+            for(Object element : (IJsonArray)originalObject) {
+                clone.addConvert(clone(element));
+            }
+            return clone;
+
+        } else {
+            return convertToNativeType(originalObject);
         }
     }
 

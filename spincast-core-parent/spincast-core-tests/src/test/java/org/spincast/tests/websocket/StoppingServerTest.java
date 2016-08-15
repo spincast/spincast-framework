@@ -4,25 +4,50 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
-import org.spincast.tests.varia.WebsocketClientTest;
-import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.junit.Ignore;
+import org.junit.Test;
+import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.websocket.IWebsocketConnectionConfig;
+import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.TrueChecker;
+import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
+
+/**
+ * We currently have to ignore this class because of this issue :
+ * http://lists.jboss.org/pipermail/undertow-dev/2016-August/001657.html
+ * This is currently not fixed on branch 1.3.X (Java 7 compatible).
+ * 
+ * The issue occures when stopping the server.
+ * 
+ * This test class can be run manually and tests should pass, if the
+ * issue doesn't occure.
+ */
+@Ignore
 public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     //==========================================
-    // By default we disable the "closed" events sent
-    // to the peers so the tests are faster. This re-enable
-    // them.
+    // We start the serv by ourself
     //==========================================
     @Override
-    protected boolean isUseTestServer() {
-        return false;
+    protected void startServer() {
+        // nothing
+    }
+
+    @Override
+    public void beforeTest() {
+        super.beforeTest();
+        getServer().start();
     }
 
     //==========================================
-    // We will stop the server by ourself.
+    // We will stop the server by ourself so we can
+    // manage if a "closing" message is sent to the
+    // peers.
     //==========================================
     @Override
     protected void stopServer() {
@@ -30,29 +55,134 @@ public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegration
     }
 
     @Test
-    public void closedEventSentToPeersWhenStoppingTheServer() throws Exception {
+    public void multipleEndpointsAndPeers() throws Exception {
 
-        DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer(), false, true);
+        final String[] endpointIdToUse = new String[]{"endpoint1"};
+        final String[] peerIdToUse = new String[]{"peer1"};
+
+        DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
+
+            @Override
+            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+
+                return new IWebsocketConnectionConfig() {
+
+                    @Override
+                    public String getEndpointId() {
+                        return endpointIdToUse[0];
+                    }
+
+                    @Override
+                    public String getPeerId() {
+                        return peerIdToUse[0];
+                    }
+                };
+            }
+        };
         getRouter().websocket("/ws").save(controller);
 
-        WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").ping(0).connect(client1);
-        assertNotNull(writer1);
+        Set<WebsocketClientTest> clients = new HashSet<WebsocketClientTest>();
 
-        WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").ping(0).connect(client2);
-        assertNotNull(writer2);
+        int endpointNbr = 5;
+        for(int endpointPos = 1; endpointPos <= endpointNbr; endpointPos++) {
 
-        assertTrue(controller.waitNrbPeerConnected("endpoint1", 2));
+            String endpointName = "endpoint" + endpointPos;
+            endpointIdToUse[0] = endpointName;
+            int peerNbr = 20;
+            for(int i = 1; i <= peerNbr; i++) {
+                peerIdToUse[0] = "peer" + i;
 
-        getServer().stop();
+                WebsocketClientTest client = new WebsocketClientTest();
+                clients.add(client);
+                IWebsocketClientWriter writer = websocket("/ws").ping(-1).connect(client);
+                assertNotNull(writer);
+            }
+            assertTrue(controller.isEndpointOpen(endpointName));
+            assertTrue(controller.waitNrbPeerConnected(endpointName, peerNbr));
+        }
 
-        assertTrue(client1.waitForConnectionClosed());
-        assertEquals(1, client1.getConnectionClosedEvents().size());
+        //==========================================
+        // true => send a "closing" message to the peers!
+        //==========================================
+        getServer().stop(true);
 
-        assertTrue(client2.waitForConnectionClosed());
-        assertEquals(1, client2.getConnectionClosedEvents().size());
+        for(WebsocketClientTest client : clients) {
+            assertTrue(client.waitForConnectionClosed());
+            assertEquals(1, client.getConnectionClosedEvents().size());
+        }
 
+        assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
+
+            @Override
+            public boolean check() {
+                return !getServer().isRunning();
+            }
+        }));
+    }
+
+    @Test
+    public void noClosingMessages() throws Exception {
+
+        final String[] endpointIdToUse = new String[]{"endpoint1"};
+        final String[] peerIdToUse = new String[]{"peer1"};
+
+        DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
+
+            @Override
+            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+
+                return new IWebsocketConnectionConfig() {
+
+                    @Override
+                    public String getEndpointId() {
+                        return endpointIdToUse[0];
+                    }
+
+                    @Override
+                    public String getPeerId() {
+                        return peerIdToUse[0];
+                    }
+                };
+            }
+        };
+        getRouter().websocket("/ws").save(controller);
+
+        Set<WebsocketClientTest> clients = new HashSet<WebsocketClientTest>();
+
+        int endpointNbr = 5;
+        for(int endpointPos = 1; endpointPos <= endpointNbr; endpointPos++) {
+
+            String endpointName = "endpoint" + endpointPos;
+            endpointIdToUse[0] = endpointName;
+            int peerNbr = 20;
+            for(int i = 1; i <= peerNbr; i++) {
+                peerIdToUse[0] = "peer" + i;
+
+                WebsocketClientTest client = new WebsocketClientTest();
+                clients.add(client);
+                IWebsocketClientWriter writer = websocket("/ws").ping(-1).connect(client);
+                assertNotNull(writer);
+            }
+            assertTrue(controller.isEndpointOpen(endpointName));
+            assertTrue(controller.waitNrbPeerConnected(endpointName, peerNbr));
+        }
+
+        //==========================================
+        // false => no "closing" message sent to the peers!
+        //==========================================
+        getServer().stop(false);
+
+        assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
+
+            @Override
+            public boolean check() {
+                return !getServer().isRunning();
+            }
+        }));
+
+        for(WebsocketClientTest client : clients) {
+            assertEquals(0, client.getConnectionClosedEvents().size());
+        }
     }
 
 }

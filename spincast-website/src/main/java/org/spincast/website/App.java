@@ -9,6 +9,8 @@ import org.spincast.core.filters.ISpincastFilters;
 import org.spincast.core.server.IServer;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.website.controllers.AdminController;
+import org.spincast.website.controllers.DemoFormAuthController;
+import org.spincast.website.controllers.DemoFormValidationController;
 import org.spincast.website.controllers.DemosTutorialsController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
@@ -89,6 +91,8 @@ public class App {
     private final FeedController feedController;
     private final AdminController adminController;
     private final DemosTutorialsController demosTutorialsControllerController;
+    private final DemoFormAuthController demoFormAuthController;
+    private final DemoFormValidationController demoFormValidationController;
     private final ISpincastFilters<IAppRequestContext> spincastFilters;
     private final WebsocketsDemoEchoAllController websocketsDemoEchoAllController;
 
@@ -101,6 +105,8 @@ public class App {
                FeedController feedController,
                AdminController adminController,
                DemosTutorialsController demosTutorialsControllerController,
+               DemoFormAuthController demoFormAuthController,
+               DemoFormValidationController demoFormValidationController,
                ISpincastFilters<IAppRequestContext> spincastFilters,
                WebsocketsDemoEchoAllController websocketsDemoEchoAllController) {
         this.server = server;
@@ -111,6 +117,8 @@ public class App {
         this.feedController = feedController;
         this.adminController = adminController;
         this.demosTutorialsControllerController = demosTutorialsControllerController;
+        this.demoFormAuthController = demoFormAuthController;
+        this.demoFormValidationController = demoFormValidationController;
         this.spincastFilters = spincastFilters;
         this.websocketsDemoEchoAllController = websocketsDemoEchoAllController;
     }
@@ -145,6 +153,14 @@ public class App {
 
     protected DemosTutorialsController getDemosTutorialsController() {
         return this.demosTutorialsControllerController;
+    }
+
+    protected DemoFormAuthController getDemoFormAuthController() {
+        return this.demoFormAuthController;
+    }
+
+    protected DemoFormValidationController getDemoFormValidationController() {
+        return this.demoFormValidationController;
     }
 
     protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
@@ -311,5 +327,13 @@ public class App {
         router.websocket("/demos-tutorials/websockets/echo-all-endpoint").save(getWebsocketsDemoEchoAllController());
         router.redirect("/showcase/websockets/echo-all").to("/demos-tutorials/websockets");
         router.redirect("/showcase/websockets/echo-all-endpoint").to("/demos-tutorials/websockets/echo-all-endpoint");
+
+        //router.GET("/demos-tutorials/form-authentication").save(getDemoFormAuthController()::index);
+        //router.POST("/demos-tutorials/form-authentication/login").save(getDemoFormAuthController()::login);
+        //router.POST("/demos-tutorials/form-authentication/register").save(getDemoFormAuthController()::login);
+
+        //router.GET("/demos-tutorials/form-validation").save(getDemoFormValidationController()::index);
+        //router.POST("/demos-tutorials/form-validation").save(getDemoFormValidationController()::submit);
+
     }
 }

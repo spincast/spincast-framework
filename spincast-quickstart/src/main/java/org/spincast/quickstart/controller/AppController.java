@@ -57,7 +57,7 @@ public class AppController implements IAppController {
             errorObj.put("message", notFoundMessage);
             context.response().sendJsonObj(errorObj);
         } else {
-            context.response().sendHtmlTemplate("/templates/notFound.html",
+            context.response().sendTemplateHtml("/templates/notFound.html",
                                                 SpincastStatics.params("notFoundMessage", notFoundMessage));
         }
     }
@@ -93,7 +93,7 @@ public class AppController implements IAppController {
             errorObj.put("error", errorMessage);
             context.response().sendJsonObj(errorObj);
         } else {
-            context.response().sendHtmlTemplate("/templates/exception.html",
+            context.response().sendTemplateHtml("/templates/exception.html",
                                                 SpincastStatics.params("errorMessage", errorMessage));
         }
     }
@@ -108,7 +108,7 @@ public class AppController implements IAppController {
         variables.put("appName", getAppConfig().getAppName());
         variables.put("serverPort", getAppConfig().getHttpServerPort());
 
-        context.response().sendHtmlTemplate("/templates/index.html", variables);
+        context.response().sendTemplateHtml("/templates/index.html", variables);
     }
 
     @Override

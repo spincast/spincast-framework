@@ -226,7 +226,7 @@ public abstract class SpincastValidatorBase<T> implements IValidator {
         }
 
         if(formatType == FormatType.JSON || formatType == FormatType.XML) {
-            jsonObject.put(fieldName, errors);
+            jsonObject.putConvert(fieldName, errors);
             return;
         }
 
