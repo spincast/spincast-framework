@@ -187,6 +187,7 @@ app.toc = function(trigger, changeSectionOffset) {
     });	
     
     app.affix('#sectionTitleFixed', trigger);
+    app.affix('#tocTopUl', trigger);
     app.affix('#mobileMenu', trigger);
 }
 

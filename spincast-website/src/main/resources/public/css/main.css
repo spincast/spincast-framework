@@ -702,6 +702,41 @@ ul.apiList li.first {
     padding-right:0px;
 }
 
+#toc ul.affix {
+    top: 100px;
+}
+
+#toc.docTop ul.affix {
+    top: 0px;
+}
+
+#toc.longTitle ul.affix {
+    top: 140px;
+}
+
+#tocTopUl {
+    height:100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index:100;
+    padding-right:10px;
+}
+
+#tocTopUl #tocTop {
+    display:none;
+}
+
+#tocTopUl.affix #tocTop {
+    display:block;
+}
+
+#tocTop h2 {
+    font-size: 22px;
+}
+#tocTop a {
+    text-decoration:none;
+}
+
 /* all links */
 #toc .nav>li>a {
     color: #1E1E1E;
@@ -777,6 +812,10 @@ ul.apiList li.first {
 /* show active nested list */
 #toc .nav>.active>ul.nav {
     display: block;           
+}
+
+#toc-content {
+    padding-left:34px;
 }
 
 #toc-content .subSection {
@@ -1016,14 +1055,6 @@ pre {
     margin-top:30px;
     text-align:center;
     font-size:18px;
-}
-
-#toc ul.affix {
-    top: 100px;
-}
-
-#toc.longTitle ul.affix {
-    top: 140px;
 }
 
 #sectionTitle {
