@@ -62,7 +62,7 @@ public class JsonObject extends JsonObjectArrayBase implements IJsonObject {
     protected void addInitialMap() {
         if(this.initialMap != null) {
             for(Entry<String, ?> entry : this.initialMap.entrySet()) {
-                putConvert(entry.getKey(), entry.getValue());
+                putConvert(entry.getKey(), entry.getValue(), true);
             }
         }
     }
@@ -593,6 +593,11 @@ public class JsonObject extends JsonObjectArrayBase implements IJsonObject {
         }
 
         return map;
+    }
+
+    @Override
+    public int size() {
+        return getMap().size();
     }
 
 }

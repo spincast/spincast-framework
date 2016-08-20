@@ -524,6 +524,20 @@ immutableClone.put("nope", "doesn't work");
         <ul class="apiList">
             
             <li>
+                <code class="apiItem">int <span>size</span>()</code>
+                <div class="well">
+                     The number of properties on the object.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isKeyExists</span>(String key)</code>
+                <div class="well">
+                     Does the <code>IJsonObject</code> contain the specified <code>key</code>?
+                </div>
+            </li>
+            
+            <li>
                 <code class="apiItem">IJsonObject <span>merge</span>(Map&lt;String, Object&gt; map, boolean clone)</code>
                 <div class="well">
                      Merges a <code>Map&lt;String, Object&gt;</code> into the <code>IJsonObject</code>. 
@@ -538,13 +552,6 @@ immutableClone.put("nope", "doesn't work");
                      Merges an external <code>IJsonObject</code> into the <code>IJsonObject</code>.                      
                      You can specify if the added elements must be cloned or
                      not (in case some are <code>IJsonObject</code> or <code>IJsonArray</code>).
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">boolean <span>isKeyExists</span>(String key)</code>
-                <div class="well">
-                     Does the <code>IJsonObject</code> contain the specified <code>key</code>?
                 </div>
             </li>
             
@@ -646,16 +653,67 @@ String value = obj.getJsonArrayOrEmpty("myArrayKey").getString(0, "defaultValue"
     <p>
         <ul class="apiList">
             
+           <li>
+                <code class="apiItem">int <span>size</span>()</code>
+                <div class="well">
+                     Returns the size of the array.
+                </div>
+            </li>
+            
             <li>
                 <code class="apiItem">IJsonArray <span>remove</span>(int index)</code>
                 <div class="well">
                      Removes an element at the specified index.
                 </div>
             </li>
+ 
             <li>
-                <code class="apiItem">int <span>size</span>()</code>
+                <code class="apiItem">IJsonObject <span>getJsonObjectOrEmpty</span>(int index)</code>
+                <div>and</div>
+                <code class="apiItem">IJsonArray <span>getJsonArrayOrEmpty</span>(int index)</code>
                 <div class="well">
-                     Returns the size of the array.
+                     Gets an <code>IJsonObject</code> or <code>IJsonArray</code> or returns an empty
+                     instance if it's not found. This allows you to try to get a deep element or use a default
+                     value if this element is not found, without any potential <code>NullPointerException</code>. For 
+                     example :
+                     
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>// This won't throw any NPE, even if "getJsonArrayOrEmpty(0)"
+// doesn't exist :
+String value = array.getJsonObjectOrEmpty(0)
+                    .getString("someKey", "defaultValue");
+</pre> 
+                            </p>
+                        </div>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">XXX <span>getArrayFirstXXX</span>(int index, String defaultValue)</code>
+                <div class="well">
+                     For all types managed by <code>IJsonArray</code>, a <code>getArrayFirstXXX(...)</code>
+                     method exists. With those methods, you can get an <code>IJsonArray</code> 
+                     using the specified <code>index</code> and returns the first element of the array.
+                     <p>
+                     This is useful in situations where you know an array only contains a single element : 
+                     
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>// This :
+String value = array.getArrayFirstString(3, "defaultValue")
+
+// ... is a shortcut for :
+String value = array.getJsonArrayOrEmpty(3).getString(0, "defaultValue")
+</pre> 
+                            </p>
+                        </div>
+                    </p>
                 </div>
             </li>
             <li>

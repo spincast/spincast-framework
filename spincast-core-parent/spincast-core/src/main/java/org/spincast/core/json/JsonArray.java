@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.json.JsonObject.IFirstElementGetter;
 import org.spincast.core.utils.ISpincastUtils;
 
 import com.google.inject.Inject;
@@ -62,7 +63,7 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
     protected void addInitalElements() {
         if(this.initialElements != null) {
             for(Object element : this.initialElements) {
-                addConvert(element);
+                addConvert(element, true);
             }
         }
     }
@@ -91,8 +92,28 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
     }
 
     @Override
+    public IJsonArray add(int index, String value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, String value) {
+        return addAsIs(index, value);
+    }
+
+    @Override
     public IJsonArray add(Integer value) {
         return addAsIs(value);
+    }
+
+    @Override
+    public IJsonArray add(int index, Integer value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, Integer value) {
+        return addAsIs(index, value);
     }
 
     @Override
@@ -101,8 +122,28 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
     }
 
     @Override
+    public IJsonArray add(int index, Long value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, Long value) {
+        return addAsIs(index, value);
+    }
+
+    @Override
     public IJsonArray add(Float value) {
         return addAsIs(value);
+    }
+
+    @Override
+    public IJsonArray add(int index, Float value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, Float value) {
+        return addAsIs(index, value);
     }
 
     @Override
@@ -111,8 +152,28 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
     }
 
     @Override
+    public IJsonArray add(int index, Double value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, Double value) {
+        return addAsIs(index, value);
+    }
+
+    @Override
     public IJsonArray add(Boolean value) {
         return addAsIs(value);
+    }
+
+    @Override
+    public IJsonArray add(int index, Boolean value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, Boolean value) {
+        return addAsIs(index, value);
     }
 
     @Override
@@ -121,8 +182,28 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
     }
 
     @Override
+    public IJsonArray add(int index, BigDecimal value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, BigDecimal value) {
+        return addAsIs(index, value);
+    }
+
+    @Override
     public IJsonArray add(byte[] value) {
         return addAsIs(value);
+    }
+
+    @Override
+    public IJsonArray add(int index, byte[] value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, byte[] value) {
+        return addAsIs(index, value);
     }
 
     @Override
@@ -131,12 +212,132 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
     }
 
     @Override
+    public IJsonArray add(int index, Date value) {
+        return setOrAddAsIs(index, value, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, Date value) {
+        return addAsIs(index, value);
+    }
+
+    @Override
+    public IJsonArray add(IJsonObject jsonObj) {
+        return setOrAdd(null, jsonObj, false, true);
+    }
+
+    @Override
+    public IJsonArray add(int index, IJsonObject jsonObj) {
+        return setOrAdd(index, jsonObj, false, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, IJsonObject jsonObj) {
+        return setOrAdd(index, jsonObj, false, false);
+    }
+
+    @Override
+    public IJsonArray add(IJsonObject jsonObj, boolean clone) {
+        return setOrAdd(null, jsonObj, clone, true);
+    }
+
+    @Override
+    public IJsonArray add(int index, IJsonObject jsonObj, boolean clone) {
+        return setOrAdd(index, jsonObj, clone, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, IJsonObject jsonObj, boolean clone) {
+        return setOrAdd(index, jsonObj, clone, false);
+    }
+
+    public IJsonArray setOrAdd(Integer index, IJsonObject jsonObj, boolean clone, boolean insert) {
+
+        //==========================================
+        // If the IJsonObject to put is Immutable, we
+        // always clone it to make it mutable.
+        //==========================================
+        if(jsonObj != null && (clone || jsonObj instanceof Immutable)) {
+            jsonObj = jsonObj.clone(true);
+        }
+
+        return setOrAddAsIs(index, jsonObj, insert);
+    }
+
+    @Override
+    public IJsonArray add(IJsonArray value) {
+        return setOrAdd(null, value, false, true);
+    }
+
+    @Override
+    public IJsonArray add(int index, IJsonArray value) {
+        return setOrAdd(index, value, false, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, IJsonArray value) {
+        return setOrAdd(index, value, false, false);
+    }
+
+    @Override
+    public IJsonArray add(IJsonArray value, boolean clone) {
+        return setOrAdd(null, value, clone, true);
+    }
+
+    @Override
+    public IJsonArray add(int index, IJsonArray value, boolean clone) {
+        return setOrAdd(index, value, clone, true);
+    }
+
+    @Override
+    public IJsonArray set(int index, IJsonArray array, boolean clone) {
+        return setOrAdd(index, array, clone, false);
+    }
+
+    public IJsonArray setOrAdd(Integer index, IJsonArray array, boolean clone, boolean insert) {
+
+        //==========================================
+        // If the IJsonObject to put is Immutable, we
+        // always clone it to make it mutable.
+        //==========================================
+        if(array != null && (clone || array instanceof Immutable)) {
+            array = array.clone(true);
+        }
+
+        return setOrAddAsIs(index, array, insert);
+    }
+
+    @Override
     public IJsonArray addConvert(Object value) {
-        return addConvert(value, false);
+        return setOrAddConvert(null, value, false, true);
+    }
+
+    @Override
+    public IJsonArray addConvert(int index, Object value) {
+        return setOrAddConvert(index, value, false, true);
+    }
+
+    @Override
+    public IJsonArray setConvert(int index, Object value) {
+        return setOrAddConvert(index, value, false, false);
     }
 
     @Override
     public IJsonArray addConvert(Object value, boolean clone) {
+        return setOrAddConvert(null, value, clone, true);
+    }
+
+    @Override
+    public IJsonArray addConvert(int index, Object value, boolean clone) {
+        return setOrAddConvert(index, value, clone, true);
+    }
+
+    @Override
+    public IJsonArray setConvert(int index, Object value, boolean clone) {
+        return setOrAddConvert(index, value, clone, false);
+    }
+
+    public IJsonArray setOrAddConvert(Integer index, Object value, boolean clone, boolean insert) {
 
         if(value != null) {
 
@@ -169,51 +370,52 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
             }
         }
 
-        addAsIs(value);
+        setOrAddAsIs(index, value, insert);
 
         return this;
-    }
-
-    @Override
-    public IJsonArray add(IJsonObject jsonObj) {
-        return add(jsonObj, false);
-    }
-
-    @Override
-    public IJsonArray add(IJsonObject jsonObj, boolean clone) {
-
-        //==========================================
-        // If the IJsonObject to put is Immutable, we
-        // always clone it to make it mutable.
-        //==========================================
-        if(jsonObj != null && (clone || jsonObj instanceof Immutable)) {
-            jsonObj = jsonObj.clone(true);
-        }
-
-        addAsIs(jsonObj);
-        return this;
-    }
-
-    @Override
-    public IJsonArray add(IJsonArray value) {
-        return add(value, false);
-    }
-
-    @Override
-    public IJsonArray add(IJsonArray array, boolean clone) {
-
-        //==========================================
-        // If the IJsonObject to put is Immutable, we
-        // always clone it to make it mutable.
-        //==========================================
-        if(array != null && (clone || array instanceof Immutable)) {
-            array = array.clone(true);
-        }
-        return addAsIs(array);
     }
 
     protected IJsonArray addAsIs(Object value) {
         getElements().add(value);
+        return this;
+    }
+
+    protected IJsonArray addAsIs(Integer index, Object value) {
+        return setOrAddAsIs(index, value, false);
+    }
+
+    protected IJsonArray setOrAddAsIs(Integer index, Object value, boolean insert) {
+
+        if(index == null) {
+            return addAsIs(value);
+        }
+
+        if(index < 0) {
+            throw new RuntimeException("Invalid index, must be >= 0 : " + index);
+        }
+
+        //==========================================
+        // If we try to index a value at an index that
+        // is greater than the next position in the array,
+        // we insert NULL values at intermediate indexes.
+        //==========================================
+        List<Object> elements = getElements();
+        if(index >= elements.size()) {
+            int limit = index;
+            if(!insert) {
+                limit = index + 1;
+            }
+            for(int i = elements.size(); i < limit; i++) {
+                elements.add(i, null);
+            }
+        }
+
+        if(insert) {
+            elements.add(index, value);
+        } else {
+            elements.set(index, value);
+        }
+
         return this;
     }
 
@@ -405,6 +607,320 @@ public class JsonArray extends JsonObjectArrayBase implements IJsonArray {
         }
 
         return getElements().get(pos);
+    }
+
+    protected <T> T getArrayFirst(int index,
+                                  boolean hasDefaultValue,
+                                  T defaultValue,
+                                  IFirstElementGetter<T> firstElementGetter) {
+
+        IJsonArray array = getJsonArray(index, null);
+
+        if(array == null) {
+            if(hasDefaultValue) {
+                return defaultValue;
+            }
+            return null;
+        }
+
+        return firstElementGetter.get(array, hasDefaultValue, defaultValue);
+    }
+
+    @Override
+    public IJsonObject getArrayFirstJsonObject(int index) {
+        return getArrayFirstJsonObject(index, false, null);
+    }
+
+    @Override
+    public IJsonObject getArrayFirstJsonObject(int index, IJsonObject defaultValue) {
+        return getArrayFirstJsonObject(index, true, defaultValue);
+    }
+
+    protected IJsonObject getArrayFirstJsonObject(int index, boolean hasDefaultValue, IJsonObject defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<IJsonObject>() {
+
+            @Override
+            public IJsonObject get(IJsonArray array,
+                                   boolean hasDefaultValue,
+                                   IJsonObject defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getJsonObject(0, defaultValue);
+                } else {
+                    return array.getJsonObject(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public IJsonArray getArrayFirstJsonArray(int index) {
+        return getArrayFirstJsonArray(index, false, null);
+    }
+
+    @Override
+    public IJsonArray getArrayFirstJsonArray(int index, IJsonArray defaultValue) {
+        return getArrayFirstJsonArray(index, true, defaultValue);
+    }
+
+    protected IJsonArray getArrayFirstJsonArray(int index, boolean hasDefaultValue, IJsonArray defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<IJsonArray>() {
+
+            @Override
+            public IJsonArray get(IJsonArray array,
+                                  boolean hasDefaultValue,
+                                  IJsonArray defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getJsonArray(0, defaultValue);
+                } else {
+                    return array.getJsonArray(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public String getArrayFirstString(int index) {
+        return getArrayFirstString(index, false, null);
+    }
+
+    @Override
+    public String getArrayFirstString(int index, String defaultValue) {
+        return getArrayFirstString(index, true, defaultValue);
+    }
+
+    protected String getArrayFirstString(int index, boolean hasDefaultValue, String defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<String>() {
+
+            @Override
+            public String get(IJsonArray array,
+                              boolean hasDefaultValue,
+                              String defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getString(0, defaultValue);
+                } else {
+                    return array.getString(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Integer getArrayFirstInteger(int index) {
+        return getArrayFirstInteger(index, false, null);
+    }
+
+    @Override
+    public Integer getArrayFirstInteger(int index, Integer defaultValue) {
+        return getArrayFirstInteger(index, true, defaultValue);
+    }
+
+    protected Integer getArrayFirstInteger(int index, boolean hasDefaultValue, Integer defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<Integer>() {
+
+            @Override
+            public Integer get(IJsonArray array,
+                               boolean hasDefaultValue,
+                               Integer defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getInteger(0, defaultValue);
+                } else {
+                    return array.getInteger(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Long getArrayFirstLong(int index) {
+        return getArrayFirstLong(index, false, null);
+    }
+
+    @Override
+    public Long getArrayFirstLong(int index, Long defaultValue) {
+        return getArrayFirstLong(index, true, defaultValue);
+    }
+
+    protected Long getArrayFirstLong(int index, boolean hasDefaultValue, Long defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<Long>() {
+
+            @Override
+            public Long get(IJsonArray array,
+                            boolean hasDefaultValue,
+                            Long defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getLong(0, defaultValue);
+                } else {
+                    return array.getLong(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Double getArrayFirstDouble(int index) {
+        return getArrayFirstDouble(index, false, null);
+    }
+
+    @Override
+    public Double getArrayFirstDouble(int index, Double defaultValue) {
+        return getArrayFirstDouble(index, true, defaultValue);
+    }
+
+    protected Double getArrayFirstDouble(int index, boolean hasDefaultValue, Double defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<Double>() {
+
+            @Override
+            public Double get(IJsonArray array,
+                              boolean hasDefaultValue,
+                              Double defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getDouble(0, defaultValue);
+                } else {
+                    return array.getDouble(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Float getArrayFirstFloat(int index) {
+        return getArrayFirstFloat(index, false, null);
+    }
+
+    @Override
+    public Float getArrayFirstFloat(int index, Float defaultValue) {
+        return getArrayFirstFloat(index, true, defaultValue);
+    }
+
+    protected Float getArrayFirstFloat(int index, boolean hasDefaultValue, Float defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<Float>() {
+
+            @Override
+            public Float get(IJsonArray array,
+                             boolean hasDefaultValue,
+                             Float defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getFloat(0, defaultValue);
+                } else {
+                    return array.getFloat(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Boolean getArrayFirstBoolean(int index) {
+        return getArrayFirstBoolean(index, false, null);
+    }
+
+    @Override
+    public Boolean getArrayFirstBoolean(int index, Boolean defaultValue) {
+        return getArrayFirstBoolean(index, true, defaultValue);
+    }
+
+    protected Boolean getArrayFirstBoolean(int index, boolean hasDefaultValue, Boolean defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<Boolean>() {
+
+            @Override
+            public Boolean get(IJsonArray array,
+                               boolean hasDefaultValue,
+                               Boolean defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getBoolean(0, defaultValue);
+                } else {
+                    return array.getBoolean(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public BigDecimal getArrayFirstBigDecimal(int index) {
+        return getArrayFirstBigDecimal(index, false, null);
+    }
+
+    @Override
+    public BigDecimal getArrayFirstBigDecimal(int index, BigDecimal defaultValue) {
+        return getArrayFirstBigDecimal(index, true, defaultValue);
+    }
+
+    protected BigDecimal getArrayFirstBigDecimal(int index, boolean hasDefaultValue, BigDecimal defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<BigDecimal>() {
+
+            @Override
+            public BigDecimal get(IJsonArray array,
+                                  boolean hasDefaultValue,
+                                  BigDecimal defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getBigDecimal(0, defaultValue);
+                } else {
+                    return array.getBigDecimal(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public byte[] getArrayFirstBytesFromBase64String(int index) {
+        return getArrayFirstBytesFromBase64String(index, false, null);
+    }
+
+    @Override
+    public byte[] getArrayFirstBytesFromBase64String(int index, byte[] defaultValue) {
+        return getArrayFirstBytesFromBase64String(index, true, defaultValue);
+    }
+
+    protected byte[] getArrayFirstBytesFromBase64String(int index, boolean hasDefaultValue, byte[] defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<byte[]>() {
+
+            @Override
+            public byte[] get(IJsonArray array,
+                              boolean hasDefaultValue,
+                              byte[] defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getBytesFromBase64String(0, defaultValue);
+                } else {
+                    return array.getBytesFromBase64String(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Date getArrayFirstDate(int index) {
+        return getArrayFirstDate(index, false, null);
+    }
+
+    @Override
+    public Date getArrayFirstDate(int index, Date defaultValue) {
+        return getArrayFirstDate(index, true, defaultValue);
+    }
+
+    protected Date getArrayFirstDate(int index, boolean hasDefaultValue, Date defaultValue) {
+
+        return getArrayFirst(index, hasDefaultValue, defaultValue, new IFirstElementGetter<Date>() {
+
+            @Override
+            public Date get(IJsonArray array,
+                            boolean hasDefaultValue,
+                            Date defaultValue) {
+                if(hasDefaultValue) {
+                    return array.getDate(0, defaultValue);
+                } else {
+                    return array.getDate(0);
+                }
+            }
+        });
     }
 
     @Override

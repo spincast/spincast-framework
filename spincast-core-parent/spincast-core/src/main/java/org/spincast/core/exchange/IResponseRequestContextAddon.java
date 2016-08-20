@@ -222,7 +222,7 @@ public interface IResponseRequestContextAddon<R extends IRequestContext<?>> {
      * 
      * @param templatePath must be a classpath's relative path.
      */
-    //public void sendTemplateHtml(String templatePath);
+    public void sendTemplateHtml(String templatePath);
 
     /**
      * Finds the <code>HTML</code> template using the <code>ITemplatingEngine</code>, evaluates it using

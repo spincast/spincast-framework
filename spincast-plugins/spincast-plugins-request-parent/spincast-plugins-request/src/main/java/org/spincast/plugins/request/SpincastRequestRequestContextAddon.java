@@ -74,6 +74,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
 
     private Map<String, List<String>> queryStringParams;
     private Map<String, List<String>> formDatasAsImmutableMap;
+    private IJsonObject formDatasAsImmutableJsonObject;
     private Map<String, List<File>> uploadedFiles;
     private Map<String, List<String>> headers;
 
@@ -599,7 +600,13 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
 
     @Override
     public IJsonObject getFormDatas() {
-        return getJsonManager().create(getFormDatasAsMap());
+
+        if(this.formDatasAsImmutableJsonObject == null) {
+            IJsonObject obj = getJsonManager().create(getFormDatasAsMap(), true);
+            this.formDatasAsImmutableJsonObject = obj.clone(false); // false => immutable clone
+        }
+
+        return this.formDatasAsImmutableJsonObject;
     }
 
     @Override

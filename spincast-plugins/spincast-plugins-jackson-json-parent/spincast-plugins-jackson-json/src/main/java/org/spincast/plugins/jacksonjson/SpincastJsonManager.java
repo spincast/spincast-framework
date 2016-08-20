@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -23,6 +24,7 @@ import org.spincast.core.json.IJsonManager;
 import org.spincast.core.json.IJsonObject;
 import org.spincast.core.json.IJsonObjectFactory;
 import org.spincast.core.json.IJsonObjectImmutable;
+import org.spincast.core.json.exceptions.CantConvertException;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
@@ -503,7 +505,569 @@ public class SpincastJsonManager implements IJsonManager {
 
     @Override
     public IJsonObject create(Map<String, ?> params) {
-        return getJsonObjectFactory().create(params);
+        return create(params, false);
+    }
+
+    @Override
+    public IJsonObject create(Map<String, ?> params, boolean parseKeyAsFieldPath) {
+
+        if(!parseKeyAsFieldPath) {
+            return getJsonObjectFactory().create(params);
+        }
+
+        //==========================================
+        // Parse keys as FieldPaths
+        //==========================================
+        IJsonObject root = getJsonObjectFactory().create();
+        if(params == null || params.size() == 0) {
+            return root;
+        }
+
+        if(params.size() > getMaxNumberOfFieldPathKeys()) {
+            throw new RuntimeException("Too many keys to parse : " + params.size() + " as FieldPaths. " +
+                                       "The maximum is currently set to " + getMaxNumberOfFieldPathKeys());
+        }
+
+        for(Entry<String, ?> entry : params.entrySet()) {
+
+            String fieldPath = entry.getKey();
+            Object value = entry.getValue();
+
+            parseFieldPathAndMerge(root, fieldPath, value);
+        }
+
+        return root;
+
+    }
+
+    protected void parseFieldPathAndMerge(IJsonObject root,
+                                          String fieldPath,
+                                          Object value) {
+
+        Objects.requireNonNull(root, "The root object can't be NULL");
+        if(fieldPath == null) {
+            return;
+        }
+
+        if(fieldPath.length() > getFieldPathKeyMaxLength()) {
+            throw new RuntimeException("A FieldPath is too long to be parsed. This FieldPath starts with : " +
+                                       fieldPath.substring(0, Math.min(30, (fieldPath.length() - 1))));
+        }
+
+        //==========================================
+        // Initial validations
+        //==========================================
+        if(fieldPath.startsWith(".") || fieldPath.endsWith(".")) {
+            throw new RuntimeException("FieldPath parsing error on character '.'. The FieldPath can't start or end with the " +
+                                       "'.' character. FieldPath : " + fieldPath);
+        }
+        if(fieldPath.endsWith("[")) {
+            throw new RuntimeException("FieldPath parsing error on character '['. The FieldPath can't end with the " +
+                                       "'[' character. FieldPath : " + fieldPath);
+        }
+        if(fieldPath.startsWith("]")) {
+            throw new RuntimeException("FieldPath parsing error on character '['. The FieldPath can't start with the " +
+                                       "']' character. FieldPath : " + fieldPath);
+        }
+
+        //==========================================
+        // We parse the FieldPath, one character at the time.
+        //==========================================
+        IJsonObject currentObj = root;
+        IJsonArray currentArray = null;
+        int currentArrayIndex = 0;
+        StringBuilder tokenBuilder = new StringBuilder();
+        boolean isInBrackets = false;
+        boolean isInQuotes = false;
+        boolean isInDoubleQuotes = false;
+        char ch = '\0';
+        char previousChar = '\0';
+        for(int i = 0; i < fieldPath.length(); i++) {
+
+            previousChar = ch;
+            ch = fieldPath.charAt(i);
+
+            //==========================================
+            // The '.' character
+            //==========================================
+            if(ch == '.') {
+
+                //==========================================
+                // In quotes, this character has no
+                // special meaning.
+                //==========================================
+                if(isInQuotes || isInDoubleQuotes) {
+                    tokenBuilder.append(ch);
+                    continue;
+                }
+
+                if(isInBrackets) {
+                    throw new RuntimeException("FieldPath parsing error on character '.'. A dot is not valid inside brackets but " +
+                                               "outside quotes. FieldPath : " + fieldPath);
+                }
+
+                if(currentObj != null) {
+
+                    //==========================================
+                    // Empty token : invalid name for an object
+                    //==========================================
+                    String token = tokenBuilder.toString();
+                    if("".equals(token)) {
+                        throw new RuntimeException("FieldPath parsing error on character '.'. A token is empty. FieldPath : " +
+                                                   fieldPath);
+                    }
+                    tokenBuilder = new StringBuilder();
+
+                    //==========================================
+                    // Creates a new object on the current object, 
+                    // if this object doesn't already exist.
+                    //==========================================
+                    IJsonObject obj;
+                    try {
+                        obj = currentObj.getJsonObject(token);
+                    } catch(CantConvertException ex) {
+                        throw new RuntimeException("FieldPath parsing error on character '.'. " +
+                                                   "The key '" + token + "' already exists, but the associated value is " +
+                                                   "not of type IJsonObject as expected here. FieldPath : " +
+                                                   fieldPath);
+                    }
+
+                    if(obj == null) {
+                        obj = create();
+                        currentObj.put(token, obj);
+                    }
+
+                    //==========================================
+                    // This object is now our current object.
+                    //==========================================
+                    currentObj = obj;
+                    currentArray = null;
+
+                } else {
+
+                    //==========================================
+                    // Creates a new object on the current array, 
+                    // if this object doesn't already exist.
+                    //==========================================
+                    IJsonObject obj;
+                    try {
+                        obj = currentArray.getJsonObject(currentArrayIndex);
+                    } catch(CantConvertException ex) {
+                        throw new RuntimeException("FieldPath parsing error on character '.'. " +
+                                                   "The element of the array at index '" + currentArrayIndex +
+                                                   "' already exists, but is " +
+                                                   "not of type IJsonObject as expected here. FieldPath : " +
+                                                   fieldPath);
+                    }
+
+                    if(obj == null) {
+                        obj = create();
+                        currentArray.set(currentArrayIndex, obj);
+                    }
+
+                    currentObj = obj;
+                    currentArray = null;
+                }
+
+            //==========================================@formatter:off 
+            // The '[' character
+            //==========================================@formatter:on
+            } else if(ch == '[') {
+
+                //==========================================
+                // In quotes, this character has no
+                // special meaning.
+                //==========================================
+                if(isInQuotes || isInDoubleQuotes) {
+                    tokenBuilder.append(ch);
+                    continue;
+                }
+
+                if(isInBrackets) {
+                    throw new RuntimeException("FieldPath parsing error on character '['.The '[' is not valid inside " +
+                                               "already started brackets. FieldPath : " + fieldPath);
+                }
+
+                String token = tokenBuilder.toString();
+                tokenBuilder = new StringBuilder();
+
+                //==========================================
+                // If what's inside the bracket is a String key, then
+                // we create an object.
+                // If it's an integer index, we create an array.
+                //==========================================
+                char nextChar = fieldPath.charAt(i + 1);
+                if(nextChar == '"' || nextChar == '\'') {
+
+                    IJsonObject obj = null;
+                    if(currentObj != null) {
+
+                        //==========================================
+                        // If the FieldPath starts with a
+                        // quoted key (for example : "['some key']" ), then 
+                        // we do not create a new object since it already exists
+                        // (its the root object).
+                        //
+                        // Also, we only create a new object if it doesn't
+                        // already exist.
+                        //==========================================
+                        if(i != 0) {
+                            try {
+                                obj = currentObj.getJsonObject(token);
+                            } catch(CantConvertException ex) {
+                                throw new RuntimeException("FieldPath parsing error on character '['. " +
+                                                           "The key '" + token +
+                                                           "' already exists, but the associated value is " +
+                                                           "not of type IJsonObject, as expected here. FieldPath : " +
+                                                           fieldPath);
+                            }
+
+                            if(obj == null) {
+                                obj = create();
+                                currentObj.put(token, obj);
+                            }
+                            currentObj = obj;
+                            currentArray = null;
+                        }
+
+                    } else {
+
+                        //==========================================
+                        // Creates a new object on the current array, 
+                        // if this object doesn't already exist.
+                        //==========================================
+                        try {
+                            obj = currentArray.getJsonObject(currentArrayIndex);
+                        } catch(CantConvertException ex) {
+                            throw new RuntimeException("FieldPath parsing error on character '['. " +
+                                                       "The index '" + currentArrayIndex +
+                                                       "' points to an already existing element, but " +
+                                                       "not of type IJsonObject. FieldPath : " +
+                                                       fieldPath);
+                        }
+
+                        if(obj == null) {
+                            obj = create();
+                            currentArray.set(currentArrayIndex, obj);
+                        }
+
+                        currentObj = obj;
+                        currentArray = null;
+                    }
+
+                //==========================================@formatter:off 
+                // We are dealing with an integer index,
+                // we have to create an array if requried.
+                //==========================================@formatter:on
+                } else {
+
+                    IJsonArray array;
+                    if(currentObj != null) {
+
+                        //==========================================
+                        // The root object is not an array so the
+                        // FieldPath Key can't start with something
+                        // like "[0]"
+                        //==========================================
+                        if(i == 0) {
+                            throw new RuntimeException("FieldPath parsing error on character '['. The root object is not " +
+                                                       "an array. FieldPath : " +
+                                                       fieldPath);
+                        }
+
+                        //==========================================
+                        // The index can't be empty
+                        //==========================================
+                        if("".equals(token)) {
+                            throw new RuntimeException("FieldPath parsing error on character '['. A token is empty . FieldPath : " +
+                                                       fieldPath);
+                        }
+
+                        //==========================================
+                        // Creates a new array on the current object, 
+                        // if this array doesn't already exist.
+                        //==========================================
+                        try {
+                            array = currentObj.getJsonArray(token);
+                        } catch(CantConvertException ex) {
+                            throw new RuntimeException("FieldPath parsing error on character '['. " +
+                                                       "The key '" + token +
+                                                       "' points to an already existing element, but " +
+                                                       "not of type IJsonArray, as expected here. " +
+                                                       "FieldPath : " + fieldPath);
+                        }
+
+                        if(array == null) {
+                            array = createArray();
+                        }
+
+                        currentObj.put(token, array);
+
+                    } else {
+
+                        //==========================================
+                        // Creates a new array on the current array, 
+                        // if this array doesn't already exist.
+                        //==========================================
+                        try {
+                            array = currentArray.getJsonArray(currentArrayIndex);
+                        } catch(CantConvertException ex) {
+                            throw new RuntimeException("FieldPath parsing error on character '['. " +
+                                                       "The index '" + currentArrayIndex +
+                                                       "' points to an already existing element, but " +
+                                                       "not of type IJsonArray. FieldPath : " +
+                                                       fieldPath);
+                        }
+
+                        if(array == null) {
+                            array = createArray();
+                            currentArray.set(currentArrayIndex, array);
+                        }
+                    }
+
+                    currentObj = null;
+                    currentArray = array;
+                }
+
+                isInBrackets = true;
+
+            //==========================================@formatter:off 
+            // The ']' character
+            //==========================================@formatter:on
+            } else if(ch == ']') {
+
+                //==========================================
+                // In quotes, this  character has no
+                // special meaning.
+                //==========================================
+                if(isInQuotes || isInDoubleQuotes) {
+                    tokenBuilder.append(ch);
+                    continue;
+                }
+
+                if(!isInBrackets) {
+                    throw new RuntimeException("FieldPath parsing error on character ']'. No start bracket found. FieldPath : " +
+                                               fieldPath);
+                }
+
+                //==========================================
+                // Next char must be ".", "[" or the end 
+                // of the FieldPath.
+                //==========================================
+                if(i < (fieldPath.length() - 1)) {
+                    char nextChar = fieldPath.charAt(i + 1);
+                    if(nextChar != '.' && nextChar != '[') {
+                        throw new RuntimeException("FieldPath parsing error on character ']'. The character following a ']', if any, must " +
+                                                   "be '.' or '['. Here, the following character is '" + nextChar +
+                                                   "'. FieldPath : " + fieldPath);
+                    }
+                }
+
+                //==========================================
+                // Empty token : invalid name for an index/key
+                //==========================================
+                String token = tokenBuilder.toString();
+                if("".equals(token)) {
+                    throw new RuntimeException("FieldPath parsing error on character ']'. A key or an index was expected. FieldPath : " +
+                                               fieldPath);
+                }
+
+                //==========================================
+                // What's inside the brackets is a key
+                //==========================================
+                if((token.startsWith("\"") && token.endsWith("\"")) || (token.startsWith("'") && token.endsWith("'"))) {
+                    String key = token.substring(1, token.length() - 1);
+                    if("".equals(key)) {
+                        throw new RuntimeException("FieldPath parsing error on character ']'. A key can't be empty. FieldPath : " +
+                                                   fieldPath);
+                    }
+                    //==========================================
+                    // This becomes our token :
+                    //==========================================
+                    tokenBuilder = new StringBuilder(key);
+
+                //==========================================@formatter:off 
+                // What's inside the beckets is an index
+                //==========================================@formatter:on
+                } else {
+
+                    Integer index = null;
+                    try {
+                        index = Integer.parseInt(token);
+                    } catch(NumberFormatException ex) {
+                        throw new RuntimeException("FieldPath parsing error on character ']'. The index '" + token +
+                                                   "' is not a valid integer. " +
+                                                   "You have to use quotes or double-quotes for an object key, or a valid integer for an array index. FieldPath : " +
+                                                   fieldPath);
+                    }
+
+                    if(currentArray == null) {
+                        throw new RuntimeException("FieldPath parsing error on character ']'. Expecting a non-null array here. FieldPath : " +
+                                                   fieldPath);
+                    }
+
+                    //==========================================
+                    // We keep the current array index.
+                    //==========================================
+                    currentArrayIndex = index;
+
+                    //==========================================
+                    // Reset the token builder
+                    //==========================================
+                    tokenBuilder = new StringBuilder();
+                }
+
+                isInBrackets = false;
+
+            //==========================================@formatter:off 
+            // The '"' character
+            //==========================================@formatter:on
+            } else if(ch == '"') {
+
+                //==========================================
+                // In single quotes, when not inside brackets, or
+                // when preceding by a "\", the '"' character has no
+                // special meaning.
+                //==========================================
+                if(isInBrackets && !isInQuotes && previousChar != '\\') {
+
+                    //==========================================
+                    // Otherwise, it starts or ends a key.
+                    //==========================================
+                    isInDoubleQuotes = !isInDoubleQuotes;
+                }
+
+                tokenBuilder.append(ch);
+
+            //==========================================@formatter:off 
+            // The "'" character
+            //==========================================@formatter:on
+            } else if(ch == '\'') {
+
+                //==========================================
+                // In double quotes, when not inside brackets, or
+                // when preceding by a "\", the "'" character has no
+                // special meaning.
+                //==========================================
+                if(isInBrackets && !isInDoubleQuotes && previousChar != '\\') {
+
+                    //==========================================
+                    // Otherwise, it starts or ends a key.
+                    //==========================================
+                    isInQuotes = !isInQuotes;
+                }
+                tokenBuilder.append(ch);
+
+            //========================================== @formatter:off 
+            // Any other character!
+            //========================================== @formatter:on
+            } else {
+
+                if(isInQuotes || isInDoubleQuotes) {
+
+                    //==========================================
+                    // Only the special characters and "\" can be
+                    // escaped by a "\".
+                    //==========================================
+                    if(previousChar == '\\') {
+
+                        if(ch != '\\') {
+                            throw new RuntimeException("FieldPath parsing error on the '" + ch + "' character. " +
+                                                       "This character can't be escaped. If you want to use a '\'  inside a " +
+                                                       "name, you need to escape it : \"\\\\\". FieldPath : " +
+                                                       fieldPath);
+                        } else {
+                            tokenBuilder.append(ch);
+                            ch = '\0';
+                            continue;
+                        }
+                    }
+
+                    //==========================================
+                    // We do not add the '\' character, except if it's
+                    // doubled (it's already added above!).
+                    //==========================================
+                    if(ch == '\\') {
+                        continue;
+                    }
+
+                } else if(isInBrackets) {
+
+                    if(!(ch >= '0' && ch <= '9')) {
+                        throw new RuntimeException("FieldPath parsing error on the '" + ch + "' character. " +
+                                                   "Invalid character in the index, expecting a digit, got " +
+                                                   "'" + ch + "'. FieldPath : " +
+                                                   fieldPath);
+                    }
+
+                } else {
+
+                    //==========================================
+                    // Validates the char to be used a an object 
+                    // property name without quotes.
+                    //==========================================
+                    if(ch == '.' || ch == '[' || ch == ']') {
+                        throw new RuntimeException("The characters '.', '[' and ']' are not valid inside a object " +
+                                                   "name or a property name, if this " +
+                                                   "name is not in quotes. In FieldPath : " + fieldPath);
+                    }
+                }
+
+                tokenBuilder.append(ch);
+            }
+        }
+
+        //==========================================
+        // We reached the end of the FieldPath...
+        //==========================================
+
+        if(isInQuotes) {
+            throw new RuntimeException("FieldPath parsing error on the last character. Some brackets were not " +
+                                       "closed properly. FieldPath : " + fieldPath);
+        }
+
+        String token = tokenBuilder.toString();
+
+        if(currentObj != null) {
+
+            //==========================================
+            // The last key to add already exists on
+            // the object.
+            //==========================================
+            if(currentObj.isKeyExists(token)) {
+                throw new RuntimeException("FieldPath parsing error on the last character. The key '" + token + "' " +
+                                           "already exists. FieldPath : " +
+                                           fieldPath);
+            }
+
+            currentObj.putConvert(token, value, true);
+
+        } else if(currentArray != null) {
+
+            //==========================================
+            // The last index to with the value has to be
+            // added is already used on the array.
+            //==========================================
+            String currentElementStr = currentArray.getString(currentArrayIndex);
+            if(currentElementStr != null) {
+                throw new RuntimeException("FieldPath parsing error on the last character. The array " +
+                                           "already contains a value at index '" + currentArrayIndex + "'. FieldPath : " +
+                                           fieldPath);
+            }
+
+            currentArray.setConvert(currentArrayIndex, value, true);
+
+        } else {
+            throw new RuntimeException("Not supposed. Invalid parsing of FieldPath : " + fieldPath);
+        }
+    }
+
+    protected int getMaxNumberOfFieldPathKeys() {
+        return getSpincastJsonManagerConfig().getMaxNumberOfFieldPathKeys();
+    }
+
+    protected int getFieldPathKeyMaxLength() {
+        return getSpincastJsonManagerConfig().getFieldPathKeyMaxLength();
     }
 
     @Override

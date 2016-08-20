@@ -798,4 +798,9 @@ public interface IJsonObject extends Iterable<Map.Entry<String, Object>> {
      */
     public Map<String, Object> convertToPlainMap();
 
+    /**
+     * The number of properties on the object.
+     */
+    public int size();
+
 }

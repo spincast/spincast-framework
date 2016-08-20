@@ -24,9 +24,28 @@ public interface IJsonManager {
     /**
      * Creates an empty <code>JsonObject</code> based on the specified Map.
      * An attempt will be made to create a deep copy of every elements so
-     * a modification won't affect any external referecen and vice-versa.
+     * a modification won't affect any external references and vice-versa.
+     * <p>
+     * The keys will be used <em>as is</em>. Use the
+     * {@link #create(Map, boolean) create(Map, boolean)} version to parse
+     * the keys to IJsonObjects and IJsonArrays.
+     * </p>
      */
     public IJsonObject create(Map<String, ?> params);
+
+    /**
+     * Creates an empty <code>JsonObject</code> based on the specified Map.
+     * An attempt will be made to create a deep copy of every elements so
+     * a modification won't affect any external references and vice-versa.
+     * 
+     * @param parseKeyAsFieldPath If <code>true</code>, the keys will be parsed
+     * as <code>FieldPaths</code> so a IJSonObject object is created.
+     * For example : <code>user.books[1].name</code>
+     * will be converted to a IJsonObject with a "books" arrays which
+     * has a IJsonObject book object at position 1 and this book 
+     * has a "name" property.
+     */
+    public IJsonObject create(Map<String, ?> params, boolean parseKeyAsFieldPath);
 
     /**
      * Creates a <code>JsonObject</code> from an inputStream.

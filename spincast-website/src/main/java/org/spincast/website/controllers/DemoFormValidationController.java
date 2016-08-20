@@ -2,6 +2,8 @@ package org.spincast.website.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.json.IJsonObject;
+import org.spincast.website.exchange.IAppRequestContext;
 
 /**
  * Form validation demo controller
@@ -13,20 +15,21 @@ public class DemoFormValidationController {
     /**
      * Index
      */
-    /*
     public void index(IAppRequestContext context) {
         sendTemplate(context);
     }
-    */
 
     /**
      * Submit
      */
-    /*
     public void submit(IAppRequestContext context) {
-    
+
+        IJsonObject formDatas = context.request().getFormDatas();
+        System.out.println(formDatas);
+
         //List<String> cars = context.request().getFormData("car");
-    
+
+        /*
         String email = context.request().getFormDataFirst("email");
         if(StringUtils.isBlank(email)) {
             context.response().addErrorField("email", "The email can't be empty");
@@ -35,7 +38,7 @@ public class DemoFormValidationController {
         if(!EmailValidator.getInstance().isValid(email)) {
             context.response().addErrorField("email", "The email is not valid");
         }
-    
+        
         List<String> tags = context.request().getFormData("tag");
         tag : do {
             if(tags.size() < 3) {
@@ -48,14 +51,13 @@ public class DemoFormValidationController {
                     break tag;
                 }
             }
-    
+        
             if("Nope".equalsIgnoreCase(tags.get(0))) {
                 context.response().addErrorField("tag", 0, "The first tag can't be 'nope'!");
                 break tag;
             }
         } while(false);
-    
-    
+        
         String password = context.request().getFormDataFirst("password");
         validatePassword(context, password);
         
@@ -83,34 +85,33 @@ public class DemoFormValidationController {
         if(info != null && info.length() > 512) {
             context.response().addErrorField("info", "Maximum 512 characters. Currently : " + info.length() + " characters.");
         }
-       
-    
+        
         sendTemplate(context);
+        */
     }
-     */
 
-    /*
     protected void validatePassword(IAppRequestContext context, String password) {
-    
+
+        /*
         // Not empty
         if(StringUtils.isBlank(password)) {
             context.response().addErrorField("password", "Can't be empty");
             return;
         }
-    
+        
         // No space or tabs
         if(password.contains(" ") || password.contains("\t")) {
             context.response().addErrorField("password", "The password can't contain space or tab characters");
         }
-    
+        
         if(password.length() < 5) {
             context.response().addErrorField("password", "The password must contain at least 5 characters");
         }
+        */
     }
-    
+
     protected void sendTemplate(IAppRequestContext context) {
         context.response().sendTemplateHtml("/templates/demos/formValidation.html");
     }
-    */
 
 }

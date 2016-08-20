@@ -46,6 +46,16 @@ public class JsonPrettyPrintConfigTest extends SpincastTestBase {
                     public int getPrettyPrinterIndentationSpaceNumber() {
                         return 2;
                     }
+
+                    @Override
+                    public int getMaxNumberOfFieldPathKeys() {
+                        return 1000;
+                    }
+
+                    @Override
+                    public int getFieldPathKeyMaxLength() {
+                        return 1000;
+                    }
                 });
             }
         };

@@ -1269,6 +1269,31 @@ public class JsonObjectsTest extends SpincastTestBase {
     }
 
     @Test
+    public void mapConvertedToJsonObjectUsingCreate() throws Exception {
+
+        IJsonObject inner = this.jsonManager.create();
+        inner.put("innerKey1", "toto");
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("key1", "val1");
+        map.put("inner", inner);
+
+        IJsonObject jsonObj = this.jsonManager.create(map);
+
+        assertEquals("val1", jsonObj.getString("key1"));
+        IJsonObject innerResult = jsonObj.getJsonObject("inner");
+        assertNotNull(innerResult);
+
+        assertEquals("toto", innerResult.getString("innerKey1"));
+
+        // A clone has been made
+        inner.put("otherKey", "titi");
+        assertEquals(null, innerResult.getString("otherKey"));
+        innerResult.put("innerKey2", "tutu");
+        assertEquals(null, inner.getString("innerKey2"));
+    }
+
+    @Test
     public void jsonArrayArrayDeserialize() throws Exception {
 
         String str = "[{},123,\"abc\",[1, {}], \"123456\"]";
@@ -1406,6 +1431,21 @@ public class JsonObjectsTest extends SpincastTestBase {
     }
 
     @Test
+    public void getArrayFirstStringFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add("toto");
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        String arrayFirst = array.getArrayFirstString(1);
+        assertEquals("toto", arrayFirst);
+    }
+
+    @Test
     public void getArrayFirstInteger() throws Exception {
 
         IJsonArray array = this.jsonManager.createArray();
@@ -1417,6 +1457,21 @@ public class JsonObjectsTest extends SpincastTestBase {
 
         Integer arrayFirst = jsonObj.getArrayFirstInteger("arr");
         assertNotNull(arrayFirst);
+        assertEquals(new Integer(123), arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstIntegerFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(123);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Integer arrayFirst = array.getArrayFirstInteger(1);
         assertEquals(new Integer(123), arrayFirst);
     }
 
@@ -1436,6 +1491,21 @@ public class JsonObjectsTest extends SpincastTestBase {
     }
 
     @Test
+    public void getArrayFirstLongFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(123L);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Long arrayFirst = array.getArrayFirstLong(1);
+        assertEquals(new Long(123), arrayFirst);
+    }
+
+    @Test
     public void getArrayFirstFloat() throws Exception {
 
         IJsonArray array = this.jsonManager.createArray();
@@ -1447,6 +1517,21 @@ public class JsonObjectsTest extends SpincastTestBase {
 
         Float arrayFirst = jsonObj.getArrayFirstFloat("arr");
         assertNotNull(arrayFirst);
+        assertEquals(new Float(123), arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstFloatFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(123F);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Float arrayFirst = array.getArrayFirstFloat(1);
         assertEquals(new Float(123), arrayFirst);
     }
 
@@ -1466,6 +1551,21 @@ public class JsonObjectsTest extends SpincastTestBase {
     }
 
     @Test
+    public void getArrayFirstDoubleFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(123);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Double arrayFirst = array.getArrayFirstDouble(1);
+        assertEquals(new Double(123), arrayFirst);
+    }
+
+    @Test
     public void getArrayFirstBoolean() throws Exception {
 
         IJsonArray array = this.jsonManager.createArray();
@@ -1477,6 +1577,21 @@ public class JsonObjectsTest extends SpincastTestBase {
 
         Boolean arrayFirst = jsonObj.getArrayFirstBoolean("arr");
         assertNotNull(arrayFirst);
+        assertEquals(true, arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstBooleanFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(true);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Boolean arrayFirst = array.getArrayFirstBoolean(1);
         assertEquals(true, arrayFirst);
     }
 
@@ -1496,6 +1611,21 @@ public class JsonObjectsTest extends SpincastTestBase {
     }
 
     @Test
+    public void getArrayFirstBigDecimalFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(new BigDecimal(123));
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        BigDecimal arrayFirst = array.getArrayFirstBigDecimal(1);
+        assertEquals(new BigDecimal(123), arrayFirst);
+    }
+
+    @Test
     public void getArrayFirstDate() throws Exception {
 
         IJsonArray array = this.jsonManager.createArray();
@@ -1506,6 +1636,21 @@ public class JsonObjectsTest extends SpincastTestBase {
         jsonObj.put("arr", array);
 
         Date arrayFirst = jsonObj.getArrayFirstDate("arr");
+        assertNotNull(arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstDateFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(new Date());
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Date arrayFirst = array.getArrayFirstDate(1);
         assertNotNull(arrayFirst);
     }
 
@@ -1525,13 +1670,38 @@ public class JsonObjectsTest extends SpincastTestBase {
     }
 
     @Test
+    public void getArrayFirstByteArrayFromArray() throws Exception {
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add("test".getBytes("UTF-8"));
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        byte[] arrayFirst = array.getArrayFirstBytesFromBase64String(1);
+        assertTrue(Arrays.equals("test".getBytes("UTF-8"), arrayFirst));
+    }
+
+    @Test
     public void getArrayFirstElementDefaultValue() throws Exception {
 
         IJsonObject jsonObj = this.jsonManager.create();
 
-        String arrayFirstString = jsonObj.getArrayFirstString("nope", "titi");
-        assertNotNull(arrayFirstString);
-        assertEquals("titi", arrayFirstString);
+        String arrayFirst = jsonObj.getArrayFirstString("nope", "titi");
+        assertNotNull(arrayFirst);
+        assertEquals("titi", arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstElementDefaultValueFromArray() throws Exception {
+
+        IJsonArray array = this.jsonManager.createArray();
+
+        String arrayFirst = array.getArrayFirstString(0, "titi");
+        assertNotNull(arrayFirst);
+        assertEquals("titi", arrayFirst);
     }
 
     @Test
@@ -1539,8 +1709,17 @@ public class JsonObjectsTest extends SpincastTestBase {
 
         IJsonObject jsonObj = this.jsonManager.create();
 
-        String result = jsonObj.getArrayFirstString("nope");
-        assertNull(result);
+        String arrayFirst = jsonObj.getArrayFirstString("nope");
+        assertNull(arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstElementNoDefaultValueFroMArray() throws Exception {
+
+        IJsonArray array = this.jsonManager.createArray();
+
+        String arrayFirst = array.getArrayFirstString(0);
+        assertNull(arrayFirst);
     }
 
     @Test
@@ -1556,9 +1735,28 @@ public class JsonObjectsTest extends SpincastTestBase {
         IJsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("arr", array);
 
-        IJsonObject arrayFirstJsonObject = jsonObj.getArrayFirstJsonObject("arr");
-        assertNotNull(arrayFirstJsonObject);
-        assertEquals("inner", arrayFirstJsonObject.getString("name"));
+        IJsonObject arrayFirst = jsonObj.getArrayFirstJsonObject("arr");
+        assertNotNull(arrayFirst);
+        assertEquals("inner", arrayFirst.getString("name"));
+    }
+
+    @Test
+    public void getArrayFirstElementAsJsonObjectFromArray() throws Exception {
+
+        IJsonObject inner = this.jsonManager.create();
+        inner.put("name", "inner");
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(inner);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        IJsonObject arrayFirst = array.getArrayFirstJsonObject(1);
+        assertNotNull(arrayFirst);
+        assertEquals("inner", arrayFirst.getString("name"));
     }
 
     @Test
@@ -1574,9 +1772,28 @@ public class JsonObjectsTest extends SpincastTestBase {
         IJsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("arr", array);
 
-        IJsonArray arrayFirstJsonArray = jsonObj.getArrayFirstJsonArray("arr");
-        assertNotNull(arrayFirstJsonArray);
-        assertEquals("inner", arrayFirstJsonArray.getString(0));
+        IJsonArray arrayFirst = jsonObj.getArrayFirstJsonArray("arr");
+        assertNotNull(arrayFirst);
+        assertEquals("inner", arrayFirst.getString(0));
+    }
+
+    @Test
+    public void getArrayFirstElementAsJsonArrayFromArray() throws Exception {
+
+        IJsonArray inner = this.jsonManager.createArray();
+        inner.add("inner");
+
+        IJsonArray array2 = this.jsonManager.createArray();
+        array2.add(inner);
+        array2.add("titi");
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add("nope");
+        array.add(array2);
+
+        IJsonArray arrayFirst = array.getArrayFirstJsonArray(1);
+        assertNotNull(arrayFirst);
+        assertEquals("inner", arrayFirst.getString(0));
     }
 
     @Test
@@ -2172,6 +2389,72 @@ public class JsonObjectsTest extends SpincastTestBase {
         IJsonObject innerObj = array.getJsonObject(0);
         innerObj.put("key1", "yes!");
 
+    }
+
+    @Test
+    public void arraySetValueToSpecificIndex() throws Exception {
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.set(3, "value1");
+
+        assertEquals(null, array.getString(0, "nope"));
+        assertEquals(null, array.getString(1, "nope"));
+        assertEquals(null, array.getString(2, "nope"));
+        assertEquals("value1", array.getString(3, "nope"));
+        assertEquals("nope", array.getString(4, "nope"));
+
+        array.set(1, "value2");
+
+        assertEquals(null, array.getString(0, "nope"));
+        assertEquals("value2", array.getString(1, "nope"));
+        assertEquals(null, array.getString(2, "nope"));
+        assertEquals("value1", array.getString(3, "nope"));
+        assertEquals("nope", array.getString(4, "nope"));
+    }
+
+    @Test
+    public void arrayInsertValueToSpecificIndex() throws Exception {
+
+        IJsonArray array = this.jsonManager.createArray();
+        array.add(3, "value1");
+
+        assertEquals(null, array.getString(0, "nope"));
+        assertEquals(null, array.getString(1, "nope"));
+        assertEquals(null, array.getString(2, "nope"));
+        assertEquals("value1", array.getString(3, "nope"));
+        assertEquals("nope", array.getString(4, "nope"));
+
+        array.add(1, "value2");
+
+        assertEquals(null, array.getString(0, "nope"));
+        assertEquals("value2", array.getString(1, "nope"));
+        assertEquals(null, array.getString(2, "nope"));
+        assertEquals(null, array.getString(3, "nope"));
+        assertEquals("value1", array.getString(4, "nope"));
+        assertEquals("nope", array.getString(5, "nope"));
+    }
+
+    @Test
+    public void arrayAddIndexUnderZero() throws Exception {
+
+        IJsonArray array = this.jsonManager.createArray();
+
+        try {
+            array.add(-10, "value1");
+            fail();
+        } catch(Exception ex) {
+        }
+    }
+
+    @Test
+    public void arraySetIndexUnderZero() throws Exception {
+
+        IJsonArray array = this.jsonManager.createArray();
+        try {
+            array.set(-10, "value1");
+            fail();
+        } catch(Exception ex) {
+        }
     }
 
 }

@@ -1125,6 +1125,12 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         return this;
     }
 
+    @Override
+    public void sendTemplateHtml(String templatePath) {
+        // TODO Auto-generated method stub
+        sendTemplateHtml(templatePath, (IJsonObject)null);
+    }
+
     /*
     @Override
     public void addErrorGlobal(String globalErrorMessage) {

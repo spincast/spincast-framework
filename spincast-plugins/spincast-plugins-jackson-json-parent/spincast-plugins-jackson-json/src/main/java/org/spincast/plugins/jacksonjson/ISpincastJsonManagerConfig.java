@@ -23,4 +23,30 @@ public interface ISpincastJsonManagerConfig {
      */
     public String getPrettyPrinterNewlineChars();
 
+    /**
+     * Gets the maximum number of <code>keys</code> that
+     * can be parsed as <code>FieldPaths</code> using the 
+     * {@link org.spincast.core.json.IJsonManager#create(java.util.Map, boolean) create}
+     * method.
+     * <p>
+     * This maximum is to prevent malicious user to POST
+     * a very big number of <code>keys</code> and kill
+     * the CPU/memory.
+     * </p>
+     */
+    public int getMaxNumberOfFieldPathKeys();
+
+    /**
+     * Gets the maximum length of a <code>key</code> that
+     * can be parsed as <code>FieldPaths</code> using the 
+     * {@link org.spincast.core.json.IJsonManager#create(java.util.Map, boolean) create}
+     * method.
+     * <p>
+     * This maximum is to prevent malicious user to POST
+     * very long and complex <code>keys</code> and kill
+     * the CPU/memory.
+     * </p>
+     */
+    public int getFieldPathKeyMaxLength();
+
 }

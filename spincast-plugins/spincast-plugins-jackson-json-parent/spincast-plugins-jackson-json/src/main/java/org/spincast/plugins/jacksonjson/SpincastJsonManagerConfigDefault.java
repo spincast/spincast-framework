@@ -14,4 +14,14 @@ public class SpincastJsonManagerConfigDefault implements ISpincastJsonManagerCon
     public String getPrettyPrinterNewlineChars() {
         return "\n";
     }
+
+    @Override
+    public int getMaxNumberOfFieldPathKeys() {
+        return 100;
+    }
+
+    @Override
+    public int getFieldPathKeyMaxLength() {
+        return 512;
+    }
 }

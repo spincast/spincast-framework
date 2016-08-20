@@ -339,23 +339,15 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
      * More than one value with the same <code>key</code> is possible.
      * The names are <em>case sensitive</em>.
      * <p>
+     * This returns the keys/values as is, without trying to figure if
+     * the keys are part of an object or an array.
+     * </p>
+     * <p>
      * This returns an <em>immutable</em> object! You won't
      * be able to add or remove elements.
      * </p>
      */
     public Map<String, List<String>> getFormDatasAsMap();
-
-    /**
-     * The datas submitted from a <code>FORM</code> via a <code>POST</code> method.
-     * More than one value with the same <code>key</code> is possible.
-     * The names are <em>case sensitive</em>.
-     * <p>
-     * This returns a new instance of <code>IJsonObject</code>. Any modification
-     * to the object or to one of its <code>IJsonArray</code> property won't affect the
-     * original form datas.
-     * </p>
-     */
-    public IJsonObject getFormDatas();
 
     /**
      * A specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
@@ -369,11 +361,31 @@ public interface IRequestRequestContextAddon<R extends IRequestContext<?>> {
     public List<String> getFormData(String name);
 
     /**
-     * The first (and often only) value of a specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
+     * The first (and often only) value of a specific parameter submitted from 
+     * a <code>FORM</code> via a <code>POST</code> method.
      * The <code>name</code> is <i>case sensitive</i>.
      * Returns <code>null</code> if the parameter doesn't exist.
      */
     public String getFormDataFirst(String name);
+
+    /**
+     * The datas submitted from a <code>FORM</code> via a <code>POST</code> method.
+     * More than one value with the same <code>key</code> is possible.
+     * The names are <em>case sensitive</em>.
+     * <p>
+     * The keys will be parsed to figure if they represent an object
+     * or an array. For example : <code>user.books[1].name</code>
+     * will be converted in a IJsonObject with a "books" arrays which
+     * has a IJsonObject book object at position 1 and this book 
+     * has a "name" property.
+     * </p>
+     * <p>
+     * This returns an <em>immutable</em> instance of <code>IJsonObject</code>.
+     * If you want to get a mutable instance, call its <code>.clone(true)</code>
+     * method.
+     * </p>
+     */
+    public IJsonObject getFormDatas();
 
     /**
      * The uploaded files, with their names as the keys.

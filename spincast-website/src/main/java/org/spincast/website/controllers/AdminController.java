@@ -63,10 +63,6 @@ public class AdminController {
     }
 
     public void news(IAppRequestContext context) {
-
-        IJsonObject formDatas = context.request().getFormDatas();
-        //formDatas.put(key, value, clone)
-
         context.response().sendTemplateHtml("/templates/admin/adminNews.html", (IJsonObject)null);
     }
 }
