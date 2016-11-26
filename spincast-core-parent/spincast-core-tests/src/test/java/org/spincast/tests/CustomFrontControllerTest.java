@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.tests.varia.CustomFrontController;
 
@@ -31,7 +31,7 @@ public class CustomFrontControllerTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void customExchangeValidation() throws Exception {
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
     }

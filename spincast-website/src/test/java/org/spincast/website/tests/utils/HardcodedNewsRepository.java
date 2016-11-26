@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.spincast.website.IAppConfig;
-import org.spincast.website.models.INewsEntriesAndTotalNbr;
-import org.spincast.website.models.INewsEntry;
-import org.spincast.website.repositories.INewsRepository;
+import org.spincast.website.AppConfig;
+import org.spincast.website.models.NewsEntriesAndTotalNbr;
+import org.spincast.website.models.NewsEntry;
+import org.spincast.website.repositories.NewsRepository;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -18,34 +18,34 @@ import com.google.inject.Inject;
 /**
  * Hardcoded implementation of the News repository.
  */
-public abstract class HardcodedNewsRepository implements INewsRepository {
+public abstract class HardcodedNewsRepository implements NewsRepository {
 
-    private final IAppConfig appConfig;
-    private List<INewsEntry> newsEntriesAsc;
-    private List<INewsEntry> newsEntriesDesc;
-    private Map<Long, INewsEntry> newsEntriesById;
+    private final AppConfig appConfig;
+    private List<NewsEntry> newsEntriesAsc;
+    private List<NewsEntry> newsEntriesDesc;
+    private Map<Long, NewsEntry> newsEntriesById;
 
     @Inject
-    public HardcodedNewsRepository(IAppConfig appConfig) {
+    public HardcodedNewsRepository(AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 
     @Override
-    public List<INewsEntry> getNewsEntries(boolean ascOrder) {
+    public List<NewsEntry> getNewsEntries(boolean ascOrder) {
 
         if(ascOrder) {
             if(this.newsEntriesAsc == null) {
 
-                List<INewsEntry> entries = getNewsEntriesLocal();
+                List<NewsEntry> entries = getNewsEntriesLocal();
 
-                Collections.sort(entries, new Comparator<INewsEntry>() {
+                Collections.sort(entries, new Comparator<NewsEntry>() {
 
                     @Override
-                    public int compare(INewsEntry entry1, INewsEntry entry2) {
+                    public int compare(NewsEntry entry1, NewsEntry entry2) {
 
                         return entry1.getPublishedDate().compareTo(entry2.getPublishedDate());
                     }
@@ -57,7 +57,7 @@ public abstract class HardcodedNewsRepository implements INewsRepository {
 
         } else {
             if(this.newsEntriesDesc == null) {
-                List<INewsEntry> newsEntriesAsc = getNewsEntries(true);
+                List<NewsEntry> newsEntriesAsc = getNewsEntries(true);
                 this.newsEntriesDesc = Lists.reverse(newsEntriesAsc);
             }
             return this.newsEntriesDesc;
@@ -65,7 +65,7 @@ public abstract class HardcodedNewsRepository implements INewsRepository {
     }
 
     @Override
-    public INewsEntriesAndTotalNbr getNewsEntriesAndTotalNbr(int startPos, int endPos, boolean ascOrder) {
+    public NewsEntriesAndTotalNbr getNewsEntriesAndTotalNbr(int startPos, int endPos, boolean ascOrder) {
 
         if(startPos < 1) {
             startPos = 1;
@@ -79,15 +79,15 @@ public abstract class HardcodedNewsRepository implements INewsRepository {
             endPos = startPos;
         }
 
-        final List<INewsEntry> entries = getNewsEntries(ascOrder);
+        final List<NewsEntry> entries = getNewsEntries(ascOrder);
 
         if(entries.size() == 0 || startPos > entries.size()) {
 
-            return new INewsEntriesAndTotalNbr() {
+            return new NewsEntriesAndTotalNbr() {
 
                 @Override
-                public List<INewsEntry> getNewsEntries() {
-                    return new ArrayList<INewsEntry>();
+                public List<NewsEntry> getNewsEntries() {
+                    return new ArrayList<NewsEntry>();
                 }
 
                 @Override
@@ -103,10 +103,10 @@ public abstract class HardcodedNewsRepository implements INewsRepository {
 
         final int startPosFinal = startPos;
         final int endPosFinal = endPos;
-        return new INewsEntriesAndTotalNbr() {
+        return new NewsEntriesAndTotalNbr() {
 
             @Override
-            public List<INewsEntry> getNewsEntries() {
+            public List<NewsEntry> getNewsEntries() {
                 return Collections.unmodifiableList(entries.subList(startPosFinal - 1, endPosFinal)); // endPos is exclusive here
             }
 
@@ -118,16 +118,16 @@ public abstract class HardcodedNewsRepository implements INewsRepository {
     }
 
     @Override
-    public INewsEntry getNewsEntry(long newsId) {
+    public NewsEntry getNewsEntry(long newsId) {
         return getNewsEntriesById().get(newsId);
     }
 
-    protected Map<Long, INewsEntry> getNewsEntriesById() {
+    protected Map<Long, NewsEntry> getNewsEntriesById() {
 
         if(this.newsEntriesById == null) {
-            this.newsEntriesById = new HashMap<Long, INewsEntry>();
-            List<INewsEntry> newsEntries = getNewsEntriesLocal();
-            for(INewsEntry newsEntry : newsEntries) {
+            this.newsEntriesById = new HashMap<Long, NewsEntry>();
+            List<NewsEntry> newsEntries = getNewsEntriesLocal();
+            for(NewsEntry newsEntry : newsEntries) {
                 this.newsEntriesById.put(newsEntry.getId(), newsEntry);
             }
         }
@@ -135,6 +135,6 @@ public abstract class HardcodedNewsRepository implements INewsRepository {
         return this.newsEntriesById;
     }
 
-    protected abstract List<INewsEntry> getNewsEntriesLocal();
+    protected abstract List<NewsEntry> getNewsEntriesLocal();
 
 }

@@ -3,17 +3,8 @@ package org.spincast.plugins.httpclient.websocket.utils;
 import org.spincast.plugins.httpclient.utils.SpincastHttpClientUtils;
 import org.xnio.Xnio;
 
-public class SpincastHttpClientWithWebsocketUtils extends SpincastHttpClientUtils
-                                                  implements ISpincastHttpClientWithWebsocketUtils {
+public interface SpincastHttpClientWithWebsocketUtils extends SpincastHttpClientUtils {
 
-    private Xnio xnioInstance = null;
+    public Xnio getXnioInstance();
 
-    @Override
-    public Xnio getXnioInstance() {
-
-        if(this.xnioInstance == null) {
-            this.xnioInstance = Xnio.getInstance("nio", SpincastHttpClientWithWebsocketUtils.class.getClassLoader());
-        }
-        return this.xnioInstance;
-    }
 }

@@ -6,10 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URLEncoder;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -18,10 +18,10 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void pathParamDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String param = context.request().getPathParam("param");
                 assertNotNull(param);
@@ -29,7 +29,7 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/" +
+        HttpResponse response = GET("/" +
                                      URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -37,10 +37,10 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void queryStringDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String queryString = context.request().getQueryString(false);
                 assertNotNull(queryString);
@@ -48,7 +48,7 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?test=" +
+        HttpResponse response = GET("/one?test=" +
                                      URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -56,10 +56,10 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void queryStringParamDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String param = context.request().getQueryStringParamFirst("test");
                 assertNotNull(param);
@@ -67,7 +67,7 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?test=" +
+        HttpResponse response = GET("/one?test=" +
                                      URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -75,10 +75,10 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fullUrlDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String url = context.request().getFullUrl();
                 assertNotNull(url);
@@ -91,7 +91,7 @@ public class UrlEncodingTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/" +
+        HttpResponse response = GET("/" +
                                      URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8") +
                                      "?test=" +
                                      URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();

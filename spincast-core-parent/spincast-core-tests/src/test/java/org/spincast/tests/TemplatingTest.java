@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.filters.SpincastFilters;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.templating.ITemplatingEngine;
+import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -46,15 +46,15 @@ import com.google.inject.Inject;
 public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ITemplatingEngine templatingEngine;
+    protected TemplatingEngine templatingEngine;
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Inject
-    protected ISpincastUtils spincastUtils;
+    protected SpincastUtils spincastUtils;
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
@@ -65,18 +65,18 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         String placeholder = this.templatingEngine.createPlaceholder("param1");
         FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("param1", "Hello!");
-                context.response().sendTemplateHtml(testFile.getAbsolutePath(), false, params);
+                context.response().getModel().put("param1", "Hello!");
+
+                context.response().sendTemplateHtml(testFile.getAbsolutePath(), false);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -90,18 +90,18 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         String placeholder = this.templatingEngine.createPlaceholder("fontPxSize");
         FileUtils.writeStringToFile(testFile, "body {font-size : " + placeholder + "px;}", "UTF-8");
 
-        getRouter().GET("/test.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/test.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("fontPxSize", 16);
-                context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css", params);
+                context.response().getModel().put("fontPxSize", 16);
+
+                context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css");
             }
         });
 
-        IHttpResponse response = GET("/test.css").send();
+        HttpResponse response = GET("/test.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -123,20 +123,20 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         // When using router.file(...) and a generator, the generated
         // resource will automatically be saved.
         //==========================================
-        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 nbrTimeCalled[0]++;
 
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("fontPxSize", 16);
-                context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css", params);
+                context.response().getModel().put("fontPxSize", 16);
+
+                context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css");
             }
         });
 
-        IHttpResponse response = GET("/test.css").send();
+        HttpResponse response = GET("/test.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
         assertEquals("body {font-size : 16px;}", response.getContentAsString());
@@ -166,7 +166,7 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void evaluateJsonObject() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("name", "Stromgol");
 
         String placeholder = this.templatingEngine.createPlaceholder("name");
@@ -197,7 +197,7 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
         String placeholder = this.templatingEngine.createPlaceholder("param1");
         FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("param1", "Stromgol");
 
         String result = this.templatingEngine.fromTemplate(testFile.getAbsolutePath(), false, jsonObj);
@@ -208,63 +208,70 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void defaultTemplateVariables() throws Exception {
 
-        getRouter().GET("/one/${param1}").id("test").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one/${param1}").id("test").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.variables().add("oneVar", "oneVal");
 
-                Map<String, Object> vars = context.templating().getTemplatingGlobalVariables();
-                assertNotNull(vars);
-                assertEquals("en", vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV));
-                assertEquals(getSpincastUtils().getSpincastCurrentVersion(),
-                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION));
+                Map<String, Object> varsRoot = context.templating().getTemplatingGlobalVariables();
+                assertNotNull(varsRoot);
 
-                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT));
+                @SuppressWarnings("unchecked")
+                Map<String, Object> vars = (Map<String, Object>)varsRoot.get("spincast");
+                assertNotNull(vars);
+
+                assertEquals("en",
+                             vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV));
+                assertEquals(getSpincastUtils().getSpincastCurrentVersion(),
+                             vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION));
+
+                assertNotNull(vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT));
 
                 assertEquals(getSpincastUtils().getCacheBusterCode(),
-                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER));
+                             vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER));
 
                 assertNotNull(getSpincastUtils().getCacheBusterCode(),
-                              vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES));
+                              vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES));
 
                 @SuppressWarnings("unchecked")
                 Map<String, Object> requestScopedVars =
-                        (Map<String, Object>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES);
+                        (Map<String, Object>)vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES);
 
                 assertEquals("oneVal", requestScopedVars.get("oneVar"));
 
                 assertEquals("test",
-                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID));
+                             vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID));
 
                 assertEquals("http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
                              "/one/test1?key1=val1",
-                             vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL));
+                             vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL));
 
-                assertEquals(false, vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS));
+                assertEquals(false,
+                             vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS));
 
-                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS));
+                assertNotNull(vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS));
 
                 @SuppressWarnings("unchecked")
                 Map<String, String> pathParams =
-                        (Map<String, String>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS);
+                        (Map<String, String>)vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS);
 
                 assertEquals("test1", pathParams.get("param1"));
 
-                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS));
+                assertNotNull(vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS));
 
                 @SuppressWarnings("unchecked")
                 Map<String, List<String>> queryStringParams =
-                        (Map<String, List<String>>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS);
+                        (Map<String, List<String>>)vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS);
 
                 assertEquals("val1", queryStringParams.get("key1").get(0));
 
-                assertNotNull(vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES));
+                assertNotNull(vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES));
 
                 @SuppressWarnings("unchecked")
-                Map<String, ICookie> cookies =
-                        (Map<String, ICookie>)vars.get(SpincastFilters.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES);
+                Map<String, Cookie> cookies =
+                        (Map<String, Cookie>)vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES);
 
                 assertEquals("cookie1Val", cookies.get("cookie1").getValue());
 
@@ -272,7 +279,7 @@ public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
+        HttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

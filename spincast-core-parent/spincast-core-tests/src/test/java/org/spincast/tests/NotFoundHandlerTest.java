@@ -7,14 +7,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastDictionary;
+import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.exceptions.NotFoundException;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -23,12 +23,12 @@ import com.google.inject.Inject;
 public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ISpincastDictionary spincastDictionary;
+    protected SpincastDictionary spincastDictionary;
 
     @Test
     public void notFoundDefault() throws Exception {
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -38,10 +38,10 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundCustom() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.routing().isExceptionRoute());
                 assertTrue(context.routing().isNotFoundRoute());
@@ -59,7 +59,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
             }
         });
 
-        IHttpResponse response = GET("/two").send();
+        HttpResponse response = GET("/two").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -69,61 +69,61 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundCustomWithFilters() throws Exception {
 
-        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("111");
             }
         });
-        getRouter().ALL("/nope").pos(-1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/nope").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("nope");
             }
         });
-        getRouter().ALL("/one").pos(-1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/one").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("222");
             }
         });
 
-        getRouter().ALL("/*{any}").pos(1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{any}").pos(1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("222");
             }
         });
 
         getRouter().ALL("/*{path}").notFound()
                    .before(
-                           new IHandler<IDefaultRequestContext>() {
+                           new Handler<DefaultRequestContext>() {
 
                                @Override
-                               public void handle(IDefaultRequestContext context) {
+                               public void handle(DefaultRequestContext context) {
                                    context.response().sendHtml("before");
                                }
                            })
-                   .after(new IHandler<IDefaultRequestContext>() {
+                   .after(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendHtml("after");
                        }
                    })
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendHtml("custom404");
                        }
                    });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -133,16 +133,16 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundCustomChangeHttpStatus() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
                 context.response().sendHtml("custom404");
             }
         });
 
-        IHttpResponse response = GET("/two").send();
+        HttpResponse response = GET("/two").send();
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -152,22 +152,22 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundCustomFirst() throws Exception {
 
-        getRouter().GET("/*{path}").notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("custom404_1");
             }
         });
-        getRouter().GET("/*{path}").notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("custom404_2");
             }
         });
 
-        IHttpResponse response = GET("/two").send();
+        HttpResponse response = GET("/two").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -177,10 +177,10 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundException() throws Exception {
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 // Let's say we look at the "param" path param and
                 // find it is not valid...
@@ -188,7 +188,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
             }
         });
 
-        IHttpResponse response = GET("/nopeParam").send();
+        HttpResponse response = GET("/nopeParam").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -199,32 +199,32 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     public void notFoundExceptionWithBeforeFiltersReset() throws Exception {
 
         // Apply to the original route AND to the Not Found route
-        getRouter().GET("/*{any}").pos(-1).found().notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-1).found().notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("A");
             }
         });
 
         // Apply to the original route only
-        getRouter().GET("/one").pos(-1).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").pos(-1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("B");
             }
         });
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new NotFoundException(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -234,18 +234,18 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundExceptionCustomHandler() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("custom404");
             }
         });
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.response().sendPlainText("A");
 
@@ -255,7 +255,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
             }
         });
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -265,18 +265,18 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void notFoundExceptionCustomHandlerNoReset() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("custom404");
             }
         });
 
-        getRouter().GET("/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.response().sendPlainText("A");
 
@@ -286,7 +286,7 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
             }
         });
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -297,19 +297,19 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     public void notFoundExceptionWithFiltersReset() throws Exception {
 
         // "before" filter A
-        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("A");
             }
         });
 
         // "before" filter B
-        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("B");
             }
         });
@@ -317,25 +317,25 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         // main handler  with inline "before" filter "C" and inline
         // "after" filter "D"
         getRouter().GET("/${param}")
-                   .before(new IHandler<IDefaultRequestContext>() {
+                   .before(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("C");
                        }
                    })
-                   .after(new IHandler<IDefaultRequestContext>() {
+                   .after(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("D");
                        }
                    })
 
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
 
                            // true => reset!
                            throw new NotFoundException(SpincastTestUtils.TEST_STRING, true);
@@ -343,24 +343,24 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
                    });
 
         // "after" filter E
-        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("E");
             }
         });
 
         // "after" filter F
-        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("F");
             }
         });
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -372,19 +372,19 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     public void notFoundExceptionWithFiltersNoReset() throws Exception {
 
         // "before" filter A
-        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("A");
             }
         });
 
         // "before" filter B
-        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("B");
             }
         });
@@ -393,48 +393,48 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         // "after" filter "D"
         getRouter().GET("/${param}")
 
-                   .before(new IHandler<IDefaultRequestContext>() {
+                   .before(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("C");
                        }
                    })
-                   .after(new IHandler<IDefaultRequestContext>() {
+                   .after(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("D");
                        }
                    })
 
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            throw new NotFoundException(SpincastTestUtils.TEST_STRING, false);
                        }
                    });
 
         // "after" filter E
-        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("E");
             }
         });
 
         // "after" filter F
-        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("F");
             }
         });
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -455,10 +455,10 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
     public void notFoundExceptionWithFiltersNoResetButSkipOneBefore() throws Exception {
 
         // "before" filter A
-        getRouter().GET("/*{any}").pos(-10).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 // Not applied when the current route is a Not Found one!
                 if(context.routing().isNotFoundRoute()) {
@@ -470,10 +470,10 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         });
 
         // "before" filter B
-        getRouter().before().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("B");
             }
         });
@@ -482,49 +482,49 @@ public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase
         // "after" filter "D"
         getRouter().GET("/${param}")
 
-                   .before(new IHandler<IDefaultRequestContext>() {
+                   .before(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("C");
                        }
                    })
 
-                   .after(new IHandler<IDefaultRequestContext>() {
+                   .after(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("D");
                        }
                    })
 
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            throw new NotFoundException(SpincastTestUtils.TEST_STRING, false);
                        }
                    });
 
         // "after" filter E
-        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("E");
             }
         });
 
         // "after" filter F
-        getRouter().after().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("F");
             }
         });
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

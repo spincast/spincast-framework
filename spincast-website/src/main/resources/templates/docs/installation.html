@@ -27,7 +27,7 @@ Docs : "installation"
                 <li>A build tool able to use Maven artifacts (<a href="https://maven.apache.org">Maven</a>, 
                    <a href="http://gradle.org">Gradle</a>, <a href="http://ant.apache.org/ivy">Ivy</a>, etc.)</li>
                 <li>Some Java and web development experience.
-                 <a href="https://github.com/google/guice/wiki/Motivation">Guice</a> experience will help a lot too!</li>
+                 <a href="https://github.com/google/guice/wiki/Motivation">Guice</a> experience will help too!</li>
             </ul>
         </p>
     </div>
@@ -41,9 +41,9 @@ Docs : "installation"
             <img id="quickIcon" class="inlineIcon" src="/public/images/icons/flash.png" /> Quick Start application
         </h4>
         
-		{% if spincastCurrrentVersionIsSnapshot  %}
+		{% if spincast.spincastCurrrentVersionIsSnapshot  %}
 	        <div class="alert alert-warning" role="alert"><strong>Warning!</strong> The current version,
-	            "<code>{{spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
+	            "<code>{{spincast.spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
 	            can change, it is not a stable version. Do not use this 
 	            as a start for a real application!
 	        </div>
@@ -101,29 +101,29 @@ Docs : "installation"
     </div>
 
     {#==========================================
-    Section "installation / using Default Module"
+    Section "installation / using spincast-default"
     ==========================================#}
     <div id="using_default_module">
         <h4>
             <a class="anchor_small" href="#using_default_module" title="permanent link"></a>
-            Using <code>SpincastDefaultGuiceModule</code>
+            Using spincast-default
         </h4>
         
-        {% if spincastCurrrentVersionIsSnapshot  %}
+        {% if spincast.spincastCurrrentVersionIsSnapshot  %}
             <div class="alert alert-warning" role="alert"><strong>Warning!</strong> The current version,
-                "<code>{{spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
+                "<code>{{spincast.spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
                 can change, it is not a stable version. Do not use this 
                 as a start for a real application!
             </div>
         {% endif %}
 
         <p>
-            Spincast is modular, and pretty much all components can be replaced. There are some <em>required</em> components
-            though, and an implementation must be provided for those. This is exactly what the <code>spincast-default</code> 
+            Spincast is modular, and pretty much all components can be replaced. There are some <em>required</em> component
+            interfaces though, and an implementation must be provided for those. This is exactly what the <code>spincast-default</code> 
             artifact is: an easy way to bind a default implementation for all the required components.
         </p>
         
-        {% if spincastCurrrentVersionIsSnapshot  %}
+        {% if spincast.spincastCurrrentVersionIsSnapshot  %}
 
              <p>
                 <img class="inlineIcon" src="/public/images/icons/para.png" />
@@ -148,24 +148,25 @@ Docs : "installation"
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     Add the 
-                    <code>org.spincast:spincast-default:{{spincastCurrrentVersion}}</code> 
+                    <code>org.spincast:spincast-default:{{spincast.spincastCurrrentVersion}}</code> 
                     dependency to your <code>pom.xml</code> :
                     <br />
                     <pre class="ace ace-xml" 
 >&lt;dependency>
     &lt;groupId>org.spincast&lt;/groupId>
     &lt;artifactId>spincast-default&lt;/artifactId>
-    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre>
                 </p>
             </div>
         </p>
         <p>
-            If you use other tools like Gradle or  Ivy, you already know how to use Maven coordinates, aren't you?
+            If you use other tools like Gradle or  Ivy, you probably already know how to use Maven coordinates.
         </p>
     
         <p>
-            This artifact gives you access to a Guice module, <code>SpincastDefaultGuiceModule</code>,
+            This <code>spincast-default</code> artifact gives you access to a Guice module, 
+            <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a>,
             which binds default implementations. (Look <a href="#required_components">here</a> if you are curious about what
             those default implementations are!).
         </p>
@@ -181,7 +182,7 @@ Docs : "installation"
         
     Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
     
-    IServer server = guice.getInstance(IServer.class);
+    Server server = guice.getInstance(Server.class);
     server.start();
 }</pre>     
     	        </p> 

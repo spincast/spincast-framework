@@ -3,7 +3,7 @@ package org.spincast.plugins.localeresolver;
 import java.lang.reflect.Type;
 
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
-import org.spincast.core.locale.ILocaleResolver;
+import org.spincast.core.locale.LocaleResolver;
 
 import com.google.inject.Scopes;
 
@@ -26,7 +26,7 @@ public class SpincastLocaleResolverPluginGuiceModule extends SpincastPluginGuice
     }
 
     protected void bindLocaleResolver() {
-        bind(ILocaleResolver.class).to(SpincastLocaleResolver.class).in(Scopes.SINGLETON);
+        bind(LocaleResolver.class).to(LocaleResolverDefault.class).in(Scopes.SINGLETON);
     }
 
 }

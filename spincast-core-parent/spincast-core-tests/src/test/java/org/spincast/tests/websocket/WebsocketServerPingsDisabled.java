@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
-import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
+import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
@@ -23,7 +23,7 @@ public class WebsocketServerPingsDisabled extends SpincastDefaultWebsocketNoAppI
 
             @Override
             protected void configure() {
-                bind(ISpincastUndertowConfig.class).toInstance(new SpincastUndertowConfigDefault() {
+                bind(SpincastUndertowConfig.class).toInstance(new SpincastUndertowConfigDefault() {
 
                     //==========================================
                     // Disable server pings
@@ -45,7 +45,7 @@ public class WebsocketServerPingsDisabled extends SpincastDefaultWebsocketNoAppI
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 

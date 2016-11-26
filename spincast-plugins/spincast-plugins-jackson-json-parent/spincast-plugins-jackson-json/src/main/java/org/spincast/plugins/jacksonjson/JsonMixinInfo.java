@@ -1,26 +1,19 @@
 package org.spincast.plugins.jacksonjson;
 
 /**
- * An simple implementation of IJsonMixinInfo.
+ * Links a mixin to a class to (de)serialize using
+ * Jackson.
  */
-public class JsonMixinInfo implements IJsonMixinInfo {
+public interface JsonMixinInfo {
 
-    private final Class<?> targetClass;
-    private final Class<?> mixinClass;
+    /**
+     * The class to apply the mixin to.
+     */
+    public Class<?> getTargetClass();
 
-    public JsonMixinInfo(Class<?> targetClass, Class<?> mixinClass) {
-        this.targetClass = targetClass;
-        this.mixinClass = mixinClass;
-    }
-
-    @Override
-    public Class<?> getTargetClass() {
-        return this.targetClass;
-    }
-
-    @Override
-    public Class<?> getMixinClass() {
-        return this.mixinClass;
-    }
+    /**
+     * The mixin class.
+     */
+    public Class<?> getMixinClass();
 
 }

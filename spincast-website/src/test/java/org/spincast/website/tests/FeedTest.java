@@ -4,21 +4,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.xml.IXmlManager;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.core.xml.XmlManager;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.website.IAppConfig;
-import org.spincast.website.models.INewsEntry;
+import org.spincast.website.AppConfig;
 import org.spincast.website.models.NewsEntry;
-import org.spincast.website.repositories.INewsRepository;
+import org.spincast.website.models.NewsEntryDefault;
+import org.spincast.website.repositories.NewsRepository;
 import org.spincast.website.tests.utils.HardcodedNewsRepository;
 
 import com.google.common.collect.Lists;
@@ -31,9 +35,9 @@ import com.google.inject.util.Modules;
 public class FeedTest extends WebsiteIntegrationTestBase {
 
     @Inject
-    private IXmlManager xmlManager;
+    private XmlManager xmlManager;
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
@@ -43,17 +47,27 @@ public class FeedTest extends WebsiteIntegrationTestBase {
     protected static class TestNewsRepository extends HardcodedNewsRepository {
 
         @Inject
-        public TestNewsRepository(IAppConfig appConfig) {
+        public TestNewsRepository(AppConfig appConfig) {
             super(appConfig);
         }
 
         @Override
-        protected List<INewsEntry> getNewsEntriesLocal() {
+        protected List<NewsEntry> getNewsEntriesLocal() {
 
-            return Lists.newArrayList(new NewsEntry(123,
-                                                    "2000-01-02 19:00",
-                                                    "my title",
-                                                    "<p>my description</p>"));
+            try {
+                FastDateFormat feedDateFormatter =
+                        FastDateFormat.getInstance("yyyy-MM-dd HH:mm", TimeZone.getTimeZone("UTC"));
+
+                Date date = feedDateFormatter.parse("2000-01-02 19:00");
+
+                return Lists.newArrayList(new NewsEntryDefault(123,
+                                                               date,
+                                                               "my title",
+                                                               "<p>my description</p>"));
+            } catch(Exception ex) {
+                throw SpincastStatics.runtimize(ex);
+            }
+
         }
 
         @Override
@@ -62,7 +76,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
         }
 
         @Override
-        public List<INewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder) {
+        public List<NewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder) {
             return getNewsEntriesLocal().subList(startPos - 1, endPos);
         }
     }
@@ -71,8 +85,8 @@ public class FeedTest extends WebsiteIntegrationTestBase {
      * Overriding Guice module
      */
     @Override
-    protected Module getTestOverridingModule(Class<? extends IRequestContext<?>> requestContextType,
-                                             Class<? extends IWebsocketContext<?>> websocketContextType) {
+    protected Module getTestOverridingModule(Class<? extends RequestContext<?>> requestContextType,
+                                             Class<? extends WebsocketContext<?>> websocketContextType) {
 
         Module baseModule = super.getDefaultOverridingModule(requestContextType, websocketContextType);
 
@@ -84,7 +98,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
                 //==========================================
                 // Overrides the News repository with our test one.
                 //==========================================
-                bind(INewsRepository.class).to(TestNewsRepository.class).in(Scopes.SINGLETON);
+                bind(NewsRepository.class).to(TestNewsRepository.class).in(Scopes.SINGLETON);
             }
         };
 
@@ -98,7 +112,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
     @Test
     public void rssFeed() throws Exception {
 
-        IHttpResponse response = GET("/rss").send();
+        HttpResponse response = GET("/rss").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -110,10 +124,10 @@ public class FeedTest extends WebsiteIntegrationTestBase {
         assertTrue(contentAsString.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         assertTrue(contentAsString.endsWith("</rss>"));
 
-        IJsonObject xmlAsJsonObj = getXmlManager().fromXml(contentAsString);
+        JsonObject xmlAsJsonObj = getXmlManager().fromXml(contentAsString);
         assertNotNull(xmlAsJsonObj);
 
-        IJsonObject channelObj = xmlAsJsonObj.getJsonObject("channel");
+        JsonObject channelObj = xmlAsJsonObj.getJsonObject("channel");
         assertNotNull(channelObj);
 
         String title = channelObj.getString("title");
@@ -128,7 +142,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
         assertNotNull(description);
         assertEquals("What's new about Spincast Framework?", description);
 
-        IJsonObject imageObj = channelObj.getJsonObject("image");
+        JsonObject imageObj = channelObj.getJsonObject("image");
         assertNotNull(imageObj);
 
         title = imageObj.getString("title");
@@ -139,7 +153,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
         assertNotNull(url);
         assertEquals("http://localhost:" + getSpincastConfig().getHttpServerPort() + "/public/images/feed.png", url);
 
-        IJsonObject itemObj = channelObj.getJsonObject("item");
+        JsonObject itemObj = channelObj.getJsonObject("item");
         assertNotNull(itemObj);
 
         title = itemObj.getString("title");

@@ -13,16 +13,16 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.config.ISpincastDictionary;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.websocket.IWebsocketConnectionConfig;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
@@ -36,12 +36,12 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
                 //==========================================
                 // Validate cookies
                 //==========================================
-                ICookie cookie = context.cookies().getCookie("username");
+                Cookie cookie = context.cookies().getCookie("username");
                 assertNotNull(cookie);
                 assertEquals("Stromgol", cookie.getValue());
 
@@ -60,7 +60,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
                 assertNotNull(customHeader);
                 assertEquals("test2", customHeader);
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -75,7 +75,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
@@ -89,7 +89,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
         WebsocketClientTest client = new WebsocketClientTest();
-        IWebsocketClientWriter writer = websocket("/ws").addCookie("username", "Stromgol")
+        WebsocketClientWriter writer = websocket("/ws").addCookie("username", "Stromgol")
                                                         .addCookie("cookie2", "val2")
                                                         .addHeaderValue("customHeader", "test1")
                                                         .addHeaderValue("customHeader2", "test2")
@@ -127,7 +127,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         getRouter().websocket("/ws").save(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
-        IWebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitPeerConnected("endpoint1", "peer1"));
 
@@ -146,7 +146,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -169,19 +169,19 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
 
                 assertEquals("endpoint1", context.getEndpointId());
                 assertEquals("peer1", context.getPeerId());
 
-                ISpincastDictionary dictionary = context.guice().getInstance(ISpincastDictionary.class);
+                SpincastDictionary dictionary = context.guice().getInstance(SpincastDictionary.class);
                 assertNotNull(dictionary);
 
-                ISpincastConfig config = context.get(ISpincastConfig.class);
+                SpincastConfig config = context.get(SpincastConfig.class);
                 assertNotNull(config);
                 assertEquals(config.getDefaultLocale().toString(), context.getLocaleToUse().toString());
 
-                IJsonObject obj = context.json().create();
+                JsonObject obj = context.json().create();
                 assertNotNull(obj);
 
                 obj = context.xml().fromXml("<test></test>");
@@ -204,7 +204,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -221,7 +221,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         getRouter().websocket("/ws").id("test").save(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
-        IWebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -235,7 +235,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         //==========================================
         try {
             @SuppressWarnings("unused")
-            IWebsocketClientWriter writer2 = websocket("/ws").connect(client);
+            WebsocketClientWriter writer2 = websocket("/ws").connect(client);
             fail();
         } catch(Exception ex) {
         }
@@ -264,7 +264,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -288,7 +288,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -307,9 +307,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -329,7 +329,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -338,7 +338,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -347,7 +347,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -379,9 +379,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -401,17 +401,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -449,9 +449,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -466,7 +466,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back!
@@ -480,17 +480,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -524,9 +524,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -541,7 +541,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back, except to the sender
@@ -555,17 +555,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -599,9 +599,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -616,7 +616,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back to the sender.
@@ -630,17 +630,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -672,9 +672,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -694,17 +694,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -749,9 +749,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -766,7 +766,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+            public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back!
@@ -780,17 +780,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -825,9 +825,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -842,7 +842,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+            public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back, except to the sender
@@ -855,17 +855,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -899,9 +899,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -916,7 +916,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+            public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back to the sender.
@@ -930,17 +930,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -972,9 +972,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -989,7 +989,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
             }
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+            public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
                 super.onPeerMessage(context, message);
 
                 // Echo the message back to the sender.
@@ -1003,12 +1003,12 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         //==========================================
@@ -1019,7 +1019,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         try {
             @SuppressWarnings("unused")
-            IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+            WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
             fail();
         } catch(Exception ex) {
         }
@@ -1043,7 +1043,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         //==========================================
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client4 = new WebsocketClientTest();
-        IWebsocketClientWriter writer4 = websocket("/ws").connect(client4);
+        WebsocketClientWriter writer4 = websocket("/ws").connect(client4);
         assertNotNull(writer4);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 2));
     }
@@ -1055,9 +1055,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -1078,17 +1078,17 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        IWebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        IWebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -1126,26 +1126,26 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
 
         final Set<String> inFilters = new HashSet<>();
 
-        getRouter().before().id("myBeforeFilter").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().id("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 inFilters.add("before");
             }
         });
 
-        getRouter().before().id("myBeforeFilter2").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().before().id("myBeforeFilter2").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 inFilters.add("before2");
             }
         });
 
-        getRouter().after().id("myAfterFilter").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().after().id("myAfterFilter").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 inFilters.add("after");
             }
         });
@@ -1153,9 +1153,9 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -1175,7 +1175,7 @@ public class WebsocketDefaultTest extends SpincastDefaultWebsocketNoAppIntegrati
         assertNull(controller.getEndpointManager("endpoint1"));
 
         WebsocketClientTest client1 = new WebsocketClientTest();
-        IWebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
         assertNotNull(writer1);
 
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));

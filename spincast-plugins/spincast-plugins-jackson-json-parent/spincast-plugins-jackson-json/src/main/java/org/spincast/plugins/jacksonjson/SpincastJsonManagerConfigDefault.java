@@ -3,7 +3,7 @@ package org.spincast.plugins.jacksonjson;
 /**
  * Default configuration for the Spincast Json Manager plugin.
  */
-public class SpincastJsonManagerConfigDefault implements ISpincastJsonManagerConfig {
+public class SpincastJsonManagerConfigDefault implements SpincastJsonManagerConfig {
 
     @Override
     public int getPrettyPrinterIndentationSpaceNumber() {
@@ -15,13 +15,4 @@ public class SpincastJsonManagerConfigDefault implements ISpincastJsonManagerCon
         return "\n";
     }
 
-    @Override
-    public int getMaxNumberOfFieldPathKeys() {
-        return 100;
-    }
-
-    @Override
-    public int getFieldPathKeyMaxLength() {
-        return 512;
-    }
 }

@@ -2,7 +2,7 @@ package org.spincast.plugins.configpropsfile;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
 import com.google.inject.Scopes;
@@ -27,10 +27,10 @@ public class SpincastConfigPropsFilePluginGuiceModule extends SpincastPluginGuic
 
     protected void bindSpincastConfig() {
         bind(getSpincastConfigImplClass()).in(Scopes.SINGLETON);
-        bind(ISpincastConfig.class).to(getSpincastConfigImplClass()).in(Scopes.SINGLETON);
+        bind(SpincastConfig.class).to(getSpincastConfigImplClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends ISpincastConfig> getSpincastConfigImplClass() {
+    protected Class<? extends SpincastConfig> getSpincastConfigImplClass() {
         return SpincastConfigPropsFileBased.class;
     }
 

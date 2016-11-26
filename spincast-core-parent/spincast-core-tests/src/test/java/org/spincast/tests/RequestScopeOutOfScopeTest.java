@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 
@@ -25,7 +25,7 @@ public class RequestScopeOutOfScopeTest extends SpincastDefaultNoAppIntegrationT
         // request scoped.
         //==========================================
         @Inject
-        public ServiceClass(IDefaultRequestContext requestContext) {
+        public ServiceClass(DefaultRequestContext requestContext) {
             fail();
         }
     }

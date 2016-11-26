@@ -6,14 +6,14 @@ import static org.junit.Assert.assertFalse;
 import java.io.File;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
 
@@ -23,9 +23,9 @@ import com.google.inject.Module;
 public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ISpincastRouterConfig spincastRouterConfig;
+    protected SpincastRouterConfig spincastRouterConfig;
 
-    protected ISpincastRouterConfig getSpincastRouterConfig() {
+    protected SpincastRouterConfig getSpincastRouterConfig() {
         return this.spincastRouterConfig;
     }
 
@@ -53,7 +53,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultN
         return new SpincastDefaultTestingModule(getMainArgsToUse()) {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
+            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
                 return TestConfig.class;
             }
         };
@@ -71,10 +71,10 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultN
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     nbrTimeCalled[0]++;
@@ -85,7 +85,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultN
             }
         });
 
-        IHttpResponse response = GET("/generated.css").send();
+        HttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());

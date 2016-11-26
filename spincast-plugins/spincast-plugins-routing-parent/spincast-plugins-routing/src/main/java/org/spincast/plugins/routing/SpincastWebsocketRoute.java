@@ -5,23 +5,23 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.websocket.IWebsocketController;
-import org.spincast.core.websocket.IWebsocketRoute;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.core.websocket.WebsocketController;
+import org.spincast.core.websocket.WebsocketRoute;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
-                                   implements IWebsocketRoute<R, W> {
+public class SpincastWebsocketRoute<R extends RequestContext<?>, W extends WebsocketContext<?>>
+                                   implements WebsocketRoute<R, W> {
 
     private final String id;
     private final String path;
-    private final List<IHandler<R>> beforeFilters;
+    private final List<Handler<R>> beforeFilters;
     private final Set<String> filterIdsToSkip;
-    private final IWebsocketController<R, W> websocketController;
+    private final WebsocketController<R, W> websocketController;
 
     /**
      * Constructor
@@ -29,9 +29,9 @@ public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWeb
     @AssistedInject
     public SpincastWebsocketRoute(@Assisted("id") @Nullable String id,
                                   @Assisted("path") String path,
-                                  @Assisted("before") @Nullable List<IHandler<R>> beforeFilters,
+                                  @Assisted("before") @Nullable List<Handler<R>> beforeFilters,
                                   @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip,
-                                  @Assisted("controller") IWebsocketController<R, W> websocketController) {
+                                  @Assisted("controller") WebsocketController<R, W> websocketController) {
 
         this.id = id;
         this.path = path;
@@ -51,7 +51,7 @@ public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWeb
     }
 
     @Override
-    public List<IHandler<R>> getBeforeFilters() {
+    public List<Handler<R>> getBeforeFilters() {
         return this.beforeFilters;
     }
 
@@ -61,7 +61,7 @@ public class SpincastWebsocketRoute<R extends IRequestContext<?>, W extends IWeb
     }
 
     @Override
-    public IWebsocketController<R, W> getWebsocketController() {
+    public WebsocketController<R, W> getWebsocketController() {
         return this.websocketController;
     }
 

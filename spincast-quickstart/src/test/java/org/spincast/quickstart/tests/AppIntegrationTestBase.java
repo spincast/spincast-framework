@@ -1,8 +1,8 @@
 package org.spincast.quickstart.tests;
 
 import org.spincast.quickstart.App;
-import org.spincast.quickstart.exchange.IAppRequestContext;
-import org.spincast.quickstart.exchange.IAppWebsocketContext;
+import org.spincast.quickstart.exchange.AppRequestContext;
+import org.spincast.quickstart.exchange.AppWebsocketContext;
 import org.spincast.testing.core.SpincastIntegrationTestBase;
 
 import com.google.inject.AbstractModule;
@@ -14,7 +14,7 @@ import com.google.inject.util.Modules;
  * Integration test base class specifically made for 
  * our application.
  */
-public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase<IAppRequestContext, IAppWebsocketContext> {
+public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase<AppRequestContext, AppWebsocketContext> {
 
     /**
      * Creates the application and returns the Guice
@@ -37,8 +37,8 @@ public abstract class AppIntegrationTestBase extends SpincastIntegrationTestBase
      */
     protected Module getOverridingModule() {
 
-        Module defaultOverridingModule = getDefaultOverridingModule(IAppRequestContext.class,
-                                                                    IAppWebsocketContext.class);
+        Module defaultOverridingModule = getDefaultOverridingModule(AppRequestContext.class,
+                                                                    AppWebsocketContext.class);
 
         Module appOverridingModule = new AbstractModule() {
 

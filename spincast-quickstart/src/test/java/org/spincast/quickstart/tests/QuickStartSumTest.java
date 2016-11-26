@@ -5,13 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.quickstart.App;
-import org.spincast.quickstart.exchange.IAppRequestContext;
-import org.spincast.quickstart.exchange.IAppWebsocketContext;
+import org.spincast.quickstart.exchange.AppRequestContext;
+import org.spincast.quickstart.exchange.AppWebsocketContext;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastIntegrationTestBase;
 
@@ -27,23 +27,23 @@ import com.google.inject.Module;
  * It could extend <code>AppIntegrationTestBase</code> to be simpler, but we wanted to 
  * show how to extend a Spincast base class directly.
  */
-public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestContext, IAppWebsocketContext> {
+public class QuickStartSumTest extends SpincastIntegrationTestBase<AppRequestContext, AppWebsocketContext> {
 
     @Override
     protected Injector createInjector() {
 
-        Module overridingModule = getDefaultOverridingModule(IAppRequestContext.class,
-                                                             IAppWebsocketContext.class);
+        Module overridingModule = getDefaultOverridingModule(AppRequestContext.class,
+                                                             AppWebsocketContext.class);
         return App.createApp(null, overridingModule);
     }
 
     @Inject
-    private IJsonManager jsonManager;
+    private JsonManager jsonManager;
 
     @Test
     public void validRequest() throws Exception {
 
-        IHttpResponse response = POST("/sum").addEntityFormDataValue("first", "42")
+        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "42")
                                              .addEntityFormDataValue("second", "1024")
                                              .addJsonAcceptHeader()
                                              .send();
@@ -55,7 +55,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
         String content = response.getContentAsString();
         assertNotNull(content);
 
-        IJsonObject resultObj = this.jsonManager.create(content);
+        JsonObject resultObj = this.jsonManager.fromString(content);
         assertNotNull(resultObj);
 
         assertEquals(new Integer(1066), resultObj.getInteger("result"));
@@ -66,7 +66,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
     public void paramMissing() throws Exception {
 
         // The "second" parameter is missing...
-        IHttpResponse response = POST("/sum").addEntityFormDataValue("first", "42")
+        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "42")
                                              .addJsonAcceptHeader()
                                              .send();
 
@@ -76,7 +76,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
         String content = response.getContentAsString();
         assertNotNull(content);
 
-        IJsonObject resultObj = this.jsonManager.create(content);
+        JsonObject resultObj = this.jsonManager.fromString(content);
         assertNotNull(resultObj);
 
         assertNull(resultObj.getString("result", null));
@@ -87,7 +87,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
     public void resultOverflows() throws Exception {
 
         // This will overflow the Integer max value...
-        IHttpResponse response = POST("/sum").addEntityFormDataValue("first", String.valueOf(Integer.MAX_VALUE))
+        HttpResponse response = POST("/sum").addEntityFormDataValue("first", String.valueOf(Integer.MAX_VALUE))
                                              .addEntityFormDataValue("second", "1")
                                              .addJsonAcceptHeader()
                                              .send();
@@ -98,7 +98,7 @@ public class QuickStartSumTest extends SpincastIntegrationTestBase<IAppRequestCo
         String content = response.getContentAsString();
         assertNotNull(content);
 
-        IJsonObject resultObj = this.jsonManager.create(content);
+        JsonObject resultObj = this.jsonManager.fromString(content);
         assertNotNull(resultObj);
 
         assertNull(resultObj.getString("result", null));

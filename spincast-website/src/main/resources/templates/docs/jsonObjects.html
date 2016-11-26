@@ -1,0 +1,613 @@
+{#==========================================
+Docs : "JsonObjects"
+==========================================#}
+
+<section id="jsonobject">
+    <h3>
+        <a class="anchor" href="#jsonobject" title="permanent link"></a>
+        JsonObjects
+    </h3>
+
+    <p>
+        <code>JsonObject</code> (and <code>JsonArray</code>)
+        are components provided by Spincast to mimic real <code>Json</code> objects.
+        You can think of <code>JsonObjects</code> as <code>Map&lt;String, Object&gt;</code> on steroids!
+    </p>
+    <p>
+        <code>JsonObjects</code> provide methods to get elements from them in a <em>typed</em> manner
+        They also support <a href="#jsonobject_jsonpaths"><em>JsonPaths</em></a>, which is an easy
+        way to navigate to a particular element in the <code>JsonObject</code>. 
+        <code>JsonObjects</code> are also very easy to 
+        <a href="#validation_jsonobject">validate</a>. 
+    </p>
+    <p>
+        Here's a quick example of using a <code>JsonObject</code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>// Creates a new JsonObject
+JsonObject jsonObj = getJsonManager().create();
+
+// Adds an element
+jsonObj.put("myElement", "42");
+
+// Gets the element as a String
+String asString = jsonObj.getString("myElement");
+
+// Gets the same element as an Integer
+Integer asInteger = jsonObj.getInteger("myElement");</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        <code>JsonObject</code> supports those types, natively :
+        
+        <ul>
+            <li>
+                String
+            </li>
+            <li>
+                Integer
+            </li>
+            <li>
+                Long
+            </li>
+            <li>
+                Float
+            </li>
+            <li>
+                Double
+            </li>
+            <li>
+                BigDecimal
+            </li>
+            <li>
+                Boolean
+            </li>
+            <li>
+                byte[] (serialized as a <em>base 64 encoded String</em>)
+            </li>
+            <li>
+                Date
+            </li>
+            <li>
+                Other <code>JsonObjects</code> and <code>JsonArrays</code>
+            </li>
+        </ul>
+    </p>
+    <p>
+        Getters are provided for all of those native types :
+        <ul>
+            <li>
+                <code>String getString(String key)</code>
+            </li>
+            <li>
+                <code>Integer getInteger(String key)</code>
+            </li> 
+            <li>
+                <code>JsonObject getJsonObject(String key)</code>
+            </li> 
+            <li>
+                ...
+            </li> 
+        </ul> 
+        
+        Every Getter has an overloaded version that you can use to provide a <code>default value</code> in case
+        the requested element if not found (by default, <code>null</code> is returned if the element is not found).
+        Let's see an example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>// Creates an empty JsonObject
+JsonObject jsonObj = getJsonManager().create();
+
+// Tries to get an inexistent element...
+// "myElement" will be NULL
+String myElement = jsonObj.getString("nope");
+
+// Tries to get an inexistent element, but also specifies a default value...
+// "myElement" will be "myDefaultValue"!
+String myElement = jsonObj.getString("nope", "myDefaultValue");</pre> 
+            </p>
+        </div>
+    </p>
+    
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+        When you add an object of a type that is not managed natively, the object 
+        is <em>automatically converted</em> 
+        to a <code>JsonObject</code> (or to a <code><em>JsonArray</em></code>,
+        if the source is an <code>array</code> or a <code>Collection</code>). Spincast does this
+        by using the
+        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonjson/SpincastJsonManager.html#convertToNativeType-java.lang.Object-"><em>SpincastJsonManager#convertToNativeType(...)</em></a>
+        method, which is based on <a href="/plugins/spincast-jackson-json">Jackson</a> by default.
+        For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>// Gets a typed user
+User user = getUser(123);
+
+// Adds this user to a JsonObject
+JsonObject jsonObj = getJsonManager().create();
+jsonObj.put("myUser", user);
+
+// Gets back the user... It is now a JsonObject!
+JsonObject userAsJsonObj = jsonObj.getJsonObject("myUser");</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        Note that you can have control over <em>how</em> an object is converted to a <code>JsonObject</code> by implementing
+        the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/ToJsonObjectConvertible.html">ToJsonObjectConvertible</a>
+        interface. This interface contains a <code><em>convertToJsonObject()</em></code> method that you implement to
+        convert your object to a <code>JsonObject</code> the way you want. There is a similar
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/json/ToJsonArrayConvertible.html">ToJsonArrayConvertible</a>
+        interface to control how an object is converted to a <code><em>JsonArray</em></code>.
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#jsonobject_creation" id="jsonobject_creation" title="permanent link"></a>
+        Creating a <em>JsonObject</em>
+    </h4>
+    
+    <p>
+        You can create an <code>JsonObject</code> (or an <code>JsonArray</code>) by using the <code>JsonManager</code>
+        component. This <code>JsonManager</code> can be injected where you want, or it can be accessed through the
+        <code>json()</code> add-on, when you are inside a <code>Route Handler</code>&nbsp;:
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,21,3,44|8,22,8,50|14,22,14,47"
+>public void myHandler(AppRequestContext context) {
+
+    // JsonObject creation
+    JsonObject obj = context.json().create();
+    obj.put("name", "Stromgol");
+    obj.put("lastName", "Laroche");
+
+    // JsonArray creation
+    JsonArray array = context.json().createArray();
+    array.add(111);
+    array.add(222);
+
+    // Or, using the JsonManager directly (if
+    // injected in the current class) :
+    JsonObject obj2 = getJsonManager().create();
+
+    //...
+}</pre> 
+            </p>
+        </div>
+    </p>     
+    
+    <h4>
+        <a class="anchor_small" href="#jsonobject_cloning_immutability" id="jsonobject_cloning_immutability" title="permanent link"></a>
+        Cloning and Immutability
+    </h4>
+    <p>
+        By default, any <code>JsonObject</code> (or <code>JsonArray</code>) added to another <code>JsonObject</code>
+        is added <em>as is</em>, without
+        being cloned. This means that any external modification to the added element
+        <em>will</em> affect the element inside the <code>JsonObject</code>, and vice-versa, since they 
+        both refere to the same instance. This allows you to do something like :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>JsonArray colors = getJsonManager().createArray();
+JsonObject obj = getJsonManager().create();
+
+// Adds the array to the obj
+obj.put("colors", colors);
+
+// Only then do we add elements to the array
+colors.add("red");
+colors.add("blue");
+
+// This returns "red" : the array inside the JsonObject
+// is the same instance as the external one.
+String firstColor = obj.getArrayFirstString("colors");</pre> 
+            </p>
+        </div>
+    </p>   
+    <p>
+        Sometimes this behavior is not wanted, though. You may need the external object and the added object
+        to be two <em>distinct</em> instances so modifications to one don't affect the other! 
+        In those cases, you can call the <code><em>"clone()"</em></code> method on the original 
+        <code>JsonObject</code> object, or you can use <code>"true"</code>
+        as the <code>"clone"</code> parameter when calling <code>put(...)</code>/<code>add(...)</code> methods.
+        Both methods result in the original object being cloned. Let's see an example :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="4,26,4,30|7,24,7,32"
+>JsonArray colors = getJsonManager().createArray();
+JsonObject obj = getJsonManager().create();
+
+// Add a *clone* of the array to the object
+obj.put("colors", colors, true);
+
+// Or :
+obj.put("colors", colors.clone());
+
+// Then we add elements to the original array
+colors.add("red");
+colors.add("blue");
+
+// This will now return NULL since a *new* instance of the 
+// array has been added to the JsonObject!
+String firstColor = obj.getArrayFirstString("colors");</pre> 
+            </p>
+        </div>
+    </p>  
+    <p>
+        Note that when you clone a <code>JsonObject</code>, a <em>deep copy</em> of the original object is made, 
+        which means the root object and all the children are cloned. The resulting <code>JsonObject</code> is guaranteed to
+        share no element at all with the original object.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+        We also decided to make <code>JsonObject</code> and <code>JsonArray</code> objects 
+        <em>mutable</em> by default. This is a 
+        conscious decision to make those objects easy to work with : you can add and remove elements from them at any time.
+    </p>
+    <p>
+        But if you need more safety, if you work in a complex multi-threaded environment for example, you can 
+        get an <em>immutable</em> version
+        of a <code>JsonObject</code> object by calling its <code><em>.clone(false)</em></code> method, using 
+        <code>false</code> as the <code>"mutable"</code> parameter :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="4,32,4,45"
+>JsonObject obj = getJsonManager().create();
+obj.put("name", "Stromgol");
+
+// "false" => make the clone not mutable!
+JsonObject immutableClone = obj.clone(false);
+
+// This will throw an exception!
+immutableClone.put("nope", "doesn't work");
+</pre> 
+            </p>
+        </div>
+        
+        When you create an immutable clones, the root element and all the children are cloned as immutable.
+        In fact, <code>JsonObject</code> objects are always <em>fully</em> mutable or <em>fully</em>
+        immutable! Because of this, if you try to add an immutable <code>JsonObject</code> to a mutable one, 
+        a mutable clone will be created from the immutable object before being added. Same thing
+        if you try to add an mutable <code>JsonObject</code> to an immutable one :
+        an immutable clone will be created from the mutable object before being added. 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        At runtime, you can validate if a <code>JsonObject</code> is mutable or not using : 
+        <em><code>if(myJsonObj.isMutable())</code></em>.
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#jsonobject_methods" id="jsonobject_methods" title="permanent link"></a>
+        JsonObject methods
+    </h4>
+    <p>
+        Have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonObject.html">JsonObject Javadoc</a> 
+        for a complete list of available methods. Here we're simply going to introduce some interesting ones, 
+        other than <code>put(...)</code>, <code>getXXX(...)</code> and <code>clone(...)</code> we already saw : 
+    </p>
+    <p>
+        <ul class="apiList">
+            
+            <li>
+                <code class="apiItem">int <span>size</span>()</code>
+                <div class="well">
+                     The number of properties on the object.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isElementExists</span>(String jsonPath)</code>
+                <div class="well">
+                     Does the <code>JsonObject</code> contain an element at the specified 
+                     <a href="#jsonobject_jsonpaths">JsonPath</a>?
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">JsonObject <span>merge</span>(JsonObject jsonObj, boolean clone)</code><br />
+                <code class="apiItem">JsonObject <span>merge</span>(Map&lt;String, Object&gt; map, boolean clone)</code>
+                <div class="well">
+                     Merges a external <code>JsonObject</code> or a plain <code>Map&lt;String, Object&gt;</code>
+                     into the <code>JsonObject</code>.                      
+                     You can specify if the added elements must be cloned or
+                     not (in case some are <code>JsonObject</code> or <code>JsonArray</code>).
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">JsonObject <span>remove</span>(String jsonPath)</code>
+                <div class="well">
+                     Removes an element using its <code>jsonPath</code>.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">JsonObject <span>getJsonObjectOrEmpty</span>(String jsonPath)</code><br />
+                <code class="apiItem">JsonArray <span>getJsonArrayOrEmpty</span>(String jsonPath)</code>
+                <div class="well">
+                     Returns the <code>JsonObject</code> or <code>JsonArray</code> at the specified 
+                     <code>JsonPath</code> or returns <em>an empty instance</em> if it's not found. 
+                     This allows you to try to get a deep element without any potential <code>NullPointerException</code>. For 
+                     example :
+                     
+                    <p>
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>// This won't throw any NPE, even if the "myArrayKey"
+// array or its first element don't exist
+String value = obj.getJsonArrayOrEmpty("myArrayKey")
+                  .getJsonObjectOrEmpty(0)
+                  .getString("someKey", "defaultValue");
+</pre> 
+                            </p>
+                        </div>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">[TYPE] <span>getArrayFirst[TYPE]</span>(String jsonPath, String defaultValue)</code>
+                <div class="well">
+                     For all types native to <code>JsonObject</code>, a <code><em>getArrayFirst[TYPE](...)</em></code>
+                     method exists. With those methods, you can get the first element of a <code>JsonArray</code> 
+                     located at the specified <code>JsonPath</code>. This is useful in situations where you 
+                     know the array only contains a single element : 
+                     
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>// This :
+String value = obj.getArrayFirstString("myArrayKey", "defaultValue")
+
+// ... is the same as :
+String value = obj.getJsonArrayOrEmpty("myArrayKey").getString(0, "defaultValue")
+</pre> 
+                            </p>
+                        </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">void <span>transform</span>(String jsonPath, ElementTransformer transformer)</code>
+                <div class="well">
+                    Applies an <a class="javadoc" href="/public/javadoc/org/spincast/core/json/ElementTransformer.html">ElementTransformer</a>
+                    to the element located at the specify <code>JsonPath</code>. This is used to modify an element without
+                    having to extract it first. For example, the provided <code>JsonObject#trim(String jsonPath)</code>
+                    method exactly does this : it internally calls <code>transform(...)</code> and pass it
+                    an <code>ElementTransformer</code> which trims the target element.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>toJsonString</span>(boolean pretty)</code>
+                <div class="well">
+                    Converts the <code>JsonObject</code> object to a <code>Json</code> string.
+                    If <code>pretty</code> is true, the resulting <code>Json</code> will be formatted.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">Map&lt;String, Object&gt; <span>convertToPlainMap</span>()</code>
+                <div class="well">
+                    <p>
+                        If you need to use the elements of a <code>JsonObject</code> in some code that doesn't
+                        know how to handle <code>JsonObjects</code>, you can convert it to a plain <code>Map&lt;String, Object&gt;</code>.
+                        Spincast does this, for example, to pass the elements of the 
+                        <a href="#sending_response_model">response model</a> to the <a href="#templating_engine">Template Engine</a>
+                        when it's time to evaluate a template and send an <code>HTML</code> page.
+                        Pebble, the default <code>templating Engine</code>, knows nothing about
+                        <code>JsonObjects</code> but can easily deal with a plain <code>Map&lt;String, Object&gt;</code>.
+                    </p>
+                    <p>
+                        Note that all <code>JsonObject</code> children will be converted to
+                        <code>Map&lt;String, Object&gt;</code> too, and all <code><em>JsonArray</em></code> children to
+                        <code>List&lt;Object&gt;</code>.
+                    </p>
+                </div>
+            </li>
+            
+        </ul>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#jsonobject_array_methods" id="jsonobject_array_methods" title="permanent link"></a>
+        JsonArray extra methods
+    </h4>
+    <p>
+        Have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonArray.html">JsonArray Javadoc</a> 
+        for a complete list of available methods. Here are some interesting ones, other than the
+        ones also available on <code>JsonObjects</code> :
+    </p>
+    <p>
+        <ul class="apiList">
+            
+            <li>
+                <code class="apiItem">List&lt;Object&gt; <span>convertToPlainList</span>()</code>
+                <div class="well">
+                    Converts the <code>JsonArray</code> to a plain <code>List&lt;Object&gt;</code>. 
+                    All <code>JsonObject</code> children will be converted to
+                    <code>Map&lt;String, Object&gt;</code>, and all <code><em>JsonArray</em></code> children to
+                    <code>List&lt;Object&gt;</code>.
+                </div>
+            </li>
+            <li>
+                <code class="apiItem">List&lt;String&gt; <span>convertToStringList</span>()</code>
+                <div class="well">
+                    Converts the <code>JsonArray</code> to a <code>List&lt;String&gt;</code>.
+                    To achieve this, the <code>toString()</code> method will be called on any <em>non null</em>
+                    element of the array.
+                </div>
+            </li>
+            
+        </ul>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#jsonobject_jsonpaths" id="jsonobject_jsonpaths" title="permanent link"></a>
+        JsonPaths
+    </h4>
+    <p>
+        In Spincast, a <code>JsonPath</code> is a simple way of expressing the location 
+        of an element inside a <code>JsonObject</code> (or a <code>JsonArray</code>).
+        For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="1,36,1,55"
+>
+
+String title = myJsonObj.getString("user.books[3].title");
+</pre>
+                  
+                In this example, <code>"user.books[3].title"</code> is 
+                a <code>JsonPath</code> targetting the title of the fourth
+                book from a user element of the <code>myJsonObj</code>
+                object.  
+            </p>
+        </div> 
+    </p>    
+    <p>
+        Without using a <code>JsonPath</code>, you would need to write something like 
+        that to retrieve the same title :
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>JsonObject user = myJsonObj.getJsonObjectOrEmpty("user");
+JsonArray books = user.getJsonArrayOrEmpty("books");
+JsonObject book = books.getJsonObjectOrEmpty(3);
+String title = book.getString("title");</pre>
+                  
+                As you can see, a <code>JSonPath</code> allows you to easily navigate a <code>JsonObject</code>
+                without having to extract any intermediate elements.
+            </p>
+        </div> 
+        
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Here is the syntax supported by <code>JsonPaths</code> :
+        
+        <ul>
+            <li>
+                To access a child you use a <code>"."</code>.
+                For example : <code>"user.car"</code>.
+            </li>
+            <li>
+                To access the element of a <code><em>JsonArray</em></code>
+                you use <code>"[X]"</code>, where <code>X</code> is the position of the element in 
+                the array (the first index is <code>0</code>).
+                For example : <code>"books[3]"</code>.
+            </li>
+            <li>
+                If a key contains spaces, or a reserved character
+                (<code>"."</code>, <code>"["</code> or <code>"]"</code>), you need to surround it
+                with brackets. For example : <code>"user['a key with spaces']"</code>.
+            </li>
+            <li>
+                That's it!
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        You can also use <code>JsonPaths</code> to
+        <em>insert</em> elements at specific positions! For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="6,15,6,28"
+>// Creates a book object
+JsonObject book = getJsonManager().create();
+book.put("title", "The Hitchhiker's Guide to the Galaxy");
+
+// Creates a "myJsonObj" object and adds the book to it
+JsonObject myJsonObj = getJsonManager().create();
+myJsonObj.put("user.books[2]", book);
+</pre>
+            </p>
+        </div>
+            
+        The <code>myJsonObj</code> object is now :
+        
+        <div>
+            <p>
+                <pre class="ace ace-json"
+>{
+    "user" : {
+        "books" : [
+            null,
+            null,
+            {
+                "title" : "The Hitchhiker's Guide to the Galaxy"
+            }
+        ]
+    }
+}</pre>
+            </p>
+        </div>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Notice that, in that example, the <code>user</code> object
+        didn't exist when we inserted the book! When you add
+        an element using a <code>JsonPath</code>, <em>all the
+        parents are automatically created</em>, if required.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        If you really need to insert an element
+        in a <code>JsonObject</code> using a key containing some of the <code>JsonPaths</code>
+        special characters (which are <code>"."</code>, <code>"["</code> and <code>"]"</code>),
+        and <em>without that key being parsed as a <code>JsonPath</code></em>, you can do so by
+        using the <code>putNoKeyParsing(...)</code> method. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="7,9,7,48"
+>// Creates a book object
+JsonObject book = getJsonManager().create();
+book.put("title", "The Hitchhiker's Guide to the Galaxy");
+
+// Creates a "myJsonObj" object and adds the book to it
+// using an unparsed key!
+JsonObject myJsonObj = getJsonManager().create();
+myJsonObj.putNoKeyParsing("user.books[2]", book);
+</pre>
+            </p>
+            
+        </div> 
+        The <code>myJsonObj</code> object is now :
+        
+        <div>
+            <p>
+                <pre class="ace ace-json"
+>{
+    "user.books[2]" : {
+        "title" : "The Hitchhiker's Guide to the Galaxy"
+    }
+}</pre>
+            </p>
+        </div>
+        
+        As you can see, the <code>"user.books[2]"</code> key has been taken
+        <em>as is</em>, without being parsed as a <code>JsonPath</code>.
+        
+    </p>
+    
+</section>
+            
+   

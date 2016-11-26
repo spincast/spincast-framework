@@ -3,7 +3,7 @@ Spincast Jackson Json plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-jackson-json{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-jackson-json{% endblock %}
 {% block meta_title %}Plugins - Spincast Jackson Json{% endblock %}
 {% block meta_description %}Spincast Jackson Json plugin provides Json functionalities using Jackson.{% endblock %}
 
@@ -35,7 +35,7 @@ Spincast Jackson Json plugin
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/jacksonjson/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/jacksonjson/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
@@ -55,10 +55,10 @@ Spincast Jackson Json plugin
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable"><a href="#jsonmanager"><code>IJsonManager</code></a></li>  
-                <li class="openable"><a href="#configs">Main configurations</a></li>   
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
+                <li class="openable"><a href="#config">Main Configurations</a></li>   
                 <li class="openable">
-                    <a href="#serialization_config">(de)serialization configurations</a>
+                    <a href="#serialization_config">(De)serialization configurations</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#annotating_objects">Annotating the Objects</a></li>
                         <li><a href="#mixins">Using mix-ins</a></li> 
@@ -77,44 +77,17 @@ Spincast Jackson Json plugin
                     Overview
                 </h3>
                 <p>
-                    The <code>Spincast Jackson Json</code> plugin provides Json functionalities
+                    This plugin provides <code>Json</code> functionalities
                      using <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>. It contains an implementation
-                    of the <code><a href="#jsonmanager">IJsonManager</a></code> interface.
+                    of the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>  
+                    interface : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonjson/SpincastJsonManager.html">SpincastJsonManager</a>.
                 </p>
                 <p>
-                    Most of the time, the <code>IJsonManager</code> interface is used directly from
-                    the <code>request context</code> via the 
-                    <a href="/documentation#core_rc_methods"><code>json()</code> method</a> or indirectly via
-                    some methods on the <a href="/plugins/spincast-response#request_context_addon"><code>response()</code> add-on</a>. 
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Make sure you read the <a href="/documentation#jsonobject">JsonObjects</a> section for more information. The
+                    <a href="http://wiki.fasterxml.com/JacksonHome">Jackson documentation</a> can also be very useful.
                 </p>
-                <p>    
-                    For example:
-                </p>
-                
-                <p>
-                    <div>
-                        <p>
-                            {% verbatim %}<pre class="ace ace-java" data-ace-hi="5,37,5,53|8,15,8,47"
->public class AppController {
-
-    public void myHandler(IDefaultRequestContext context) {
-
-        // Create a Json object, using the "json()" add-on
-        IJsonObject jsonObj = context.json().create();
-
-        // Send an object as Json, using the "response()" add-on
-        context.response().sendJsonObj(jsonObj);
-    }
-}</pre>{% endverbatim %}
-                        </p>
-                    </div>
-                </p>
-                <p>
-                    You can also directly inject the <code>IJsonManager</code>
-                    instance where you need it in your application.
-                </p>
-  
-            </section>
+            </section> 
             
 	        <section id="installation">
                 <h3>
@@ -135,7 +108,7 @@ Spincast Jackson Json plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-jackson-json&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -148,8 +121,8 @@ Spincast Jackson Json plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastJacksonJsonPluginGuiceModule(IAppRequestContext.class, 
-                                                 IAppWebsocketContext.class)
+        new SpincastJacksonJsonPluginGuiceModule(AppRequestContext.class, 
+                                                 AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -177,188 +150,42 @@ Spincast Jackson Json plugin
 	            </p>
             </section>
             
-            <section id="jsonmanager">
-                <h3 class="noTop">
-                    <a class="anchor" href="#jsonmanager" title="permanent link"></a>
-                    The <code>IJsonManager</code> interface
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>   
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonjson/SpincastJsonManagerConfig.html">SpincastJsonManagerConfig</a> 
+                        </li>   
+                    </ul>
                 </p> 
-                
-                <div id="methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-            
- <li>
-    <code class="apiItem">IJsonObject <span>create</span>()</code>
-    <div class="well">
-        Creates an empty <code>JsonObject</code>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonObject <span>create</span>(String jsonString)</code>
-    <div class="well">
-        Creates a <code>JsonObject</code> from a <code>Json</code>
-<br />String.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonObject <span>create</span>(InputStream inputStream)</code>
-    <div class="well">
-        Creates a <code>JsonObject</code> from an inputStream.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonArray <span>createArray</span>()</code>
-    <div class="well">
-        Creates an empty <code>JsonArray</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonArray <span>createArray</span>(String jsonString)</code>
-    <div class="well">
-        Creates a <code>JsonArray</code> from a <code>Json</code>
-<br />String.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonArray <span>createArray</span>(InputStream inputStream)</code>
-    <div class="well">
-        Creates a <code>JsonArray</code> from an inputStream.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>toJsonString</span>(Object obj)</code>
-    <div class="well">
-        Gets the <code>Json</code> String representation of
- the specified object.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>toJsonString</span>(Object obj, boolean pretty)</code>
-    <div class="well">
-        Gets the <code>Json</code> String representation of the
- specified object.
-
-        <div class="apiItemFooter">
-            @param pretty if <code>true</code>, the generated
- String will be formatted.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, Object&gt; <span>fromJsonStringToMap</span>(String jsonString)</code>
-    <div class="well">
-        Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code>
-<br />String.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, Object&gt; <span>fromJsonInputStreamToMap</span>(InputStream inputStream)</code>
-    <div class="well">
-        Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code> inputStream.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">&lt;T&gt; T <span>fromJsonString</span>(String jsonString, Class&lt;T&gt; clazz)</code>
-    <div class="well">
-        Creates an instance of the specified <code>T</code> type
- from a <code>Json</code> String.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">&lt;T&gt; T <span>fromJsonInputStream</span>(InputStream inputStream, Class&lt;T&gt; clazz)</code>
-    <div class="well">
-        Creates an instance of the specified <code>T</code> type
- from a <code>Json</code> inputStream.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Date <span>parseDateFromJson</span>(String str)</code>
-    <div class="well">
-        Converts a <code>Json</code> date to a Java <code>UTC</code> date.
-
-    </div>
-</li>
-
- 
-     
-
-
-                        </ul>
-                    </p>
-                </div>
             </section>
             
-            <section id="configs">
+            <section id="config">
                 <h3 class="noTop">
-                    <a class="anchor" href="#configs" title="permanent link"></a>
-                    Main configurations
+                    <a class="anchor" href="#config" title="permanent link"></a>
+                    Main Configurations
                 </h3>
                 <p>
-                    You can bind a <code>ISpincastJsonManagerConfig</code> implementation to tweak
-                    the default configurations
+                    You can bind a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonjson/SpincastJsonManagerConfig.html">SpincastJsonManagerConfig</a>
+                    implementation to tweak the default configurations
                     used by the components this plugin provides. By default, the
-                    <code>SpincastJsonManagerConfigDefault</code> class is used as the implementation.
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonjson/SpincastJsonManagerConfigDefault.html">SpincastJsonManagerConfigDefault</a> 
+                    class is used as the implementation.
                 </p> 
-                
-                <div>
-                    <p>
-                        <ul class="apiList">
 
-                            <li>
-                                <code class="apiItem">int <span>getPrettyPrinterIndentationSpaceNumber</span>()</code>
-                                <div class="well">
-                                    The number of spaces to used to indent generated <code>Json</code> when
-                                    <em>pretty print</em> is used.
-                                    <br />
-                                    Defaults to <code>4</code> spaces.
-                                </div>
-                            </li>
-                            <li>
-                                <code class="apiItem">String <span>getPrettyPrinterNewlineChars</span>()</code>
-                                <div class="well">
-                                    The newline character(s) to use for generated <code>Json</code> when
-                                    <em>pretty print</em> is used.
-                                    <br />
-                                    Defaults to <code>\n</code>, wathever the platform the application is running on.
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </p>
-                </div>
             </section>
             
             <section id="serialization_config">
                 <h3 class="noTop">
                     <a class="anchor" href="#serialization_config" title="permanent link"></a>
-                    (de)serialization configurations
+                    (De)serialization configurations
                 </h3>
                 <p>
                     Jackson allows some configuration when serializing and deserializing an object.
@@ -388,7 +215,7 @@ Spincast Jackson Json plugin
                         <div>
                             <p>
                                 <pre class="ace ace-java"
->public class User implements IUser {
+>public class User implements User {
 
     private String name;
     private String title;
@@ -423,7 +250,7 @@ Spincast Jackson Json plugin
                         <div>
                             <p>
                                 <pre class="ace ace-java" data-ace-hi="16,4,16,15"
->public class User implements IUser {
+>public class User implements User {
 
     private String name;
     private String title;
@@ -458,7 +285,7 @@ Spincast Jackson Json plugin
                         <div>
                             <p>
                                 <pre class="ace ace-java"
->IUser user = new User();
+>User user = new User();
 user.setName("Stromgol");
 user.setTitle("alien");
 
@@ -482,7 +309,7 @@ assertEquals("{\"name\":\"Stromgol\"}", jsonString);</pre>
                         Many developers (us included) don't like to pollute their model classes
                         with too many annotations. Lucky us, Jackson provides a way to configure
                         objects <em>from the outside</em>, without annotating the objects directly, by using what is called 
-                        <a href="http://wiki.fasterxml.com/JacksonMixInAnnotations"><code>mix-ins</code> annotations</a>.
+                        <a href="http://wiki.fasterxml.com/JacksonMixInAnnotations">mix-ins annotations</a>.
                     </p>
                     <p>
                         Let's start with the same <code>User</code> class, without any Jackson annotations:
@@ -491,7 +318,7 @@ assertEquals("{\"name\":\"Stromgol\"}", jsonString);</pre>
                         <div>
                             <p>
                                 <pre class="ace ace-java"
->public class User implements IUser {
+>public class User implements User {
 
     private String name;
     private String title;
@@ -526,11 +353,11 @@ assertEquals("{\"name\":\"Stromgol\"}", jsonString);</pre>
                         only to annotate methods, not fields.
                     </p>
                     <p>
-                        An example mix-in for our <code>IUser</code> objects:
+                        An example mix-in for our <code>User</code> objects:
                         <div>
                             <p>
                                 <pre class="ace ace-java" data-ace-hi="4,4,4,15"
->public abstract class IUserMixin implements IUser {
+>public abstract class UserMixin implements User {
 
     // Ignore this property!
     @Override
@@ -569,8 +396,8 @@ assertEquals("{\"name\":\"Stromgol\"}", jsonString);</pre>
 
     protected void bindJsonMixins() {
 
-        Multibinder&lt;IJsonMixinInfo&gt; jsonMixinsBinder = Multibinder.newSetBinder(binder(), IJsonMixinInfo.class);
-        jsonMixinsBinder.addBinding().toInstance(new JsonMixinInfo(IUser.class, IUserMixin.class));
+        Multibinder&lt;JsonMixinInfo&gt; jsonMixinsBinder = Multibinder.newSetBinder(binder(), JsonMixinInfo.class);
+        jsonMixinsBinder.addBinding().toInstance(new JsonMixinInfo(User.class, UserMixin.class));
     }
 }</pre> 
                             </p>
@@ -601,7 +428,7 @@ assertEquals("{\"name\":\"Stromgol\"}", jsonString);</pre>
                         <div>
                             <p>
                                 <pre class="ace ace-java"
->IUser user = new User();
+>User user = new User();
 user.setName("Stromgol");
 user.setTitle("alien");
 

@@ -9,14 +9,14 @@ import static org.junit.Assert.fail;
 import java.util.List;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.WebsocketEndpointManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
@@ -32,8 +32,8 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
         //==========================================
         // For the WebSocket tests
         //==========================================
-        List<IWebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
-        for(IWebsocketEndpointManager manager : websocketEndpointManagers) {
+        List<WebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
+        for(WebsocketEndpointManager manager : websocketEndpointManagers) {
             manager.closeEndpoint();
         }
         assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
@@ -48,25 +48,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void redirectDefault() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").to("/two");
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -76,25 +76,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void redirectPermanently() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").permanently().to("/two");
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -104,25 +104,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void redirectTemporarily() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").temporarily().to("/two");
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -132,25 +132,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void notFound() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").to("/nope");
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
@@ -158,18 +158,18 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fullUrl() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
@@ -177,7 +177,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
         String fullUrl = createTestUrl("/two");
         getRouter().redirect("/one").to(fullUrl);
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -187,17 +187,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void oldRouteNotFound() throws Exception {
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").to("/two");
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -207,17 +207,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void dynParams() throws Exception {
 
-        getRouter().GET("/two/three/four").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two/three/four").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one/${param1}/${param2}").to("/two/${param1}/${param2}");
 
-        IHttpResponse response = GET("/one/three/four").send();
+        HttpResponse response = GET("/one/three/four").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -227,17 +227,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void splatParam() throws Exception {
 
-        getRouter().GET("/two/three/four").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two/three/four").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one/*{path}").to("/two/*{path}");
 
-        IHttpResponse response = GET("/one/three/four").send();
+        HttpResponse response = GET("/one/three/four").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -247,17 +247,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void startOrDollarSignAreInterchnageableInTheNewPath() throws Exception {
 
-        getRouter().GET("/two/four/five/three").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two/four/five/three").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one/${param1}/*{path}").to("/two/${path}/*{param1}");
 
-        IHttpResponse response = GET("/one/three/four/five").send();
+        HttpResponse response = GET("/one/three/four/five").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -267,17 +267,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void startOrDollarSignAreInterchnageableInTheNewPathNotFound() throws Exception {
 
-        getRouter().GET("/two/four/five/nope").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two/four/five/nope").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one/${param1}/*{path}").to("/two/${path}/*{param1}");
 
-        IHttpResponse response = GET("/one/three/four/five").send();
+        HttpResponse response = GET("/one/three/four/five").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
@@ -285,17 +285,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void dynParamsCanBeUsedAnywhereInTheNewPath() throws Exception {
 
-        getRouter().GET("/aaabbbccc/dddeee/fff").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/aaabbbccc/dddeee/fff").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one/${param1}/${param2}/*{path}").to("/aaa${param1}ccc/${param2}eee/*{path}");
 
-        IHttpResponse response = GET("/one/bbb/ddd/fff").send();
+        HttpResponse response = GET("/one/bbb/ddd/fff").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -305,17 +305,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void nullNewPathLeadsToRoot() throws Exception {
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one").to(null);
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -325,17 +325,17 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void emptyNewPathLeadsToRoot() throws Exception {
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok!");
             }
         });
 
         getRouter().redirect("/one").to("");
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -345,25 +345,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void postIsNotRedirectedButWeReceive301Default() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().POST("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").to("/two");
 
-        IHttpResponse response = POST("/one").send();
+        HttpResponse response = POST("/one").send();
 
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
     }
@@ -371,25 +371,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void postIsNotRedirectedButWeReceive301() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().POST("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").permanently().to("/two");
 
-        IHttpResponse response = POST("/one").send();
+        HttpResponse response = POST("/one").send();
 
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
     }
@@ -397,25 +397,25 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void postIsNotRedirectedButWeReceive302() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        getRouter().POST("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
         getRouter().redirect("/one").temporarily().to("/two");
 
-        IHttpResponse response = POST("/one").send();
+        HttpResponse response = POST("/one").send();
 
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
     }
@@ -426,7 +426,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
         DefaultWebsocketControllerTest controller1 = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerConnected(IDefaultWebsocketContext context) {
+            public void onPeerConnected(DefaultWebsocketContext context) {
                 fail();
             }
         };
@@ -435,7 +435,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
         DefaultWebsocketControllerTest controller2 = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerConnected(IDefaultWebsocketContext context) {
+            public void onPeerConnected(DefaultWebsocketContext context) {
                 super.onPeerConnected(context);
                 context.sendMessageToCurrentPeer("ok!");
             }
@@ -446,7 +446,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/one").connect(client);
+        WebsocketClientWriter writer = websocket("/one").connect(client);
         assertNotNull(writer);
 
         assertTrue(controller2.waitNrbPeerConnected("endpoint1", 1));
@@ -462,7 +462,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerConnected(IDefaultWebsocketContext context) {
+            public void onPeerConnected(DefaultWebsocketContext context) {
                 super.onPeerConnected(context);
                 context.sendMessageToCurrentPeer("ok!");
             }
@@ -477,7 +477,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/one").connect(client);
+        WebsocketClientWriter writer = websocket("/one").connect(client);
         assertNotNull(writer);
 
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
@@ -492,7 +492,7 @@ public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerConnected(IDefaultWebsocketContext context) {
+            public void onPeerConnected(DefaultWebsocketContext context) {
                 super.onPeerConnected(context);
                 context.sendMessageToCurrentPeer("ok!");
             }

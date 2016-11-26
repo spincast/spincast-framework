@@ -1,6 +1,6 @@
 package org.spincast.website;
 
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.website.pebble.AppPebbleExtension;
 
@@ -16,7 +16,7 @@ public class AppPebbleTemplatingEngineConfig extends SpincastPebbleTemplatingEng
 
     @Inject
     public AppPebbleTemplatingEngineConfig(AppPebbleExtension appPebbleExtension,
-                                           ISpincastConfig spincastConfig) {
+                                           SpincastConfig spincastConfig) {
         super(spincastConfig);
         this.appPebbleExtension = appPebbleExtension;
     }
@@ -28,6 +28,16 @@ public class AppPebbleTemplatingEngineConfig extends SpincastPebbleTemplatingEng
         // Our custom Pebble extension.
         //==========================================
         return this.appPebbleExtension;
+    }
+
+    @Override
+    public String getValidationMessagesTemplatePath() {
+
+        //==========================================
+        // Custom template to display the validation messages
+        // for a form field.
+        //==========================================
+        return "/templates/fragments/validationMessagesTemplate.html";
     }
 
 }

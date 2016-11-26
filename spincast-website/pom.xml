@@ -36,15 +36,6 @@
         </dependency>
         
         <!--=================================== 
-        Spincast validation plugin
-        ====================================-->
-        <dependency>
-            <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-validation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <!--=================================== 
         Rome - For the RSS feed
         ====================================-->
         <dependency>
@@ -83,12 +74,6 @@
            <artifactId>jsoup</artifactId>
            <version>1.9.2</version>
        </dependency>
-       
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
-        </dependency>
 
     </dependencies>
 

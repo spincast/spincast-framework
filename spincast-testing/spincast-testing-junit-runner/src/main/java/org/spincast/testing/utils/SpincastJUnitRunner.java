@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * the tests.
  * </p>
  * <p>
- * If the class is annotated with {@link IBeforeAfterClassMethodsProvider}, then
+ * If the class is annotated with {@link BeforeAfterClassMethodsProvider}, then
  * a <code>beforeClass()</code> and <code>afterClass()</code> methods will be
  * called.
  * </p>
@@ -170,7 +170,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
         //==========================================
         // We add a testFailure listener in case the 
-        // Test class implements ITestFailureListener
+        // Test class implements TestFailureListener
         // to be informed of any failing test.
         //==========================================
         addTestFailureListener(notifier);
@@ -211,11 +211,11 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                     //==========================================
                     // Calls the "beforeClass()" method
                     //==========================================
-                    if(getTestClassInstance() instanceof IBeforeAfterClassMethodsProvider) {
+                    if(getTestClassInstance() instanceof BeforeAfterClassMethodsProvider) {
 
                         try {
 
-                            ((IBeforeAfterClassMethodsProvider)getTestClassInstance()).beforeClass();
+                            ((BeforeAfterClassMethodsProvider)getTestClassInstance()).beforeClass();
 
                             if(isExpectingBeforeClassException()) {
                                 String msg = "An exception was expected in the 'beforeClass()' method since " +
@@ -237,7 +237,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                         if(isExpectingBeforeClassException()) {
                             String msg = "The @" + ExpectingBeforeClassException.class.getSimpleName() + " annotation " +
                                          "can only be used on a class implementing the " +
-                                         IBeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
+                                         BeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
                             spincastTestError(SPINCAST_TEST_NAME_BEFORE_CLASS_METHOD_VALIDATION, msg);
                         }
                     }
@@ -250,10 +250,10 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                     //==========================================
                     // Calls the "afterClass()" method, if required
                     //==========================================
-                    if(!isIgnoreRemainingTests() && getTestClassInstance() instanceof IBeforeAfterClassMethodsProvider) {
+                    if(!isIgnoreRemainingTests() && getTestClassInstance() instanceof BeforeAfterClassMethodsProvider) {
 
                         try {
-                            ((IBeforeAfterClassMethodsProvider)getTestClassInstance()).afterClass();
+                            ((BeforeAfterClassMethodsProvider)getTestClassInstance()).afterClass();
                         } catch(Throwable ex) { // assertions are Errors, not Exceptions
                             spincastTestError(SPINCAST_TEST_NAME_AFTER_CLASS_METHOD_VALIDATION, ex);
                             break;
@@ -277,10 +277,10 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                 }
             } finally {
 
-                if(getTestClassInstance() instanceof IRepeatedClassAfterMethodProvider) {
+                if(getTestClassInstance() instanceof RepeatedClassAfterMethodProvider) {
                     if(!isExceptionInBeforeClass()) {
                         try {
-                            ((IRepeatedClassAfterMethodProvider)getTestClassInstance()).afterClassLoops();
+                            ((RepeatedClassAfterMethodProvider)getTestClassInstance()).afterClassLoops();
                         } catch(Throwable ex) { // assertions are Errors, not Exceptions
                             spincastTestError(SPINCAST_TEST_NAME_AFTER_CLASS_LOOPS_EXCEPTION, ex);
                         }
@@ -361,8 +361,8 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             @Override
             public void testFailure(Failure failure) throws Exception {
                 SpincastJUnitRunner.this.atLeastOneTestFailed = true;
-                if(SpincastJUnitRunner.this.testClassInstance instanceof ITestFailureListener) {
-                    ((ITestFailureListener)SpincastJUnitRunner.this.testClassInstance).testFailure(failure);
+                if(SpincastJUnitRunner.this.testClassInstance instanceof TestFailureListener) {
+                    ((TestFailureListener)SpincastJUnitRunner.this.testClassInstance).testFailure(failure);
                 }
             }
         });
@@ -380,7 +380,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             String msg = "The @BeforeClass JUnit annotation can't be used with the " +
                          SpincastJUnitRunner.class.getSimpleName() + " " +
                          "custom runner. Use the beforeClass() method instead by implementing the " +
-                         IBeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
+                         BeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
 
             spincastTestError(SPINCAST_TEST_NAME_BEFORE_CLASS_ANNOTATIONS_VALIDATION, msg);
         }
@@ -392,7 +392,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             String msg = "The @AfterClass JUnit annotation can't be used with the " +
                          SpincastJUnitRunner.class.getSimpleName() + " " +
                          "custom runner. Use the afterClass() method instead by implementing the " +
-                         IBeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
+                         BeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
             spincastTestError(SPINCAST_TEST_NAME_AFTER_CLASS_ANNOTATIONS_VALIDATION, msg);
         }
     }

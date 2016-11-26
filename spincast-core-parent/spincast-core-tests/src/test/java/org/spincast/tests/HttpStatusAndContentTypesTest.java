@@ -9,17 +9,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastDictionary;
+import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.exceptions.NotFoundException;
-import org.spincast.core.exceptions.PublicException;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exceptions.PublicExceptionDefault;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -30,19 +30,19 @@ import com.google.inject.Inject;
 public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    private IJsonManager jsonManager;
+    private JsonManager jsonManager;
 
     @Inject
-    private IXmlManager xmlManager;
+    private XmlManager xmlManager;
 
     @Inject
-    private ISpincastDictionary spincastDictionary;
+    private SpincastDictionary spincastDictionary;
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
@@ -57,15 +57,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundDefault() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/two").send();
+        HttpResponse response = GET("/two").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         // Default content-type for a Not Found
@@ -76,15 +76,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundPlainText() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/two").addPlainTextAcceptHeader().send();
+        HttpResponse response = GET("/two").addPlainTextAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -94,15 +94,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundPlainTextCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new NotFoundException("Custom message");
             }
         });
 
-        IHttpResponse response = GET("/one").addPlainTextAcceptHeader().send();
+        HttpResponse response = GET("/one").addPlainTextAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -112,15 +112,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundJson() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/two").addJsonAcceptHeader().send();
+        HttpResponse response = GET("/two").addJsonAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -130,15 +130,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundJsonCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new NotFoundException("Custom message");
             }
         });
 
-        IHttpResponse response = GET("/one").addJsonAcceptHeader().send();
+        HttpResponse response = GET("/one").addJsonAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -148,15 +148,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundXml() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/two").addXMLAcceptHeader().send();
+        HttpResponse response = GET("/two").addXMLAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -167,15 +167,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundXmlCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new NotFoundException("Custom message");
             }
         });
 
-        IHttpResponse response = GET("/one").addXMLAcceptHeader().send();
+        HttpResponse response = GET("/one").addXMLAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -185,15 +185,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundHtml() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/two").addHTMLAcceptHeader().send();
+        HttpResponse response = GET("/two").addHTMLAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -204,15 +204,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void notFoundHtmlCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new NotFoundException("Custom message");
             }
         });
 
-        IHttpResponse response = GET("/one").addHTMLAcceptHeader().send();
+        HttpResponse response = GET("/one").addHTMLAcceptHeader().send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -222,10 +222,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorDefault() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -236,7 +236,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         // Default content-type for an exception
@@ -247,10 +247,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorDefaultPublic() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -258,11 +258,11 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
                 assertTrue(context.request().isPlainTextShouldBeReturn());
 
                 // Public message!
-                throw new PublicException("Some exception");
+                throw new PublicExceptionDefault("Some exception");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         // Default content-type for an exception
@@ -273,10 +273,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -287,7 +287,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").addPlainTextAcceptHeader().send();
+        HttpResponse response = GET("/one").addPlainTextAcceptHeader().send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -297,10 +297,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorHtml() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertTrue(context.request().isHTMLShouldBeReturn());
@@ -311,7 +311,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 GET("/one").addHeaderValue("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
@@ -322,10 +322,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorHtmlDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertTrue(context.request().isHTMLShouldBeReturn());
@@ -335,7 +335,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 GET("/one").addHTMLAcceptHeader().send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
@@ -346,10 +346,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorJson() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertTrue(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -360,7 +360,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").addHeaderValue("Accept", "application/json").send();
+        HttpResponse response = GET("/one").addHeaderValue("Accept", "application/json").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -370,10 +370,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorJsonDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertTrue(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -384,7 +384,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").addJsonAcceptHeader().send();
+        HttpResponse response = GET("/one").addJsonAcceptHeader().send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -394,10 +394,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorXml() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -408,7 +408,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").addHeaderValue("Accept", "application/xml").send();
+        HttpResponse response = GET("/one").addHeaderValue("Accept", "application/xml").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -419,10 +419,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void serverErrorXmlDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertFalse(context.request().isJsonShouldBeReturn());
                 assertFalse(context.request().isHTMLShouldBeReturn());
@@ -433,7 +433,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").addHeaderValue("Accept", "application/xml").send();
+        HttpResponse response = GET("/one").addHeaderValue("Accept", "application/xml").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -444,16 +444,16 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void text() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
@@ -462,15 +462,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void textCustom() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendCharacters(SpincastTestUtils.TEST_STRING, "application/custom; charset=utf-8");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/custom; charset=utf-8", response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
@@ -479,15 +479,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void html() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendHtml(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
@@ -496,10 +496,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void json() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("key1", SpincastTestUtils.TEST_STRING);
                 map.put("key2", "val2");
@@ -509,12 +509,12 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
         assertNotNull(response.getContentAsString());
 
-        Map<String, Object> map = getJsonManager().fromJsonStringToMap(response.getContentAsString());
+        Map<String, Object> map = getJsonManager().fromStringToMap(response.getContentAsString());
         assertNotNull(map);
         assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
@@ -523,18 +523,18 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void jsonObj() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 Map<String, Object> json = new HashMap<String, Object>();
                 json.put("key1", SpincastTestUtils.TEST_STRING);
                 json.put("key2", "val2");
-                context.response().sendJsonObj(json);
+                context.response().sendJson(json);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), response.getContentType());
         assertNotNull(response.getContentAsString());
@@ -550,10 +550,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void xml() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("key1", SpincastTestUtils.TEST_STRING);
                 map.put("key2", "val2");
@@ -563,7 +563,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
         assertNotNull(response.getContentAsString());
@@ -578,18 +578,18 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void xmlObj() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("key1", SpincastTestUtils.TEST_STRING);
                 map.put("key2", "val2");
-                context.response().sendXmlObj(map);
+                context.response().sendXml(map);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());
         assertNotNull(response.getContentAsString());
@@ -605,16 +605,16 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void customStatusCode() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED);
                 context.response().sendHtml(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_EXPECTATION_FAILED, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
@@ -623,10 +623,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void customStatusCodeButException() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED);
                 context.response().sendHtml(SpincastTestUtils.TEST_STRING);
 
@@ -635,7 +635,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
     }
@@ -643,15 +643,15 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void guessingContentTypeFromExtension() throws Exception {
 
-        getRouter().GET("/one.mkv").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.mkv").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendBytes(new byte[0]);
             }
         });
 
-        IHttpResponse response = GET("/one.mkv").send();
+        HttpResponse response = GET("/one.mkv").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("video/x-matroska", response.getContentType());
 
@@ -660,10 +660,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void noGuessingIfContentTypeSpecified() throws Exception {
 
-        getRouter().GET("/one.mkv").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.mkv").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
@@ -675,7 +675,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response = GET("/one.mkv").send();
+        HttpResponse response = GET("/one.mkv").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/test", response.getContentType());
         assertNotNull(response.getContentAsString());
@@ -688,7 +688,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
 
         getRouter().file("/image").classpath("/image.jpg").save();
 
-        IHttpResponse response = GET("/image").send();
+        HttpResponse response = GET("/image").send();
         assertNotNull(response);
         assertEquals("image/jpeg", response.getContentType());
 
@@ -697,10 +697,10 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
     @Test
     public void requestContentType() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String body = context.request().getBodyAsString();
                 assertNotNull(body);
@@ -714,7 +714,7 @@ public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrati
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/").setEntityString("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                          .send();
 

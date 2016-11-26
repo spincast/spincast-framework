@@ -3,7 +3,7 @@ Spincast Properties File Config
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-config-props-file{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-config-props-file{% endblock %}
 {% block meta_title %}Plugins - Spincast Properties File Config{% endblock %}
 {% block meta_description %}Allows an application to define its configurations in a .properties file.{% endblock %}
 
@@ -35,7 +35,7 @@ Spincast Properties File Config
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/configpropsfile/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/configpropsfile/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <span class="clear"></span>
             </div>   
@@ -53,10 +53,10 @@ Spincast Properties File Config
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable"><a href="#utility_methods">Base methods</a></li>
                 <li class="openable"><a href="#free_keys">Using free keys</a></li>
-                <li class="openable"><a href="#config_keys">The default configuration keys</a></li>  
+                <li class="openable"><a href="#config_keys">Spincast configuration keys</a></li>  
                 <li class="openable"><a href="#example_file">Example .properties file</a></li>  
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
@@ -81,32 +81,32 @@ Spincast Properties File Config
                     <div>
                         <p>
                             <pre class="ace ace-batchfile"
->java -jar mySpincastApp.jar /var/www/mySite/mySiteApp.properties</pre> 
+>java -jar mySpincastApp.jar /var/www/mySite/mySite.properties</pre> 
                         </p>
                     </div>  
                 </p>
                 <p>
-                    You can override the <code>lookForPropsFileSpecificPath(...)</code>
-                    method if you want to use another way to externally define the path (for example, by looking
+                    You can override the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/configpropsfile/SpincastConfigPropsFileBased.html#lookForPropsFileSpecificPath--">lookForPropsFileSpecificPath()</a>
+                    method if you want to use another way to externally define the path (for example by looking
                     at an <code>environment variable</code>).
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    If no explicit path is provided, the plugin tries to find an <code>app.properties</code>
-                    file in the same directory where the application's <code>.jar</code> is running.
+                    If no explicit path is provided when starting the application, the plugin tries to find an <code>"app.properties"</code>
+                    file <em>in the directory where the application <code>.jar</code> is running</em>.
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    If no <code>app.properties</code> file is found next to the <code>.jar</code>, or if the application is not
-                    running from a <code>.jar</code> file (the code is running inside an IDE, for example), then the 
-                    <a href="/plugins/spincast-config#spincast_config">default configurations</a> are used.
+                    If no explicit path is provided when starting the application and no <code>"app.properties"</code> file is 
+                    found next to the <code>.jar</code>, or if the application is not
+                    running from a <code>.jar</code> file (the code may be running inside an IDE, for example), then the 
+                    <a href="http://spincast.loc:44420/documentation#default_config">default configurations</a> are used.
                 </p>
                 <p>
-                    You can add your application specific configurations in this <code>.properties</code> file, but
-                    by using the <a href="#config_keys">default keys</a>,
-                    you can also override Spincast default configurations.
-                    Note that you don't have to override <em>all</em> default configurations. If
-                    a particular Spincast configuration is not there, its default value will be used.
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that by using the <a href="#config_keys">Spincast configuration keys</a>,
+                    you can also override some Spincast default configurations in that file.
                 </p>
                 
             </section>
@@ -125,7 +125,7 @@ Spincast Properties File Config
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-config-properties-file&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -139,10 +139,10 @@ Spincast Properties File Config
                     <div>
                         <p>
                             <pre class="ace ace-java"
->public class AppConfig extends SpincastConfigPropsFileBased implements IAppConfig {
+>public class AppConfig extends SpincastConfigPropsFileBased implements AppConfig {
 
     @Inject
-    public AppConfig(ISpincastUtils spincastUtils,
+    public AppConfig(SpincastUtils spincastUtils,
                      @MainArgs @Nullable String[] mainArgs) {
         super(spincastUtils, mainArgs);
     }
@@ -164,7 +164,7 @@ Spincast Properties File Config
                                 <li>
                                     <span class="code-line-nbr">1</span> : Our custom configuration class
                                     extends <code>SpincastConfigPropsFileBased</code> but also implements
-                                    our custom <code>IAppConfig</code> interface.
+                                    our custom <code>AppConfig</code> interface.
                                 </li>
                                 <li>
                                     <span class="code-line-nbr">3-7</span> : Constructor required
@@ -199,8 +199,8 @@ Spincast Properties File Config
 	                    <p>
 	                        <pre class="ace ace-java"
 >Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule(args))
-        .with(new SpincastConfigPropsFilePluginGuiceModule(IDefaultRequestContext.class, 
-                                                           IDefaultWebsocketContext.class)));</pre> 
+        .with(new SpincastConfigPropsFilePluginGuiceModule(DefaultRequestContext.class, 
+                                                           DefaultWebsocketContext.class)));</pre> 
 	                    </p>
 	                </div>   
 	            </p>
@@ -210,8 +210,8 @@ Spincast Properties File Config
                         <p>
                             <pre class="ace ace-java"
 >Injector guice = Guice.createInjector(Modules.override(new AppModule(args))
-        .with(new SpincastConfigPropsFilePluginGuiceModule(IAppRequestContext.class, 
-                                                           IAppWebsocketContext.class)));</pre> 
+        .with(new SpincastConfigPropsFilePluginGuiceModule(AppRequestContext.class, 
+                                                           AppWebsocketContext.class)));</pre> 
                         </p>
                     </div>   
                 </p>
@@ -244,64 +244,6 @@ Spincast Properties File Config
 	            </p>
             </section>
             
-            <section id="utility_methods">
-                <h3 class="noTop">
-                    <a class="anchor" href="#utility_methods" title="permanent link"></a>
-                    SpincastConfigPropsFileBased base methods
-                </h3>
-                <div id="methods">
-                    <p>
-                        <ul class="apiList">
-
-                            <li>
-                                <code class="apiItem">String <span>getConfig</span>(String key)</code>
-                                <div class="well">
-                                    Gets a String configuration and throws an exception if the
-                                    specified key is not found. 
-                                </div>
-                            </li>
-                            <li>
-                                <code class="apiItem">String <span>getConfig</span>(String key, String defaultValue)</code>
-                                <div class="well">
-                                    Gets a String configuration and uses the specified default value if the
-                                    key is not found.
-                                </div>
-                            </li>
-                            <li>
-                                <code class="apiItem">Boolean <span>getConfigBoolean</span>(String key)</code>
-                                <div class="well">
-                                    Gets a Boolean configuration and throws an exception if the
-                                    specified key is not found. 
-                                </div>
-                            </li>  
-                            <li>
-                                <code class="apiItem">Boolean <span>getConfigBoolean</span>(String key, Boolean defaultValue)</code>
-                                <div class="well">
-                                    Gets a Boolean configuration and uses the specified default value if the
-                                    key is not found.
-                                </div>
-                            </li>
-                            <li>
-                                <code class="apiItem">Integer <span>getConfigInteger</span>(String key)</code>
-                                <div class="well">
-                                    Gets a Integer configuration and throws an exception if the
-                                    specified key is not found. 
-                                </div>
-                            </li>  
-                            <li>
-                                <code class="apiItem">Integer <span>getConfigInteger</span>(String key, Integer defaultValue)</code>
-                                <div class="well">
-                                    Gets a Integer configuration and uses the specified default value if the
-                                    key is not found.
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </p>
-                </div>
-  
-            </section>
-            
             <section id="free_keys">
                 <h3 class="noTop">
                     <a class="anchor" href="#free_keys" title="permanent link"></a>
@@ -309,14 +251,16 @@ Spincast Properties File Config
                 </h3>
                 <p>
                     If you want to be able to access your configurations without having to
-                    define a method for all of them, you can use the provided <code>IFreeKeyConfig</code>
+                    define a method for all of them, you can use the provided <code>FreeKeyConfig</code>
                     interface:
                 </p> 
                 <p>
                     <div>
                         <p>
-                            <pre class="ace ace-java" data-ace-hi="0,60,0,74"
->public static interface IAppConfig extends ISpincastConfig, IFreeKeyConfig {
+                            <pre class="ace ace-java" data-ace-hi="1,58,1,71"
+>
+
+public static interface AppConfig extends SpincastConfig, FreeKeyConfig {
 
     public String someTypedConfig1();
     public Boolean someTypedConfig2();
@@ -328,14 +272,14 @@ Spincast Properties File Config
                 </p>
                 <p>
                     Now, you have access your <code>.properties</code> based configurations without having to
-                    define a method for all of them. You directly use <code>getConfig(...)</code>, 
-                    <code>getConfigInteger(...)</code> or <code>getConfigBoolean(...)</code>:
+                    define a method for all of them. You can also use the <code>getConfig(...)</code>, 
+                    <code>getConfigInteger(...)</code> or <code>getConfigBoolean(...)</code> methods :
                 </p> 
                 <p>
                     <div>
                         <p>
                             <pre class="ace ace-java"
->IAppConfig configs = getAppConfig();
+>AppConfig configs = getAppConfig();
 
 String config = configs.getConfig("some.config.as.string");
 config = configs.getConfig("some.non.existing.config", "default value");
@@ -346,7 +290,7 @@ configInt = configs.getConfigInteger("some.non.existing.config", 42);
 Boolean configBool = configs.getConfigBoolean("some.config.as.bool");
 configBool = configs.getConfigBoolean("some.non.existing.config", true);
 
-// Typed configs still work too, of course:
+// Typed configs still work too, of course!
 config = configs.someTypedConfig1();
 configBool = configs.someTypedConfig2();
 </pre> 
@@ -359,12 +303,11 @@ configBool = configs.someTypedConfig2();
             <section id="config_keys">
                 <h3 class="noTop">
                     <a class="anchor" href="#config_keys" title="permanent link"></a>
-                    The default configuration keys
+                    Spincast configuration keys
                 </h3>
                 <p>
-                    In your <code>.properties</code> file, you would add any application specific configuration,
-                    but you can also override default Spincast configurations. Here are the keys to use to
-                    override those.
+                    In your <code>.properties</code> file, you can override some default Spincast 
+                    configuration by using those keys :
                 </p> 
                 
                 <div id="methods">
@@ -450,15 +393,9 @@ configBool = configs.someTypedConfig2();
                     <div>
                         <p>
                             <pre class="ace ace-properties"
-># Default Spincast configurations
+># Override some default Spincast configurations
 spincast.environment.name=prod
 spincast.environment.isDebug=false
-spincast.httpServer.port=-1
-spincast.httpsServer.port=443
-spincast.httpsServer.keystore.path=/var/www/mySite/certificates/myKeyStore.jks
-spincast.httpsServer.keystore.type=JKS
-spincast.httpsServer.keystore.storepass=myStorePass
-spincast.httpsServer.keystore.keypass=myKeyPass
 
 # App specific configurations
 app.name=My supercalifragilisticexpialidocious app!
@@ -468,6 +405,26 @@ app.some.other.config=42
                     </div>  
                 </p>
             </section>
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
+                </h3>
+                <p>
+                    <ul>
+                    
+                        <li>
+                            <a class="javadoc" href="http://spincast.loc:44420/public/javadoc/org/spincast/plugins/configpropsfile/SpincastConfigPropsFileBased.html">SpincastConfigPropsFileBased</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/configpropsfile/SpincastConfigPropsFileBasedConfig.html">SpincastConfigPropsFileBasedConfig</a>
+                        </li>
+
+                    </ul>
+                </p> 
+            </section>
+            
         </div>
     </div>
 </div> 

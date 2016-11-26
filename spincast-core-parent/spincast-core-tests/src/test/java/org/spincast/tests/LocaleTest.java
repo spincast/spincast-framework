@@ -8,14 +8,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.locale.ILocaleResolver;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -24,10 +23,10 @@ public class LocaleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void defaultLocale() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 Locale localeToUse = context.getLocaleToUse();
                 context.response().sendPlainText(localeToUse.toString());
@@ -35,7 +34,7 @@ public class LocaleTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -45,10 +44,10 @@ public class LocaleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void acceptLanguageHeader() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 Locale localeToUse = context.getLocaleToUse();
                 context.response().sendPlainText(localeToUse.toString());
@@ -59,7 +58,7 @@ public class LocaleTest extends SpincastDefaultNoAppIntegrationTestBase {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA");
 
-        IHttpResponse response = GET("/one").addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
+        HttpResponse response = GET("/one").addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -69,21 +68,21 @@ public class LocaleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void localeCookie() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 Locale localeToUse = context.getLocaleToUse();
                 context.response().sendPlainText(localeToUse.toString());
             }
         });
 
-        ICookie cookie = getCookieFactory().createCookie(SpincastConstants.COOKIE_NAME_LOCALE_TO_USE, "jp");
+        Cookie cookie = getCookieFactory().createCookie(getSpincastConfig().getCookieNameLocale(), "jp");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
 
-        IHttpResponse response =
+        HttpResponse response =
                 GET("/one").addCookie(cookie).addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -94,7 +93,7 @@ public class LocaleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void outOfRequestScope() throws Exception {
 
-        ILocaleResolver localeResolver = getInjector().getInstance(ILocaleResolver.class);
+        LocaleResolver localeResolver = getInjector().getInstance(LocaleResolver.class);
         assertNotNull(localeResolver);
 
         Locale localeToUse = localeResolver.getLocaleToUse();

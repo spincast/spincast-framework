@@ -5,12 +5,12 @@ import static org.junit.Assert.assertEquals;
 import java.util.Locale;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastDictionary;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -18,22 +18,22 @@ import com.google.inject.Inject;
 public class RoutingTypesFoundOnlyByDefaultTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ISpincastDictionary spincastDictionary;
+    protected SpincastDictionary spincastDictionary;
 
     @Test
     public void defaultRouteTypes() throws Exception {
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 Locale localeToUse = context.getLocaleToUse();
                 context.response().sendPlainText(localeToUse.toString());
             }
         });
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

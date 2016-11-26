@@ -10,17 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.json.IJsonObjectFactory;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.json.JsonObject;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.templating.ITemplatingEngine;
+import org.spincast.core.json.JsonObjectDefault;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -29,27 +28,24 @@ import com.google.inject.Inject;
 public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected IJsonObjectFactory jsonObjectFactory;
+    protected XmlManager xmlManager;
 
     @Inject
-    protected IXmlManager xmlManager;
-
-    @Inject
-    protected ITemplatingEngine templatingEngine;
+    protected TemplatingEngine templatingEngine;
 
     @Test
     public void toJsonString() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.json().create();
+                JsonObject jsonObj = context.json().create();
                 jsonObj.put("someBoolean", true);
                 jsonObj.put("someInt", 123);
 
-                IJsonObject jsonObj2 = context.json().create();
+                JsonObject jsonObj2 = context.json().create();
                 jsonObj2.put("anotherBoolean", true);
                 jsonObj2.put("anotherInt", 44444);
                 jsonObj2.put("innerObj", jsonObj);
@@ -61,7 +57,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -72,24 +68,24 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromJsonStringToJsonObject() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String jsonString =
                         "{\"innerObj\":{\"someBoolean\":true,\"someInt\":123},\"anotherBoolean\":true,\"anotherInt\":44444}";
 
-                IJsonObject jsonObj = context.json().create(jsonString);
+                JsonObject jsonObj = context.json().fromString(jsonString);
                 assertNotNull(jsonObj);
                 assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
                 assertNotNull(jsonObj.getJsonObject("innerObj"));
-                assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObject);
+                assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObjectDefault);
 
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -97,15 +93,15 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromJsonStringToMap() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String jsonString =
                         "{\"innerObj\":{\"someBoolean\":true,\"someInt\":123},\"anotherBoolean\":true,\"anotherInt\":44444}";
 
-                Map<String, Object> map = context.json().fromJsonStringToMap(jsonString);
+                Map<String, Object> map = context.json().fromStringToMap(jsonString);
                 assertNotNull(map);
                 assertEquals(true, (boolean)map.get("anotherBoolean"));
                 assertNotNull(map.get("innerObj"));
@@ -114,7 +110,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -122,24 +118,24 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromJsonStringToT() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String jsonString =
                         "{\"innerObj\":{\"someBoolean\":true,\"someInt\":123},\"anotherBoolean\":true,\"anotherInt\":44444}";
 
-                IJsonObject jsonObj = context.json().fromJsonString(jsonString, IJsonObject.class);
+                JsonObject jsonObj = context.json().fromString(jsonString, JsonObject.class);
                 assertNotNull(jsonObj);
                 assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
                 assertNotNull(jsonObj.getJsonObject("innerObj"));
-                assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObject);
+                assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObjectDefault);
 
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -147,10 +143,10 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromJsonInputStreamToJsonObject() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     String jsonString =
@@ -158,18 +154,18 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonString.getBytes("UTF-8"));
 
-                    IJsonObject jsonObject = context.json().create(byteArrayInputStream);
+                    JsonObject jsonObject = context.json().fromInputStream(byteArrayInputStream);
                     assertNotNull(jsonObject);
                     assertEquals(true, jsonObject.getBoolean("anotherBoolean"));
                     assertNotNull(jsonObject.getJsonObject("innerObj"));
-                    assertTrue(jsonObject.getJsonObject("innerObj") instanceof IJsonObject);
+                    assertTrue(jsonObject.getJsonObject("innerObj") instanceof JsonObject);
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -177,10 +173,10 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromJsonInputStreamToMap() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     String jsonString =
@@ -188,7 +184,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonString.getBytes("UTF-8"));
 
-                    Map<String, Object> map = context.json().fromJsonInputStreamToMap(byteArrayInputStream);
+                    Map<String, Object> map = context.json().fromInputStreamToMap(byteArrayInputStream);
                     assertNotNull(map);
                     assertEquals(true, (boolean)map.get("anotherBoolean"));
                     assertNotNull(map.get("innerObj"));
@@ -199,7 +195,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -207,10 +203,10 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromJsonInputStreamToT() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     String jsonString =
@@ -218,19 +214,19 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(jsonString.getBytes("UTF-8"));
 
-                    IJsonObject jsonObj = context.json().fromJsonInputStream(byteArrayInputStream, IJsonObject.class);
+                    JsonObject jsonObj = context.json().fromInputStream(byteArrayInputStream, JsonObject.class);
                     assertNotNull(jsonObj);
-                    assertTrue(jsonObj instanceof JsonObject);
+                    assertTrue(jsonObj instanceof JsonObjectDefault);
                     assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
                     assertNotNull(jsonObj.getJsonObject("innerObj"));
-                    assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObject);
+                    assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObjectDefault);
                 } catch(Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -238,10 +234,10 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlStringFromMap() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("someBoolean", true);
@@ -258,7 +254,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -270,16 +266,16 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlStringFromJsonObject() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.json().create();
+                JsonObject jsonObj = context.json().create();
                 jsonObj.put("someBoolean", true);
                 jsonObj.put("someInt", 123);
 
-                IJsonObject jsonObj2 = context.json().create();
+                JsonObject jsonObj2 = context.json().create();
                 jsonObj2.put("anotherBoolean", true);
                 jsonObj2.put("anotherInt", 44444);
                 jsonObj2.put("innerObj", jsonObj);
@@ -290,18 +286,18 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         String xml = response.getContentAsString();
         assertNotNull(xml);
 
-        IJsonObject json = this.xmlManager.fromXml(xml);
+        JsonObject json = this.xmlManager.fromXml(xml);
         assertNotNull(xml);
         assertEquals(true, json.getBoolean("anotherBoolean"));
         assertEquals(new Integer(44444), json.getInteger("anotherInt"));
-        IJsonObject inner = json.getJsonObject("innerObj");
+        JsonObject inner = json.getJsonObject("innerObj");
         assertNotNull(inner);
         assertEquals(true, inner.getBoolean("someBoolean"));
         assertEquals(new Integer(123), inner.getInteger("someInt"));
@@ -310,10 +306,10 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void evaluate() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String placeholder = context.templating().createPlaceholder("name");
                 String content = "Hello " + placeholder + "!";
@@ -324,7 +320,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -335,10 +331,10 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
         String placeholder = this.templatingEngine.createPlaceholder("param1");
         FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("param1", "Toto");
@@ -347,7 +343,7 @@ public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

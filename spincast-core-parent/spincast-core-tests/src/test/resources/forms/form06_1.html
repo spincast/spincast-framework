@@ -6,7 +6,7 @@
     <body>
         <form method="post">
             {% for book in books %}
-                <input type="radio" id="books_{{book.value}}" name="books" {{checked(book.selected)}} value="{{book.value}}" />
+                <input type="radio" id="books_{{book.value}}" name="books" {{book.selected | checked(true)}} value="{{book.value}}" />
                 <label for="books_{{book.value}}">{{book.text}}</label><br>
             {% endfor %}
             <input type="submit" value="Submit!" />

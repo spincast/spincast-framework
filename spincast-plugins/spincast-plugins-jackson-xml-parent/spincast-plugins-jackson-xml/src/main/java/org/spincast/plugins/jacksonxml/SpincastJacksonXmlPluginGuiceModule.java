@@ -3,7 +3,7 @@ package org.spincast.plugins.jacksonxml;
 import java.lang.reflect.Type;
 
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 
 import com.fasterxml.jackson.dataformat.xml.XmlPrettyPrinter;
 import com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter.Indenter;
@@ -31,10 +31,10 @@ public class SpincastJacksonXmlPluginGuiceModule extends SpincastPluginGuiceModu
     }
 
     protected void bindXmlManager() {
-        bind(IXmlManager.class).to(getSpincastXmlManagerClass()).in(Scopes.SINGLETON);
+        bind(XmlManager.class).to(getSpincastXmlManagerClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends IXmlManager> getSpincastXmlManagerClass() {
+    protected Class<? extends XmlManager> getSpincastXmlManagerClass() {
         return SpincastXmlManager.class;
     }
 
@@ -45,7 +45,7 @@ public class SpincastJacksonXmlPluginGuiceModule extends SpincastPluginGuiceModu
         // even if no mixin infos are added.
         //==========================================
         @SuppressWarnings("unused")
-        Multibinder<IXmlMixinInfo> uriBinder = Multibinder.newSetBinder(binder(), IXmlMixinInfo.class);
+        Multibinder<XmlMixinInfo> uriBinder = Multibinder.newSetBinder(binder(), XmlMixinInfo.class);
     }
 
     protected void binxCustomXmlPrettyPrinter() {

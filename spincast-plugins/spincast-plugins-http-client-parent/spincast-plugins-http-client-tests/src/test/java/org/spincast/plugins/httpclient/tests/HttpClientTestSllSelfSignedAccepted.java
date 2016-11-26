@@ -3,13 +3,13 @@ package org.spincast.plugins.httpclient.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -61,7 +61,7 @@ public class HttpClientTestSllSelfSignedAccepted extends SpincastDefaultNoAppInt
         return new SpincastDefaultTestingModule(getMainArgsToUse()) {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
+            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
                 return HttpsTestConfig.class;
             }
         };
@@ -70,10 +70,10 @@ public class HttpClientTestSllSelfSignedAccepted extends SpincastDefaultNoAppInt
     @Test
     public void selfSignedCertificateAccepted() throws Exception {
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
@@ -82,7 +82,7 @@ public class HttpClientTestSllSelfSignedAccepted extends SpincastDefaultNoAppInt
         // By default, SSL certificate errors are disabled when
         // running Spincast tests.
         //==========================================
-        IHttpResponse response = GET("/", false, true).send();
+        HttpResponse response = GET("/", false, true).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

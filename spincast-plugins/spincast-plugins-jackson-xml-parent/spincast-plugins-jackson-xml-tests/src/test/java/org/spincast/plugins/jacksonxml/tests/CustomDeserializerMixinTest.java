@@ -6,10 +6,10 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.jacksonxml.IXmlMixinInfo;
 import org.spincast.plugins.jacksonxml.XmlMixinInfo;
+import org.spincast.plugins.jacksonxml.XmlMixinInfoDefault;
 import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -26,9 +26,9 @@ import com.google.inject.multibindings.Multibinder;
 public class CustomDeserializerMixinTest extends SpincastTestBase {
 
     @Inject
-    IXmlManager xmlManager;
+    XmlManager xmlManager;
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
@@ -46,9 +46,9 @@ public class CustomDeserializerMixinTest extends SpincastTestBase {
     }
 
     /**
-     * Our IUser mixin
+     * Our User mixin
      */
-    public static abstract class IUserMixin implements IUser {
+    public static abstract class UserMixin implements User {
 
         //==========================================
         // Uses our custom deserializer!
@@ -77,8 +77,8 @@ public class CustomDeserializerMixinTest extends SpincastTestBase {
             //==========================================
             protected void bindXmlMixins() {
 
-                Multibinder<IXmlMixinInfo> xmlMixinsBinder = Multibinder.newSetBinder(binder(), IXmlMixinInfo.class);
-                xmlMixinsBinder.addBinding().toInstance(new XmlMixinInfo(IUser.class, IUserMixin.class));
+                Multibinder<XmlMixinInfo> xmlMixinsBinder = Multibinder.newSetBinder(binder(), XmlMixinInfo.class);
+                xmlMixinsBinder.addBinding().toInstance(new XmlMixinInfoDefault(User.class, UserMixin.class));
             }
         };
     }
@@ -88,7 +88,7 @@ public class CustomDeserializerMixinTest extends SpincastTestBase {
 
         String xml = "<User><name>Stromgol</name><age>123</age><title>alien</title></User>";
 
-        IUser user = getXmlManager().fromXml(xml, User.class);
+        User user = getXmlManager().fromXml(xml, UserDefault.class);
         assertNotNull(user);
         assertEquals("Stromgol", user.getName());
         assertEquals(123, user.getAge());

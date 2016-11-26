@@ -8,7 +8,7 @@ import io.undertow.websockets.core.CloseMessage;
 /**
  * Default configuration for Spincast Undertow plugin.
  */
-public class SpincastUndertowConfigDefault implements ISpincastUndertowConfig {
+public class SpincastUndertowConfigDefault implements SpincastUndertowConfig {
 
     @Override
     public String getWebsocketPingMessageString() {

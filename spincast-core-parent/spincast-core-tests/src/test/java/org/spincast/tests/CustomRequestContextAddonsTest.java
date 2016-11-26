@@ -8,20 +8,20 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestContextBase;
 import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.guice.SpincastGuiceScopes;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
 import org.spincast.tests.CustomRequestContextAddonsTest.ITestRequestContext;
-import org.spincast.tests.varia.IRequestContextAddon;
 import org.spincast.tests.varia.RequestContextAddon;
+import org.spincast.tests.varia.RequestContextAddonDefault;
 
 import com.google.inject.Key;
 import com.google.inject.Module;
@@ -30,7 +30,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class CustomRequestContextAddonsTest extends
-                                            SpincastNoAppIntegrationTestBase<ITestRequestContext, IDefaultWebsocketContext> {
+                                            SpincastNoAppIntegrationTestBase<ITestRequestContext, DefaultWebsocketContext> {
 
     public static class Singleton {
     }
@@ -38,7 +38,7 @@ public class CustomRequestContextAddonsTest extends
     public static class TestNotSingletonNorRequestScoped {
     }
 
-    public static interface ITestRequestContext extends IRequestContext<ITestRequestContext> {
+    public static interface ITestRequestContext extends RequestContext<ITestRequestContext> {
 
         public Map<Key<?>, Object> getInstanceFromGuiceCachePublic();
     }
@@ -72,8 +72,8 @@ public class CustomRequestContextAddonsTest extends
                 //==========================================
                 // Bind the request context add-on in Request scope!
                 //==========================================
-                bind(IRequestContextAddon.class).to(RequestContextAddon.class)
-                                                .in(SpincastGuiceScopes.REQUEST);
+                bind(RequestContextAddon.class).to(RequestContextAddonDefault.class)
+                                               .in(SpincastGuiceScopes.REQUEST);
 
                 //==========================================
                 // Bind an object as singleton
@@ -87,7 +87,7 @@ public class CustomRequestContextAddonsTest extends
             }
 
             @Override
-            protected Class<? extends IRequestContext<?>> getRequestContextImplementationClass() {
+            protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
                 return TestRequestContext.class;
             }
         };
@@ -96,30 +96,30 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void cacheForRequestScopedObjects() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
 
             @Override
             public void handle(ITestRequestContext context) {
 
-                IRequestContextAddon requestContextAddon1 = context.get(IRequestContextAddon.class);
+                RequestContextAddon requestContextAddon1 = context.get(RequestContextAddon.class);
                 assertNotNull(requestContextAddon1);
-                assertTrue(context.getInstanceFromGuiceCachePublic().containsKey(Key.get(IRequestContextAddon.class)));
+                assertTrue(context.getInstanceFromGuiceCachePublic().containsKey(Key.get(RequestContextAddon.class)));
 
-                IRequestContextAddon requestContextAddon2 = context.get(IRequestContextAddon.class);
+                RequestContextAddon requestContextAddon2 = context.get(RequestContextAddon.class);
                 assertTrue(requestContextAddon1 == requestContextAddon2);
-                assertTrue(context.getInstanceFromGuiceCachePublic().containsKey(Key.get(IRequestContextAddon.class)));
+                assertTrue(context.getInstanceFromGuiceCachePublic().containsKey(Key.get(RequestContextAddon.class)));
 
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void cacheForSingletons() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
 
             @Override
             public void handle(ITestRequestContext context) {
@@ -134,14 +134,14 @@ public class CustomRequestContextAddonsTest extends
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void noCacheForOtherScopedObjects() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
 
             @Override
             public void handle(ITestRequestContext context) {
@@ -158,24 +158,24 @@ public class CustomRequestContextAddonsTest extends
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void useAddon() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
 
             @Override
             public void handle(ITestRequestContext context) {
-                context.get(IRequestContextAddon.class).addonMethod1();
-                String str = context.get(IRequestContextAddon.class).addonMethod2();
+                context.get(RequestContextAddonDefault.class).addonMethod1();
+                String str = context.get(RequestContextAddonDefault.class).addonMethod2();
                 context.response().sendPlainText(str);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

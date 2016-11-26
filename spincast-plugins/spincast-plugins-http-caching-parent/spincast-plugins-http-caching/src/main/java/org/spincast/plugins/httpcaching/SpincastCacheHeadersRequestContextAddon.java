@@ -6,32 +6,32 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.exchange.ICacheHeadersRequestContextAddon;
-import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.exchange.CacheHeadersRequestContextAddon;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.ETag;
+import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IETag;
-import org.spincast.core.routing.IETagFactory;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 
 import com.google.inject.Inject;
 
-public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?>>
-                                                    implements ICacheHeadersRequestContextAddon<R> {
+public class SpincastCacheHeadersRequestContextAddon<R extends RequestContext<?>>
+                                                    implements CacheHeadersRequestContextAddon<R> {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastCacheHeadersRequestContextAddon.class);
 
     private final R requestContext;
-    private final IETagFactory etagFactory;
+    private final ETagFactory etagFactory;
 
-    private IETag eTag = null;
+    private ETag eTag = null;
     private boolean eTagWeakComparison = false;
     private Date lastModificationDate;
 
     @Inject
     public SpincastCacheHeadersRequestContextAddon(R requestContext,
-                                                   IETagFactory etagFactory) {
+                                                   ETagFactory etagFactory) {
         this.requestContext = requestContext;
         this.etagFactory = etagFactory;
     }
@@ -40,7 +40,7 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
         return this.requestContext;
     }
 
-    protected IETagFactory getEtagFactory() {
+    protected ETagFactory getEtagFactory() {
         return this.etagFactory;
     }
 
@@ -48,11 +48,11 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
         return getRequestContext().exchange();
     }
 
-    protected IETag getETag() {
+    protected ETag getETag() {
         return this.eTag;
     }
 
-    protected void setETag(IETag eTag) {
+    protected void setETag(ETag eTag) {
         this.eTag = eTag;
     }
 
@@ -73,24 +73,24 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> eTag(String currentTag) {
+    public CacheHeadersRequestContextAddon<R> eTag(String currentTag) {
         return eTag(currentTag, false, false);
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> eTag(String currentTag, boolean currentTagIsWeak) {
+    public CacheHeadersRequestContextAddon<R> eTag(String currentTag, boolean currentTagIsWeak) {
         return eTag(currentTag, currentTagIsWeak, false);
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> eTag(String currentTag, boolean currentTagIsWeak, boolean weakComparison) {
+    public CacheHeadersRequestContextAddon<R> eTag(String currentTag, boolean currentTagIsWeak, boolean weakComparison) {
 
         if(currentTag == null) {
             setETag(null);
             getRequestContext().response().removeHeader(HttpHeaders.ETAG);
         } else {
             // Wildcard would make no sense here.
-            IETag eTag = getEtagFactory().create(currentTag, currentTagIsWeak, false);
+            ETag eTag = getEtagFactory().create(currentTag, currentTagIsWeak, false);
             setETag(eTag);
 
             getRequestContext().response().setHeader(HttpHeaders.ETAG, eTag.getHeaderValue());
@@ -110,7 +110,7 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> lastModified(Date lastModificationDate) {
+    public CacheHeadersRequestContextAddon<R> lastModified(Date lastModificationDate) {
 
         setLastModificationDate(lastModificationDate);
 
@@ -126,7 +126,7 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
 
     protected boolean isEtagsFromIfMatchHeaderContainsAWildcard() {
 
-        for(IETag eTag : getRequestContext().request().getEtagsFromIfMatchHeader()) {
+        for(ETag eTag : getRequestContext().request().getEtagsFromIfMatchHeader()) {
             if(eTag.isWildcard()) {
                 return true;
             }
@@ -134,17 +134,17 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
         return false;
     }
 
-    public List<IETag> getEtagsFromIfMatchHeader() {
+    public List<ETag> getEtagsFromIfMatchHeader() {
         return getRequestContext().request().getEtagsFromIfMatchHeader();
     }
 
-    public List<IETag> getEtagsFromIfNoneMatchHeader() {
+    public List<ETag> getEtagsFromIfNoneMatchHeader() {
         return getRequestContext().request().getEtagsFromIfNoneMatchHeader();
     }
 
     protected boolean isEtagsFromIfNoneMatchHeaderContainsAWildcard() {
 
-        for(IETag eTag : getEtagsFromIfNoneMatchHeader()) {
+        for(ETag eTag : getEtagsFromIfNoneMatchHeader()) {
             if(eTag.isWildcard()) {
                 return true;
             }
@@ -154,12 +154,12 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
 
     protected boolean isIfMatchEtagMatches() {
 
-        List<IETag> eTags = getEtagsFromIfMatchHeader();
+        List<ETag> eTags = getEtagsFromIfMatchHeader();
         if(eTags == null || eTags.size() == 0) {
             return false;
         }
 
-        for(IETag eTag : eTags) {
+        for(ETag eTag : eTags) {
 
             //==========================================
             // "A server MUST use the strong comparison function (see section 13.3.3) to compare the entity tags in If-Match. "
@@ -175,12 +175,12 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
 
     protected boolean isIfNoneMatchEtagMatches() {
 
-        List<IETag> eTags = getEtagsFromIfNoneMatchHeader();
+        List<ETag> eTags = getEtagsFromIfNoneMatchHeader();
         if(eTags == null || eTags.size() == 0) {
             return false;
         }
 
-        for(IETag eTag : eTags) {
+        for(ETag eTag : eTags) {
             if(isEtagMatches(eTag, isETagWeakComparison())) {
                 return true;
             }
@@ -189,9 +189,9 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
         return false;
     }
 
-    protected boolean isEtagMatches(IETag requestETag, boolean weakComparison) {
+    protected boolean isEtagMatches(ETag requestETag, boolean weakComparison) {
 
-        IETag newETag = getETag();
+        ETag newETag = getETag();
 
         if(requestETag != null && requestETag.isWildcard()) {
             return true;
@@ -218,17 +218,17 @@ public class SpincastCacheHeadersRequestContextAddon<R extends IRequestContext<?
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> cache(int seconds) {
+    public CacheHeadersRequestContextAddon<R> cache(int seconds) {
         return cache(seconds, false, null);
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> cache(int seconds, boolean isPrivate) {
+    public CacheHeadersRequestContextAddon<R> cache(int seconds, boolean isPrivate) {
         return cache(seconds, isPrivate, null);
     }
 
     @Override
-    public ICacheHeadersRequestContextAddon<R> cache(int seconds, boolean isPrivate, Integer cdnSeconds) {
+    public CacheHeadersRequestContextAddon<R> cache(int seconds, boolean isPrivate, Integer cdnSeconds) {
 
         if(seconds <= 0) {
             return noCache();

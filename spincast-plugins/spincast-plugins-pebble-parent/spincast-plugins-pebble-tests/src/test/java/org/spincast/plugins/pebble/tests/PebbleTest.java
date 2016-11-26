@@ -8,18 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.templating.ITemplatingEngine;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.pebble.ISpincastPebbleTemplatingEngineConfig;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -33,7 +32,7 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     public static class SpincastPebbleTemplatingEngineConfigDefaultTest extends SpincastPebbleTemplatingEngineConfigDefault {
 
         @Inject
-        public SpincastPebbleTemplatingEngineConfigDefaultTest(ISpincastConfig spincastConfig) {
+        public SpincastPebbleTemplatingEngineConfigDefaultTest(SpincastConfig spincastConfig) {
             super(spincastConfig);
         }
 
@@ -53,47 +52,46 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
 
             @Override
             protected void configure() {
-                bind(ISpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigDefaultTest.class)
+                bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigDefaultTest.class)
                                                                  .in(Scopes.SINGLETON);
             }
         };
     }
 
     @Inject
-    protected ITemplatingEngine templatingEngine;
+    protected TemplatingEngine templatingEngine;
 
     @Inject
-    protected ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
+    protected SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Inject
-    protected ISpincastUtils spincastUtils;
+    protected SpincastUtils spincastUtils;
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
-    protected ISpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
+    protected SpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
         return this.spincastPebbleTemplatingEngineConfig;
     }
 
     @Test
     public void htmlTemplate() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("param1", "Hello!");
-                context.response().sendTemplateHtml("/template.html", params);
+                context.response().getModel().put("param1", "Hello!");
+                context.response().sendTemplateHtml("/template.html");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -103,18 +101,16 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void genericTemplate() throws Exception {
 
-        getRouter().GET("/test.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/test.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
-
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("fontPxSize", 16);
-                context.response().sendTemplate("/template.css", "text/css", params);
+            public void handle(DefaultRequestContext context) {
+                context.response().getModel().put("fontPxSize", 16);
+                context.response().sendTemplate("/template.css", "text/css");
             }
         });
 
-        IHttpResponse response = GET("/test.css").send();
+        HttpResponse response = GET("/test.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -132,20 +128,19 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
         // When using router.file(...) and a generator, the generated
         // resource will automatically be saved.
         //==========================================
-        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 nbrTimeCalled[0]++;
 
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("fontPxSize", 16);
-                context.response().sendTemplate("/template.css", "text/css", params);
+                context.response().getModel().put("fontPxSize", 16);
+                context.response().sendTemplate("/template.css", "text/css");
             }
         });
 
-        IHttpResponse response = GET("/test.css").send();
+        HttpResponse response = GET("/test.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
         assertEquals("body {font-size : 16px;}", response.getContentAsString());
@@ -175,7 +170,7 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void evaluateJsonObject() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("name", "Stromgol");
 
         String result = this.templatingEngine.evaluate("Hello {{name}}", jsonObj);
@@ -197,7 +192,7 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void fromTemplateJsonObject() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("param1", "Stromgol");
 
         String result = this.templatingEngine.fromTemplate("template.html", jsonObj);
@@ -208,19 +203,20 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void defaultVariables() throws Exception {
 
-        getRouter().GET("/one/${param1}").id("test").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one/${param1}").id("test").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.variables().add("oneVar", "oneVal");
 
-                context.response().sendTemplateHtml("/templateDefaultVars.html",
-                                                    SpincastStatics.params("extraParam1", "extraParam1Val"));
+                context.response().getModel().put("extraParam1", "extraParam1Val");
+
+                context.response().sendTemplateHtml("/templateDefaultVars.html");
             }
         });
 
-        IHttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
+        HttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());

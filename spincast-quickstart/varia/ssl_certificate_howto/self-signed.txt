@@ -18,7 +18,7 @@ HTTPS in developement.
 
    /src/main/resources/certificates/devKeyStore.jks
 
-3. In your ISpincastConfig implementation :
+3. In your SpincastConfig implementation :
 
     - Make "getHttpServerPort()" return "-1", if you only want the server to serve HTTPS and not HTTP.
     - Make "getHttpsServerPort()" return a valid and free port, "443" is the default one for HTTPS.

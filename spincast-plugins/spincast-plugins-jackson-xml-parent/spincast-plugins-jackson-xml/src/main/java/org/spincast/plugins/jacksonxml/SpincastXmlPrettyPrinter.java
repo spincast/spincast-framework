@@ -14,12 +14,12 @@ public class SpincastXmlPrettyPrinter extends DefaultXmlPrettyPrinter {
 
     private final Provider<SpincastXmlPrettyPrinter> spincastXmlPrettyPrinterProvider;
     private final Indenter spincastXmlIndenter;
-    private final ISpincastXmlManagerConfig spincastXmlManagerConfig;
+    private final SpincastXmlManagerConfig spincastXmlManagerConfig;
 
     @Inject
     public SpincastXmlPrettyPrinter(Provider<SpincastXmlPrettyPrinter> spincastXmlPrettyPrinterProvider,
                                     Indenter spincastXmlIndenter,
-                                    ISpincastXmlManagerConfig spincastXmlManagerConfig) {
+                                    SpincastXmlManagerConfig spincastXmlManagerConfig) {
         this.spincastXmlPrettyPrinterProvider = spincastXmlPrettyPrinterProvider;
         this.spincastXmlIndenter = spincastXmlIndenter;
         this.spincastXmlManagerConfig = spincastXmlManagerConfig;
@@ -31,7 +31,7 @@ public class SpincastXmlPrettyPrinter extends DefaultXmlPrettyPrinter {
         indentArraysWith(getSpincastXmlIndenter());
     }
 
-    protected ISpincastXmlManagerConfig getSpincastXmlManagerConfig() {
+    protected SpincastXmlManagerConfig getSpincastXmlManagerConfig() {
         return this.spincastXmlManagerConfig;
     }
 

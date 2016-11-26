@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -22,10 +22,10 @@ public class FileUploadTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void oneFile() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     File uploadedFile = context.request().getUploadedFileFirst("someName");
@@ -39,17 +39,17 @@ public class FileUploadTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void twoFilesSameName() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     List<File> uploadedFiles = context.request().getUploadedFiles("someName");
@@ -66,7 +66,7 @@ public class FileUploadTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
                                              .addEntityFileUpload("someFile2.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -74,10 +74,10 @@ public class FileUploadTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void multipleFiles() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     Map<String, List<File>> uploadedFiles = context.request().getUploadedFiles();
@@ -127,7 +127,7 @@ public class FileUploadTest extends SpincastDefaultNoAppIntegrationTestBase {
         String testFilePath = createTestingFilePath();
         FileUtils.copyInputStreamToFile(stream, new File(testFilePath));
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
                                              .addEntityFileUpload("someFile2.txt", true, "someName")
                                              .addEntityFileUpload("someFile3.txt", true, "other")
                                              .addEntityFileUpload(testFilePath, false, "fileSystemBased")

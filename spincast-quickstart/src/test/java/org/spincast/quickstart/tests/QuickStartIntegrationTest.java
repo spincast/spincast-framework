@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 /**
@@ -15,7 +15,7 @@ public class QuickStartIntegrationTest extends AppIntegrationTestBase {
     @Test
     public void testGreeting() throws Exception {
 
-        IHttpResponse response = GET("/greet/Stromgol").send();
+        HttpResponse response = GET("/greet/Stromgol").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

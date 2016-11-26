@@ -10,14 +10,14 @@ import java.io.InputStream;
 import javax.annotation.Nullable;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.configpropsfile.IFreeKeyConfig;
-import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
+import org.spincast.plugins.configpropsfile.FreeKeyConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfigDefault;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
@@ -30,7 +30,7 @@ import com.google.inject.Scopes;
 public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected IAppConfig appConfig;
+    protected AppConfig appConfig;
 
     protected String appPropertiesPath;
 
@@ -66,7 +66,7 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
         return new String[]{this.appPropertiesPath};
     }
 
-    public static interface IAppConfig extends ISpincastConfig, IFreeKeyConfig {
+    public static interface AppConfig extends SpincastConfig, FreeKeyConfig {
 
         public String getTestString();
 
@@ -88,12 +88,12 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     }
 
-    public static class PropsFileBasedConfig extends SpincastConfigPropsFileBased implements IAppConfig {
+    public static class PropsFileBasedConfig extends SpincastConfigPropsFileBased implements AppConfig {
 
         @Inject
-        public PropsFileBasedConfig(ISpincastUtils spincastUtils,
+        public PropsFileBasedConfig(SpincastUtils spincastUtils,
                                     @MainArgs @Nullable String[] mainArgs,
-                                    @Nullable ISpincastConfigPropsFileBasedConfig pluginConfig) {
+                                    @Nullable SpincastConfigPropsFileBasedConfig pluginConfig) {
             super(spincastUtils, mainArgs, pluginConfig);
         }
 
@@ -156,7 +156,7 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
             protected void configure() {
                 super.configure();
 
-                bind(ISpincastConfigPropsFileBasedConfig.class).toInstance(new SpincastConfigPropsFileBasedConfigDefault() {
+                bind(SpincastConfigPropsFileBasedConfig.class).toInstance(new SpincastConfigPropsFileBasedConfigDefault() {
 
                     //==========================================
                     // We enable the main arg strategy!
@@ -166,12 +166,12 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
                         return 1;
                     }
                 });
-                bind(IAppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
+                bind(AppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
             }
         };
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 

@@ -3,14 +3,14 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastDictionary;
-import org.spincast.core.locale.ILocaleResolver;
+import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.dictionary.SpincastDictionary;
+import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
 import org.spincast.plugins.dictionary.SpincastDictionaryPluginGuiceModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -18,10 +18,10 @@ import com.google.inject.Module;
 
 public class CustomSpincastDictionaryTest extends SpincastDefaultNoAppIntegrationTestBase {
 
-    public static class CustomSpincastDictionary extends SpincastDictionary {
+    public static class CustomSpincastDictionary extends SpincastDictionaryDefault {
 
         @Inject
-        public CustomSpincastDictionary(ILocaleResolver localeResolver) {
+        public CustomSpincastDictionary(LocaleResolver localeResolver) {
             super(localeResolver);
         }
 
@@ -43,7 +43,7 @@ public class CustomSpincastDictionaryTest extends SpincastDefaultNoAppIntegratio
                 install(new SpincastDictionaryPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
                     @Override
-                    protected Class<? extends ISpincastDictionary> bindSpincastDictionaryImplClass() {
+                    protected Class<? extends SpincastDictionary> bindSpincastDictionaryImplClass() {
                         return CustomSpincastDictionary.class;
                     }
                 });
@@ -54,7 +54,7 @@ public class CustomSpincastDictionaryTest extends SpincastDefaultNoAppIntegratio
     @Test
     public void testNotFoundCustomMessage() throws Exception {
 
-        IHttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

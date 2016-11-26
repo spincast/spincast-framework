@@ -8,10 +8,10 @@ import static org.junit.Assert.fail;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.SpincastTestConfig;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.WebsocketClientTest;
@@ -67,7 +67,7 @@ public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
         return new SpincastDefaultTestingModule() {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
+            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
                 return HttpsTestConfig.class;
             }
         };
@@ -79,7 +79,7 @@ public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
@@ -88,7 +88,7 @@ public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws", false, true).disableSslCertificateErrors().connect(client);
+        WebsocketClientWriter writer = websocket("/ws", false, true).disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -110,7 +110,7 @@ public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
@@ -124,7 +124,7 @@ public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
         //==========================================
         try {
             @SuppressWarnings("unused")
-            IWebsocketClientWriter writer = websocket("/ws", false, true).connect(client);
+            WebsocketClientWriter writer = websocket("/ws", false, true).connect(client);
             fail();
         } catch(Exception ex) {
             Throwable cause = ex.getCause();

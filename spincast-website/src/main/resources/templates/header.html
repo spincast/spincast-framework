@@ -3,12 +3,14 @@ Header
 ==========================================#}
 <header class="container">
 
+    {#==========================================
+    Logo and social buttons
+    ==========================================#}
     <div class="row">
         <div id="top" class="col-md-12">
             <a href="/"><img id="logo" src="/public/images/logo_top.png" alt="" /></a>
             
             <div id="topLinks">
-
                 <a href="https://twitter.com/spincast">
                     <img src="/public/images/twitter.png" title="News on Twitter" />
                 </a>
@@ -20,11 +22,44 @@ Header
                 <a href="https://github.com/spincast/spincast-framework">
                     <img src="/public/images/github.png" title="Code on Github" />
                 </a>
-
             </div>
         </div>
     </div>
     
+    {#==========================================
+    Alerts (Error/Warning/Confirmation) : 
+    static version, when javascript is disabled.
+    ==========================================#}
+    {% if spincast.alerts is not empty | default(false) %}
+        <noscript>
+            <div class="alerts">
+            	{% for alert in spincast.alerts %}
+                    {% set alertClass = "alert-danger" %}
+                    {% set symbol = "✘" %}
+                    {% if alert.alertType == "SUCCESS" %}
+                        {% set alertClass = "alert-success" %}
+                        {% set symbol = "✔" %}
+                    {% elseif alert.alertType == "WARNING" %}
+                        {% set alertClass = "alert-warning" %} 
+                        {% set symbol = "<span class='validationSymbolWarning'>!</span>" %}
+                    {% endif %}
+                    <p class="alert {{alertClass}}">
+                        <strong>{{symbol | raw}}</strong> {{alert.text}}
+                    </p> 
+            	{% endfor %}
+            </div>
+            
+            {#==========================================
+            Required to make sure the static Alerts
+            are visible (at the top of the page).
+            ==========================================#}
+            <meta http-equiv="refresh" content="0;URL='#top'" /> 
+        </noscript>
+    {% endif %}
+    
+    {#==========================================
+    Main menu
+    ==========================================#}
     <div class="row">
         <div class="col-md-12">
             <div class="left menu" id="menu">

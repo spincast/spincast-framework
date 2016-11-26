@@ -6,6 +6,7 @@
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent-pom</artifactId>
         <version>1.0.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>spincast-parent</artifactId>
@@ -77,7 +78,7 @@
             
             <!--=================================== 
             Undertow.
-            May be used for the IServer component
+            May be used for the Server component
             and the Http Client plugin.
             ====================================-->
             <dependency>
@@ -88,5 +89,16 @@
         
         </dependencies>
     </dependencyManagement>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
     
 </project>

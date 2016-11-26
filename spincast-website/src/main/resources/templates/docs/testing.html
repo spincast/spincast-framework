@@ -36,28 +36,27 @@ Docs : "Testing"
             </li>
             <li>
                 <p>
-                    <b><em>An HTTP server is very often started before running a test class.</em></b>
+                    <b><em>An HTTP Server is very often started before running a test class.</em></b>
                 </p>
                 <p>
-                    Not all tests require an HTTP server to be started, but we're not shy at all to start a server before running a test class
+                    Not all tests require an HTTP Server to be started, but we're not shy at all to start a Server before running a test class
                     which may benefit from it, even if the tests could run faster using another approach! 
                     For example, to test a <code>controller</code>, we do
                     not create a mocked <code>request</code> to call the <code>controller</code>'s methods directly. Instead, we
                     test the <code>controller</code> using a <em>real</em> <code>request</code>, on the 
-                    <em>real</em> HTTP server the application runs on.
+                    <em>real</em> HTTP Server the application runs on.
                 </p>
                 <p> 
-                    By starting an HTTP server before running your tests, you can test your <code>web API</code> as easily 
+                    By starting an HTTP Server before running your tests, you can test your <code>web API</code> as easily 
                     as you test simple methods. Also, your tests are then run in an environment which is as close as possible 
                     to the production environment.
                 </p>
                 <p>
-                    You may think that it is not very efficient to start a web server simply to run some basic tests. 
-                    And sometimes it's not! But the fact is that starting a server is in general very fast, at least when the default 
-                    <a href="http://undertow.io/">Undertow</a> server is used. At the time of writing, Spincast contains 
-                    over 700 tests and everything runs under <em>one minute</em>. As you'll see, the
+                    You may think that it is not very efficient to start a web Server simply to run some basic tests. 
+                    And sometimes it's not! But the fact is that starting a Server is in general very fast, at least when the default 
+                    <a href="http://undertow.io/">Undertow</a> Server is used. As you'll see, the
                     <a href="#testing_runner">Spincast JUnit runner</a>, and the provided test base classes, only start
-                    the server <em>once</em> for a given test class, not for each individual test: this helps in keeping the
+                    the Server <em>once</em> for a given test class, not for each individual test: this helps in keeping the
                     tests fast.
                 </p>
 
@@ -67,7 +66,7 @@ Docs : "Testing"
                     <b><em>The <span class="underline">real application itself</span> is often started before running a test class!</em></b>
                 </p>
                 <p>
-                    Not only do we often start an HTTP server before running a test class,
+                    Not only do we often start an HTTP Server before running a test class,
                     but Spincast makes it very easy to run the tests against <em>the real application itself</em>. No
                     mock, no simulation: the real application.
                 </p>
@@ -76,18 +75,18 @@ Docs : "Testing"
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        In other words, there are two types of Spincast testing: 
+        In other words, there are two types of Spincast testing : 
         
         <ul>
             <li>
                 Test classes that start the <em>real</em> application, that let this application create its Guice context and start
-                its HTTP server, and then that run their tests against it. Those are <code>integration tests</code>, you might say. We'll
+                its HTTP Server, and then that run their tests against it. Those are <code>integration tests</code>, you might say. We'll
                 see an example of this testing approach in the <a href="#testing_app_example">Integration test example</a>
                 section.
             </li>
             <li>
                 Test classes that create the Guice context by themselves. Those are more about 
-                regular <code>unit tests</code>: they do not require an HTTP server... But they are still 
+                regular <code>unit tests</code>: they do not require an HTTP Server... But they are still 
                 run using a Guice context! We'll see an example of this testing approach in the 
                 <a href="#testing_custom_example">Custom context test example</a> section.
             </li>
@@ -96,7 +95,7 @@ Docs : "Testing"
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Of course, when you run some tests against a <em>real</em> application, you first have to mock
-        some parts. Tests must be without side effects! The classic example is a database: a test
+        some parts. Tests must be without side effects! The classic example is a database : a test
         database must be used when tests are run or otherwise it would be total craziness. Another example is
         that you may want to disable some initialization tasks your application runs when it starts,
         so the tests run faster. The Spincast testing utilities and pattern make this 
@@ -127,7 +126,7 @@ Installation
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-testing-default&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
     &lt;scope&gt;test&lt;/scope&gt;
 &lt;/dependency&gt;</pre> 
             </p>
@@ -145,7 +144,7 @@ Installation
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Also, it's good to know that the <a href="#testing_runner"><code>Spincast JUnit Runner</code></a>, at which we'll
         have a look in a next section, can easily be used outside a Spincast
-        application. It has its own artifact, <code>org.spincast:spincast-testing-junit-runner:{{spincastCurrrentVersion}}</code>, 
+        application. It has its own artifact, <code>org.spincast:spincast-testing-junit-runner:{{spincast.spincastCurrrentVersion}}</code>, 
         and has no dependency to any other Spincast artifacts.
     </p>
     
@@ -167,10 +166,10 @@ Integration test example
         For this example, we will use the <a href="#quick_start">Quick Start</a> application and we will 
         write a test to validate one of its <code>API</code> methods. If you look at the 
         <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-quickstart/src/main/java/org/spincast/quickstart/App.java">App</a> 
-        class from the Quick Start, you will see that a <code>POST("/sum")</code> route is defined. This is the route we're going to test.
+        class from the Quick Start, you will see that a <code>POST("/sum")</code> Route is defined. This is the Route we're going to test.
     </p>
     <p>
-        This route expects a <code>POST</code> 
+        This Route expects a <code>POST</code> 
         request with two post parameters:
         <ul>
             <li>
@@ -202,7 +201,7 @@ Integration test example
     <p>
         <div>
             <p>
-                <pre class="ace ace-java"
+                <pre class="ace ace-java" data-ace-hi="2,4,2,26"
 >// The main method
 public static void main(String[] args) {
     createApp(args, null);
@@ -298,7 +297,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
                         Creating a mocked <code>request</code>.
                     </li>
                     <li>
-                        Calling the <code>sumRoute(IAppRequestContext context)</code> method 
+                        Calling the <code>sumRoute(AppRequestContext context)</code> method 
                         of the controller directly.
                     </li>
                     <li>
@@ -307,12 +306,12 @@ public static Injector createApp(String[] args, Module overridingModule) {
                 </ul>
             </li>
             <li>
-                Test the <code>router</code> too, to make sure that <code>POST("/sum")</code> requests
+                Test the <code>Router</code> too, to make sure that <code>POST("/sum")</code> requests
                 are routed correctly.
                 Again, this would probably require a lot of mocking.
             </li>
             <li>
-                Then we would pray that, when the application is actually run in production, the way the controller and the router work together, in
+                Then we would pray that, when the application is actually run in production, the way the controller and the Router work together, in
                 addition to other components that can be involved (such as the <code>front controller</code>), doesn't
                 make a difference so our tests are in fact useless! 
             </li>
@@ -325,15 +324,16 @@ public static Injector createApp(String[] args, Module overridingModule) {
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
-        First, let's make our test class extend <code>SpincastIntegrationTestBase</code>, which is the base class
-        Spincast provides for integration testing:
+        First, let's make our test class extend 
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastIntegrationTestBase.html">SpincastIntegrationTestBase</a>, 
+        which is the base class Spincast provides for integration testing :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
 >public class QuickStartSumTest extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
@@ -355,7 +355,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
                     <li>
                         <span class="code-line-nbr">1-2</span> : Our test class now extends 
                         <code>SpincastIntegrationTestBase</code> and parameterizes it with
-                        the route context type and WebSocket context type that our application uses. We'll see later 
+                        the <code>Route Context</code> type and <code>WebSocket Context</code> type that our application uses. We'll see later 
                         that it's also possible to <a href="#testing_app_example_writing_custom_base_class">create a custom base class</a> so 
                         we don't have to use that kind of parameterized class all the time.
                     </li>
@@ -369,7 +369,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
     </p> 
     <p>
         The <code>SpincastIntegrationTestBase</code> only requires one thing
-        from us: that we provide the Guice injector to use to run the test class. So it is now time to come back to 
+        from us : that we provide the Guice injector to use to run the test class. So it is now time to come back to 
         the famous <code><em>createApp(...)</em></code> method from our Quick Start application! Do you
         remember what this method does? It starts the application but it also <em>returns the Guice injector</em>. 
         So let's start our application and retrieve its Guice injector:
@@ -379,13 +379,13 @@ public static Injector createApp(String[] args, Module overridingModule) {
             <p>
                 <pre class="ace ace-java"
 >public class QuickStartSumTest extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
 
-        Module overridingModule = getDefaultOverridingModule(IAppRequestContext.class, 
-                                                             IAppWebsocketContext.class);
+        Module overridingModule = getDefaultOverridingModule(AppRequestContext.class, 
+                                                             AppWebsocketContext.class);
         return App.createApp(null, overridingModule);
     }
 
@@ -414,7 +414,6 @@ public static Injector createApp(String[] args, Module overridingModule) {
                         <code>createApp(...)</code> method returns the application's Guice injector and we return it too so it can be
                         used to run the test class.
                     </li>
-                    
                 </ul>
             </p>   
         </div>
@@ -429,30 +428,31 @@ public static Injector createApp(String[] args, Module overridingModule) {
         Writing the test
     </h5>
     <p>
-        In the test we're about to write, we'll need an instance of the <code>IJsonManager</code> component to
-        validate the <code>Json</code> response returned by the server. 
+        In the test we're about to write, we'll need an instance of the 
+        <a href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a> component to
+        validate the <code>Json</code> response returned by the Server. 
         With the setup we put into place, it is very easy: we now have full access to the application's Guice context.
         Also, dependencies are automatically injected into the
         test class (thanks to the <code>SpincastIntegrationTestBase</code> base class). Therefore, to get
-        an instance of the  <code>IJsonManager</code> component, we simply inject it!
+        an instance of the  <code>JsonManager</code> component, we simply inject it!
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java" data-ace-hi="11,4,11,11|12,4,12,37"
 >public class QuickStartSumTest extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
 
-        Module overridingModule = getDefaultOverridingModule(IAppRequestContext.class, 
-                                                             IAppWebsocketContext.class);
+        Module overridingModule = getDefaultOverridingModule(AppRequestContext.class, 
+                                                             AppWebsocketContext.class);
         return App.createApp(null, overridingModule);
     }
     
     @Inject
-    private IJsonManager jsonManager;
+    private JsonManager jsonManager;
 
     @Test
     public void validRequest() throws Exception {
@@ -460,15 +460,14 @@ public static Injector createApp(String[] args, Module overridingModule) {
     }
     
     // Other tests...
-    
 }</pre> 
             </p>
         </div>
     </p>
     <p>
-        Isn't this cool? Think about it! Our real (but tweakable) application is started, 
+        All right! Our real (but tweakable) application is started, 
         and we can write our tests the exact same way we write the application itself: with full 
-        dependency injection and with a running HTTP server so we can test the web API.
+        dependency injection and with a running HTTP Server so we can test the web API.
     </p>
     <p>
         Let's now write the test...
@@ -476,40 +475,39 @@ public static Injector createApp(String[] args, Module overridingModule) {
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         The <code>SpincastIntegrationTestBase</code>
-        base class provides methods to easily use a <a href="/plugins/spincast-http-client-with-websocket"><code>Spincast HTTP Client</code></a>
-        instance. We will use this client to create and send a request to the <code>"/sum"</code> route that we want to test. 
+        base class provides methods to easily use a <a href="/plugins/spincast-http-client-with-websocket">Spincast HTTP Client</a>
+        instance. We will use this client to create and send a request to the <code>"/sum"</code> Route that we want to test. 
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
 >public class QuickStartSumTest extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
 
-        Module overridingModule = getDefaultOverridingModule(IAppRequestContext.class, 
-                                                             IAppWebsocketContext.class);
+        Module overridingModule = getDefaultOverridingModule(AppRequestContext.class, 
+                                                             AppWebsocketContext.class);
         return App.createApp(null, overridingModule);
     }
     
     @Inject
-    private IJsonManager jsonManager;
+    private JsonManager jsonManager;
 
     @Test
     public void validRequest() throws Exception {
     
-        IHttpResponse response = POST("/sum").addEntityFormDataValue("first", "40")
-                                             .addEntityFormDataValue("second", "2")
-                                             .addJsonAcceptHeader()
-                                             .send();
+        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "40")
+                                            .addEntityFormDataValue("second", "2")
+                                            .addJsonAcceptHeader()
+                                            .send();
 
         // TODO : the assertions
     }
     
     // Other tests...
-    
 }</pre> 
             </p>
             <p>
@@ -518,7 +516,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
                     <li>
                         <span class="code-line-nbr">18</span> : We use the <code>POST(...)</code> method 
                         provided by the base class to start building our request. We target the
-                        <code>"/sum"</code> route. The application's host and port will be automatically
+                        <code>"/sum"</code> Route. The application's host and port will be automatically
                         added.
                     </li>
                     <li>
@@ -533,7 +531,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
                     </li>
                     <li>
                         <span class="code-line-nbr">21</span> : We send the request! We have access to the response
-                        in the form of an <code>IHttpResponse</code> object.
+                        in the form of an <code>HttpResponse</code> object.
                     </li>
                 </ul>
             </p>
@@ -541,30 +539,30 @@ public static Injector createApp(String[] args, Module overridingModule) {
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Let's now add some <code>assertions</code> to validate the response:
+        Let's now add some <code>assertions</code> to validate the response :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
 >public class QuickStartSumTest extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
 
-        Module overridingModule = getDefaultOverridingModule(IAppRequestContext.class, 
-                                                             IAppWebsocketContext.class);
+        Module overridingModule = getDefaultOverridingModule(AppRequestContext.class, 
+                                                             AppWebsocketContext.class);
         return App.createApp(null, overridingModule);
     }
     
     @Inject
-    private IJsonManager jsonManager;
+    private JsonManager jsonManager;
 
     @Test
     public void validRequest() throws Exception {
     
-        IHttpResponse response = POST("/sum").addEntityFormDataValue("first", "40")
+        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "40")
                                              .addEntityFormDataValue("second", "2")
                                              .addJsonAcceptHeader()
                                              .send();
@@ -576,7 +574,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
         String content = response.getContentAsString();
         assertNotNull(content);
 
-        IJsonObject resultObj = this.jsonManager.create(content);
+        JsonObject resultObj = this.jsonManager.create(content);
         assertNotNull(resultObj);
 
         assertEquals(new Integer(42), resultObj.getInteger("result"));
@@ -607,7 +605,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
                     <li>
                         <span class="code-line-nbr">33-34</span> : Now that we have a Java object representing the <code>Json</code>
                         returned by the application, validations are very easy. We make sure that this object contains a <code>"result"</code>
-                        property and that its value is really the sum of the two parameters we sent. We also validate that no
+                        field and that its value is really the sum of the two parameters we sent. We also validate that no
                         error occurred.
                     </li>
                 </ul>
@@ -635,13 +633,13 @@ public static Injector createApp(String[] args, Module overridingModule) {
             <p>
                 <pre class="ace ace-java"
 >public abstract class AppIntegrationTestBase extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
 
-        Module overridingModule = getDefaultOverridingModule(IAppRequestContext.class, 
-                                                             IAppWebsocketContext.class);
+        Module overridingModule = getDefaultOverridingModule(AppRequestContext.class, 
+                                                             AppWebsocketContext.class);
         return App.createApp(null, overridingModule);
     }
 
@@ -658,8 +656,10 @@ public static Injector createApp(String[] args, Module overridingModule) {
     <p>
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="0,31,0,61"
->public class QuickStartSumTest extends AppIntegrationTestBase {
+                <pre class="ace ace-java" data-ace-hi="1,31,1,61"
+>
+
+public class QuickStartSumTest extends AppIntegrationTestBase {
 
     @Test
     public void validRequest() throws Exception {
@@ -694,7 +694,7 @@ public static Injector createApp(String[] args, Module overridingModule) {
     <p>
         As we saw, we can provide an <code><em>overriding module</em></code> when we start the application. 
         This allows us to mock some components so our tests run without side effects. For example,
-        we could change an <code>IUserDatabase</code> binding so it points to a 
+        we could change an <code>UserDatabase</code> binding so it points to a 
         <code>TestUserDatabase</code> implementation instead of pointing to the real database.
     </p>
     <p>
@@ -710,14 +710,14 @@ public static Injector createApp(String[] args, Module overridingModule) {
     </p>
     <p>
         In fact, the recommended way of creating a custom overriding module is by always 
-        <em>combining it</em> with the default one:
+        <em>combining it</em> with the default one :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
 >public abstract class AppIntegrationTestBase extends 
-        SpincastIntegrationTestBase&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+        SpincastIntegrationTestBase&lt;AppRequestContext, AppWebsocketContext&gt; {
 
     @Override
     protected Injector createInjector() {
@@ -731,8 +731,8 @@ public static Injector createApp(String[] args, Module overridingModule) {
     protected Module getOverridingModule() {
 
         Module defaultOverridingModule = 
-                getDefaultOverridingModule(IAppRequestContext.class,
-                                           IAppWebsocketContext.class);
+                getDefaultOverridingModule(AppRequestContext.class,
+                                           AppWebsocketContext.class);
 
         Module appOverridingModule = new AbstractModule() {
 
@@ -768,11 +768,9 @@ public static Injector createApp(String[] args, Module overridingModule) {
                     </li>
                     <li>
                         <span class="code-line-nbr">28</span> : Finally, we use the 
-                        <a href="http://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/util/Modules.html#combine-com.google.inject.Module...-"><code>combine(...)</code></a>
+                        <a href="http://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/util/Modules.html#combine-com.google.inject.Module...-">combine(...)</a>
                         utility provided by Guice to create the final overriding module! 
                     </li>
-                    
-                    
                 </ul>
             </p>   
         </div>
@@ -791,22 +789,22 @@ Custom context test example
     
     <p>
         In the previous example, we used <code>integration testing</code>: we started our real application 
-        and we used its Guice context and HTTP server to run our test. But for some tests, starting an
-        HTTP server is simply overkill.
+        and we used its Guice context and HTTP Server to run our test. But for some tests, starting an
+        HTTP Server is simply overkill.
     </p>
     <p>
         In those cases, the tests that we are going to write will be closer to <code>"unit tests"</code>. But 
         those tests will still be a little bit different than 
-        traditional unit tests: they are going to use a <em>Guice context</em>. 
+        traditional unit tests : they are going to use a <em>Guice context</em>. 
         By doing so, those tests will be able to use dependency injection and "mocking"
         some components will be very easy.
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Let's see an example of this kind of tests by looking at a real Spincast test class:
-        <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-core-parent/spincast-core-tests/src/test/java/org/spincast/tests/json/JsonObjectsTest.java"><code>JsonObjectsTest.java</code></a>.
+        Let's see an example of this kind of tests by looking at a real Spincast test class :
+        <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-core-parent/spincast-core-tests/src/test/java/org/spincast/tests/json/JsonObjectsTest.java">JsonObjectsTest.java</a>.
         As you can see, this test class extends <code>SpincastTestBase</code> instead of <code>SpincastIntegrationTestBase</code> and 
-        doesn't start any application. Instead, the test class creates the Guice injector/context by itself:
+        doesn't start any application. Instead, the test class creates the Guice injector/context by itself :
     
     </p>
     <p>
@@ -854,7 +852,7 @@ Custom context test example
 >public class JsonObjectsTest extends SpincastTestBase {
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Override
     protected Injector createInjector() {
@@ -869,12 +867,12 @@ Custom context test example
         String str = "{\"innerObj\":{\"someBoolean\":true,\"someInt\":123}," +
                      "\"anotherBoolean\":true,\"anotherInt\":44444}";
 
-        IJsonObject jsonObj = this.jsonManager.create(str);
+        JsonObject jsonObj = this.jsonManager.create(str);
         assertNotNull(jsonObj);
         assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
         assertEquals(new Integer(44444), jsonObj.getInteger("anotherInt"));
 
-        IJsonObject jsonObj2 = jsonObj.getJsonObject("innerObj");
+        JsonObject jsonObj2 = jsonObj.getJsonObject("innerObj");
         assertNotNull(jsonObj2);
         assertEquals(true, jsonObj2.getBoolean("someBoolean"));
         assertEquals(new Integer(123), jsonObj2.getInteger("someInt"));
@@ -894,7 +892,7 @@ Custom context test example
                     </li>
                     <li>
                         <span class="code-line-nbr">19</span> : We can use the injected dependencies in our tests. 
-                        As you can see, this test doesn't require any running HTTP server or application to be started.
+                        As you can see, this test doesn't require any running HTTP Server or application to be started.
                     </li>
                 </ul>
             </p>
@@ -917,7 +915,7 @@ Spincast JUnit runner
     
     <p>
         Spincast's testing base classes all use a custom JUnit runner: 
-        <a href="/public/javadoc/org/spincast/testing/utils/SpincastJUnitRunner.html">SpincastJUnitRunner</a>.
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/SpincastJUnitRunner.html">SpincastJUnitRunner</a>.
     </p>
     <p>
         This custom runner has a couple of differences as compared with the default JUnit runner, 
@@ -928,12 +926,12 @@ Spincast JUnit runner
         This way of running the tests works very well when a Guice context is involved.
         The Guice context is created when the test class is initialized, and then this context is used to run all the tests
         of the class. If <a href="#testing_app_example">integration testing</a> is used, then the application
-        is started when the test class is initialized and both its Guice context and its HTTP server are used to run
+        is started when the test class is initialized and both its Guice context and its HTTP Server are used to run
         all the tests of the class.
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Let's see in more details how the Spincast JUnit runner works:
+        Let's see in more details how the Spincast JUnit runner works :
     </p>
     <p>
         <ul>
@@ -991,7 +989,7 @@ Spincast JUnit runner
         <ul>
             <li>
                 If your test class (or a parent) implements
-                <a href="/public/javadoc/org/spincast/testing/utils/IBeforeAfterClassMethodsProvider.html"><code>IBeforeAfterClassMethodsProvider</code></a> 
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/BeforeAfterClassMethodsProvider.html">BeforeAfterClassMethodsProvider</a> 
                 then the <code>beforeClass()</code> and <code>afterClass()</code> methods will be called. 
                 We highly recommend that you implement this interface
                 if you don't use a base class provided by Spincast because the <code>beforeClass()</code> method 
@@ -1000,7 +998,7 @@ Spincast JUnit runner
             </li>
             <li>
                 If your test class is annotated with
-                <a href="/public/javadoc/org/spincast/testing/utils/ExpectingBeforeClassException.html"><code>@ExpectingBeforeClassException</code></a>
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/ExpectingBeforeClassException.html">@ExpectingBeforeClassException</a>
                 then the <code>beforeClass()</code> method is expected to throw an exception! In other words, the test class will be
                 shown by JUnit as a "success" only of the <code>beforeClass()</code> method throws an exception. This is useful,
                 in integration testing, to validate that your application refuses some invalid configuration when 
@@ -1008,25 +1006,25 @@ Spincast JUnit runner
             </li>
             <li>
                 If your test class (or a parent) implements
-                <a href="/public/javadoc/org/spincast/testing/utils/ITestFailureListener.html"><code>ITestFailureListener</code></a>
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/TestFailureListener.html">TestFailureListener</a>
                 then the <code>testFailure(...)</code> method will be called each time a test fails. This
                 allows you to add a breakpoint or some logs, and to inspect the context of the failure.
             </li>
             <li>
-                You can use the <a href="/public/javadoc/org/spincast/testing/utils/Repeat.html"><code>@Repeat</code></a> annotation. 
+                You can use the <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/Repeat.html">@Repeat</a> annotation. 
                 When added to the class itself, this annotation makes your test class loop X number of times. Note that the 
                 <code>beforeClass()</code> and <code>afterClass()</code> methods will also be called X number of time, so the
                 Guice context will be recreated each time.
                 You can specify an amount of milliseconds to sleep between two loops, using the <code>sleep</code> parameter.
             </li>
             <li>
-                You can also use the <a href="/public/javadoc/org/spincast/testing/utils/Repeat.html"><code>@Repeat</code></a> annotation
+                You can also use the <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/Repeat.html">@Repeat</a> annotation
                 <em>on a test</em>. This will make the test run X number of time during the execution of a test class
                 loop.
             </li>
             <li>
                 If your test class (or a parent) implements
-                <a href="/public/javadoc/org/spincast/testing/utils/IRepeatedClassAfterMethodProvider.html"><code>IRepeatedClassAfterMethodProvider</code></a> 
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/RepeatedClassAfterMethodProvider.html">RepeatedClassAfterMethodProvider</a> 
                 then the <code>afterClassLoops()</code> method will be called when all the loops of the test class have been
                 run.
             </li>
@@ -1034,7 +1032,7 @@ Spincast JUnit runner
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        A quick note about the <code>@Repeat</code></a> annotation: this annotation should probably only be used 
+        A quick note about the <code>@Repeat</code></a> annotation : this annotation should probably only be used 
         for debugging purpose! A test should always be reproducible and should probably not have
         to be run multiple times. But this annotation, in association with the 
         <code>testFailure(...)</code> method, can be a great help to debug a test
@@ -1054,14 +1052,15 @@ SpincastTestBase
     </h4>
     
     <p>
-        The <code>SpincastTestBase</code> class is the root of all Spincast testing base classes.
+        The <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastTestBase.html">SpincastTestBase</a> class is 
+        the root of all Spincast testing base classes.
         As we saw in the <a href="#testing_custom_example">Custom context test example</a> section,
         it is also the class to extend if you want to run some
         tests using a Guice context but without starting your actual application.
     </p>
     
     <p>
-        Some information about the <code>SpincastTestBase</code> class:
+        Some information about the <code>SpincastTestBase</code> class :
     </p>
     
     <p>  
@@ -1075,9 +1074,9 @@ SpincastTestBase
                 tests are sorted alphanumerically, using the name of their method, before they are run.
              </li>
              <li>
-                It implements <a href="/public/javadoc/org/spincast/testing/utils/IBeforeAfterClassMethodsProvider.html"><code>IBeforeAfterClassMethodsProvider</code></a>, 
-                <a href="/public/javadoc/org/spincast/testing/utils/ITestFailureListener.html"><code>ITestFailureListener</code></a> and
-                <a href="/public/javadoc/org/spincast/testing/utils/IRepeatedClassAfterMethodProvider.html"><code>IRepeatedClassAfterMethodProvider</code></a>, 
+                It implements <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/BeforeAfterClassMethodsProvider.html">BeforeAfterClassMethodsProvider</a>, 
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/TestFailureListener.html">TestFailureListener</a> and
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/RepeatedClassAfterMethodProvider.html">RepeatedClassAfterMethodProvider</a>, 
                 so it gives access to all Spincast JUnit runner's features.
              </li>
              <li>
@@ -1088,7 +1087,7 @@ SpincastTestBase
              <li>
                 It creates a temporary directory in which the tests can create files and directories
                 if they need to. When the tests are finished, this temporary folder is automatically deleted. 
-                There are some methods related to this temporary directory available to the tests:
+                There are some methods related to this temporary directory available to the tests :
                 
                 <ul class="apiList">
                     <li>
@@ -1126,7 +1125,7 @@ SpincastTestBase
                         </div>
                     </li>
                     <li>
-                        <code class="apiItem">ISpincastConfig <span>getSpincastConfig</span>()</code>
+                        <code class="apiItem">SpincastConfig <span>getSpincastConfig</span>()</code>
                         <div class="well">
                             Returns the Spincast configurations component.
                         </div>
@@ -1148,7 +1147,8 @@ SpincastIntegrationTestBase
     
     <p>
         As we saw in the <a href="#testing_app_example">Integration test example</a>,
-        <code>SpincastIntegrationTestBase</code> is the class to extend to run integration
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastIntegrationTestBase.html">SpincastIntegrationTestBase</a> 
+        is the class to extend to run integration
         tests using Spincast. It is used when you want to run tests against your real application.
     </p>
     
@@ -1159,13 +1159,13 @@ SpincastIntegrationTestBase
     <p> 
         <ul>
             <li>
-                It injects in itself the <code>server</code>, the <code>router</code>, and an
+                It injects in itself the <code>Server</code>, the <code>Router</code>, and an
                 <code>HTTP Client</code>. So those dependencies are already available to the
                 extending classes, using the associated getters.
             </li>
             <li>
-                It automatically stops the server when all tests are done, but it does <em>not</em> start 
-                it by itself! It is the responsibility of your tested application to start the server.
+                It automatically stops the Server when all tests are done, but it does <em>not</em> start 
+                it by itself! It is the responsibility of your tested application to start the Server.
             </li>
             <li>
                 It defines a default <code>overriding module</code> to use to create the Guice context. This module
@@ -1175,12 +1175,12 @@ SpincastIntegrationTestBase
                 <a href="#testing_app_example_overriding_module">combining</a> both modules.
             </li>
             <li>
-                It defines a lot of utility methods (<a href="/public/javadoc/org/spincast/testing/core/SpincastIntegrationTestBase.html">view them all here</a>) 
-                to easily create and send HTTP and WebSocket requests. For example:
+                It defines a lot of utility methods (<a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastIntegrationTestBase.html">view them all here</a>) 
+                to easily create and send HTTP and WebSocket requests. For example :
                 
                 <ul class="apiList">
                     <li>
-                        <code class="apiItem">IGetRequestBuilder <span>GET</span>/<span>POST</span>/<span>DELETE</span>/<span>...</span>(String path)</code>
+                        <code class="apiItem">GetRequestBuilder <span>GET</span>/<span>POST</span>/<span>DELETE</span>/<span>...</span>(String path)</code>
                         <div class="well">
                             Starts the creation of a request, using the relative
                             <code>path</code>. The application's host and port will be automatically found.
@@ -1197,7 +1197,7 @@ SpincastIntegrationTestBase
                         <code class="apiItem">String <span>createTestUrl</span>(String path)</code>
                         <div class="well">
                             Creates a full url to the relative <code>path</code>, using the
-                            server's host and port.
+                            Server's host and port.
                         </div>
                     </li>
                 </ul>  
@@ -1228,8 +1228,8 @@ Other test base classes
         SpincastNoAppIntegrationTestBase
     </h5>
     <p>
-        The <a href="/public/javadoc/org/spincast/testing/core/SpincastNoAppIntegrationTestBase.html">SpincastNoAppIntegrationTestBase</a>
-        class extends <code>SpincastNoAppIntegrationTestBase</code>. It can be used when you need a running HTTP server and all the
+        The <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastNoAppIntegrationTestBase.html">SpincastNoAppIntegrationTestBase</a>
+        class extends <code>SpincastNoAppIntegrationTestBase</code>. It can be used when you need a running HTTP Server and all the
         HTTP utilities provided by the <code>SpincastNoAppIntegrationTestBase</code>class, but you don't want to start your application. 
     </p>
     <p>
@@ -1237,10 +1237,10 @@ Other test base classes
         the abstract <code>getTestingModule()</code> method.
     </p>
     <p>
-        The server is automatically started in the <code>beforeClass()</code> method.
+        The Server is automatically started in the <code>beforeClass()</code> method.
     </p>
     <p>
-        All routes are deleted before each test is run.
+        All Routes are deleted before each test is run.
     </p>
     
     <h5>
@@ -1248,27 +1248,12 @@ Other test base classes
         SpincastDefaultNoAppIntegrationTestBase
     </h5>
     <p>
-        The <a href="/public/javadoc/org/spincast/defaults/tests/SpincastDefaultNoAppIntegrationTestBase.html">SpincastDefaultNoAppIntegrationTestBase</a>
-        class extends <code>SpincastNoAppIntegrationTestBase</code>. It simply parameterizes it with the default route context type
-        and WebSocket context type. You should probably not have to use this class if you have
-        custom context types (which is recommended and already done if your application is based on 
+        The <a class="javadoc" href="/public/javadoc/org/spincast/defaults/tests/SpincastDefaultNoAppIntegrationTestBase.html">SpincastDefaultNoAppIntegrationTestBase</a>
+        class extends <code>SpincastNoAppIntegrationTestBase</code>. It simply parameterizes it with the default <code>Route Context</code> type
+        and <code>WebSocket Context</code> type. You should probably not have to use this class if you have
+        custom Context types (which is recommended and already done if your application is based on 
         the <a href="#quick_start">Quick Start</a>).
-    </p>
-    
+    </p> 
     
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-         
-            
-            
+     

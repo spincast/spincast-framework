@@ -23,10 +23,10 @@ Download
     <div class="row"> 
         <div class="col-xs-12">
         
-            {% if spincastCurrrentVersionIsSnapshot  %}
+            {% if spincast.spincastCurrrentVersionIsSnapshot  %}
         
                 <div class="alert alert-warning topContextAlert" role="alert"><strong>Warning!</strong> The current version,
-                    "<code>{{spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
+                    "<code>{{spincast.spincastCurrrentVersion}}</code>" is a <em>snapshot</em> version. That means that it
                     can change, it is not a stable version. Do not use this
                     as a start for a real application!
                 </div>
@@ -51,10 +51,10 @@ Download
                 Maven artifacts
             </h3>
             <p>
-                The current version is : <code>{{spincastCurrrentVersion}}</code>.
+                The current version is : <code>{{spincast.spincastCurrrentVersion}}</code>.
             </p>
             
-            {% if spincastCurrrentVersionIsSnapshot  %}
+            {% if spincast.spincastCurrrentVersionIsSnapshot  %}
 
                  <p>
                     Since this is a <code>SNAPSHOT</code> version, you first have to add this repository
@@ -81,7 +81,7 @@ Download
 >&lt;dependency>
     &lt;groupId>org.spincast&lt;/groupId>
     &lt;artifactId>spincast-default&lt;/artifactId>
-    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre> 
             </p>
             <p>
@@ -91,7 +91,7 @@ Download
 >&lt;dependency>
     &lt;groupId>org.spincast&lt;/groupId>
     &lt;artifactId>spincast-core&lt;/artifactId>
-    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre> 
                 
             </p>

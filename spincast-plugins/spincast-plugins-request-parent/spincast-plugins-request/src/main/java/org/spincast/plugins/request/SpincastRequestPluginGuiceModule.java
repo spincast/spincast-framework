@@ -2,7 +2,7 @@ package org.spincast.plugins.request;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.exchange.IRequestRequestContextAddon;
+import org.spincast.core.exchange.RequestRequestContextAddon;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
@@ -26,7 +26,7 @@ public class SpincastRequestPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     protected void bindRequestContextAddon() {
 
-        bind(parameterizeWithRequestContext(IRequestRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastRequestRequestContextAddon.class))
+        bind(parameterizeWithRequestContext(RequestRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastRequestRequestContextAddon.class))
                                                                                .in(SpincastGuiceScopes.REQUEST);
     }
 

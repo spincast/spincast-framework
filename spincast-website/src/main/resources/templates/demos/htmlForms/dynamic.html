@@ -1,0 +1,277 @@
+{#==========================================
+Demos - HTML Forms - Dynamic Fields
+==========================================#}
+{% extends "../htmlForms.html" %}
+
+{% block demoSectionClasses %}demo_html_forms_single{% endblock %}
+{% block meta_title %}Demos - HTML Forms - Dynamic Fields{% endblock %}
+{% block meta_description %}Dynamic Fields HTML Forms with validation demo{% endblock %}
+
+{% set demoId = "dynamic" %}
+
+{% block scripts %}
+
+{#==========================================
+We use Handlebars as a client-side 
+templating engine to generate new elements.
+==========================================#
+<script src="/public/js/handlebars.min-7535e48.js"></script>
+<script>
+    
+	$(function() {
+		
+	    app.dynamicDemo = app.dynamicDemo || {};
+	    
+	    app.dynamicDemo.newUserTemplate = Handlebars.compile($("#newUserTemplate").html());
+	    app.dynamicDemo.newTagTemplate = Handlebars.compile($("#newTagTemplate").html());
+	    
+	    $("#addUserBtn").on("click", function() {
+	    	app.dynamicDemo.addUser();
+	    	return false;
+	    });
+	    
+	    app.dynamicDemo.addUser = function() {
+	    	var nextPos = $("#usersForm").find(".user").size();
+	    	var newUserHtml = app.dynamicDemo.newUserTemplate({userPath: "demoForm.users[" + nextPos + "]",
+	    		                                               position: nextPos,
+	    		                                               positionInc: nextPos + 1});	    	
+	    	$("#newUserPosition").before(newUserHtml);
+	    }
+	    
+	    $("#usersForm").on("click", ".addTag", function() {
+	    	var name = $(this).attr("name");
+	    	var userPos = name.substring(name.indexOf("_") + 1);
+	    	app.dynamicDemo.addTag(this, userPos)
+	    	return false;
+	    });
+
+	    app.dynamicDemo.addTag = function(btn, userPos) {
+	    	var $tagsDiv = $(btn).closest(".tags");
+	    	var nextTagPos = $tagsDiv.find(".tag").size();
+	    	var newTagHtml = app.dynamicDemo.newTagTemplate({tagNum:nextTagPos + 1, tagPath: "demoForm.users[" + userPos + "].tags[" + nextTagPos + "]"});
+	    	$tagsDiv.find(".newTagPosition").before(newTagHtml);
+	    }
+
+	    $("#usersForm").on("click", ".deleteUser", function() {
+	    	var name = $(this).attr("name");
+	    	var userPos = name.substring(name.indexOf("_") + 1);
+	    	app.dynamicDemo.deleteUser(this, userPos)
+	    	return false;
+	    });
+	    
+	    app.dynamicDemo.deleteUser = function(btn, userPos) {
+	    	var $userDiv = $(btn).closest(".user");
+	    	$userDiv.remove();	
+	    }
+	});
+
+</script>
+
+{#==========================================
+Transforms the Pebble "User" template to a
+Handlebars template so it can be used to
+dynamically add a new User using javascript.
+==========================================#}
+<script id="newUserTemplate" type="text/x-handlebars-template">
+	{% include "./dynamic/userFragment.html" 
+       with {"position": "{{position}}",
+             "positionInc": "{{positionInc}}", 
+             "userPath":"{{userPath}}", 
+             "user":{"tags":[''], "status":''}} %}
+</script>
+
+{#==========================================
+New tag template
+==========================================#}
+{% verbatim %}
+<script id="newTagTemplate" type="text/x-handlebars-template">
+<div class="row">
+    <span class="col-sm-1">#{{tagNum}}</span>
+	<div class="col-sm-11">
+	    <input type="text" 
+               class="form-control tag has-no-message" 
+               name="{{tagPath}}" 
+               placeholder="Tag {{tagNum}}"
+               value="" />
+    </div>
+</div>
+</script>
+{% endverbatim %}
+
+{% endblock %}
+
+{% block demoBody %}
+<h4>
+    <a class="anchor_small" href="#form" id="form" title="permanent link"></a>
+    Dynamic Fields
+</h4>
+
+<div id="htmlFormDemosWarning" class="well">
+    <p>
+        <strong>Please note</strong> : 
+        <p>
+            It is important to know that this demo is not a <code>SPA</code> and 
+            <em>doesn't use any data management javascript library</em>. 
+            There is no <code>"store"</code> as the source of the dynamic elements. 
+        </p>
+        <p>
+            This demo shows how the <code>form model</code>
+            can be manipulated freely on the client side simply using the
+            <code>"name"</code> attributes on a traditional <code>HTML</code> form. 
+            <em>It is fully working even when javascript is disabled.</em>
+        </p>
+        <p>
+            We're going to provide a true <code>SPA</code> demo in a near future.
+        </p> 
+    </p>
+</div>
+
+<p>
+    Add <code>tags</code> and new
+    <code>users</code> and submit the form to see the validations in action! All existing field are required and have
+    a minimum length. Also, <code>tags</code> must all be different in a given <code>User</code> section.
+</p>
+
+<div class="row tallTop">     
+    <div class="col-sm-12">
+    
+        <form id="usersForm" action="#form" class="container" method="post" 
+              novalidate="novalidate" accept-charset="UTF-8">
+              
+            {% if validation._ | validationSubmitted()%}
+            
+                {% if validation._ | validationHasErrors() %}
+                    {% set alertClass = "alert-danger" %}
+                    {% set status = "Some users are invalid" %}
+                    
+                {% elseif validation._ | validationHasWarnings() %}
+                    {% set alertClass = "alert-warning" %}
+                    {% set status = "Some users contains warnings" %}
+                    
+                {% elseif validation._ | validationIsValid() %}
+                    {% set alertClass = "alert-success" %}
+                    {% set status = "All users are valid!" %} 
+                {% endif %}
+            
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="alert {{alertClass}}">
+                            <img src="/public/images/icons/info2.png" /> {{status}} 
+                        </div>
+                    </div>
+                </div> 
+            {% endif %}
+              
+            {% for user in demoForm.users | default([]) %}
+                {% set userPath = "demoForm.users[" + loop.index + "]" %}
+                {% include "./dynamic/userFragment.html" with 
+                        {"position" : loop.index, "positionInc" : loop.index + 1} %}
+            {% endfor %}
+            
+            <span id="newUserPosition"></span>
+            
+            <div class="row">
+                <input type="submit" 
+                       id="addUserBtn"
+                       name="addUserBtn"
+                       class="btn btn-default btn-sm" 
+                       value="+ Add user" />   
+            </div>
+            
+            <div class="row subRow">
+                <div class="subDiv col-md-6 col-sm-12">
+                    <button id="subBtn" type="submit" class="btn btn-primary">Submit and validate</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<h4>
+    <a class="anchor_small" href="#code" id="code" title="permanent link"></a>
+    Code
+</h4>
+<p>
+    <ul>
+        <li>
+            The controller (the backend part) : 
+            <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsDynamicFieldsController.java"><em>DemoHtmlFormsDynamicFieldsController.java</em></a>
+        </li>
+        <li>
+            The <code>HTML</code> templates (the frontend part) : 
+            
+            <ol>
+                <li>
+                    <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/resources/templates/demos/htmlForms/single.html"><em>dynamic.html</em></a>
+                </li>
+                <li>
+                    <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/resources/templates/demos/htmlForms/dynamic/userFragment.html"><em>userFragment.html</em></a>
+                </li>
+            </ol> 
+        </li>
+    </ul>
+</p>
+
+
+<h4>
+    <a class="anchor_small" href="#how_to" id="how_to" title="permanent link"></a>
+    How to
+</h4>
+<p>
+    The explanation of this demo will be quite short. We encourage
+    you to look at the source to see how it actually works!
+</p>
+    Basically, this demo shows how the fields of a traditional <code>HTML</code> form
+    can be manipulate to change the underlying <code>form model</code>.
+    Spincast uses the <code>"name"</code> 
+    attributes of the fields of a form to <em>dynamically</em> build
+    a <a href="/documentation#jsonobject">JsonObject</a> representing this form.
+</p>
+<p>
+    When a form is submitted, we get a <code>JsonObject</code> which represents it :
+
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>JsonObject form = context.request().getFormData() //...</pre>       
+        </p>
+    </div>  
+    The structure of this <code>JsonObject</code> <em>depends on the <code>names</code> of 
+    the submitted fields</em>. If you add or remove some fields client-side, the <code>form</code>
+    object will reflect those modifications. This allows great flexibility when using
+     traditional <code>HTML</code> forms (vs. <code>SPA</code> or using data management javascript libraries) 
+     since the model can be dynamically changed, client-side.
+</p>
+<p>
+    Also, by adding back that dynamic <code>JsonObject</code> to the 
+    <a href="/documentation#sending_response_model">response model</a>,
+    you can re-render the form and all the fields are kept, as they
+    were submitted :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>context.response().getModel().put("demoForm", form);</pre>       
+        </p>
+    </div>  
+</p>
+<p>
+    You can learn more about the dynamic of a form model
+    in the <a href="/documentation#forms_validation_data">Getting the submitted form data</a> section
+    of the documentation.
+</p>
+
+<h4>
+    <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
+    More info
+</h4>
+<p>
+    Make sure you also try the first demo of this section, <a href="/demos-tutorials/html-forms/single-field">Introduction - Single field</a>
+    which introduces forms and validation using Spincast.
+</p>
+<p>
+    Otherwise, you can learn everything about those topics in the <a href="/documentation#validation">Validation</a> 
+    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+</p>
+
+{% endblock %}

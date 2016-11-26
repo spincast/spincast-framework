@@ -4,37 +4,38 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.websocket.IWebsocketPeerManager;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketContextBase;
 import org.spincast.core.websocket.WebsocketContextBaseDeps;
+import org.spincast.core.websocket.WebsocketPeerManager;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.WebsocketControllerTestBase;
-import org.spincast.tests.websocket.CustomWebsocketContextTest.IAppWebsocketContext;
+import org.spincast.tests.websocket.CustomWebsocketContextTest.AppWebsocketContext;
 
 import com.google.inject.Module;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class CustomWebsocketContextTest extends SpincastWebsocketNoAppIntegrationTestBase<IDefaultRequestContext, IAppWebsocketContext> {
+public class CustomWebsocketContextTest extends
+                                        SpincastWebsocketNoAppIntegrationTestBase<DefaultRequestContext, AppWebsocketContext> {
 
-    public static interface IAppWebsocketContext extends IWebsocketContext<IAppWebsocketContext> {
+    public static interface AppWebsocketContext extends WebsocketContext<AppWebsocketContext> {
 
         public void customMethod(String message);
     }
 
-    public static class AppWebsocketContext extends WebsocketContextBase<IAppWebsocketContext>
-                                            implements IAppWebsocketContext {
+    public static class AppWebsocketContextDefault extends WebsocketContextBase<AppWebsocketContext>
+                                                   implements AppWebsocketContext {
 
         @AssistedInject
-        public AppWebsocketContext(@Assisted("endpointId") String endpointId,
-                                   @Assisted("peerId") String peerId,
-                                   @Assisted IWebsocketPeerManager peerManager,
-                                   WebsocketContextBaseDeps<IAppWebsocketContext> deps) {
+        public AppWebsocketContextDefault(@Assisted("endpointId") String endpointId,
+                                          @Assisted("peerId") String peerId,
+                                          @Assisted WebsocketPeerManager peerManager,
+                                          WebsocketContextBaseDeps<AppWebsocketContext> deps) {
             super(endpointId,
                   peerId,
                   peerManager,
@@ -52,8 +53,8 @@ public class CustomWebsocketContextTest extends SpincastWebsocketNoAppIntegratio
         return new SpincastDefaultTestingModule() {
 
             @Override
-            protected Class<? extends IWebsocketContext<?>> getWebsocketContextImplementationClass() {
-                return AppWebsocketContext.class;
+            protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
+                return AppWebsocketContextDefault.class;
             }
         };
     }
@@ -61,11 +62,11 @@ public class CustomWebsocketContextTest extends SpincastWebsocketNoAppIntegratio
     @Test
     public void testCustomMethod() throws Exception {
 
-        WebsocketControllerTestBase<IDefaultRequestContext, IAppWebsocketContext> controller =
-                new WebsocketControllerTestBase<IDefaultRequestContext, IAppWebsocketContext>(getServer()) {
+        WebsocketControllerTestBase<DefaultRequestContext, AppWebsocketContext> controller =
+                new WebsocketControllerTestBase<DefaultRequestContext, AppWebsocketContext>(getServer()) {
 
                     @Override
-                    public void onPeerMessage(IAppWebsocketContext context, String message) {
+                    public void onPeerMessage(AppWebsocketContext context, String message) {
 
                         super.onPeerMessage(context, message);
 
@@ -79,7 +80,7 @@ public class CustomWebsocketContextTest extends SpincastWebsocketNoAppIntegratio
         getRouter().websocket("/ws").save(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
-        IWebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").connect(client);
         assertNotNull(writer);
         assertTrue(client.isConnectionOpen());
 

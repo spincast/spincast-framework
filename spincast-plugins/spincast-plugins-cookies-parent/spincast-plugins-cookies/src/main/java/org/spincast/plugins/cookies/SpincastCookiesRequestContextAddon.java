@@ -4,29 +4,29 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.cookies.ICookieFactory;
-import org.spincast.core.cookies.ICookiesRequestContextAddon;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.server.IServer;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.cookies.CookieFactory;
+import org.spincast.core.cookies.CookiesRequestContextAddon;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.server.Server;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 
 import com.google.inject.Inject;
 
-public class SpincastCookiesRequestContextAddon<R extends IRequestContext<?>>
-                                               implements ICookiesRequestContextAddon<R> {
+public class SpincastCookiesRequestContextAddon<R extends RequestContext<?>>
+                                               implements CookiesRequestContextAddon<R> {
 
     private final R requestContext;
-    private final IServer server;
-    private final ICookieFactory cookieFactory;
+    private final Server server;
+    private final CookieFactory cookieFactory;
 
-    private Map<String, ICookie> cookies;
+    private Map<String, Cookie> cookies;
 
     @Inject
     public SpincastCookiesRequestContextAddon(R requestContext,
-                                              IServer server,
-                                              ICookieFactory cookieFactory) {
+                                              Server server,
+                                              CookieFactory cookieFactory) {
         this.requestContext = requestContext;
         this.server = server;
         this.cookieFactory = cookieFactory;
@@ -36,21 +36,21 @@ public class SpincastCookiesRequestContextAddon<R extends IRequestContext<?>>
         return this.requestContext;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected ICookieFactory getCookieFactory() {
+    protected CookieFactory getCookieFactory() {
         return this.cookieFactory;
     }
 
     @Override
-    public ICookie getCookie(String name) {
+    public Cookie getCookie(String name) {
         return getCookies().get(name);
     }
 
     @Override
-    public void addCookie(ICookie cookie) {
+    public void addCookie(Cookie cookie) {
 
         boolean valid = validateCookie(cookie);
         if(!valid) {
@@ -61,19 +61,24 @@ public class SpincastCookiesRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
+    public Cookie createCookie(String name) {
+        return getCookieFactory().createCookie(name);
+    }
+
+    @Override
     public void addCookie(String name, String value) {
-        ICookie cookie = getCookieFactory().createCookie(name, value);
+        Cookie cookie = getCookieFactory().createCookie(name, value);
         addCookie(cookie);
     }
 
     @Override
     public void addCookie(String name, String value, String path, String domain, Date expires, boolean secure,
                           boolean httpOnly, boolean discard, int version) {
-        ICookie cookie = getCookieFactory().createCookie(name, value, path, domain, expires, secure, httpOnly, discard, version);
+        Cookie cookie = getCookieFactory().createCookie(name, value, path, domain, expires, secure, httpOnly, discard, version);
         addCookie(cookie);
     }
 
-    protected boolean validateCookie(ICookie cookie) {
+    protected boolean validateCookie(Cookie cookie) {
         Objects.requireNonNull(cookie, "Can't add a NULL cookie");
 
         String name = cookie.getName();
@@ -85,25 +90,25 @@ public class SpincastCookiesRequestContextAddon<R extends IRequestContext<?>>
 
     @Override
     public void deleteCookie(String name) {
-        ICookie cookie = getCookies().get(name);
+        Cookie cookie = getCookies().get(name);
         deleteCookie(cookie);
     }
 
     @Override
     public void deleteAllCookies() {
-        for(ICookie cookie : getCookies().values()) {
+        for(Cookie cookie : getCookies().values()) {
             deleteCookie(cookie);
         }
     }
 
-    protected void deleteCookie(ICookie cookie) {
+    protected void deleteCookie(Cookie cookie) {
         if(cookie != null) {
             cookie.setExpires(DateUtils.addYears(new Date(), -1));
         }
     }
 
     @Override
-    public Map<String, ICookie> getCookies() {
+    public Map<String, Cookie> getCookies() {
         if(this.cookies == null) {
             this.cookies = getServer().getCookies(getRequestContext().exchange());
         }
@@ -113,6 +118,11 @@ public class SpincastCookiesRequestContextAddon<R extends IRequestContext<?>>
     @Override
     public void resetCookies() {
         this.cookies = null;
+    }
+
+    @Override
+    public boolean isCookiesEnabledValidated() {
+        return getCookies().size() > 0;
     }
 
 }

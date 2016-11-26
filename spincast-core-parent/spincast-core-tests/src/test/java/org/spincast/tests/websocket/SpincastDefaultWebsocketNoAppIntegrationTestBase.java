@@ -1,8 +1,8 @@
 package org.spincast.tests.websocket;
 
 import org.junit.Ignore;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 
 import com.google.inject.Module;
@@ -14,7 +14,7 @@ import com.google.inject.Module;
  */
 @Ignore
 public class SpincastDefaultWebsocketNoAppIntegrationTestBase extends
-                                                              SpincastWebsocketNoAppIntegrationTestBase<IDefaultRequestContext, IDefaultWebsocketContext> {
+                                                              SpincastWebsocketNoAppIntegrationTestBase<DefaultRequestContext, DefaultWebsocketContext> {
 
     @Override
     public Module getTestingModule() {

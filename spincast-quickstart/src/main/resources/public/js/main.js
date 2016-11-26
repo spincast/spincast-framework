@@ -40,3 +40,12 @@ function moveToXY(x, y) {
         container.style.transform = 'rotateX(' + rotateX + 'deg) rotateZ(0deg)';
     }, 2000);
 }
+
+$(function() {
+	setTimeout(function() {
+		moveToXY(325,368);
+	}, 1000);
+});
+
+
+

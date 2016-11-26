@@ -5,14 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceScopes;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -27,15 +27,15 @@ public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     public static class ServiceClass {
 
-        private final Provider<IDefaultRequestContext> requestContextProvider;
-        private final Provider<IDefaultRequestContext> requestContextProvider2;
+        private final Provider<DefaultRequestContext> requestContextProvider;
+        private final Provider<DefaultRequestContext> requestContextProvider2;
 
         //==========================================
         // We have to use Providers since those objects are Request scoped!
         //==========================================
         @Inject
-        public ServiceClass(Provider<IDefaultRequestContext> requestContextProvider,
-                            Provider<IDefaultRequestContext> requestContextProvider2,
+        public ServiceClass(Provider<DefaultRequestContext> requestContextProvider,
+                            Provider<DefaultRequestContext> requestContextProvider2,
                             Provider<TestRequestScopeClass> testRequestScopeClassProvider) {
             assertNotNull(requestContextProvider);
             assertNotNull(requestContextProvider2);
@@ -45,10 +45,10 @@ public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
         }
 
         public void setCookie() {
-            IDefaultRequestContext requestContext1 = this.requestContextProvider.get();
+            DefaultRequestContext requestContext1 = this.requestContextProvider.get();
             assertNotNull(requestContext1);
 
-            IDefaultRequestContext requestContext2 = this.requestContextProvider2.get();
+            DefaultRequestContext requestContext2 = this.requestContextProvider2.get();
             assertNotNull(requestContext2);
             assertTrue(requestContext1 == requestContext2);
 
@@ -98,18 +98,18 @@ public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void oneInstanceOnly() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IDefaultRequestContext requestContextAsGeneric = context.guice()
-                                                                        .getInstance(IDefaultRequestContext.class);
+                DefaultRequestContext requestContextAsGeneric = context.guice()
+                                                                        .getInstance(DefaultRequestContext.class);
                 assertNotNull(requestContextAsGeneric);
                 assertTrue(requestContextAsGeneric == context);
 
-                IDefaultRequestContext requestContextAsGeneric2 = context.guice()
-                                                                         .getInstance(IDefaultRequestContext.class);
+                DefaultRequestContext requestContextAsGeneric2 = context.guice()
+                                                                         .getInstance(DefaultRequestContext.class);
                 assertNotNull(requestContextAsGeneric2);
                 assertTrue(requestContextAsGeneric2 == context);
 
@@ -122,26 +122,26 @@ public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
-    public void getRequestScopeObjectsFromElsewhereThanIHandler() throws Exception {
+    public void getRequestScopeObjectsFromElsewhereThanHandler() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 RequestScopeTest.this.controller.testHandlerMethod();
 
-                ICookie cookie = context.cookies().getCookie("testCookie");
+                Cookie cookie = context.cookies().getCookie("testCookie");
                 assertNotNull(cookie);
                 assertEquals("testValue", cookie.getValue());
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(getSpincastConfig().getDefaultLocale().toString(), response.getContentAsString());

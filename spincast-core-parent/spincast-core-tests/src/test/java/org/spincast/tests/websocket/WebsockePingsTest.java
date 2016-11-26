@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
-import org.spincast.plugins.undertow.IClosedEventSentCallback;
-import org.spincast.plugins.undertow.IUndertowWebsocketEndpointWriter;
-import org.spincast.plugins.undertow.IUndertowWebsocketEndpointWriterFactory;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
+import org.spincast.plugins.undertow.ClosedEventSentCallback;
+import org.spincast.plugins.undertow.UndertowWebsocketEndpointWriter;
+import org.spincast.plugins.undertow.UndertowWebsocketEndpointWriterFactory;
 import org.spincast.plugins.undertow.SpincastUndertowWebsocketEndpointWriter;
-import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
+import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
@@ -32,7 +32,7 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
 
         @AssistedInject
         public SpincastUndertowWebsocketEndpointWriterTest(@Assisted Map<String, WebSocketChannel> channels,
-                                                           ISpincastUndertowConfig spincastUndertowConfig) {
+                                                           SpincastUndertowConfig spincastUndertowConfig) {
             super(channels, spincastUndertowConfig);
         }
 
@@ -40,7 +40,7 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
         public void sendClosingConnection(int closingCode,
                                           String closingReason,
                                           Set<String> peerIds,
-                                          IClosedEventSentCallback callback) {
+                                          ClosedEventSentCallback callback) {
             // We disable the "Endpoint closed" events normally 
             // sent to the peers!
             callback.done();
@@ -55,11 +55,11 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
             @Override
             protected void configure() {
 
-                install(new FactoryModuleBuilder().implement(IUndertowWebsocketEndpointWriter.class,
+                install(new FactoryModuleBuilder().implement(UndertowWebsocketEndpointWriter.class,
                                                              SpincastUndertowWebsocketEndpointWriterTest.class)
-                                                  .build(IUndertowWebsocketEndpointWriterFactory.class));
+                                                  .build(UndertowWebsocketEndpointWriterFactory.class));
 
-                bind(ISpincastUndertowConfig.class).toInstance(new SpincastUndertowConfigDefault() {
+                bind(SpincastUndertowConfig.class).toInstance(new SpincastUndertowConfigDefault() {
 
                     //==========================================
                     // Server pings every seconds
@@ -84,7 +84,7 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
         //==========================================
         // Pings every second
         //==========================================
-        IWebsocketClientWriter writer = websocket("/ws").ping(1).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").ping(1).connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
 
@@ -105,7 +105,7 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
         //==========================================
         // No pings == no closed connection detection!
         //==========================================
-        IWebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
 
@@ -122,7 +122,7 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
 

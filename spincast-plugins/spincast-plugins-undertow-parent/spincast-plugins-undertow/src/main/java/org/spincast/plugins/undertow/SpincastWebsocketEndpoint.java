@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.websocket.IWebsocketEndpointHandler;
-import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
+import org.spincast.core.websocket.WebsocketEndpointHandler;
+import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -35,13 +35,13 @@ import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 
-public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
+public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastWebsocketEndpoint.class);
 
     public static final String EXCHANGE_VARIABLE_PEER_ID = SpincastWebsocketEndpoint.class.getName() + "_peerId";
 
-    private final IUndertowWebsocketEndpointWriterFactory undertowWebsocketEndpointWriterFactory;
+    private final UndertowWebsocketEndpointWriterFactory undertowWebsocketEndpointWriterFactory;
     private final String endpointId;
 
     //==========================================
@@ -50,10 +50,10 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
     //==========================================
     private final Map<String, WebSocketChannel> webSocketChannelByPeerId = new ConcurrentHashMap<String, WebSocketChannel>();
 
-    private final IWebsocketEndpointHandler eventsHandler;
-    private final ISpincastUndertowConfig spincastUndertowConfig;
-    private final ISpincastUndertowUtils spincastUndertowUtils;
-    private IUndertowWebsocketEndpointWriter websocketWriter;
+    private final WebsocketEndpointHandler eventsHandler;
+    private final SpincastUndertowConfig spincastUndertowConfig;
+    private final SpincastUndertowUtils spincastUndertowUtils;
+    private UndertowWebsocketEndpointWriter websocketWriter;
     private volatile Thread pingSenderThread = null;
 
     private volatile boolean endpointIsClosing = false;
@@ -70,10 +70,10 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
      */
     @AssistedInject
     public SpincastWebsocketEndpoint(@Assisted String endpointId,
-                                     @Assisted IWebsocketEndpointHandler eventsHandler,
-                                     IUndertowWebsocketEndpointWriterFactory undertowWebsocketEndpointWriterFactory,
-                                     ISpincastUndertowConfig spincastUndertowConfig,
-                                     ISpincastUndertowUtils spincastUndertowUtils) {
+                                     @Assisted WebsocketEndpointHandler eventsHandler,
+                                     UndertowWebsocketEndpointWriterFactory undertowWebsocketEndpointWriterFactory,
+                                     SpincastUndertowConfig spincastUndertowConfig,
+                                     SpincastUndertowUtils spincastUndertowUtils) {
         this.endpointId = endpointId;
         this.eventsHandler = eventsHandler;
         this.undertowWebsocketEndpointWriterFactory = undertowWebsocketEndpointWriterFactory;
@@ -96,23 +96,23 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
         return this.webSocketChannelByPeerId;
     }
 
-    protected IWebsocketEndpointHandler getEventsHandler() {
+    protected WebsocketEndpointHandler getEventsHandler() {
         return this.eventsHandler;
     }
 
-    protected IUndertowWebsocketEndpointWriterFactory getUndertowWebsocketEndpointWriterFactory() {
+    protected UndertowWebsocketEndpointWriterFactory getUndertowWebsocketEndpointWriterFactory() {
         return this.undertowWebsocketEndpointWriterFactory;
     }
 
-    protected ISpincastUndertowConfig getSpincastUndertowConfig() {
+    protected SpincastUndertowConfig getSpincastUndertowConfig() {
         return this.spincastUndertowConfig;
     }
 
-    protected ISpincastUndertowUtils getSpincastUndertowUtils() {
+    protected SpincastUndertowUtils getSpincastUndertowUtils() {
         return this.spincastUndertowUtils;
     }
 
-    protected IUndertowWebsocketEndpointWriter getUndertowWebsocketWriter() {
+    protected UndertowWebsocketEndpointWriter getUndertowWebsocketWriter() {
 
         if(this.websocketWriter == null) {
             this.websocketWriter = getUndertowWebsocketEndpointWriterFactory().create(getWebSocketChannelByPeerId());
@@ -162,7 +162,7 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
 
         try {
 
-            IClosedEventSentCallback callback = new IClosedEventSentCallback() {
+            ClosedEventSentCallback callback = new ClosedEventSentCallback() {
 
                 @Override
                 public void done() {
@@ -273,7 +273,7 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
         // Try to send a "closing connection" message
         // to the peers before closing their connection?
         //==========================================
-        IClosedEventSentCallback callback = new IClosedEventSentCallback() {
+        ClosedEventSentCallback callback = new ClosedEventSentCallback() {
 
             @Override
             public void done() {
@@ -362,7 +362,7 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
                         break;
                     }
 
-                    getUndertowWebsocketWriter().sendPings(new IWebsocketPeersWriteCallback() {
+                    getUndertowWebsocketWriter().sendPings(new WebsocketPeersWriteCallback() {
 
                         @Override
                         public void connectionClosed(Set<String> peerids) {
@@ -411,7 +411,7 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
             return;
         }
 
-        getUndertowWebsocketWriter().sendMessage(peerIds, message, new IWebsocketPeersWriteCallback() {
+        getUndertowWebsocketWriter().sendMessage(peerIds, message, new WebsocketPeersWriteCallback() {
 
             @Override
             public void connectionClosed(Set<String> peerIds) {
@@ -452,7 +452,7 @@ public class SpincastWebsocketEndpoint implements IWebsocketEndpoint {
             return;
         }
 
-        getUndertowWebsocketWriter().sendMessage(peerIds, message, new IWebsocketPeersWriteCallback() {
+        getUndertowWebsocketWriter().sendMessage(peerIds, message, new WebsocketPeersWriteCallback() {
 
             @Override
             public void connectionClosed(Set<String> peerIds) {

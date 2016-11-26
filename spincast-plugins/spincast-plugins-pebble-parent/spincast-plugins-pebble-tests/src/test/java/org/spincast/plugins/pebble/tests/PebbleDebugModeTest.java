@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.pebble.ISpincastPebbleTemplatingEngineConfig;
+import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.testing.core.SpincastTestConfig;
 
 import com.google.inject.Inject;
@@ -28,16 +28,16 @@ public class PebbleDebugModeTest extends SpincastDefaultNoAppIntegrationTestBase
         return new SpincastDefaultTestingModule(getMainArgsToUse()) {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
+            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
                 return SpincastTestConfigTest.class;
             }
         };
     }
 
     @Inject
-    protected ISpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
+    protected SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
 
-    protected ISpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
+    protected SpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
         return this.spincastPebbleTemplatingEngineConfig;
     }
 

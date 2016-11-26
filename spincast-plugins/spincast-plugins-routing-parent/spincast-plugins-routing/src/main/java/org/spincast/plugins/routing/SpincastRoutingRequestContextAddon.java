@@ -1,15 +1,15 @@
 package org.spincast.plugins.routing;
 
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.routing.IRouteHandlerMatch;
-import org.spincast.core.routing.IRoutingRequestContextAddon;
-import org.spincast.core.routing.IRoutingResult;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.RouteHandlerMatch;
+import org.spincast.core.routing.RoutingRequestContextAddon;
+import org.spincast.core.routing.RoutingResult;
 
 import com.google.inject.Inject;
 
-public class SpincastRoutingRequestContextAddon<R extends IRequestContext<R>>
-                                               implements IRoutingRequestContextAddon<R> {
+public class SpincastRoutingRequestContextAddon<R extends RequestContext<R>>
+                                               implements RoutingRequestContextAddon<R> {
 
     private final R requestContext;
 
@@ -22,12 +22,12 @@ public class SpincastRoutingRequestContextAddon<R extends IRequestContext<R>>
         return this.requestContext;
     }
 
-    protected IRouteHandlerMatch<R> getCurrentRouteMatch() {
+    protected RouteHandlerMatch<R> getCurrentRouteMatch() {
 
         @SuppressWarnings("unchecked")
-        IRouteHandlerMatch<R> match =
-                (IRouteHandlerMatch<R>)getRequestContext().variables()
-                                                          .get(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH);
+        RouteHandlerMatch<R> match =
+                (RouteHandlerMatch<R>)getRequestContext().variables()
+                                                         .get(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH);
         return match;
     }
 
@@ -37,17 +37,17 @@ public class SpincastRoutingRequestContextAddon<R extends IRequestContext<R>>
     }
 
     @Override
-    public IRouteHandlerMatch<R> getCurrentRouteHandlerMatch() {
+    public RouteHandlerMatch<R> getCurrentRouteHandlerMatch() {
         return getCurrentRouteMatch();
     }
 
     @Override
-    public IRoutingResult<R> getRoutingResult() {
+    public RoutingResult<R> getRoutingResult() {
 
         @SuppressWarnings("unchecked")
-        IRoutingResult<R> routingResult =
-                (IRoutingResult<R>)getRequestContext().variables()
-                                                      .get(SpincastConstants.RequestScopedVariables.ROUTING_RESULT);
+        RoutingResult<R> routingResult =
+                (RoutingResult<R>)getRequestContext().variables()
+                                                     .get(SpincastConstants.RequestScopedVariables.ROUTING_RESULT);
         return routingResult;
     }
 

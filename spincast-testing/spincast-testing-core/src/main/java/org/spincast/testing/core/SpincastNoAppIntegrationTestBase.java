@@ -1,7 +1,7 @@
 package org.spincast.testing.core;
 
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.websocket.WebsocketContext;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -32,7 +32,7 @@ import com.google.inject.util.Modules;
  * </p>
  * 
  */
-public abstract class SpincastNoAppIntegrationTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
+public abstract class SpincastNoAppIntegrationTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                                       extends SpincastIntegrationTestBase<R, W> {
 
     @Override

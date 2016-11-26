@@ -26,22 +26,22 @@ import javax.net.ssl.SSLContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
-import org.spincast.core.controllers.IFrontController;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.cookies.ICookieFactory;
+import org.spincast.core.controllers.FrontController;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IStaticResource;
+import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.utils.ssl.ISSLContextFactory;
-import org.spincast.core.websocket.IWebsocketEndpointHandler;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
-import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
+import org.spincast.core.utils.SpincastUtils;
+import org.spincast.core.utils.ssl.SSLContextFactory;
+import org.spincast.core.websocket.WebsocketEndpointHandler;
+import org.spincast.core.websocket.WebsocketEndpointManager;
+import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 
@@ -62,7 +62,6 @@ import io.undertow.security.handlers.SecurityInitialHandler;
 import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.Cookie;
 import io.undertow.server.handlers.CookieImpl;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.ResponseCodeHandler;
@@ -79,47 +78,47 @@ import io.undertow.util.HttpString;
 /**
  * Server implementation for Undertow.
  */
-public class SpincastUndertowServer implements IServer {
+public class SpincastUndertowServer implements Server {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastUndertowServer.class);
 
     public static final String UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE = "UT000020";
 
-    private final IWebsocketEndpointFactory spincastWebsocketEndpointFactory;
-    private final ISpincastUtils spincastUtils;
-    private final ISpincastConfig config;
-    private final ISpincastUndertowConfig spincastUndertowConfig;
-    private final IFrontController frontController;
-    private final ICookieFactory cookieFactory;
-    private final ICorsHandlerFactory corsHandlerFactory;
-    private final IGzipCheckerHandlerFactory gzipCheckerHandlerFactory;
-    private final ISpincastResourceHandlerFactory spincastResourceHandlerFactory;
-    private final ICacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory;
-    private final IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
-    private final ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
-    private final ISSLContextFactory sslContextFactory;
+    private final WebsocketEndpointFactory spincastWebsocketEndpointFactory;
+    private final SpincastUtils spincastUtils;
+    private final SpincastConfig config;
+    private final SpincastUndertowConfig spincastUndertowConfig;
+    private final FrontController frontController;
+    private final CookieFactory cookieFactory;
+    private final CorsHandlerFactory corsHandlerFactory;
+    private final GzipCheckerHandlerFactory gzipCheckerHandlerFactory;
+    private final SpincastResourceHandlerFactory spincastResourceHandlerFactory;
+    private final CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory;
+    private final FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
+    private final SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
+    private final SSLContextFactory sslContextFactory;
 
     private Undertow undertowServer;
     private IoCallback doNothingCallback = null;
     private IoCallback closeExchangeCallback = null;
 
-    private final Map<String, IStaticResource<?>> staticResourcesServedByUrlPath = new HashMap<String, IStaticResource<?>>();
+    private final Map<String, StaticResource<?>> staticResourcesServedByUrlPath = new HashMap<String, StaticResource<?>>();
 
     private final Map<String, String> httpAuthActiveRealms = new HashMap<String, String>();
 
-    private final Map<String, ISpincastHttpAuthIdentityManager> httpAuthIdentityManagersByRealmName =
-            new HashMap<String, ISpincastHttpAuthIdentityManager>();
+    private final Map<String, SpincastHttpAuthIdentityManager> httpAuthIdentityManagersByRealmName =
+            new HashMap<String, SpincastHttpAuthIdentityManager>();
 
     //==========================================
     // Websocket endpoints, with there id as the key.
     //==========================================
-    private final Map<String, IWebsocketEndpoint> websocketEndpointsMap =
-            new ConcurrentHashMap<String, IWebsocketEndpoint>();
+    private final Map<String, WebsocketEndpoint> websocketEndpointsMap =
+            new ConcurrentHashMap<String, WebsocketEndpoint>();
 
     private HttpHandler spincastFrontControllerHandler;
     private PathHandler staticResourcesPathHandler;
     private PathHandler httpAuthenticationHandler;
-    private ICacheBusterRemovalHandler cacheBusterRemovalHandler;
+    private CacheBusterRemovalHandler cacheBusterRemovalHandler;
 
     private FormParserFactory formParserFactory;
 
@@ -130,19 +129,19 @@ public class SpincastUndertowServer implements IServer {
      * Constructor
      */
     @Inject
-    public SpincastUndertowServer(ISpincastConfig config,
-                                  ISpincastUndertowConfig spincastUndertowConfig,
-                                  IFrontController frontController,
-                                  ISpincastUtils spincastUtils,
-                                  ICookieFactory cookieFactory,
-                                  ICorsHandlerFactory corsHandlerFactory,
-                                  IGzipCheckerHandlerFactory gzipCheckerHandlerFactory,
-                                  ISpincastResourceHandlerFactory spincastResourceHandlerFactory,
-                                  ICacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
-                                  IFileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
-                                  ISpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
-                                  IWebsocketEndpointFactory spincastWebsocketEndpointFactory,
-                                  ISSLContextFactory sslContextFactory) {
+    public SpincastUndertowServer(SpincastConfig config,
+                                  SpincastUndertowConfig spincastUndertowConfig,
+                                  FrontController frontController,
+                                  SpincastUtils spincastUtils,
+                                  CookieFactory cookieFactory,
+                                  CorsHandlerFactory corsHandlerFactory,
+                                  GzipCheckerHandlerFactory gzipCheckerHandlerFactory,
+                                  SpincastResourceHandlerFactory spincastResourceHandlerFactory,
+                                  CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
+                                  FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
+                                  SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
+                                  WebsocketEndpointFactory spincastWebsocketEndpointFactory,
+                                  SSLContextFactory sslContextFactory) {
         this.config = config;
         this.spincastUndertowConfig = spincastUndertowConfig;
         this.frontController = frontController;
@@ -158,63 +157,63 @@ public class SpincastUndertowServer implements IServer {
         this.sslContextFactory = sslContextFactory;
     }
 
-    protected ISpincastConfig getConfig() {
+    protected SpincastConfig getConfig() {
         return this.config;
     }
 
-    protected ISpincastUndertowConfig getSpincastUndertowConfig() {
+    protected SpincastUndertowConfig getSpincastUndertowConfig() {
         return this.spincastUndertowConfig;
     }
 
-    protected IFrontController getFrontController() {
+    protected FrontController getFrontController() {
         return this.frontController;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
-    protected ICookieFactory getCookieFactory() {
+    protected CookieFactory getCookieFactory() {
         return this.cookieFactory;
     }
 
-    protected ICorsHandlerFactory getCorsHandlerFactory() {
+    protected CorsHandlerFactory getCorsHandlerFactory() {
         return this.corsHandlerFactory;
     }
 
-    protected IGzipCheckerHandlerFactory getGzipCheckerHandlerFactory() {
+    protected GzipCheckerHandlerFactory getGzipCheckerHandlerFactory() {
         return this.gzipCheckerHandlerFactory;
     }
 
-    protected ISpincastResourceHandlerFactory getSpincastResourceHandlerFactory() {
+    protected SpincastResourceHandlerFactory getSpincastResourceHandlerFactory() {
         return this.spincastResourceHandlerFactory;
     }
 
-    protected ICacheBusterRemovalHandlerFactory getCacheBusterRemovalHandlerFactory() {
+    protected CacheBusterRemovalHandlerFactory getCacheBusterRemovalHandlerFactory() {
         return this.cacheBusterRemovalHandlerFactory;
     }
 
-    protected IFileClassPathResourceManagerFactory getFileClassPathResourceManagerFactory() {
+    protected FileClassPathResourceManagerFactory getFileClassPathResourceManagerFactory() {
         return this.fileClassPathResourceManagerFactory;
     }
 
-    protected ISpincastHttpAuthIdentityManagerFactory getSpincastHttpAuthIdentityManagerFactory() {
+    protected SpincastHttpAuthIdentityManagerFactory getSpincastHttpAuthIdentityManagerFactory() {
         return this.spincastHttpAuthIdentityManagerFactory;
     }
 
-    protected IWebsocketEndpointFactory getSpincastWebsocketEndpointFactory() {
+    protected WebsocketEndpointFactory getSpincastWebsocketEndpointFactory() {
         return this.spincastWebsocketEndpointFactory;
     }
 
-    protected Map<String, IStaticResource<?>> getStaticResourcesServedByUrlPath() {
+    protected Map<String, StaticResource<?>> getStaticResourcesServedByUrlPath() {
         return this.staticResourcesServedByUrlPath;
     }
 
-    protected Map<String, ISpincastHttpAuthIdentityManager> getHttpAuthIdentityManagersByRealmName() {
+    protected Map<String, SpincastHttpAuthIdentityManager> getHttpAuthIdentityManagersByRealmName() {
         return this.httpAuthIdentityManagersByRealmName;
     }
 
-    protected Map<String, IWebsocketEndpoint> getWebsocketEndpointsMap() {
+    protected Map<String, WebsocketEndpoint> getWebsocketEndpointsMap() {
         return this.websocketEndpointsMap;
     }
 
@@ -222,7 +221,7 @@ public class SpincastUndertowServer implements IServer {
         return this.httpAuthActiveRealms;
     }
 
-    protected ISSLContextFactory getSslContextFactory() {
+    protected SSLContextFactory getSslContextFactory() {
         return this.sslContextFactory;
     }
 
@@ -360,7 +359,7 @@ public class SpincastUndertowServer implements IServer {
     /**
      * Handler to remove cache busters from the request's URL.
      */
-    protected ICacheBusterRemovalHandler getCacheBusterRemovalHandler() {
+    protected CacheBusterRemovalHandler getCacheBusterRemovalHandler() {
         if(this.cacheBusterRemovalHandler == null) {
             this.cacheBusterRemovalHandler = getCacheBusterRemovalHandlerFactory().create(getHttpAuthenticationHandler());
         }
@@ -389,7 +388,7 @@ public class SpincastUndertowServer implements IServer {
                                        "already exists for path: " + pathPrefix);
         }
 
-        ISpincastHttpAuthIdentityManager identityManager = getOrCreateHttpAuthIdentityManagersByRealmName(realmName);
+        SpincastHttpAuthIdentityManager identityManager = getOrCreateHttpAuthIdentityManagersByRealmName(realmName);
 
         HttpHandler handler = new AuthenticationCallHandler(getHttpAuthHandlerNextHandler());
         handler = new AuthenticationConstraintHandler(handler);
@@ -415,8 +414,8 @@ public class SpincastUndertowServer implements IServer {
         return realmName;
     }
 
-    protected ISpincastHttpAuthIdentityManager getOrCreateHttpAuthIdentityManagersByRealmName(String realmName) {
-        ISpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
+    protected SpincastHttpAuthIdentityManager getOrCreateHttpAuthIdentityManagersByRealmName(String realmName) {
+        SpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
         if(identityManager == null) {
             identityManager = getSpincastHttpAuthIdentityManagerFactory().create();
             getHttpAuthIdentityManagersByRealmName().put(realmName, identityManager);
@@ -433,13 +432,13 @@ public class SpincastUndertowServer implements IServer {
         // Adds the new username/password to the
         // identity manager of this realm.
         //==========================================
-        ISpincastHttpAuthIdentityManager identityManager = getOrCreateHttpAuthIdentityManagersByRealmName(realmName);
+        SpincastHttpAuthIdentityManager identityManager = getOrCreateHttpAuthIdentityManagersByRealmName(realmName);
         identityManager.addUser(username, password);
     }
 
     @Override
     public void removeHttpAuthentication(String username, String realmName) {
-        ISpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
+        SpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
         if(identityManager != null) {
             identityManager.removeUser(username);
         }
@@ -447,7 +446,7 @@ public class SpincastUndertowServer implements IServer {
 
     @Override
     public void removeHttpAuthentication(String username) {
-        for(ISpincastHttpAuthIdentityManager identityManager : getHttpAuthIdentityManagersByRealmName().values()) {
+        for(SpincastHttpAuthIdentityManager identityManager : getHttpAuthIdentityManagersByRealmName().values()) {
             identityManager.removeUser(username);
         }
     }
@@ -515,15 +514,15 @@ public class SpincastUndertowServer implements IServer {
 
     protected void sendWebsocketEnpointsClosedWhenServerStops() {
 
-        Collection<IWebsocketEndpoint> websocketEndpointsMap = getWebsocketEndpointsMap().values();
-        List<IWebsocketEndpoint> websocketEndpoints = new ArrayList<IWebsocketEndpoint>(websocketEndpointsMap);
+        Collection<WebsocketEndpoint> websocketEndpointsMap = getWebsocketEndpointsMap().values();
+        List<WebsocketEndpoint> websocketEndpoints = new ArrayList<WebsocketEndpoint>(websocketEndpointsMap);
 
         Set<String> unclosedEndpoints = new HashSet<String>(getWebsocketEndpointsMap().keySet());
 
         this.logger.debug("We wait for those endpoints to be finished closing : " +
                           Arrays.toString(unclosedEndpoints.toArray()));
 
-        for(IWebsocketEndpoint websocketEndpoint : websocketEndpoints) {
+        for(WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
             try {
                 websocketEndpoint.closeEndpoint(true);
             } catch(Exception ex) {
@@ -544,7 +543,7 @@ public class SpincastUndertowServer implements IServer {
         outer : while(millisecondsWaited < millisecondsToWait) {
 
             try {
-                for(IWebsocketEndpoint websocketEndpoint : websocketEndpoints) {
+                for(WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
 
                     try {
                         if(unclosedEndpoints.contains(websocketEndpoint.getEndpointId()) &&
@@ -596,9 +595,9 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public void addStaticResourceToServe(final IStaticResource<?> staticResource) {
+    public void addStaticResourceToServe(final StaticResource<?> staticResource) {
 
-        Map<String, IStaticResource<?>> staticResourcesServedByUrlPath = getStaticResourcesServedByUrlPath();
+        Map<String, StaticResource<?>> staticResourcesServedByUrlPath = getStaticResourcesServedByUrlPath();
 
         StaticResourceType staticResourceType = staticResource.getStaticResourceType();
 
@@ -625,14 +624,14 @@ public class SpincastUndertowServer implements IServer {
             HttpHandler next = staticResource.isCanBeGenerated() ? getSpincastFrontControllerHandler()
                                                                  : ResponseCodeHandler.HANDLE_404;
 
-            ISpincastResourceHandler resourceHandler =
+            SpincastResourceHandler resourceHandler =
                     getSpincastResourceHandlerFactory().create(new FileResourceManager(file, 1024),
                                                                staticResource,
                                                                next);
 
-            IGzipCheckerHandler gzipCheckerHandler =
+            GzipCheckerHandler gzipCheckerHandler =
                     getGzipCheckerHandlerFactory().create(resourceHandler, file.getAbsolutePath());
-            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
+            CorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
 
@@ -649,15 +648,15 @@ public class SpincastUndertowServer implements IServer {
                 throw new RuntimeException("The classpath file doesn't exist so it can't be served : " + classpathPath);
             }
 
-            IFileClassPathResourceManager fileClassPathResourceManager =
+            FileClassPathResourceManager fileClassPathResourceManager =
                     getFileClassPathResourceManagerFactory().create(classpathPath);
 
-            ISpincastResourceHandler resourceHandler =
+            SpincastResourceHandler resourceHandler =
                     getSpincastResourceHandlerFactory().create(fileClassPathResourceManager,
                                                                staticResource);
 
-            IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, classpathPath);
-            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
+            GzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, classpathPath);
+            CorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
 
@@ -675,13 +674,13 @@ public class SpincastUndertowServer implements IServer {
             HttpHandler next = staticResource.isCanBeGenerated() ? getSpincastFrontControllerHandler()
                                                                  : ResponseCodeHandler.HANDLE_404;
 
-            ISpincastResourceHandler resourceHandler =
+            SpincastResourceHandler resourceHandler =
                     getSpincastResourceHandlerFactory().create(new FileResourceManager(dir, 1024),
                                                                staticResource,
                                                                next);
 
-            IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
-            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
+            GzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
+            CorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
 
@@ -703,12 +702,12 @@ public class SpincastUndertowServer implements IServer {
             ClassPathResourceManager classPathResourceManager =
                     new ClassPathResourceManager(SpincastUndertowServer.class.getClassLoader(), classpathPath);
 
-            ISpincastResourceHandler resourceHandler =
+            SpincastResourceHandler resourceHandler =
                     getSpincastResourceHandlerFactory().create(classPathResourceManager,
                                                                staticResource);
 
-            IGzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
-            ICorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
+            GzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
+            CorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
 
@@ -728,10 +727,10 @@ public class SpincastUndertowServer implements IServer {
     @Override
     public void removeAllStaticResourcesServed() {
 
-        for(Entry<String, IStaticResource<?>> entry : getStaticResourcesServedByUrlPath().entrySet()) {
+        for(Entry<String, StaticResource<?>> entry : getStaticResourcesServedByUrlPath().entrySet()) {
 
             String urlPath = entry.getKey();
-            IStaticResource<?> staticResource = entry.getValue();
+            StaticResource<?> staticResource = entry.getValue();
 
             removeStaticResource(staticResource.getStaticResourceType(), urlPath);
         }
@@ -750,13 +749,13 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public IStaticResource<?> getStaticResourceServed(String urlPath) {
+    public StaticResource<?> getStaticResourceServed(String urlPath) {
         return getStaticResourcesServedByUrlPath().get(urlPath);
     }
 
     @Override
-    public Set<IStaticResource<?>> getStaticResourcesServed() {
-        return new HashSet<IStaticResource<?>>(getStaticResourcesServedByUrlPath().values());
+    public Set<StaticResource<?>> getStaticResourcesServed() {
+        return new HashSet<StaticResource<?>>(getStaticResourcesServedByUrlPath().values());
     }
 
     @Override
@@ -816,7 +815,7 @@ public class SpincastUndertowServer implements IServer {
             // Cache buster are removed by the CacheBusterRemovalHandler. 
             // To return the original URL, potentially containing cache
             // busters, we should call 
-            // ICacheBusterRemovalHandler#getOrigninalRequestUrlWithPotentialCacheBusters(...)
+            // CacheBusterRemovalHandler#getOrigninalRequestUrlWithPotentialCacheBusters(...)
             //==========================================
             if(keepCacheBusters) {
                 return getCacheBusterRemovalHandler().getOrigninalRequestUrlWithPotentialCacheBusters(exchange) + queryString;
@@ -1029,15 +1028,16 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public void addCookies(Object exchange, Map<String, ICookie> cookies) {
+    public void addCookies(Object exchange, Map<String, Cookie> cookies) {
 
         if(cookies == null) {
             return;
         }
 
-        Map<String, Cookie> undertowResponseCookiesMap = ((HttpServerExchange)exchange).getResponseCookies();
+        Map<String, io.undertow.server.handlers.Cookie> undertowResponseCookiesMap =
+                ((HttpServerExchange)exchange).getResponseCookies();
 
-        for(ICookie cookie : cookies.values()) {
+        for(Cookie cookie : cookies.values()) {
 
             String name = cookie.getName();
             String value = cookie.getValue();
@@ -1054,7 +1054,7 @@ public class SpincastUndertowServer implements IServer {
                 throw SpincastStatics.runtimize(ex);
             }
 
-            Cookie undertowCookie = new CookieImpl(name);
+            io.undertow.server.handlers.Cookie undertowCookie = new CookieImpl(name);
             undertowCookie.setValue(value);
             undertowCookie.setDiscard(cookie.isDiscard());
             undertowCookie.setDomain(cookie.getDomain());
@@ -1069,16 +1069,17 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public Map<String, ICookie> getCookies(Object exchange) {
+    public Map<String, Cookie> getCookies(Object exchange) {
 
-        Map<String, ICookie> cookies = new HashMap<String, ICookie>();
+        Map<String, Cookie> cookies = new HashMap<String, Cookie>();
 
         //==========================================
         // Get current cookies from the request
         //==========================================
-        Map<String, Cookie> undertowRequestCookies = ((HttpServerExchange)exchange).getRequestCookies();
+        Map<String, io.undertow.server.handlers.Cookie> undertowRequestCookies =
+                ((HttpServerExchange)exchange).getRequestCookies();
         if(undertowRequestCookies != null) {
-            for(Cookie undertowCookie : undertowRequestCookies.values()) {
+            for(io.undertow.server.handlers.Cookie undertowCookie : undertowRequestCookies.values()) {
 
                 String name = undertowCookie.getName();
                 String value = undertowCookie.getValue();
@@ -1093,15 +1094,15 @@ public class SpincastUndertowServer implements IServer {
                     throw SpincastStatics.runtimize(ex);
                 }
 
-                ICookie spincastCookie = getCookieFactory().createCookie(name,
-                                                                         value,
-                                                                         undertowCookie.getPath(),
-                                                                         undertowCookie.getDomain(),
-                                                                         undertowCookie.getExpires(),
-                                                                         undertowCookie.isSecure(),
-                                                                         undertowCookie.isHttpOnly(),
-                                                                         undertowCookie.isDiscard(),
-                                                                         undertowCookie.getVersion());
+                Cookie spincastCookie = getCookieFactory().createCookie(name,
+                                                                        value,
+                                                                        undertowCookie.getPath(),
+                                                                        undertowCookie.getDomain(),
+                                                                        undertowCookie.getExpires(),
+                                                                        undertowCookie.isSecure(),
+                                                                        undertowCookie.isHttpOnly(),
+                                                                        undertowCookie.isDiscard(),
+                                                                        undertowCookie.getVersion());
                 cookies.put(spincastCookie.getName(), spincastCookie);
             }
         }
@@ -1161,7 +1162,7 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public Map<String, List<String>> getFormDatas(Object exchangeObj) {
+    public Map<String, List<String>> getFormData(Object exchangeObj) {
 
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
 
@@ -1265,7 +1266,7 @@ public class SpincastUndertowServer implements IServer {
 
                 //==========================================
                 // All header names must be lowercased to respect the
-                // IServer interface.
+                // Server interface.
                 //==========================================
                 String headerNameLowercased = headerNameObj.toString().toLowerCase();
 
@@ -1298,12 +1299,12 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public IWebsocketEndpointManager websocketCreateEndpoint(final String endpointId,
-                                                             final IWebsocketEndpointHandler appEndpointHandler) {
+    public WebsocketEndpointManager websocketCreateEndpoint(final String endpointId,
+                                                             final WebsocketEndpointHandler appEndpointHandler) {
 
         Object lock = getWebsocketEndpointCreationLock(endpointId);
         synchronized(lock) {
-            IWebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
+            WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
             if(websocketEndpoint != null) {
                 throw new RuntimeException("The endpoint '" + endpointId + "' already exists.");
             }
@@ -1312,7 +1313,7 @@ public class SpincastUndertowServer implements IServer {
             // We wrap the app endpoint handler to add
             // extra event listeners.
             //==========================================
-            IWebsocketEndpointHandler undertowEndpointHandler =
+            WebsocketEndpointHandler undertowEndpointHandler =
                     createUndertowWebsocketEndpointHandler(endpointId, appEndpointHandler);
 
             websocketEndpoint = getSpincastWebsocketEndpointFactory().create(endpointId, undertowEndpointHandler);
@@ -1322,9 +1323,9 @@ public class SpincastUndertowServer implements IServer {
         }
     }
 
-    protected IWebsocketEndpointHandler createUndertowWebsocketEndpointHandler(final String endpointId,
-                                                                               final IWebsocketEndpointHandler appHandler) {
-        return new IWebsocketEndpointHandler() {
+    protected WebsocketEndpointHandler createUndertowWebsocketEndpointHandler(final String endpointId,
+                                                                               final WebsocketEndpointHandler appHandler) {
+        return new WebsocketEndpointHandler() {
 
             @Override
             public void onPeerMessage(String peerId, byte[] message) {
@@ -1371,7 +1372,7 @@ public class SpincastUndertowServer implements IServer {
 
         Object lock = getWebsocketEndpointCreationLock(endpointId);
         synchronized(lock) {
-            IWebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
+            WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
             if(websocketEndpoint == null) {
                 this.logger.warn("No Websocket endpoint with id '" + endpointId + "' exists...");
                 return;
@@ -1402,7 +1403,7 @@ public class SpincastUndertowServer implements IServer {
 
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
 
-        IWebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
+        WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
         if(websocketEndpoint == null) {
             throw new RuntimeException("The Websocket endpoint '" + endpointId + "' doesn't exist.");
         }
@@ -1416,12 +1417,12 @@ public class SpincastUndertowServer implements IServer {
     }
 
     @Override
-    public List<IWebsocketEndpointManager> getWebsocketEndpointManagers() {
-        return new ArrayList<IWebsocketEndpointManager>(getWebsocketEndpointsMap().values());
+    public List<WebsocketEndpointManager> getWebsocketEndpointManagers() {
+        return new ArrayList<WebsocketEndpointManager>(getWebsocketEndpointsMap().values());
     }
 
     @Override
-    public IWebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
+    public WebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
         return getWebsocketEndpointsMap().get(endpointId);
     }
 

@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRouter;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.Router;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Key;
@@ -27,12 +27,12 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
     @Test
     public void variables() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").pos(-1).save(new IHandler<IDefaultRequestContext>() {
+        router.GET("/one").pos(-1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 Map<String, Object> variables = context.variables().getAll();
                 assertNotNull(variables);
                 int nbr = variables.size();
@@ -47,10 +47,10 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
         });
         router.GET("/one")
 
-              .before(new IHandler<IDefaultRequestContext>() {
+              .before(new Handler<DefaultRequestContext>() {
 
                   @Override
-                  public void handle(IDefaultRequestContext context) {
+                  public void handle(DefaultRequestContext context) {
                       Map<String, Object> variables = context.variables().getAll();
                       assertNotNull(variables);
                       int nbr = variables.size();
@@ -69,10 +69,10 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
                       assertEquals("val3", context.variables().get("key3"));
                   }
               })
-              .after(new IHandler<IDefaultRequestContext>() {
+              .after(new Handler<DefaultRequestContext>() {
 
                   @Override
-                  public void handle(IDefaultRequestContext context) {
+                  public void handle(DefaultRequestContext context) {
                       Map<String, Object> variables = context.variables().getAll();
                       assertNotNull(variables);
                       int nbr = variables.size();
@@ -92,10 +92,10 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
                   }
               })
 
-              .save(new IHandler<IDefaultRequestContext>() {
+              .save(new Handler<DefaultRequestContext>() {
 
                   @Override
-                  public void handle(IDefaultRequestContext context) {
+                  public void handle(DefaultRequestContext context) {
                       Map<String, Object> variables = context.variables().getAll();
                       assertNotNull(variables);
                       int nbr = variables.size();
@@ -114,10 +114,10 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
                   }
               });
 
-        router.GET("/one").pos(1).save(new IHandler<IDefaultRequestContext>() {
+        router.GET("/one").pos(1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 Map<String, Object> variables = context.variables().getAll();
                 assertNotNull(variables);
                 int nbr = variables.size();
@@ -134,17 +134,17 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void classAndKey() throws Exception {
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.variables().add("asClass", new Date());
 
@@ -174,7 +174,7 @@ public class RequestScopedVariablesTest extends SpincastDefaultNoAppIntegrationT
             }
         });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

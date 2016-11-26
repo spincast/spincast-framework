@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,40 +15,54 @@ import java.util.zip.GZIPOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.exchange.IResponseRequestContextAddon;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IETagFactory;
-import org.spincast.core.server.IServer;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.config.SpincastConstants.ResponseModelVariables;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.exchange.ResponseRequestContextAddon;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.response.Alert;
+import org.spincast.core.response.AlertDefault;
+import org.spincast.core.response.AlertLevel;
+import org.spincast.core.routing.ETagFactory;
+import org.spincast.core.server.Server;
+import org.spincast.core.session.FlashMessage;
+import org.spincast.core.session.FlashMessageFactory;
+import org.spincast.core.session.FlashMessageLevel;
+import org.spincast.core.session.FlashMessagesHolder;
 import org.spincast.core.utils.Bool;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
-import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.utils.SpincastUtils;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.shaded.org.apache.http.client.utils.URIBuilder;
 
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
-public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
-                                                implements IResponseRequestContextAddon<R> {
+public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
+                                                implements ResponseRequestContextAddon<R> {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastResponseRequestContextAddon.class);
 
     protected static final boolean IS_RESPONSE_CHARACTERS_BASED_BY_DEFAULT = false;
 
     private final R requestContext;
-    private final IServer server;
-    private final IJsonManager jsonManager;
-    private final IXmlManager xmlManager;
-    private final ISpincastConfig spincastConfig;
-    private final ISpincastUtils spincastUtils;
-    private final IETagFactory etagFactory;
+    private final Server server;
+    private final JsonManager jsonManager;
+    private final XmlManager xmlManager;
+    private final SpincastConfig spincastConfig;
+    private final SpincastUtils spincastUtils;
+    private final ETagFactory etagFactory;
+    private final FlashMessagesHolder flashMessagesHolder;
+    private final FlashMessageFactory flashMessageFactory;
 
     private String responseContentType = null;
     private int responseStatusCode = HttpStatus.SC_OK;
@@ -64,22 +77,18 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     private Map<String, List<String>> headers;
     private GzipOption gzipOption = GzipOption.DEFAULT;
 
-    private List<String> globalErrors;
-    private List<String> globalConfirms;
-    private List<String> globalWarnings;
-
-    private Map<String, List<IFieldMessage>> fieldsErrors;
-    private Map<String, List<IFieldMessage>> fieldsConfirms;
-    private Map<String, List<IFieldMessage>> fieldsWarnings;
+    private JsonObject responseModel;
 
     @Inject
     public SpincastResponseRequestContextAddon(R requestContext,
-                                               IServer server,
-                                               IJsonManager jsonManager,
-                                               IXmlManager xmlManager,
-                                               ISpincastConfig spincastConfig,
-                                               ISpincastUtils spincastUtils,
-                                               IETagFactory etagFactory) {
+                                               Server server,
+                                               JsonManager jsonManager,
+                                               XmlManager xmlManager,
+                                               SpincastConfig spincastConfig,
+                                               SpincastUtils spincastUtils,
+                                               ETagFactory etagFactory,
+                                               FlashMessagesHolder flashMessagesHolder,
+                                               FlashMessageFactory flashMessageFactory) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
@@ -87,13 +96,15 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         this.spincastConfig = spincastConfig;
         this.spincastUtils = spincastUtils;
         this.etagFactory = etagFactory;
+        this.flashMessagesHolder = flashMessagesHolder;
+        this.flashMessageFactory = flashMessageFactory;
     }
 
     protected R getRequestContext() {
         return this.requestContext;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
@@ -101,24 +112,32 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         return getRequestContext().exchange();
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
-    protected ISpincastConfig getSpincastConfig() {
+    protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
-    protected IETagFactory getEtagFactory() {
+    protected ETagFactory getEtagFactory() {
         return this.etagFactory;
+    }
+
+    protected FlashMessagesHolder getFlashMessagesHolder() {
+        return this.flashMessagesHolder;
+    }
+
+    protected FlashMessageFactory getFlashMessageFactory() {
+        return this.flashMessageFactory;
     }
 
     protected ByteArrayOutputStream getBuffer() {
@@ -129,48 +148,12 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
         return this.byteArrayOutputStreamOut;
     }
 
-    protected List<String> getGlobalErrors() {
-        if(this.globalErrors == null) {
-            this.globalErrors = new ArrayList<String>();
+    @Override
+    public JsonObject getModel() {
+        if(this.responseModel == null) {
+            this.responseModel = getJsonManager().create();
         }
-        return this.globalErrors;
-    }
-
-    protected List<String> getGlobalConfirms() {
-
-        if(this.globalConfirms == null) {
-            this.globalConfirms = new ArrayList<String>();
-        }
-        return this.globalConfirms;
-    }
-
-    protected List<String> getGlobalWarnings() {
-
-        if(this.globalWarnings == null) {
-            this.globalWarnings = new ArrayList<String>();
-        }
-        return this.globalWarnings;
-    }
-
-    protected Map<String, List<IFieldMessage>> getFieldsErrors() {
-        if(this.fieldsErrors == null) {
-            this.fieldsErrors = new HashMap<String, List<IFieldMessage>>();
-        }
-        return this.fieldsErrors;
-    }
-
-    protected Map<String, List<IFieldMessage>> getFieldsConfirms() {
-        if(this.fieldsConfirms == null) {
-            this.fieldsConfirms = new HashMap<String, List<IFieldMessage>>();
-        }
-        return this.fieldsConfirms;
-    }
-
-    protected Map<String, List<IFieldMessage>> getFieldsWarnings() {
-        if(this.fieldsWarnings == null) {
-            this.fieldsWarnings = new HashMap<String, List<IFieldMessage>>();
-        }
-        return this.fieldsWarnings;
+        return this.responseModel;
     }
 
     public GZIPOutputStream getGzipBuffer() {
@@ -193,7 +176,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setGzipOption(GzipOption gzipOption) {
+    public ResponseRequestContextAddon<R> setGzipOption(GzipOption gzipOption) {
 
         if(gzipOption == null) {
             gzipOption = GzipOption.DEFAULT;
@@ -220,7 +203,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setStatusCode(int responseStatusCode) {
+    public ResponseRequestContextAddon<R> setStatusCode(int responseStatusCode) {
 
         if(isHeadersSent()) {
             if(responseStatusCode != getStatusCode()) {
@@ -239,7 +222,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setContentType(String responseContentType) {
+    public ResponseRequestContextAddon<R> setContentType(String responseContentType) {
 
         if(isHeadersSent()) {
             if(responseContentType != null && !responseContentType.equals(getContentType())) {
@@ -280,16 +263,91 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
+    public void redirect() {
+        redirect("", false, null);
+    }
+
+    @Override
+    public void redirect(FlashMessage flashMessage) {
+        redirect("", false, flashMessage);
+    }
+
+    @Override
+    public void redirect(FlashMessageLevel flashMessageType, String flashMessageText) {
+        redirect(flashMessageType, flashMessageText, null);
+    }
+
+    @Override
+    public void redirect(FlashMessageLevel flashMessageType, String flashMessageText, JsonObject flashMessageVariables) {
+        redirect(getFlashMessageFactory().create(flashMessageType, flashMessageText, flashMessageVariables));
+    }
+
+    @Override
+    public void redirect(String newUrl) {
+        redirect(newUrl, false, null);
+    }
+
+    @Override
+    public void redirect(String newUrl, FlashMessage flashMessage) {
+        redirect(newUrl, false, flashMessage);
+    }
+
+    @Override
+    public void redirect(String newUrl, FlashMessageLevel flashMessageType, String flashMessageText) {
+        redirect(newUrl, flashMessageType, flashMessageText, null);
+    }
+
+    @Override
+    public void redirect(String newUrl, FlashMessageLevel flashMessageType, String flashMessageText,
+                         JsonObject flashMessageVariables) {
+        redirect(newUrl, getFlashMessageFactory().create(flashMessageType, flashMessageText, flashMessageVariables));
+    }
+
+    @Override
     public void redirect(String newUrl, boolean permanently) {
+        redirect(newUrl, permanently, null);
+    }
+
+    @Override
+    public void redirect(String newUrl, boolean permanently, FlashMessage flashMessage) {
         if(permanently) {
-            redirect(newUrl, HttpStatus.SC_MOVED_PERMANENTLY);
+            redirect(newUrl, HttpStatus.SC_MOVED_PERMANENTLY, flashMessage);
         } else {
-            redirect(newUrl, HttpStatus.SC_MOVED_TEMPORARILY);
+            redirect(newUrl, HttpStatus.SC_MOVED_TEMPORARILY, flashMessage);
         }
     }
 
     @Override
+    public void redirect(String newUrl, boolean permanently, FlashMessageLevel flashMessageType, String flashMessageText) {
+        redirect(newUrl, permanently, getFlashMessageFactory().create(flashMessageType, flashMessageText));
+    }
+
+    @Override
+    public void redirect(String newUrl, boolean permanently, FlashMessageLevel flashMessageType, String flashMessageText,
+                         JsonObject flashMessageVariables) {
+        redirect(newUrl, permanently, getFlashMessageFactory().create(flashMessageType, flashMessageText, flashMessageVariables));
+    }
+
+    @Override
     public void redirect(String newUrl, int specific3xxCode) {
+        redirect(newUrl, specific3xxCode, null);
+    }
+
+    @Override
+    public void redirect(String newUrl, int specific3xxCode, FlashMessageLevel flashMessageType, String flashMessageText) {
+        redirect(newUrl, specific3xxCode, getFlashMessageFactory().create(flashMessageType, flashMessageText));
+    }
+
+    @Override
+    public void redirect(String newUrl, int specific3xxCode, FlashMessageLevel flashMessageType, String flashMessageText,
+                         JsonObject flashMessageVariables) {
+        redirect(newUrl,
+                 specific3xxCode,
+                 getFlashMessageFactory().create(flashMessageType, flashMessageText, flashMessageVariables));
+    }
+
+    @Override
+    public void redirect(String newUrl, int specific3xxCode, FlashMessage flashMessage) {
 
         try {
             if(isHeadersSent()) {
@@ -298,8 +356,12 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
             setStatusCode(specific3xxCode);
 
+            //==========================================
+            // If the URL to redirect to is empty, we
+            // redirect to the current page.
+            //==========================================
             if(StringUtils.isBlank(newUrl)) {
-                newUrl = "/";
+                newUrl = getRequestContext().request().getFullUrlOriginal();
             } else {
                 newUrl = newUrl.trim();
 
@@ -316,10 +378,27 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
 
                 String path = newUrl;
 
+                String anchor = currentUri.getFragment();
+                String queryString = currentUri.getQuery();
+
+                //==========================================
+                // Simple #anchor
+                //==========================================
+                if(path.startsWith("#")) {
+                    anchor = path.substring(1);
+                    path = currentUri.getPath();
+                }
+                //==========================================
+                // Simple queryString
+                //==========================================
+                else if(path.startsWith("?")) {
+                    queryString = path.substring(1);
+                    path = currentUri.getPath();
+                }
                 //==========================================
                 // Relative path?
                 //==========================================
-                if(!path.startsWith("/")) {
+                else if(!path.startsWith("/")) {
 
                     String currentPath = currentUri.getPath();
                     currentPath = StringUtils.strip(currentPath, "/");
@@ -337,16 +416,63 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                               currentUri.getHost(),
                               currentUri.getPort(),
                               path,
-                              null,
-                              null);
+                              queryString,
+                              anchor);
 
                 newUrl = uri.toString();
+            }
+
+            //==========================================
+            // Flash message to use?
+            //==========================================
+            if(flashMessage != null) {
+                newUrl = saveFlashMessage(newUrl, flashMessage);
             }
 
             setHeader(HttpHeaders.LOCATION, newUrl);
 
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    /**
+     * Saves a Flash message.
+     * 
+     * Returned a modified version of the final URL to redirect to,
+     * if required.
+     */
+    protected String saveFlashMessage(String url, FlashMessage flashMessage) {
+
+        if(flashMessage == null) {
+            return url;
+        }
+
+        String flashMessageId = getFlashMessagesHolder().saveFlashMessage(flashMessage);
+
+        //==========================================
+        // TODO Maybe we should use a user session.
+        //==========================================
+        if(getRequestContext().cookies().isCookiesEnabledValidated()) {
+            getRequestContext().cookies().addCookie(getSpincastConfig().getCookieNameFlashMessage(), flashMessageId);
+            return url;
+
+        //==========================================@formatter:off 
+        // We add the id of the flash message to the
+        // redirected URL since we don't know if cookies
+        // are enabled or not.
+        //==========================================@formatter:on
+        } else {
+
+            try {
+
+                URIBuilder builder = new URIBuilder(url);
+                builder.setParameter(getSpincastConfig().getQueryParamFlashMessageId(), flashMessageId);
+                return builder.build().toString();
+
+            } catch(Exception ex) {
+                throw SpincastStatics.runtimize(ex);
+            }
         }
     }
 
@@ -402,11 +528,6 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendCharacters(String content) {
-        sendCharacters(content, null, false);
-    }
-
-    @Override
     public void sendCharacters(String content, String contentType) {
         sendCharacters(content, contentType, false);
     }
@@ -439,7 +560,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setCharactersCharsetName(String charactersCharsetName) {
+    public ResponseRequestContextAddon<R> setCharactersCharsetName(String charactersCharsetName) {
 
         Objects.requireNonNull(charactersCharsetName, "charactersCharsetName can't be NULL");
 
@@ -472,155 +593,68 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendParseHtml(String html, Map<String, Object> params) {
-        sendParseHtml(html, params, false);
+    public void sendParseHtml(String html) {
+        sendParse(html, ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), false);
     }
 
     @Override
-    public void sendParseHtml(String html, Map<String, Object> params, boolean flush) {
-
-        IJsonObject model = getJsonManager().create(params);
-        sendParseHtml(html, model, flush);
+    public void sendParseHtml(String html, boolean flush) {
+        sendParse(html, ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), flush);
     }
 
     @Override
-    public void sendParseHtml(String html, IJsonObject model) {
-        sendParseHtml(html, model, false);
+    public void sendParse(String content, String contentType) {
+        sendParse(content, contentType, false);
     }
 
     @Override
-    public void sendParseHtml(String html, IJsonObject model, boolean flush) {
-        String evaluated = getRequestContext().templating().evaluate(html, model);
-        sendHtml(evaluated, flush);
-    }
-
-    @Override
-    public void sendTemplateHtml(String templatePath, IJsonObject model) {
-        sendTemplateHtml(templatePath, true, model, false);
-    }
-
-    @Override
-    public void sendTemplateHtml(String templatePath, IJsonObject model, boolean flush) {
-        sendTemplateHtml(templatePath, true, model, flush);
-    }
-
-    @Override
-    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, IJsonObject model) {
-        sendTemplateHtml(templatePath, isClasspathPath, model, false);
-    }
-
-    @Override
-    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, IJsonObject model, boolean flush) {
-        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, model);
-        sendHtml(evaluated, flush);
-    }
-
-    @Override
-    public void sendParse(String content, String contentType, Map<String, Object> params) {
-        sendParse(content, contentType, params, false);
-    }
-
-    @Override
-    public void sendParse(String content, String contentType, Map<String, Object> params, boolean flush) {
-
-        if(params == null) {
-            params = new HashMap<String, Object>();
-        }
-        IJsonObject model = getJsonManager().create(params);
-
-        sendParse(content, contentType, model, flush);
-    }
-
-    @Override
-    public void sendParse(String content, String contentType, IJsonObject model) {
-        sendParse(content, contentType, model, false);
-    }
-
-    @Override
-    public void sendParse(String content, String contentType, IJsonObject model, boolean flush) {
+    public void sendParse(String content, String contentType, boolean flush) {
 
         if(StringUtils.isBlank(contentType)) {
-            sendParseHtml(content, model, flush);
-            return;
+            this.logger.warn("The Content-Type was not specified : 'text/html' will be used");
+            contentType = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
         }
 
-        String evaluated = getRequestContext().templating().evaluate(content, model);
+        if(content == null) {
+            content = "";
+        }
+
+        String evaluated = getRequestContext().templating().evaluate(content, getModel());
         sendCharacters(evaluated, contentType, flush);
     }
 
-    /*
     @Override
     public void sendTemplateHtml(String templatePath) {
-        IJsonObject responseJsonObject = generateJsonObjectResponse();
-        sendTemplateHtml(templatePath, true, responseJsonObject, false);
-    }
-    */
-
-    @Override
-    public void sendTemplateHtml(String templatePath, Map<String, Object> params) {
-        sendTemplateHtml(templatePath, true, params, false);
+        sendTemplateHtml(templatePath, true, false);
     }
 
     @Override
-    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, Map<String, Object> params) {
-        sendTemplateHtml(templatePath, isClasspathPath, params, false);
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath) {
+        sendTemplateHtml(templatePath, isClasspathPath, false);
     }
 
     @Override
-    public void sendTemplateHtml(String templatePath, Map<String, Object> params, boolean flush) {
-        sendTemplateHtml(templatePath, true, params, flush);
+    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, boolean flush) {
+        sendTemplate(templatePath, isClasspathPath, ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), flush);
     }
 
     @Override
-    public void sendTemplateHtml(String templatePath, boolean isClasspathPath, Map<String, Object> params, boolean flush) {
-        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, params);
-        sendHtml(evaluated, flush);
+    public void sendTemplate(String templatePath, String contentType) {
+        sendTemplate(templatePath, true, contentType, false);
     }
 
     @Override
-    public void sendTemplate(String templatePath, String contentType, Map<String, Object> params) {
-        sendTemplate(templatePath, true, contentType, params, false);
+    public void sendTemplate(String templatePath, String contentType, boolean flush) {
+        sendTemplate(templatePath, true, contentType, flush);
     }
 
     @Override
-    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, Map<String, Object> params) {
-        sendTemplate(templatePath, isClasspathPath, contentType, params, false);
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType) {
+        sendTemplate(templatePath, isClasspathPath, contentType, false);
     }
 
     @Override
-    public void sendTemplate(String templatePath, String contentType, Map<String, Object> params, boolean flush) {
-        sendTemplate(templatePath, true, contentType, params, flush);
-    }
-
-    @Override
-    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, Map<String, Object> params,
-                             boolean flush) {
-
-        if(params == null) {
-            params = new HashMap<String, Object>();
-        }
-        IJsonObject model = getJsonManager().create(params);
-
-        sendTemplate(templatePath, isClasspathPath, contentType, model, flush);
-    }
-
-    @Override
-    public void sendTemplate(String templatePath, String contentType, IJsonObject model) {
-        sendTemplate(templatePath, true, contentType, model, false);
-    }
-
-    @Override
-    public void sendTemplate(String templatePath, String contentType, IJsonObject model, boolean flush) {
-        sendTemplate(templatePath, true, contentType, model, flush);
-    }
-
-    @Override
-    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, IJsonObject model) {
-        sendTemplate(templatePath, isClasspathPath, contentType, model, false);
-    }
-
-    @Override
-    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, IJsonObject model, boolean flush) {
+    public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, boolean flush) {
 
         if(StringUtils.isBlank(contentType)) {
 
@@ -628,13 +662,27 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             if(contentType == null) {
                 this.logger.warn("The Content-Type was not specified and can't be determined from the template path '" +
                                  templatePath +
-                                 "': 'text/plain' will be used");
-                contentType = ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset();
+                                 "': 'text/html' will be used");
+                contentType = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
             }
         }
 
-        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, model);
+        String evaluated = getRequestContext().templating().fromTemplate(templatePath, isClasspathPath, getModel());
         sendCharacters(evaluated, contentType, flush);
+    }
+
+    @Override
+    public void sendJson() {
+        sendJson(false);
+    }
+
+    @Override
+    public void sendJson(boolean flush) {
+
+        addAlertsToModel();
+
+        String json = getJsonManager().toJsonString(getModel());
+        sendCharacters(json, ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), flush);
     }
 
     @Override
@@ -648,14 +696,34 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendJsonObj(Object obj) {
-        sendJsonObj(obj, false);
+    public void sendJson(Object obj) {
+        sendJson(obj, false);
     }
 
     @Override
-    public void sendJsonObj(Object obj, boolean flush) {
+    public void sendJson(Object obj, boolean flush) {
+
+        if(obj instanceof String) {
+            sendJson((String)obj);
+            return;
+        }
+
         String json = getJsonManager().toJsonString(obj);
         sendCharacters(json, ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset(), flush);
+    }
+
+    @Override
+    public void sendXml() {
+        sendXml(false);
+    }
+
+    @Override
+    public void sendXml(boolean flush) {
+
+        addAlertsToModel();
+
+        String xml = getXmlManager().toXml(getModel());
+        sendCharacters(xml, ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), flush);
     }
 
     @Override
@@ -669,18 +737,60 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendXmlObj(Object obj) {
-        sendXmlObj(obj, false);
+    public void sendXml(Object obj) {
+        sendXml(obj, false);
     }
 
     @Override
-    public void sendXmlObj(Object obj, boolean flush) {
+    public void sendXml(Object obj, boolean flush) {
+
+        if(obj instanceof String) {
+            sendXml((String)obj);
+            return;
+        }
+
         String xml = getXmlManager().toXml(obj);
         sendCharacters(xml, ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), flush);
     }
 
+    protected void addAlertsToModel() {
+
+        if(isAddAlertsToModel()) {
+
+            Map<String, Object> map = getRequestContext().templating().getSpincastReservedMap();
+
+            @SuppressWarnings("unchecked")
+            List<Alert> alerts =
+                    (List<Alert>)map.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS);
+            if(alerts != null && alerts.size() > 0) {
+
+                JsonObject model = getModel();
+
+                String spincastModelObjKey = getSpincastConfig().getSpincastModelRootVariableName();
+                JsonObject spincastModelObj = model.getJsonObjectOrEmpty(spincastModelObjKey);
+                model.put(spincastModelObjKey, spincastModelObj);
+
+                JsonArray alertsArray =
+                        spincastModelObj.getJsonArrayOrEmpty(ResponseModelVariables.DEFAULT_RESPONSE_MODEL_VAR_ALERTS);
+                spincastModelObj.put(ResponseModelVariables.DEFAULT_RESPONSE_MODEL_VAR_ALERTS, alertsArray);
+
+                for(Alert alert : alerts) {
+                    alertsArray.add(alert);
+                }
+            }
+        }
+    }
+
+    /**
+     * Should Alert messages (and therefore Flash message)
+     * be added to the model when sending this one as Json or XML?
+     */
+    protected boolean isAddAlertsToModel() {
+        return true;
+    }
+
     @Override
-    public IResponseRequestContextAddon<R> resetBuffer() {
+    public ResponseRequestContextAddon<R> resetBuffer() {
 
         try {
             getBuffer().reset();
@@ -696,14 +806,22 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> resetEverything() {
+    public ResponseRequestContextAddon<R> resetEverything() {
+        return resetEverything(true);
+    }
+
+    @Override
+    public ResponseRequestContextAddon<R> resetEverything(boolean resetCookies) {
 
         resetBuffer();
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, the cookies, headers and status code won't be reset...");
         } else {
-            getRequestContext().cookies().resetCookies();
+            if(resetCookies) {
+                getRequestContext().cookies().resetCookies();
+            }
+
             getHeaders().clear();
             setContentType(null);
             setStatusCode(HttpStatus.SC_OK);
@@ -733,7 +851,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> removeHeader(String name) {
+    public ResponseRequestContextAddon<R> removeHeader(String name) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
@@ -746,7 +864,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setHeader(String name, String value) {
+    public ResponseRequestContextAddon<R> setHeader(String name, String value) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
@@ -763,7 +881,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setHeader(String name, List<String> values) {
+    public ResponseRequestContextAddon<R> setHeader(String name, List<String> values) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
@@ -780,7 +898,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> addHeaderValue(String name, String value) {
+    public ResponseRequestContextAddon<R> addHeaderValue(String name, String value) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
@@ -796,7 +914,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IResponseRequestContextAddon<R> addHeaderValues(String name, List<String> values) {
+    public ResponseRequestContextAddon<R> addHeaderValues(String name, List<String> values) {
 
         if(isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
@@ -978,7 +1096,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void flush(boolean end) {
+    public void flush(boolean close) {
 
         try {
             if(isClosed()) {
@@ -1038,13 +1156,20 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                 // Nothing sent yet and we end the response, we can
                 // send a Content-Length header!
                 //==========================================
-                if(end && !isShouldGzip()) {
+                if(close && !isShouldGzip()) {
                     setHeader(HttpHeaders.CONTENT_LENGTH, "" + buffer.size());
                 }
 
                 //==========================================
                 // Add Cookies
                 //==========================================
+
+                //==========================================
+                // Do we add the cookies validator?
+                //==========================================
+                if(getSpincastConfig().isEnableCookiesValidator()) {
+                    getRequestContext().cookies().addCookie(createCookiesValidatorCookie());
+                }
                 getServer().addCookies(getExchange(), getRequestContext().cookies().getCookies());
 
                 //==========================================
@@ -1076,7 +1201,7 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
                 // We must close the GZIPOutputStream at the end
                 // so the correct gzip "footer" is sent...
                 //==========================================
-                if(end) {
+                if(close) {
                     getGzipBuffer().close();
                 }
 
@@ -1088,20 +1213,29 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
             }
             buffer.reset();
 
-            getServer().flushBytes(getExchange(), bytesToFlush, end);
+            getServer().flushBytes(getExchange(), bytesToFlush, close);
 
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
 
+    private Cookie createCookiesValidatorCookie() {
+
+        Cookie cookie = getRequestContext().cookies().createCookie(getSpincastConfig().getCookiesValidatorCookieName());
+        cookie.setValue("1");
+        cookie.setExpiresUsingMaxAge(60 * 60 * 24 * 365);
+
+        return cookie;
+    }
+
     @Override
-    public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds) {
+    public ResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds) {
         return setCacheSeconds(cacheSeconds, false);
     }
 
     @Override
-    public IResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache) {
+    public ResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache) {
 
         if(cacheSeconds <= 0) {
             this.logger.warn("A number of seconds below 1 doesn't send any cache headers: " + cacheSeconds);
@@ -1126,284 +1260,29 @@ public class SpincastResponseRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public void sendTemplateHtml(String templatePath) {
-        // TODO Auto-generated method stub
-        sendTemplateHtml(templatePath, (IJsonObject)null);
+    public void setModel(JsonObject model) {
+        this.responseModel = model;
     }
 
-    /*
     @Override
-    public void addErrorGlobal(String globalErrorMessage) {
-    
-        if(StringUtils.isBlank(globalErrorMessage)) {
-            throw new RuntimeException("The error message can't be empty.");
+    public void addAlert(AlertLevel alertType, String alertText) {
+
+        Map<String, Object> spincastMap = getRequestContext().templating().getSpincastReservedMap();
+
+        @SuppressWarnings("unchecked")
+        List<Alert> alerts =
+                (List<Alert>)spincastMap.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS);
+        if(alerts == null) {
+            alerts = new ArrayList<Alert>();
+            spincastMap.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS,
+                            alerts);
         }
-    
-        getGlobalErrors().add(globalErrorMessage);
+
+        alerts.add(createAlert(alertType, alertText));
     }
-    
-    @Override
-    public void addErrorField(String fieldName, String fieldErrorMessage) {
-        addErrorField(fieldName, null, null, fieldErrorMessage);
+
+    protected Alert createAlert(AlertLevel alertType, String alertText) {
+        return new AlertDefault(alertType, alertText);
     }
-    
-    @Override
-    public void addErrorField(String fieldName, int valuePosition, String fieldErrorMessage) {
-        addErrorField(fieldName, null, valuePosition, fieldErrorMessage);
-    }
-    
-    @Override
-    public void addErrorField(String fieldName, String value, String fieldErrorMessage) {
-        addErrorField(fieldName, value, null, fieldErrorMessage);
-    }
-    
-    protected void addErrorField(String fieldName, String value, Integer valuePosition, String fieldErrorMessage) {
-    
-        if(StringUtils.isBlank(fieldName)) {
-            throw new RuntimeException("The field name can't be empty.");
-        }
-        if(StringUtils.isBlank(fieldErrorMessage)) {
-            throw new RuntimeException("The error message can't be empty.");
-        }
-    
-        List<IFieldMessage> errors = getFieldsErrors().get(fieldName);
-        if(errors == null) {
-            errors = new ArrayList<IFieldMessage>();
-            getFieldsErrors().put(fieldName, errors);
-        }
-        errors.add(createFieldMessage(FieldMessageType.ERROR, fieldName, value, valuePosition, fieldErrorMessage));
-    }
-    
-    protected IFieldMessage createFieldMessage(FieldMessageType messageType, String fieldName, String value,
-                                               Integer valuePosition, String fieldErrorMessage) {
-        return new FieldMessage(messageType, fieldName, value, valuePosition, fieldErrorMessage);
-    }
-    
-    @Override
-    public void addWarningGlobal(String globalWarningMessage) {
-    
-        if(StringUtils.isBlank(globalWarningMessage)) {
-            throw new RuntimeException("The warning message can't be empty.");
-        }
-    
-        getGlobalWarnings().add(globalWarningMessage);
-    }
-    
-    @Override
-    public void addWarningField(String fieldName, String fieldWarningMessage) {
-    
-        if(StringUtils.isBlank(fieldName)) {
-            throw new RuntimeException("The field name can't be empty.");
-        }
-        if(StringUtils.isBlank(fieldWarningMessage)) {
-            throw new RuntimeException("The warning message can't be empty.");
-        }
-    
-        List<IFieldMessage> warnings = getFieldsWarnings().get(fieldName);
-        if(warnings == null) {
-            warnings = new ArrayList<IFieldMessage>();
-            getFieldsWarnings().put(fieldName, warnings);
-        }
-        warnings.add(createFieldMessage(FieldMessageType.WARNING, fieldName, null, null, fieldWarningMessage));
-    }
-    
-    @Override
-    public void addConfirmGlobal(String globalConfirmationMessage) {
-    
-        if(StringUtils.isBlank(globalConfirmationMessage)) {
-            throw new RuntimeException("The confirmation message can't be empty.");
-        }
-    
-        getGlobalConfirms().add(globalConfirmationMessage);
-    }
-    
-    @Override
-    public void addConfirmField(String fieldName, String fieldConfirmationMessage) {
-    
-        if(StringUtils.isBlank(fieldName)) {
-            throw new RuntimeException("The field name can't be empty.");
-        }
-        if(StringUtils.isBlank(fieldConfirmationMessage)) {
-            throw new RuntimeException("The confirmation message can't be empty.");
-        }
-    
-        List<IFieldMessage> confirms = getFieldsConfirms().get(fieldName);
-        if(confirms == null) {
-            confirms = new ArrayList<IFieldMessage>();
-            getFieldsConfirms().put(fieldName, confirms);
-        }
-        confirms.add(createFieldMessage(FieldMessageType.CONFIRM, fieldName, null, null, fieldConfirmationMessage));
-    }
-    
-    protected IJsonObject generateJsonObjectResponse() {
-    
-        IJsonObject jsonObj = getJsonManager().create();
-    
-    
-        IJsonObject fields = getJsonManager().create();
-        
-        Map<String, List<String>> formDatas = getRequestContext().request().getFormDatas();
-        if(formDatas != null) {
-            for(Entry<String, List<String>> entry : formDatas.entrySet()) {
-        
-                String fieldName = entry.getKey().trim();
-        
-                IJsonObject field = getJsonManager().create();
-                fields.put(fieldName, field);
-        
-                //==========================================
-                // Field level messages
-                //==========================================
-                List<IFieldMessage> allFieldErrors = getFieldsErrors().get(fieldName);
-                if(allFieldErrors == null) {
-                    allFieldErrors = new ArrayList<IFieldMessage>();
-                }
-        
-                List<IFieldMessage> fieldLevelErrors = new ArrayList<IFieldMessage>();
-                for(IFieldMessage error : allFieldErrors) {
-                    if(error.getValuePosition() == null && error.getValue() == null) {
-                        fieldLevelErrors.add(error);
-                    }
-                }
-                field.put("errors", fieldLevelErrors);
-                field.put("isError", allFieldErrors.size() > 0);
-        
-                List<IFieldMessage> allFieldWarnings = getFieldsWarnings().get(fieldName);
-                if(allFieldWarnings == null) {
-                    allFieldWarnings = new ArrayList<IFieldMessage>();
-                }
-                List<IFieldMessage> fieldLevelWarnings = new ArrayList<IFieldMessage>();
-                for(IFieldMessage warning : allFieldWarnings) {
-                    if(warning.getValuePosition() == null && warning.getValue() == null) {
-                        fieldLevelWarnings.add(warning);
-                    }
-                }
-                field.put("warnings", fieldLevelWarnings);
-                field.put("isWarning", allFieldWarnings.size() > 0 && allFieldErrors.size() == 0);
-        
-                List<IFieldMessage> allFieldConfirms = getFieldsConfirms().get(fieldName);
-                if(allFieldConfirms == null) {
-                    allFieldConfirms = new ArrayList<IFieldMessage>();
-                }
-                List<IFieldMessage> fieldLevelConfirms = new ArrayList<IFieldMessage>();
-                for(IFieldMessage confirm : allFieldConfirms) {
-                    if(confirm.getValuePosition() == null && confirm.getValue() == null) {
-                        fieldLevelConfirms.add(confirm);
-                    }
-                }
-                field.put("confirms", fieldLevelConfirms);
-                field.put("isConfirm", allFieldConfirms.size() > 0 && allFieldErrors.size() == 0 && allFieldWarnings.size() == 0);
-        
-                //==========================================
-                // Field values
-                //==========================================
-                List<IJsonObject> fieldValues = new ArrayList<>();
-                field.put("values", fieldValues);
-        
-                List<String> submittedValues = entry.getValue();
-        
-                for(int i = 0; i < submittedValues.size(); i++) {
-        
-                    IJsonObject fieldValue = getJsonManager().create();
-                    fieldValues.add(fieldValue);
-        
-                    fieldValue.put("value", submittedValues.get(i));
-        
-                    //==========================================
-                    // FieldValue level messages
-                    //==========================================
-                    fieldValue.put("errors", getJsonManager().createArray());
-                    fieldValue.put("warnings", getJsonManager().createArray());
-                    fieldValue.put("confirms", getJsonManager().createArray());
-                }
-            }
-        }
-        
-        //==========================================
-        // Some groups may need some messages without any fields
-        // present in the request. For example a group of
-        // checkbox with no option checked.
-        //==========================================
-        for(Entry<String, List<IFieldMessage>> entry : getFieldsErrors().entrySet()) {
-        
-            String fieldName = entry.getKey();
-            if(!fields.isKeyExists(fieldName)) {
-        
-                IJsonObject field = getJsonManager().create();
-        
-                List<IFieldMessage> errors = entry.getValue();
-                if(errors == null) {
-                    errors = new ArrayList<IFieldMessage>();
-                }
-                field.put("errors", errors);
-                field.put("isError", errors.size() > 0);
-        
-                List<IFieldMessage> warnings = getFieldsWarnings().get(fieldName);
-                if(warnings == null) {
-                    warnings = new ArrayList<IFieldMessage>();
-                }
-                field.put("warnings", warnings);
-                field.put("isWarning", warnings.size() > 0 && errors.size() == 0);
-        
-                List<IFieldMessage> confirms = getFieldsConfirms().get(fieldName);
-                if(confirms == null) {
-                    confirms = new ArrayList<IFieldMessage>();
-                }
-                field.put("confirms", confirms);
-                field.put("isConfirm", confirms.size() > 0 && errors.size() == 0 && warnings.size() == 0);
-        
-                fields.put(fieldName, field);
-            }
-        }
-        
-        for(Entry<String, List<IFieldMessage>> entry : getFieldsWarnings().entrySet()) {
-        
-            String fieldName = entry.getKey();
-            if(!fields.isKeyExists(fieldName)) {
-        
-                IJsonObject field = getJsonManager().create();
-        
-                List<IFieldMessage> warnings = entry.getValue();
-                if(warnings == null) {
-                    warnings = new ArrayList<IFieldMessage>();
-                }
-                field.put("warnings", warnings);
-                field.put("isWarning", warnings.size() > 0);
-        
-                List<IFieldMessage> confirms = getFieldsConfirms().get(fieldName);
-                if(confirms == null) {
-                    confirms = new ArrayList<IFieldMessage>();
-                }
-                field.put("confirms", confirms);
-                field.put("isConfirm", confirms.size() > 0 && warnings.size() == 0);
-        
-                fields.put(fieldName, field);
-            }
-        }
-        
-        for(Entry<String, List<IFieldMessage>> entry : getFieldsConfirms().entrySet()) {
-        
-            String fieldName = entry.getKey();
-            if(!fields.isKeyExists(fieldName)) {
-        
-                IJsonObject field = getJsonManager().create();
-        
-                List<IFieldMessage> confirms = entry.getValue();
-                if(confirms == null) {
-                    confirms = new ArrayList<IFieldMessage>();
-                }
-                field.put("confirms", confirms);
-                field.put("isConfirm", confirms.size() > 0);
-        
-                fields.put(fieldName, field);
-            }
-        }
-        
-        jsonObj.put("fields", fields);
-    
-        return jsonObj;
-    }
-    
-    */
 
 }

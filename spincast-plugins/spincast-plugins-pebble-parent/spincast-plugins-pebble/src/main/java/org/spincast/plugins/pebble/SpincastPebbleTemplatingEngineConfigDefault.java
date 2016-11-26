@@ -1,6 +1,6 @@
 package org.spincast.plugins.pebble;
 
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 
 import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.extension.Extension;
@@ -9,16 +9,16 @@ import com.mitchellbosecke.pebble.extension.Extension;
  * Default implementation for the configurations of 
  * the Pebble templating engine plugin.
  */
-public class SpincastPebbleTemplatingEngineConfigDefault implements ISpincastPebbleTemplatingEngineConfig {
+public class SpincastPebbleTemplatingEngineConfigDefault implements SpincastPebbleTemplatingEngineConfig {
 
-    private final ISpincastConfig spincastConfig;
+    private final SpincastConfig spincastConfig;
 
     @Inject
-    public SpincastPebbleTemplatingEngineConfigDefault(ISpincastConfig spincastConfig) {
+    public SpincastPebbleTemplatingEngineConfigDefault(SpincastConfig spincastConfig) {
         this.spincastConfig = spincastConfig;
     }
 
-    protected ISpincastConfig getSpincastConfig() {
+    protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
@@ -58,6 +58,16 @@ public class SpincastPebbleTemplatingEngineConfigDefault implements ISpincastPeb
     @Override
     public boolean isStrictVariablesEnabled() {
         return getSpincastConfig().isDebugEnabled();
+    }
+
+    @Override
+    public String getValidationMessagesTemplatePath() {
+        return "/spincast/spincast-plugins-pebble/spincastPebbleExtension/validationMessagesTemplate.html";
+    }
+
+    @Override
+    public String getValidationGroupMessagesTemplatePath() {
+        return "/spincast/spincast-plugins-pebble/spincastPebbleExtension/validationGroupMessagesTemplate.html";
     }
 
 }

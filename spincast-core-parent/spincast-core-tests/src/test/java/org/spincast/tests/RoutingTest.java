@@ -13,14 +13,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.exchange.IRequestRequestContextAddon;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.RequestRequestContextAddon;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRouteHandlerMatch;
-import org.spincast.core.routing.IRouter;
-import org.spincast.core.routing.IRoutingResult;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.RouteHandlerMatch;
+import org.spincast.core.routing.Router;
+import org.spincast.core.routing.RoutingResult;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.testing.core.SpincastTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -32,14 +32,14 @@ import com.google.inject.Injector;
 public class RoutingTest extends SpincastTestBase {
 
     @Inject
-    IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router;
+    Router<DefaultRequestContext, DefaultWebsocketContext> router;
 
     @Before
     public void before() {
         getRouter().removeAllRoutes(true);
     }
 
-    protected IRouter<IDefaultRequestContext, IDefaultWebsocketContext> getRouter() {
+    protected Router<DefaultRequestContext, DefaultWebsocketContext> getRouter() {
         return this.router;
     }
 
@@ -48,14 +48,14 @@ public class RoutingTest extends SpincastTestBase {
         return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
-    protected IDefaultRequestContext getRequestContextMock(HttpMethod httpMethod, String url) {
+    protected DefaultRequestContext getRequestContextMock(HttpMethod httpMethod, String url) {
 
         @SuppressWarnings("unchecked")
-        IRequestRequestContextAddon<IDefaultRequestContext> requestAddon = Mockito.mock(IRequestRequestContextAddon.class);
+        RequestRequestContextAddon<DefaultRequestContext> requestAddon = Mockito.mock(RequestRequestContextAddon.class);
         Mockito.when(requestAddon.getHttpMethod()).thenReturn(httpMethod);
         Mockito.when(requestAddon.getFullUrl()).thenReturn(url);
 
-        IDefaultRequestContext requestContext = Mockito.mock(IDefaultRequestContext.class);
+        DefaultRequestContext requestContext = Mockito.mock(DefaultRequestContext.class);
         Mockito.when(requestContext.request()).thenReturn(requestAddon);
 
         return requestContext;
@@ -64,7 +64,7 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void addRemove() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         assertEquals(0, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(0, router.getMainRoutes().size());
@@ -100,9 +100,9 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void root() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
         assertNull(routingResult);
 
@@ -366,11 +366,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void rootNoSlash() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -460,11 +460,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void oneToken() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -583,11 +583,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void oneTokenNoSlashPrefix() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("one").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -683,11 +683,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void oneTokenSlashSuffix() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -783,11 +783,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void oneTokenSlashSuffixNoSlashPrefix() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("one/").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -882,11 +882,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void twoTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/two").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one/two"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -1030,16 +1030,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void paramRoot() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1055,16 +1055,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void paramEmptyName() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1076,16 +1076,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void twoParams() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one/two"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1105,7 +1105,7 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void twoParamsSameName() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         try {
             router.GET("/${param1}/${param1}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1117,7 +1117,7 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void twoParamsSameNameEmpty() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         // This is ok, we don't collect them!
         router.GET("/${}/${}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1126,7 +1126,7 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void lotsdOfParamNamesEmpty() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         // Yeah, why not?
         router.GET("/${}/${}/*{}/${}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1135,16 +1135,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void paramEmptyNameNotCollected() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/${param1}/${}/${}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/one/two/three/four/five?test=1"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1164,7 +1164,7 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void twoParamsSameNameOneSplat() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         try {
             router.GET("/${param1}/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
@@ -1176,46 +1176,46 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void filterBeforeAfter() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         final Map<String, String> handlerCalled = new HashMap<String, String>();
 
-        router.GET("/").save(new IHandler<IDefaultRequestContext>() {
+        router.GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext exchange) {
+            public void handle(DefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "route");
             }
         });
-        router.before("/").save(new IHandler<IDefaultRequestContext>() {
+        router.before("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext exchange) {
+            public void handle(DefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "before");
             }
         });
-        router.after("/").save(new IHandler<IDefaultRequestContext>() {
+        router.after("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext exchange) {
+            public void handle(DefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "after");
             }
         });
-        router.beforeAndAfter("/").save(new IHandler<IDefaultRequestContext>() {
+        router.beforeAndAfter("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext exchange) {
+            public void handle(DefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "beforeAndAfter");
             }
         });
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
 
-        List<IRouteHandlerMatch<IDefaultRequestContext>> routeAndFilters = routingResult.getRouteHandlerMatches();
+        List<RouteHandlerMatch<DefaultRequestContext>> routeAndFilters = routingResult.getRouteHandlerMatches();
         assertEquals(5, routeAndFilters.size());
 
-        IRouteHandlerMatch<IDefaultRequestContext> handlerMatch = routeAndFilters.get(0);
+        RouteHandlerMatch<DefaultRequestContext> handlerMatch = routeAndFilters.get(0);
         assertTrue(handlerMatch.getPosition() < 0);
         handlerMatch.getHandler().handle(null);
         assertEquals("before", handlerCalled.get("handlerCalled"));
@@ -1245,7 +1245,7 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void twoSplats() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         // Two splat params not allowed...
         try {
@@ -1258,16 +1258,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatSimpleNoName() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1280,16 +1280,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splat1() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1341,16 +1341,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splat2() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("*{param1}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1402,16 +1402,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatAndRegularParams() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/*{param2}/${param3}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1435,16 +1435,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatAndRegularParams2() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{param1}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1465,16 +1465,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatAndRegularParams3() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/*{param2}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1494,16 +1494,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatAndRegularParamsAndHardcodedTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/*{param1}/333/444/${param2}/666/${}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555/666/777/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1523,16 +1523,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatAndRegularParamsAndHardcodedTokens2() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}/222/*{param2}/${param3}/777").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555/666/777/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1556,16 +1556,16 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatAndRegularParamsAndHardcodedTokens3() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("111/${param1}/${param2}/*{param3}/").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/111/222/333/444/555/666/777/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
-        IHandler<IDefaultRequestContext> route = routeMatch.getHandler();
+        Handler<DefaultRequestContext> route = routeMatch.getHandler();
         assertNotNull(route);
         assertEquals(0, routeMatch.getPosition());
 
@@ -1589,14 +1589,14 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void splatSlashOrNot() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/*{splat}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one/two"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
-        IRouteHandlerMatch<IDefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
+        RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
         Map<String, String> parameters = routeMatch.getPathParams();
         assertNotNull(parameters);
@@ -1638,11 +1638,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void notEnoughTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/two/three").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult =
+        RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one/two"));
         assertNull(routingResult);
 
@@ -1651,11 +1651,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void tooManyTokens() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/one/two/three"));
         assertNull(routingResult);
 
@@ -1664,11 +1664,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void tooManyTokensButSplat() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/*{any}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/one/two/three"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
@@ -1677,11 +1677,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void missingToken() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/one"));
         assertNull(routingResult);
 
@@ -1693,11 +1693,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void emptyDynamicParam() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/"));
         assertNull(routingResult);
 
@@ -1708,11 +1708,11 @@ public class RoutingTest extends SpincastTestBase {
     @Test
     public void emptyDynamicParam2() throws Exception {
 
-        IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router = getRouter();
+        Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         router.GET("/one/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
-        IRoutingResult<IDefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
+        RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
                                                                                                   "http://localhost/one/"));
         assertNull(routingResult);
 

@@ -5,13 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -20,15 +20,15 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void gzipped() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING_LONG);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertTrue(response.isGzipped());
     }
@@ -36,10 +36,10 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void notGzipped() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
                 } catch(Exception ex) {
@@ -48,7 +48,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }
@@ -56,10 +56,10 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void unknowContentType() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
                 } catch(Exception ex) {
@@ -68,7 +68,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }
@@ -76,10 +76,10 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void changeContentType() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
                     context.response().sendPlainText("text");
@@ -89,7 +89,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertTrue(response.isGzipped());
     }
@@ -97,10 +97,10 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void guessingContentType() throws Exception {
 
-        getRouter().GET("/one.txt").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.txt").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
                 } catch(Exception ex) {
@@ -109,7 +109,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one.txt").send();
+        HttpResponse response = GET("/one.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertTrue(response.isGzipped());
     }
@@ -119,7 +119,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         getRouter().file("/txt").classpath("/someFile.txt").save();
 
-        IHttpResponse response = GET("/txt").send();
+        HttpResponse response = GET("/txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertTrue(response.isGzipped());
     }
@@ -129,7 +129,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         getRouter().file("/image").classpath("/image.jpg").save();
 
-        IHttpResponse response = GET("/image").send();
+        HttpResponse response = GET("/image").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }
@@ -137,16 +137,16 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void disableGzip() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setGzipOption(GzipOption.DISABLE);
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING_LONG);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }
@@ -154,23 +154,23 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void disableGzipInFilter() throws Exception {
 
-        IHandler<IDefaultRequestContext> noGzip = new IHandler<IDefaultRequestContext>() {
+        Handler<DefaultRequestContext> noGzip = new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setGzipOption(GzipOption.DISABLE);
             }
         };
 
-        getRouter().GET("/one").before(noGzip).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").before(noGzip).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }
@@ -178,16 +178,16 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void forceGzip() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setGzipOption(GzipOption.FORCE);
                 context.response().sendBytes(new byte[0], ContentTypeDefaults.BINARY.getMainVariation());
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertTrue(response.isGzipped());
     }
@@ -195,16 +195,16 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void defaultGzip() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().setGzipOption(GzipOption.DEFAULT);
                 context.response().sendBytes(new byte[0], ContentTypeDefaults.BINARY.getMainVariation());
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }
@@ -212,10 +212,10 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void headersSent() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(GzipOption.DEFAULT, context.response().getGzipOption());
 
@@ -229,7 +229,7 @@ public class GzipTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertFalse(response.isGzipped());
     }

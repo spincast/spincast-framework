@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.filters.ISpincastFilters;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -32,7 +32,7 @@ import com.google.inject.Inject;
 public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ISpincastFilters<IDefaultRequestContext> spincastFilters;
+    protected SpincastFilters<DefaultRequestContext> spincastFilters;
 
     @Test
     public void corsFilterButNoCorsHeaders() throws Exception {
@@ -40,15 +40,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -76,10 +76,10 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
@@ -88,7 +88,7 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         headers.put(HttpHeaders.ORIGIN, "https://example1.com");
         headers.put(HttpHeaders.HOST, "example1.com");
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example1.com")
                                          .send();
 
@@ -118,15 +118,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -162,15 +162,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example1.com", "https://example1.com"));
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -206,15 +206,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example3.com"));
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -245,15 +245,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("https://example1.com"));
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -286,15 +286,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          Sets.newHashSet("extra-header-to-be-read-1",
                                          "extra-header-to-be-read-2"));
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -335,15 +335,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          null,
                          false);
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -385,15 +385,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          false,
                          Sets.newHashSet(HttpMethod.PATCH));
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -434,15 +434,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          false,
                          Sets.newHashSet(HttpMethod.PATCH));
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                           .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                           .addHeaderValue(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
                                           .send();
@@ -486,16 +486,16 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          false,
                          Sets.newHashSet(HttpMethod.PATCH));
 
-        getRouter().HEAD("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().HEAD("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 inHandler[0] = true;
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                           .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                           .send();
 
@@ -532,15 +532,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -581,7 +581,7 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -622,15 +622,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
@@ -674,15 +674,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example1.com", "https://example1.com"));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -723,15 +723,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example3.com"));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -767,15 +767,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          Sets.newHashSet("extra-header-to-be-sent-1",
                                          "extra-header-to-be-sent-2"));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
@@ -823,15 +823,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          Sets.newHashSet("extra-header-to-be-sent-1",
                                          "*"));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
@@ -881,15 +881,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                                          "extra-header-to-be-read-2"),
                          Sets.newHashSet("extra-header-to-send-1", "extra-header-2"));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
@@ -924,15 +924,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                                          "extra-header-to-be-read-2"),
                          null);
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
@@ -971,15 +971,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                                          "extra-header-to-be-sent-2"),
                          false);
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -1026,15 +1026,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          false,
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -1082,15 +1082,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          false,
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT));
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE")
                                              .send();
@@ -1127,15 +1127,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT),
                          123);
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -1184,15 +1184,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT),
                          0);
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -1240,15 +1240,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT),
                          -123);
 
-        getRouter().OPTIONS("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();
@@ -1289,10 +1289,10 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
@@ -1301,11 +1301,11 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         headers.put(HttpHeaders.ORIGIN, "https://example1.com");
         headers.put(HttpHeaders.HOST, "example2.com");
 
-        ICookie cookie = getCookieFactory().createCookie("name1", "value2");
+        Cookie cookie = getCookieFactory().createCookie("name1", "value2");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .addCookie(cookie)
                                          .send();
@@ -1342,15 +1342,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors("/");
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -1386,15 +1386,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors("/*{path}");
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -1430,15 +1430,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors("/nope");
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -1471,15 +1471,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors("/${param}");
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -1516,15 +1516,15 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         // Cors filter
         getRouter().cors("/*{param}", Sets.newHashSet("*"));
 
-        getRouter().DELETE("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().DELETE("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
                                              .send();

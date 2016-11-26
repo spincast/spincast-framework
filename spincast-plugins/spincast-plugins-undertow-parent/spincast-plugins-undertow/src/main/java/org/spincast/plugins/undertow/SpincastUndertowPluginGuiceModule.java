@@ -3,7 +3,7 @@ package org.spincast.plugins.undertow;
 import java.lang.reflect.Type;
 
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
 
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -21,7 +21,7 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
     @Override
     protected void configure() {
 
-        bind(IServer.class).to(getSpincastUndertowServerClass()).in(Scopes.SINGLETON);
+        bind(Server.class).to(getSpincastUndertowServerClass()).in(Scopes.SINGLETON);
         bindSpincastUndertowUtils();
         bindCorsHandlerFactory();
         bindGzipCheckerHandlerFactory();
@@ -34,90 +34,90 @@ public class SpincastUndertowPluginGuiceModule extends SpincastPluginGuiceModule
     }
 
     protected void bindSpincastUndertowUtils() {
-        bind(ISpincastUndertowUtils.class).to(getSpincastUndertowUtilsClass()).in(Scopes.SINGLETON);
+        bind(SpincastUndertowUtils.class).to(getSpincastUndertowUtilsClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends ISpincastUndertowUtils> getSpincastUndertowUtilsClass() {
-        return SpincastUndertowUtils.class;
+    protected Class<? extends SpincastUndertowUtils> getSpincastUndertowUtilsClass() {
+        return SpincastUndertowUtilsDefault.class;
     }
 
-    protected Class<? extends IServer> getSpincastUndertowServerClass() {
+    protected Class<? extends Server> getSpincastUndertowServerClass() {
         return SpincastUndertowServer.class;
     }
 
     protected void bindCorsHandlerFactory() {
 
-        install(new FactoryModuleBuilder().implement(ICorsHandler.class, getCorsHandlerClass())
-                                          .build(ICorsHandlerFactory.class));
+        install(new FactoryModuleBuilder().implement(CorsHandler.class, getCorsHandlerClass())
+                                          .build(CorsHandlerFactory.class));
     }
 
-    protected Class<? extends ICorsHandler> getCorsHandlerClass() {
-        return CorsHandler.class;
+    protected Class<? extends CorsHandler> getCorsHandlerClass() {
+        return CorsHandlerDefault.class;
     }
 
     protected void bindGzipCheckerHandlerFactory() {
-        install(new FactoryModuleBuilder().implement(IGzipCheckerHandler.class, getGzipCheckerHandlerClass())
-                                          .build(IGzipCheckerHandlerFactory.class));
+        install(new FactoryModuleBuilder().implement(GzipCheckerHandler.class, getGzipCheckerHandlerClass())
+                                          .build(GzipCheckerHandlerFactory.class));
     }
 
-    protected Class<? extends IGzipCheckerHandler> getGzipCheckerHandlerClass() {
-        return GzipCheckerHandler.class;
+    protected Class<? extends GzipCheckerHandler> getGzipCheckerHandlerClass() {
+        return GzipCheckerHandlerDefault.class;
     }
 
     protected void bindSpincastResourceHandlerFactory() {
-        install(new FactoryModuleBuilder().implement(ISpincastResourceHandler.class, getSpincastResourceHandlerClass())
-                                          .build(ISpincastResourceHandlerFactory.class));
+        install(new FactoryModuleBuilder().implement(SpincastResourceHandler.class, getSpincastResourceHandlerClass())
+                                          .build(SpincastResourceHandlerFactory.class));
     }
 
-    protected Class<? extends ISpincastResourceHandler> getSpincastResourceHandlerClass() {
-        return SpincastResourceHandler.class;
+    protected Class<? extends SpincastResourceHandler> getSpincastResourceHandlerClass() {
+        return SpincastResourceHandlerDefault.class;
     }
 
     protected void bindCacheBusterRemovalHandlerFactory() {
-        install(new FactoryModuleBuilder().implement(ICacheBusterRemovalHandler.class, getCacheBusterRemovalHandlerClass())
-                                          .build(ICacheBusterRemovalHandlerFactory.class));
+        install(new FactoryModuleBuilder().implement(CacheBusterRemovalHandler.class, getCacheBusterRemovalHandlerClass())
+                                          .build(CacheBusterRemovalHandlerFactory.class));
     }
 
-    protected Class<? extends ICacheBusterRemovalHandler> getCacheBusterRemovalHandlerClass() {
-        return CacheBusterRemovalHandler.class;
+    protected Class<? extends CacheBusterRemovalHandler> getCacheBusterRemovalHandlerClass() {
+        return CacheBusterRemovalHandlerDefault.class;
     }
 
     protected void bindFileClassPathResourceManagerFactory() {
-        install(new FactoryModuleBuilder().implement(IFileClassPathResourceManager.class, getFileClassPathResourceManagerClass())
-                                          .build(IFileClassPathResourceManagerFactory.class));
+        install(new FactoryModuleBuilder().implement(FileClassPathResourceManager.class, getFileClassPathResourceManagerClass())
+                                          .build(FileClassPathResourceManagerFactory.class));
     }
 
-    protected Class<? extends IFileClassPathResourceManager> getFileClassPathResourceManagerClass() {
-        return FileClassPathResourceManager.class;
+    protected Class<? extends FileClassPathResourceManager> getFileClassPathResourceManagerClass() {
+        return FileClassPathResourceManagerDefault.class;
     }
 
     protected void bindHttpAuthIdentityManagerFactory() {
-        install(new FactoryModuleBuilder().implement(ISpincastHttpAuthIdentityManager.class,
+        install(new FactoryModuleBuilder().implement(SpincastHttpAuthIdentityManager.class,
                                                      getSpincastHttpAuthIdentityManagerClass())
-                                          .build(ISpincastHttpAuthIdentityManagerFactory.class));
+                                          .build(SpincastHttpAuthIdentityManagerFactory.class));
     }
 
-    protected Class<? extends ISpincastHttpAuthIdentityManager> getSpincastHttpAuthIdentityManagerClass() {
-        return SpincastHttpAuthIdentityManager.class;
+    protected Class<? extends SpincastHttpAuthIdentityManager> getSpincastHttpAuthIdentityManagerClass() {
+        return SpincastHttpAuthIdentityManagerDefault.class;
     }
 
     protected void bindUndertowWebsocketEndpointWriterFactory() {
-        install(new FactoryModuleBuilder().implement(IUndertowWebsocketEndpointWriter.class,
+        install(new FactoryModuleBuilder().implement(UndertowWebsocketEndpointWriter.class,
                                                      getUndertowWebsocketEndpointWriterClass())
-                                          .build(IUndertowWebsocketEndpointWriterFactory.class));
+                                          .build(UndertowWebsocketEndpointWriterFactory.class));
     }
 
-    protected Class<? extends IUndertowWebsocketEndpointWriter> getUndertowWebsocketEndpointWriterClass() {
+    protected Class<? extends UndertowWebsocketEndpointWriter> getUndertowWebsocketEndpointWriterClass() {
         return SpincastUndertowWebsocketEndpointWriter.class;
     }
 
     protected void bindWebsocketEndpointFactory() {
-        install(new FactoryModuleBuilder().implement(IWebsocketEndpoint.class,
+        install(new FactoryModuleBuilder().implement(WebsocketEndpoint.class,
                                                      getWebsocketEndpointClass())
-                                          .build(IWebsocketEndpointFactory.class));
+                                          .build(WebsocketEndpointFactory.class));
     }
 
-    protected Class<? extends IWebsocketEndpoint> getWebsocketEndpointClass() {
+    protected Class<? extends WebsocketEndpoint> getWebsocketEndpointClass() {
         return SpincastWebsocketEndpoint.class;
     }
 

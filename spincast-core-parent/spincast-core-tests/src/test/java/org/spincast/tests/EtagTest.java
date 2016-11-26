@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.spincast.core.routing.IETag;
-import org.spincast.core.routing.IETagFactory;
+import org.spincast.core.routing.ETag;
+import org.spincast.core.routing.ETagFactory;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.testing.core.SpincastTestBase;
 
@@ -24,19 +24,19 @@ public class EtagTest extends SpincastTestBase {
     }
 
     @Inject
-    protected IETagFactory eTagFactory;
+    protected ETagFactory eTagFactory;
 
-    protected IETagFactory getETagFactory() {
+    protected ETagFactory getETagFactory() {
         return this.eTagFactory;
     }
 
     @Test
     public void matchDefault() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123");
+        ETag eTag2 = getETagFactory().create("123");
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2));
@@ -45,10 +45,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123");
+        ETag eTag2 = getETagFactory().create("123");
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2, true));
@@ -57,10 +57,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNoMatch() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("456");
+        ETag eTag2 = getETagFactory().create("456");
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -69,10 +69,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNoMatchWeak() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("456");
+        ETag eTag2 = getETagFactory().create("456");
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2, true));
@@ -81,10 +81,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak2() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123");
+        ETag eTag2 = getETagFactory().create("123");
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -93,10 +93,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak2WeakComparison() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123");
+        ETag eTag2 = getETagFactory().create("123");
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2, true));
@@ -105,10 +105,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak3() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123", true);
+        ETag eTag2 = getETagFactory().create("123", true);
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -117,10 +117,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak3WeakComparison() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123", true);
+        ETag eTag2 = getETagFactory().create("123", true);
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2, true));
@@ -129,10 +129,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak4() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123", true);
+        ETag eTag2 = getETagFactory().create("123", true);
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -141,10 +141,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWeak4WeakComparison() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123", true);
+        ETag eTag2 = getETagFactory().create("123", true);
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2, true));
@@ -153,10 +153,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNoMatchWeak2() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("456");
+        ETag eTag2 = getETagFactory().create("456");
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -165,10 +165,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNoMatchWeak3() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("456", true);
+        ETag eTag2 = getETagFactory().create("456", true);
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -177,10 +177,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNoMatchWeak4() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("456", true);
+        ETag eTag2 = getETagFactory().create("456", true);
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2));
@@ -189,10 +189,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNoMatchWeakWeakComparison() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123", true);
+        ETag eTag1 = getETagFactory().create("123", true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("456", true);
+        ETag eTag2 = getETagFactory().create("456", true);
         assertNotNull(eTag2);
 
         assertFalse(eTag1.matches(eTag2, true));
@@ -201,10 +201,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWildcard() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("*", false, true);
+        ETag eTag1 = getETagFactory().create("*", false, true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("123");
+        ETag eTag2 = getETagFactory().create("123");
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2));
@@ -213,10 +213,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWildcard2() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("*", false, true);
+        ETag eTag2 = getETagFactory().create("*", false, true);
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2));
@@ -225,10 +225,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWildcard3() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("*", false, true);
+        ETag eTag1 = getETagFactory().create("*", false, true);
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("*", false, true);
+        ETag eTag2 = getETagFactory().create("*", false, true);
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2));
@@ -237,10 +237,10 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWildcardWeakComparison() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
-        IETag eTag2 = getETagFactory().create("*", false, true);
+        ETag eTag2 = getETagFactory().create("*", false, true);
         assertNotNull(eTag2);
 
         assertTrue(eTag1.matches(eTag2, true));
@@ -249,7 +249,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchWildcardNull() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("*", false, true);
+        ETag eTag1 = getETagFactory().create("*", false, true);
         assertNotNull(eTag1);
 
         assertTrue(eTag1.matches(null));
@@ -258,7 +258,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void matchNull() throws Exception {
 
-        IETag eTag1 = getETagFactory().create("123");
+        ETag eTag1 = getETagFactory().create("123");
         assertNotNull(eTag1);
 
         assertFalse(eTag1.matches(null));
@@ -267,7 +267,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void deserializeETagHeaderValid() throws Exception {
 
-        IETag eTag = getETagFactory().deserializeHeaderValue("\"test\"");
+        ETag eTag = getETagFactory().deserializeHeaderValue("\"test\"");
         assertNotNull(eTag);
         assertEquals("test", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -277,7 +277,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void deserializeETagHeaderValidWeak() throws Exception {
 
-        IETag eTag = getETagFactory().deserializeHeaderValue("W/\"test\"");
+        ETag eTag = getETagFactory().deserializeHeaderValue("W/\"test\"");
         assertNotNull(eTag);
         assertEquals("test", eTag.getTag());
         assertTrue(eTag.isWeak());
@@ -287,7 +287,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void deserializeETagHeaderValidWildcard() throws Exception {
 
-        IETag eTag = getETagFactory().deserializeHeaderValue("*");
+        ETag eTag = getETagFactory().deserializeHeaderValue("*");
         assertNotNull(eTag);
         assertEquals("*", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -297,7 +297,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void deserializeETagHeaderWildcardQuotedIsNotWildcard() throws Exception {
 
-        IETag eTag = getETagFactory().deserializeHeaderValue("\"*\"");
+        ETag eTag = getETagFactory().deserializeHeaderValue("\"*\"");
         assertNotNull(eTag);
         assertEquals("*", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -347,7 +347,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void createETag() throws Exception {
 
-        IETag eTag = getETagFactory().create("test");
+        ETag eTag = getETagFactory().create("test");
         assertNotNull(eTag);
         assertEquals("test", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -357,7 +357,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void createETagWeak() throws Exception {
 
-        IETag eTag = getETagFactory().create("test", true);
+        ETag eTag = getETagFactory().create("test", true);
         assertNotNull(eTag);
         assertEquals("test", eTag.getTag());
         assertTrue(eTag.isWeak());
@@ -367,7 +367,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void createETagAsteriskTagIsNotWildcard() throws Exception {
 
-        IETag eTag = getETagFactory().create("*");
+        ETag eTag = getETagFactory().create("*");
         assertNotNull(eTag);
         assertEquals("*", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -407,7 +407,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void createETagWildcardAsteriskTag() throws Exception {
 
-        IETag eTag = getETagFactory().create("*", false, true);
+        ETag eTag = getETagFactory().create("*", false, true);
         assertNotNull(eTag);
         assertEquals("*", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -417,7 +417,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void createETagWildcardNullTag() throws Exception {
 
-        IETag eTag = getETagFactory().create(null, false, true);
+        ETag eTag = getETagFactory().create(null, false, true);
         assertNotNull(eTag);
         assertEquals("*", eTag.getTag());
         assertFalse(eTag.isWeak());
@@ -427,7 +427,7 @@ public class EtagTest extends SpincastTestBase {
     @Test
     public void createETagWildcardEmptyTag() throws Exception {
 
-        IETag eTag = getETagFactory().create("", false, true);
+        ETag eTag = getETagFactory().create("", false, true);
         assertNotNull(eTag);
         assertEquals("*", eTag.getTag());
         assertFalse(eTag.isWeak());

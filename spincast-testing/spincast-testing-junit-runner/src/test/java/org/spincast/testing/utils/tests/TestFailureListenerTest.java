@@ -8,12 +8,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
-import org.spincast.testing.utils.IBeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.ITestFailureListener;
+import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.TestFailureListener;
 import org.spincast.testing.utils.SpincastJUnitRunner;
 
 /**
- * We didn't find a way to test ITestFailureListener
+ * We didn't find a way to test TestFailureListener
  * properly. Since a test must fail to validate that feature, we always
  * end up with a failed result. So we ignore this test but it can be
  * run manually: it will fail, but we can validate that 
@@ -21,8 +21,8 @@ import org.spincast.testing.utils.SpincastJUnitRunner;
  */
 @Ignore
 @RunWith(SpincastJUnitRunner.class)
-public class TestFailureListenerTest implements ITestFailureListener,
-                                     IBeforeAfterClassMethodsProvider {
+public class TestFailureListenerTest implements TestFailureListener,
+                                     BeforeAfterClassMethodsProvider {
 
     private boolean testFailureCalled = false;
 

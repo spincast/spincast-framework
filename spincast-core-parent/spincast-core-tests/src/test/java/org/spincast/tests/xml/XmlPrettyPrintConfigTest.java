@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.jacksonxml.ISpincastXmlManagerConfig;
+import org.spincast.plugins.jacksonxml.SpincastXmlManagerConfig;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -17,10 +17,10 @@ import com.google.inject.Module;
 public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Inject
-    protected IXmlManager xmlManager;
+    protected XmlManager xmlManager;
 
     @Override
     public Module getTestingModule() {
@@ -33,7 +33,7 @@ public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTes
                 //==========================================
                 // Bind custom XML Manager configs
                 //==========================================
-                bind(ISpincastXmlManagerConfig.class).toInstance(new ISpincastXmlManagerConfig() {
+                bind(SpincastXmlManagerConfig.class).toInstance(new SpincastXmlManagerConfig() {
 
                     @Override
                     public String getPrettyPrinterNewlineChars() {
@@ -52,7 +52,7 @@ public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void toXmlPretty() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("someInt", 123);
 
         String xml = this.xmlManager.toXml(jsonObj, true);

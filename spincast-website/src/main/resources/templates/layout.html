@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{langAbrv}}">
+<html lang="{{spincast.langAbrv}}">
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -13,8 +13,8 @@
         <link rel="stylesheet" href="/public/js/bootstrap/css/bootstrap.min.css">
         <link rel="stylesheet" href="/public/js/letterfx/jquery-letterfx.min.css">
         <link rel="stylesheet" href="/public/css/hint.min.css">
-        
-        <link rel="stylesheet" href="/public/css/{{cacheBuster}}main.css">
+        <link rel="stylesheet" href="/public/js/toastr/toastr.min.css">
+        <link rel="stylesheet" href="/public/css/{{spincast.cacheBuster}}main.css">
         
     </head>
     <body class="{% block sectionClasses %}{% endblock %}">
@@ -43,12 +43,25 @@
         <script src="/public/js/jquery.inview.js"></script>
         <script src="/public/js/letterfx/jquery-letterfx.min.js"></script>
         <script src="/public/js/ace/ace.js"></script>
-        <script src="/public/js/{{cacheBuster}}main.js"></script>
-        
+        <script src="/public/js/toastr/toastr.min.js"></script>
+        <script src="/public/js/arrive.min.js"></script>
+        <script src="/public/js/{{spincast.cacheBuster}}main.js"></script>
+            
         {#==========================================
         Page specific scripts
         ==========================================#}
         {% block scripts %}{% endblock %}
+        
+        {#==========================================
+        Alerts
+        ==========================================#}
+        {% if spincast.alerts is not empty | default(false) %}
+            <script>
+            	{% for alert in spincast.alerts %}
+            	    app.alertMessage("{{alert.alertType}}", "{{alert.text}}"); 
+            	{% endfor %}
+            </script> 
+        {% endif %}
         
     </body>
 </html>

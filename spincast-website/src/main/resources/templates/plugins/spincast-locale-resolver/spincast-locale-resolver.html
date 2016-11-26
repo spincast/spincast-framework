@@ -3,7 +3,7 @@ Spincast Locale Resolver plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-locale-resolver{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-locale-resolver{% endblock %}
 {% block meta_title %}Plugins - Spincast Locale Resolver{% endblock %}
 {% block meta_description %}Spincast Locale Resolver plugin helps find the Locale/Langage to use.{% endblock %}
 
@@ -30,17 +30,17 @@ Spincast Locale Resolver plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
+        <div class="col-xs-12"> 
             <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Locale Resolver <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/localeresolver/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/localeresolver/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -54,33 +54,73 @@ Spincast Locale Resolver plugin
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#localeresolver">The <code>ILocaleResolver</code> interface</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#methods">Methods</a></li>
-                    </ul>
-                </li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
 	            <p>
-	                The <code>Spincast Locale Resolver</code> plugin provides an implementation 
-                    of the <code>ILocaleResolver</code> interface, which is used to find the best locale/language to use
-                    for the current request/response exchange.
+	                This plugin provides an implementation 
+                    of the <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a>  interface, 
+                    which is used to find the best locale/language in the code. The implementation,
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/localeresolver/LocaleResolverDefault.html">LocaleResolverDefault</a>,
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/localeresolver/LocaleResolverDefault.html"></a> try to find the
+                    best Locale to use this way&nbsp;:
+                    
+                    <ul>
+                        <li>
+                            If it is not inside a HTTP request scope, it uses the default Locale. This default Locale is
+                            configurable using <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getDefaultLocale--">SpincastConfig#getDefaultLocale()</a>.
+                        </li>
+                        <li>
+                            If a Cookie specified what Locale to use, this Locale is returned. The cookie of this cookie is configurable using
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getCookieNameLocale--">SpincastConfig#getCookieNameLocale()</a>.
+                        </li>
+                        <li>
+                            Use the <code>"Accept-Language"</code> HTTP header of the request to determine the best Locale to use.
+                        </li>
+                    </ul>
 	            </p>
-                
             </section>
             
-	        <section id="installation">
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
+	            <p>
+	                <ul>
+                        <li>
+                            You can inject the <code>LocaleResolver</code> component anywhere you need it, but you also 
+                            have a direct access to the best <code>Locale</code> to use
+                            inside a <code>Route Handler</code> :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java" data-ace-hi="1,32,1,49"
+>public void myHandler(AppRequestContext context) {
+    Locale localeToUse = context.getLocaleToUse();
+    //...
+}</pre>
+                                </p>
+                            </div> 
+                        </li>   
+                    </ul>
+	            </p>
+            </section>
+            
+            
+            
+           	<section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
                     Installation
@@ -99,7 +139,7 @@ Spincast Locale Resolver plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-locale-resolver&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -112,8 +152,8 @@ Spincast Locale Resolver plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastLocaleResolverPluginGuiceModule(IAppRequestContext.class, 
-                                                    IAppWebsocketContext.class)
+        new SpincastLocaleResolverPluginGuiceModule(AppRequestContext.class, 
+                                                    AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -141,49 +181,23 @@ Spincast Locale Resolver plugin
 	            </p>
             </section>
             
-            <section id="localeresolver">
-            
-                <h3 class="noTop">
-                     <a class="anchor" href="#localeresolver" title="permanent link"></a>
-                    The <code>ILocaleResolver</code> interface
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a>
+                        </li>
+                    </ul>
                 </p> 
-                
-                <div id="methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-                        
-                        
-                        
-                        
-                        
-<li>
-    <code class="apiItem">Locale <span>getLocaleToUse</span>()</code>
-    <div class="well">
-        The best Locale to use.
-
-        <div class="apiItemFooter">
-            @return The best Locale to use. If none is found, returns
- the <em>default</em> Locale, as defined by <code>ISpincastConfig#getDefaultLocale()</code>
-
-        </div>
-    </div>
-</li>
-
-
-
-                        </ul>
-                        
-                    </p>
-                </div> 
             </section>
-
-
+           
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

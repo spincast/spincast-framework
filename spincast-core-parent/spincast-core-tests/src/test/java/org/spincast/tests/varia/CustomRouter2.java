@@ -1,29 +1,29 @@
 package org.spincast.tests.varia;
 
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.routing.SpincastRouter;
 import org.spincast.plugins.routing.SpincastRouterDeps;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class CustomRouter2 extends SpincastRouter<IDefaultRequestContext, IDefaultWebsocketContext> {
+public class CustomRouter2 extends SpincastRouter<DefaultRequestContext, DefaultWebsocketContext> {
 
     @Inject
-    public CustomRouter2(SpincastRouterDeps<IDefaultRequestContext, IDefaultWebsocketContext> spincastRouterDeps) {
+    public CustomRouter2(SpincastRouterDeps<DefaultRequestContext, DefaultWebsocketContext> spincastRouterDeps) {
         super(spincastRouterDeps);
     }
 
     @Inject
-    public void addRoute(ISpincastConfig spincastConfig) {
+    public void addRoute(SpincastConfig spincastConfig) {
 
-        GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });

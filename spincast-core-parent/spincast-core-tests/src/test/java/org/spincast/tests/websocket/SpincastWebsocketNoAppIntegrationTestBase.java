@@ -11,14 +11,14 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils;
-import org.spincast.plugins.httpclient.websocket.builders.IWebsocketRequestBuilder;
-import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.core.websocket.WebsocketEndpointManager;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.httpclient.utils.SpincastHttpClientUtils;
+import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilder;
+import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
 import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -33,9 +33,9 @@ import com.google.inject.Module;
  * Base class for WebSocket tests without an existing
  * application.
  */
-public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
+public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                                                extends
-                                                               SpincastNoAppIntegrationTestBase<IDefaultRequestContext, W> {
+                                                               SpincastNoAppIntegrationTestBase<DefaultRequestContext, W> {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastWebsocketNoAppIntegrationTestBase.class);
 
@@ -43,9 +43,9 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
     private String secSocketKey;
 
     @Inject
-    protected ISpincastHttpClientUtils spincastHttpClientUtils;
+    protected SpincastHttpClientUtils spincastHttpClientUtils;
 
-    protected ISpincastHttpClientUtils getSpincastHttpClientUtils() {
+    protected SpincastHttpClientUtils getSpincastHttpClientUtils() {
         return this.spincastHttpClientUtils;
     }
 
@@ -63,7 +63,7 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
             @Override
             protected void configure() {
 
-                bind(ISpincastUndertowConfig.class).toInstance(new SpincastUndertowConfigDefault() {
+                bind(SpincastUndertowConfig.class).toInstance(new SpincastUndertowConfigDefault() {
 
                     //==========================================
                     // Server pings every seconds
@@ -83,8 +83,8 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
 
     protected void closeAllWebsocketEndpoints() {
 
-        List<IWebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
-        for(IWebsocketEndpointManager manager : websocketEndpointManagers) {
+        List<WebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
+        for(WebsocketEndpointManager manager : websocketEndpointManagers) {
             manager.closeEndpoint(false);
         }
         assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
@@ -118,7 +118,7 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
     /**
      * Validates the response is a Websocket upgrade permission.
      */
-    protected void validateIsWebsocketUpgradeHttpResponse(String path, IHttpResponse response) {
+    protected void validateIsWebsocketUpgradeHttpResponse(String path, HttpResponse response) {
 
         assertNotNull(response);
 
@@ -144,7 +144,7 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
     /**
      * Validates the response is NOT a Websocket upgrade permission.
      */
-    protected void validateIsNotWebsocketUpgradeHttpResponse(IHttpResponse response) {
+    protected void validateIsNotWebsocketUpgradeHttpResponse(HttpResponse response) {
         String upgradeHeader = response.getHeaderFirst(HttpHeaders.UPGRADE);
         assertNull(upgradeHeader);
 
@@ -157,9 +157,9 @@ public abstract class SpincastWebsocketNoAppIntegrationTestBase<R extends IReque
      * is considered to be HTTPS and Websocket is served using SSL too.
      */
     @Override
-    protected IWebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+    protected WebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
 
-        IWebsocketRequestBuilder builder = super.websocket(pathOrUrl, isFullUrl, isHttps);
+        WebsocketRequestBuilder builder = super.websocket(pathOrUrl, isFullUrl, isHttps);
 
         //==========================================
         // Add an known value for the "Sec-WebSocket-Key"

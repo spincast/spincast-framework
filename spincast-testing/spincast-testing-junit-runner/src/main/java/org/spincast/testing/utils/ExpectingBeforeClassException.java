@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * the 'beforeClass()' method is expected to fail.
  * 
  * To use with {@link org.spincast.testing.utils.SpincastJUnitRunner SpincastJUnitRunner}
- * and {@link org.spincast.testing.utils.IBeforeAfterClassMethodsProvider IBeforeAfterClassMethodsProvider}
+ * and {@link org.spincast.testing.utils.BeforeAfterClassMethodsProvider BeforeAfterClassMethodsProvider}
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

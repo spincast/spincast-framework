@@ -1,7 +1,7 @@
 package org.spincast.defaults.tests;
 
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
 
 import com.google.inject.Module;
@@ -14,7 +14,7 @@ import com.google.inject.Module;
  * main Guice module to bind.
  */
 public class SpincastDefaultNoAppIntegrationTestBase extends
-                                                     SpincastNoAppIntegrationTestBase<IDefaultRequestContext, IDefaultWebsocketContext> {
+                                                     SpincastNoAppIntegrationTestBase<DefaultRequestContext, DefaultWebsocketContext> {
 
     @Override
     public Module getTestingModule() {

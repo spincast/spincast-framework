@@ -3,7 +3,7 @@ package org.spincast.core.exceptions;
 /**
  * Exception to throw to trigger the "Not Found" route.
  */
-public class NotFoundException extends ResponseResetableException {
+public class NotFoundException extends ResponseResetableExceptionDefault {
 
     private static final long serialVersionUID = 1L;
 

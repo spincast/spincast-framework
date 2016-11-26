@@ -3,29 +3,29 @@ package org.spincast.plugins.httpclient.websocket;
 import java.lang.reflect.Type;
 
 import org.spincast.plugins.httpclient.SpincastHttpClientPluginGuiceModule;
+import org.spincast.plugins.httpclient.builders.ConnectRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.DeleteRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.GetRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.HeadRequestBuilderDefault;
 import org.spincast.plugins.httpclient.builders.ConnectRequestBuilder;
 import org.spincast.plugins.httpclient.builders.DeleteRequestBuilder;
 import org.spincast.plugins.httpclient.builders.GetRequestBuilder;
 import org.spincast.plugins.httpclient.builders.HeadRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IConnectRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IDeleteRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IGetRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IHeadRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IOptionsRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IPatchRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IPostRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IPutRequestBuilder;
-import org.spincast.plugins.httpclient.builders.ITraceRequestBuilder;
 import org.spincast.plugins.httpclient.builders.OptionsRequestBuilder;
 import org.spincast.plugins.httpclient.builders.PatchRequestBuilder;
 import org.spincast.plugins.httpclient.builders.PostRequestBuilder;
 import org.spincast.plugins.httpclient.builders.PutRequestBuilder;
 import org.spincast.plugins.httpclient.builders.TraceRequestBuilder;
-import org.spincast.plugins.httpclient.utils.ISpincastHttpClientUtils;
-import org.spincast.plugins.httpclient.websocket.builders.IWebsocketRequestBuilder;
+import org.spincast.plugins.httpclient.builders.OptionsRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.PatchRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.PostRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.PutRequestBuilderDefault;
+import org.spincast.plugins.httpclient.builders.TraceRequestBuilderDefault;
+import org.spincast.plugins.httpclient.utils.SpincastHttpClientUtils;
 import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilder;
-import org.spincast.plugins.httpclient.websocket.utils.ISpincastHttpClientWithWebsocketUtils;
+import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilderDefault;
 import org.spincast.plugins.httpclient.websocket.utils.SpincastHttpClientWithWebsocketUtils;
+import org.spincast.plugins.httpclient.websocket.utils.SpincastHttpClientWithWebsocketUtilsDefault;
 
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -49,35 +49,35 @@ public class SpincastHttpClientWithWebsocketPluginGuiceModule extends SpincastHt
     }
 
     /**
-     * Override to bind IWebsocketRequestBuilder too. 
+     * Override to bind WebsocketRequestBuilder too. 
      */
     @Override
     protected void bindHttpClientFactory() {
 
-        install(new FactoryModuleBuilder().implement(IGetRequestBuilder.class, GetRequestBuilder.class)
-                                          .implement(IPostRequestBuilder.class, PostRequestBuilder.class)
-                                          .implement(IPutRequestBuilder.class, PutRequestBuilder.class)
-                                          .implement(IDeleteRequestBuilder.class, DeleteRequestBuilder.class)
-                                          .implement(ITraceRequestBuilder.class, TraceRequestBuilder.class)
-                                          .implement(IOptionsRequestBuilder.class, OptionsRequestBuilder.class)
-                                          .implement(IHeadRequestBuilder.class, HeadRequestBuilder.class)
-                                          .implement(IConnectRequestBuilder.class, ConnectRequestBuilder.class)
-                                          .implement(IPatchRequestBuilder.class, PatchRequestBuilder.class)
-                                          .implement(IWebsocketRequestBuilder.class, WebsocketRequestBuilder.class)
-                                          .build(IHttpClient.class));
+        install(new FactoryModuleBuilder().implement(GetRequestBuilder.class, GetRequestBuilderDefault.class)
+                                          .implement(PostRequestBuilder.class, PostRequestBuilderDefault.class)
+                                          .implement(PutRequestBuilder.class, PutRequestBuilderDefault.class)
+                                          .implement(DeleteRequestBuilder.class, DeleteRequestBuilderDefault.class)
+                                          .implement(TraceRequestBuilder.class, TraceRequestBuilderDefault.class)
+                                          .implement(OptionsRequestBuilder.class, OptionsRequestBuilderDefault.class)
+                                          .implement(HeadRequestBuilder.class, HeadRequestBuilderDefault.class)
+                                          .implement(ConnectRequestBuilder.class, ConnectRequestBuilderDefault.class)
+                                          .implement(PatchRequestBuilder.class, PatchRequestBuilderDefault.class)
+                                          .implement(WebsocketRequestBuilder.class, WebsocketRequestBuilderDefault.class)
+                                          .build(HttpClient.class));
     }
 
     protected void bindSpincastHttpClientWithWebsocketUtils() {
-        bind(ISpincastHttpClientWithWebsocketUtils.class).to(getSpincastHttpClientUtilsWithWebsocketClass()).in(Scopes.SINGLETON);
+        bind(SpincastHttpClientWithWebsocketUtils.class).to(getSpincastHttpClientUtilsWithWebsocketClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends ISpincastHttpClientWithWebsocketUtils> getSpincastHttpClientUtilsWithWebsocketClass() {
-        return SpincastHttpClientWithWebsocketUtils.class;
+    protected Class<? extends SpincastHttpClientWithWebsocketUtils> getSpincastHttpClientUtilsWithWebsocketClass() {
+        return SpincastHttpClientWithWebsocketUtilsDefault.class;
     }
 
     @Override
-    protected Class<? extends ISpincastHttpClientUtils> getSpincastHttpClientUtilsClass() {
-        return SpincastHttpClientWithWebsocketUtils.class;
+    protected Class<? extends SpincastHttpClientUtils> getSpincastHttpClientUtilsClass() {
+        return SpincastHttpClientWithWebsocketUtilsDefault.class;
     }
 
 }

@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.filters.ISpincastFilters;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.server.IServer;
-import org.spincast.quickstart.config.IAppConfig;
-import org.spincast.quickstart.controller.IAppController;
-import org.spincast.quickstart.exchange.IAppHandler;
-import org.spincast.quickstart.exchange.IAppRequestContext;
-import org.spincast.quickstart.exchange.IAppRouter;
+import org.spincast.core.filters.SpincastFilters;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.server.Server;
+import org.spincast.quickstart.config.AppConfig;
+import org.spincast.quickstart.controller.AppController;
+import org.spincast.quickstart.exchange.AppHandler;
+import org.spincast.quickstart.exchange.AppRequestContext;
+import org.spincast.quickstart.exchange.AppRouter;
 import org.spincast.quickstart.guice.AppModule;
 
 import com.google.common.collect.Lists;
@@ -23,7 +23,7 @@ import com.google.inject.util.Modules;
 
 /**
  * The main class of the application. Everything starts with the
- * classic <code>main(...)</code> method.
+ * <code>main(...)</code> method.
  */
 public class App {
 
@@ -78,22 +78,22 @@ public class App {
     //==========================================
     // The application
     //==========================================
-    private final IServer server;
-    private final IAppConfig appConfig;
-    private final IAppRouter router;
-    private final IAppController appController;
-    private final ISpincastFilters<IAppRequestContext> spincastFilters;
+    private final Server server;
+    private final AppConfig appConfig;
+    private final AppRouter router;
+    private final AppController appController;
+    private final SpincastFilters<AppRequestContext> spincastFilters;
 
     /**
-     * The application constructor which Guice will call
+     * The application constructor that Guice will call
      * with the required dependencies.
      */
     @Inject
-    public App(IServer server,
-               IAppConfig config,
-               IAppRouter router,
-               IAppController appController,
-               ISpincastFilters<IAppRequestContext> spincastFilters) {
+    public App(Server server,
+               AppConfig config,
+               AppRouter router,
+               AppController appController,
+               SpincastFilters<AppRequestContext> spincastFilters) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
@@ -101,23 +101,23 @@ public class App {
         this.spincastFilters = spincastFilters;
     }
 
-    protected IAppConfig getConfig() {
+    protected AppConfig getConfig() {
         return this.appConfig;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IAppRouter getRouter() {
+    protected AppRouter getRouter() {
         return this.router;
     }
 
-    protected IAppController getAppController() {
+    protected AppController getAppController() {
         return this.appController;
     }
 
-    protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
+    protected SpincastFilters<AppRequestContext> getSpincastFilters() {
         return this.spincastFilters;
     }
 
@@ -151,50 +151,50 @@ public class App {
         //==========================================
         // A GET route for the index page.
         //
-        // Note that with Java 8, we could simply use 
-        // a method handler:
+        // Note that, with Java 8, we could simply use 
+        // a method handler :
         //
         // getRouter().GET("/", getAppController()::indexPage);
         //
-        // Or a Lambda:
+        // Or a Lambda :
         //
         // getRouter().GET("/").save(context -> getAppController().indexPage(context));
         //
         //==========================================
-        getRouter().GET("/").cache(3600).save(new IAppHandler() {
+        getRouter().GET("/").cache(3600).save(new AppHandler() {
 
             @Override
-            public void handle(IAppRequestContext context) {
+            public void handle(AppRequestContext context) {
                 getAppController().indexPage(context);
             }
         });
 
         //==========================================
         // Another GET route. 
-        // Note that here we use 
-        // "IHandler<IAppRequestContext>" instead of 
-        // "IAppHandler" for the handler type: 
+        // Note that here we are using "Handler<AppRequestContext>" 
+        // instead of "AppHandler" for the handler type : 
         // they are equivalent.
         //==========================================
-        getRouter().GET("/greet/${name}").save(new IHandler<IAppRequestContext>() {
+        getRouter().GET("/greet/${name}").save(new Handler<AppRequestContext>() {
 
             @Override
-            public void handle(IAppRequestContext context) {
-                // Call a method we added on our
-                // custom request context type...
+            public void handle(AppRequestContext context) {
+
+                // Example call to a method we added on our
+                // custom Request Context type
                 context.customGreetingMethod();
             }
         });
 
         //==========================================
         // A POST route. 
-        // This route in used in Spincast documentation
-        // to demonstrate how to write a test.
+        // This route is the one used in Spincast's 
+        // documentation to demonstrate how to write a test.
         //==========================================
-        getRouter().POST("/sum").save(new IAppHandler() {
+        getRouter().POST("/sum").save(new AppHandler() {
 
             @Override
-            public void handle(IAppRequestContext context) {
+            public void handle(AppRequestContext context) {
                 getAppController().sumRoute(context);
             }
         });
@@ -202,10 +202,10 @@ public class App {
         //==========================================
         // "Not Found" handler
         //==========================================
-        getRouter().notFound(new IAppHandler() {
+        getRouter().notFound(new AppHandler() {
 
             @Override
-            public void handle(IAppRequestContext context) {
+            public void handle(AppRequestContext context) {
                 getAppController().notFound(context);
             }
         });
@@ -213,10 +213,10 @@ public class App {
         //==========================================
         // Exceptions handler
         //==========================================
-        getRouter().exception(new IAppHandler() {
+        getRouter().exception(new AppHandler() {
 
             @Override
-            public void handle(IAppRequestContext context) {
+            public void handle(AppRequestContext context) {
                 getAppController().exception(context);
             }
         });
@@ -242,10 +242,10 @@ public class App {
         //==========================================
         // Add some security headers on every route.
         //==========================================
-        getRouter().before().save(new IAppHandler() {
+        getRouter().before().save(new AppHandler() {
 
             @Override
-            public void handle(IAppRequestContext context) {
+            public void handle(AppRequestContext context) {
                 getSpincastFilters().addSecurityHeaders(context);
             }
         });

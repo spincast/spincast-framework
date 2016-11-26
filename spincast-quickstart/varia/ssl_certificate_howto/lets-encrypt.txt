@@ -97,7 +97,7 @@ it directly without reverse proxy.
 
    /src/main/resources/certificates/myKeyStore.jks
 
-6. In your ISpincastConfig implementation :
+6. In your SpincastConfig implementation :
 
     - Make "getHttpServerPort()" return "-1", if you only want the server to serve HTTPS and not HTTP.
     - Make "getHttpsServerPort()" return a valid and free port, "443" is the default one for HTTPS.

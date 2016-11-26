@@ -3,7 +3,7 @@ Spincast Pebble plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-pebble{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-pebble{% endblock %}
 {% block meta_title %}Plugins - Spincast Pebble{% endblock %}
 {% block meta_description %}Spincast Pebble plugin provides templating functionalities using Pebble.{% endblock %}
 
@@ -30,17 +30,17 @@ Spincast Pebble plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
+        <div class="col-xs-12"> 
             <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Pebble <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/pebble/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/pebble/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -55,64 +55,37 @@ Spincast Pebble plugin
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#templatingengine">The <code>ITemplatingEngine</code> interface</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#methods">Methods</a></li> 
-                    </ul>
-                </li>  
-                <li class="openable"><a href="#configs">Configurations</a></li>   
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
+                <li class="openable"><a href="#config">Configuration</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
 	            <p>
-	                The <code>Spincast Pebble</code> provides templating and HTML generation functionalities
-                     using <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. It contains an implementation
-                    of the <code><a href="#templatingengine">ITemplatingEngine</a></code> interface.
+	                This plugin provides an implementation of the
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a>
+                    interface : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngine.html">SpincastPebbleTemplatingEngine</a>.
+	                It is based on <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>.
+	            </p>
+	            <p class="center">
+	                <a href="http://www.mitchellbosecke.com/pebble/home"><img src="/public/images/pebble.png" /></a>
 	            </p>
                 <p>
-                    Most of the time, the <code>ITemplatingEngine</code> interface is used directly from
-                    the <code>request context</code> via the 
-                    <a href="/plugins/spincast-templating-addon#request_context_addon"><code>templating()</code> add-on</a> or via
-                    some dedicated methods on the <a href="/plugins/spincast-response#request_context_addon"><code>response()</code> add-on</a>. 
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Make sure you read the <a href="/documentation#templating_engine">Templating Engine </a> section
+                    for more information about the templating functionnalities. Of course the
+                    <a class="javadoc" href="http://www.mitchellbosecke.com/pebble/documentation">Pebble documentation</a> 
+                    may also be very useful.
                 </p>
-                <p>    
-                    For example:
-                </p>
-                
-                <p>
-                    <div>
-                        <p>
-                            {% verbatim %}<pre class="ace ace-java" data-ace-hi="8,15,8,81|11,29,11,84"
->public class AppController {
-
-    public void myHandler(IDefaultRequestContext context) {
-
-        Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-        params.put("name", "Stromgol");
-
-        // Sends an evaluated template using the "response()" add-on:
-        context.response().sendHtmlTemplate("/templates/myTemplate.html", params);
-
-        // Evaluates some inline content using the "templating()" add-on:
-        String html = context.templating().evaluate("&lt;h1&gt;Hi {{name}}!&lt;/h1&gt;", params);
-        System.out.println(html); // &lt;h1&gt;Hi Stromgol!&lt;/h1&gt;
-    }
-}</pre>{% endverbatim %}
-                        </p>
-                    </div>
-                </p>
-  
             </section>
             
+
 	        <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
@@ -132,7 +105,7 @@ Spincast Pebble plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-pebble&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -145,7 +118,7 @@ Spincast Pebble plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastPebblePluginGuiceModule(IAppRequestContext.class, IAppWebsocketContext.class)
+        new SpincastPebblePluginGuiceModule(AppRequestContext.class, AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -173,236 +146,45 @@ Spincast Pebble plugin
 	            </p>
             </section>
             
-<section id="templatingengine">
-                <h3 class="noTop">
-                    <a class="anchor" href="#templatingengine" title="permanent link"></a>
-                    The <code>ITemplatingEngine</code> interface
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
-               
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngineConfig.html">SpincastPebbleTemplatingEngineConfig</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleExtensionDefault.html">SpincastPebbleExtensionDefault</a>
+                        </li>
+                    </ul>
                 </p> 
-                
-                <div id="methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-                        
-           
-<li>
-    <code class="apiItem">String <span>evaluate</span>(String content, Map&lt;String, Object&gt; params)</code>
-    <div class="well">
-        Evaluates the content, using the given parameters.
-<br />Uses the default Locale.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>evaluate</span>(String content, Map&lt;String, Object&gt; params, Locale locale)</code>
-    <div class="well">
-        Evaluates the content, using the given parameters.
-<br />Uses the specified Locale.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>evaluate</span>(String content, IJsonObject jsonObject)</code>
-    <div class="well">
-        Evaluates the content, using the given parameters.
- specified as a <code>IJsonObject</code>.
-<br />Uses the default Locale.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>evaluate</span>(String content, IJsonObject jsonObject, Locale locale)</code>
-    <div class="well">
-        Evaluates the content, using the given parameters.
- specified as a <code>IJsonObject</code>.
-<br />Uses the specified Locale.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, Map&lt;String, Object&gt; params)</code>
-    <div class="well">
-        Evaluates a template using the given parameters.
-<br />Uses the default Locale.
-
-        <div class="apiItemFooter">
-            @param templatePath must be a classpath's relative path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, Map&lt;String, Object&gt; params, Locale locale)</code>
-    <div class="well">
-        Evaluates a template using the given parameters.
-<br />Uses the specified Locale.
-
-        <div class="apiItemFooter">
-            @param templatePath must be a classpath's relative path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, IJsonObject jsonObject)</code>
-    <div class="well">
-        Evaluates a template using the parameters specified
- as a <code>IJsonObject</code>.
-<br />Uses the default Locale.
-
-        <div class="apiItemFooter">
-            @param templatePath must be a classpath's relative path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, IJsonObject jsonObject, Locale locale)</code>
-    <div class="well">
-        Evaluates a template using the parameters specified
- as a <code>IJsonObject</code>.
-<br />Uses the specified Locale.
-
-        <div class="apiItemFooter">
-            @param templatePath must be a classpath's relative path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params)</code>
-    <div class="well">
-        Evaluates a template using the given parameters.
-<br />Uses the default Locale.
-
-        <div class="apiItemFooter">
-            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
- a classpath's relative path. If <code>false</code>, it is considered as an absolute file
- system path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, Map&lt;String, Object&gt; params, Locale locale)</code>
-    <div class="well">
-        Evaluates a template using the given parameters.
-<br />Uses the specified Locale.
-
-        <div class="apiItemFooter">
-            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
- a classpath's relative path. If <code>false</code>, it is considered as an absolute file
- system path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, IJsonObject jsonObject)</code>
-    <div class="well">
-        Evaluates a template using the parameters specified
- as a <code>IJsonObject</code>.
-<br />Uses the default Locale.
-
-        <div class="apiItemFooter">
-            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
- a classpath's relative path. If <code>false</code>, it is considered as an absolute file
- system path.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>fromTemplate</span>(String templatePath, boolean isClasspathPath, IJsonObject jsonObject, Locale locale)</code>
-    <div class="well">
-        Evaluates a template using the parameters specified
- as a <code>IJsonObject</code>.
-<br />Uses the specified Locale.
-
-        <div class="apiItemFooter">
-            @param isClasspathPath if <code>true</code>, the 'templatePath' is considered as
- a classpath's relative path. If <code>false</code>, it is considered as an absolute file
- system path.
-
-        </div>
-    </div>
-</li>
-
-{% verbatim %}
-<li>
-    <code class="apiItem">String <span>createPlaceholder</span>(String variable)</code>
-    <div class="well">
-        Creates a placeholder using the current templating engine
- implementation.
- <p>
-<br />This is mainly useful for the tests, which don't know in advance
- which templating engine will be used, so which syntax to use
- for the placeholders.
- </p>
- <p>
-<br />For example, using Pebble, a call to <code>createPlaceholder("name")</code> will
-result in "<code>{{name}}</code>" (without the quotes).
- </p>
-
-    </div>
-</li>
-{% endverbatim %}
-
-           
-
-                        </ul>  
-                    </p>
-                </div>
             </section>
             
-            <section id="configs">
-                <h3 class="noTop">
-                    <a class="anchor" href="#configs" title="permanent link"></a>
-                    Configurations
+            
+            
+            <section id="config">
+                <h3>
+                    <a class="anchor" href="#config" title="permanent link"></a>
+                    Configuration
                 </h3>
                 <p>
-                    You can bind a <code>ISpincastPebbleTemplatingEngineConfig</code> implementation to tweak
-                    the default configurations used by Pebble. By default, the
-                    <code>SpincastPebbleTemplatingEngineConfigDefault</code> class is used as the implementation.
-                </p> 
-                <p>
-                    The main configuration, <code><em>getExtension()</em></code>, allows you to add a custom <code>extension</code> to Pebble.
-                    Learn more about extensions on <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble">Pebble website</a>.
-                </p> 
-                <div>
-                    <p>
-                        <ul class="apiList">
-
-                            <li>
-                                <code class="apiItem">Extension <span>getExtension</span>()</code>
-                                <div class="well">
-                                    Pebble extension to register: allows you to add custom
-                                    filters, functions, etc.
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </p>
-                </div>
+                    You can bind a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngineConfig.html">SpincastPebbleTemplatingEngineConfig</a>
+                    implementation to tweak the default configurations used by this plugin. By default, the
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngineConfigDefault.html">SpincastPebbleTemplatingEngineConfigDefault</a>
+                    class is used as the implementation.
+                </p>  
             </section>
-
+            
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

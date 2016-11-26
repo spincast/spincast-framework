@@ -3,7 +3,7 @@ package org.spincast.website.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.templating.ITemplatingEngine;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.SpincastStatics;
 
 import com.google.inject.Inject;
@@ -11,9 +11,9 @@ import com.google.inject.Inject;
 public class PebbleCustomTest extends WebsiteIntegrationTestBase {
 
     @Inject
-    protected ITemplatingEngine templatingEngine;
+    protected TemplatingEngine templatingEngine;
 
-    protected ITemplatingEngine getTemplatingEngine() {
+    protected TemplatingEngine getTemplatingEngine() {
         return this.templatingEngine;
     }
 

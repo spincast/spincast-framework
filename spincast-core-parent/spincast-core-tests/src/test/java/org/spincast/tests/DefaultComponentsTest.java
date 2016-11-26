@@ -6,15 +6,15 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRouter;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.Router;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.routing.IDefaultHandler;
-import org.spincast.plugins.routing.IDefaultRouter;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.routing.DefaultHandler;
+import org.spincast.plugins.routing.DefaultRouter;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -22,49 +22,49 @@ import com.google.inject.Inject;
 
 public class DefaultComponentsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
-    // IDefaultRouter
+    // DefaultRouter
     @Inject
-    protected IDefaultRouter defaultRouter;
+    protected DefaultRouter defaultRouter;
 
-    // IRouter
+    // Router
     @SuppressWarnings("rawtypes")
     @Inject
-    protected IRouter genericRouter;
+    protected Router genericRouter;
 
-    // IRouter<?, ?>
+    // Router<?, ?>
     @Inject
-    protected IRouter<?, ?> genericRouterPara;
+    protected Router<?, ?> genericRouterPara;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void defaultComponents() throws Exception {
 
-        // IDefaultHandler
-        this.defaultRouter.GET("/default").save(new IDefaultHandler() {
+        // DefaultHandler
+        this.defaultRouter.GET("/default").save(new DefaultHandler() {
 
-            // IDefaultRequestContext
+            // DefaultRequestContext
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        // IHandler
-        this.genericRouter.GET("/generic").save(new IHandler() {
+        // Handler
+        this.genericRouter.GET("/generic").save(new Handler() {
 
             @Override
-            public void handle(IRequestContext context) {
+            public void handle(RequestContext context) {
                 context.response().sendPlainText("generic");
             }
 
         });
 
-        // IRouter<?>
+        // Router<?>
         List<?> mainRoutes = this.genericRouterPara.getMainRoutes();
         assertNotNull(mainRoutes);
         assertEquals(2, mainRoutes.size());
 
-        IHttpResponse response = GET("/default").send();
+        HttpResponse response = GET("/default").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());

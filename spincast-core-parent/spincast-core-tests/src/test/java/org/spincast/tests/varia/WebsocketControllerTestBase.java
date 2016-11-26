@@ -6,43 +6,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.server.IServer;
-import org.spincast.core.websocket.IWebsocketConnectionConfig;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.websocket.IWebsocketController;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.server.Server;
+import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.core.websocket.WebsocketController;
+import org.spincast.core.websocket.WebsocketEndpointManager;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 
-public abstract class WebsocketControllerTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
-                                                 implements IWebsocketController<R, W> {
+public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
+                                                 implements WebsocketController<R, W> {
 
-    private final IServer server;
+    private final Server server;
     private final boolean randomEndpointId;
     private final boolean randomPeerId;
 
-    private final Map<String, IWebsocketEndpointManager> endpointManagers = new HashMap<String, IWebsocketEndpointManager>();
+    private final Map<String, WebsocketEndpointManager> endpointManagers = new HashMap<String, WebsocketEndpointManager>();
 
     private final Map<String, Map<String, List<String>>> stringMessageReceived = new HashMap<String, Map<String, List<String>>>();
     private final Map<String, Map<String, List<byte[]>>> bytesMessageReceived = new HashMap<String, Map<String, List<byte[]>>>();
     private final Map<String, List<String>> onPeerConnectedReceived = new HashMap<String, List<String>>();
 
-    protected Map<String, IWebsocketEndpointManager> getEndpointManagers() {
+    protected Map<String, WebsocketEndpointManager> getEndpointManagers() {
         return this.endpointManagers;
     }
 
-    public WebsocketControllerTestBase(IServer server) {
+    public WebsocketControllerTestBase(Server server) {
         this(server, false, false);
     }
 
-    public WebsocketControllerTestBase(IServer server, boolean randomEndpointId, boolean randomPeerId) {
+    public WebsocketControllerTestBase(Server server, boolean randomEndpointId, boolean randomPeerId) {
         this.server = server;
         this.randomEndpointId = randomEndpointId;
         this.randomPeerId = randomPeerId;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
@@ -55,9 +55,9 @@ public abstract class WebsocketControllerTestBase<R extends IRequestContext<?>, 
     }
 
     @Override
-    public IWebsocketConnectionConfig onPeerPreConnect(R context) {
+    public WebsocketConnectionConfig onPeerPreConnect(R context) {
 
-        return new IWebsocketConnectionConfig() {
+        return new WebsocketConnectionConfig() {
 
             @Override
             public String getEndpointId() {
@@ -164,7 +164,7 @@ public abstract class WebsocketControllerTestBase<R extends IRequestContext<?>, 
     }
 
     @Override
-    public void onEndpointReady(IWebsocketEndpointManager endpointManager) {
+    public void onEndpointReady(WebsocketEndpointManager endpointManager) {
         getEndpointManagers().put(endpointManager.getEndpointId(), endpointManager);
     }
 
@@ -200,7 +200,7 @@ public abstract class WebsocketControllerTestBase<R extends IRequestContext<?>, 
         this.onPeerConnectedReceived.clear();
     }
 
-    public IWebsocketEndpointManager getEndpointManager(String endpointId) {
+    public WebsocketEndpointManager getEndpointManager(String endpointId) {
         return getEndpointManagers().get(endpointId);
     }
 

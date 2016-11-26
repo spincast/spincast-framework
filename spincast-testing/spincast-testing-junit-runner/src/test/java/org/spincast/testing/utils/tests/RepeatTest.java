@@ -5,14 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.spincast.testing.utils.IBeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.IRepeatedClassAfterMethodProvider;
+import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.RepeatedClassAfterMethodProvider;
 import org.spincast.testing.utils.Repeat;
 import org.spincast.testing.utils.tests.utils.SpincastJUnitRunnerTester;
 
 @RunWith(SpincastJUnitRunnerTester.class)
 @Repeat(value = 3, sleep = 0)
-public class RepeatTest implements IBeforeAfterClassMethodsProvider, IRepeatedClassAfterMethodProvider {
+public class RepeatTest implements BeforeAfterClassMethodsProvider, RepeatedClassAfterMethodProvider {
 
     private int test1Called = 0;
     private int test2Called = 0;

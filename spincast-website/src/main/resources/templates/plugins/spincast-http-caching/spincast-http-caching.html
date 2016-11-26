@@ -3,7 +3,7 @@ Spincast HTTP Caching plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-http-caching{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-http-caching{% endblock %}
 {% block meta_title %}Plugins - Spincast HTTP Caching{% endblock %}
 {% block meta_description %}Spincast HTTP Caching plugin : ETag, Cache-Control, etc.{% endblock %}
 
@@ -26,27 +26,27 @@ Spincast HTTP Caching plugin
 
     <ol class="breadcrumb">
         <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
-        <li class="active">Spincast HTTP Caching plugin</li>
+        <li class="active">Spincast HTTP Caching Addon plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HTTP Caching <span>plugin</span></h2></a>
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HTTP Caching Addon <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/org/spincast/plugins/httpcaching/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/httpcaching/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
     <div id="sectionTitleFixed" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast HTTP Caching  <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast HTTP Caching Addon <span>plugin</span></h2></a>
         </div>
     </div>
 
@@ -54,26 +54,58 @@ Spincast HTTP Caching plugin
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable"><a href="#addon">The request context add-on</a></li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
 	            <p>
-	                The <code>Spincast HTTP Caching</code> plugin provides utilities to
-	                send and validate cache headers. The main component is the
-	                request context add-on, <a href="#addon"><code>ICacheHeadersRequestContextAddon</code></a>.
+	                This plugin provides an implementation for the Request Context add-on 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/CacheHeadersRequestContextAddon.html">CacheHeadersRequestContextAddon</a> 
+                    interface :
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpcaching/SpincastCacheHeadersRequestContextAddon.html">SpincastCacheHeadersRequestContextAddon</a>
 	            </p>
 	            <p>
-	                For the full documentation about HTTP caching using Spincast, please have a look at the
-	                <a href="/documentation#http_caching">HTTP caching</a> section.
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+	                Have a look at the
+	                <a href="/documentation#http_caching">HTTP caching</a> section of the
+                    documentation for all the information about this topic.
+	            </p>
+            </section>
+            
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
+	            <p>
+	                <ul>
+                        <li>
+                            Using the <code>.cacheHeaders()</code> add-on from a <code>Route Handler</code> 
+                            to set some cache headers :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+    
+    // Sends "Cache-Control" header
+    context.cacheHeaders().cache(60);
+}</pre>
+                                </p>
+                            </div> 
+                        </li>
+
+                    </ul>
 	            </p>
             </section>
             
@@ -96,7 +128,7 @@ Spincast HTTP Caching plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-http-caching&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -109,8 +141,8 @@ Spincast HTTP Caching plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastHttpCachingPluginGuiceModule(IAppRequestContext.class, 
-                                                 IAppWebsocketContext.class)
+        new SpincastHttpCachingPluginGuiceModule(AppRequestContext.class, 
+                                                 AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -138,174 +170,25 @@ Spincast HTTP Caching plugin
 	            </p>
             </section>
             
-            <section id="addon">
+            
+            
+            <section id="javadoc">
                 <h3>
-                    <a class="anchor" href="#addon" title="permanent link"></a>
-                    The request context add-on 
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
-                <div id="request_context_example">
-                    <p>
-                        <div>
-                            <p>
-                                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
-                                <pre class="ace ace-java" data-ace-hi="1,30,1,40"
->public void myHandler(IAppRequestContext context) {
-    
-    // Sends "Cache-Control" header
-    context.cacheHeaders().cache(60);
-    
-    // Validates the "freshness" headers
-    if(context.cacheHeaders().eTag(etag).lastModified(date).validate(true)) {
-        return;
-    } 
-}</pre> 
-                            </p>
-                        </div>
-                    </p>
-                </div>
-                
-             <div id="request_context_methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-          
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>eTag</span>(String currentTag)</code>
-    <div class="well">
-         Specifies the current ETag (strong) of the resource.
- <p>
- A strong comparison will be used to compare the request ETag to this
- current ETag.
- </p>
- <p>
- Skip, or use <code>null</code> if the resource doesn't exist.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>eTag</span>(String currentTag, boolean currentTagIsWeak)</code>
-    <div class="well">
-         Specifies the current strong or weak ETag of the resource.
- <p>
- A strong comparison will be used to compare the request ETag to this
- current ETag.
- </p>
- <p>
- Skip, or use <code>null</code> if the resource doesn't exist.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>eTag</span>(String currentTag, boolean currentTagIsWeak, boolean weakComparison)</code>
-    <div class="well">
-         Specifies the current strong or weak ETag of the resource.
- <p>
- Skip, or use <code>null</code> if the resource doesn't exist.
- </p>
-
-        <div class="apiItemFooter">
-            @param weakComparison should a weak comparison be used instead of
- a strong one to compare the request ETag to the current ETag?
-
+                <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/CacheHeadersRequestContextAddon.html">CacheHeadersRequestContextAddon</a> 
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+            
+            
         </div>
     </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>lastModified</span>(Date lastModificationDate)</code>
-    <div class="well">
-         Specifies the last modification date of the resource.
- <p>
- Skip, or use <code>null</code> if the resource doesn't exist.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>cache</span>(int seconds)</code>
-    <div class="well">
-         The number of seconds the client should cache this resource
- before requesting it again.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>cache</span>(int seconds, boolean isPrivate)</code>
-    <div class="well">
-         The number of seconds the client should cache this resource
- before requesting it again.
-
-        <div class="apiItemFooter">
-            @param isPrivate should the cache be 'private'?
- (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>cache</span>(int seconds, boolean isPrivate, Integer secondsCdn)</code>
-    <div class="well">
-         The number of seconds the client should cache this resource
- before requesting it again.
-
-        <div class="apiItemFooter">
-            @param isPrivate should the cache be 'private'?
- (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
-<br />@param secondsCdn The number of seconds the resource associated with
- this route should be cached by a CDN/proxy. If <code>null</code>, it
- won't be used.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICacheHeadersRequestContextAddon&lt;R&gt; <span>noCache</span>()</code>
-    <div class="well">
-         Sends "No Cache" headers so the resource is not cached
- at all by the client.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>validate</span>(boolean resourceCurrentlyExists)</code>
-    <div class="well">
-         Call this when you are done setting
- <code>ETag</code> and/or <code>Last-Modified</code> to validate
- them agains the headers sent by the client.
- <p>
- If this method returns <code>true</code>, the route handler should return immediately
- without returning/creating/modifying/deleting the associated resource! Appropriate headers 
- have already been set on the response.
- </p>
-
-        <div class="apiItemFooter">
-            @param resourceCurrentlyExists Does the resource currently exist?
-
-        </div>
-    </div>
-</li>
-
-
-
-
-			            </ul>
-			        </p>
-			    </div> 
-			</section>
-			
-			
-        </div>
-    </div>
-    
 </div> 
 
 {% endblock %}

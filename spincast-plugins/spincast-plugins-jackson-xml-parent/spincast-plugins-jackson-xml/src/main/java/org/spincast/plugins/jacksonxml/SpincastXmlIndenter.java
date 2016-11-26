@@ -21,14 +21,14 @@ import com.google.inject.Inject;
  */
 public class SpincastXmlIndenter implements Indenter {
 
-    private final ISpincastXmlManagerConfig spincastXmlManagerConfig;
+    private final SpincastXmlManagerConfig spincastXmlManagerConfig;
 
     @Inject
-    public SpincastXmlIndenter(ISpincastXmlManagerConfig spincastXmlManagerConfig) {
+    public SpincastXmlIndenter(SpincastXmlManagerConfig spincastXmlManagerConfig) {
         this.spincastXmlManagerConfig = spincastXmlManagerConfig;
     }
 
-    protected ISpincastXmlManagerConfig getSpincastXmlManagerConfig() {
+    protected SpincastXmlManagerConfig getSpincastXmlManagerConfig() {
         return this.spincastXmlManagerConfig;
     }
 

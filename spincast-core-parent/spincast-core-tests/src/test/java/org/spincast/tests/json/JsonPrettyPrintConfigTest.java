@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.jacksonjson.ISpincastJsonManagerConfig;
+import org.spincast.plugins.jacksonjson.SpincastJsonManagerConfig;
 import org.spincast.testing.core.SpincastTestBase;
 
 import com.google.inject.Guice;
@@ -18,7 +18,7 @@ import com.google.inject.Module;
 public class JsonPrettyPrintConfigTest extends SpincastTestBase {
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Override
     protected Injector createInjector() {
@@ -35,7 +35,7 @@ public class JsonPrettyPrintConfigTest extends SpincastTestBase {
                 //==========================================
                 // Bind custom Json Manager configs
                 //==========================================
-                bind(ISpincastJsonManagerConfig.class).toInstance(new ISpincastJsonManagerConfig() {
+                bind(SpincastJsonManagerConfig.class).toInstance(new SpincastJsonManagerConfig() {
 
                     @Override
                     public String getPrettyPrinterNewlineChars() {
@@ -46,16 +46,6 @@ public class JsonPrettyPrintConfigTest extends SpincastTestBase {
                     public int getPrettyPrinterIndentationSpaceNumber() {
                         return 2;
                     }
-
-                    @Override
-                    public int getMaxNumberOfFieldPathKeys() {
-                        return 1000;
-                    }
-
-                    @Override
-                    public int getFieldPathKeyMaxLength() {
-                        return 1000;
-                    }
                 });
             }
         };
@@ -64,7 +54,7 @@ public class JsonPrettyPrintConfigTest extends SpincastTestBase {
     @Test
     public void toJsonStringPretty() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("someInt", 123);
 
         String jsonStr = this.jsonManager.toJsonString(jsonObj, true);

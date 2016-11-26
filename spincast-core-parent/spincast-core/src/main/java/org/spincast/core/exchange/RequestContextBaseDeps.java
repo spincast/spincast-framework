@@ -1,11 +1,11 @@
 package org.spincast.core.exchange;
 
-import org.spincast.core.cookies.ICookiesRequestContextAddon;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.locale.ILocaleResolver;
-import org.spincast.core.routing.IRoutingRequestContextAddon;
-import org.spincast.core.templating.ITemplatingRequestContextAddon;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.cookies.CookiesRequestContextAddon;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.routing.RoutingRequestContextAddon;
+import org.spincast.core.templating.TemplatingRequestContextAddon;
+import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -31,32 +31,32 @@ import com.google.inject.Provider;
  *     </li>  
  * </ul>
  */
-public class RequestContextBaseDeps<R extends IRequestContext<R>> {
+public class RequestContextBaseDeps<R extends RequestContext<R>> {
 
-    private final ILocaleResolver localeResolver;
-    private final IJsonManager jsonManager;
-    private final IXmlManager xmlManager;
-    private final Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider;
-    private final Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider;
-    private final Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider;
-    private final Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
-    private final Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider;
-    private final Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
-    private final Provider<ICacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider;
+    private final LocaleResolver localeResolver;
+    private final JsonManager jsonManager;
+    private final XmlManager xmlManager;
+    private final Provider<CookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider;
+    private final Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider;
+    private final Provider<RoutingRequestContextAddon<R>> routingRequestContextAddonProvider;
+    private final Provider<ResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
+    private final Provider<VariablesRequestContextAddon<R>> variablesRequestContextAddonProvider;
+    private final Provider<TemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
+    private final Provider<CacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider;
     private final Provider<Injector> injectorProvider;
 
     /**
      * Constructor
      */
     @Inject
-    public RequestContextBaseDeps(ILocaleResolver localeResolver, IJsonManager jsonManager, IXmlManager xmlManager,
-                                  Provider<ICookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider,
-                                  Provider<IRequestRequestContextAddon<R>> requestRequestContextAddonProvider,
-                                  Provider<IRoutingRequestContextAddon<R>> routingRequestContextAddonProvider,
-                                  Provider<IResponseRequestContextAddon<R>> responseRequestContextAddonProvider,
-                                  Provider<IVariablesRequestContextAddon<R>> variablesRequestContextAddonProvider,
-                                  Provider<ITemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider,
-                                  Provider<ICacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider,
+    public RequestContextBaseDeps(LocaleResolver localeResolver, JsonManager jsonManager, XmlManager xmlManager,
+                                  Provider<CookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider,
+                                  Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider,
+                                  Provider<RoutingRequestContextAddon<R>> routingRequestContextAddonProvider,
+                                  Provider<ResponseRequestContextAddon<R>> responseRequestContextAddonProvider,
+                                  Provider<VariablesRequestContextAddon<R>> variablesRequestContextAddonProvider,
+                                  Provider<TemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider,
+                                  Provider<CacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider,
                                   Provider<Injector> injectorProvider) {
 
         this.localeResolver = localeResolver;
@@ -72,43 +72,43 @@ public class RequestContextBaseDeps<R extends IRequestContext<R>> {
         this.injectorProvider = injectorProvider;
     }
 
-    public ILocaleResolver getLocaleResolver() {
+    public LocaleResolver getLocaleResolver() {
         return this.localeResolver;
     }
 
-    public IJsonManager getJsonManager() {
+    public JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    public IXmlManager getXmlManager() {
+    public XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
-    public Provider<ICookiesRequestContextAddon<R>> getCookiesRequestContextAddonProvider() {
+    public Provider<CookiesRequestContextAddon<R>> getCookiesRequestContextAddonProvider() {
         return this.cookiesRequestContextAddonProvider;
     }
 
-    public Provider<IRequestRequestContextAddon<R>> getRequestRequestContextAddonProvider() {
+    public Provider<RequestRequestContextAddon<R>> getRequestRequestContextAddonProvider() {
         return this.requestRequestContextAddonProvider;
     }
 
-    public Provider<IRoutingRequestContextAddon<R>> getRoutingRequestContextAddonProvider() {
+    public Provider<RoutingRequestContextAddon<R>> getRoutingRequestContextAddonProvider() {
         return this.routingRequestContextAddonProvider;
     }
 
-    public Provider<IResponseRequestContextAddon<R>> getResponseRequestContextAddonProvider() {
+    public Provider<ResponseRequestContextAddon<R>> getResponseRequestContextAddonProvider() {
         return this.responseRequestContextAddonProvider;
     }
 
-    public Provider<IVariablesRequestContextAddon<R>> getVariablesRequestContextAddonProvider() {
+    public Provider<VariablesRequestContextAddon<R>> getVariablesRequestContextAddonProvider() {
         return this.variablesRequestContextAddonProvider;
     }
 
-    public Provider<ITemplatingRequestContextAddon<R>> getTemplatingRequestContextAddonProvider() {
+    public Provider<TemplatingRequestContextAddon<R>> getTemplatingRequestContextAddonProvider() {
         return this.templatingRequestContextAddonProvider;
     }
 
-    public Provider<ICacheHeadersRequestContextAddon<R>> getCacheHeadersRequestContextAddonProvider() {
+    public Provider<CacheHeadersRequestContextAddon<R>> getCacheHeadersRequestContextAddonProvider() {
         return this.cacheHeadersRequestContextAddonProvider;
     }
 

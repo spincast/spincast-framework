@@ -3,33 +3,33 @@ package org.spincast.plugins.routing;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
-import org.spincast.core.routing.IETagFactory;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRedirectRuleBuilder;
-import org.spincast.core.routing.IRedirectRuleBuilderFactory;
-import org.spincast.core.routing.IRoute;
-import org.spincast.core.routing.IRouteBuilder;
-import org.spincast.core.routing.IRouteBuilderFactory;
-import org.spincast.core.routing.IRouteHandlerMatch;
-import org.spincast.core.routing.IRouter;
-import org.spincast.core.routing.IRoutingRequestContextAddon;
-import org.spincast.core.routing.IStaticResource;
-import org.spincast.core.routing.IStaticResourceBuilder;
-import org.spincast.core.routing.IStaticResourceBuilderFactory;
-import org.spincast.core.routing.IStaticResourceCacheConfig;
-import org.spincast.core.routing.IStaticResourceCorsConfig;
-import org.spincast.core.routing.IStaticResourceFactory;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.websocket.IWebsocketRoute;
-import org.spincast.core.websocket.IWebsocketRouteBuilder;
-import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
-import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
+import org.spincast.core.routing.ETagFactory;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.RedirectRuleBuilder;
+import org.spincast.core.routing.RedirectRuleBuilderFactory;
+import org.spincast.core.routing.Route;
+import org.spincast.core.routing.RouteBuilder;
+import org.spincast.core.routing.RouteBuilderFactory;
+import org.spincast.core.routing.RouteHandlerMatch;
+import org.spincast.core.routing.Router;
+import org.spincast.core.routing.RoutingRequestContextAddon;
+import org.spincast.core.routing.StaticResource;
+import org.spincast.core.routing.StaticResourceBuilder;
+import org.spincast.core.routing.StaticResourceBuilderFactory;
+import org.spincast.core.routing.StaticResourceCacheConfig;
+import org.spincast.core.routing.StaticResourceCorsConfig;
+import org.spincast.core.routing.StaticResourceFactory;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.WebsocketRoute;
+import org.spincast.core.websocket.WebsocketRouteBuilder;
+import org.spincast.core.websocket.WebsocketRouteBuilderFactory;
+import org.spincast.core.websocket.WebsocketRouteHandlerFactory;
 import org.spincast.core.websocket.WebsocketRouteHandler;
-import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
 import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
+import org.spincast.plugins.routing.utils.SpincastRoutingUtilsDefault;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -139,7 +139,7 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
     }
 
     protected void validateRequirements() {
-        requireBinding(ISpincastRouterConfig.class);
+        requireBinding(SpincastRouterConfig.class);
     }
 
     protected Key<?> getRouterImplementationKey() {
@@ -147,19 +147,19 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         //==========================================
         // If we use the default request context and default
         // Websocket context, we directly bind the DefaultRouter that
-        // implements the "IDefaultRouter" interface, for
+        // implements the "DefaultRouter" interface, for
         // easy injection of the default router.
         //==========================================
-        if(getRequestContextType().equals(IDefaultRequestContext.class) &&
-           getWebsocketContextType().equals(IDefaultWebsocketContext.class)) {
-            return Key.get(DefaultRouter.class);
+        if(getRequestContextType().equals(DefaultRequestContext.class) &&
+           getWebsocketContextType().equals(DefaultWebsocketContext.class)) {
+            return Key.get(DefaultRouterDefault.class);
         } else {
             return parameterizeWithContextInterfaces(SpincastRouter.class);
         }
     }
 
     protected Key<?> getRouteKey() {
-        return parameterizeWithContextInterfaces(SpincastRoute.class);
+        return parameterizeWithContextInterfaces(RouteDefault.class);
     }
 
     protected Key<?> getWebsocketRouteKey() {
@@ -167,7 +167,7 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
     }
 
     protected Key<?> getStaticResourceKey() {
-        return parameterizeWithContextInterfaces(StaticResource.class);
+        return parameterizeWithContextInterfaces(StaticResourceDefault.class);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -175,9 +175,9 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
         Key key = getRouterImplementationKey();
         try {
-            key.getTypeLiteral().getSupertype(IRouter.class);
+            key.getTypeLiteral().getSupertype(Router.class);
         } catch(Exception ex) {
-            throw new RuntimeException("The router Key must implement " + IRouter.class.getName() + " : " + key);
+            throw new RuntimeException("The router Key must implement " + Router.class.getName() + " : " + key);
         }
 
         //==========================================
@@ -189,27 +189,27 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
         //==========================================
         // Bind a parameterized version.
         //==========================================
-        bind(parameterizeWithContextInterfaces(IRouter.class)).to(key).in(Scopes.SINGLETON);
+        bind(parameterizeWithContextInterfaces(Router.class)).to(key).in(Scopes.SINGLETON);
 
         //==========================================
-        // Bind a generic "IRouter" version.
+        // Bind a generic "Router" version.
         //==========================================
-        bind(IRouter.class).to(key).in(Scopes.SINGLETON);
+        bind(Router.class).to(key).in(Scopes.SINGLETON);
 
         //==========================================
-        // Bind a generic "IRouter<?, ?>" version.
+        // Bind a generic "Router<?, ?>" version.
         //==========================================
-        bind(new TypeLiteral<IRouter<?, ?>>() {}).to(key).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<Router<?, ?>>() {}).to(key).in(Scopes.SINGLETON);
 
         //==========================================
         // If the default request context class is used
-        // and the router extends IDefaultRouter, we can bind the 
-        // "IDefaultRouter" interface for easier access to the parameterized 
+        // and the router extends DefaultRouter, we can bind the 
+        // "DefaultRouter" interface for easier access to the parameterized 
         // router!
         //==========================================
-        if(getRequestContextType().equals(IDefaultRequestContext.class) &&
-           IDefaultRouter.class.isAssignableFrom(key.getTypeLiteral().getRawType())) {
-            bind(IDefaultRouter.class).to(key).in(Scopes.SINGLETON);
+        if(getRequestContextType().equals(DefaultRequestContext.class) &&
+           DefaultRouter.class.isAssignableFrom(key.getTypeLiteral().getRawType())) {
+            bind(DefaultRouter.class).to(key).in(Scopes.SINGLETON);
         }
     }
 
@@ -218,14 +218,14 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
         Key key = getRouteKey();
         try {
-            key.getTypeLiteral().getSupertype(IRoute.class);
+            key.getTypeLiteral().getSupertype(Route.class);
         } catch(Exception ex) {
             throw new RuntimeException("The route Key must implement " +
-                                       IRoute.class.getName() + " : " + key);
+                                       Route.class.getName() + " : " + key);
         }
 
-        Key routeKey = parameterizeWithRequestContext(IRoute.class);
-        Key factoryKey = parameterizeWithRequestContext(IRouteFactory.class);
+        Key routeKey = parameterizeWithRequestContext(Route.class);
+        Key factoryKey = parameterizeWithRequestContext(RouteFactory.class);
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
@@ -245,14 +245,14 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
         Key key = getWebsocketRouteKey();
         try {
-            key.getTypeLiteral().getSupertype(IWebsocketRoute.class);
+            key.getTypeLiteral().getSupertype(WebsocketRoute.class);
         } catch(Exception ex) {
             throw new RuntimeException("The websocket route Key must implement " +
-                                       IWebsocketRoute.class.getName() + " : " + key);
+                                       WebsocketRoute.class.getName() + " : " + key);
         }
 
-        Key routeKey = parameterizeWithContextInterfaces(IWebsocketRoute.class);
-        Key factoryKey = parameterizeWithContextInterfaces(IWebsocketRouteFactory.class);
+        Key routeKey = parameterizeWithContextInterfaces(WebsocketRoute.class);
+        Key factoryKey = parameterizeWithContextInterfaces(WebsocketRouteFactory.class);
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
@@ -270,78 +270,78 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRouteBuilderFactory() {
 
-        Key interfaceKey = parameterizeWithRequestContext(IRouteBuilder.class);
+        Key interfaceKey = parameterizeWithRequestContext(RouteBuilder.class);
         Key implementationKey = parameterizeWithContextInterfaces(getRouteBuilderImplClass());
-        Key factoryKey = parameterizeWithContextInterfaces(IRouteBuilderFactory.class);
+        Key factoryKey = parameterizeWithContextInterfaces(RouteBuilderFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
     @SuppressWarnings("rawtypes")
-    protected Class<? extends IRouteBuilder> getRouteBuilderImplClass() {
-        return RouteBuilder.class;
+    protected Class<? extends RouteBuilder> getRouteBuilderImplClass() {
+        return RouteBuilderDefault.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRedirectRuleBuilderFactory() {
 
         Key implementationKey = parameterizeWithContextInterfaces(getRedirectRuleBuilderImplClass());
-        Key factoryKey = parameterizeWithContextInterfaces(IRedirectRuleBuilderFactory.class);
+        Key factoryKey = parameterizeWithContextInterfaces(RedirectRuleBuilderFactory.class);
 
-        install(new FactoryModuleBuilder().implement(IRedirectRuleBuilder.class, implementationKey.getTypeLiteral())
+        install(new FactoryModuleBuilder().implement(RedirectRuleBuilder.class, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
-    protected Class<? extends IRedirectRuleBuilder> getRedirectRuleBuilderImplClass() {
-        return RedirectRuleBuilder.class;
+    protected Class<? extends RedirectRuleBuilder> getRedirectRuleBuilderImplClass() {
+        return RedirectRuleBuilderDefault.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindWebsocketRouteBuilderFactory() {
 
-        Key interfaceKey = parameterizeWithContextInterfaces(IWebsocketRouteBuilder.class);
+        Key interfaceKey = parameterizeWithContextInterfaces(WebsocketRouteBuilder.class);
         Key implementationKey = parameterizeWithContextInterfaces(getWebsocketRouteBuilderImplClass());
-        Key factoryKey = parameterizeWithContextInterfaces(IWebsocketRouteBuilderFactory.class);
+        Key factoryKey = parameterizeWithContextInterfaces(WebsocketRouteBuilderFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
     @SuppressWarnings("rawtypes")
-    protected Class<? extends IWebsocketRouteBuilder> getWebsocketRouteBuilderImplClass() {
-        return WebsocketRouteBuilder.class;
+    protected Class<? extends WebsocketRouteBuilder> getWebsocketRouteBuilderImplClass() {
+        return WebsocketRouteBuilderDefault.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindWebsocketRouteHandlerFactory() {
 
-        Key interfaceKey = parameterizeWithRequestContext(IHandler.class);
+        Key interfaceKey = parameterizeWithRequestContext(Handler.class);
         Key implementationKey = parameterizeWithContextInterfaces(getWebsocketRouteHandlerImplClass());
-        Key factoryKey = parameterizeWithContextInterfaces(IWebsocketRouteHandlerFactory.class);
+        Key factoryKey = parameterizeWithContextInterfaces(WebsocketRouteHandlerFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
     @SuppressWarnings("rawtypes")
-    protected Class<? extends IHandler> getWebsocketRouteHandlerImplClass() {
+    protected Class<? extends Handler> getWebsocketRouteHandlerImplClass() {
         return WebsocketRouteHandler.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRouteHandlerMatchFactory() {
-        Key interfaceKey = parameterizeWithRequestContext(IRouteHandlerMatch.class);
+        Key interfaceKey = parameterizeWithRequestContext(RouteHandlerMatch.class);
         Key implementationKey = parameterizeWithRequestContext(getRouteHandlerMatchImplClass());
-        Key factoryKey = parameterizeWithRequestContext(IRouteHandlerMatchFactory.class);
+        Key factoryKey = parameterizeWithRequestContext(RouteHandlerMatchFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
     @SuppressWarnings("rawtypes")
-    protected Class<? extends IRouteHandlerMatch> getRouteHandlerMatchImplClass() {
-        return RouteHandlerMatch.class;
+    protected Class<? extends RouteHandlerMatch> getRouteHandlerMatchImplClass() {
+        return RouteHandlerMatchDefault.class;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -349,14 +349,14 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
         Key key = getStaticResourceKey();
         try {
-            key.getTypeLiteral().getSupertype(IStaticResource.class);
+            key.getTypeLiteral().getSupertype(StaticResource.class);
         } catch(Exception ex) {
             throw new RuntimeException("The static resource Key must implement " +
-                                       IStaticResource.class.getName() + " : " + key);
+                                       StaticResource.class.getName() + " : " + key);
         }
 
-        Key staticResourceKey = parameterizeWithRequestContext(IStaticResource.class);
-        Key factoryKey = parameterizeWithRequestContext(IStaticResourceFactory.class);
+        Key staticResourceKey = parameterizeWithRequestContext(StaticResource.class);
+        Key factoryKey = parameterizeWithRequestContext(StaticResourceFactory.class);
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
@@ -373,55 +373,55 @@ public class SpincastRoutingPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindStaticResourceBuilderFactory() {
-        Key interfaceKey = parameterizeWithRequestContext(IStaticResourceBuilder.class);
+        Key interfaceKey = parameterizeWithRequestContext(StaticResourceBuilder.class);
         Key implementationKey = parameterizeWithContextInterfaces(getStaticResourceBuilderImplClass());
-        Key factoryKey = parameterizeWithContextInterfaces(IStaticResourceBuilderFactory.class);
+        Key factoryKey = parameterizeWithContextInterfaces(StaticResourceBuilderFactory.class);
 
         install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
     @SuppressWarnings("rawtypes")
-    protected Class<? extends IStaticResourceBuilder> getStaticResourceBuilderImplClass() {
-        return StaticResourceBuilder.class;
+    protected Class<? extends StaticResourceBuilder> getStaticResourceBuilderImplClass() {
+        return StaticResourceBuilderDefault.class;
     }
 
     protected void bindStaticResourceCorsConfigFactory() {
-        install(new FactoryModuleBuilder().implement(IStaticResourceCorsConfig.class, getStaticResourceCorsConfigImplClass())
-                                          .build(IStaticResourceCorsConfigFactory.class));
+        install(new FactoryModuleBuilder().implement(StaticResourceCorsConfig.class, getStaticResourceCorsConfigImplClass())
+                                          .build(StaticResourceCorsConfigFactory.class));
     }
 
-    protected Class<? extends IStaticResourceCorsConfig> getStaticResourceCorsConfigImplClass() {
-        return StaticResourceCorsConfig.class;
+    protected Class<? extends StaticResourceCorsConfig> getStaticResourceCorsConfigImplClass() {
+        return StaticResourceCorsConfigDefault.class;
     }
 
     protected void bindStaticResourceCacheConfigFactory() {
-        install(new FactoryModuleBuilder().implement(IStaticResourceCacheConfig.class, getStaticResourceCacheConfigImplClass())
-                                          .build(IStaticResourceCacheConfigFactory.class));
+        install(new FactoryModuleBuilder().implement(StaticResourceCacheConfig.class, getStaticResourceCacheConfigImplClass())
+                                          .build(StaticResourceCacheConfigFactory.class));
     }
 
-    protected Class<? extends IStaticResourceCacheConfig> getStaticResourceCacheConfigImplClass() {
-        return StaticResourceCacheConfig.class;
+    protected Class<? extends StaticResourceCacheConfig> getStaticResourceCacheConfigImplClass() {
+        return StaticResourceCacheConfigDefault.class;
     }
 
     protected void bindRequestContextAddon() {
-        bind(parameterizeWithRequestContext(IRoutingRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastRoutingRequestContextAddon.class))
+        bind(parameterizeWithRequestContext(RoutingRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastRoutingRequestContextAddon.class))
                                                                                .in(SpincastGuiceScopes.REQUEST);
     }
 
     protected void bindETagFactory() {
-        bind(IETagFactory.class).to(getETagFactoryImplClass()).in(Scopes.SINGLETON);
+        bind(ETagFactory.class).to(getETagFactoryImplClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends IETagFactory> getETagFactoryImplClass() {
-        return ETagFactory.class;
+    protected Class<? extends ETagFactory> getETagFactoryImplClass() {
+        return ETagFactoryDefault.class;
     }
 
     protected void bindSpincastRoutingUtils() {
-        bind(ISpincastRoutingUtils.class).to(getSpincastRoutingUtilsImplClass()).in(Scopes.SINGLETON);
+        bind(SpincastRoutingUtils.class).to(getSpincastRoutingUtilsImplClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends ISpincastRoutingUtils> getSpincastRoutingUtilsImplClass() {
-        return SpincastRoutingUtils.class;
+    protected Class<? extends SpincastRoutingUtils> getSpincastRoutingUtilsImplClass() {
+        return SpincastRoutingUtilsDefault.class;
     }
 }

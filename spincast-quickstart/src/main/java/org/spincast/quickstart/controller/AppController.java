@@ -1,44 +1,42 @@
 package org.spincast.quickstart.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.spincast.core.config.SpincastConstants.RequestScopedVariables;
-import org.spincast.core.exceptions.IPublicException;
 import org.spincast.core.exceptions.PublicException;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.utils.SpincastStatics;
-import org.spincast.quickstart.config.IAppConfig;
-import org.spincast.quickstart.exchange.IAppRequestContext;
+import org.spincast.core.exceptions.PublicExceptionDefault;
+import org.spincast.core.json.JsonObject;
+import org.spincast.quickstart.config.AppConfig;
+import org.spincast.quickstart.exchange.AppRequestContext;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
 /**
- * Implementation of an application controller.
+ * The application controller.
  */
-public class AppController implements IAppController {
+public class AppController {
 
-    private final IAppConfig appConfig;
+    private final AppConfig appConfig;
 
     @Inject
-    public AppController(IAppConfig appConfig) {
+    public AppController(AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 
-    @Override
-    public void notFound(IAppRequestContext context) {
+    /**
+     * Route Handler to manage 404
+     */
+    public void notFound(AppRequestContext context) {
 
         String notFoundMessage = "Page not found";
 
         //==========================================
-        // There may be a public and custom "Not Found" message
-        // set by the controller that we should display:
+        // Is there a custom "Not Found" message
+        // to display?
         //==========================================
         String specificNotFoundMessage =
                 context.variables().getAsString(RequestScopedVariables.NOT_FOUND_PUBLIC_MESSAGE);
@@ -48,79 +46,83 @@ public class AppController implements IAppController {
         }
 
         //==========================================
-        // Our Not Found handler manages Json and HTML
-        // requests. We return the response in the
+        // We return the response in the
         // appropriated format.
         //==========================================
         if(context.request().isJsonShouldBeReturn()) {
-            IJsonObject errorObj = context.json().create();
+            JsonObject errorObj = context.json().create();
             errorObj.put("message", notFoundMessage);
-            context.response().sendJsonObj(errorObj);
+            context.response().sendJson(errorObj);
         } else {
-            context.response().sendTemplateHtml("/templates/notFound.html",
-                                                SpincastStatics.params("notFoundMessage", notFoundMessage));
+            context.response().getModel().put("notFoundMessage", notFoundMessage);
+            context.response().sendTemplateHtml("/templates/notFound.html");
         }
     }
 
-    @Override
-    public void exception(IAppRequestContext context) {
+    /**
+     * Route Handler to manage exceptions
+     */
+    public void exception(AppRequestContext context) {
 
         String errorMessage = "An error occured! Please try again later...";
 
         //==========================================
-        // We have access to the exception which was threw,
-        // using the associated request scoped variables:
+        // We have access to the exception that was threw :
         //==========================================
         Throwable originalException =
                 context.variables().get(RequestScopedVariables.EXCEPTION, Throwable.class);
 
         //==========================================
-        // If the exception which was thres is an instance of 
-        // IPublicException, it means we should display its
+        // If the exception that was threw is an instance of 
+        // PublicException, it means we should display its
         // message to the user.
         //==========================================
-        if(originalException != null && originalException instanceof IPublicException) {
+        if(originalException != null && originalException instanceof PublicException) {
             errorMessage = originalException.getMessage();
         }
 
         //==========================================
-        // Our Exception handler manages Json and HTML
-        // requests. We return the response in the
+        // We return the response in the
         // appropriated format.
         //==========================================
         if(context.request().isJsonShouldBeReturn()) {
-            IJsonObject errorObj = context.json().create();
+            JsonObject errorObj = context.json().create();
             errorObj.put("error", errorMessage);
-            context.response().sendJsonObj(errorObj);
+            context.response().sendJson(errorObj);
         } else {
-            context.response().sendTemplateHtml("/templates/exception.html",
-                                                SpincastStatics.params("errorMessage", errorMessage));
+            context.response().getModel().put("errorMessage", errorMessage);
+            context.response().sendTemplateHtml("/templates/exception.html");
         }
     }
 
-    @Override
-    public void indexPage(IAppRequestContext context) {
+    /**
+     * Index page handler
+     */
+    public void indexPage(AppRequestContext context) {
 
         //==========================================
         // Render an HTML template with some parameters.
         //==========================================
-        Map<String, Object> variables = new HashMap<String, Object>();
-        variables.put("appName", getAppConfig().getAppName());
-        variables.put("serverPort", getAppConfig().getHttpServerPort());
+        context.response().getModel().put("appName", getAppConfig().getAppName());
+        context.response().getModel().put("serverPort", getAppConfig().getHttpServerPort());
 
-        context.response().sendTemplateHtml("/templates/index.html", variables);
+        context.response().sendTemplateHtml("/templates/index.html");
     }
 
-    @Override
-    public void sumRoute(IAppRequestContext context) {
+    /**
+     * /sum route handler
+     */
+    public void sumRoute(AppRequestContext context) {
 
-        String firstNbr = context.request().getFormDataFirst("first");
+        String firstNbr = context.request().getFormData().getString("first");
         if(StringUtils.isBlank(firstNbr)) {
-            throw new PublicException("The 'first' post parameter is required.", HttpStatus.SC_BAD_REQUEST);
+            throw new PublicExceptionDefault("The 'first' post parameter is required.",
+                                             HttpStatus.SC_BAD_REQUEST);
         }
-        String secondNbr = context.request().getFormDataFirst("second");
+        String secondNbr = context.request().getFormData().getString("second");
         if(StringUtils.isBlank(secondNbr)) {
-            throw new PublicException("The 'second' post parameter is required.", HttpStatus.SC_BAD_REQUEST);
+            throw new PublicExceptionDefault("The 'second' post parameter is required.",
+                                             HttpStatus.SC_BAD_REQUEST);
         }
 
         String error = null;
@@ -155,7 +157,7 @@ public class AppController implements IAppController {
 
         } while(false);
 
-        IJsonObject resultObj = context.json().create();
+        JsonObject resultObj = context.json().create();
         if(error != null) {
             context.response().setStatusCode(HttpStatus.SC_BAD_REQUEST);
             resultObj.put("error", error);
@@ -163,6 +165,6 @@ public class AppController implements IAppController {
             resultObj.put("result", String.valueOf(sum));
         }
 
-        context.response().sendJsonObj(resultObj);
+        context.response().sendJson(resultObj);
     }
 }

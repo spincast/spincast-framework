@@ -1,21 +1,12 @@
 package org.spincast.quickstart.exchange;
 
-import org.spincast.plugins.routing.SpincastRouter;
-import org.spincast.plugins.routing.SpincastRouterDeps;
-
-import com.google.inject.Inject;
+import org.spincast.core.routing.Router;
 
 /**
- * The only purpose of this class is to make it
- * easier to inject the application specific router by using
- * "IAppRouter" instead of "IRouter&lt;IAppRequestContext, IAppWebsocketContext&gt;".
+ * The only purpose of this interface is to make it
+ * easier to inject the application specific Router by using
+ * "AppRouter" instead of "Router&lt;AppRequestContext, AppWebsocketContext&gt;".
  */
-public class AppRouter extends SpincastRouter<IAppRequestContext, IAppWebsocketContext>
-                       implements IAppRouter {
-
-    @Inject
-    public AppRouter(SpincastRouterDeps<IAppRequestContext, IAppWebsocketContext> spincastRouterDeps) {
-        super(spincastRouterDeps);
-    }
-
+public interface AppRouter extends Router<AppRequestContext, AppWebsocketContext> {
+    // nothing required
 }

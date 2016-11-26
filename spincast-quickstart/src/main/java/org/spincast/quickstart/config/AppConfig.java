@@ -1,14 +1,19 @@
 package org.spincast.quickstart.config;
 
-import org.spincast.plugins.config.SpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 
 /**
- * Implementation of the application's custom configurations class.
+ * Application's custom configurations.
+ * 
+ * Extends <code>SpincastConfig</code> so we can use this class 
+ * as the implementation for this interface too.
  */
-public class AppConfig extends SpincastConfig implements IAppConfig {
+public interface AppConfig extends SpincastConfig {
 
-    @Override
-    public String getAppName() {
-        return "Spincast Quick Start";
-    }
+    /**
+     * A custom configuration : return the
+     * application name.
+     */
+    public String getAppName();
+
 }

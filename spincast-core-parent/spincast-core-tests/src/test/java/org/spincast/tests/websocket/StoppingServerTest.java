@@ -9,9 +9,9 @@ import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.websocket.IWebsocketConnectionConfig;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
@@ -63,9 +63,9 @@ public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegration
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -94,7 +94,7 @@ public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegration
 
                 WebsocketClientTest client = new WebsocketClientTest();
                 clients.add(client);
-                IWebsocketClientWriter writer = websocket("/ws").ping(-1).connect(client);
+                WebsocketClientWriter writer = websocket("/ws").ping(-1).connect(client);
                 assertNotNull(writer);
             }
             assertTrue(controller.isEndpointOpen(endpointName));
@@ -129,9 +129,9 @@ public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegration
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -160,7 +160,7 @@ public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegration
 
                 WebsocketClientTest client = new WebsocketClientTest();
                 clients.add(client);
-                IWebsocketClientWriter writer = websocket("/ws").ping(-1).connect(client);
+                WebsocketClientWriter writer = websocket("/ws").ping(-1).connect(client);
                 assertNotNull(writer);
             }
             assertTrue(controller.isEndpointOpen(endpointName));

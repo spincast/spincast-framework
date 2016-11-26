@@ -8,10 +8,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfigDefault;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
@@ -28,9 +28,9 @@ public class SpecifiedFileNotFoundTest extends SpincastDefaultNoAppIntegrationTe
     public static class PropsFileBasedConfig extends SpincastConfigPropsFileBased {
 
         @Inject
-        public PropsFileBasedConfig(ISpincastUtils spincastUtils,
+        public PropsFileBasedConfig(SpincastUtils spincastUtils,
                                     @MainArgs @Nullable String[] mainArgs,
-                                    @Nullable ISpincastConfigPropsFileBasedConfig pluginConfig) {
+                                    @Nullable SpincastConfigPropsFileBasedConfig pluginConfig) {
             super(spincastUtils, mainArgs, pluginConfig);
         }
     }
@@ -48,7 +48,7 @@ public class SpecifiedFileNotFoundTest extends SpincastDefaultNoAppIntegrationTe
             protected void configure() {
                 super.configure();
 
-                bind(ISpincastConfigPropsFileBasedConfig.class).toInstance(new SpincastConfigPropsFileBasedConfigDefault() {
+                bind(SpincastConfigPropsFileBasedConfig.class).toInstance(new SpincastConfigPropsFileBasedConfigDefault() {
 
                     //==========================================
                     // We enable the main arg strategy!

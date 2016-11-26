@@ -3,7 +3,7 @@ Spincast HTTP Client with WebSockets support plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-http-client-with-websocket{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-http-client-with-websocket{% endblock %}
 {% block meta_title %}Plugins - Spincast HTTP Client with WebSockets support{% endblock %}
 {% block meta_description %}Client to easily create and send HTTP requests and establish WebSocket connections.{% endblock %}
 
@@ -35,7 +35,7 @@ Spincast HTTP Client with WebSockets support plugin
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/org/spincast/plugins/httpclient/websocket/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <span class="clear"></span>
             </div>    
@@ -54,10 +54,8 @@ Spincast HTTP Client with WebSockets support plugin
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
                 <li class="openable"><a href="#usage">Usage</a></li>
-                <li class="openable"><a href="#http_client"><code>IHttpClient</code></a></li>
-                <li class="openable"><a href="#websocket_builder"><code>IWebsocketRequestBuilder</code></a></li>
-                <li class="openable"><a href="#client_writer"><code>IWebsocketClientWriter</code></a></li>
                 <li class="openable"><a href="#config">Configurations</a></li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
@@ -70,18 +68,21 @@ Spincast HTTP Client with WebSockets support plugin
                 </h3>
 	            <p>
 	                This plugin is the same as the regular <a href="/plugins/spincast-http-client">Spincast HTTP Client</a> but
-                    adds support for <code>WebSockets</code>. We decided to create two separate versions because 
+                    adds support for <code>WebSockets</code>. 
+                </p>
+                <p>
+                    We decided to create two separate versions because 
                     this one uses classes from <a href="http://undertow.io/">Undertow</a>, so more transitive dependencies are pulled
                     into an application using it.
                     We wanted to give the possibility to use the <code>HTTP Client</code> without those extra dependencies, if preferred.
-                    But note that if you are already using the default <code>server</code> in your Spincast application, it is also
-                    based on Undertow, so you already pull those dependencies!
+                    But note that if you are already using the default <code>Server</code> in your Spincast application, it is also
+                    based on Undertow, so you already pull those dependencies...
                 </p>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    Make sure you read the documentation of the regular <a href="/plugins/spincast-http-client">HTTP Client</a>
-                    since most of the functionalities are documented there. Here, we're only going to focus on the 
-                    <code>WebSockets</code> specificities.
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    All the WebSockets tests of Spincast use this HTTP client so
+                    have <a class="javadoc" href="https://github.com/spincast/spincast-framework/tree/master/spincast-core-parent/spincast-core-tests/src/test/java/org/spincast/tests/websocket">a look at them</a> 
+                    for a lot of examples!  
                 </p>  
             </section>
             
@@ -100,7 +101,7 @@ Spincast HTTP Client with WebSockets support plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-http-client-with-websocket&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -113,8 +114,8 @@ Spincast HTTP Client with WebSockets support plugin
                             <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new AppModule(args),
-        new SpincastHttpClientWithWebsocketPluginGuiceModule(IAppRequestContext.class, 
-                                                             IAppWebsocketContext.class)
+        new SpincastHttpClientWithWebsocketPluginGuiceModule(AppRequestContext.class, 
+                                                             AppWebsocketContext.class)
         // other modules...
         );</pre> 
                         </p>
@@ -153,14 +154,10 @@ Spincast HTTP Client with WebSockets support plugin
                     Usage
                 </h3>
                 <p>
-                    Again, make sur you read the documentation of <a href="/plugins/spincast-http-client">the regular client</a> too. 
-                    Here, we're only going to focus on WebSockets specificities:
-                </p>
-                <p>
                     <div>
                         <p>
                             <pre class="ace ace-java"
->IWebsocketClientHandler websocketHandler = new IWebsocketClientHandler() {
+>WebsocketClientHandler websocketHandler = new WebsocketClientHandler() {
 
     @Override
     public void onEndpointMessage(String message) {
@@ -178,9 +175,9 @@ Spincast HTTP Client with WebSockets support plugin
     }
 };
 
-IHttpClient httpClient = getHttpClient();
+HttpClient httpClient = getHttpClient();
 
-IWebsocketClientWriter websocketWriter =
+WebsocketClientWriter websocketWriter =
         httpClient.websocket("http://example.com/someEndpoint")
                   .addCookie("cookieKey", "cookieValue")
                   .addHeaderValue("headerKey", "headerValue")
@@ -217,289 +214,40 @@ websocketWriter.sendMessage("Hi server!");
                 
             </section>
            
-            
-            <section id="http_client">
-                <h3>
-                    <a class="anchor" href="#http_client" title="permanent link"></a>
-                    <code>IHttpClient</code>'s methods
-                </h3>
-                <p>
-                    The object used to start the creation of a WebSocket connection request.
-                </p>
-                <div>
-                    <p>
-                        <ul class="apiList">
-          
-<li>
-    <code class="apiItem">IWebsocketRequestBuilder <span>websocket</span>(String url)</code>
-    <div class="well">
-        Starts the builder to create a WebSocket connection request.
-    </div>
-</li>
-
-                        </ul>
-                        
-                    </p>
-                </div> 
-            </section>
-            
-            <section id="websocket_builder">
-                <h3>
-                    <a class="anchor" href="#websocket_builder" title="permanent link"></a>
-                    <code>IWebsocketRequestBuilder</code>'s methods
-                </h3>
-                <p>
-                    The builder object used to 
-                    create a WebSocket connection request. You obtain an instance by calling <code>IHttpClient#websocket(...)</code>
-                </p>
-                <div>
-                    <p>
-                        <ul class="apiList">
-          
-
-<li>
-    <code class="apiItem">IWebsocketRequestBuilder <span>ping</span>(int seconds)</code>
-    <div class="well">
-         You can use this to configure the pings that are automatically sent to the Websocket 
-         endpoint every X seconds.
- <code>IWebsocketClientHandler#onConnectionClosed()</code>
- will be called if the connection is closed.
- <p>
- Use a value <code>&lt;= 0</code> to disable the pings.
- </p>
- <p>
- The automatic pings and their default interval are also configurable using:
- <code>ISpincastHttpClientWithWebsocketConfig#isWebsocketAutomaticPingEnabled()</code><br>
- and<br>
- <code>ISpincastHttpClientWithWebsocketConfig#getWebsocketAutomaticPingIntervalSeconds()</code>
- </p>
-<p>
-Pings are enabled by default.
-</p>
-
-        <div class="apiItemFooter">
-            @param seconds the interval in seconds or &lt;= 0 to disable the pings.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IWebsocketClientWriter <span>connect</span>(IWebsocketClientHandler handler)</code>
-    <div class="well">
-         Sends the request and establish the WebSocket connection.
-
-        <div class="apiItemFooter">
-            @param handler The handler that is responsible to
- handle the various WebSocket events.
-<br />@return a writer to send Websocket messages to the connected endpoint.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">@Override     public IHttpResponse <span>send</span>()</code>
-    <div class="well">
-         Sends the request and gets the <code>HTTP</code> response.
- Does <i>not</i> make the actual upgrade to a
- WebSocket connection! Use the <code>connect(...)</code>
- method if you want the actual WebSocket connection
- to be made.
- <p>
- This version is useful to debug the intermediate
- <code>HTTP</code> upgrade response made from the server
- before the actual WebSocket connection is established.
- </p>
-
-    </div>
-</li>
-
-
-
-
-
-
-
-                        </ul>
-                        
-                    </p>
-                </div> 
-            </section>
-
-           
-            <section id="client_writer">
-                <h3>
-                    <a class="anchor" href="#client_writer" title="permanent link"></a>
-                    <code>IWebsocketClientWriter</code>'s methods
-                </h3>
-                <p>
-                    The object you receive when your
-                    request is sent and the WebSocket connection is established
-                    successfully. You use it to send messages and to close the connection.
-                </p>
-
-                <div>
-                    <p>
-                        <ul class="apiList">
-          
-   
-<li>
-    <code class="apiItem">void <span>sendMessage</span>(String message)</code>
-    <div class="well">
-        Sends a text message to the endpoint.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>sendMessage</span>(byte[] message)</code>
-    <div class="well">
-        Sends a binary message to the endpoint
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>closeConnection</span>()</code>
-    <div class="well">
-        Closes the WebSocket connection.
-
-    </div>
-</li>
-
-
-
-
-
-
-                        </ul>
-                        
-                    </p>
-                </div> 
-            </section>
-
-
             <section id="config">
                 <h3>
                     <a class="anchor" href="#config" title="permanent link"></a>
                     Configurations
                 </h3>
                 <p>
-                    You can bind the <code>ISpincastHttpClientWithWebsocketConfig</code> interface
-                    if you want to change some default configurations. 
+                    You can bind the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/SpincastHttpClientWithWebsocketConfig.html">SpincastHttpClientWithWebsocketConfig</a> 
+                    interface if you want to change some default configurations. 
                     The default implementation class for those configurations 
-                    is <code>SpincastHttpClientWithWebsocketConfigDefault</code>.
+                    is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/SpincastHttpClientWithWebsocketConfigDefault.html">SpincastHttpClientWithWebsocketConfigDefault</a>.
                 </p>
+            </section>
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
+                </h3>
                 <p>
-                    Here are the available configurations:
-                </p>
-                <div>
-                    <p>
-                        <ul class="apiList">
-          
-<li>
-    <code class="apiItem">boolean <span>isWebsocketAutomaticPingEnabled</span>()</code>
-    <div class="well">
-        Are automatic pings enabled when a WebSocket
- connection is established?
-<br />Default to <code>true</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketAutomaticPingIntervalSeconds</span>()</code>
-    <div class="well">
-        When automatic pings are enabled for WebSocket
- connections, how many seconds should be waited
- between two pings?
-<br />Defaults to <code>20</code> seconds.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getWebsocketPingMessageString</span>()</code>
-    <div class="well">
-        The ping text to use. Must be <code>&lt; 125</code> characters.
-        
-        <br />Defaults to <code>"__ping"</code>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketThreadExecutorForClientEventsThreadNumber</span>()</code>
-    <div class="well">
-        The maximum number of concurrent threads used when
- sending events to the <code>IWebsocketClientHandler</code>.
-<br />Defaults to <code>10</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketThreadExecutorForClientEventsTimeoutAmount</span>()</code>
-    <div class="well">
-        The timeout <code>amount</code> before cancelling a task when
- sending events to the <code>IWebsocketClientHandler</code>.
-<br />Defaults to <code>60</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">TimeUnit <span>getWebsocketThreadExecutorForClientEventsTimeoutTimeUnit</span>()</code>
-    <div class="well">
-        The timeout <code>TimeUnit</code> before cancelling a task when
- sending events to the <code>IWebsocketClientHandler</code>.
-<br />Defaults to <code>SECONDS</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ThreadFactory <span>getWebsocketThreadExecutorForClientEventsThreadFactory</span>()</code>
-    <div class="well">
-        The <code>ThreadFactory</code> to use to create threads to send WebSocket events
- to the <code>IWebsocketClientHandler</code>.
-<br />Defaults to <code>null</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketDefaultClosingCode</span>()</code>
-    <div class="well">
-        The default code to send to the <code>IWebsocketClientHandler</code> when a WebSocket connection
- was found to be closed.
-<br />Valid codes can be found <a href="https://tools.ietf.org/html/rfc6455#section-7.4.1">here</a>
-<br />Defaults to <code>1001</code>:
- "1001 indicates that an endpoint is "going away", such as a server
- going down or a browser having navigated away from a page.."
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getWebsocketDefaultClosingReason</span>()</code>
-    <div class="well">
-        The default reason to send to the <code>IWebsocketClientHandler</code>
- when a WebSocket connection was found to be closed.
-<br />Defaults to an empty message.
-
-    </div>
-</li>
-
-
-
-
-
-                        </ul>
-                        
-                    </p>
-                </div> 
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/HttpClient.html">HttpClient</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/SpincastHttpClientWithWebsocketConfig.html">SpincastHttpClientWithWebsocketConfig</a>
+                        </li> 
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/WebsocketClientWriter.html">WebsocketClientWriter</a>
+                        </li> 
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/WebsocketClientHandler.html">WebsocketClientHandler</a>
+                        </li> 
+                    </ul>
+                </p> 
             </section>
 
         </div>

@@ -16,9 +16,16 @@ Documentation
     ==========================================#}
     $(function() {  
         app.toc(180);
+        
+        $("#taostrDemo").html("<code>(<a href=\"#\" id=\"taostrDemoJs\"><img class=\"inlineIcon\" src=\"/public/images/icons/run.png\"> Try it!</a>)</code>");
+        $("#taostrDemoJs").on("click", function() {
+        	app.alertMessage("SUCCESS", "This is an example Success Alert message!")
+        	return false;
+        }); 
     }); 
  
 </script>
+
 {% endblock %}
 
 {% block body %} 
@@ -31,7 +38,7 @@ Documentation
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Browse Spincast Javadoc">
-                     <a href="/public/javadoc/"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <span class="clear"></span>
             </div>
@@ -57,7 +64,7 @@ Documentation
                     <ul class="nav nav-stacked">
                         <li><a href="#requirements">Requirements</a></li>
                         <li><a href="#quick_start"><img id="quickIconSmall" class="inlineIcon" src="/public/images/icons/flash.png" /> Quick Start application</a></li>
-                        <li><a href="#using_default_module">Using SpincastDefaultGuiceModule</a></li>
+                        <li><a href="#using_default_module">Using spincast-default</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -68,6 +75,13 @@ Documentation
                         <li><a href="#request_handling">Request handling</a></li>
                         <li><a href="#required_components">The required components and their default implementations</a></li>
                         <li><a href="#dependencies">Transitive dependencies</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#quick_tutorial">Quick tutorial</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#quick_tutorial_traditional">Traditional website</a></li>
+                        <li><a href="#quick_tutorial_spa">SPA / REST services</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -83,33 +97,96 @@ Documentation
                     </ul>
                 </li>
                 <li class="openable">
-                    <a href="#request_context">The request context</a>
+                    <a href="#request_context">The Request Context</a>
                     <ul class="nav nav-stacked">
-                        <li><a href="#core_rc_add-ons">The core request context <code>add-ons</code></a></li>
-                        <li><a href="#core_rc_methods">The core request context methods</a></li>
-                        <li><a href="#extending_request_context">Extending the request context</a></li>
+                        <li><a href="#core_rc_add-ons">The core Request Context <code>add-ons</code></a></li>
+                        <li><a href="#core_rc_methods">The core Request Context methods</a></li>
+                        <li><a href="#extending_request_context">Extending the Request Context</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#sending_response">Sending the response</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#sending_response_model">The response model object</a></li>
+                        <li><a href="#sending_response_model_template">Sending the model as HTML</a></li>
+                        <li><a href="#sending_response_model_json">Sending Json or XML</a></li>
+                        <li><a href="#sending_response_specific">Sending specific content</a></li>
+                        <li><a href="#sending_response_redirecting">Redirecting</a></li>
+                        <li><a href="#sending_response_forwarding">Forwarding</a></li>
+                        <li><a href="#sending_response_flushing">Flushing</a></li>
+                        <li><a href="#sending_response_skip">Skipping remaining handlers</a></li>
                     </ul>
                 </li>
                 <li class="openable">
                     <a href="#routing">Routing</a>
                     <ul class="nav nav-stacked">
-                        <li><a href="#routing_process">The routing process</a></li>
-                        <li><a href="#adding_route">Adding a route</a></li>
+                        <li><a href="#routing_process">The Routing Process</a></li>
+                        <li><a href="#adding_route">Adding a Route</a></li>
                         <li><a href="#http_method_and_path">HTTP method and path</a></li>
                         <li><a href="#dynamic_parameters">Dynamic parameters</a></li>
-                        <li><a href="#routing_types">Routing Types</a></li>
+                        <li><a href="#routing_types">Routing Process Types</a></li>
                         <li><a href="#route_content-type">Content-Types</a></li>
                         <li><a href="#route_http_caching">HTTP Caching route options</a></li>
-                        <li><a href="#route_saving">Saving the route</a></li>
+                        <li><a href="#route_saving">Saving the Route</a></li>
                         <li><a href="#filters">Filters</a></li>
                         <li><a href="#routing_websockets">WebSockets</a></li>
-                        <li><a href="#static_resources">Static resources</a></li>
-                        <li><a href="#dynamic_resources">Dynamic resources</a></li>
+                        <li><a href="#static_resources">Static Resources</a></li>
+                        <li><a href="#dynamic_resources">Dynamic Resources</a></li>
                         <li><a href="#cors">Cors</a></li>
                         <li><a href="#http_auth">HTTP Authentication</a></li>
                         <li><a href="#redirections">Redirection rules</a></li>
                         <li><a href="#special_exceptions">Special exceptions</a></li>
-                        <li><a href="#router_dynamic">The router is dynamic</a></li>
+                        <li><a href="#router_dynamic">The Router is dynamic</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#templating_engine">Templating Engine</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#templating_rendering">Using the Templating Engine</a></li>
+                        <li><a href="#templating_creation">Templates basics</a></li>
+                        <li><a href="#templating_default_vars">Default templating variables </a></li>
+                        <li><a href="#templating_filters_and_functions">Provided functions and filters</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#jsonobject">JsonObjects</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#jsonobject_creation">Creating a JsonObject</a></li>
+                        <li><a href="#jsonobject_cloning_immutability">Cloning and Immutability</a></li>
+                        <li><a href="#jsonobject_methods">JsonObject methods</a></li>
+                        <li><a href="#jsonobject_array_methods">JsonArray extra methods</a></li>
+                        <li><a href="#jsonobject_jsonpaths">JsonPaths</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#validation">Validation</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#validation_sets">The Validation Set</a></li>
+                        <li><a href="#validation_messages">Validation Messages</a></li> 
+                        <li><a href="#validation_keys">Validation Keys</a></li>
+                        <li><a href="#validation_predefined">Predefined Validations</a></li>
+                        <li><a href="#validation_predefined_options">Predefine Validation options</a></li>
+                        <li><a href="#validation_jsonobject">JsonObject validation</a></li>
+                        <li><a href="#validation_sharing_sets">Sharing / Merging Validation Sets</a></li>
+                        <li><a href="#validation_to_jsonobject">Converting to a JsonObject</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#forms">Forms</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#forms_model">The form model</a></li>
+                        <li><a href="#forms_displaying">Displaying the Form</a></li>
+                        <li><a href="#forms_display_field_text">Text based fields</a></li>
+                        <li><a href="#forms_display_field_text_group">Text based fields group</a></li>
+                        <li><a href="#forms_display_field_select">Select fields</a></li>
+                        <li><a href="#forms_display_field_radio">Radio Buttons</a></li>
+                        <li><a href="#forms_display_field_checkboxes">Checkboxes</a></li>
+                        <li><a href="#forms_display_file_upload">File upload</a></li>
+                        <li><a href="#forms_validation_intro">Form validation introduction</a></li>
+                        <li><a href="#forms_validation_data">Getting the submitted form data</a></li>
+                        <li><a href="#forms_validation_validating">Validating the form</a></li>
+                        <li><a href="#forms_validation_messages">Displaying Validation Messages</a></li>
+                        
                     </ul>
                 </li>
                 <li class="openable">
@@ -148,9 +225,9 @@ Documentation
                     <a href="#miscellaneous">Miscellaneous</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#default_config">Default configurations</a></li>
-                        <li><a href="#templating_engine">Templating engine</a></li>
+                        <li><a href="#flash_messages">Flash messages</a></li>
+                        <li><a href="#alert_messages">Alert messages</a></li>
                         <li><a href="#ssl">Using a SSL certificate (HTTPS)</a></li>
-                        <li><a href="#jsonobject">IJsonObject</a></li>
                         <li><a href="#spincast_utils">Spincast Utilities</a></li>
                         <li><a href="#main_args">@MainArgs</a></li>
                         <li><a href="#init_method">Using an <code>init()</code> method</a></li>
@@ -174,6 +251,11 @@ Documentation
             Section "overview"
             ==========================================#}
             {% include "./docs/overview.html" %}
+            
+            {#==========================================
+            Section "Quick Tutorial"
+            ==========================================#}
+            {% include "./docs/quickTutorial.html" %}
 
             {#==========================================
             Section "bootstrapping"
@@ -184,12 +266,37 @@ Documentation
             Section "Request Context"
             ==========================================#}
             {% include "./docs/requestContext.html" %}
+            
+            {#==========================================
+            Section "Sending the response"
+            ==========================================#}
+            {% include "./docs/sendingResponse.html" %}
 
             {#==========================================
             Section "Routing"
             ==========================================#}
             {% include "./docs/routing.html" %}
 
+            {#==========================================
+            Section "Templating Engine"
+            ==========================================#}
+            {% include "./docs/templatingEngine.html" %}
+            
+            {#==========================================
+            Section "JsonObjects"
+            ==========================================#}
+            {% include "./docs/jsonObjects.html" %}
+            
+            {#==========================================
+            Section "Validation"
+            ==========================================#}
+            {% include "./docs/validation.html" %}
+            
+            {#==========================================
+            Section "Forms"
+            ==========================================#}
+            {% include "./docs/forms.html" %}
+            
             {#==========================================
             Section "HTTP Caching"
             ==========================================#}

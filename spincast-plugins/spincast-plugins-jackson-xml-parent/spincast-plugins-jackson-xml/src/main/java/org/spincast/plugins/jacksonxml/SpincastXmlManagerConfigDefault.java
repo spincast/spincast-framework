@@ -3,7 +3,7 @@ package org.spincast.plugins.jacksonxml;
 /**
  * Default configuration for the Spincast Xml Manager plugin.
  */
-public class SpincastXmlManagerConfigDefault implements ISpincastXmlManagerConfig {
+public class SpincastXmlManagerConfigDefault implements SpincastXmlManagerConfig {
 
     @Override
     public int getPrettyPrinterIndentationSpaceNumber() {

@@ -19,34 +19,40 @@ import org.spincast.plugins.variables.SpincastVariablesPluginGuiceModule;
 /**
  * Spincast Guice module that binds a default implementation
  * for all the required modules.
- * 
+ * <p>
  * To tweak this module,
- * 
- * 1. Extend it to create your custom module
- *    and override some methods. For example:
- * 
- *    public class AppModule extends SpincastDefaultGuiceModule {
+ * <ol>
+ * <li>
+ * Extend it to create your custom module
+ * and override some methods. For example:
+ * <pre>
+ *public class AppModule extends SpincastDefaultGuiceModule {
  *
- *        protected void configure() {
- *            super.configure();
+ *    protected void configure() {
+ *        super.configure();
  *            
- *            // Add some new bindings here...
- *        }
- *        
- *        // Override some methods here... 
- *        
+ *        // Add some new bindings here...
  *    }
- *    
- *    Then:
- *    Injector guice = Guice.createInjector(new AppModule());
- *    
- * 2. Use Modules.override() to add modules. For example:
- * 
- *    Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule(args))
- *                                                 .with(new AppModule()));
- *                                                 
- * 3. You can also extends from SpincastCoreGuiceModule directly if you
- *    want to start from scratch and not use the default implementations.                                      
+ *        
+ *    // Override some methods here... 
+ *        
+ *}
+ *</pre>
+ * Then:
+ *<pre>Injector guice = Guice.createInjector(new AppModule());</pre> 
+ * </li>
+ * </ol>
+ * <li>
+ * Use Modules.override() to add modules. For example:
+ * <pre>
+ * Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule(args))
+ *                                              .with(new AppModule()));
+ * </pre>
+ * </li>
+ * <li>
+ * You can also extend {@link SpincastCoreGuiceModule} directly if you
+ * want to start from scratch and not use the default implementations!   
+ * </li>                               
  */
 public class SpincastDefaultGuiceModule extends SpincastCoreGuiceModule {
 

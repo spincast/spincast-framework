@@ -6,12 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.exceptions.ForwardRouteException;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.net.HttpHeaders;
@@ -20,19 +20,19 @@ import com.google.inject.Inject;
 public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ISpincastUtils spincastUtils;
+    protected SpincastUtils spincastUtils;
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
     @Test
     public void removeCacheBusterRegularRoute() throws Exception {
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String requestPath = context.request().getRequestPath();
                 assertEquals("/one.css", requestPath);
@@ -52,7 +52,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb").send();
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -66,7 +66,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        IHttpResponse response = GET("/someFile" + cacheBusterCode + ".txt").send();
+        HttpResponse response = GET("/someFile" + cacheBusterCode + ".txt").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
@@ -79,10 +79,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one.css?aaa=bbb";
@@ -96,7 +96,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -113,10 +113,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one.css?aaa=bbb";
@@ -130,7 +130,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -147,10 +147,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one" + cacheBusterCode + ".css?aaa=bbb";
@@ -164,7 +164,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -181,10 +181,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
@@ -199,7 +199,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -216,10 +216,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
@@ -234,7 +234,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -251,10 +251,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
@@ -269,7 +269,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -286,10 +286,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one.css?aaa=bbb";
@@ -303,7 +303,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -320,10 +320,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one.css?aaa=bbb";
@@ -337,7 +337,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -354,10 +354,10 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one" + cacheBusterCode + ".css?aaa=bbb";
@@ -371,7 +371,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -388,18 +388,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/two.css?aaa=bbb";
@@ -413,7 +413,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -430,18 +430,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/two.css?aaa=bbb";
@@ -455,7 +455,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -472,18 +472,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/two.css?aaa=bbb";
@@ -497,7 +497,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -514,18 +514,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
@@ -540,7 +540,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -557,18 +557,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
@@ -583,7 +583,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -600,18 +600,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
@@ -626,7 +626,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -643,18 +643,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one.css?aaa=bbb";
@@ -668,7 +668,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -685,18 +685,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one.css?aaa=bbb";
@@ -710,7 +710,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")
@@ -727,18 +727,18 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two.css" + context.request().getQueryString(true));
             }
         });
 
-        getRouter().GET("/two.css").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
                         "https://someHost:81/one" + cacheBusterCode + ".css?aaa=bbb";
@@ -752,7 +752,7 @@ public class CacheBusterTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         // @formatter:off
-        IHttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
+        HttpResponse response = GET("/one" + cacheBusterCode + ".css?aaa=bbb")
                 .addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                 .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "81")

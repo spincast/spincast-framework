@@ -1,0 +1,579 @@
+{#==========================================
+Docs : "Quick Tutorial"
+==========================================#}
+
+<section id="quick_tutorial">
+    <h3>
+        <a class="anchor" href="#quick_tutorial" title="permanent link"></a>
+        Quick Tutorial
+    </h3>
+    
+    <p>
+        Here, we'll have a <em>quick</em> tutorial on how to develop
+        a Spincast application : as a traditional website or as a
+        <code>SPA</code> application. We won't go into too much details 
+        so, to dig deeper, have a look at :
+        <ul>
+            <li>
+                The dedicated <a href="/demos-tutorials">Demos/Tutorials</a> section of the site.
+            </li>
+            <li>
+                The <a href="#quick_start">Quick Start</a> application, which is a fully
+                working Spincast application.
+            </li>
+            <li>
+                The others sections of this documentation!
+            </li>
+        </ul>
+    </p>
+
+    {#==========================================
+    Section "Quick Tutorial / Traditional website"
+    ==========================================#}
+    <div id="quick_tutorial_traditional">
+        <h4>
+            <a class="anchor_small" href="#quick_tutorial_traditional" title="permanent link"></a>
+            1. Traditional website
+        </h4>
+        <p>
+            A "traditional website" is a web application where the server generates
+            <code>HTML</code> pages, using a <a href="#templating_engine">Templating Engine</a>. 
+            This is different from the more recent  
+            <a href="#quick_tutorial_spa">SPA</a> approach, where the interface is generated
+            <em>client side</em> (using javascript) and where the backend only provides <code>REST services</code>
+            (by returning  <code>Json</code> or, more rarely, <code>XML</code>).
+        </p>
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_boostrapping" id="quick_tutorial_traditional_boostrapping" title="permanent link"></a>
+            1.1. Bootstrapping
+        </h5>
+        <p>
+            Bootstrapping a Spincast application involves 3 main steps :
+            
+            <ul>
+                <li>
+                    Creating a <code>Guice Context</code>. This is the process
+                    of binding all the components required in your application. Spincast provides a
+                    default <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a> 
+                    Guice module to make this process very easy.
+                </li>
+                <li>
+                    Defining <code>Routes</code> and <code>Route Handlers</code> (controller methods). We're going to
+                    see those in a minute.
+                </li>
+                <li>
+                    Starting the HTTP Server.
+                </li>
+            </ul>
+        </p>  
+        <p>  
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            The quickest way to start a Spincast application is to
+            download the <a href="#quick_start">Quick Start</a> application and to adapt it
+            to your needs.
+        </p>  
+        <p>
+            Please read the whole section dedicated to 
+            <a href="#bootstrapping">bootstrapping</a> for more information about this topic.
+        </p>
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_routes" id="quick_tutorial_traditional_routes" title="permanent link"></a>
+            1.2. Defining Routes
+        </h5>
+        <p>
+            You define some <code>Routes</code> and you specify which <code>Route Handlers</code> (controllers) should handle them. Those <code>Routes</code> can
+            be all defined together in a dedicated class or can be defined in controllers
+            (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+            You can learn more about the various routing options in the <a href="#routing">Routing</a>
+            section, but here's a quick example of Route definitions :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>// Using a specific HTTP method
+router.GET("/books/${bookId}").save(bookController::booksGet);
+router.POST("/books/${bookId}").save(bookController::booksPost);
+        
+// Or, for any HTTP method 
+router.ALL("/books/${bookId}").save(bookController::books);
+</pre>
+                </p>
+            </div>
+        </p>
+ 
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_route_handlers" id="quick_tutorial_traditional_route_handlers" title="permanent link"></a>
+            1.3. Defining Route Handlers
+        </h5>
+        <p>
+            <code>Route Handlers</code> are the methods in your controllers responsible to handle requests.
+            They receive a <a href="#request_context">Request Context</a> object as a parameter, 
+            object which represents the current request. This <code>Request Context</code> is 
+            <a href="#extending_request_context">extensible</a> and is one
+            of the most interesting parts of Spincast! In this quick example, we simply use the 
+            default <code>Request Context</code> implementation,
+            <code>"DefaultRequestContext"</code> :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public class BookController {
+
+    // Route Handler dedicated to handle GET requests
+    // for a book : "/books/${bookId}"
+    public void booksGet(DefaultRequestContext context) {
+        // ...
+    }
+}</pre>
+                </p>
+            </div>
+        </p>
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_request_info" id="quick_tutorial_traditional_request_info" title="permanent link"></a>
+            1.4. Getting information about the request
+        </h5>
+        <p>
+            In your <code>Route Handlers</code>, you use the <code>Request Context</code> object and its various
+            <a href="#core_rc_add-ons">add-ons</a> to get the information you need about the current request :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void booksGet(DefaultRequestContext context) {
+
+    // Path parameter
+    // From "/books/${bookId}" for example
+    String bookId = context.request().getPathParam("bookId");
+
+    // QueryString parameter
+    String page = context.request().getQueryStringParamFirst("page");
+    
+    // Field received from a POSTed form
+    String newTitle = context.request().getFormData().getString("newTitle");
+
+    // HTTP Header
+    String authorizationHeader = context.request().getHeaderFirst("Authorization");
+
+    // Cookie
+    Cookie localeCookie = context.cookies().getCookie("locale");
+
+    //...
+}</pre>
+                </p>
+            </div>
+        </p>  
+ 
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_response_model" id="quick_tutorial_traditional_response_model" title="permanent link"></a>
+            1.5. Building the response's model 
+        </h5>
+        <p>
+            You process the current request using any required business logic, and you finally build the
+            <code>model</code> for the response. This response model
+            is a <a href="#jsonobject">JsonObject</a> accessible via
+            <code><em>"context.response().getModel()"</em></code> : it is the object
+            containing all the information you want to return as the response. 
+        </p>
+        <p>
+            In the context of a traditional
+            website, you are going to add to this <code>response model</code> all the variables you want 
+            your templates to have access to :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void booksGet(DefaultRequestContext context) {
+    
+    //...
+    
+    JsonObject book = context.json().create();
+    book.put("author", "Douglas Adams");
+    book.put("title", "The Hitchhiker's Guide to the Galaxy");
+    
+    // Adds the book to the response model
+    context.response().getModel().put("book", book);
+    
+    //...
+}</pre>
+                </p>
+            </div>
+        </p>  
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_template_rendering" id="quick_tutorial_traditional_template_rendering" title="permanent link"></a>
+            1.6. Rendering the response model using a template
+        </h5>
+        <p>
+            When you develop a traditional website, you usually want to render a <em>template</em>
+            so <code>HTML</code> is going to be displayed.
+            To do so, you use the integrated <a href="#templating_engine">Templating Engine</a> :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void booksGet(DefaultRequestContext context) {
+    
+    //... builds the response model
+    
+    // Sends the response model as HTML, using a template
+    context.response().sendTemplateHtml("/templates/book.html");
+}</pre>
+                </p>
+            </div>
+        </p>  
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_traditional_template" id="quick_tutorial_traditional_template" title="permanent link"></a>
+            1.7. Writing the template
+        </h5>
+        <p>
+            Here is a template example using the syntax of the default <code>Templating Engine</code>, 
+            <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>.
+            <div>
+                <p>
+                    {% verbatim %}<pre class="ace ace-pebble"
+><strong>{% if book is not empty %}</strong>
+    &lt;div class="book"&gt;
+        &lt;h2&gt;<strong>{{book.title}}</strong>&lt;/h2&gt;
+        &lt;p&gt;Author : <strong>{{book.author}}</strong>&lt;/p&gt;
+    &lt;/div&gt;
+<strong>{% else %}</strong>
+    &lt;div&gt;
+        Book not found!
+    &lt;/div&gt;
+<strong>{% endif %}</strong></pre>{% endverbatim %}
+                </p>
+            </div>
+        </p>    
+          
+    </div>
+
+    {#==========================================
+    Section "Quick Tutorial / SPA website"
+    ==========================================#}
+    <div id="quick_tutorial_spa">
+        <h4>
+            <a class="anchor_small" href="#quick_tutorial_spa" title="permanent link"></a>
+            2. SPA / REST services
+        </h4>
+        <p>
+            The main difference between a <code>SPA</code> application 
+            (or a set of plain <code>REST services</code>) and a 
+            <a href="#quick_tutorial_traditional">traditional website</a>, is that in a <code>SPA</code> you 
+            don't generate <code>HTML</code> server side. 
+            Instead, most of the logic is client-side, and your Spincast application only acts as a provider 
+            of <code>REST services</code>
+            to which your client-side application talks using <code>Json</code> 
+            or, more rarely, <code>XML</code>.
+        </p>
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_spa_boostrapping" id="quick_tutorial_spa_boostrapping" title="permanent link"></a>
+            2.1. Bootstrapping
+        </h5>
+        <p>
+            Bootstrapping a Spincast application involves 3 main steps :
+            
+            <ul>
+                <li>
+                    Creating a <code>Guice Context</code>. This is the process
+                    of binding all the components required in your application. Spincast provides a
+                    default <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a> 
+                    Guice module to make this process very easy.
+                </li>
+                <li>
+                    Defining <code>Routes</code> and <code>Route Handlers</code> (controller methods). We're going to
+                    see those in a minute.
+                </li>
+                <li>
+                    Starting the HTTP Server.
+                </li>
+            </ul>
+        </p>  
+        <p>  
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            The quickest way to start a Spincast application is to
+            download the <a href="#quick_start">Quick Start</a> application and to adapt it
+            to your needs.
+        </p>
+        <p>
+            Please read the whole section dedicated to 
+            <a href="#bootstrapping">bootstrapping</a> for more information about this topic.
+        </p>
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_spa_routes" id="quick_tutorial_spa_routes" title="permanent link"></a>
+            2.2. Defining Routes
+        </h5>
+        <p>
+            You define some <code>Routes</code> and you specify which <code>Route Handlers</code> (controllers) should handle them. Those <code>Routes</code> can
+            be all defined together in a dedicated class or can be defined in controllers
+            (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+            You can learn more about the various routing options in the <a href="#routing">Routing</a>
+            section.
+        <p>
+        </p>
+            In general, if you are building a <code>SPA</code>, you want to return a <em>single</em> <code>HTML</code>
+            page : that index page is going to load <code>.js</code> files and, using those, will bootstrap your
+            client-side application. Using Spincast, you can return that index page as a 
+            <a href="/documentation#static_resources">Static Resource</a>, or you
+            can generate it using a <em>template</em>. Let's first see how you could return the
+            index page as a <code>Static Resource</code> :
+            
+           <div>
+                <p>
+                    <pre class="ace ace-java"
+>// The static "index.html" page that is going to bootstrap
+// our SPA
+router.file("/").classpath("/index.html").save();
+
+// The resources (.js, .css, images, etc.) will 
+// be located under the "/public" path :
+router.dir("/public").classpath("/myResources").save();
+
+// ... the REST endpoints routes
+</pre>
+                </p>
+            </div>
+                
+            As you can see, Spincast will return the
+            <code>"index.html"</code> file when a <code>"/"</code> request is made. 
+            In this <code>HTML</code> page, you are going to load all the
+            required resources (mostly <code>.js</code> files first), and
+            bootstrap your whole application.
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            You can also use a <em>template</em> to generate the
+            first index page. This allows you to dynamically tweak it, to 
+            use variables. Here's an example :
+            
+           <div>
+                <p>
+                    <pre class="ace ace-java"
+>// Route Handler that evaluates
+// a template to generate the HTML index page
+router.GET("/").save(new DefaultHandler() {
+    @Override
+    public void handle(DefaultRequestContext context) {
+    
+        // Adds some variables to the response model so
+        // the template has access to them.
+        context.response().getModel().put("randomQuote", getRandomQuote());
+        
+        // Renders the template
+        context.response().sendTemplateHtml("/index.html");
+    }
+});
+
+// The resources (.js, .css, images, etc.) will 
+// be located under the "/public" path :
+router.dir("/public").classpath("/public").save();
+
+// ... the REST endpoints routes
+</pre>
+                </p>
+            </div>
+            
+            By using such template to send your index page, you have 
+            access to all the functionalities
+            provided by the <a href="#templating_engine">Templating Engine</a>. 
+            Note that if your template is quite complexe, you're 
+            probably better creating a
+            <em>controller</em> to define the <code>Route Handler</code>, instead of
+            defining it <em>inline</em> like in our example!
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Once the Route for the index page and those for the resources are
+            in place, you add the ones required for your <code>REST endpoints</code>. 
+            For example :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>// Endpoint to get a book
+router.GET("/books/${bookId}").save(bookController::booksGet);
+
+// Endpoint to modify a book
+router.POST("/books/${bookId}").save(bookController::booksPost);
+        
+// ...</pre>
+                </p>
+            </div>
+        </p>
+
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_spa_route_handlers" id="quick_tutorial_spa_route_handlers" title="permanent link"></a>
+            2.3. Defining Route Handlers
+        </h5>
+        <p>
+            <code>Route Handlers</code> are the methods in your controllers responsible to handle requests.
+            They receive a <a href="#request_context">Request Context</a> object as a parameter, 
+            object which represents the current request. This <code>Request Context</code> is 
+            <a href="#extending_request_context">extensible</a> and is one
+            of the most interesting parts of Spincast! In this quick example, we simply use the 
+            default <code>Request Context</code> implementation,
+            <code>"DefaultRequestContext"</code> :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public class BookController {
+
+    // Route Handler dedicated to handle GET requests
+    // for a book : "/books/${bookId}"
+    public void booksGet(DefaultRequestContext context) {
+        // ...
+    }
+}</pre>
+                </p>
+            </div>
+        </p>
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_spa_request_info" id="quick_tutorial_spa_request_info" title="permanent link"></a>
+            2.4. Getting information about the request
+        </h5>
+        <p>
+            In your <code>Route Handlers</code>, you use the <code>Request Context</code> object and its various
+            <a href="#core_rc_add-ons">add-ons</a> to get the information you need about the 
+            current request (an <code>AJAX request</code> for example) :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void booksGet(DefaultRequestContext context) {
+
+    // The Json body of the request as a JsonObject
+    JsonObject jsonObj = context.request().getJsonBody();
+
+    // Path parameter
+    // From "/books/${bookId}" for example
+    String bookId = context.request().getPathParam("bookId");
+
+    // HTTP Header
+    String authorizationHeader = context.request().getHeaderFirst("Authorization");
+
+    // Cookie
+    Cookie localeCookie = context.cookies().getCookie("locale");
+
+    //...
+}</pre>
+                </p>
+            </div>   
+        </p> 
+        <p> 
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            Very often in a <code>SPA</code> application, or when you develop plain
+            <code>REST services</code>, you are going to receive a <code>Json</code> object
+            as the body of a request (with a <code>"application/json"</code> content-type). 
+            In the previous code snippet, <code>context.request().getJsonBody()</code> gets 
+            that <code>Json</code> from the request and creates a <a href="#jsonobject">JsonObject</a>
+            from it so it is easy to manipulate. 
+        </p> 
+ 
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_spa_response" id="quick_tutorial_spa_response" title="permanent link"></a>
+            2.5. Creating and sending a Json / XML response
+        </h5>
+        <p>
+            When you receive a request, you process it using any required business logic, and you then build the
+            <code>Json</code> (or <code>XML</code>) object to return as a response. There are two ways to achieve that.
+            The prefered approach, is to create a <em>typed</em> object,
+            a book created from a <code>Book</code> class for example, and explicitly
+            send this entity as <code>Json</code>. For example :
+                    
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="3,4,3,17|5,22,5,41"
+>public void booksGet(DefaultRequestContext context) {
+
+    String bookId = context.request().getPathParam("bookId");
+    Book someBook = getBook(bookId);
+    
+    context.response().sendJson(someBook);
+}</pre>
+                </p>
+            </div> 
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            The second option, probably more useful for
+            <a href="#quick_tutorial_traditional">traditional websites</a> though, is to
+            use the <code><em>response model</em></code> to dynamically create the <code>Json</code>
+            object to send.
+        </p>
+        <p>
+            You get the response model as a <a href="/documentation#jsonobject">JsonObject</a> 
+            by calling the <code>context.response().getModel()</code> method, you then
+            add elements to it and you send it as <code>Json</code> :
+
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="3,4,3,60|20,4,20,33"
+>public void booksGet(DefaultRequestContext context) {
+
+    // Gets the response model
+    JsonObject responseModel = context.response().getModel();
+
+    // Gets a book
+    String bookId = context.request().getPathParam("bookId");
+    Book someBook = getBook(bookId);
+
+    // Adds the book to the response model, using
+    // the "data.book" key
+    responseModel.put("data.book", book);
+
+    // Adds a "code" element to the response model
+    responseModel.put("code", AppCode.APP_CODE_ACCEPTED);
+
+    // Adds a timestamp to the response model
+    responseModel.put("timestamp", new Date());
+    
+    // This is going to send the response model as Json
+    context.response().sendJson();
+}</pre>
+                </p>
+            </div>
+            
+            In this example, the generated <code>Json</code> response 
+            would have a <code>"application/json"</code> content-type and
+            would look like this :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-json"
+>{
+    "code" : 12345,
+    "timestamp" : "2016-11-06T22:58+0000",
+    "data" : {
+        "book" : {
+            "author" : "Douglas Adams",
+            "title" : "The Hitchhiker's Guide to the Galaxy"
+        }
+    }
+}</pre>
+                </p>
+            </div>
+        </p>  
+        
+        <h5>
+            <a class="anchor_small" href="#quick_tutorial_spa_client_side" id="quick_tutorial_spa_client_side" title="permanent link"></a>
+            2.6. Consuming a Json / XML response
+        </h5>
+        <p>
+            You consume the <code>Json</code> response from your client-side <code>SPA</code>
+            application whatever it is built with : <a href="https://angularjs.org/">Angular</a>, 
+            <a href="https://facebook.github.io/react/">React</a>, <a href="https://vuejs.org/">Vue.js</a>, 
+            <a href="http://emberjs.com/">Ember</a>, etc. Of course, we won't go into details here since 
+            there are so many client-side frameworks! 
+        </p>
+        <p>
+            A <code>Json</code> response can also be consumed by a client
+            which is not a <code>SPA</code> : it can be a response for a <code>Ajax request</code>
+            made using <a href="https://jquery.com/">Jquery</a> 
+            or plain javascript. Such <code>Json</code> response can also be consumed by a
+             <em>backend</em> application able to send <code>HTTP</code> requests.
+        </p>    
+        
+    </div>
+    
+</section>
+            

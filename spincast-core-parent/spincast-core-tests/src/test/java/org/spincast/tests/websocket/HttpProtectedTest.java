@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.xnio.http.UpgradeFailedException;
@@ -28,7 +28,7 @@ public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationT
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
@@ -39,7 +39,7 @@ public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationT
 
         try {
             @SuppressWarnings("unused")
-            IWebsocketClientWriter writer = websocket("/ws").connect(client);
+            WebsocketClientWriter writer = websocket("/ws").connect(client);
             fail();
         } catch(Exception ex) {
 
@@ -55,7 +55,7 @@ public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationT
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
@@ -66,7 +66,7 @@ public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationT
 
         try {
             @SuppressWarnings("unused")
-            IWebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "nope")
+            WebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "nope")
                                                             .connect(client);
             fail();
         } catch(Exception ex) {
@@ -83,7 +83,7 @@ public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationT
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+            public void onPeerMessage(DefaultWebsocketContext context, String message) {
                 super.onPeerMessage(context, message);
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
@@ -92,7 +92,7 @@ public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationT
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        IWebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "Laroche")
+        WebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "Laroche")
                                                         .connect(client);
         assertNotNull(writer);
 

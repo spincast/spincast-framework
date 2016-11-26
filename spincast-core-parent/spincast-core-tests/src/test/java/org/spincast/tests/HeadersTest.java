@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -27,10 +27,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void requestHeaders() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     Map<String, List<String>> requestHeaders = context.request().getHeaders();
@@ -83,7 +83,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").addHeaderValue("header1", "val1 val2")
+        HttpResponse response = GET("/one").addHeaderValue("header1", "val1 val2")
                                             .addHeaderValue("header2",
                                                             URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
                                             .send();
@@ -95,10 +95,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersMutable() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     Map<String, List<String>> responseHeaders = context.response().getHeaders();
@@ -113,7 +113,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -127,10 +127,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersResetEverything() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -153,7 +153,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -165,10 +165,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersAdd() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -188,7 +188,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -201,10 +201,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersAddValues() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -223,7 +223,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -236,10 +236,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersSet() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -257,7 +257,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -269,10 +269,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersRemove() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -289,7 +289,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -300,10 +300,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersRemoveWithSetNull() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -320,7 +320,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -331,10 +331,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersGetFirstValue() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -349,7 +349,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");
@@ -362,10 +362,10 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void responseHeadersFlush() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -392,7 +392,7 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         List<String> vals = response.getHeader("header1");

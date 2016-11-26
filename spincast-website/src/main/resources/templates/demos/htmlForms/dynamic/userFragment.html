@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="well user col-md-6 col-sm-12">
+        
+        <div class="title">User #{{positionInc}}</div>
+        
+        <div class="form-group {{validation[userPath + '.name'] | validationClass()}}">
+            <label for="email" class="col-sm-2 control-label">Name *</label>
+            <div class="col-sm-10">
+                <input type="text" 
+                       class="form-control inputs" 
+                       name="{{userPath}}.name" 
+                       placeholder="Name"
+                       value="{{user.name | default('')}}">
+                {{validation[userPath + '.name'] | validationMessages()}}  
+            </div>
+        </div>
+        
+        <div class="form-group {{validation[userPath + '.city']  | validationClass()}}">
+            <label for="email" class="col-sm-2 control-label">City *</label>
+            <div class="col-sm-10 inputs">
+                <input type="text" 
+                       class="form-control" 
+                       name="{{userPath}}.city" 
+                       placeholder="City"
+                       value="{{user.city | default('')}}">
+                {{validation[userPath + '.city'] | validationMessages()}}  
+            </div>
+        </div>
+        
+        <div class="form-group tags {{validation[userPath + '._tags'] | validationClass()}}">
+            <label class="col-sm-2 control-label">Tags *</label>
+            <div class="col-sm-10 inputs">
+                {% if user.tags is not empty | default(false) %}
+                    {% for tag in user.tags %}
+                        <div class="row {{validation[userPath + '.tags[' + loop.index + ']'] | validationClass()}}">
+                            <span class="col-sm-1 control-label">#{{loop.index + 1}}</span>
+                            <div class="col-sm-11">
+                                <input type="text" 
+                                       class="form-control tag" 
+                                       name="{{userPath}}.tags[{{loop.index}}]" 
+                                       placeholder="Tag {{loop.index + 1}}"
+                                       value="{{user.tags[loop.index] | default('')}}" />
+                                 {{validation[userPath + '.tags[' + loop.index + ']'] | validationMessages()}}
+                             </div>
+                        </div> 
+                    {% endfor %}
+                {% endif %}
+                <span class="newTagPosition"></span>
+                <input type="submit"
+                       name="addTag_{{position}}"
+                       class="btn btn-default btn-xs addTag" 
+                       value="+ Add Tag">  
+            </div>
+        </div>
+        
+    </div>
+</div>
+

@@ -1,21 +1,17 @@
 package org.spincast.plugins.routing;
 
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-
-import com.google.inject.Inject;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Router;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 
 /**
- * An implementaiton of the IDefaultRouter interface, for easy
- * usage of the default version of the router.
+ * Unparameterized default router interface to easily use a router with the
+ * default request context class.
+ * 
+ * It's easier to inject "DefaultRouter" than "Router&lt;DefaultRequestContext, DefaultWebsocketContext&gt;"
+ * for a quick application.
  */
-public class DefaultRouter extends SpincastRouter<IDefaultRequestContext, IDefaultWebsocketContext>
-                           implements IDefaultRouter {
+public interface DefaultRouter extends Router<DefaultRequestContext, DefaultWebsocketContext> {
 
-    @Inject
-    public DefaultRouter(SpincastRouterDeps<IDefaultRequestContext, IDefaultWebsocketContext> spincastRouterDeps) {
-        super(spincastRouterDeps);
-        // nothing required
-    }
-
+    // nothing required
 }

@@ -1,0 +1,1869 @@
+{#==========================================
+Docs : "Forms"
+==========================================#}
+
+<section id="forms">
+    <h3>
+        <a class="anchor" href="#forms" title="permanent link"></a>
+        Forms
+    </h3>
+    <p>
+        This section is about <em>HTML Forms</em>, as used on <a href="#quick_tutorial_traditional">traditional websites</a>.
+        If you use a <a href="#quick_tutorial_spa">SPA</a> client-side, you in general don't use such
+        POSTed forms, you rather use javascript to send and receive <code>Json</code> objects. 
+        Both approach are supported out of the box by Spincast but this specific section is about
+        traditional <code>HTML</code> forms and their validation! 
+    </p>
+    <p>
+        We're going to learn :
+
+        <ul>
+            <li>
+                How to populate a form and bind its fields to an underlying <code>form model</code>.
+            </li>
+            <li>
+                How to validate a form that has been submitted.
+            </li>
+            <li>
+                How to redisplay a validated form with <a href="#validation_messages">Validation Messages</a>.
+            </li>
+        </ul>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_model" id="forms_model" title="permanent link"></a>
+        The form model 
+    </h4>
+    <p>
+        You need to prepare a <code>model</code> to back the form you are going to display. This 
+        model is sometimes called <em>"form backing object"</em>, <em>"form backing bean"</em>
+        or <em>"command object"</em>. It's the object used to transfert the values
+        of a form from the server to the client (to populate the form's fields) and vice versa.
+    </p>
+    <p>
+        You create that form model as a <a href="#jsonobject">JsonObject</a> and you add it to the 
+        <a href="#sending_response_model">response model</a>, the root object the 
+        <a href="#templating_engine">Templating Engine</a> has access to. For example :
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>
+public void displayUserForm(AppRequestContext context) {
+
+    // Creates a JsonObject as the the model for the form
+    JsonObject userForm = context.json().create();
+    
+    // ... populates it with inital values, 
+    // if required
+    userForm.put("email", "test@example.com");
+
+    // Adds the form model to the response model
+    context.response().getModel().put("userForm", userForm);
+    
+    // Displays the form using a HTML template
+    context.response().sendTemplateHtml("/templates/userCreationTemplate.html");
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        You can then use this form model to populate fields, in the template. For example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="3,20,3,34"
+>&lt;form method="post"&gt;
+    &lt;input type="text" 
+           name="userForm.email"
+           value="{{userForm.email}}" /&gt;
+    //...
+&lt;/form&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        When the form is submitted, you get back its model
+        using the <code>context.request().getFormData()</code>
+        method, in your <code>Route Handler</code>. We will see this in details in the
+        <a href="#forms_validation_data">Getting the submitted form data</a> section,
+        but here's a quick example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>
+public void manageUserForm(AppRequestContext context) {
+
+    // Gets the submitted form model
+    JsonObject userForm = context.request()
+                                 .getFormData()
+                                 .getJsonObject("userForm");
+                                 
+   // ...
+}</pre> 
+            </p>
+        </div>
+    </p>
+
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        You may have noticed that we are not using a <em>dedicated class</em> to represent the form 
+        model (a <code>"UserForm"</code> class, for example) : we use a dynamic <code>JsonObject</code>.
+        Spincast supports both approaches, but we think a dynamic <code>JsonObject</code>
+        is better for the model of a form. Here's why&nbsp;:
+
+        <ul>
+            <li>
+                <p>
+                    You may be thinking about reusing an existing <em>Entity</em> class for the model of your form. 
+                    For example, you may want to use an existing <code>"User"</code> Entity class for the model of a form
+                    dedicated to the creation of a new user. This seems logical at first since a lot
+                    of fields on the form would have a matching field on that <code>User</code> Entity class...
+                    But, in  practice, it's very rare that an existing <em>Entity</em> class contains <em>all</em> the fields
+                    required to model the form.
+                </p>
+                <p>
+                    Let's say our form has a <code>"name"</code> field and a <code>"email"</code> field and uses those to create
+                    a new user : those fields would probably indeed have matching fields on a <code>"User"</code> Entity. 
+                    But what about a <em>captcha</em>? Or an option to <em>"subscribe to our newsletter"</em>? Those two 
+                    fields on the form have nothing to do with a <code>"user"</code>
+                    and there won't be matching fields for them on a <code>"User"</code> Entity class...
+                    So, what you do then? You have to create a new class that contains <em>all</em> the required
+                    fields. For that, you may be tempted to <em>extend</em> the <code>"User"</code> Entity and simply add 
+                    the missing fields, but our opinion is that this is hackish at best and clearly not a good
+                    practice.
+                </p>
+            </li>
+            <li>
+                <p>
+                    You may also feel that using a dedicated class for such form model is more robust, since that model
+                    is then <em>typed</em>. We understand this feeling since we're huge fans of statically typed code! But, 
+                    <em>for this particular component</em>, for the model of a form, our opinion is that a 
+                    dedicated class is not very beneficial...
+                </p>
+                <p>
+                    As soon as your form model leaves your controller, it
+                    is pretty much converted to a simple and dumb <code>Map&lt;String, Object&gt;</code>, so the <code>Templating Engine</code>
+                    can use it easily. At that moment, your typed form model is no more!
+                    And, at the end of the day, the model becomes plain <code>HTML</code> fields : nothing
+                    is typed there either.
+                </p>
+                <p>
+                    In other words, if you use a dedicated class for your form model, this model is going to be
+                    typed for a very short period, and we feel this doesn't worth the effort. That said, when your form
+                    has been validated and everything is fine, <em>then</em> you may want to convert the
+                    <code>JsonObject</code> model to a dedicated <code>Entity</code> class and pass it to 
+                    services, repositories, etc.
+                </p>
+            </li>
+            <li>
+                Last but not least : using an existing <code>Entity</code> class as a form model can lead to
+                <a href="/public/varia/ounce_springframework_vulnerabilities.pdf" target="_blank">security vulnerabilities</a> (<code>PDF</code>)
+                if you are not careful.
+            </li>
+        </ul>
+    </p>
+    <p> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        In case you still want to use a dedicated class to back your form, you are free to do so,
+        and here's a quick example.... First, you would create a dedicated class for the model :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public class UserCreationForm {
+    
+    private String username;
+    private String email;
+    private String captcha;
+    
+    //... Getters
+    //... Setters
+}</pre> 
+            </p>
+        </div>
+        
+        You would then create a model instance like so :
+     
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void displayUserForm(AppRequestContext context) {
+
+    // A typed form model
+    UserCreationForm userForm = new UserCreationForm();
+    
+    // ... that is quickly converted to a 
+    // JsonObject anyway when added to the response model!
+    context.response().getModel().put("userForm", userForm);
+    
+    sendMyTemplate();
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p> 
+        When the form is submitted, you would then convert <code>context.request().getFormData()</code>,
+        which is a <code>JsonObject</code>, to an instance of your 
+        <code>UserCreationForm</code> class :
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,39,5,71"
+>public void manageUserForm(AppRequestContext context) {
+
+    // Back to a typed version of the form model!
+    UserCreationForm userForm = context.request()
+                                       .getFormData()
+                                       .getJsonObject("userForm")
+                                       .convert(UserCreationForm.class);
+                                       
+   // ...
+}</pre> 
+            </p>
+        </div>
+    </p>
+
+    <h4>
+        <a class="anchor_small" href="#forms_displaying" id="forms_displaying" title="permanent link"></a>
+        Displaying the Form
+    </h4>
+    <p>
+        By using a dynamic <code>JsonObject</code> as the form model, a benefit is 
+        that we don't have to create <em>in advance</em> all the elements required 
+        to match the fields of our <code>HTML</code> form. Simply by using a valid
+        <a href="#jsonobject_jsonpaths">JsonPath</a> as the <code>"name"</code> attribute of a
+        field, the element will automatically be created on the form model...
+    </p>
+    <p>
+        As an example, let's again use a form dedicated to create a user. This form will
+        display two fields : one for a <em>username</em> and one for an <em>email</em>. Our inital form
+        model <em>doesn't have to specify those two elements</em> when it is first created :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>
+public void myRouteHandler(AppRequestContext context) {
+
+    // Empty model! No username and no email 
+    // element specified...
+    JsonObject userForm = context.json().create();
+    
+    // Adds the form model to the response model
+    context.response().getModel().put("userForm", userForm);
+
+    // Renders a template containing the user creation
+    // form
+    context.response().sendTemplateHtml("/templates/userCreationTemplate.html");
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        Here's what that <code>HTML</code> form may looks like (we are using the syntax for
+        the default <code>Templating Engine</code>, <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>) :
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble"
+>&lt;form method="post"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;input type="text" 
+               class="form-control" 
+               name="userForm.username"
+               value="{{userForm.username | default('')}}" /&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+        &lt;input type="text" 
+               class="form-control" 
+               name="userForm.email"
+               value="{{userForm.email | default('')}}" /&gt;
+    &lt;/div&gt;
+    &lt;input type="submit" /&gt;
+&lt;/form&gt;</pre> 
+            </p>
+            {% endverbatim %}
+            
+            Notice that even if the form model doesn't contain any <code>"username"</code> or
+            <code>"email"</code> elements, we still bind them to the fields using their
+            <code>JsonPaths</code> [<span class="code-line-nbr">6</span>] and here [<span class="code-line-nbr">12</span>].   
+            This is possible in part because we use the <a href="http://www.mitchellbosecke.com/pebble/documentation/filter/default"><code>default("")</code></a> 
+            filter : this filter tells Pebble to use an empty string if the element doesn't exist yet (this is required if 
+            <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/basic-usage#user-content-type-safety"><code>strictVariables</code></a> is on).
+        </div>
+    </p>
+    <p>
+        The <code>"name"</code> attributes of the fields are very important : they represent 
+        the <a href="#jsonobject_jsonpaths">JsonPaths</a> that Spincast is going to use to 
+        dynamically create the required elements on the model, when the form is submitted.
+    </p>
+    <p>
+        Let's say this form is submitted. You would then access the values of the fields like so,
+        in your <code>Route Handler</code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>
+public void myRouteHandler(AppRequestContext context) {
+
+    // Gets the form model
+    JsonObject userForm = context.request()
+                                 .getFormData()
+                                 .getJsonObject("userForm");
+    
+    // The "username" and "email" elements have been
+    // automatically created to represent the submitted
+    // fields!
+    String username = userForm.getString("username");
+    String email = userForm.getString("email");                                
+}</pre> 
+            </p>
+        </div>
+        
+        Without extracting the model of the form first, you could also reference those
+        elements <em>directly</em> using their full <code>JsonPaths</code> :
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    String username = context.request().getFormData().getString("userForm.username");
+    String email = context.request().getFormData().getString("userForm.email");
+}</pre>
+            </p>
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        As you can see, Spincast uses the <code>"name"</code> attribute
+        of a field as a <code>JsonPath</code> to dynamically create an element 
+        for the field. This gives you a lot of flexibility client-side
+        since you can dynamically generate new fields or even <em>entire new forms</em>, 
+        using javascript.
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_display_field_text" id="forms_display_field_text" title="permanent link"></a>
+        Text based fields
+    </h4>
+    <p>
+        Text based fields, such as <code><em>text</em></code>, <code><em>password</em></code>, 
+        <code><em>email</em></code> and <code><em>textarea</em></code> are
+        very easy to manipulate :
+        
+        <ul>
+            <li>
+                You use the <code>JsonPath</code> you want for their associated model element as their
+                <code>"name"</code> attribute.
+            </li>
+            <li>
+                You use that same <code>JsonPath</code> to target 
+                the <em>current value</em> of the element on the model, 
+                and you output it in the <code>"value"</code> attribute.
+            </li>
+            <li>
+                You use the <code>default("")</code> filter to make sure not exception
+                is thrown if the model element doesn't exist yet.
+            </li>
+        </ul>
+        
+        Quick example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble"
+>&lt;input type="text" 
+       name="user.email"
+       value="{{user.email | default('')}}" /&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_display_field_text_group" id="forms_display_field_text_group" title="permanent link"></a>
+        Text based field <em>groups</em>
+    </h4>
+    <p>
+        Sometimes we want multiple text fields <em>to be grouped together</em>. For example, let's say we
+        want various <code>"tags"</code> to be associated with an <code>"article"</code> object. Each of those
+        <code>"tags"</code> will have its own dedicated field on the form, but we want all the <code>"tags"</code> to 
+        be available <em>as a single array</em> when they are submitted. To achieve that :
+        
+        <ul>
+            <li>
+                We use the same <code>"name"</code> attribute for every field, but we suffix this name with the 
+                position of the tag inside the final array.
+                For example : <code>"article.tags[0]"</code> or <code>"article.tags[1]"</code> 
+            </li>
+            <li>
+                We also use that same <code>"[X]"</code> suffixed name to get and display the <code>"value"</code> 
+                attributes.  
+            </li>
+        </ul>
+        What we are doing, in fact, is to use the <code><em>JsonPath</em></code> to target each element!
+        For example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="1,50,1,65|2,20,2,35|4,50,4,65|5,20,5,35|7,50,7,65|8,20,8,35"
+>&lt;form method="post"&gt;
+    &lt;input type="text" class="form-control" name="article.tags[0]"
+           value="{{article.tags[0] | default('')}}" /&gt;
+    
+    &lt;input type="text" class="form-control" name="article.tags[1]"
+           value="{{article.tags[1] | default('')}}"&gt;
+    
+    &lt;input type="text" class="form-control" name="article.tags[2]"
+           value="{{article.tags[2] | default('')}}"&gt;
+    &lt;input type="submit" /&gt;
+&lt;/form&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+        
+    </p>
+    <p>
+        When this form is submitted, you have access to the three <code>"tags"</code> as
+        a single <code><em>JsonArray</em></code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void manageArticle(AppRequestContext context) {
+
+    JsonObject model = context.request().getFormData();
+    
+    // Get all the tags of the article, as an array
+    JsonArray tags = model.getJsonArray("article.tags");
+    
+    // You could also access one of the tag directly, using
+    // its full JsonPath
+    String thirdTag = model.getString("article.tags[2]");
+    
+    //...
+}</pre> 
+            </p>
+        </div>
+        
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_display_field_select" id="forms_display_field_select" title="permanent link"></a>
+        Select fields
+    </h4>
+    <p>
+        The <code>select</code> fields come in two flavors : single value or multiple values. To use them :
+        
+        <ul>
+            <li>
+                You specify the <code>JsonPath</code> of the associated element in the
+                <code>"name"</code> attribute of the <code>select</code> field.
+            </li>
+            <li>
+                For every <code>option</code> elements of the field you
+                use the <a href="#templating_filters_selected"><code>selected(...)</code></a> filter to check if the <code>option</code>
+                should be selected or not.
+            </li>
+        </ul>
+        
+        Here's an example for a single value <code>select</code> field :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="1,14,1,27|3,27,3,65"
+>
+
+&lt;select name="user.favDrink" class="form-control"&gt;
+    &lt;option value="tea" {{user.favDrink | selected("tea")}}&gt;Tea&lt;/option&gt;
+    &lt;option value="coffee" {{user.favDrink | selected("coffee")}}&gt;Coffee&lt;/option&gt;
+    &lt;option value="beer" {{user.favDrink | selected("beer")}}&gt;WBeer&lt;/option&gt;
+&lt;/select&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    <p>
+        In this example, the values of the <code>option</code> elements are <em>hardcoded</em>, they were
+        known in advance : "tea", "coffee" and "beer". Here's a version where the <code>option</code> elements 
+        are <em>dynamically generated</em> :
+
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble"
+>&lt;select name="user.favDrink" class="form-control"&gt;
+    {% for drink in allDrinks %}
+        &lt;option value="{{drink.id}}" {{user.favDrink | selected(drink.id)}}&gt;{{drink.name}}&lt;/option&gt;
+    {% endfor %}
+&lt;/select&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    <p>
+        In this example, the <a href="#templating_filters_selected"><code>selected(...)</code></a> filter 
+        compares the current favorite <code>drink</code>
+        of the <code>user</code> (<code>"user.favDrink"</code>) to the value of every 
+        <code>option</code> element and outputs the <code>"selected"</code>
+        attribute if there is a match.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Displaying a <em>multiple values</em> <code>select</code> field is similar, but :
+        
+        <ul>
+            <li>
+                You use <code>"[]"</code> after the <code>"name"</code> attribute of the <code>select</code>
+                field. This tells Spincast that an <em>array</em> of values is expected when the form
+                is submitted.
+            </li>
+            <li>
+                The left side of a <a href="#templating_filters_selected"><code>selected(...)</code></a>
+                filter will be a <em>list</em> of values (since more than one option may have been
+                selected). The filter will output the <code>"seleted"</code> attribute as long as the value 
+                of an option matches <em>any of the values from the list</em>.
+            </li>
+        </ul>
+        
+        For example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="1,8,1,16|1,23,1,39"
+>
+
+&lt;select multiple name="user.favDrinks[]" class="form-control"&gt;
+    &lt;option value="tea" {{user.favDrinks | selected("tea")}}&gt;Tea&lt;/option&gt;
+    &lt;option value="coffee" {{user.favDrinks | selected("coffee")}}&gt;Coffee&lt;/option&gt;
+    &lt;option value="beer" {{user.favDrinks | selected("beer")}}&gt;WBeer&lt;/option&gt;
+&lt;/select&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_display_field_radio" id="forms_display_field_radio" title="permanent link"></a>
+        Radio Buttons
+    </h4>
+    <p>
+        To display a radio buttons group :
+        
+        <ul>
+            <li>
+                You use the <code>JsonPath</code> of the associated model element as the
+                <code>"name"</code> attributes.
+            </li>
+            <li>
+                You output the <code>"value"</code> of each radio button. Those values can be
+                hardcoded, or they can be dynamically generated inside a loop (we'll see an example 
+                of both).
+            </li>
+            <li>
+                You use the <a href="#templating_filters_checked"><code>checked(...)</code></a> 
+                filter provided by Spincast determine if a radio button should be checked or
+                not.
+            </li>
+        </ul>
+    </p>
+    <p>
+        Let's first have a look at an example where the values of the radio buttons are <em>hardcoded</em> :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="6,22,6,25|13,22,13,28|20,22,20,26"
+>&lt;div class="form-group"&gt;
+    &lt;label for="drinkTea"&gt;
+        &lt;input type="radio" 
+               id="drinkTea" 
+               name="user.favDrink"
+               {{user.favDrink | checked("tea")}}
+               value="tea"/&gt; Tea&lt;/label&gt;
+    
+    &lt;label for="drinkCoffee"&gt;
+        &lt;input type="radio" 
+               id="drinkCoffee" 
+               name="user.favDrink"
+               {{user.favDrink | checked("coffee")}}
+               value="coffee"&gt; Coffee&lt;/label&gt;
+    
+    &lt;label for="drinkBeer"&gt;
+        &lt;input type="radio" 
+               id="drinkBeer" 
+               name="user.favDrink"
+               {{user.favDrink | checked("beer")}}
+               value="beer"&gt; Beer&lt;/label&gt;
+&lt;/div&gt;
+</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>   
+    <p>
+        Let's focus on the <em>first</em> radio button of that group. First, 
+        its <code>"name"</code> attribute :
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="3,17,3,30"
+>&lt;label for="drinkTea"&gt;
+    &lt;input type="radio" 
+           id="drinkTea" 
+           name="user.favDrink"
+           {{user.favDrink | checked("tea")}}
+           value="tea"/&gt; Tea&lt;/label&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+        
+        As we already said, the <code>"name"</code> attribute of a field is very important. Spincast uses it
+        to create the element on the form model, when the form is submitted. This <code>"name"</code>
+        will become the <a href="#jsonobject_jsonpaths">JsonPath</a> of the element on the form model.
+        In our example, the model would contain a <code>"user"</code> root element with a <code>"favDrink"</code> element
+        under it.
+    </p>   
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Let's now have a look at the <a href="#templating_filters_checked"><code>checked(...)</code></a> filter :
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,11,4,45"
+>&lt;label for="drinkTea"&gt;
+    &lt;input type="radio" 
+           id="drinkTea" 
+           name="user.favDrink"
+           {{user.favDrink | checked("tea")}}
+           value="tea"/&gt; Tea&lt;/label&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+        <p>
+            We don't know in advance if a radio button should be checked or not, this depends
+            on the current value of the <code>"user.favDrink"</code> element. That's why we use
+            <a href="#templating_filters_checked"><code>"checked(...)"</code></a>. This filter will compare the current
+            value of the <code>"user.favDrink"</code> model element to the value
+            of the radio button (<code>"tea"</code> in our example). If there is a match, a <code>"checked"</code>
+            attribute is printed!
+        </p>
+    </p>   
+    <p>
+        <img src="/public/images/icons/tipy.png" />
+        Note that the parameter of the <a href="#templating_filters_checked"><code>"checked(...)"</code></a> filter 
+        can be an <em>array</em>. In that case, the
+        filter will output <code>"checked"</code> if the current value 
+        matches <em>any</em> of the elements. For example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,37,4,62"
+>&lt;label for="drinkTea"&gt;
+    &lt;input type="radio" 
+           id="drinkTea" 
+           name="user.favDrink"
+           {{user.favDrink | checked(["tea", "ice tea", chai"])}}
+           value="tea"/&gt; Tea&lt;/label&gt;
+</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    <p>
+        This feature is mainly useful when the radio buttons are dynamically generated.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Speaking of dynamically generated radio buttons, let's see an example of those! The creation
+        of the <em>response model</em>, in your <code>Route Handler</code>, may look like this :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    // Gets the response model
+    JsonObject model = context.response().getModel();
+
+    // Creates the available drink options
+    JsonArray allDrinks = context.json().createArray();
+
+    JsonObject drink = context.json().create();
+    drink.put("id", 1);
+    drink.put("name", "Tea");
+    allDrinks.add(drink);
+
+    drink = context.json().create();
+    drink.put("id", 2);
+    drink.put("name", "Coffee");
+    allDrinks.add(drink);
+
+    drink = context.json().create();
+    drink.put("id", 3);
+    drink.put("name", "Beer");
+    allDrinks.add(drink);
+
+    // Creates a "user" object and specifies 
+    // his favorite drink
+    JsonObject user = context.json().create();
+    user.put("favDrink", 2);
+
+    // Adds the drinks options and the user object 
+    // to the response model
+    model.put("allDrinks", allDrinks);
+    model.put("user", user);
+
+    // Renders an HTML template containing the form
+    // to display
+    context.response().sendTemplateHtml("/templates/userTemplate.html");
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        With this response model in place, we can dynamically generate the radio buttons
+        group and check the current favorite one of the user :
+    
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="1,4,1,32|8,4,8,16|6,19,6,56"
+>&lt;div class="form-group"&gt;
+    {% for drink in allDrinks %}
+        &lt;label for="drink_{{drink.id}}"&gt;
+            &lt;input type="radio" 
+                   id="drink_{{drink.id}}" 
+                   name="user.favDrink"
+                   {{user.favDrink | checked(drink.id)}}
+                   value="{{drink.id}}"/&gt; {{drink.name}}&lt;/label&gt; 
+    {% endfor %}
+&lt;/div&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    <p>
+        <img src="/public/images/icons/tipy.png" />
+        You may notice that, in this example, we haven't <em>scoped</em> the elements of the form
+        under a dedicated <code>"userForm"</code> parent element as we did in other examples. We added the
+        <code>"allDrinks"</code> and <code>"user"</code> objects as <em>root</em> elements 
+        (instead of naming them <code>"userForm.allDrinks"</code> and <code>"userForm.user"</code>).
+        You don't <em>have</em> to scope the elements of a form inside a parent element
+        when you are working with a simple template... But as soon as your template is somewhat complex, 
+        for example if it contains more than one form, then scoping elements is a good idea.
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_display_field_checkboxes" id="forms_display_field_checkboxes" title="permanent link"></a>
+        Checkboxes
+    </h4>
+    <p>
+        Checkboxes are often used in one of those two situations :
+        
+        <ul>
+            <li>
+                To allow the user to select a <em>single</em> boolean value. For example :
+
+                <div>
+                    {% verbatim %}
+                    <p>
+                        <pre class="ace ace-pebble"
+>[ ] Do you want to subscribe to our newsletter?</pre> 
+                    </p>
+                    {% endverbatim %}
+                </div>  
+            </li>
+            <li>
+                To allow the user to select <em>multiple</em> values for a single preference. For example :
+                
+                <div>
+                    {% verbatim %}
+                    <p>
+                        <pre class="ace ace-pebble"
+>Which drinks do you like?
+[ ] Tea
+[ ] Coffee
+[ ] Beer</pre> 
+                    </p>
+                    {% endverbatim %}
+                </div>  
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        First, let's look at a single checkbox field :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,42,4,46|5,18,5,22"
+>&lt;label for="tosAccepted"&gt;
+    &lt;input type="checkbox" 
+           id="tosAccepted" 
+           name="myForm.tosAccepted"
+           {{myForm.tosAccepted | checked(true)}}
+           value="true" /&gt; I agree to the Terms of Service&lt;/label&gt;
+</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    <p>
+        <img src="/public/images/icons/tipy.png" />
+        Note that, even if the value of the checkbox is <code>"true"</code> <em>as a string</em>,
+        you can use <code>true</code> <em>as a boolean</em> as the filter parameter. 
+        This is possible because the <a href="#templating_filters_checked"><code>checked(...)</code></a> 
+        filter (and the <a href="#templating_filters_selected"><code>selected(...)</code></a> 
+        filter) compares elements using 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/ObjectConverter.html#isEquivalent-java.lang.Object-java.lang.Object-"><em>equivalence</em></a>, 
+        not <em>equality</em>. So <code>"true"</code>
+        would match <code>true</code> and <code>"123.00"</code> would match <code>123</code>.
+    </p>
+    <p>
+        When this field is submitted, you would be able to access 
+        the boolean value associated with it using :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonObject model = context.request().getFormData();
+    
+    boolean tosAccepted = model.getBoolean("myForm.tosAccepted");
+    
+    //...
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Now, let's see an example of a <em>group</em> of checkboxes :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,21,4,38|11,21,11,38|18,21,18,38"
+>&lt;div class="form-group"&gt;
+    &lt;label for="drinkTea"&gt;
+        &lt;input type="checkbox" 
+               id="drinkTea" 
+               name="user.favDrinks[0]"
+               {{user.favDrinks[0] | checked("tea")}}
+               value="tea"/&gt; Tea&lt;/label&gt;
+    
+    &lt;label for="drinkCoffee"&gt;
+        &lt;input type="checkbox" 
+               id="drinkCoffee" 
+               name="user.favDrinks[1]"
+               {{user.favDrinks[1] | checked("coffee")}}
+               value="coffee"&gt; Coffee&lt;/label&gt;
+    
+    &lt;label for="drinkBeer"&gt;
+        &lt;input type="checkbox" 
+               id="drinkBeer" 
+               name="user.favDrinks[2]"
+               {{user.favDrinks[2] | checked("beer")}}
+               value="beer"&gt; Beer&lt;/label&gt;
+&lt;/div&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+
+        Here, the checkboxes are grouped together since they share the same <code>"name"</code>
+        attribute, name that is suffixed with the position of the element in the group.
+        In fact, their <code>"name"</code> is the <a href="#jsonobject_jsonpaths">JsonPath</a>
+        of their associated element on the form model.
+    </p>
+    <p>
+        With this in place, we can access all the checked <code>"favorite drinks"</code> as a single array,
+        in our <code>Route Handler</code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonObject model = context.request().getFormData();
+    
+    // The checked favorite drinks, as an array!
+    JsonArray favDrinks = model.getJsonArray("user.favDrinks");
+    
+    //...
+}</pre> 
+            </p>
+        </div> 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Note that the <em>positions</em> used in the <code>"name"</code> attributes
+        are kept when we receive the array! This means that if the
+        user only checked <code>"beer"</code> for example (the last option), the array 
+        received in our <code>Route handler</code> would be <code>[null, null, "beer"]</code>, not <code>["beer"]</code>! 
+        This is a good thing because the
+        <code>JsonPath</code> we use for an element always stays valid (<code>"user.favDrinks[2]"</code>
+        here).
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_display_file_upload" id="forms_display_file_upload" title="permanent link"></a>
+        File upload
+    </h4>
+    <p>
+        Uploading a file is very easy using Spincast. The main difference between a <code>"file"</code> field
+        and the other types of fields is that the uploaded file
+        will not be available on the model when the form is submitted. You'll have to use a dedicated method to 
+        retrieve it in your <code>Route handler</code>. 
+    </p>
+    <p>
+        The <code>HTML</code> part is very standard :
+        
+        <div>
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="1,11,1,22|1,50,1,62"
+>&lt;form action="/upload" method="post" enctype="multipart/form-data"&gt;
+    &lt;input type="file" class="form-control" name="fileToUpload"&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        To retrieve the uploaded file, you use one of the <code>getUploadedFileXXX(...)</code>
+        methods on the <code>request()</code> add-on. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="2,41,2,78"
+>public void myRouteHandler(AppRequestContext context) {
+
+    File uploadedFile = context.request().getUploadedFileFirst("fileToUpload");
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Note that even if the uploaded file is not part of the <code>form data</code>, you can still add 
+        <a href="#validation_messages">Validation Messages</a> for it, if the file is not valid.
+    </p>
+
+    <h4>
+        <a class="anchor_small" href="#forms_validation_intro" id="forms_validation_intro" title="permanent link"></a>
+        Form validation introduction
+    </h4>
+    <p>
+        Validating a submitted form involves three main steps :
+        
+        <ul>
+            <li>
+                Getting the submitted form data.
+            </li>
+            <li>
+                Using everything explained in the <a href="#validation">Validation</a> section to
+                validate the form model.
+            </li>
+            <li>
+                Redisplaying the form with the <a href="#validation_messages">Validation Messages</a> resulting 
+                from the validation, if any. 
+                If the form is <em>valid</em>, you may instead want to redirect the user to 
+                a confirmation page where a <a href="#flash_messages">Flash Message</a> will be
+                displayed.
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Make sure you read the dedicated <a href="#validation">Validation</a> section! Here,
+        we are going to take for granted that you already know how to create a <code>Validation Set</code> from
+        a <code>JsonObject</code> and how to <a href="#validation_jsonobject">validate that JsonObject</a>.
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_validation_data" id="forms_validation_data" title="permanent link"></a>
+        Getting the submitted form data
+    </h4>
+    <p>
+        When a <code>HTML</code> form is submitted, Spincast threats the
+        <code>"name"</code> attributes of the fields as <a href="#jsonobject_jsonpaths">JsonPaths</a> in order to create 
+        a <a href="#jsonobject">JsonObject</a> representing the <a href="#forms_model">form model</a>. In other words,
+        Spincast converts the submitted form to a <code>JsonObject</code> so you can easily validate and manipulate it.
+    </p>
+    <p>
+        You access that <code>JsonObject</code> representing the submitted form using the
+        <code>getFormData()</code> method of the <code>request()</code> add-on. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonObject myForm = context.request().getFormData();
+    
+    //... validates the form
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        If you have more than one form on the same <code>HTML</code> page, you will probably want to
+        <em>scope</em> the names of every field. For example, a text
+        field of a form named <code>"myFirstForm"</code> could be :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="2,13,2,30"
+>&lt;input type="text" 
+       class="form-control" 
+       name="myFirstForm.email"
+       value="{{myFirstForm.email | default('')}}" /&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+        
+        And you can then retrieve the <code>JsonObject</code> representing this particular
+        <code>"myFirstForm"</code> form model using :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,52,5,63|9,42,9,47"
+>public void myRouteHandler(AppRequestContext context) {
+
+    // Gets the "myFirstForm" form model
+    JsonObject myFirstForm = context.request()
+                                    .getFormData()
+                                    .getJsonObject("myFirstForm");
+                               
+    // Gets the value of the "email" field from 
+    // the "myFirstForm" form model
+    String email = myFirstForm.getString("email");
+}</pre> 
+            </p>
+        </div>
+        
+      Instead of "extracting" the form model first, you can also select the
+      value of a field directly from the root of the form data : 
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="2,62,2,79"
+>public void myRouteHandler(AppRequestContext context) {
+
+    String email = context.request().getFormData().getString("myFirstForm.email");
+}</pre> 
+            </p>
+        </div>
+    </p>
+    
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Spincast supports <em>arrays</em> to group a bunch of fields together.
+        When multiple fields have the same <code>"name"</code> attribute, they are
+        automatically grouped together when a form is submitted. For example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,21,4,35|11,21,11,35"
+>&lt;div class="form-group"&gt;
+    &lt;label for="drinkTea"&gt;
+        &lt;input type="checkbox" 
+               id="drinkTea" 
+               name="user.favDrinks"
+               {{user.favDrinks[0] | checked("tea")}}
+               value="tea"/&gt; Tea&lt;/label&gt;
+    
+    &lt;label for="drinkCoffee"&gt;
+        &lt;input type="checkbox" 
+               id="drinkCoffee" 
+               name="user.favDrinks"
+               {{user.favDrinks[1] | checked("tea")}}
+               value="coffee"&gt; Coffee&lt;/label&gt;
+&lt;/div&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+        
+        When submitted, this form would result in the two <code>"user.favDrinks"</code> fields to be grouped
+        in a single array. We could access this array with :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="2,53,2,82"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonArray tags = context.request().getFormData().getJsonArray("user.favDrinks");
+    
+    //...
+}</pre> 
+            </p>
+            
+            There are two problems with this approach though :
+            
+            <ul>
+                <li>
+                    If only <em>one</em> of those <code>"user.favDrinks"</code> field is submitted,
+                    Spincast has no way of knowing it should be part of an array, so
+                    it won't create one. In other words, your code must be prepare to
+                    receive those <code>"favDrinks"</code> in an array <em>or as a single element</em>.
+                    Not cool!
+                </li>
+                <li>
+                    When a form is submitted, the order in which fields are received is
+                    not garanteed by the HTTP specification. This means that you
+                    can potentially receive those <code>"favDrinks"</code> elements in 
+                    a different order, from requests to requests. Not cool either!
+                </li>   
+            </ul>
+        </div>
+    </p>
+    
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        The first improvement we can make, is to make sure
+        we always receive an array, never a single element alone! To achieve that, we can use 
+        a <code>"name"</code> attribute <em>ending with <code>"[]"</code></em>. For example&nbsp;:
+        
+            <div>
+                {% verbatim %}
+                <p>
+                    <pre class="ace ace-pebble" data-ace-hi="4,21,4,37|11,21,11,37"
+>&lt;div class="form-group"&gt;
+    &lt;label for="drinkTea"&gt;
+        &lt;input type="checkbox" 
+               id="drinkTea" 
+               name="user.favDrinks[]"
+               {{user.favDrinks[0] | checked("tea")}}
+               value="tea"/&gt; Tea&lt;/label&gt;
+    
+    &lt;label for="drinkCoffee"&gt;
+        &lt;input type="checkbox" 
+               id="drinkCoffee" 
+               name="user.favDrinks[]"
+               {{user.favDrinks[1] | checked("tea")}}
+               value="coffee"&gt; Coffee&lt;/label&gt;
+&lt;/div&gt;</pre> 
+                </p>
+                {% endverbatim %}
+            </div>
+            
+            This guarantees that an array will <em>always</em> be created to group the <code>"user.favDrinks[]"</code>
+            fields, even if only <em>one</em> of those fields is actually submitted.
+            But this approach still doesn't guarantee the <em>order</em> of the elements in the 
+            resulting array, when multiple fields are submitted!
+    </p>
+    <p>
+        The third and best method, is to suffix the <code>"names"</code> attribute not only with 
+        <code>"[]"</code>, but with <code>"[X]"</code>,
+        where <code>"X"</code> is the position of the element in the group! 
+        For example :
+        
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,21,4,38|11,21,11,38"
+>&lt;div class="form-group"&gt;
+    &lt;label for="drinkTea"&gt;
+        &lt;input type="checkbox" 
+               id="drinkTea" 
+               name="user.favDrinks[0]"
+               {{user.favDrinks[0] | checked("tea")}}
+               value="tea"/&gt; Tea&lt;/label&gt;
+    
+    &lt;label for="drinkCoffee"&gt;
+        &lt;input type="checkbox" 
+               id="drinkCoffee" 
+               name="user.favDrinks[1]"
+               {{user.favDrinks[1] | checked("tea")}}
+               value="coffee"&gt; Coffee&lt;/label&gt;
+&lt;/div&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+        
+        Now, the order is also guaranteed : the <code>"user.favDrinks[0]"</code> field will always be at
+        the first position of the resulting array and <code>"user.favDrinks[1]"</code> always be at the second
+        position. Note that since the positions are now guaranteed, Spincast will automatically adds <code>null</code> elements
+        if some indexes are not associated with a submitted field.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        In this third solution, notice that
+        the "name" attribute <em>is the actual <a href="#jsonobject_jsonpaths">JsonPath</a></em>
+        of the associated element. We like that!
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_validation_validating" id="forms_validation_validating" title="permanent link"></a>
+        Validating the form
+    </h4>
+    <p>
+        Once you we the <code>JsonObject</code> representing the model of the submitted form, we can start validating it.
+        To do so, we create a <a href="#validation_sets">Validation Set</a> from this object.
+        For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="6,54,6,70"
+>public void myRouteHandler(AppRequestContext context) {
+
+    // Gets the form model
+    JsonObject myForm = context.request().getFormData().getJsonObject("myForm");
+    
+    // Gets a Validation Set for the form model
+    JsonObjectValidationSet formValidationSet = myForm.validationSet();
+    // ...
+}</pre> 
+            </p>
+        </div>
+        
+        We are going to use this <code>Validation Set</code> object to store the
+        <a href="#validation_messages">Validation Messages</a> resulting from the validation we're about
+        to perform.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Here's a quick example where we make sure that an <code>"email"</code> 
+        field is valid and, if it is, that the <code>email</code> is not already 
+        used by another user in our system :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonObject myForm = context.request().getFormData().getJsonObject("myForm");
+    JsonObjectValidationSet formValidationSet = myForm.validationSet();
+
+    ValidationSet lastResult = formValidationSet.validationEmail().jsonPath("email").validate();
+    if(lastResult.isValid()) {
+
+        boolean emailIsAvailable = isEmailAvailable(myForm.getString("email"));
+        if(!emailIsAvailable) {
+            formValidationSet.addError("email",
+                                       "EMAIL_ALREADY_EXISTS",
+                                       "This email is already used.");
+        }
+    }
+    // ...
+}</pre> 
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">6</span> : Using the
+                        <code>validationEmail()</code> predefined validation, we validate the
+                        submitted email.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">7</span> : Only if the last
+                        validation doesn't generate any error (so only if the email
+                        is valid) do we perform the next validation...
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">9</span> : Here we use some custom
+                        code to validate in our system if the specified email is available or not.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">10-14</span> : If the email is not
+                        available, we manually add an <code>Error Validation Message</code> 
+                        to our <code>Validation Set</code>, using the <code>addError(...)</code> method.
+                    </li>  
+                </ul>
+            </p>
+        </div>
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        When we are done validating a form, we usually have two choices :
+        
+        <ul>
+            <li>
+                <p>
+                    If the form is valid, we can process it. This often involves
+                    creating <code>Entities</code> objects from the form data,
+                    calling business logic in <code>services</code> and 
+                    making modifications to <code>data sources</code>.
+                </p>
+                <p>
+                    When the submitted (and valid) form has been processed, it's a good practice
+                    to <a href="#sending_response_redirecting">redirect</a>
+                    the user to a confirmation page, with a <a href="#flash_messages">Flash message</a> 
+                    to be displayed. Doing do, you prevent the form to be submitted again, in case 
+                    the user tries to refresh the resulting page.
+                </p>
+            </li>
+            <li>
+                If the form is <em>not</em> valid (i.e. if some <code>Error Validation Messages</code>
+                have been generated by the validation), then we need to redisplay the form to the user with 
+                the <code>Validation Messages</code>. We're going to see how to display those messages 
+                in the following <a href="#forms_validation_messages">Displaying validation messages</a> section
+                but, for now, let's see what first needs to be done in the <code>Route Handler</code>...
+            </li>
+        </ul>
+        
+    </p>
+    <p>
+        In order to prepare a form to be redisplayed with the <code>Validation Messages</code> resulting from
+        its validation, we need to add the <code>form model</code> and the resulting <code>Validation Set</code> back to
+        the <a href="#sending_response_model">response model</a>! This is required so the 
+        <code>Templating Engine</code> can redisplay the fields with their submitted (but potentially invalid values) 
+        and the various <code>Validation Messages</code>. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonObject myForm = context.request().getFormData().getJsonObject("myForm");
+    JsonObjectValidationSet formValidationSet = myForm.validationSet();
+    
+    // ... Perfoms validation and saves Validation Messages
+    // on the Validation Set
+    
+    if(formValidationSet.isValid()) {
+        
+        // ... Calls services / business logic / data sources
+        // to process the submitted data
+        
+        // Redirects to a confirmation page
+        context.response().redirect(FlashMessageLevel.SUCCESS,
+                "The form has been processed successfully.");
+    } else {
+        
+        // Adds the form model back to the response model
+        context.response().getModel().put("myForm", myForm);
+        
+        // Adds the Validation Set to the response model
+        // using a key of our choice
+        context.response().getModel().put("validation", formValidationSet);
+        
+        // Redisplays the form using the Templating Engine
+        context.response().sendTemplateHtml("/templates/myTemplate.html");
+    }
+}</pre> 
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">6-7</span> : Performs the validations
+                        on the form.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">9</span> : We check if the form
+                        is valid.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">11-12</span> : Since the form is valid we
+                        can process it! This part is specific to each application.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">15-16</span> : We redirect the user
+                        to a confirmation page with a Flash message to be displayed.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">20</span> : The form is invalid so we need to
+                        redisplay it with the Validation Messages... So we add it back to the response model.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">24</span> : We add the <code>Validation Set</code> to the
+                        response model too.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">27</span> : We redisplay our form using an <code>HTML</code>
+                        template.
+                    </li>  
+                </ul>
+            </p>
+        </div>
+    </p>
+    <p>
+        In this example, we added the <code>Validation Set</code> to the response model using a
+        <code>"validation"</code> key. This would result in the <code>Validation Messages</code>
+        to be accessible in the template using <code>validation['<em>some.validation.key</em>']</code>. For example :
+        
+        {% verbatim %}
+        <div>
+            <p>
+                <pre class="ace ace-pebble" 
+>
+
+&lt;div&gt;{{validation['myForm.email']}}&lt;/div&gt;
+</pre> 
+            </p>
+        </div> 
+        {% endverbatim %} 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Now, everything required by our <code>Templating Engine</code> to be able to redisplay the form
+        with the <code>Validation Messages</code> has been made available.
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#forms_validation_messages" id="forms_validation_messages" title="permanent link"></a>
+        Displaying Validation Messages
+    </h4>
+    <p>
+        At the end of the previous section, we showed that two main elements have to be added to 
+        the <code>response model</code> in order to redisplay an invalid form :
+
+        <ul>
+            <li>
+                The submitted form model itself
+            </li>
+            <li>
+                The <code>Validation Set</code> resulting from the validation
+            </li>
+        </ul>
+        
+        If you followed the 
+        <code><em>"Use the JsonPath of a validated element as its validation key"</em></code> convention as suggested in
+        the <a href="#validation_keys">Validation Keys</a> section, the final model your templates will
+        have access to will look like this :
+        
+        <div>
+            <p>
+                <pre class="ace ace-json"
+>{
+    "myForm" : {
+        "name" : "Stromgol"
+        "email" : "abc"
+        "books": [
+            {
+                "title" : "Dune",
+                "author": "Frank Herbert"
+            },
+            {
+                "title" : "The Hitchhiker's Guide to the Galaxy",
+                "author" : ""
+            }
+        ]
+    },
+    
+    "validation" : {
+        "_" : {
+            "hasErrors" : true,
+            "hasWarnings" : false,
+            "isValid" : false,
+            "hasSuccesses" : false
+        },
+        "myForm.email" : {
+            "level" : "ERROR",
+            "code" : "VALIDATION_TYPE_EMAIL",
+            "text" : "Invalid email address" 
+        },
+        "myForm.books[1].author" : {
+            "level" : "ERROR",
+            "code" : "VALIDATION_TYPE_NOT_BLANK",
+            "text" : "The author can't be empty" 
+        }
+    }
+    
+    // ...
+}</pre> 
+            </p> 
+        </div> 
+    </p> 
+    <p> 
+        <ul>
+            <li>
+                At the top is the serialized form model : notice that the <code>JsonPath</code> 
+                of every element is respected.
+            </li>
+            <li>
+                <p>
+                    Below is the serialized <a href="#validation_sets">Validation Set</a>
+                    resulting from the validation. Here, the validation keys have been scoped 
+                    in a <code>"validation"</code> object so they don't clash with any other element on the model. 
+                </p>
+                <p>
+                    Notice that each validation key is the string representation of the <code>JsonPath</code> of the element 
+                    it is associated with!
+                </p>
+                <p>
+                    You can also see the special <code>"_"</code> element that is automatically added when
+                    a <code>Validation Set</code> is <a href="#validation_to_jsonobject">converted to a JsonObject</a>.
+                    This element summarizes the validation.
+                </p>
+            </li>
+            <li>
+                In real life, there are always more elements than this in a template model, 
+                for example the <a href="#templating_default_vars">Default templating variables</a>... We
+                didn't list them here for the sake of simplicity.
+            </li>
+        </ul>
+    </p> 
+    <p> 
+        This structure of the templating model makes the <code>Validation Messages</code> very easy to be retrieved and displayed.
+        For example :
+
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="5,4,5,57"
+>&lt;div class="form-group"&gt;
+    &lt;input type="text" 
+           class="form-control" 
+           name="myForm.email"
+           value="{{myForm.email | default('')}}" /&gt;
+    {{validation['myForm.email'] | validationMessages()}}
+&lt;/div&gt;</pre> 
+            </p>
+            {% endverbatim %}
+            
+            Here, <code><em>validationMessages()</em></code> is a 
+            <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble#user-content-filters">Pebble filter</a> 
+            provided by Spincast that can be used to display the <code>Validation Messages</code> associated with a field. 
+            Since our validation keys are in fact the string representation of the <code>JsonPaths</code> of the
+            validated elements, it's very clear how to retrieve the <code>Validation Messages</code> for a particular
+            field : it is, in most cases, the same as the <code>"name"</code> attribute of that field [<span class="code-line-nbr">4</span>].  
+        </div>
+    </p>
+    
+
+    <h5>
+        <a class="anchor_small" href="#forms_validation_filters" id="forms_validation_filters" title="permanent link"></a>
+        Validation Filters
+    </h5>
+    <p>
+        Spincast provides utilities to display the 
+        <a href="#validation_messages">Validation Messages</a> when the default <code>Templating Engine</code> is used,
+        <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. But, as we saw, the template model is pretty much a 
+        simple <code>Map&lt;String, Object&gt;</code> so no magic is involved and any other <code>Templating Engine</code> 
+        could be used!
+    </p>
+    <p>  
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Have a look at the <a href="/demos-tutorials/html-forms/single-field">Forms + Validation demos</a>
+        section to see the following validation filters in action!
+    </p>
+    <p>
+        <ul class="apiList">
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationMessages</span>()</code>
+                <div class="well">
+                     <p>
+                         This filter uses a <code>HTML</code> template fragment to output the <code>Validation Messages</code> associated with a field.
+                     </p>
+                     <p>
+                         Here's an example :
+                         
+                        <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="5,4,5,57"
+>&lt;div class="form-group"&gt;
+    &lt;input type="text" 
+           class="form-control" 
+           name="myForm.email"
+           value="{{myForm.email | default('')}}" /&gt;
+    {{validation['myForm.email'] | validationMessages()}}
+&lt;/div&gt;</pre> 
+                            </p>
+                            {% endverbatim %}
+                        </div>
+                     </p>
+                     <p>
+                         The path to the template fragment is configurable using the 
+                         <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngineConfig.html#getValidationMessagesTemplatePath--">SpincastPebbleTemplatingEngineConfig#getValidationMessagesTemplatePath()</a> 
+                         method. The default path is <code>"/spincast/spincast-plugins-pebble/spincastPebbleExtension/validationMessagesTemplate.html"</code> which points
+                         to a template fragment provided by Spincast.
+                     </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationGroupMessages</span>()</code>
+                <div class="well">
+                     <p>
+                         This filter is similar to <code>validationMessages()</code> but uses a different template fragment.
+                         Its purpose is to output the <code>Validation Messages</code> of a <em>group of fields</em>.
+                     </p>
+                     <p>
+                         Here's an example :
+                         
+                        <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="4,8,4,67"
+>&lt;div id="tagsGroup" class="form-group {{validation['demoForm.tags'] | validationClass()}}"&gt;
+
+    &lt;div class="col-sm-4"&gt;
+        &lt;label class="control-label"&gt;Tags *&lt;/label&gt;
+        {{validation['demoForm.tags'] | validationGroupMessages()}}
+    &lt;/div&gt;
+    
+    &lt;div class="col-sm-8"&gt;
+        &lt;input type="text" name="demoForm.tags[0]" 
+               class="form-control {{validation['demoForm.tags[0]'] | validationClass()}}"
+               value="{{demoForm.tags[0] | default('')}}" /&gt;
+        {{validation['demoForm.tags[0]'] | validationMessages()}}
+        
+        &lt;input type="text" name="demoForm.tags[1]" 
+               class="form-control {{validation['demoForm.tags[1]'] | validationClass()}}"
+               value="{{demoForm.tags[1] | default('')}}"&gt;
+        {{validation['demoForm.tags[1]'] | validationMessages()}}
+    &lt;/div&gt;
+&lt;/div&gt;</pre> 
+                            </p>
+                            {% endverbatim %}
+                        </div>
+                     </p>
+                     <p>
+                         In this example, we ask the user to enter two tags. If one is invalid, we may want to display
+                         a <code>"This tag is invalid"</code> message below the invalid field, but we may also want to
+                         display a <em>global</em> <code>"At least one tag is invalid"</code> below the group title, <code>"Tags *"</code>.
+                     </p>
+                     <p>
+                        This is exactly what the  <code>validationGroupMessages()</code> filter is for. 
+                        As you may notice, <code>"demoForm.tags"</code> is, in fact, the <code>JsonPath</code> to the
+                        <em>tags array itself</em>. In the <a href="#validation_building_options">Validation</a> section,
+                        you can learn that Spincast can automatically add such <code>Validation Messages</code> for an array itself,
+                        when the validation of its elements is done.
+                     </p>
+                     <p>
+                         The path to the template fragment used by this filter is
+                         configurable using the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngineConfig.html#getValidationGroupMessagesTemplatePath--">SpincastPebbleTemplatingEngineConfig#getValidationGroupMessagesTemplatePath()</a> 
+                         method. The default path is <code>"/spincast/spincast-plugins-pebble/spincastPebbleExtension/validationGroupMessagesTemplate.html"</code> which is
+                         a template fragment provided by Spincast.
+                     </p>
+                </div>
+            </li>
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationClass</span>()</code>
+                <div class="well">
+                     <p>
+                         The <code>validationClass(...)</code> filter checks if there are 
+                         <code>Validation Messages</code> and, if so, it outputs a <em>class name</em>.
+                     </p>
+                     <p>
+                         The default <em>class names</em> are :
+                         
+                         <ul>
+                            <li>
+                                <code><strong>"has-error"</strong></code> : when there is at least one <code><em>Error</em> Validation Message</code>.
+                            </li>
+                            <li>
+                                <code><strong>"has-warning"</strong></code> : when there is at least one <code><em>Warning</em> Validation Message</code>.
+                            </li>
+                            <li>
+                                <code><strong>"has-success"</strong></code> : when there is at least one <code><em>Success</em> Validation Message</code>.
+                            </li>
+                            <li>
+                                <code><strong>"has-no-message"</strong></code> : when there are no <code>Validation Messages</code> at all.
+                            </li>
+                         </ul>
+                     </p>
+                     <p>
+                         For example :
+                         
+                         <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="1,39,1,89|10,35,10,89|15,35,15,89"
+>
+
+&lt;div id="tagsGroup" class="form-group {{validation['demoForm.tags'] | validationClass()}}"&gt;
+
+    &lt;div class="col-sm-4"&gt;
+        &lt;label class="control-label"&gt;Tags *&lt;/label&gt;
+        {{validation['demoForm.tags'] | validationGroupMessages()}}
+    &lt;/div&gt;
+    
+    &lt;div class="col-sm-8"&gt;
+        &lt;input type="text" name="demoForm.tags[0]" 
+               class="form-control {{validation['demoForm.tags[0]'] | validationClass()}}"
+               value="{{demoForm.tags[0] | default('')}}" /&gt;
+        {{validation['demoForm.tags[0]'] | validationMessages()}}
+        
+        &lt;input type="text" name="demoForm.tags[1]" 
+               class="form-control {{validation['demoForm.tags[1]'] | validationClass()}}"
+               value="{{demoForm.tags[1] | default('')}}"&gt;
+        {{validation['demoForm.tags[1]'] | validationMessages()}}
+    &lt;/div&gt;
+&lt;/div&gt;</pre> 
+                            </p>
+                            {% endverbatim %}
+                         </div>
+                     </p>
+                     
+                     The <code>validationClass()</code> filter can be used both on single fields and
+                     on a <em>group of fields</em>. It is up to you to tweak the <code>CSS</code> of your application
+                     so the generated class are used properly.
+                 </div>
+            </li>
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationFresh</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationSubmitted</span>()</code>
+                <div class="well">
+                     <p>
+                         Those two filters are used to determine if a form is displayed for the first time,
+                         or if it has been submitted and is currently redisplayed with 
+                         potential <code>Validation Messages</code>. When one of those filters returns <code>true</code>,
+                         the other necessarily returns <code>false</code>.
+                     </p>
+                     <p>
+                         Most of the time, you are going to use the special 
+                         <code>"_"</code> element, representing the validation as a whole 
+                         (<a href="#validation_to_jsonobject">more info</a>), as the element 
+                         passed to those filters.
+                         For example :
+                         
+                         <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="1,1,1,52|3,1,3,12"
+>
+
+ {% if validation['myForm._'] | validationFresh() %}
+     &lt;div&gt;This form is displayed for the first time!&lt;/div&gt; 
+ {% endif %}
+</pre> 
+                            </p>
+                            {% endverbatim %}
+                         </div>  
+                         and :
+                         <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="1,1,1,56|3,1,3,12"
+>
+
+ {% if validation['myForm._'] | validationSubmitted() %}
+     &lt;div&gt;This form has been validated!&lt;/div&gt; 
+ {% endif %}
+</pre> 
+                            </p>
+                            {% endverbatim %}
+                         </div>  
+                     </p>
+                 </div>
+            </li> 
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationHasErrors</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationHasWarnings</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationHasSuccesses</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationIsValid</span>()</code>
+                <div class="well">
+                     <p>
+                         Those four filters check if there are <code>Validation Messages</code> of a
+                         particular level and return <code>true</code> or <code>false</code>.
+                    </p>
+                     <p>
+                         For example, you could use those filters to determine if you have to display an element 
+                         or not, depending of the result of a validation.
+                     </p>
+                     <p>
+                         <ul>
+                            <li>
+                                <code><strong>validationHasErrors()</strong></code> : returns <code>true</code> if there is at least
+                                one <code><em>Error</em> Validation Message</code>.
+                            </li>
+                            <li>
+                                <code><strong>validationHasWarnings()</strong></code> : returns <code>true</code> if there is at least
+                                one <code><em>Warning</em> Validation Message</code>.
+                            </li>
+                            <li>
+                                <code><strong>validationHasSuccesses()</strong></code> :returns <code>true</code> if there is at least
+                                one <code><em>Success</em> Validation Message</code>.
+                            </li>
+                            <li>
+                                <code><strong>validationIsValid()</strong></code> : returns<code>true</code> if there is 
+                                no <code>Validation Message</code> at all.
+                            </li> 
+                         </ul>
+
+                         For example :
+                         <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="1,1,1,60|3,1,3,12"
+>
+
+ {% if validation['myForm.email'] | validationHasErrors() %}
+     &lt;div&gt;There are errors associated with the email field.&lt;/div&gt; 
+ {% endif %}
+</pre> 
+                            </p>
+                            {% endverbatim %}
+                         </div>
+                     </p>
+                     <p>
+                         <br />
+                         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                         An important thing to know is that you can also use those filters to see if the
+                         form itself, as a whole, contains <code>Validation Messages</code>
+                         at a specific level. To do that, you use the special <code>"_"</code> element representing
+                         the form itself. For example :
+                         
+                         <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="1,1,1,56|3,1,3,12"
+>
+
+ {% if validation['myForm._'] | validationHasErrors() %}
+     &lt;div&gt;The form contains errors!&lt;/div&gt; 
+ {% endif %}
+</pre> 
+                            </p>
+                            {% endverbatim %}
+                         </div>
+                     </p>
+                     <p>
+                         <br />
+                         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                         It is also important to know that those filters will often be used
+                         in association with the <code><em>validationSubmitted(...)</em></code> filter. 
+                         The reason is that when a form is displayed
+                         for the first time, it doesn't contain any <code>Validation Messages</code>, so
+                         the <code>validationIsValid(...)</code> filter will return <code>true</code>. 
+                     </p>
+                     <p>
+                        But if you want to know if the form is valid <em>after having been validated</em>,
+                        then you need to use the <code>validationSubmitted(...)</code> filter too :
+
+                        <div>
+                            {% verbatim %}
+                            <p>
+                                <pre class="ace ace-pebble" data-ace-hi="1,1,1,109|3,1,3,12"
+>
+
+ {% if validation['myForm._'] | validationSubmitted() and validation['myForm.email'] | validationIsValid() %}
+     &lt;div&gt;The email has been validated and is ok!&lt;/div&gt; 
+ {% endif %}
+</pre> 
+                            </p>
+                            {% endverbatim %}
+                         </div>
+                     </p>
+                 </div>
+            </li>
+        </ul>
+    </p>
+    
+    
+
+</section>
+
+
+
+
+            

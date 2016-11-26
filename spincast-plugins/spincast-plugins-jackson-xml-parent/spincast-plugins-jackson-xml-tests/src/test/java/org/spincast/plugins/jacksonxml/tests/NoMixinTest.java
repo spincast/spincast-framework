@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 
 import com.google.inject.Inject;
@@ -12,23 +12,23 @@ import com.google.inject.Inject;
 public class NoMixinTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    IXmlManager xmlManager;
+    XmlManager xmlManager;
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
     @Test
     public void noMixinSerialize() throws Exception {
 
-        IUser user = new User();
+        User user = new UserDefault();
         user.setName("Stromgol");
         user.setAge(123);
         user.setTitle("alien");
 
         String xml = getXmlManager().toXml(user);
         assertNotNull(xml);
-        assertEquals("<User><name>Stromgol</name><age>123</age><title>Title is: alien</title></User>", xml);
+        assertEquals("<UserDefault><name>Stromgol</name><age>123</age><title>Title is: alien</title></UserDefault>", xml);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class NoMixinTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String xml = "<User><name>Stromgol</name><age>123</age><title>alien</title></User>";
 
-        IUser user = getXmlManager().fromXml(xml, User.class);
+        User user = getXmlManager().fromXml(xml, UserDefault.class);
         assertNotNull(user);
         assertEquals("Stromgol", user.getName());
         assertEquals(123, user.getAge());

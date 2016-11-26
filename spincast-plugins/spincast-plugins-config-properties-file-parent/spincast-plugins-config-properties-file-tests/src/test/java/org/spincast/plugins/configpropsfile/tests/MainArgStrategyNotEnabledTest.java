@@ -9,14 +9,14 @@ import java.io.InputStream;
 import javax.annotation.Nullable;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.configpropsfile.IFreeKeyConfig;
-import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
+import org.spincast.plugins.configpropsfile.FreeKeyConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -28,7 +28,7 @@ import com.google.inject.Scopes;
 public class MainArgStrategyNotEnabledTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected IAppConfig appConfig;
+    protected AppConfig appConfig;
 
     protected String appPropertiesPath;
 
@@ -64,17 +64,17 @@ public class MainArgStrategyNotEnabledTest extends SpincastDefaultNoAppIntegrati
         return new String[]{this.appPropertiesPath};
     }
 
-    public static interface IAppConfig extends ISpincastConfig, IFreeKeyConfig {
+    public static interface AppConfig extends SpincastConfig, FreeKeyConfig {
         // ...
 
     }
 
-    public static class PropsFileBasedConfig extends SpincastConfigPropsFileBased implements IAppConfig {
+    public static class PropsFileBasedConfig extends SpincastConfigPropsFileBased implements AppConfig {
 
         @Inject
-        public PropsFileBasedConfig(ISpincastUtils spincastUtils,
+        public PropsFileBasedConfig(SpincastUtils spincastUtils,
                                     @MainArgs @Nullable String[] mainArgs,
-                                    @Nullable ISpincastConfigPropsFileBasedConfig pluginConfig) {
+                                    @Nullable SpincastConfigPropsFileBasedConfig pluginConfig) {
             super(spincastUtils, mainArgs, pluginConfig);
         }
     }
@@ -91,12 +91,12 @@ public class MainArgStrategyNotEnabledTest extends SpincastDefaultNoAppIntegrati
             @Override
             protected void configure() {
                 super.configure();
-                bind(IAppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
+                bind(AppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
             }
         };
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 

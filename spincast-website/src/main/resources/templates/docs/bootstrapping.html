@@ -10,13 +10,15 @@ Docs : "bootstrapping"
     
     <p>
         The flexibility that Guice allows means that there are <em>many</em> ways
-        of structuring your application, and that can be confusing! We'll show you some examples, but once you understand
+        of structuring your application, and that can be confusing at first.
+        We'll show you some ways of doing it, but once you understand
         the basics, you could very well invent your own structure...
     </p> 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Note that, except if specified otherwise, the following examples all use <code>SpincastDefaultGuiceModule</code>,
-        so this Maven artifact must be added to your project:
+        Note that, except if specified otherwise, the following examples all use 
+        the default Guice module, <code><em>SpincastDefaultGuiceModule</em></code>,
+        so this Maven artifact must be added to your project :
     </p> 
     <p>
         <div>
@@ -24,7 +26,7 @@ Docs : "bootstrapping"
 >&lt;dependency>
     &lt;groupId>org.spincast&lt;/groupId>
     &lt;artifactId>spincast-default&lt;/artifactId>
-    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre>
         </div>
     </p>
@@ -51,16 +53,16 @@ Docs : "bootstrapping"
 
         Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
 
-        IDefaultRouter router = guice.getInstance(IDefaultRouter.class);
-        router.GET("/").save(new IDefaultHandler() {
+        DefaultRouter router = guice.getInstance(DefaultRouter.class);
+        router.GET("/").save(new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("In index!");
             }
         });
 
-        IServer server = guice.getInstance(IServer.class);
+        Server server = guice.getInstance(Server.class);
         server.start();
     }
 }</pre> 
@@ -70,11 +72,12 @@ Docs : "bootstrapping"
                     <ul>
                         <li>
                             <span class="code-line-nbr">5</span> : We create the Guice context using the provided
-                            <code>SpincastDefaultGuiceModule</code> module. This will bind a default implementation
+                            <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a> module. 
+                            This will bind a default implementation
                             for all the required components.
                         </li>
                         <li>
-                            <span class="code-line-nbr">7</span> : We get the router from the Guice context.
+                            <span class="code-line-nbr">7</span> : We get the Router from the Guice context.
                         </li>
                         <li>
                             <span class="code-line-nbr">8-14</span> : We add a <code>GET</code> route for the <code>"/"</code> index page.
@@ -82,7 +85,7 @@ Docs : "bootstrapping"
                             <code>lambdas</code> or <code>method handlers</code> too.
                         </li>
                         <li>
-                            <span class="code-line-nbr">16-17</span> : We get the server instance from the Guice context and
+                            <span class="code-line-nbr">16-17</span> : We get the Server instance from the Guice context and
                             we start it!
                         </li>
                     </ul>
@@ -100,8 +103,8 @@ Docs : "bootstrapping"
             The main class used as the bootstrapping class
         </h4>
         <p>
-            In this second example, instead of retrieving the router and
-            the server from the Guice context, we let Guice inject them inside
+            In this second example, instead of retrieving the Router and
+            the Server from the Guice context, we let Guice inject them inside
             our <code>App</code> class. The <code>App</code> class is, in other words, 
             now part of the Guice context!
         </p>
@@ -125,21 +128,21 @@ Docs : "bootstrapping"
         app.start();
     }
 
-    private final IServer server;
-    private final IDefaultRouter router;
+    private final Server server;
+    private final DefaultRouter router;
 
     @Inject
-    public App(IServer server, IDefaultRouter router) {
+    public App(Server server, DefaultRouter router) {
         this.server = server;
         this.router = router;
     }
 
     public void start() {
 
-        this.router.GET("/").save(new IDefaultHandler() {
+        this.router.GET("/").save(new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("In index!");
             }
         });
@@ -167,10 +170,10 @@ Docs : "bootstrapping"
                             We get the <code>App</code> instance from Guice and we call the
                             <code>start()</code> method on it! Since the <code>App</code> instance
                             is now managed by Guice, the required dependencies will be injected automatically
-                            and there is no need to manually retrieve the server or the router from Guice anymore.
+                            and there is no need to manually retrieve the Server or the Router from Guice anymore.
                         </li>
                         <li>
-                            <span class="code-line-nbr">21-25</span> : The contructor
+                            <span class="code-line-nbr">21-25</span> : The constructor
                             that Guice will use (Note the <code>@Inject</code> annotation).
                         </li>
                         <li>
@@ -178,11 +181,11 @@ Docs : "bootstrapping"
                             we call once the Guice context is created.  
                         </li>
                         <li>
-                            <span class="code-line-nbr">29-34</span> : We add a <code>GET</code> route for the <code>"/"</code> index page,
-                            here again using an inline handler.
+                            <span class="code-line-nbr">29-34</span> : We add a <code>GET</code> Route for the <code>"/"</code> index page,
+                            here again using an inline Route Handler.
                         </li>
                         <li>
-                           <span class="code-line-nbr">37</span> : We start the server.
+                           <span class="code-line-nbr">37</span> : We start the Server.
                         </li>
                     </ul>
                 </p>
@@ -214,12 +217,12 @@ Docs : "bootstrapping"
 
                 <pre class="ace ace-java"
 >// The interface
-public interface IAppConfig extends ISpincastConfig {
+public interface AppConfig extends SpincastConfig {
     public String getAppName();
 }
 
 // The implementation
-public class AppConfig extends SpincastConfig implements IAppConfig {
+public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
 
     @Override
     public int getHttpServerPort() {
@@ -237,7 +240,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     <ul>
                         <li>
                             <span class="code-line-nbr">2</span> : We define an interface for our custom configurations.
-                            We make this interface extend <code>ISpincastConfig</code> because we're going to use it
+                            We make this interface extend <code>SpincastConfig</code> because we're going to use it
                             not only to <em>add</em> new configurations, but also to <em>override</em> some 
                             default Spincast configurations.  
                         </li>
@@ -247,9 +250,9 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                             at runtime.
                         </li>
                         <li>
-                            <span class="code-line-nbr">7</span> : The <code>AppConfig</code> implementation class. We
-                            extend the default <code>SpincastConfig</code>, to start with the default configurations, but 
-                            of course we also implement our custom <code>IAppConfig</code> interface.
+                            <span class="code-line-nbr">7</span> : The <code>AppConfigDefault</code> implementation class. We
+                            extend the default <code>SpincastConfigDefault</code>, to start with the default configurations, but 
+                            of course we also implement our custom <code>AppConfig</code> interface.
                         </li>
                         <li>
                             <span class="code-line-nbr">9-12</span> : Here, we override a default Spincast configuration : we change
@@ -284,8 +287,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         super.configure();
 
         bind(App.class).in(Scopes.SINGLETON);
-        bind(AppConfig.class).in(Scopes.SINGLETON);
-        bind(IAppConfig.class).to(AppConfig.class).in(Scopes.SINGLETON);
+        bind(AppConfigDefault.class).in(Scopes.SINGLETON);
+        bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
 
         // Here you would also bind your other components : controllers, services, etc.
     }
@@ -300,8 +303,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                                                     getWebsocketContextType()) {
 
             @Override
-            protected Class&lt;? extends ISpincastConfig&gt; getSpincastConfigImplClass() {
-                return AppConfig.class;
+            protected Class&lt;? extends SpincastConfig&gt; getSpincastConfigImplClass() {
+                return AppConfigDefault.class;
             }
         });
     }
@@ -329,8 +332,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                         </li>
                         <li>
                             <span class="code-line-nbr">12-13</span> : We bind our app specific configurations. Since our implementation
-                            class, <code>AppConfig</code>, will be used by two different interfaces, <code>IAppConfig</code> and
-                            <code>ISpincastConfig</code>, we have to bind it as a singleton 
+                            class, <code>AppConfigDefault</code>, will be used by two different interfaces, <code>AppConfig</code> and
+                            <code>SpincastConfig</code>, we have to bind it itself as a singleton 
                             (<a href="https://github.com/google/guice/wiki/Scopes#applying-scopes">more info</a>).
                         </li>
                         <li>
@@ -339,7 +342,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                         </li>
                         <li>
                             <span class="code-line-nbr">22-32</span> : Since we want Spincast to use our <em>custom</em>
-                            class, <code>AppConfig</code>, as the implementation for the <code>ISpincastConfig</code> interface, 
+                            class, <code>AppConfigDefault</code>, as the implementation for the <code>SpincastConfig</code> interface, 
                             we need to override that binding! There
                             are a couple of ways to do this, but here we're going to override the
                             <code>SpincastConfigPluginGuiceModule</code> module installation, <em>inline</em>. You could also
@@ -366,26 +369,26 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         app.start();
     }
 
-    private final IServer server;
-    private final IDefaultRouter router;
-    private final IAppConfig config;
+    private final Server server;
+    private final DefaultRouter router;
+    private final AppConfig config;
 
     @Inject
-    public App(IServer server, IDefaultRouter router, IAppConfig config) {
+    public App(Server server, DefaultRouter router, AppConfig config) {
         this.server = server;
         this.router = router;
         this.config = config;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IDefaultRouter getRouter() {
+    protected DefaultRouter getRouter() {
         return this.router;
     }
 
-    protected IAppConfig getConfig() {
+    protected AppConfig getConfig() {
         return this.config;
     }
 
@@ -415,8 +418,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 	                    </li>
 	                    <li>
 	                        <span class="code-line-nbr">15-20</span> : In the constructor, we 
-	                        ask Guice to inject a <code>IAppConfig</code> instance, in addition to the
-	                        <code>server</code> and <code>router</code>.
+	                        ask Guice to inject a <code>AppConfig</code> instance, in addition to the
+	                        <code>Server</code> and <code>Router</code>.
 	                    </li>
 	                    <li>
 	                        <span class="code-line-nbr">22-32</span> : Let's use <code>getters</code> in this
@@ -431,7 +434,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 	                        page. Here, for the handler, we use a Java 8's <code>lambda</code>.
 	                    </li>
 	                    <li>
-	                        <span class="code-line-nbr">38</span> : In the route handler, we can now access
+	                        <span class="code-line-nbr">38</span> : In the <code>Route Handler</code>, we can now access
 	                        our new configuration method <code>getAppName()</code>!
 	                    </li>
 	                    <li>
@@ -439,7 +442,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 	                        method that we overrided in our custom configuration implementation class.
 	                    </li>
 	                    <li>
-	                        <span class="code-line-nbr">42</span> : We start the server. The server will start on
+	                        <span class="code-line-nbr">42</span> : We start the Server. The Server will start on
 	                        port <code>8042</code>.
 	                    </li>
 	                </ul>
@@ -471,7 +474,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     <br />
                     
                     <pre class="ace ace-java"
->public class AppConfig extends SpincastConfig {
+>public class AppConfigDefault extends SpincastConfigDefault {
     
     @Override
     public int getHttpServerPort() {
@@ -483,7 +486,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     <span class="explanation">Explanation :</span>
                     <ul>
                         <li>
-                            <span class="code-line-nbr">1</span> : Our custom class extends <code>SpincastConfig</code>
+                            <span class="code-line-nbr">1</span> : Our custom class extends <code>SpincastConfigDefault</code>
                             since we want to keep the defaut configurations and only change the <code>port</code> the server 
                             will use.
                         </li>
@@ -508,7 +511,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
     protected void configure() {
         
         bind(App.class).in(Scopes.SINGLETON);
-        bind(ISpincastConfig.class).to(AppConfig.class).in(Scopes.SINGLETON); 
+        bind(SpincastConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON); 
         
         // Here you would also bind your other components : controllers, services, etc.
     }
@@ -525,8 +528,8 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                             <span class="code-line-nbr">6</span> : We bind our <code>App</code> class (listed below).
                         </li>
                         <li>
-                            <span class="code-line-nbr">7</span> : We bind the <code>ISpincastConfig</code> interface
-                            to our custom <code>AppConfig</code> implementation. This is going to override the 
+                            <span class="code-line-nbr">7</span> : We bind the <code>SpincastConfig</code> interface
+                            to our custom <code>AppConfigDefault</code> implementation. This is going to override the 
                             default binding.
                         </li>
                         <li>
@@ -558,21 +561,21 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         app.start();
     }
 
-    private final IServer server;
-    private final IDefaultRouter router;
+    private final Server server;
+    private final DefaultRouter router;
 
     @Inject
-    public App(IServer server, IDefaultRouter router) {
+    public App(Server server, DefaultRouter router) {
         this.server = server;
         this.router = router;
     }
 
     public void start() {
 
-        this.router.GET("/").save(new IDefaultHandler() {
+        this.router.GET("/").save(new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("In index!");
             }
         });
@@ -614,16 +617,16 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             pick/invent one you are comfortable with.
         </p>
         <p>
-            Here, we'll use the <code>App</code> class not only as the bootstrapping
-            class, but as the <code>ISpincastConfig</code> implementation too! This will
-            make it easier to override default configurations.
+            In the following example, the <code>App</code> class not only acts as the bootstrapping
+            class, but as the <code>SpincastConfig</code> implementation too! This will
+            make it easy to override some default configurations.
         </p>
         <p>
             <div>
                 <p>
                     
                 <pre class="ace ace-java"
->public class App extends SpincastConfig {
+>public class App extends SpincastConfigDefault {
 
     public static void main(String[] args) {
 
@@ -633,22 +636,22 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         app.start();
     }
 
-    private final IServer server;
-    private final IDefaultRouter router;
+    private final Server server;
+    private final DefaultRouter router;
 
     @Inject
-    public App(IServer server,
-               IDefaultRouter router) {
+    public App(Server server,
+               DefaultRouter router) {
         super();
         this.server = server;
         this.router = router;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IDefaultRouter getRouter() {
+    protected DefaultRouter getRouter() {
         return this.router;
     }
 
@@ -659,10 +662,10 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 
     public void start() {
 
-        getRouter().GET("/").save(new IDefaultHandler() {
+        getRouter().GET("/").save(new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("In Index!");
             }
         });
@@ -676,7 +679,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     <ul>
                         <li>
                             <span class="code-line-nbr">1</span> : Our <code>App</code> 
-                            class extends <code>SpincastConfig</code> : it will be
+                            class extends <code>SpincastConfigDefault</code> : it will be
                             the implementation class for the configurations.
                         </li>
                         <li>
@@ -725,7 +728,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                                                     getWebsocketContextType()) {
 
             @Override
-            protected Class&lt;? extends ISpincastConfig&gt; getSpincastConfigImplClass() {
+            protected Class&lt;? extends SpincastConfig&gt; getSpincastConfigImplClass() {
                 return App.class;
             }
         });
@@ -742,7 +745,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                         <li>
                             <span class="code-line-nbr">16-26</span> : We override the installation of the
                             <code>SpincastConfigPluginGuiceModule</code> module, so our <code>App</code> class
-                            is used as the implementation for the <code>ISpincastConfig</code> interface. 
+                            is used as the implementation for the <code>SpincastConfig</code> interface. 
                         </li>
                     </ul>
                 </p>  
@@ -766,16 +769,16 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             Here's a quick example of what this could look like.
         <p>
         <p>
-            Let's start with a "<code>IUserController</code>" controller responsible for 
+            Let's start with a "<code>UserController</code>" controller responsible for 
             handling <code>users</code> related requests:
         </p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public interface IUserController {
+>public interface UserController {
 
-    // Route handler to get a user as Json
-    public void getUser(IDefaultRequestContext context);
+    // Route Handler to get a User as Json
+    public void getUser(DefaultRequestContext context);
     
     // ...
 }</pre>
@@ -784,34 +787,34 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Here's a possible implementation for this controller. Note that
-            we inject an <code>"IUserService"</code> <em>service</em>, and we use it
-            to actually get the user from our system. The implementation of this service
-            is not important in this example...
+            we inject an "UserService" service object, and we use it
+            to get the user from our system (the actual implementation of this service
+            is not important in this example) :
         </p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public class UserController implements IUserController {
+>public class UserControllerDefault implements UserController {
 
-    private final IUserService userService;
+    private final UserService userService;
 
     @Inject
-    public UserController(IUserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    protected IUserService getUserService() {
+    protected UserService getUserService() {
         return this.userService;
     }
 
     @Override
-    public void getUser(IDefaultRequestContext context) {
+    public void getUser(DefaultRequestContext context) {
 
         String userId = context.request().getPathParam("userId");
 
-        IUser user = getUserService().getUser(userId);
+        User user = getUserService().getUser(userId);
 
-        context.response().sendJsonObj(user);
+        context.response().sendJson(user);
     }
 }</pre>
             </p>
@@ -820,38 +823,38 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                 <ul>
                     <li>
                         <span class="code-line-nbr">5-8</span> : In the constructor, we inject
-                        the required <code>IUserService</code> service.
+                        the required <code>UserService</code> service.
                     </li>
                     <li>
-                        <span class="code-line-nbr">15</span> : We implement our <code>route handler</code>.
+                        <span class="code-line-nbr">15</span> : We implement our <code>Route Handler</code>.
                     </li>
                     <li>
                         <span class="code-line-nbr">17</span> : We get the <code>userId</code> value from 
                         the request. As we'll see, this user id will be part of the 
-                        route <code>path</code>.
+                        path from the Route.
                     </li>
                     <li>
                         <span class="code-line-nbr">19</span> : We use the injected <code>service</code> to get
-                        the user from our system. Note that this <code>service</code> would probably use a
-                        <code>repository</code> to access a data source where the users
+                        the user from our system. Note that this <code>service</code> could itself uses a
+                        <code>repository</code> object to access a data source where the users
                         information is stored.
                     </li>
                     <li>
-                        <span class="code-line-nbr">21</span> : We use the <code>response()</code>
-                        add-on, and more specifically its <code>sendJsonObj(...)</code> method, to serialize
-                        the user to <code>Json</code> and return the result as the response.
+                        <span class="code-line-nbr">21</span> : We send the user as
+                        <code>Json</code>. The user object will be serialized and sent using the
+                        <code>"application/json"</code> content-type.
                     </li>
-                    
                 </ul>
             </p>   
         </div>
         <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             As in the previous examples, let's once again define our routes directly in the <code>App</code> class
-            (this is not <em>required</em>, by the way! You can inject the <code>router</code> anywhere to add
+            (this is not <em>required</em>, by the way! You can 
+            <a href="#router_dynamic">inject the Router anywhere</a> to add
             routes to it...). 
-            But this time, instead of defining the logic of our <code>route handlers</code> inline, we're going
-            to use our <code>controller</code>.
+            But this time, instead of defining our <code>Route Handlers</code> inline, we're going
+            to do it inside our <code>Controller</code> :
         </p>
         <div>
             <p>
@@ -866,26 +869,26 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         app.start();
     }
 
-    private final IServer server;
-    private final IDefaultRouter router;
-    private final IUserController userController;
+    private final Server server;
+    private final DefaultRouter router;
+    private final UserController userController;
 
     @Inject
-    public App(IServer server, IDefaultRouter router, IUserController userController) {
+    public App(Server server, DefaultRouter router, UserController userController) {
         this.server = server;
         this.router = router;
         this.userController = userController;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IDefaultRouter getRouter() {
+    protected DefaultRouter getRouter() {
         return this.router;
     }
 
-    protected IUserController getUserController() {
+    protected UserController getUserController() {
         return this.userController;
     }
 
@@ -901,16 +904,16 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                 <span class="explanation">Explanation :</span>
                 <ul>
                     <li>
-                        <span class="code-line-nbr">16</span> : We inject our <code>controller</code>
+                        <span class="code-line-nbr">16</span> : We inject our <code>Controller</code>
                         in the constructor.
                     </li>
                     <li>
-                        <span class="code-line-nbr">36</span> : We define a <code>"/users/${userId}"</code> route which 
-                        contains a <code><a href="#dynamic_parameters">dynamic parameter</a></code>:
-                        "<code>userId</code>". Instead of defining the logic of our handler <em>inline</em>, we
-                        use a Java 8's <code>method handler</code> pointing to
-                        the <code>getUser(...)</code> route handler of our <code>IUserController</code>
-                        controller!
+                        <span class="code-line-nbr">36</span> : We define a <code>"/users/${userId}"</code> Route which 
+                        contains a <a href="#dynamic_parameters">dynamic parameter</a> :
+                        "<code>userId</code>". Instead of defining our Route Handler <em>inline</em>, we
+                        use a Java 8's <code>method handler</code> to point to
+                        the <code>getUser(...)</code> Route Handler of our <code>UserController</code>
+                        controller.
                     </li>
                     
                 </ul>
@@ -934,16 +937,17 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         super.configure();
 
         bind(App.class).in(Scopes.SINGLETON);
-        bind(IUserController.class).to(UserController.class).in(Scopes.SINGLETON);
-        bind(IUserService.class).to(UserService.class).in(Scopes.SINGLETON);
+        bind(UserController.class).to(UserControllerDefault.class).in(Scopes.SINGLETON);
+        bind(UserService.class).to(UserServiceDefault.class).in(Scopes.SINGLETON);
     }
 }</pre>
             </p>
         </div>
         <p>
-            This last example represents what we think is a good architecture to start
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            This example represents what we think is a good architecture to start
             a real life Spincast application. The only modification we would also recommend, is
-            to use a <em>custom</em> <code>request context</code> type instead of the default one.
+            to use a <em>custom</em> <code>Request Context</code> type instead of the default one.
             Learn how to do this in <a href="#request_context">The Request Context</a> section!
         </p>
     </div>
@@ -958,20 +962,18 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
         </h4>
         <p>
             In all of the previous examples, we have been using
-            the <code>spincast-default</code> Maven artifact, so a default
-            implementation is bound for all the required components.
+            the <code>"spincast-default"</code> Maven artifact, so a default
+            implementation is automatically bound for all the required components.
         </p> 
         <p>
-            By adding those default implementations, <code>spincast-default</code> also
+            By adding those default implementations, <code>"spincast-default"</code> also
             add <em>transitive dependencies</em>. For example, dependencies for some 
-            <code><a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a></code> artifacts
+            <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a> artifacts
             are added by the default 
             <a href="/plugins/spincast-jackson-json">Spincast Jackson Json</a> plugin. Those
-            dependencies may conflict with other dependencies you want to use in your application.
-            This is a situation where you may want to start with the <code><em>core</em></code> directly,
-            without any default implementations.
-        </p>   
-        <p> 
+            dependencies may conflict with other dependencies you use in your application.
+            This is a situation where you may want to start with the <code><em>"spincast-core"</em></code> 
+            artifact directly, instead of the default one.
             You may also want to start from scratch to have very fine control over what the resulting application will
             contain, to reduce the size of the application, etc.
         </p> 
@@ -979,21 +981,22 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             <div>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    To start a Spincast application from scratch, start with the <code>spincast-core</code> Maven artifact instead 
-                    of <code>spincast-default</code>:
+                    To start a Spincast application from scratch, start with the <code>"spincast-core"</code> Maven artifact instead 
+                    of <code>"spincast-default"</code>:
                     <br />
-                    <pre class="ace ace-xml" 
+                    <pre class="ace ace-xml" data-ace-hi="2,16,2,29"
 >&lt;dependency>
     &lt;groupId>org.spincast&lt;/groupId>
     &lt;artifactId>spincast-core&lt;/artifactId>
-    &lt;version>{{spincastCurrrentVersion}}&lt;/version>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre>
                 </p>
             </div>
         </p> 
         <p>
             Doing so, you start with the <code>core</code> code but you need to provide an implementation
-            for all the required components, by yourself! You generaly do so by choosing and installing
+            for all the required components, by yourself. You generaly provide those
+            implementations by choosing and installing
             some <a href="/plugins">plugins</a>: you add their artifacts to your project
             and you install their Guice modules.
         </p>
@@ -1001,20 +1004,22 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
             <div>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    For example, to provide an implementation for the <code>IServer</code> 
-                    and for the <code>ITemplatingEngine</code> components, you could use:
+                    For example, to provide an implementation for the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html"><code>Server</code></a> 
+                    and for the <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html"><code>TemplatingEngine</code></a> 
+                    components, you could use:
                     
                     <pre class="ace ace-xml" 
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-undertow&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;
 
 &lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-pebble&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;
 
 // ...
@@ -1028,7 +1033,7 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     And then install their Guice modules:
                     
-                    <pre class="ace ace-java" data-ace-hi="10,8,10,100|11,8,11,100|12,8,12,100|13,8,13,100"
+                    <pre class="ace ace-java" data-ace-hi="10,8,10,100|11,8,11,100|13,8,13,100|14,8,14,100"
 >public class AppModule extends SpincastCoreGuiceModule {
 
     public AppModule(String[] mainArgs) {
@@ -1041,8 +1046,10 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
 
         install(new SpincastUndertowPluginGuiceModule(getRequestContextType(), 
                                                       getWebsocketContextType()));
+                                                      
         install(new SpincastPebblePluginGuiceModule(getRequestContextType(), 
                                                     getWebsocketContextType()));
+        
         // ...
     }
 }</pre>
@@ -1056,7 +1063,12 @@ public class AppConfig extends SpincastConfig implements IAppConfig {
                     If you fail to provide an implementation for a required component,
                     you will get this kind of error when trying to start the application:
                     
-                    <pre class="language-error">1) No implementation for org.spincast.server.IServer was bound.</pre>    
+                    <div>
+                        <p>
+                            <pre class="ace ace-text"
+>&gt; ERROR - No implementation for org.spincast.server.Server was bound.</pre>
+                        </p> 
+                    </div> 
                 </p>
             </div>   
         </div>

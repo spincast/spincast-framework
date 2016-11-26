@@ -3,7 +3,7 @@ Spincast Templating Addon plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-templating-addon{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-templating-addon{% endblock %}
 {% block meta_title %}Plugins - Spincast Templating Addon{% endblock %}
 {% block meta_description %}Spincast Templating Addon plugin{% endblock %}
 
@@ -30,17 +30,17 @@ Spincast Templating Addon plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
+        <div class="col-xs-12"> 
             <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Templating Addon <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/templatingaddon/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/templatingaddon/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -54,31 +54,68 @@ Spincast Templating Addon plugin
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#request_context_addon">The request context add-on</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#request_context_example">Quick Example</a></li>
-                    </ul>
-                </li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
+                <p>
+                    This plugin provides an implementation for the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingRequestContextAddon.html">TemplatingRequestContextAddon</a> 
+                    Request Context <code>add-on</code> : 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/templatingaddon/SpincastTemplatingRequestContextAddon.html">SpincastTemplatingRequestContextAddon</a>.
+                    It allows a <code>Route Handler</code> to easily access templating functionalities. It is mounted as 
+                    <code>.templating()</code> on the default Spincast Request Context. 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Make sure you read the section dedicated to the <a href="/documentation#templating_engine">Templating Engine</a> for more information.
+                </p>
+                
+            </section>
+            
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
 	            <p>
-                    The <code>Spincast Templating Addon</code> plugin provides a request context <code>add-on</code>:
-                    "<code>ITemplatingRequestContextAddon</code>". This add-on allows your <code>route handlers</code> to 
-                    easily access templating functionalities. It is mounted as <code>.templating()</code>
-                    on the default Spincast request context. 
+	                <ul>
+                        <li>
+                            Using the <code>.templating()</code> add-on to evaluate a template 
+                            using some parameters :
+                            
+                            {% verbatim %}
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java" data-ace-hi="5,25,5,38"
+>public void myHandler(AppRequestContext context) {
+
+    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+    params.put("name", "Stromgol");
+
+    String html = context.templating().evaluate("&lt;h1&gt;Hi {{name}}!&lt;/h1&gt;", params);
+    System.out.println(html); // &lt;h1&gt;Hi Stromgol!&lt;/h1&gt;
+}</pre>
+                                </p>
+                            </div> 
+                            {% endverbatim %}
+                        </li>
+                        
+                    </ul>
 	            </p>
             </section>
+            
+            
             
 	        <section id="installation">
                 <h3>
@@ -99,7 +136,7 @@ Spincast Templating Addon plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-templating-addon&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -112,8 +149,8 @@ Spincast Templating Addon plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastTemplatingAddonPluginGuiceModule(IAppRequestContext.class, 
-                                                     IAppWebsocketContext.class)
+        new SpincastTemplatingAddonPluginGuiceModule(AppRequestContext.class, 
+                                                     AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -141,40 +178,27 @@ Spincast Templating Addon plugin
 	            </p>
             </section>
             
-            <section id="request_context_addon">
+            
+            <section id="javadoc">
                 <h3>
-                    <a class="anchor" href="#request_context_addon" title="permanent link"></a>
-                    The request context add-on
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
-                    The add-on returns a <code class="block">ITemplatingEngine</code> instance. Look at the
-                    <a href="/plugins/spincast-pebble#templatingengine">The ITemplatingEngine interface</a> section
-                    of the <code>Spincast Pebble</code> plugin (the default implementation of <code>ITemplatingEngine</code>) for a list of 
-                    methods available on this object!
-                </p>
-	            <div id="request_context_example">
-		            <p>
-		                <div>
-		                    <p>
-		                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
-		                        {% verbatim %}<pre class="ace ace-java" data-ace-hi="5,25,5,38"
->public void myHandler(IAppRequestContext context) {
-
-    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-    params.put("name", "Stromgol");
-
-    String html = context.templating().evaluate("&lt;h1&gt;Hi {{name}}!&lt;/h1&gt;", params);
-    System.out.println(html); // &lt;h1&gt;Hi Stromgol!&lt;/h1&gt;
-}</pre>{% endverbatim %}
-		                    </p>
-		                </div>
-		            </p>
-	            </div>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingRequestContextAddon.html">TemplatingRequestContextAddon</a> 
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a> 
+                        </li>
+                    </ul>
+                </p> 
             </section>
+            
             
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

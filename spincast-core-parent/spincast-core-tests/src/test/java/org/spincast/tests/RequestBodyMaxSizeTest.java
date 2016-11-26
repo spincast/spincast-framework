@@ -3,13 +3,13 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.SpincastTestConfig;
 
@@ -33,7 +33,7 @@ public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestB
         return new SpincastDefaultTestingModule() {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
+            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
                 return TestingSpincastConfig2.class;
             }
         };
@@ -42,15 +42,15 @@ public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void get() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -60,15 +60,15 @@ public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void postSmall() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/one").setEntityString("1234567890", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -78,10 +78,10 @@ public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void postTooBig() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response()
                        .sendPlainText("ok sdfsdasdasdfsd453sfsdf 3fdgdfawdgdfg 23423asdfsd453sfsdf " +
                                       "3fdgdfgdfasdfwersd453sfsdf 3fdgdfgdfasdfsd453sfsdf 3fdgdfgdf4ertertert453 3fdgdfgdfg " +
@@ -89,7 +89,7 @@ public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestB
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/one").setEntityString("12345678901", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
         assertEquals(HttpStatus.SC_REQUEST_TOO_LONG, response.getStatus());
     }

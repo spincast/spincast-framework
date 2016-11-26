@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.jacksonxml.IXmlMixinInfo;
 import org.spincast.plugins.jacksonxml.XmlMixinInfo;
+import org.spincast.plugins.jacksonxml.XmlMixinInfoDefault;
 import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,16 +20,16 @@ import com.google.inject.multibindings.Multibinder;
 public class IgnorePropertyMixinTest extends SpincastTestBase {
 
     @Inject
-    IXmlManager xmlManager;
+    XmlManager xmlManager;
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
     /**
-     * Our IUser mixin
+     * Our User mixin
      */
-    public static abstract class IUserMixin implements IUser {
+    public static abstract class UserMixin implements User {
 
         //==========================================
         // Ignore this property!
@@ -65,8 +65,8 @@ public class IgnorePropertyMixinTest extends SpincastTestBase {
             //==========================================
             protected void bindXmlMixins() {
 
-                Multibinder<IXmlMixinInfo> xmlMixinsBinder = Multibinder.newSetBinder(binder(), IXmlMixinInfo.class);
-                xmlMixinsBinder.addBinding().toInstance(new XmlMixinInfo(IUser.class, IUserMixin.class));
+                Multibinder<XmlMixinInfo> xmlMixinsBinder = Multibinder.newSetBinder(binder(), XmlMixinInfo.class);
+                xmlMixinsBinder.addBinding().toInstance(new XmlMixinInfoDefault(User.class, UserMixin.class));
             }
         };
     }
@@ -74,14 +74,14 @@ public class IgnorePropertyMixinTest extends SpincastTestBase {
     @Test
     public void mixinIgnoreProperty() throws Exception {
 
-        IUser user = new User();
+        User user = new UserDefault();
         user.setName("Stromgol");
         user.setAge(123);
         user.setTitle("alien");
 
         String xml = getXmlManager().toXml(user);
         assertNotNull(xml);
-        assertEquals("<User><age>123</age></User>", xml);
+        assertEquals("<UserDefault><age>123</age></UserDefault>", xml);
 
     }
 

@@ -1,0 +1,879 @@
+{#==========================================
+Demos - HTML Forms - Multiple Fields
+==========================================#}
+{% extends "../htmlForms.html" %}
+
+{% block demoSectionClasses %}demo_html_forms_multiple{% endblock %}
+{% block meta_title %}Demos - HTML Forms - Multiple Fields{% endblock %}
+{% block meta_description %}Multiple Fields HTML Forms with complex validation demo{% endblock %}
+
+{% set demoId = "multiple" %}
+
+{% block scripts %}
+
+<script>
+
+    $(function() {
+        
+        $("a.tryIt").css("display", "block");
+        $("a.tryItFixed").css("display", "block");
+        
+        $("#fillEmailSame").on("click", function() {
+            $("#email").val("test@example.com");
+            $("#emailAgain").val("test@example.com");
+            return false;
+        });
+        
+        $("#fillEmailDifferent").on("click", function() {
+            $("#email").val("test@example.com");
+            $("#emailAgain").val("another@example.com");
+            return false;
+        });
+        
+        $("#fillTags").on("click", function() {
+            $("#tag1").val("blue");
+            $("#tag2").val("red");
+            $("#tag3").val("yellow");
+            return false;
+        });
+    }); 
+    
+</script>
+{% endblock %}
+
+{% block demoBody %}
+
+<h4>
+    <a class="anchor_small" href="#form" id="form" title="permanent link"></a>
+    Multiple Fields / Complex validation
+</h4>
+
+<div id="htmlFormDemosWarning" class="well">
+    <p>
+        <strong>Please note</strong> : 
+        <ul>
+            <li>
+                When you're done playing with the form, 
+                make sure you scroll to the <a href="#code">How-To</a> below the form, a quick tutorial will
+                show you how the demo works.
+            </li>
+            <li>
+                There is <em>no</em> client-side validation in this demo. It's on
+                purpose since we want
+                to demonstrate how <em>server-side</em> validation works and how the
+                <a href="/documentation#validation_messages">Validation Messages</a> can be displayed. 
+            </li>
+            <li>
+                The demo is fully functional even when javascript is disabled.
+            </li>
+        </ul> 
+    </p>
+</div>
+
+<p>
+    Here, we're going to look at more complex validation, where many different types of fields are validated,
+    and where the validity of some fields
+    depends on the value of <em>other</em> fields.
+</p>
+<p>
+    Enter any valid or invalid inputs in the following form and submit it to see
+    the validations in action!
+</p>
+<p>
+    You can also try the tests suggested on the right...
+</p>
+
+<div class="row tallTop">     
+    <div class="col-sm-12">
+
+        <form class="form-horizontal" action="#form" method="post" novalidate="novalidate" accept-charset="UTF-8">
+
+            {% if validation._ | validationSubmitted()%}
+            
+                {% if validation._ | validationHasErrors() %}
+                    {% set alertClass = "alert-danger" %}
+                    {% set status = "contains errors" %}
+                    
+                {% elseif validation._ | validationHasWarnings() %}
+                    {% set alertClass = "alert-warning" %}
+                    {% set status = "contains warnings" %}
+                    
+                {% elseif validation._ | validationIsValid() %}
+                    {% set alertClass = "alert-success" %}
+                    {% set status = "is valid" %} 
+                {% endif %}
+            
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="alert {{alertClass}}">
+                            <img src="/public/images/icons/info2.png" /> The Form <strong>{{status}}</strong> 
+                        </div>
+                    </div>
+                </div> 
+            {% endif %}
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row form-group {{validation['demoForm.email'] | validationClass()}}">
+                        <label for="email" class="col-sm-4 control-label">Email *</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="email" name="demoForm.email" placeholder="Email"
+                            value="{{demoForm.email | default('')}}" />
+                            {{validation['demoForm.email'] | validationMessages()}}   
+                        </div>
+                    </div>
+                    <div class="row shortTop form-group {{validation['demoForm.emailAgain'] | validationClass()}}">
+                        <label for="emailAgain" class="col-sm-4 control-label">Email Again *</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="emailAgain" name="demoForm.emailAgain" placeholder="Email Again"
+                            value="{{demoForm.emailAgain | default('')}}" />
+                            {{validation['demoForm.emailAgain'] | validationMessages()}}   
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                        
+                            <span class="validationsTitle">Validations to test :</span>
+                            <ul class="list-group validations">
+                            
+                                <li class="list-group-item">
+                                    The values of the two email fields must match. The second field will be invalid if
+                                    its doesn't match the first one.
+                                    <a href="#" class="tryIt btn btn-default btn-xs" id="fillEmailSame">Fill with the same email</a>
+                                    <a href="#" class="tryIt btn btn-default btn-xs" id="fillEmailDifferent">Fill with different emails</a>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tagsGroup" class="form-group {{validation['demoForm.tags'] | validationClass()}}">
+
+                <div class="col-sm-2 fieldGroupLabelAndMessages">
+                    <label class="control-label">Tags *</label>
+                    {{validation['demoForm.tags'] | validationGroupMessages()}}
+                </div>
+                
+                <div class="col-sm-4">
+                    <input type="text" class="form-control {{validation['demoForm.tags[0]'] | validationClass()}}" id="tag1" name="demoForm.tags[0]" placeholder="Tag 1"
+                           value="{{demoForm.tags[0] | default('')}}" />
+                    {{validation['demoForm.tags[0]'] | validationMessages()}}
+                    <input type="text" class="form-control {{validation['demoForm.tags[1]'] | validationClass()}}" id="tag2" name="demoForm.tags[1]" placeholder="Tag 2"
+                           value="{{demoForm.tags[1] | default('')}}" />
+                    {{validation['demoForm.tags[1]'] | validationMessages()}}
+                    <input type="text" class="form-control {{validation['demoForm.tags[2]'] | validationClass()}}" id="tag3" name="demoForm.tags[2]" placeholder="Tag 3"
+                           value="{{demoForm.tags[2] | default('')}}" />
+                    {{validation['demoForm.tags[2]'] | validationMessages()}}
+                </div>
+                
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                        
+                            <span class="validationsTitle">Validations to test :</span>
+                            <ul class="list-group validations">
+                            
+                                <li class="list-group-item">
+                                    <p>
+                                        This is a <em>group of fields</em> : they all have the
+                                        same <code>"name"</code> attribute. Because of this, when the form is 
+                                        submitted those fields are retrived 
+                                        together <em>as an array</em> on the server.
+                                    </p>
+                                    <p>
+                                        The three tags are required.
+                                    </p>
+                                    <a href="#" class="tryIt btn btn-default btn-xs" id="fillTags">Fill all tags</a>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group {{validation['demoForm.drink'] | validationClass()}}">
+
+                <div class="col-sm-2 fieldGroupLabelAndMessages">
+                    <label class="control-label">Favorite drink *</label>
+                    {{validation['demoForm.drink']  | validationGroupMessages()}}
+                </div>
+                
+                <div class="col-sm-4">
+                    <div class="radio">
+                        <label for="drink0">
+                            <input type="radio" 
+                                   id="drink0" 
+                                   name="demoForm.drink"
+                                   {{demoForm.drink | checked("tea")}}
+                                   value="tea" /> Tea</label>
+                    </div>
+                    
+                    <div class="radio">
+                        <label for="drink1">
+                            <input type="radio" 
+                                   id="drink1" 
+                                   name="demoForm.drink"
+                                   {{demoForm.drink | checked("coffee")}}
+                                   value="coffee"> Coffee</label>
+                    </div>
+
+                    <div class="radio">
+                        <label for="drink2">
+                            <input type="radio" 
+                                   id="drink2" 
+                                   name="demoForm.drink"
+                                   {{demoForm.drink | checked("beer")}}
+                                   value="beer"> Beer</label>
+                    </div>
+
+                    <div class="radio">
+                        <label for="drink3">
+                            <input type="radio" 
+                                   id="drink3" 
+                                   name="demoForm.drink"
+                                   {{demoForm.drink | checked("juice")}}
+                                   value="juice"> Juice</label>
+                    </div>
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                        
+                            <span class="validationsTitle">Validations to test :</span>
+                            <ul class="list-group validations">
+                            
+                                <li class="list-group-item">
+                                    <p>
+                                        A favorite drink is required.
+                                    </p>
+                                    <p>
+                                        Choosing <code>"beer"</code> is invalid if the
+                                        <code>"Action on submit"</code> field is set to <code>"Warning choice!"</code>...
+                                        Try it!
+                                    </p>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            
+            <div class="form-group {{validation['demoForm.numbers'] | validationClass()}}">
+
+                <div class="col-sm-2 fieldGroupLabelAndMessages">
+                    <label class="control-label">Pick 2 numbers *</label>
+                    {{validation['demoForm.numbers'] | validationGroupMessages()}}
+                </div>
+                
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        <label for="num1">
+                            <input type="checkbox" 
+                                   id="num1" 
+                                   name="demoForm.numbers[0]"
+                                   {{demoForm.numbers[0] | checked("1")}}
+                                   value="1" /> 1</label>
+                    </div>
+                    <div class="checkbox">
+                        <label for="num2">
+                            <input type="checkbox" 
+                                   id="num2" 
+                                   name="demoForm.numbers[1]"
+                                   {{demoForm.numbers[1] | checked("2")}}
+                                   value="2" /> 2</label>
+                    </div>
+                    <div class="checkbox">
+                        <label for="num3">
+                            <input type="checkbox" 
+                                   id="num3" 
+                                   name="demoForm.numbers[2]"
+                                   {{demoForm.numbers[2] | checked("3")}}
+                                   value="3" /> 3</label>
+                    </div>
+                    <div class="checkbox">
+                        <label for="num4">
+                            <input type="checkbox" 
+                                   id="num4" 
+                                   name="demoForm.numbers[3]"
+                                   {{demoForm.numbers[3] | checked("4")}}
+                                   value="4" /> 4</label>
+                    </div>
+                    <div class="checkbox">
+                        <label for="num5">
+                            <input type="checkbox" 
+                                   id="num5" 
+                                   name="demoForm.numbers[4]"
+                                   {{demoForm.numbers[4] | checked("5")}}
+                                   value="5" /> 5</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                        
+                            <span class="validationsTitle">Validations to test :</span>
+                            <ul class="list-group validations">
+                            
+                                <li class="list-group-item">
+                                    <p>
+                                        You have to pick exactly two numbers and both must be
+                                        odd or both be even!
+                                    </p>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            
+            <div class="form-group {{validation['demoForm.musicStyles'] | validationClass()}}">
+
+                <div class="col-sm-2 fieldGroupLabelAndMessages">
+                    <label class="control-label">Favourite music styles?</label>
+                    {{validation['demoForm.musicStyles'] | validationGroupMessages()}}
+                </div>
+                
+                <div class="col-sm-4">
+                    <select multiple id="musicStyles" name="demoForm.musicStyles[]"  
+                            class="form-control">
+                        <option value="rock" {{demoForm.musicStyles | selected("rock")}}>Rock</option>
+                        <option value="pop" {{demoForm.musicStyles | selected("pop")}}>Pop</option>
+                        <option value="jazz" {{demoForm.musicStyles | selected("jazz")}}>Jazz</option>
+                        <option value="metal" {{demoForm.musicStyles | selected("metal")}}>Metal</option>
+                        <option value="classical" {{demoForm.musicStyles | selected("classical")}}>Classical</option>
+                    </select>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                        
+                            <span class="validationsTitle">Validations to test :</span>
+                            <ul class="list-group validations">
+                            
+                                <li class="list-group-item">
+                                    <p>
+                                        There is no validation on this field, but you can check that if
+                                        you select multiple of its options (using the <code>CTRL/Command</code> key),
+                                        they will still be selected when the form is redisplayed.
+                                    </p>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+            
+            <div id="tagsGroup" class="form-group {{validation['demoForm.action'] | validationClass()}}">
+
+                <div class="col-sm-2 fieldGroupLabelAndMessages">
+                    <label class="control-label">Action on submit</label>
+                </div>
+                
+                <div class="col-sm-4">
+                
+                    <select name="demoForm.action" class="form-control {{validation.demoForm.action | validationClass('')}}">
+                        <option value="stay" {{demoForm.action | selected("stay")}}>Stay on the page</option>
+                        <option value="process" {{demoForm.action | selected("process")}}>Process and redirect</option>
+                        <option value="warning" {{demoForm.action | selected("warning")}}>Warning choice</option>
+                        <option value="error" {{demoForm.action | selected("error")}}>Invalid choice</option>
+                    </select>
+                    {{validation['demoForm.action'] | validationMessages()}} 
+                    
+                    <div class="validationsDirectBtnDiv form-group {{validation['demoForm.acceptTos'] | validationClass()}}">
+                            <label for="acceptTos">
+                                <input type="checkbox" 
+                                       id="acceptTos" 
+                                       name="demoForm.acceptTos"
+                                       {{demoForm.acceptTos | checked(true)}}
+                                       value="true" /> I agree to the Terms of Service</label>
+                                 <br />
+                            {{validation['demoForm.acceptTos'] | validationMessages()}} 
+                        
+                        <button id="subBtn" type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                            <span class="validationsTitle">Validations to test :</span>
+                            <ul class="list-group validations">
+                                <li class="list-group-item">
+                                    <p>
+                                        Choosing the <code>"Warning choice"</code> will result in a <code><em>Warning</em> Validation Message</code>.
+                                        If you choose this option, and if all the other fields are valid, you will see that the form is going to 
+                                        be processed and you are going to be redirected. 
+                                    </p>
+                                    <p>
+                                        This is to demonstrate that 
+                                        <code><em>Warning</em> Validation Messages</code> don't make a form
+                                        invalid, only <code><em>Error</em> Validation Messages</code> do!
+                                    </p>
+                                </li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<h4>
+    <a class="anchor_small" href="#code" id="code" title="permanent link"></a>
+    Code
+</h4>
+<p>
+    <ul>
+        <li>
+            The controller (the backend part) : 
+            <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsMultipleFieldsController.java"><em>DemoHtmlFormsMultipleFieldsController.java</em></a>
+        </li>
+        <li>
+            The <code>HTML</code> template (the frontend part) : 
+            <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/resources/templates/demos/htmlForms/multiple.html"><em>multiple.html</em></a>
+        </li>
+    </ul>
+</p>
+
+
+<h4>
+    <a class="anchor_small" href="#how_to" id="how_to" title="permanent link"></a>
+    How to - Frontend
+</h4>
+<p>
+    We already introduced the process of validating a form in the <a href="/demos-tutorials/html-forms/single-field">Introduction</a> 
+    demo. In this one, we focus mostly on how to display the various types of fields, how to validate a field by comparing its value with
+    <em>another</em> field, and how to run <em>conditional</em> validations.
+</p>
+<p> 
+    Let's first examine how we render the fields in the
+    <code>HTML</code> template, and how we use <a href="/documentation#forms_validation_filters"">Validation Filters</a> 
+    for their <code>Validation Messages</code>...
+</p>
+<p> 
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    The <code>"email"</code> and <code>"emailAgain"</code> are simple text inputs. 
+    Here's the <code>"email"</code> field :
+
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>&lt;input type="text" class="form-control" id="email" 
+       name="demoForm.email" placeholder="Email"
+       value="{{demoForm.email | default('')}}" /&gt;
+{{validation['demoForm.email'] | validationMessages()}}
+</pre>       
+       </p>
+       
+        We use <code>"{{demoForm.email | default('')}}"</code> to
+        fill the inital value [<span class="code-line-nbr">3</span>] and <code>"{{validation['demoForm.email'] | validationMessages()}}"</code>
+        to display the potential <code>Validation Messages</code> [<span class="code-line-nbr">4</span>].
+    </div>  
+    {% endverbatim %}
+</p>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    The <code>tags</code> section is more interesting :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>&lt;div class="col-sm-2 fieldGroupLabelAndMessages"&gt;
+    &lt;label class="control-label"&gt;Tags *&lt;/label&gt;
+    {{validation['demoForm.tags'] | validationGroupMessages()}}
+&lt;/div&gt;
+
+&lt;div class="col-sm-4"&gt;
+
+    &lt;input type="text" 
+           class="form-control {{validation['demoForm.tags[0]'] | validationClass()}}" 
+           id="tag1" name="demoForm.tags[0]" placeholder="Tag 1"
+           value="{{demoForm.tags[0] | default('')}}" /&gt;
+    {{validation['demoForm.tags[0]'] | validationMessages()}}
+    
+    &lt;input type="text" 
+           class="form-control {{validation['demoForm.tags[1]'] | validationClass()}}" 
+           id="tag2" name="demoForm.tags[1]" placeholder="Tag 2"
+           value="{{demoForm.tags[1] | default('')}}" /&gt;
+    {{validation['demoForm.tags[1]'] | validationMessages()}}
+    
+    &lt;input type="text" 
+           class="form-control {{validation['demoForm.tags[2]'] | validationClass()}}" 
+           id="tag3" name="demoForm.tags[2]" placeholder="Tag 3"
+           value="{{demoForm.tags[2] | default('')}}" /&gt;
+    {{validation['demoForm.tags[2]'] | validationMessages()}}
+    
+&lt;/div&gt;</pre>       
+        </p>
+    </div>  
+    {% endverbatim %}
+<p> 
+    Those fields form a <em>group</em>.  We can know this by looking at their
+    <code>"name"</code> attributes : <code>"demoForm.tags[0]"</code>, 
+    <code>"demoForm.tags[1]"</code> and <code>"demoForm.tags[2]"</code>. This syntax
+    indicates that those fields are part of the same group and have a specific position in it
+    (<a href="/documentation#forms_validation_data">learn more</a>).
+</p>
+<p>  
+    At the top of this code snippet, you can see that there is section which
+    describe the section those fields are in : <code>"Tags *"</code>. We
+    use this zone to output the <code>Validation Messages</code> associated with the
+    <em>group itself</em> :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>
+
+{{validation['demoForm.tags'] | validationGroupMessages()}}
+</pre>       
+        </p>
+    </div>  
+    {% endverbatim %}
+    
+    If at least one of the <code>"tag"</code> field is invalid, this filter will display an 
+    error : <code>"Some tags are invalid."</code>. This error is not associated
+    with a particular field, but with the group itself. You can learn more about this
+    in the <a href="/documentation#validation_predefined_options">Predefine Validation options</a> section.
+</p>
+<p> 
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Next, we have the <code>"Favorite drink"</code> radio buttons group. 
+</p>
+<p> 
+    In this section too we have
+    a zone where some <code>Validation Messages</code> may be displayed for <em>the group itself</em> :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble" data-ace-hi="2,4,2,65"
+>&lt;div class="col-sm-2 fieldGroupLabelAndMessages"&gt;
+    &lt;label class="control-label"&gt;Favorite drink *&lt;/label&gt;
+    {{validation['demoForm.drink']  | validationGroupMessages()}}
+&lt;/div&gt;</pre>       
+        </p>
+    </div>  
+    {% endverbatim %}
+</p>
+<p> 
+    Otherwise, every radio button of the group is listed using a code similar to this :
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>&lt;div class="radio"&gt;
+    &lt;label for="drink0"&gt;
+        &lt;input type="radio" 
+               id="drink0" 
+               name="demoForm.drink"
+               {{demoForm.drink | checked("tea")}}
+               value="tea" /&gt; Tea&lt;/label&gt;
+&lt;/div&gt;
+
+&lt;div class="radio"&gt;
+    &lt;label for="drink1"&gt;
+        &lt;input type="radio" 
+               id="drink1" 
+               name="demoForm.drink"
+               {{demoForm.drink | checked("coffee")}}
+               value="coffee" /&gt; Coffee&lt;/label&gt;
+&lt;/div&gt;
+
+//...
+</pre>       
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">5</span> : All the radio buttons of this group
+                    have the exact same <code>"name"</code> attribute! Not only does this
+                    make the fields being a group in the eyes of the browser (only one radio button
+                    of this group can be checked at a given time), but it also tells <em>Spincast</em> that those 
+                    radio buttons  are part of the same group (<a href="/documentation#forms_validation_data">learn more</a>).
+                </li>
+                <li>
+                    <span class="code-line-nbr">6</span> : We use the <code>checked(...)</code>
+                    filter to determine if a radio button must be checked or not. Learn
+                    more about this filter in the <a href="/documentation#templating_filters_and_functions">Provided functions and filters</a> 
+                    section.
+                </li>
+            </ul>
+        </p> 
+    </div>  
+    {% endverbatim %}
+</p>
+
+<p> 
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    The <code>"Pick 2 numbers *"</code> section allows more than one option to be picked, so
+     <em>checkboxes</em> are used :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble" data-ace-hi="4,21,4,40|12,21,12,40"
+>&lt;div class="checkbox"&gt;
+    &lt;label for="num1"&gt;
+        &lt;input type="checkbox" 
+               id="num1" 
+               name="demoForm.numbers[0]"
+               {{demoForm.numbers[0] | checked("1")}}
+               value="1" /&gt; 1&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="checkbox"&gt;
+    &lt;label for="num2"&gt;
+        &lt;input type="checkbox" 
+               id="num2" 
+               name="demoForm.numbers[1]"
+               {{demoForm.numbers[1] | checked("2")}}
+               value="2" /&gt; 2&lt;/label&gt;
+&lt;/div&gt;
+
+//...
+</pre>       
+        </p>
+    </div>  
+    {% endverbatim %} 
+</p>
+<p> 
+    Those checkboxes are part of the same group, so we want to receive them as <em>an array</em>
+    when the form is submitted. For that reason, 
+    it's recommended to use brakets (<code>"[]"</code>) at the end of their <code>"name"</code>
+    attributes and, when possible, to specify the position of the element inside those brackets.
+    Make sure you read the <a href="/documentation#forms_validation_data">Getting the submitted form data</a> 
+    sectiton to learn why.
+</p>
+<p> 
+    As for the <code>"drink"</code> radio buttons fields,
+    we use the <code>checked(...)</code> filter to determine if an option must be checked
+    or not.
+</p>
+<p> 
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Finally, the <code>"Favourite music styles?"</code> and the <code>"Action on submit"</code>
+    are both <code><em>&lt;select&gt;</em></code> fields. The first one, <code>"musicStyles"</code>, 
+    allow <em>multiple</em> options to be selected :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble" data-ace-hi="|1,8,1,16|1,40,1,62"
+>
+
+&lt;select multiple id="musicStyles" name="demoForm.musicStyles[]"  
+        class="form-control"&gt;
+    &lt;option value="rock" {{demoForm.musicStyles | selected("rock")}}&gt;Rock&lt;/option&gt;
+    &lt;option value="pop" {{demoForm.musicStyles | selected("pop")}}&gt;Pop&lt;/option&gt;
+    &lt;option value="jazz" {{demoForm.musicStyles | selected("jazz")}}&gt;Jazz&lt;/option&gt;
+    &lt;option value="metal" {{demoForm.musicStyles | selected("metal")}}&gt;Metal&lt;/option&gt;
+    &lt;option value="classical" {{demoForm.musicStyles | selected("classical")}}&gt;Classical&lt;/option&gt;
+&lt;/select&gt;
+</pre>       
+        </p>
+    </div>  
+    {% endverbatim %} 
+</p>
+<p> 
+    Since more than one option can be selected, we make the <code>"name"</code> attribute of this
+    field end with <code>"[]"</code>. That way, the selected options are always going to be grouped
+    together as an array when the form is submitted.
+</p>
+<p> 
+    Note that with <code><em>&lt;select&gt;</em></code> fields, we use the <code>selected(...)</code>
+    filter to determine if an option must be selected or not. This filter is going to output a <code>"selected"</code>
+    attribute, where required.
+</p>
+
+<p> 
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    The last thing on the frontend we'll going to have a look at is how to display the
+    status of <em>the form itself</em>. Notice that we display a message at the top of the form to
+    show if it is valid or not :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>
+
+{% if validation._ | validationSubmitted()%}
+
+    {% if validation._ | validationHasErrors() %}
+        {% set alertClass = "alert-danger" %}
+        {% set status = "contains errors" %}
+        
+    {% elseif validation._ | validationHasWarnings() %}
+        {% set alertClass = "alert-warning" %}
+        {% set status = "contains warnings" %}
+        
+    {% elseif validation._ | validationIsValid() %}
+        {% set alertClass = "alert-success" %}
+        {% set status = "is valid" %} 
+        
+    {% endif %}
+
+    &lt;div class="row"&gt;
+        &lt;div class="col-sm-6"&gt;
+            &lt;div class="alert {{alertClass}}"&gt;
+                &lt;img src="/public/images/icons/info2.png" /&gt; The Form &lt;strong&gt;{{status}}&lt;/strong&gt; 
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt; 
+{% endif %}
+</pre>       
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">2</span> : This line validates that the form 
+                    <em>has been submitted</em>. We don't want to display any message when the form is
+                    displayed for the first time! The <code>"_"</code> element is a special element which
+                    represents a <code>Validation Set</code> itself (<a href="/documentation#validation_to_jsonobject">more info</a>)
+                </li>
+                <li>
+                    We use the <code>validationHasErrors()</code> filter [<span class="code-line-nbr">4</span>],
+                    the <code>validationHasWarnings()</code> filter [<span class="code-line-nbr">8</span>] and
+                    the <code>validationIsValid()</code> filter [<span class="code-line-nbr">12</span>] to
+                    pick the appropriate <code>CSS</code> class and status to use for the message we're going to
+                    display.
+                </li>
+                <li>
+                    <span class="code-line-nbr">19</span> : We output the selected <code>CSS</code> class.
+                </li>
+                <li>
+                    <span class="code-line-nbr">20</span> : We output the selected status.
+                </li>  
+            </ul>
+        </p>
+    </div>  
+    {% endverbatim %} 
+</p>
+
+
+<h4>
+    <a class="anchor_small" href="#how_to_backend" id="how_to_backend" title="permanent link"></a>
+    How to - Backend
+</h4>
+<p>
+    On the backend, this demo first shows how to run a validation or not <em>depending on the result of a previous
+    validation</em>. For example :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java" data-ace-hi="3,1,3,25"
+> ValidationSet lastResult =
+         validationSet.validationNotBlank().jsonPath("email").failMessageText("Please enter the email").validate();
+
+ if(lastResult.isValid()) {
+     validationSet.validationEmail().jsonPath("email").failMessageText("Please enter a valid email").validate();
+ }</pre> 
+                  
+        </p>
+    </div> 
+</p>
+<p>
+    As you can see, we only perform the second validation if the first one is valid! This is often
+    very useful since we do not want to display 5 different error messages for a single field when, in fact,
+    the field was simply left empty.
+</p>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    In this demo, we also see how to validate a field by comparing it's value to the value <em>of another field</em>. 
+    For example :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java" data-ace-hi="1,26,1,71"
+>
+
+lastResult = validationSet.validationEquivalent(form.getString("email"))
+                          .jsonPath("emailAgain")
+                          .failMessageText("Must match the first email field.")
+                          .validate();</pre>       
+        </p>
+    </div>  
+</p>
+<p>
+    In this snippet, we retrieve the <code>"email"</code> element from the
+    <code>form</code> object using <code>form.getString("email")</code>. We
+    then compare this value to the <code>"emailAgain"</code> validated element using the
+    <code>validationEquivalent(...)</code> <a href="/documentation#validation_predefined">predefined validation</a>.
+    If they are not equivalent (which is a loose version of an <em>equality</em> check), an
+    <code>Error Validation Message</code> is recorded for the validated <code>"emailAgain"</code> field. 
+    You can test this by yourself by entering two valid
+    but different emails in the demo form!
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Another interesting validation in this demo is :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>if("beer".equals(form.getString("drink")) && validationSet.isWarning("action")) {
+    validationSet.addError("drink", 
+                           "BEER_AND_WARNING_ACTION", 
+                           "'Beer' is invalid if the 'Action on submit' field is a Warning!");
+}</pre>       
+        </p>
+    </div>  
+</p>
+<p>
+    This custom validation doesn't use any <code>Predefined Validation</code> and the resulting
+    <code>Error Validation Message</code>, when the validation fails, is added <em>manually</em> to the
+    <code>Validation Set</code>, using the <code>"drink"</code> 
+    <a href="/documentation#validation_keys">validation key</a>.
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    There are more validations performed in this demo! We suggest you have a look
+    at <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsMultipleFieldsController.java"><em>DemoHtmlFormsMultipleFieldsController</em></a>
+    code to see them all.
+</p>
+
+<h4>
+    <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
+    More info
+</h4>
+<p>
+    Make sure you also try the first demo of this section, <a href="/demos-tutorials/html-forms/single-field">Introduction - Single field</a>
+    which introduces forms and validation using Spincast.
+</p>
+<p>
+    Otherwise, you can learn everything about those topics in the <a href="/documentation#validation">Validation</a> 
+    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+</p>
+        
+{% endblock %}

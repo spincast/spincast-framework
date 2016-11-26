@@ -7,13 +7,13 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exceptions.PublicException;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exceptions.PublicExceptionDefault;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.websocket.IWebsocketConnectionConfig;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.routing.IDefaultHandler;
+import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.routing.DefaultHandler;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 
@@ -31,8 +31,8 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
-                return new IWebsocketConnectionConfig() {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -50,7 +50,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         });
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).send();
+        HttpResponse response = websocket(path).send();
         validateIsWebsocketUpgradeHttpResponse(path, response);
     }
 
@@ -60,9 +60,9 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("username");
+                Cookie cookie = context.cookies().getCookie("username");
                 assertNotNull(cookie);
 
                 if(!("Stromgol".equals(cookie.getValue()))) {
@@ -71,7 +71,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
                     return null;
                 }
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -88,7 +88,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         });
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope").send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -101,16 +101,16 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
     @Test
     public void upgradeRefusedByBeforeFilterInline() throws Exception {
 
-        IDefaultHandler beforeFilter = new IDefaultHandler() {
+        DefaultHandler beforeFilter = new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("username");
+                Cookie cookie = context.cookies().getCookie("username");
                 assertNotNull(cookie);
 
                 if(!("Stromgol".equals(cookie.getValue()))) {
-                    throw new PublicException("Websocket upgrade not allowed.", HttpStatus.SC_FORBIDDEN);
+                    throw new PublicExceptionDefault("Websocket upgrade not allowed.", HttpStatus.SC_FORBIDDEN);
                 }
             }
         };
@@ -118,9 +118,9 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").before(beforeFilter).save(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -136,7 +136,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         });
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope").send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -149,16 +149,16 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
     @Test
     public void upgradeRefusedByBeforeFilterGlobal() throws Exception {
 
-        IDefaultHandler beforeFilter = new IDefaultHandler() {
+        DefaultHandler beforeFilter = new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("username");
+                Cookie cookie = context.cookies().getCookie("username");
                 assertNotNull(cookie);
 
                 if(!("Stromgol".equals(cookie.getValue()))) {
-                    throw new PublicException("Websocket upgrade not allowed.", HttpStatus.SC_FORBIDDEN);
+                    throw new PublicExceptionDefault("Websocket upgrade not allowed.", HttpStatus.SC_FORBIDDEN);
                 }
             }
         };
@@ -168,9 +168,9 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -186,7 +186,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         });
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope").send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -202,9 +202,9 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("username");
+                Cookie cookie = context.cookies().getCookie("username");
                 assertNotNull(cookie);
 
                 if(!("Stromgol".equals(cookie.getValue()))) {
@@ -213,7 +213,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
                     return null;
                 }
 
-                return new IWebsocketConnectionConfig() {
+                return new WebsocketConnectionConfig() {
 
                     @Override
                     public String getEndpointId() {
@@ -229,17 +229,17 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         });
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).addCookie("username", "Stromgol").send();
+        HttpResponse response = websocket(path).addCookie("username", "Stromgol").send();
         validateIsWebsocketUpgradeHttpResponse(path, response);
     }
 
     @Test
     public void afterFiltersAreNotAppliedConnectionAllowed() throws Exception {
 
-        IDefaultHandler afterFilter = new IDefaultHandler() {
+        DefaultHandler afterFilter = new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         };
@@ -248,7 +248,7 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()));
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope").send();
         assertNotNull(response);
 
         validateIsWebsocketUpgradeHttpResponse(path, response);
@@ -260,10 +260,10 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         final boolean[] filterCalled = new boolean[]{false};
         final boolean[] onPeerPreConnectCalled = new boolean[]{false};
 
-        IDefaultHandler afterFilter = new IDefaultHandler() {
+        DefaultHandler afterFilter = new DefaultHandler() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 filterCalled[0] = true;
             }
         };
@@ -272,14 +272,14 @@ public class WebsocketHttpResponseTest extends SpincastDefaultWebsocketNoAppInte
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
-            public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+            public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
                 onPeerPreConnectCalled[0] = true;
                 return null;
             }
         });
 
         String path = "/ws";
-        IHttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope").send();
         assertNotNull(response);
 
         validateIsNotWebsocketUpgradeHttpResponse(response);

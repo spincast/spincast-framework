@@ -3,12 +3,12 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRoute;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.Route;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -32,12 +32,12 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
         assertEquals(0, getRouter().getMainRoutes().size());
         assertEquals(0, getRouter().getGlobalAfterFiltersRoutes().size());
 
-        IRoute<IDefaultRequestContext> route =
+        Route<DefaultRequestContext> route =
                 getRouter().GET("/")
-                           .create(new IHandler<IDefaultRequestContext>() {
+                           .create(new Handler<DefaultRequestContext>() {
 
                                @Override
-                               public void handle(IDefaultRequestContext context) {
+                               public void handle(DefaultRequestContext context) {
                                    context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
                                }
                            });
@@ -46,7 +46,7 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
         assertEquals(0, getRouter().getMainRoutes().size());
         assertEquals(0, getRouter().getGlobalAfterFiltersRoutes().size());
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         getRouter().addRoute(route);
@@ -66,15 +66,15 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void minimumConfigs() throws Exception {
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -84,55 +84,55 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void filterPosition() throws Exception {
 
-        getRouter().GET("/").pos(100).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").pos(100).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("4");
             }
         });
 
-        getRouter().GET("/").pos(-1).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").pos(-1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("2");
             }
         });
 
-        getRouter().GET("/").pos(1).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").pos(1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("3");
             }
         });
 
-        getRouter().GET("/").pos(1000).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").pos(1000).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("5");
             }
         });
 
-        getRouter().GET("/").pos(-2).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").pos(-2).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("1");
             }
         });
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("main");
             }
         });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -142,42 +142,42 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void multipleInlineFilters() throws Exception {
 
-        IHandler<IDefaultRequestContext> handler = new IHandler<IDefaultRequestContext>() {
+        Handler<DefaultRequestContext> handler = new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("1");
             }
         };
 
         getRouter().GET("/")
                    .before(handler)
-                   .before(new IHandler<IDefaultRequestContext>() {
+                   .before(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("2");
                        }
                    })
                    .before(handler)
                    .after(handler)
-                   .after(new IHandler<IDefaultRequestContext>() {
+                   .after(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("2");
                        }
                    })
                    .after(handler)
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("M");
                        }
                    });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -189,15 +189,15 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         getRouter().GET("/")
                    .accept(ContentTypeDefaults.JSON)
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("ok");
                        }
                    });
 
-        IHttpResponse response =
+        HttpResponse response =
                 GET("/").addHeaderValue(HttpHeaders.ACCEPT, ContentTypeDefaults.JSON.getMainVariation()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -212,15 +212,15 @@ public class RouteBuilderTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         getRouter().GET("/")
                    .acceptAsString("application/json")
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            context.response().sendPlainText("ok");
                        }
                    });
 
-        IHttpResponse response =
+        HttpResponse response =
                 GET("/").setHeaderValues(HttpHeaders.ACCEPT, Lists.newArrayList(ContentTypeDefaults.JSON.getMainVariation()))
                         .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());

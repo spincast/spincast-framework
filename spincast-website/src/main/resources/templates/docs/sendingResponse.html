@@ -1,0 +1,605 @@
+{#==========================================
+Docs : "Sending the response"
+==========================================#}
+
+<section id="sending_response">
+    <h3>
+        <a class="anchor" href="#sending_response" title="permanent link"></a>
+        Sending the response
+    </h3>
+    
+    <p>
+        The kind of responses you send to incoming requests really  depends on the type of
+        application you're building! If you are building a traditional website, you will
+        most of the time use the integrated <a href="#templating_engine">Templating Engine</a> 
+        to output <code>HTML</code> as the response to a request. 
+        But if you are building a <code>SPA</code>, or if you use Spincast for
+        <code>REST</code> microservices/services, then your responses will 
+        probably be <code>Json</code> or <code>XML</code> objects.
+    </p>
+
+    {#==========================================
+    Section "Sending the response / The response model"
+    ==========================================#}
+    <div id="sending_response_model">
+        <h4>
+            <a class="anchor_small" href="#sending_response_model" title="permanent link"></a>
+            The response model object
+        </h4>
+        <p>
+            Inside a <code>Route Handler</code>, you can (but are not forced to) use the 
+            provided <code>response model</code> as an easy way to build the response. This
+            can be useful to build a response to be sent as <code>Json</code>, but is
+            mainly use to accumulate the various parameters required to render a <em>template</em>.
+        </p>
+        <p>
+            You get this model  by using the <code>getModel()</code>
+            method on the <code>response()</code> add-on : 
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+    
+    JsonObject responseModel = context.response().getModel();
+    
+    // ... adds elements to this response model
+    
+    // ... then sends the response
+}</pre>
+                </p>
+            </div>
+        </p>
+        <p>
+            The response model is a
+            <a href="#jsonobject">JsonObject</a> so it can be manipulated as such!
+            You can add any type of element on it. When the added object is not
+            of a type native to <code>JsonObjects</code>, the object is converted
+            to a <code>JsonObject</code> or to a <code>JsonArray</code>.
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            You can use the <code>json()</code> add-on to create new
+            <code>JsonObject</code> and <code>JsonArray</code> elements to be added to the response model.
+            For example, let's add to the response model : a simple String variable, a Book object 
+            and a <code>JsonObject</code> representing a user...
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+   
+    JsonObject responseModel = context.response().getModel();
+
+    // Adds a simple String variable
+    responseModel.put("simpleVar", "test");
+    
+    // Adds a Book : this object will automatically
+    // be converted to a JsonObject
+    Book book = getBook(42);
+    responseModel.put("myBook", book);
+        
+    // Then adds a JsonObject representing a user
+    JsonObject user = context.json().create();
+    user.put("name", "Stromgol");
+    user.put("age", 30);
+    responseModel.put("user", user);
+
+    // ...
+}</pre>
+                </p>
+            </div>
+            At this point, the response model would be something like :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-json"
+>{
+    "simpleVar": "test",
+    "myBook": {
+        "id": 42,
+        "title": "The Hitchhiker's Guide to the Galaxy",
+        "author": "Douglas Adams"
+    },
+    "user": {
+        "name": "Stromgol",
+        "age": 30
+    }
+}</pre>
+                </p>
+            </div>
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            To resume : you use any business logic required to process a request, you query
+            some data sources if needed, then you build the response model. When the response model is 
+            ready, you decide <em>how</em> to send it. Let's see the different options...
+        </p>
+    </div>
+        
+    {#==========================================
+    Section "Sending the response / sending the model as HTML, using a template"
+    ==========================================#}
+    <div id="sending_response_model_template">
+        <h4>
+            <a class="anchor_small" href="#sending_response_model_template" title="permanent link"></a>
+            Sending the response model as <code>HTML</code>, using a template
+        </h4>
+        <p>
+            If you're building a traditional website, you will most of the time send <code>HTML</code>
+            as the response for a request. To do so, you can use the <a href="#templating_engine">Templating Engine</a>, 
+            and specify which template to use to render the data contained in the response model :
+
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+   
+    JsonObject responseModel = context.response().getModel();
+    
+    // ... adds variables to the response model
+    
+    // Renders the response model using a template
+    context.response().sendTemplateHtml("/templates/myTemplate.html");
+}</pre>
+                </p>
+            </div>
+        </p>
+        <p>
+            The default templating engine is <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. The
+            template files are found on the classpath by default, but there are overload methods to find
+            them on the file system too. Learn more about that in the 
+            <a href="#templating_engine">Templating Engine</a> section.
+        </p>
+    </div>
+     
+    {#==========================================
+    Section "Sending the response / Sending the model as Json or XML
+    ==========================================#}
+    <div id="sending_response_model_json">
+        <h4>
+            <a class="anchor_small" href="#sending_response_model_json" title="permanent link"></a>
+            Sending <code>Json</code> or <code>XML</code>
+        </h4>
+        <p>
+            If you are using Spincast to build a <code>Single Page Application</code> or <code>REST services</code>, 
+            you will probably want to directly return a <code>Json</code> 
+            (or as <code>XML</code>) object instead of rendering an <code>HTML</code> template.
+            Most of the time you are going to return that resource <em>directly</em>. 
+            Here's an example :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void booksGet(DefaultRequestContext context) {
+
+    String bookId = context.request().getPathParam("bookId");
+    Book someBook = getBook(bookId);
+    
+    // Sends the book as Json
+    context.response().sendJson(someBook);
+    
+    // ... or as XML
+    context.response().sendXML(someBook);
+}</pre>
+                </p>
+            </div>
+        </p>
+        <p>
+            By using the 
+            <code>sendJson(someBook)</code> method, the book object will 
+            automatically be serialized to <code>Json</code> and sent using the
+            appropriated <code>"application/json"</code> content-type.
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            In some cases, it may be useful to build the object to return using the
+            <code>response model</code>, exactly as you may do when developing a traditional website.
+            This approach is discussed in the 
+            <a href="#quick_tutorial_spa">SPA Quick Tutorial</a>.
+            Here's an example :
+        </p>
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+   
+    JsonObject responseModel = context.response().getModel();
+    
+    JsonObject user = context.json().create();
+    user.put("name", "Stromgol");
+    user.put("age", 42);
+    responseModel.put("user", user);
+    
+    // This will send the response model as "application/json" :
+    // {"user":{"name":"Stromgol","age":42}}
+    context.response().sendJson();
+    
+    // or, this will send the response model as "application/xml" :
+    // &lt;JsonObject&gt;&lt;user&gt;&lt;name&gt;Stromgol&lt;/name&gt;&lt;age&gt;42&lt;/age&gt;&lt;/user&gt;&lt;/JsonObject&gt;
+    context.response().sendXml();
+}</pre>
+                </p>
+            </div>
+        </p>
+        <p>
+            The <code>sendJson()</code> method, without any argument, takes the response model,
+            converts it to a <code>Json</code> string and sends it with the appropriate
+            <code>"application/json"</code> content-type.
+        </p>
+    </div>
+    
+    {#==========================================
+    Section "Sending the response / sending a specific object"
+    ==========================================#}
+    <div id="sending_response_specific">
+        <h4>
+            <a class="anchor_small" href="#sending_response_specific" title="permanent link"></a>
+            Sending specific content
+        </h4>
+        <p>
+            You can use the default <code>response model</code> to build the object which will be used
+            for the response, but you can also send any object directly. We already
+            saw that we can send an object using the <code>sendJson(myObject)</code> method, but
+            Spincast provides other options. You can...
+            
+            <ul>
+                <li>
+                    Send <code>characters</code>, using the content-type of your choice :
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    // Sends as "text/plain"
+    context.response().sendPlainText("This is plain text");
+
+    // Sends as "application/json"
+    context.response().sendJson("{\"name\":\"Stromgol\"}");
+
+    // Sends as "application/xml"
+    context.response().sendXml("&lt;root&gt;&lt;name&gt;Stromgol&lt;/name&gt;&lt;/root&gt;");
+
+    // Sends as "text/html"
+    context.response().sendHtml("&lt;h1&gt;Hi Stromgol!&lt;/h1&gt;");
+    
+    // Sends using a specified content-type
+    context.response().sendCharacters("&lt;italic&gt;Stromgol!&lt;/italic&gt;", "text/richtext");
+}</pre>
+                        </p>
+                    </div>
+                </li>
+                <li>
+                    Evaluate a template by yourself and send it as <code>HTML</code>,
+                    explicitly :
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    Map&lt;String, Object&gt; params = getTemplateParams();
+    String result = context.templating().evaluate("/templates/myTemplate.html", params);
+    
+    // Sends the evaluated template
+    context.response().sendHtml(result);
+}</pre>
+                        </p>
+                    </div>
+                </li>
+ 
+                <li>
+                    Send a specific object as <code>Json</code> or as <code>XML</code> :
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    User user = getUserService().getUser(123);
+    
+    // Sends the user object as Json
+    context.response().sendJson(user);
+    
+    // or, sends it as XML
+    context.response().sendXml(user);
+}</pre>
+                        </p>
+                    </div>
+                </li>
+                
+                <li>
+                    Send binary data :
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    byte[] imageBytes = loadImageBytes();
+    
+    // Sends as "application/octet-stream"
+    context.response().sendBytes(imageBytes);
+    
+    // or sends using a specific content-type
+    context.response().sendBytes(imageBytes, "image/png");
+}</pre>
+                        </p>
+                    </div>
+                </li>  
+            </ul>
+        </p>
+    </div>
+    
+    {#==========================================
+    Section "Sending the response / Redirecting"
+    ==========================================#}
+    <div id="sending_response_redirecting">
+        <h4>
+            <a class="anchor_small" href="#sending_response_redirecting" title="permanent link"></a>
+            Redirecting
+        </h4>
+        <p>
+            Sometimes you need to redirect a request to a new page. There are multiple cases
+            where that can be useful. For example when you decide to change a URL in your application, 
+            but don't want existing links pointing to the old URL to break. In that particular case you can 
+            use <a href="#redirections">using redirection rules</a> :
+            the requests for the old URL won't even reach any route handler... A redirection header 
+            will be sent at the very beginning of the routing process.
+        </p>
+        <p>
+            Another case where a redirection is useful is when you are building a traditional website 
+            and a form is submitted via a <code>POST</code> method. In that case, it is seen as a good practice 
+            to <em>redirect</em> to a confirmation page once the form has been validated 
+            successfully. By doing so, the form won't be submitted again if the user decides to refresh
+            the resulting page.
+        </p>
+        <p>
+            Other than <code>redirection rules</code>, there
+            are two ways of redirecting a request to a new page :
+            
+            <ul>
+                <li>
+                    <p>
+                        By using the <code>"redirect(...)"</code> method on the <code>response()</code>
+                        add-on, in a <code>Route Handler</code> : 
+                        
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    context.response().redirect("/new-url"); 
+}</pre>
+                            </p>
+                        </div>
+                    </p>
+                    <p>
+                        Calling this <code>redirect(...)</code> method simply adds redirection headers to the response, 
+                        it doesn't <em>send</em> anything. This means that any remaining 
+                        <code>Route Handlers</code>/<code>Filters</code> will be ran as usual
+                        and could even, eventually, <em>remove</em> the redirection headers that the method added.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        By throwing a <a class="javadoc" href="/public/javadoc/org/spincast/core/exceptions/RedirectException.html">RedirectException</a> exception.
+                    
+                        <div>
+                            <p>
+                                <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    // Any remaing filters will be skipped
+    throw new RedirectException("/new-url");
+}</pre>
+                            </p>
+                        </div>
+                    </p>
+                    <p>
+                        Unlike the <code>redirect(...)</code> method approach, throwing a <code>RedirectException</code> 
+                        <em>will</em> end the current routing process and immediately send the redirection
+                        headers. Any remaining <code>Route Handlers</code>/<code>Filters</code> will be skipped!
+                    </p>
+                </li>
+            </ul>
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            The URL parameter of a redirection can :
+            
+            <ul>
+                <li>
+                    Be <em>absolute</em> or <em>relative</em>.
+                </li>
+                <li>
+                    Be <em>empty</em>. In that case, the request will be redirected to the current URL.
+                </li>
+                <li>
+                    Start with <code>"?"</code>. In that case, the current URL will be used but with
+                    the specified <em>queryString</em>.
+                </li>
+                <li>
+                    Start with <code>"#"</code>. In that case, the current URL will be used but with
+                    the specified <em>anchor</em>.
+                </li>
+            </ul>
+        </p>
+        
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Other redirections options :
+            
+            <ul>
+                <li>
+                    You can specify if the redirection should be permanent (<code>301</code>) 
+                    or temporary (<code>302</code>). The default is "temporary".
+                </li>
+                <li>
+                    You can specify a <a href="#flash_messages">Flash message</a> :
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    // Sends a permanent redirection (301) with
+    // a Flash message to be displayed on the target page
+    context.response().redirect("/new-url", 
+                                true, 
+                                FlashMessageLevel.WARNING, 
+                                "This is a warning message!");
+}</pre>
+                        </p>
+                    </div>  
+                </li>
+            </ul>
+        </p> 
+    </div>
+    
+    {#==========================================
+    Section "Sending the response / Forwarding"
+    ==========================================#}
+    <div id="sending_response_forwarding">
+        <h4>
+            <a class="anchor_small" href="#sending_response_forwarding" title="permanent link"></a>
+            Forwarding
+        </h4>
+        <p>
+            Forwarding the request doesn't send anything, it's only a way of
+            <em>changing the current route</em>. By forwarding a request, you restart the 
+            <a href="#routing_process">routing process </a>from scratch,
+            this time using a new, specified route instead of the original one.
+        </p>
+        <p> 
+            Forwarding is very different than
+            <a href="#sending_response_redirecting">Redirecting</a> since 
+            the client can't know that the request endpoint has been changed... 
+            The process is entirely server side.
+        </p>
+        <p>
+            Since forwarding the request ends the current routing process and skips any
+            remaining <code>Route Handlers</code>/<code>Filters</code>, it is done by throwing an exception,   
+            <a class="javadoc" href="/public/javadoc/org/spincast/core/exceptions/ForwardRouteException.html">ForwardRouteException</a> :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    throw new ForwardRouteException("new-url");
+}</pre>
+                </p>
+            </div> 
+        </p> 
+    </div>
+    
+    {#==========================================
+    Section "Sending the response / Flushing"
+    ==========================================#}
+    <div id="sending_response_flushing">
+        <h4>
+            <a class="anchor_small" href="#sending_response_flushing" title="permanent link"></a>
+            Flushing the response
+        </h4>
+        <p>
+            Flushing the response consists in sending the HTTP headers
+            and any data already added to the response buffer. You only start to actually <em>send</em> 
+            something to the user when the response is flushed!
+        </p>
+        <p>
+            It is important to know that the first time the response is flushed,
+            the HTTP headers are sent and therefore <em>can't be modified
+            anymore</em>. Indeed, the HTTP headers are only sent once, during the first flush
+            of the response.
+        </p>
+        <p>
+            Note that explicitly flushing the response is not required : this is automatically done
+            when the routing process is over. In fact, you don't need to explicitly flush the response
+            most of the time. But there are some few cases where you may need to do so, for example for the user starts receiving 
+            data even if you are still collecting more of it on the server.
+        </p>
+        <p>
+            So, how do you flush the response? The first option is by using the dedicated 
+            <code>flush()</code> method : 
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    context.response().flush();
+}</pre>
+                </p>
+            </div>   
+        </p>
+        <p>
+            A second option is to use the <code><em>"flush"</em></code> parameter available
+            on many <code>sendXXX(...)</code> methods of the <code>response()</code> 
+            add-on. For example...
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    // true => flushes the response
+    context.response().sendPlainText("Hello world!", true);
+}</pre>
+                </p>
+            </div>   
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Note that flushing the response
+            doesn't prevent any remaining <code>Route Handlers</code>/<code>Filters</code> to be run, it simply
+            send the response as it currently is.
+        </p>
+        <p>
+            Finally, note that you can also use the <code>end()</code> method
+            of the response() add-on if you want the response to be flushed <em>and be closed</em>. In that case, 
+            remaining <code>Route Handlers</code>/<code>Filters</code> will still run, 
+            but they won't be able to send any more data :
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    context.response().end();
+}</pre>
+                </p>
+            </div>   
+        </p>
+    </div>
+    
+    {#==========================================
+    Section "Sending the response / Skipping remaining handlers"
+    ==========================================#}
+    <div id="sending_response_skip">
+        <h4>
+            <a class="anchor_small" href="#sending_response_skip" title="permanent link"></a>
+            Skipping remaining handlers
+        </h4>
+        <p>
+            Most of the time you want to allow the main <code>Route Handler</code> 
+            and all its associated <a href="#filters">filters</a> to be run. A filter may modify some headers, may
+            log some information, etc. But in the rare cases where you want to make sure the response 
+            is sent as is and that <em>anything else is skipped</em>, you can throw a 
+            <a class="javadoc" href="/public/javadoc/org/spincast/core/exceptions/SkipRemainingHandlersException.html">SkipRemainingHandlersException</a>.
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    context.response().sendPlainText("Hello world!");
+        
+    throw new SkipRemainingHandlersException();
+}</pre>
+                </p>
+            </div> 
+        </p>
+        <p>
+            Unlike simply flushing and ending the response (using the <code>end()</code> method), 
+            throwing a <code>SkipRemainingHandlersException</code> skips any remaining handlers : the
+            response will be sent as is, and the routing process will be over.
+         </p>
+    </div>
+
+    
+</section>
+            

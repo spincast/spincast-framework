@@ -2,602 +2,1052 @@ package org.spincast.core.json;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 
-import javax.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spincast.core.utils.ISpincastUtils;
-
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import org.spincast.core.exceptions.CantConvertException;
 
 /**
- * <code>IJsonObject</code> implementation.
+ * Represents a <code>Json</code> object, "{}".
  */
-public class JsonObject extends JsonObjectArrayBase implements IJsonObject {
-
-    protected final Logger logger = LoggerFactory.getLogger(JsonObject.class);
-
-    protected static interface IFirstElementGetter<T> {
-
-        public T get(IJsonArray array, boolean hasDefaultValue, T defaultValue);
-    }
-
-    private final Map<String, ?> initialMap;
-    private final Map<String, Object> map;
-
-    @AssistedInject
-    public JsonObject(IJsonManager jsonManager,
-                      ISpincastUtils spincastUtils) {
-        this(null, jsonManager, spincastUtils);
-    }
-
-    @AssistedInject
-    public JsonObject(@Assisted @Nullable Map<String, ?> initialMap,
-                      IJsonManager jsonManager,
-                      ISpincastUtils spincastUtils) {
-        super(jsonManager, spincastUtils);
-        if(initialMap == null) {
-            initialMap = new HashMap<String, Object>();
-        }
-        this.initialMap = initialMap;
-        this.map = new HashMap<String, Object>();
-    }
+public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String, Object>> {
 
     /**
-     * Init
+     * Puts an element at the specified key, without parsing this
+     * key as a <code>JsonPath</code>.
+     * <p>
+     * If the element to add is not of a native type,
+     * then the element is converted before being added. 
+     * Once the element is converted and added, a modification of the original 
+     * object won't affect this element, and vice-versa.
+     * <p>
+     * If the element to add is a <code>JsonObject</code> or 
+     * a <code>JsonArray</code> and is <em>immutable</em>, it will be cloned. 
+     * Doing so, we can make sure the <code>JsonArray</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If the element implements <code>ToJsonObjectConvertible</code>, it
+     * will be converted to a <code>JsonObject</code> using the associated
+     * conversion method. If it implements <code>ToJsonArrayConvertible</code>, it
+     * will be converted to an <code>JsonArray</code> using the associated
+     * conversion method.
+     * <p>
+     * Those are the types of objects that will be converted to a 
+     * <code>JsonArray</code> instead of a <code>JsonObject</code>, if 
+     * no conversion interface is implemented :
+     * <ul>
+     * <li>
+     * A Collection
+     * </li>
+     * <li>
+     * An array
+     * </li>
+     * </ul>
      */
-    @Inject
-    protected void init() {
-        addInitialMap();
-    }
+    public JsonObject putNoKeyParsing(String key, Object element);
 
-    protected void addInitialMap() {
-        if(this.initialMap != null) {
-            for(Entry<String, ?> entry : this.initialMap.entrySet()) {
-                putConvert(entry.getKey(), entry.getValue(), true);
-            }
-        }
-    }
+    /**
+     * Puts an element at the specified key, without parsing this
+     * key as a <code>JsonPath</code>.
+     * <p>
+     * If the element to add is not of a native type,
+     * then the element is converted before being added. 
+     * Once the element is converted and added, a modification of the original 
+     * object won't affect this element, and vice-versa.
+     * <p>
+     * If the element to add is a <code>JsonObject</code> or 
+     * a <code>JsonArray</code> and is <em>immutable</em>, it will be cloned. 
+     * Doing so, we can make sure the <code>JsonArray</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If the element implements <code>ToJsonObjectConvertible</code>, it
+     * will be converted to a <code>JsonObject</code> using the associated
+     * conversion method. If it implements <code>ToJsonArrayConvertible</code>, it
+     * will be converted to an <code>JsonArray</code> using the associated
+     * conversion method.
+     * <p>
+     * Those are the types of objects that will be converted to a 
+     * <code>JsonArray</code> instead of a <code>JsonObject</code>, if 
+     * no conversion interface is implemented :
+     * <ul>
+     * <li>
+     * A Collection
+     * </li>
+     * <li>
+     * An array
+     * </li>
+     * </ul>
+     * 
+     * @param clone if <code>true</code>, and the element to add is a
+     * <code>JsonObject</code> or <code>JsonArray</code>, a clone will be made 
+     * before being added. If that case, any modification to the 
+     * original element won't affect the added one, 
+     * and vice-versa. If the element is <em>immutable</em> then it will 
+     * always be cloned. Doing so, we can make sure a 
+     * <code>JsonObject</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     */
+    public JsonObject putNoKeyParsing(String key, Object element, boolean clone);
 
-    protected Map<String, Object> getMap() {
-        return this.map;
-    }
+    /**
+     * Merges all the specified Map elements in the JsonObject. The keys
+     * are parsed as <code>JsonPaths</code>.
+     * Overwrites existing elements at the specified JsonPaths.
+     * <p>
+     * Note that the JsonObject and JsonArray objects from the source 
+     * will be added as is, so any modification to them WILL affect 
+     * the added elements, and vise-versa. There is an exception though :
+     * if the element to add is <em>immutable</em>
+     * then it will always be cloned. Doing so, we can make sure a
+     * <code>JsonObject</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If an element to is not of a native type,
+     * then the element is converted before being added. 
+     * Once the element is converted and added, a modification of the original 
+     * object won't affect this element, and vice-versa.
+     * <p>
+     * If an element to is a <code>JsonObject</code> or 
+     * a <code>JsonArray</code> and is <em>immutable</em>, it will be cloned. 
+     * Doing so, we can make sure the <code>JsonArray</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If an element implements <code>ToJsonObjectConvertible</code>, it
+     * will be converted to a <code>JsonObject</code> using the associated
+     * conversion method. If it implements <code>ToJsonArrayConvertible</code>, it
+     * will be converted to an <code>JsonArray</code> using the associated
+     * conversion method.
+     * <p>
+     * Those are the types of objects that will be converted to a 
+     * <code>JsonArray</code> instead of a <code>JsonObject</code>, if 
+     * no conversion interface is implemented :
+     * <ul>
+     * <li>
+     * A Collection
+     * </li>
+     * <li>
+     * An array
+     * </li>
+     * </ul>
+     */
+    public JsonObject merge(Map<String, Object> map);
 
+    /**
+     * Merges all the specified Map elements in the JsonObject. The keys
+     * are parsed as <code>JsonPaths</code>.
+     * Overwrites existing elements at the specified JsonPaths.
+     * <p>
+     * If an element to is not of a native type,
+     * then the element is converted before being added. 
+     * Once the element is converted and added, a modification of the original 
+     * object won't affect this element, and vice-versa.
+     * <p>
+     * If an element to is a <code>JsonObject</code> or 
+     * a <code>JsonArray</code> and is <em>immutable</em>, it will be cloned. 
+     * Doing so, we can make sure the <code>JsonArray</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If an element implements <code>ToJsonObjectConvertible</code>, it
+     * will be converted to a <code>JsonObject</code> using the associated
+     * conversion method. If it implements <code>ToJsonArrayConvertible</code>, it
+     * will be converted to an <code>JsonArray</code> using the associated
+     * conversion method.
+     * <p>
+     * Those are the types of objects that will be converted to a 
+     * <code>JsonArray</code> instead of a <code>JsonObject</code>, if 
+     * no conversion interface is implemented :
+     * <ul>
+     * <li>
+     * A Collection
+     * </li>
+     * <li>
+     * An array
+     * </li>
+     * </ul>
+     * 
+     * @param clone if <code>true</code>, a clone of any 
+     * <code>JsonObject</code> or <code>JsonArray</code> will be made 
+     * before being added. If that case, any modification to the 
+     * original elements won't affect the added elements, 
+     * and vice-versa. If the element is <em>immutable</em> then it will 
+     * always be cloned. Doing so, we can make sure a 
+     * <code>JsonObject</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     */
+    public JsonObject merge(Map<String, Object> map, boolean clone);
+
+    /**
+     * Merges the specified <code>JsonObject</code> properties in the current
+     * object. Overwrites elements of the same JsonPaths.
+     * <p>
+     * Note that the elements from the source are added as is, 
+     * so any modification to them WILL affect the added element,
+     * and vise-versa. There is an exception though :
+     * if an element to add is <em>immutable</em>
+     * then it will always be cloned. Doing so, we can make sure a
+     * <code>JsonObject</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * </p>
+     */
+    public JsonObject merge(JsonObject jsonObj);
+
+    /**
+     * Merges the specified <code>JsonObject</code> properties in the current
+     * object. Overwrites elements of the same JsonPaths.
+     * 
+     * @param clone if <code>true</code>, a clone of the original 
+     * <code>JsonObject</code> will be made before being added.
+     * If that case, any modification to the original object
+     * won't affect the added element, and vice-versa. 
+     * If an  element is <em>immutable</em> then it will 
+     * always be cloned. Doing so, we can make sure a 
+     * <code>JsonObject</code> is always 
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     */
+    public JsonObject merge(JsonObject jsonObj, boolean clone);
+
+    /**
+     * Transforms the specifie3d object to <code>JsonObject</code> 
+     * and merges its properties in the current
+     * object. Overwrites elements of the same JsonPaths.
+     */
+    public JsonObject merge(ToJsonObjectConvertible jsonObj);
+
+    /**
+     * Removes a element from the object.
+     * The key is used <em>as is</em>, without
+     * being parsed as a <code>JsonPath</code>.
+     */
+    public JsonObject removeNoKeyParsing(String key);
+
+    /**
+     * Does the JsonObject contain an element at 
+     * the specified key?
+     * The key is considered <em>as is</em>, without
+     * being parsed as a <code>JsonPath</code>.
+     */
+    public boolean isElementExistsNoKeyParsing(String key);
+
+    /**
+     * Gets an untyped Object.
+     * 
+     * @return the object or <code>null</code> if not found. This object
+     * will inevitably be of a type managed by <code>JsonObject</code>, since
+     * an object of any other type is automatically converted when added.
+     */
+    public Object getObjectNoKeyParsing(String jsonPath);
+
+    /**
+     * Gets an untyped Object.
+     * @return the object or the specified 
+     * <code>defaultElement</code> if not found. This object
+     * will inevitably be of a type managed by <code>JsonObject</code>, since
+     * an object of any other type is automatically converted when added.
+     */
+    public Object getObjectNoKeyParsing(String jsonPath, Object defaultElement);
+
+    /**
+     * Gets an element as <code>JsonObject</code>.
+     * 
+     * @return the object or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonObject getJsonObjectNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonObject</code>.
+     * 
+     * @return the object or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonObject getJsonObjectNoKeyParsing(String jsonPath, JsonObject defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonObject</code>.
+     * 
+     * @return the element or an empty
+     * <code>JsonObject</code> if not found or if <code>null</code>.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonObject getJsonObjectOrEmptyNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonArray</code>.
+     * 
+     * @return the object or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonArray getJsonArrayNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonArray</code>.
+     * 
+     * @return the object or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonArray getJsonArrayNoKeyParsing(String jsonPath, JsonArray defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonArray</code>.
+     * @return the element or an empty
+     * <code>JsonArray</code> if not found or if <code>null</code>.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonArray getJsonArrayOrEmptyNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>String</code>.
+     * 
+     * @return the element or <code>null</code> if not found.
+     */
+    public String getStringNoKeyParsing(String jsonPath);
+
+    /**
+     * Gets an element as <code>String</code>.
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     */
+    public String getStringNoKeyParsing(String jsonPath, String defaultElement);
+
+    /**
+     * Gets an element as <code>Integer</code>.
+     * 
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Integer getIntegerNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Integer</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Integer getIntegerNoKeyParsing(String jsonPath, Integer defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Long</code>.
+     * 
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Long getLongNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Long</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Long getLongNoKeyParsing(String jsonPath, Long defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Float</code>.
+     * 
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Float getFloatNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Float</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Float getFloatNoKeyParsing(String jsonPath, Float defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Double</code>.
+     * 
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Double getDoubleNoKeyParsing(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Double</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Double getDoubleNoKeyParsing(String jsonPath, Double defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Boolean</code>.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * <p>
+     * The signature of this method is different than from the other
+     * "get" methods with a "parseJsonPath" parameter since we have to
+     * differenciate it from the overload that takes a Boolean
+     * default value.
+     * <p>
+     * 
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Boolean getBooleanNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>Boolean</code>.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Boolean getBooleanNoKeyParsing(String key, Boolean defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>BigDecimal</code>.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public BigDecimal getBigDecimalNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>BigDecimal</code>.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public BigDecimal getBigDecimalNoKeyParsing(String key, BigDecimal defaultElement) throws CantConvertException;
+
+    /**
+     * Gets a byte array, from a <em>base 64 encoded</em> element.
+     * 
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public byte[] getBytesFromBase64StringNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets a byte array, from a <em>base 64 encoded</em> element.
+     * 
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public byte[] getBytesFromBase64StringNoKeyParsing(String key, byte[] defaultElement) throws CantConvertException;
+
+    /**
+     * Gets a UTC timezoned date from a <code>ISO 8601</code> date element.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Date getDateNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets a UTC timezoned date from a <code>ISO 8601</code> date element.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Date getDateNoKeyParsing(String key, Date defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as JsonObject) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonObject getArrayFirstJsonObjectNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as JsonObject) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonObject getArrayFirstJsonObjectNoKeyParsing(String key, JsonObject defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as JsonArray) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonArray getArrayFirstJsonArrayNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as JsonArray) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonArray getArrayFirstJsonArrayNoKeyParsing(String key, JsonArray defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as String) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     */
+    public String getArrayFirstStringNoKeyParsing(String key);
+
+    /**
+     * Gets the first value (as String) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     */
+    public String getArrayFirstStringNoKeyParsing(String key, String defaultElement);
+
+    /**
+     * Gets the first value (as Integer) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Integer getArrayFirstIntegerNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Integer) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the arr
+     * ay or
+     * the first element are not found.
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Integer getArrayFirstIntegerNoKeyParsing(String key, Integer defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Long) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Long getArrayFirstLongNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Long) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Long getArrayFirstLongNoKeyParsing(String key, Long defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Double) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Double getArrayFirstDoubleNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Double) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Double getArrayFirstDoubleNoKeyParsing(String key, Double defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Float) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Float getArrayFirstFloatNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Float) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Float getArrayFirstFloatNoKeyParsing(String key, Float defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Boolean) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Boolean getArrayFirstBooleanNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Boolean) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Boolean getArrayFirstBooleanNoKeyParsing(String key, Boolean defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as BigDecimal) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public BigDecimal getArrayFirstBigDecimalNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as BigDecimal) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public BigDecimal getArrayFirstBigDecimalNoKeyParsing(String key, BigDecimal defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as byte[]) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public byte[] getArrayFirstBytesFromBase64StringNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as byte[]) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public byte[] getArrayFirstBytesFromBase64StringNoKeyParsing(String key, byte[] defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Date) of a <code>JsonArray</code> element
+     * . The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Date getArrayFirstDateNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Date) of a <code>JsonArray</code> element. 
+     * The key will be used <em>as is</em> without being parsed
+     * as a <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Date getArrayFirstDateNoKeyParsing(String key, Date defaultElement) throws CantConvertException;
+
+    /**
+     * Converts the <code>JsonObject</code> to an instance of
+     * the specified <code>T</code> type.
+     * <p>
+     * This uses {@link org.spincast.core.json.JsonManager#fromString(String, Class) JsonManager#fromJsonString}
+     * and may throw an exception if it is unable to do the conversion.
+     * </p>
+     */
+    public <T> T convert(Class<T> clazz);
+
+    /**
+     * Converts the <code>JsonObject</code> to a plain Map. 
+     * All <code>JsonObject</code> children will be converted to
+     * Maps and all <code>JsonArray</code> children will be converted to
+     * Lists.
+     */
+    public Map<String, Object> convertToPlainMap();
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>String</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToStringNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specifiedkey (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>Integer</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToIntegerNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>Long</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToLongNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>Float</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToFloatNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>Double</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToDoubleNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>Boolean</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToBooleanNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>BigDecimal</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToBigDecimalNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>base 64 String</code> representing 
+     * a byte array, or can be converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToByteArrayNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>Date</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToDateNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>JsonObject</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToJsonObjectNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code>, of type <code>JsonArray</code>, or can be
+     * converted and retrieved as one.
+     */
+    public boolean isCanBeConvertedToJsonArrayNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>String</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeStringNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>Integer</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeIntegerNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>Long</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeLongNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>Float</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeFloatNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>Double</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeDoubleNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>)> exists and
+     * is currently <code>null</code> or of type <code>Boolean</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeBooleanNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>BigDecimal</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeBigDecimalNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>byte[]</code>, without requiring
+     * any conversion.
+     * 
+     * @param acceptBase64StringToo if <code>true</code>, then a valid base 64 String
+     * will also be accepted.
+     */
+    public boolean isOfTypeByteArrayNoKeyParsing(String key, boolean acceptBase64StringToo);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>Date</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeDateNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>JsonObject</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeJsonObjectNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is currently <code>null</code> or of type <code>JsonArray</code>, without requiring
+     * any conversion.
+     */
+    public boolean isOfTypeJsonArrayNoKeyParsing(String key);
+
+    /**
+     * Validates that the element at the specified key (not parsed
+     * as a <code>JsonPath</code>) exists and
+     * is <code>null</code>.
+     */
+    public boolean isNullNoKeyParsing(String key);
+
+    /**
+     * Compares the current <code>JsonObject</code> to the specified one
+     * and returns <code>true</code> if they are equivalent. To be equivalent,
+     * all their elements must be so too.
+     * <p>
+     * An element is equivalent to the other if they can be converted to the¸
+     * same type, and then if they are equals.
+     * <p>
+     * For example, the <code>String</code> "123" is equivalent to 
+     * <code>new BigDecimal("123")</code> or to <code>123L</code>.
+     */
+    public boolean isEquivalentTo(JsonObject other);
+
+    /**
+     * Deep copy of the <code>JsonObject</code>, so any
+     * modification to the original won't affect the
+     * clone, and vice-versa.
+     * <p>
+     * Note that if the current object is immutable and
+     * the <code>mutable</code> parameter is set to <code>false</code>,
+     * then the current object will be returned as is, since no
+     * cloning is required.
+     * 
+     * @param mutable if <code>true</code> the resulting
+     * object and all its children will be mutable, otherwise
+     * they will all be immutable.
+     */
     @Override
-    public IJsonObject put(String key, String value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, Integer value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, Long value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, Float value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, Double value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, Boolean value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, BigDecimal value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, byte[] value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, Date value) {
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, IJsonObject value) {
-        return put(key, value, false);
-    }
-
-    @Override
-    public IJsonObject put(String key, IJsonObject value, boolean clone) {
-
-        //==========================================
-        // If the IJsonObject to put is Immutable, we
-        // always clone it to make it mutable.
-        //==========================================
-        if(value != null && (clone || (value instanceof Immutable))) {
-            value = value.clone(true);
-        }
-        return putAsIs(key, value);
-    }
-
-    @Override
-    public IJsonObject put(String key, IJsonArray value) {
-        return put(key, value, false);
-    }
-
-    @Override
-    public IJsonObject put(String key, IJsonArray value, boolean clone) {
-
-        //==========================================
-        // If the IJsonArray to put is Immutable, we
-        // always clone it to make it mutable.
-        //==========================================
-        if(value != null && (clone || (value instanceof Immutable))) {
-            value = value.clone(true);
-        }
-        return putAsIs(key, value);
-    }
-
-    protected IJsonObject putAsIs(String key, Object value) {
-        Objects.requireNonNull(key, "The key can't be NULL");
-        getMap().put(key, value);
-        return this;
-    }
-
-    @Override
-    public IJsonObject putConvert(String key, Object value) {
-        return putConvert(key, value, false);
-    }
-
-    @Override
-    public IJsonObject putConvert(String key, Object value, boolean clone) {
-
-        Objects.requireNonNull(key, "The key can't be NULL");
-
-        //==========================================
-        // If the element to put is Immutable, we
-        // always clone it to make it mutable.
-        //==========================================
-        if(clone || value instanceof Immutable) {
-            value = getJsonManager().clone(value, true);
-        } else {
-            value = getJsonManager().convertToNativeType(value);
-        }
-
-        putAsIs(key, value);
-
-        return this;
-    }
-
-    @Override
-    public IJsonObject merge(Map<String, Object> map) {
-        return merge(map, false);
-    }
-
-    @Override
-    public IJsonObject merge(Map<String, Object> map, boolean clone) {
-
-        if(map == null) {
-            return this;
-        }
-
-        for(Entry<String, Object> entry : map.entrySet()) {
-            putConvert(entry.getKey(), entry.getValue(), clone);
-        }
-        return this;
-    }
-
-    @Override
-    public IJsonObject merge(IJsonObject jsonObj) {
-        return merge(jsonObj, false);
-    }
-
-    @Override
-    public IJsonObject merge(IJsonObject jsonObj, boolean clone) {
-
-        if(jsonObj == null) {
-            return this;
-        }
-
-        for(Entry<String, Object> entry : jsonObj) {
-            putConvert(entry.getKey(), entry.getValue(), clone);
-        }
-        return this;
-    }
-
-    @Override
-    public IJsonObject remove(String key) {
-        getMap().remove(key);
-        return this;
-    }
-
-    @Override
-    public IJsonObject removeAll() {
-        getMap().clear();
-        return this;
-    }
-
-    @Override
-    public boolean isKeyExists(String key) {
-        return getMap().containsKey(key);
-    }
-
-    protected <T> T getArrayFirst(String key,
-                                  boolean hasDefaultValue,
-                                  T defaultValue,
-                                  IFirstElementGetter<T> firstElementGetter) {
-
-        IJsonArray array = getJsonArray(key, null);
-
-        if(array == null) {
-            if(hasDefaultValue) {
-                return defaultValue;
-            }
-            return null;
-        }
-
-        return firstElementGetter.get(array, hasDefaultValue, defaultValue);
-    }
-
-    @Override
-    public IJsonObject getArrayFirstJsonObject(String key) {
-        return getArrayFirstJsonObject(key, false, null);
-    }
-
-    @Override
-    public IJsonObject getArrayFirstJsonObject(String key, IJsonObject defaultValue) {
-        return getArrayFirstJsonObject(key, true, defaultValue);
-    }
-
-    protected IJsonObject getArrayFirstJsonObject(String key, boolean hasDefaultValue, IJsonObject defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<IJsonObject>() {
-
-            @Override
-            public IJsonObject get(IJsonArray array,
-                                   boolean hasDefaultValue,
-                                   IJsonObject defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getJsonObject(0, defaultValue);
-                } else {
-                    return array.getJsonObject(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public IJsonArray getArrayFirstJsonArray(String key) {
-        return getArrayFirstJsonArray(key, false, null);
-    }
-
-    @Override
-    public IJsonArray getArrayFirstJsonArray(String key, IJsonArray defaultValue) {
-        return getArrayFirstJsonArray(key, true, defaultValue);
-    }
-
-    protected IJsonArray getArrayFirstJsonArray(String key, boolean hasDefaultValue, IJsonArray defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<IJsonArray>() {
-
-            @Override
-            public IJsonArray get(IJsonArray array,
-                                  boolean hasDefaultValue,
-                                  IJsonArray defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getJsonArray(0, defaultValue);
-                } else {
-                    return array.getJsonArray(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public String getArrayFirstString(String key) {
-        return getArrayFirstString(key, false, null);
-    }
-
-    @Override
-    public String getArrayFirstString(String key, String defaultValue) {
-        return getArrayFirstString(key, true, defaultValue);
-    }
-
-    protected String getArrayFirstString(String key, boolean hasDefaultValue, String defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<String>() {
-
-            @Override
-            public String get(IJsonArray array,
-                              boolean hasDefaultValue,
-                              String defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getString(0, defaultValue);
-                } else {
-                    return array.getString(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Integer getArrayFirstInteger(String key) {
-        return getArrayFirstInteger(key, false, null);
-    }
-
-    @Override
-    public Integer getArrayFirstInteger(String key, Integer defaultValue) {
-        return getArrayFirstInteger(key, true, defaultValue);
-    }
-
-    protected Integer getArrayFirstInteger(String key, boolean hasDefaultValue, Integer defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<Integer>() {
-
-            @Override
-            public Integer get(IJsonArray array,
-                               boolean hasDefaultValue,
-                               Integer defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getInteger(0, defaultValue);
-                } else {
-                    return array.getInteger(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Long getArrayFirstLong(String key) {
-        return getArrayFirstLong(key, false, null);
-    }
-
-    @Override
-    public Long getArrayFirstLong(String key, Long defaultValue) {
-        return getArrayFirstLong(key, true, defaultValue);
-    }
-
-    protected Long getArrayFirstLong(String key, boolean hasDefaultValue, Long defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<Long>() {
-
-            @Override
-            public Long get(IJsonArray array,
-                            boolean hasDefaultValue,
-                            Long defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getLong(0, defaultValue);
-                } else {
-                    return array.getLong(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Double getArrayFirstDouble(String key) {
-        return getArrayFirstDouble(key, false, null);
-    }
-
-    @Override
-    public Double getArrayFirstDouble(String key, Double defaultValue) {
-        return getArrayFirstDouble(key, true, defaultValue);
-    }
-
-    protected Double getArrayFirstDouble(String key, boolean hasDefaultValue, Double defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<Double>() {
-
-            @Override
-            public Double get(IJsonArray array,
-                              boolean hasDefaultValue,
-                              Double defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getDouble(0, defaultValue);
-                } else {
-                    return array.getDouble(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Float getArrayFirstFloat(String key) {
-        return getArrayFirstFloat(key, false, null);
-    }
-
-    @Override
-    public Float getArrayFirstFloat(String key, Float defaultValue) {
-        return getArrayFirstFloat(key, true, defaultValue);
-    }
-
-    protected Float getArrayFirstFloat(String key, boolean hasDefaultValue, Float defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<Float>() {
-
-            @Override
-            public Float get(IJsonArray array,
-                             boolean hasDefaultValue,
-                             Float defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getFloat(0, defaultValue);
-                } else {
-                    return array.getFloat(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Boolean getArrayFirstBoolean(String key) {
-        return getArrayFirstBoolean(key, false, null);
-    }
-
-    @Override
-    public Boolean getArrayFirstBoolean(String key, Boolean defaultValue) {
-        return getArrayFirstBoolean(key, true, defaultValue);
-    }
-
-    protected Boolean getArrayFirstBoolean(String key, boolean hasDefaultValue, Boolean defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<Boolean>() {
-
-            @Override
-            public Boolean get(IJsonArray array,
-                               boolean hasDefaultValue,
-                               Boolean defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getBoolean(0, defaultValue);
-                } else {
-                    return array.getBoolean(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public BigDecimal getArrayFirstBigDecimal(String key) {
-        return getArrayFirstBigDecimal(key, false, null);
-    }
-
-    @Override
-    public BigDecimal getArrayFirstBigDecimal(String key, BigDecimal defaultValue) {
-        return getArrayFirstBigDecimal(key, true, defaultValue);
-    }
-
-    protected BigDecimal getArrayFirstBigDecimal(String key, boolean hasDefaultValue, BigDecimal defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<BigDecimal>() {
-
-            @Override
-            public BigDecimal get(IJsonArray array,
-                                  boolean hasDefaultValue,
-                                  BigDecimal defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getBigDecimal(0, defaultValue);
-                } else {
-                    return array.getBigDecimal(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public byte[] getArrayFirstBytesFromBase64String(String key) {
-        return getArrayFirstBytesFromBase64String(key, false, null);
-    }
-
-    @Override
-    public byte[] getArrayFirstBytesFromBase64String(String key, byte[] defaultValue) {
-        return getArrayFirstBytesFromBase64String(key, true, defaultValue);
-    }
-
-    protected byte[] getArrayFirstBytesFromBase64String(String key, boolean hasDefaultValue, byte[] defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<byte[]>() {
-
-            @Override
-            public byte[] get(IJsonArray array,
-                              boolean hasDefaultValue,
-                              byte[] defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getBytesFromBase64String(0, defaultValue);
-                } else {
-                    return array.getBytesFromBase64String(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Date getArrayFirstDate(String key) {
-        return getArrayFirstDate(key, false, null);
-    }
-
-    @Override
-    public Date getArrayFirstDate(String key, Date defaultValue) {
-        return getArrayFirstDate(key, true, defaultValue);
-    }
-
-    protected Date getArrayFirstDate(String key, boolean hasDefaultValue, Date defaultValue) {
-
-        return getArrayFirst(key, hasDefaultValue, defaultValue, new IFirstElementGetter<Date>() {
-
-            @Override
-            public Date get(IJsonArray array,
-                            boolean hasDefaultValue,
-                            Date defaultValue) {
-                if(hasDefaultValue) {
-                    return array.getDate(0, defaultValue);
-                } else {
-                    return array.getDate(0);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Iterator<Entry<String, Object>> iterator() {
-        return getMap().entrySet().iterator();
-    }
-
-    @Override
-    public IJsonObject clone() {
-        return clone(true);
-    }
-
-    @Override
-    public IJsonObject clone(boolean mutable) {
-        return getJsonManager().cloneJsonObject(this, mutable);
-    }
-
-    @Override
-    protected Object getElement(String keyPosition, boolean hasDefaultValue, Object defaultValue) {
-
-        if(isKeyExists(keyPosition)) {
-            return getMap().get(keyPosition);
-        }
-        if(hasDefaultValue) {
-            return defaultValue;
-        }
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> convertToPlainMap() {
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        for(Entry<String, Object> entry : this) {
-
-            Object value = entry.getValue();
-            if(value instanceof IJsonObject) {
-                value = ((IJsonObject)value).convertToPlainMap();
-            } else if(value instanceof IJsonArray) {
-                value = ((IJsonArray)value).convertToPlainList();
-            }
-            map.put(entry.getKey(), value);
-        }
-
-        return map;
-    }
-
-    @Override
-    public int size() {
-        return getMap().size();
-    }
+    public JsonObject clone(boolean mutable);
 
 }

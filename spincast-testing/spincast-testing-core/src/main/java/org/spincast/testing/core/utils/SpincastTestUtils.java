@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
@@ -28,10 +28,10 @@ public class SpincastTestUtils {
 
     private static Date testDate;
 
-    public static final IHandler<IDefaultRequestContext> dummyRouteHandler = new IHandler<IDefaultRequestContext>() {
+    public static final Handler<DefaultRequestContext> dummyRouteHandler = new Handler<DefaultRequestContext>() {
 
         @Override
-        public void handle(IDefaultRequestContext exchange) {
+        public void handle(DefaultRequestContext exchange) {
             //...
         }
     };

@@ -1,6 +1,6 @@
 package org.spincast.tests;
 
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
@@ -22,7 +22,7 @@ public class InvalidCustomRouterConfigKeyTest extends SpincastDefaultNoAppIntegr
 
                     @Override
                     protected Key<?> getRouterImplementationKey() {
-                        return Key.get(ISpincastUtils.class); // Invalid!
+                        return Key.get(SpincastUtils.class); // Invalid!
                     }
                 });
             }

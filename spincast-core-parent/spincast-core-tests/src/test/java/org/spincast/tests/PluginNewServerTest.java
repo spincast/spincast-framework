@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.tests.varia.CustomServer;
 
@@ -25,7 +25,7 @@ public class PluginNewServerTest {
 
         @Override
         protected void configure() {
-            bind(IServer.class).to(CustomServer.class).in(Scopes.SINGLETON);
+            bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
         }
     }
 
@@ -40,7 +40,7 @@ public class PluginNewServerTest {
         Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule())
                                                      .with(new CustomServerModule()));
 
-        IServer serverRaw = guice.getInstance(IServer.class);
+        Server serverRaw = guice.getInstance(Server.class);
         assertNotNull(serverRaw);
         assertTrue(serverRaw instanceof CustomServer);
 

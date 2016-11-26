@@ -1,35 +1,20 @@
 package org.spincast.quickstart.exchange;
 
-import org.spincast.core.exchange.RequestContextBase;
-import org.spincast.core.exchange.RequestContextBaseDeps;
-
-import com.google.inject.assistedinject.Assisted;
-import com.google.inject.assistedinject.AssistedInject;
+import org.spincast.core.exchange.RequestContext;
 
 /**
- * Implementation of our custom request context type.
+ * Custom type which allows our application to
+ * extend the default Request Context.
+ * 
+ * Spincast will pass an instance of this class to all matching
+ * <code>Route Handlers</code>, when a request arrives.
  */
-public class AppRequestContext extends RequestContextBase<IAppRequestContext>
-                               implements IAppRequestContext {
-
-    @AssistedInject
-    public AppRequestContext(@Assisted Object exchange, RequestContextBaseDeps<IAppRequestContext> requestContextBaseDeps) {
-        super(exchange, requestContextBaseDeps);
-    }
+public interface AppRequestContext extends RequestContext<AppRequestContext> {
 
     /**
-     * Our simple example will take a "name" parameter from the path
-     * ("/greet/${name}" for example) and will output
-     * a greeting message.
+     * A custom method example.
+     * This will simply output a plain text "Hello [NAME]".
      */
-    @Override
-    public void customGreetingMethod() {
-        String name = request().getPathParam("name");
-        if(name == null) {
-            throw new RuntimeException("The 'name' parameter was not found, " +
-                                       "full url : " + request().getFullUrl());
-        }
+    public void customGreetingMethod();
 
-        response().sendPlainText("Hello " + name + "!");
-    }
 }

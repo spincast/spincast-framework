@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -18,20 +18,20 @@ import com.google.inject.Inject;
 public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected DefaultRouteParamAliasesBinder<IDefaultRequestContext, IDefaultWebsocketContext> defaultPredefinedRouteParamPatternsBinder;
+    protected DefaultRouteParamAliasesBinder<DefaultRequestContext, DefaultWebsocketContext> defaultPredefinedRouteParamPatternsBinder;
 
     @Test
     public void paramNoPattern() throws Exception {
 
-        getRouter().GET("/${param1}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("one", response.getContentAsString());
@@ -40,31 +40,31 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void paramNoPatternNoName() throws Exception {
 
-        getRouter().GET("/${}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(0, context.request().getPathParams().size());
             }
         });
 
-        IHttpResponse response = GET("/one123").send();
+        HttpResponse response = GET("/one123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void paramPattern1() throws Exception {
 
-        getRouter().GET("/${param1:a+}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:a+}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("a", response.getContentAsString());
@@ -90,15 +90,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void paramPatternNumeric() throws Exception {
 
-        getRouter().GET("/users/${param1:\\d+}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/users/${param1:\\d+}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/users/1").send();
+        HttpResponse response = GET("/users/1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("1", response.getContentAsString());
@@ -119,15 +119,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
     @Test
     public void emptyPattern() throws Exception {
 
-        getRouter().GET("/${param1:}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("one", response.getContentAsString());
@@ -144,10 +144,10 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
         try {
             String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaAliasKey();
 
-            getRouter().GET("/${param1:<" + key + "}").save(new IHandler<IDefaultRequestContext>() {
+            getRouter().GET("/${param1:<" + key + "}").save(new Handler<DefaultRequestContext>() {
 
                 @Override
-                public void handle(IDefaultRequestContext context) {
+                public void handle(DefaultRequestContext context) {
                 }
             });
             fail();
@@ -160,10 +160,10 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
     public void paramPredefinedPatternNotFound() throws Exception {
 
         try {
-            getRouter().GET("/${param1:<NOPE>}").save(new IHandler<IDefaultRequestContext>() {
+            getRouter().GET("/${param1:<NOPE>}").save(new Handler<DefaultRequestContext>() {
 
                 @Override
-                public void handle(IDefaultRequestContext context) {
+                public void handle(DefaultRequestContext context) {
                 }
             });
             fail();
@@ -177,10 +177,10 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
         try {
             String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaAliasKey();
 
-            getRouter().GET("/*{param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+            getRouter().GET("/*{param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
                 @Override
-                public void handle(IDefaultRequestContext context) {
+                public void handle(DefaultRequestContext context) {
                 }
             });
             fail();
@@ -193,15 +193,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("a", response.getContentAsString());
@@ -250,15 +250,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.geNumericAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/A").send();
@@ -304,15 +304,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaPlusAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("a", response.getContentAsString());
@@ -368,15 +368,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.geNumericPlusAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/A").send();
@@ -426,15 +426,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaNumericAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("a", response.getContentAsString());
@@ -493,15 +493,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaNumericPlusAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("a", response.getContentAsString());
@@ -566,15 +566,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         getRouter().addRouteParamPatternAlias("XX", "abc");
 
-        getRouter().GET("/${param1:<XX>}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<XX>}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/A").send();
@@ -627,15 +627,15 @@ public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase
 
         getRouter().addRouteParamPatternAlias("USERS", "user|users|usr");
 
-        getRouter().GET("/${param1:<USERS>}/${userId}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1:<USERS>}/${userId}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(context.request().getPathParam("param1"));
             }
         });
 
-        IHttpResponse response = GET("/a").send();
+        HttpResponse response = GET("/a").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/abc").send();

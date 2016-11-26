@@ -12,11 +12,11 @@ import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.MethodSorters;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.testing.utils.IBeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.IRepeatedClassAfterMethodProvider;
-import org.spincast.testing.utils.ITestFailureListener;
+import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.RepeatedClassAfterMethodProvider;
+import org.spincast.testing.utils.TestFailureListener;
 import org.spincast.testing.utils.SpincastJUnitRunner;
 
 import com.google.inject.Inject;
@@ -48,13 +48,13 @@ import com.google.inject.Injector;
  */
 @RunWith(SpincastJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class SpincastTestBase implements IBeforeAfterClassMethodsProvider,
-                                       ITestFailureListener,
-                                       IRepeatedClassAfterMethodProvider {
+public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvider,
+                                       TestFailureListener,
+                                       RepeatedClassAfterMethodProvider {
 
     private Injector guice;
     private File testingWritableDir;
-    private ISpincastConfig spincastConfig;
+    private SpincastConfig spincastConfig;
 
     @Override
     public void beforeClass() {
@@ -95,11 +95,11 @@ public abstract class SpincastTestBase implements IBeforeAfterClassMethodsProvid
     }
 
     @Inject
-    protected void setSpincastConfig(ISpincastConfig spincastConfig) {
+    protected void setSpincastConfig(SpincastConfig spincastConfig) {
         this.spincastConfig = spincastConfig;
     }
 
-    protected ISpincastConfig getSpincastConfig() {
+    protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 

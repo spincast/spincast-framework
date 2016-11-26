@@ -3,7 +3,7 @@ package org.spincast.website.maven;
 import java.io.File;
 
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -28,7 +28,7 @@ public class SpincastMavenPreparePackage extends SpincastMavenScriptBase {
         script.start();
     }
 
-    private final ISpincastUtils spincastUtils;
+    private final SpincastUtils spincastUtils;
     private String projectVersion;
 
     /**
@@ -36,12 +36,12 @@ public class SpincastMavenPreparePackage extends SpincastMavenScriptBase {
      */
     @Inject
     public SpincastMavenPreparePackage(@MainArgs String[] mainArgs,
-                                       ISpincastUtils spincastUtils) {
+                                       SpincastUtils spincastUtils) {
         super(mainArgs);
         this.spincastUtils = spincastUtils;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 

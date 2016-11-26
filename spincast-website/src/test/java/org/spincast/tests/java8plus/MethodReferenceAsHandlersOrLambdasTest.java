@@ -3,11 +3,11 @@ package org.spincast.tests.java8plus;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -18,7 +18,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends SpincastDefaultNoApp
 
     public static class MyController {
 
-        public void test(IDefaultRequestContext context) {
+        public void test(DefaultRequestContext context) {
             context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
         }
     }
@@ -43,7 +43,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends SpincastDefaultNoApp
 
         getRouter().GET("/one").save(this.ctl::test);
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -55,7 +55,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends SpincastDefaultNoApp
 
         getRouter().GET("/one").save(context -> context.response().sendPlainText(SpincastTestUtils.TEST_STRING));
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

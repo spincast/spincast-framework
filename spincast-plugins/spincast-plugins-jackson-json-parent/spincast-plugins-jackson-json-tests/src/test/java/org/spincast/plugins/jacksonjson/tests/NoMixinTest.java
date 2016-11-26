@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.JsonManager;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.testing.core.SpincastTestBase;
 
@@ -15,21 +15,21 @@ import com.google.inject.Injector;
 public class NoMixinTest extends SpincastTestBase {
 
     @Inject
-    IJsonManager jsonManager;
+    JsonManager jsonManager;
 
     @Override
     protected Injector createInjector() {
         return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
     @Test
     public void noMixinSerialize() throws Exception {
 
-        IUser user = new User();
+        User user = new UserDefault();
         user.setName("Stromgol");
         user.setAge(123);
         user.setTitle("alien");
@@ -44,7 +44,7 @@ public class NoMixinTest extends SpincastTestBase {
 
         String jsonString = "{\"name\":\"Stromgol\",\"age\":123,\"title\":\"some title\"}";
 
-        IUser user = getJsonManager().fromJsonString(jsonString, User.class);
+        User user = getJsonManager().fromString(jsonString, UserDefault.class);
         assertNotNull(jsonString);
         assertEquals("Stromgol", user.getName());
         assertEquals(123, user.getAge());

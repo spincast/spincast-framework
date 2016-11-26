@@ -3,7 +3,7 @@ Spincast Variables plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-variables-addon{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-variables-addon{% endblock %}
 {% block meta_title %}Plugins - Spincast Variables Addon{% endblock %}
 {% block meta_description %}Spincast Variables Addon plugin{% endblock %}
 
@@ -30,12 +30,12 @@ Spincast Variables plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
+        <div class="col-xs-12"> 
             <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Variables Addon <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/variables/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/variables/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
@@ -54,31 +54,60 @@ Spincast Variables plugin
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#request_context_addon">The request context add-on</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#request_context_example">Quick Example</a></li>
-                        <li><a href="#request_context_methods">Methods</a></li> 
-                    </ul>
-                </li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
+                <p>
+                    This plugin provides an implementation for the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/VariablesRequestContextAddon.html">VariablesRequestContextAddon</a> 
+                    Request Context <code>add-on</code> : 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/variables/SpincastVariablesRequestContextAddon.html">SpincastVariablesRequestContextAddon</a>.
+                    It allows a <code>Route Handler</code> to set 
+                    <em>request scoped</em> variables which will be available to other <code>Route Handlers</code>. 
+                    It is mounted as <code>.variables()</code> on the default Spincast Request Context. 
+                </p>
+            </section>
+            
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
 	            <p>
-                    The <code>Spincast Variables</code> plugin provides a request context <code>add-on</code> :
-                    "<code>IVariablesRequestContextAddon</code>". This add-on allows your <code>route handlers</code> to set 
-                    <em>request scoped</em> variables which will be available to other handlers. 
-                    It is mounted as <code>.variables()</code>
-                    on the default Spincast request context. 
+	                <ul>
+                        <li>
+                            Using the <code>.variables()</code> add-on from a <code>Route Handler</code> 
+                            to get and set request scoped variables :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+
+    // Reads a request scoped variable
+    context.variables().get("someVariable");
+
+    // Adds a new request scoped variable
+    context.variables().add("newVariable", "some value");
+    
+    //...
+}</pre>
+                                </p>
+                            </div> 
+                        </li>
+                        
+                    </ul>
 	            </p>
             </section>
             
@@ -101,7 +130,7 @@ Spincast Variables plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-variables-addon&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -114,8 +143,8 @@ Spincast Variables plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastVariablesPluginGuiceModule(IAppRequestContext.class, 
-                                               IAppWebsocketContext.class)
+        new SpincastVariablesPluginGuiceModule(AppRequestContext.class, 
+                                               AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -143,138 +172,24 @@ Spincast Variables plugin
 	            </p>
             </section>
             
-            <section id="request_context_addon">
+            
+            <section id="javadoc">
                 <h3>
-                    <a class="anchor" href="#request_context_addon" title="permanent link"></a>
-                    The request context add-on
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
-	            <div id="request_context_example">
-		            <p>
-		                <div>
-		                    <p>
-		                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
-		                        {% verbatim %}<pre class="ace ace-java" data-ace-hi="1,11,1,23"
->public void myHandler(IAppRequestContext context) {
-    context.variables().add("myVariable", "some value");
-}</pre>{% endverbatim %}
-		                    </p>
-		                </div>
-		            </p>
-	            </div>
-                <div id="request_context_methods">
-		            <p>
-		                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-		                <ul class="apiList">
-                        
-    
-<li>
-    <code class="apiItem">void <span>add</span>(String key, Object obj)</code>
-    <div class="well">
-        Adds a request scoped variable.
-<br />It is recommended that you prefixe the name of the
- <code>key</code> with the name of your class
- (for example : <code>this.getClass().getName()</code>),
- so it doesn't clash with other keys!
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>add</span>(Map&lt;String, Object&gt; variables)</code>
-    <div class="well">
-        Adds request scoped variables.
-<br />It is recommended that you prefixe the name of the
- <code>keys</code> with the name of your class
- (for example : <code>this.getClass().getName()</code>),
- so they don't clash with other keys!
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, Object&gt; <span>getAll</span>()</code>
-    <div class="well">
-        Gets all the request scoped variables.
-<br />The map is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Object <span>get</span>(String key)</code>
-    <div class="well">
-        Gets the specified request scoped variable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">&lt;T&gt; T <span>get</span>(String key, Class&lt;T&gt; clazz)</code>
-    <div class="well">
-        Gets the specified request scoped variable as the
- specified class.
-
-        <div class="apiItemFooter">
-            @throw an exception is the object is not
- of the specified class.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">&lt;T&gt; T <span>get</span>(String key, Key&lt;T&gt; typeKey)</code>
-    <div class="well">
-        Gets the specified request scoped variable as the
- specified <code>Key</code>.
-
-        <div class="apiItemFooter">
-            @throw an exception is the object is not
- of the specified Key.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonObject <span>getAsJsonObject</span>(String key)</code>
-    <div class="well">
-        Gets the specified request scoped variable as <code>JsonObject</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getAsString</span>(String key)</code>
-    <div class="well">
-        Gets the specified request scoped variable as a String.
- <code>toString</code> will be called on the Object.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>remove</span>(String key)</code>
-    <div class="well">
-        Removes a request scoped variable.
-<br />Note: Spincast uses some request scoped variables for
- internal purposes. Do not try to remove <em>all</em>
- variables!
-
-    </div>
-</li>
-
-
-       
-       
-                            
-		                </ul>
-		            </p>
-	            </div>
+                <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/VariablesRequestContextAddon.html">VariablesRequestContextAddon</a> 
+                        </li>
+                    </ul>
+                </p> 
             </section>
+            
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

@@ -8,12 +8,12 @@ import static org.junit.Assert.fail;
 import java.io.File;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -22,9 +22,9 @@ import com.google.inject.Inject;
 public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected ISpincastRouterConfig spincastRouterConfig;
+    protected SpincastRouterConfig spincastRouterConfig;
 
-    protected ISpincastRouterConfig getSpincastRouterConfig() {
+    protected SpincastRouterConfig getSpincastRouterConfig() {
         return this.spincastRouterConfig;
     }
 
@@ -49,10 +49,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -72,7 +72,7 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
             }
         });
 
-        IHttpResponse response = GET("/generated.css").send();
+        HttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -102,10 +102,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -118,7 +118,7 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
             }
         });
 
-        IHttpResponse response = GET("/generated.css").send();
+        HttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -148,10 +148,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -165,7 +165,7 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
             }
         });
 
-        IHttpResponse response = GET("/generated.css").send();
+        HttpResponse response = GET("/generated.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -195,10 +195,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         final int[] nbrTimeCalled = new int[]{0};
 
         getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
 
                            try {
 
@@ -218,7 +218,7 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
                        }
                    });
 
-        IHttpResponse response = GET("/generated/test1.css").send();
+        HttpResponse response = GET("/generated/test1.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
         assertEquals("path : test1.css", response.getContentAsString());
@@ -256,10 +256,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         final int[] nbrTimeCalled = new int[]{0};
 
         getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
 
                            try {
 
@@ -279,7 +279,7 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
                        }
                    });
 
-        IHttpResponse response = GET("/generated/../test1.css").send();
+        HttpResponse response = GET("/generated/../test1.css").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
     }
 
@@ -293,10 +293,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         final int[] nbrTimeCalled = new int[]{0};
 
         getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
 
                            try {
 
@@ -310,7 +310,7 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
                        }
                    });
 
-        IHttpResponse response = GET("/generated/test1.css").send();
+        HttpResponse response = GET("/generated/test1.css").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
         assertEquals("path : test1.css", response.getContentAsString());
@@ -342,10 +342,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         try {
             getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/*{splat}")
-                       .save(new IHandler<IDefaultRequestContext>() {
+                       .save(new Handler<DefaultRequestContext>() {
 
                            @Override
-                           public void handle(IDefaultRequestContext context) {
+                           public void handle(DefaultRequestContext context) {
                                fail();
                            }
                        });
@@ -359,10 +359,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         try {
             getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/${splat}")
-                       .save(new IHandler<IDefaultRequestContext>() {
+                       .save(new Handler<DefaultRequestContext>() {
 
                            @Override
-                           public void handle(IDefaultRequestContext context) {
+                           public void handle(DefaultRequestContext context) {
                                fail();
                            }
                        });
@@ -382,16 +382,16 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         getRouter().file("/test/${name}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            nbrTimeCalled[0]++;
                            context.response().sendCharacters(content, "text/css");
                        }
                    });
 
-        IHttpResponse response = GET("/test/test1.css").send();
+        HttpResponse response = GET("/test/test1.css").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -422,16 +422,16 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         getRouter().file("/test/${name}/coco")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${name}.css")
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            nbrTimeCalled[0]++;
                            context.response().sendCharacters(content, "text/css");
                        }
                    });
 
-        IHttpResponse response = GET("/test/test1").send();
+        HttpResponse response = GET("/test/test1").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/test/test1/coco").send();
@@ -464,16 +464,16 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         getRouter().file("/${param1}/${param2}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${param2}/${param1}.css")
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            nbrTimeCalled[0]++;
                            context.response().sendCharacters(content, "text/css");
                        }
                    });
 
-        IHttpResponse response = GET("/test1/test2").send();
+        HttpResponse response = GET("/test1/test2").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -504,16 +504,16 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         getRouter().file("/${param1}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/toto.css")
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            nbrTimeCalled[0]++;
                            context.response().sendCharacters(content, "text/css");
                        }
                    });
 
-        IHttpResponse response = GET("/test").send();
+        HttpResponse response = GET("/test").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/css", response.getContentType());
@@ -547,16 +547,16 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
 
         getRouter().file("/test/${name}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
-                   .save(new IHandler<IDefaultRequestContext>() {
+                   .save(new Handler<DefaultRequestContext>() {
 
                        @Override
-                       public void handle(IDefaultRequestContext context) {
+                       public void handle(DefaultRequestContext context) {
                            nbrTimeCalled[0]++;
                            context.response().sendCharacters(content, "text/css");
                        }
                    });
 
-        IHttpResponse response = GET("/test/nope/test1.css").send();
+        HttpResponse response = GET("/test/nope/test1.css").send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
@@ -571,10 +571,10 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
         try {
             getRouter().file("/test/*{name}")
                        .pathAbsolute(getTestingWritableDir() + "/somepath/titi")
-                       .save(new IHandler<IDefaultRequestContext>() {
+                       .save(new Handler<DefaultRequestContext>() {
 
                            @Override
-                           public void handle(IDefaultRequestContext context) {
+                           public void handle(DefaultRequestContext context) {
                                fail();
                            }
                        });

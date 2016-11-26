@@ -10,13 +10,14 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.spincast.core.json.IJsonArray;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,24 +41,24 @@ import com.google.inject.Provider;
 /**
  * Spincast Jackson XML manager
  */
-public class SpincastXmlManager implements IXmlManager {
+public class SpincastXmlManager implements XmlManager {
 
     private final Provider<Injector> guiceProvider;
-    private final IJsonManager jsonManager;
-    private final Set<IXmlMixinInfo> xmlMixinInfos;
+    private final JsonManager jsonManager;
+    private final Set<XmlMixinInfo> xmlMixinInfos;
     private final XmlPrettyPrinter xmlPrettyPrinter;
 
     private XmlMapper xmlMapper;
     private XmlMapper xmlMapperPretty;
-    private JsonSerializer<IJsonObject> jsonObjectSerializer;
-    private JsonDeserializer<IJsonObject> jsonObjectDeserializer;
-    private JsonDeserializer<IJsonArray> jsonArrayDeserializer;
-    private JsonSerializer<IJsonArray> jsonArraySerializer;
+    private JsonSerializer<JsonObject> jsonObjectSerializer;
+    private JsonDeserializer<JsonObject> jsonObjectDeserializer;
+    private JsonDeserializer<JsonArray> jsonArrayDeserializer;
+    private JsonSerializer<JsonArray> jsonArraySerializer;
 
     @Inject
     public SpincastXmlManager(Provider<Injector> guiceProvider,
-                              IJsonManager jsonManager,
-                              @Nullable Set<IXmlMixinInfo> xmlMixinInfos,
+                              JsonManager jsonManager,
+                              @Nullable Set<XmlMixinInfo> xmlMixinInfos,
                               XmlPrettyPrinter xmlPrettyPrinter) {
         this.guiceProvider = guiceProvider;
         this.jsonManager = jsonManager;
@@ -69,11 +70,11 @@ public class SpincastXmlManager implements IXmlManager {
         return this.guiceProvider.get();
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected Set<IXmlMixinInfo> getXmlMixinInfos() {
+    protected Set<XmlMixinInfo> getXmlMixinInfos() {
         return this.xmlMixinInfos;
     }
 
@@ -123,9 +124,43 @@ public class SpincastXmlManager implements IXmlManager {
     }
 
     protected void configureMixins(XmlMapper xmlMapper) {
-        for(IXmlMixinInfo xmlMixinInfo : getXmlMixinInfos()) {
+
+        addSpincastMixins(xmlMapper);
+
+        for(XmlMixinInfo xmlMixinInfo : getXmlMixinInfos()) {
             xmlMapper.addMixIn(xmlMixinInfo.getTargetClass(), xmlMixinInfo.getMixinClass());
         }
+    }
+
+    protected void addSpincastMixins(XmlMapper xmlMapper) {
+        addJsonObjectMixin(xmlMapper);
+        addJsonArrayMixin(xmlMapper);
+    }
+
+    @JsonRootName("JsonObject")
+    protected static interface JsonObjectMixIn extends JsonObject {
+        // nothing required
+    }
+
+    @JsonRootName("JsonArray")
+    protected static interface JsonArrayMixIn extends JsonArray {
+        // nothing required
+    }
+
+    /**
+     * Specifies the root element name when serializing
+     * a JsonObject
+     */
+    protected void addJsonObjectMixin(XmlMapper xmlMapper) {
+        xmlMapper.addMixIn(JsonObject.class, JsonObjectMixIn.class);
+    }
+
+    /**
+     * Specifies the root element name when serializing
+     * a JsonArray
+     */
+    protected void addJsonArrayMixin(XmlMapper xmlMapper) {
+        xmlMapper.addMixIn(JsonArray.class, JsonArrayMixIn.class);
     }
 
     protected XmlMapper getXmlMapperPretty() {
@@ -136,6 +171,7 @@ public class SpincastXmlManager implements IXmlManager {
             xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
             registerCustomModules(xmlMapper);
+            configureMixins(xmlMapper);
 
             this.xmlMapperPretty = xmlMapper;
         }
@@ -144,20 +180,20 @@ public class SpincastXmlManager implements IXmlManager {
 
     /**
      * The name of the attribute set on a XML element to indicate it
-     * comes from a IJsonArray. This allows us to deserialize the XML
+     * comes from a JsonArray. This allows us to deserialize the XML
      * back to the correct structure.
      */
     protected String getArrayAttributeName() {
         return "isArray";
     }
 
-    protected JsonSerializer<IJsonObject> getJsonObjectSerializer() {
+    protected JsonSerializer<JsonObject> getJsonObjectSerializer() {
 
         if(this.jsonObjectSerializer == null) {
-            this.jsonObjectSerializer = new JsonSerializer<IJsonObject>() {
+            this.jsonObjectSerializer = new JsonSerializer<JsonObject>() {
 
                 @Override
-                public void serialize(IJsonObject jsonObject,
+                public void serialize(JsonObject jsonObject,
                                       JsonGenerator gen,
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
@@ -180,13 +216,13 @@ public class SpincastXmlManager implements IXmlManager {
         return this.jsonObjectSerializer;
     }
 
-    protected JsonSerializer<IJsonArray> getJsonArraySerializer() {
+    protected JsonSerializer<JsonArray> getJsonArraySerializer() {
 
         if(this.jsonArraySerializer == null) {
-            this.jsonArraySerializer = new JsonSerializer<IJsonArray>() {
+            this.jsonArraySerializer = new JsonSerializer<JsonArray>() {
 
                 @Override
-                public void serialize(IJsonArray jsonArray,
+                public void serialize(JsonArray jsonArray,
                                       JsonGenerator gen,
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
@@ -213,12 +249,12 @@ public class SpincastXmlManager implements IXmlManager {
 
                         if(element == null) {
                             xmlGen.writeNull();
-                        } else if(element instanceof IJsonObject) {
+                        } else if(element instanceof JsonObject) {
                             xmlGen.writeStartObject();
                             xmlGen.writeFieldName("obj");
                             xmlGen.writeObject(element);
                             xmlGen.writeEndObject();
-                        } else if(element instanceof IJsonArray) {
+                        } else if(element instanceof JsonArray) {
                             xmlGen.writeStartObject();
                             xmlGen.writeFieldName("array");
                             xmlGen.writeObject(element);
@@ -235,23 +271,23 @@ public class SpincastXmlManager implements IXmlManager {
         return this.jsonArraySerializer;
     }
 
-    protected JsonDeserializer<IJsonObject> getJsonObjectDeserializer() {
+    protected JsonDeserializer<JsonObject> getJsonObjectDeserializer() {
 
         if(this.jsonObjectDeserializer == null) {
-            this.jsonObjectDeserializer = new JsonDeserializer<IJsonObject>() {
+            this.jsonObjectDeserializer = new JsonDeserializer<JsonObject>() {
 
                 @Override
-                public IJsonObject deserialize(JsonParser jsonParser,
-                                               DeserializationContext context)
-                                                                               throws IOException,
-                                                                               JsonProcessingException {
+                public JsonObject deserialize(JsonParser jsonParser,
+                                              DeserializationContext context)
+                                                                              throws IOException,
+                                                                              JsonProcessingException {
 
                     FromXmlParser xmlParser = (FromXmlParser)jsonParser;
 
                     @SuppressWarnings("unused")
                     JsonToken token = xmlParser.nextToken();
 
-                    IJsonObject jsonObject = deserializeJsonObject(xmlParser, context, null);
+                    JsonObject jsonObject = deserializeJsonObject(xmlParser, context, null);
                     return jsonObject;
                 }
             };
@@ -260,16 +296,16 @@ public class SpincastXmlManager implements IXmlManager {
         return this.jsonObjectDeserializer;
     }
 
-    protected JsonDeserializer<IJsonArray> getJsonArrayDeserializer() {
+    protected JsonDeserializer<JsonArray> getJsonArrayDeserializer() {
 
         if(this.jsonArrayDeserializer == null) {
-            this.jsonArrayDeserializer = new JsonDeserializer<IJsonArray>() {
+            this.jsonArrayDeserializer = new JsonDeserializer<JsonArray>() {
 
                 @Override
-                public IJsonArray deserialize(JsonParser jsonParser,
-                                              DeserializationContext context)
-                                                                              throws IOException,
-                                                                              JsonProcessingException {
+                public JsonArray deserialize(JsonParser jsonParser,
+                                             DeserializationContext context)
+                                                                             throws IOException,
+                                                                             JsonProcessingException {
 
                     FromXmlParser xmlParser = (FromXmlParser)jsonParser;
 
@@ -371,17 +407,17 @@ public class SpincastXmlManager implements IXmlManager {
         }
     }
 
-    protected IJsonArray deserializeJsonArray(FromXmlParser xmlParser, DeserializationContext context) {
+    protected JsonArray deserializeJsonArray(FromXmlParser xmlParser, DeserializationContext context) {
         return deserializeJsonArray(xmlParser, context, false);
     }
 
-    protected IJsonArray deserializeJsonArray(FromXmlParser xmlParser,
-                                              DeserializationContext context,
-                                              boolean firstElementSkipped) {
+    protected JsonArray deserializeJsonArray(FromXmlParser xmlParser,
+                                             DeserializationContext context,
+                                             boolean firstElementSkipped) {
 
         try {
 
-            IJsonArray jsonArray = getJsonManager().createArray();
+            JsonArray jsonArray = getJsonManager().createArray();
 
             JsonToken token = xmlParser.getCurrentToken();
             while(token == JsonToken.FIELD_NAME || firstElementSkipped) {
@@ -431,16 +467,16 @@ public class SpincastXmlManager implements IXmlManager {
                         // <someKey><color>red</color><size>big</size></someKey>
                         // or is an array in the array.
                         //==========================================
-                        jsonArray.addConvert(deserializeObjectOrArray(xmlParser, context));
+                        jsonArray.add(deserializeObjectOrArray(xmlParser, context));
                     } else {
 
                         //==========================================
                         // The array element is a something like <someKey>titi</someKey>.
-                        // We considere this as a IJsonObject with one property.
+                        // We considere this as a JsonObject with one property.
                         //==========================================
-                        IJsonObject jsonObject = getJsonManager().create();
+                        JsonObject jsonObject = getJsonManager().create();
                         Object value = xmlParser.readValueAs(Object.class);
-                        jsonObject.putConvert(fieldName, value);
+                        jsonObject.put(fieldName, value);
 
                         jsonArray.add(jsonObject);
                     }
@@ -462,7 +498,7 @@ public class SpincastXmlManager implements IXmlManager {
                     // The array element is a simple value
                     //==========================================
                     Object value = xmlParser.readValueAs(Object.class);
-                    jsonArray.addConvert(value);
+                    jsonArray.add(value);
                 }
 
                 token = xmlParser.nextToken();
@@ -474,16 +510,16 @@ public class SpincastXmlManager implements IXmlManager {
         }
     }
 
-    protected IJsonObject deserializeJsonObject(FromXmlParser xmlParser,
-                                                DeserializationContext context,
-                                                Entry<String, Object> firstProperty) {
+    protected JsonObject deserializeJsonObject(FromXmlParser xmlParser,
+                                               DeserializationContext context,
+                                               Entry<String, Object> firstProperty) {
 
         try {
 
-            IJsonObject jsonObject = getJsonManager().create();
+            JsonObject jsonObject = getJsonManager().create();
 
             if(firstProperty != null) {
-                jsonObject.putConvert(firstProperty.getKey(), firstProperty.getValue());
+                jsonObject.put(firstProperty.getKey(), firstProperty.getValue());
             }
 
             JsonToken token = xmlParser.getCurrentToken();
@@ -501,10 +537,10 @@ public class SpincastXmlManager implements IXmlManager {
                 if(token == JsonToken.VALUE_NULL) {
                     jsonObject.put(fieldName, getJsonManager().create());
                 } else if(token == JsonToken.START_OBJECT) {
-                    jsonObject.putConvert(fieldName, deserializeObjectOrArray(xmlParser, context));
+                    jsonObject.put(fieldName, deserializeObjectOrArray(xmlParser, context));
                 } else {
                     Object value = xmlParser.readValueAs(Object.class);
-                    jsonObject.putConvert(fieldName, value);
+                    jsonObject.put(fieldName, value);
                 }
                 token = xmlParser.nextToken();
             }
@@ -515,19 +551,19 @@ public class SpincastXmlManager implements IXmlManager {
     }
 
     protected void registerCustomModules(XmlMapper objectMapper) {
-        registerIJsonObjectModule(objectMapper);
+        registerJsonObjectModule(objectMapper);
     }
 
     /**
-     * Register our custom (de)serializers for IJsonObject
+     * Register our custom (de)serializers for JsonObject
      */
-    protected void registerIJsonObjectModule(XmlMapper objectMapper) {
+    protected void registerJsonObjectModule(XmlMapper objectMapper) {
 
         SimpleModule module = new SimpleModule();
-        module.addSerializer(IJsonObject.class, getJsonObjectSerializer());
-        module.addDeserializer(IJsonObject.class, getJsonObjectDeserializer());
-        module.addSerializer(IJsonArray.class, getJsonArraySerializer());
-        module.addDeserializer(IJsonArray.class, getJsonArrayDeserializer());
+        module.addSerializer(JsonObject.class, getJsonObjectSerializer());
+        module.addDeserializer(JsonObject.class, getJsonObjectDeserializer());
+        module.addSerializer(JsonArray.class, getJsonArraySerializer());
+        module.addDeserializer(JsonArray.class, getJsonArrayDeserializer());
         objectMapper.registerModule(module);
     }
 
@@ -550,13 +586,13 @@ public class SpincastXmlManager implements IXmlManager {
     }
 
     @Override
-    public IJsonObject fromXml(String xml) {
-        return fromXmlToType(xml, IJsonObject.class);
+    public JsonObject fromXml(String xml) {
+        return fromXmlToType(xml, JsonObject.class);
     }
 
     @Override
-    public IJsonArray fromXmlToJsonArray(String xml) {
-        return fromXmlToType(xml, IJsonArray.class);
+    public JsonArray fromXmlToJsonArray(String xml) {
+        return fromXmlToType(xml, JsonArray.class);
     }
 
     @Override

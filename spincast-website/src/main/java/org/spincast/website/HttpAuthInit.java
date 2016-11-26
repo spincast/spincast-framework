@@ -2,7 +2,7 @@ package org.spincast.website;
 
 import java.util.List;
 
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 
 import com.google.inject.Inject;
@@ -12,20 +12,20 @@ import com.google.inject.Inject;
  */
 public class HttpAuthInit {
 
-    private final IAppConfig appConfig;
-    private final IServer server;
+    private final AppConfig appConfig;
+    private final Server server;
 
     @Inject
-    public HttpAuthInit(IAppConfig appConfig, IServer server) {
+    public HttpAuthInit(AppConfig appConfig, Server server) {
         this.appConfig = appConfig;
         this.server = server;
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 

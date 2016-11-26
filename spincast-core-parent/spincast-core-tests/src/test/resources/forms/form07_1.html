@@ -7,7 +7,7 @@
         <form method="post">
             <select name="books" multiple>
                 {% for book in user2.child2.books %}
-                    <option {{selected(book.selected)}} value="{{book.value}}">{{book.text}}</option>
+                    <option {{book.selected | selected(true)}} value="{{book.value}}">{{book.text}}</option>
                 {% endfor %}
             </select>
             

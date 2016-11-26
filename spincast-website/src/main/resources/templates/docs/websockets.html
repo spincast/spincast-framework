@@ -25,23 +25,23 @@ Docs : "WebSockets"
             </li>
             <li>
                 You need your application to be the central point where multiple users can share real-time data. The classic example
-                is a <em>chat room</em>: when a user sends a message, your application echoes that message back to the other peers.
+                is a <em>chat room</em>: when a user sends a message, your application echoes that message back to the other Peers.
             </li>
         </ul>
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        WebSockets's terminology is quite simple: an <code><em>endpoint</em></code> is a group
-        of <code><em>peers</em></code> (users) connected together and that your application manages. 
-        A WebSocket <code>endpoint</code> can receive and send <code><em>text messages</em></code>
-        and <code><em>binary messages</em></code> from and to the peers.
+        WebSockets's terminology is quite simple: an <code><em>Endpoint</em></code> is a group
+        of <code><em>Peers</em></code> (users) connected together and that your application manages. 
+        A WebSocket <code>Endpoint</code> can receive and send <code><em>text messages</em></code>
+        and <code><em>binary messages</em></code> from and to the Peers.
     </p>
     <p>
-        Your application can manage multiple <code>endpoints</code>, each of them with its own set of <code>peers</code>. 
-        Grouping peers into separate <code>endpoints</code> can be useful so you can easily send a specific message 
-        to a specific group of peers only. Also, each <code>endpoint</code> may have some different level of 
+        Your application can manage multiple <code>Endpoints</code>, each of them with its own set of <code>Peers</code>. 
+        Grouping Peers into separate <code>Endpoints</code> can be useful so you can easily send a specific message 
+        to a specific group of Peers only. Also, each <code>Endpoint</code> may have some different level of 
         security associated with it:
-        some users may be allowed to connect to some <code>endpoints</code>, but not to some others.
+        some users may be allowed to connect to some <code>Endpoints</code>, but not to some others.
     </p>
     
 </section>
@@ -64,16 +64,16 @@ Quick Example
         The source code for this example is:
         <ul>
             <li>
-                WebSocket controller: <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/java/org/spincast/website/controllers/WebsocketsDemoEchoAllController.java"><code>WebsocketsDemoEchoAllController.java</code></a>
+                WebSocket controller: <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/java/org/spincast/website/controllers/WebsocketsDemoEchoAllController.java">WebsocketsDemoEchoAllController.java</a>
             </li>
             <li>
-                HTML page: <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/resources/templates/demos/websockets.html"><code>websockets.html</code></a>
+                HTML page: <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/resources/templates/demos/websockets.html">websockets.html</a>
             </li>
         </ul>
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        First, we define a <code>WebSocket route</code>:
+        First, we define a <code>WebSocket Route</code>:
     </p>
     <p>
         <div>
@@ -84,7 +84,7 @@ Quick Example
         </div>
     </p>  
     <p>
-        The <em>"chatWebsocketController"</em> is an instance of a class that implements the <code>IWebsocketController</code>
+        The <em>"chatWebsocketController"</em> is an instance of a class that implements the <code>WebsocketController</code>
         interface. This component is responsible for handling all the WebSocket events:
     </p>
     <p>
@@ -92,18 +92,18 @@ Quick Example
             <p>
                 <pre class="ace ace-java"
 >public class ChatWebsocketController 
-        implements IWebsocketController&lt;IDefaultRequestContext, IDefaultWebsocketContext&gt; {
+        implements WebsocketController&lt;DefaultRequestContext, DefaultWebsocketContext&gt; {
 
-    private IWebsocketEndpointManager endpointManager;
+    private WebsocketEndpointManager endpointManager;
 
-    protected IWebsocketEndpointManager getEndpointManager() {
+    protected WebsocketEndpointManager getEndpointManager() {
         return this.endpointManager;
     }
 
     @Override
-    public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+    public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
         
-        return new IWebsocketConnectionConfig() {
+        return new WebsocketConnectionConfig() {
 
             @Override
             public String getEndpointId() {
@@ -118,27 +118,27 @@ Quick Example
     }
 
     @Override
-    public void onEndpointReady(IWebsocketEndpointManager endpointManager) {
+    public void onEndpointReady(WebsocketEndpointManager endpointManager) {
         this.endpointManager = endpointManager;
     }
     
     @Override
-    public void onPeerConnected(IDefaultWebsocketContext context) {
+    public void onPeerConnected(DefaultWebsocketContext context) {
         context.sendMessageToCurrentPeer("Your peer id is " + context.getPeerId());
     }
     
     @Override
-    public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+    public void onPeerMessage(DefaultWebsocketContext context, String message) {
         getEndpointManager().sendMessage("Peer '" + context.getPeerId() + 
                 "' sent a message: " + message);
     }
 
     @Override
-    public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+    public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
     }
 
     @Override
-    public void onPeerClosed(IDefaultWebsocketContext context) {
+    public void onPeerClosed(DefaultWebsocketContext context) {
     }
 
     @Override
@@ -153,26 +153,26 @@ Quick Example
                         <span class="code-line-nbr">10-25</span> : Without going into too many details (we will do
                         that in the following sections), <code>onPeerPreConnect(...)</code> is a method called
                         <em>before</em> a new user is connected. In this example, we specify that this user should 
-                        connect to the <em>"chatEndpoint"</em> <code>endpoint</code> and that
-                        its <code>peer id</code> will be <em>"peer_"</em> followed by a random String.
+                        connect to the <em>"chatEndpoint"</em> <code>Endpoint</code> and that
+                        its <code>Peer id</code> will be <em>"peer_"</em> followed by a random String.
                     </li>
                     <li>
-                        <span class="code-line-nbr">27-30</span> : When a WebSocket endpoint is ready to receive and send
+                        <span class="code-line-nbr">27-30</span> : When a WebSocket Endpoint is ready to receive and send
                         messages, the <em>onEndpointReady(...)</em> method is called and gives us access 
-                        to an <code><em>endpoint manager</em></code>.
+                        to an <code><em>Endpoint Manager</em></code>.
                         We keep a reference to this manager since we are going to use it to send messages.
                     </li>   
                     <li>
-                        <span class="code-line-nbr">32-35</span> : When the connection with a new peer is established,
-                        the <code>onPeerConnected(...)</code> method is called. In this example, as soon as the peer is connected, 
-                        we send him a message containing his <em>peer id</em>.
+                        <span class="code-line-nbr">32-35</span> : When the connection with a new Peer is established,
+                        the <code>onPeerConnected(...)</code> method is called. In this example, as soon as the Peer is connected, 
+                        we send him a message containing his <em>Peer id</em>.
                     </li>   
                     <li>
-                        <span class="code-line-nbr">37-40</span> : When a peer sends a <code>message</code>, 
+                        <span class="code-line-nbr">37-40</span> : When a Peer sends a message, 
                         the <em>onPeerMessage(...)</em> method is called.
-                        In this example, we use the <code>endpoint manager</code> (which was received in the <em>onEndpointReady(...)</em> 
+                        In this example, we use the <code>Endpoint Manager</code> (which was received in the <em>onEndpointReady(...)</em> 
                         method [<span class="code-line-nbr">27-30</span>])
-                        and we broadcast this message to all the peers of the endpoint.
+                        and we broadcast this message to all the Peers of the Endpoint.
                     </li>   
                 </ul>
             </p>   
@@ -181,12 +181,12 @@ Quick Example
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Here's a quick client-side <code>HTML/javascript</code> code example, for a user to connect 
-        to this endpoint:
+        to this Endpoint:
     </p>  
     <p>
         <div>
             <p>
-                <pre class="ace ace-html"
+                <pre class="ace ace-pebble"
 >&lt;script&gt;
     var app = app || {};
     
@@ -252,9 +252,9 @@ WebSocket Routing
     </h4>
     
     <p>
-        The WebSocket routes are defined similarly to regular routes, using
-        Spincast's router (interface <code>IRouter</code>). But, instead of beginning the creation 
-        of the route with the <code>HTTP</code> method, like 
+        The WebSocketRroutes are defined similarly to regular Routes, using
+        Spincast's <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/Router.html">Router</a>. But, instead of beginning the creation 
+        of the Route with the <code>HTTP</code> method, like 
         <code>GET(...)</code> or <code>POST(...)</code>, you use <code><em>websocket(...)</em></code>:
     </p>
     <p>
@@ -266,13 +266,13 @@ WebSocket Routing
         </div>
     </p>  
     <p>
-        There are fewer options available when creating a WebSocket route compared to a regular HTTP route. Here are
+        There are fewer options available when creating a WebSocket Route compared to a regular HTTP Route. Here are
         the available ones...
     </p>
     <p> 
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         You can set
-        an <code>id</code> for the route. This allows you to identify the route so you can refer to it
+        an <code>id</code> for the Route. This allows you to identify the Route so you can refer to it
         later on, delete it, etc:
     </p>
     <p>
@@ -286,18 +286,18 @@ WebSocket Routing
     </p>  
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        You can also add "before" <code>filters</code>, inline. Note that you can <em>not</em> add
-        "after" <code>filters</code> to a WebSocket route because, as soon as the
+        You can also add "before" <code>Filters</code>, inline. Note that you can <em>not</em> add
+        "after" <code>Filters</code> to a WebSocket Route because, as soon as the
         WebSocket connection is established, the <code>HTTP</code> request is over.
-        But "before" <code>filters</code> are perfectly fine since they applied to the 
+        But "before" <code>Filters</code> are perfectly fine since they applied to the 
         <code>HTTP</code> request <em>before</em> it is upgraded to a WebSocket connection. For the
-        same reason, <em>global</em> "before" <code>filters</code> (defined using
+        same reason, <em>global</em> "before" <code>Filters</code> (defined using
         <code>router.before(...)</code>) will be applied during a
-        WebSocket route processing, but not the global "after" <code>filters</code> (defined using 
+        WebSocket Route processing, but not the global "after" <code>Filters</code> (defined using 
         <code>router.after(...)</code>).
     </p>
     <p>
-        Here's an example of inline "before" <code>filters</code>, on a WebSocket route:
+        Here's an example of inline "before" <code>Filters</code>, on a WebSocket Route:
     </p>
     <p>
         <div>
@@ -312,9 +312,9 @@ WebSocket Routing
     </p>  
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Finally, like you do during the creating of a regular route, you <em>save</em> the WebSocket route. The 
-        <code>save(...)</code> method for a WebSocket route takes a <a href="#websockets_controllers"><code>WebSocket controller</code></a>, 
-        not a <code>route handler</code> as regular HTTP routes do.
+        Finally, like you do during the creating of a regular Route, you <em>save</em> the WebSocket Route. The 
+        <code>save(...)</code> method for a WebSocket Route takes a <a href="#websockets_controllers">WebSocket Controller</a>, 
+        not a <code>Route Handler</code> as regular HTTP Routes do.
     </p>
     <p>
         <div>
@@ -341,13 +341,13 @@ WebSocket Controllers
     </h4>
     
     <p>
-        WebSocket routes require a dedicated controller as a handler. This controller 
+        WebSocket Routes require a dedicated Controller as an handler. This Controller 
         is responsible for receiving the various WebSocket <em>events</em> occurring during the
         connection.
     </p>
     <p>
-        You create a WebSocket controller by implementing the 
-        <a href="/public/javadoc/org/spincast/core/websocket/IWebsocketController.html"><code>IWebsocketController</code></a> interface.
+        You create a WebSocket Controller by implementing the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/websocket/WebsocketController.html"><code>WebsocketController</code></a> interface.
         
     </p>
     <h5>
@@ -355,107 +355,102 @@ WebSocket Controllers
         The WebSocket events
     </h5>
     <p>
-        Here are the methods a WebSocket controller must implement, each of them associated with a specific WebSocket <code>event</code>:
+        Here are the methods a WebSocket Controller must implement, each of them associated with a specific WebSocket <code>event</code>:
         <ul class="apiList">
-
-
-<li>
-    <code class="apiItem">IWebsocketConnectionConfig <span>onPeerPreConnect</span>(R context)</code>
-    <div class="well">
-        Called when a user requests a WebSocket connection. At this moment, the connection is not
-        yet established and you can allow or deny the request. You can also decide on which <code>endpoint</code>
-        to connect the user to, and which <code>peer id</code> to assign him.
-        
-        <div class="apiItemFooter">
-            @param context the <code>request context</code> of the initial <code>HTTP</code> request. Remember that
-            the WebSocket connection is not established yet!
-        </div>
-        
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>onEndpointReady</span>(IWebsocketEndpointManager endpointManager)</code>
-    <div class="well">
-        Called when a new endpoint is created within your application. The <code>endpoint manager</code> is passed
-        as a parameter on your should keep a reference to it. You'll use this manager to send messages, to close
-        the connection with some peers, etc.
-        <br /><br />
-        Note that this method <em>should not block</em>! More details <a href="#websockets_controllers_onEndpointReady">below</a>...
-        
-        <div class="apiItemFooter">
-            @param endpointManager the endpoint manager.
-        </div>
- 
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>onPeerConnected</span>(W context)</code>
-    <div class="well">
-        Called when a new peer is connected. At this point, the WebSocket connection is established with the
-        peer and you can send him messages.
-        
-        <div class="apiItemFooter">
-            @param context the <code><a href="#websockets_context">WebSocket context</a></code>
-        </div>
-        
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>onPeerMessage</span>(W context, String message)</code>
-    <div class="well">
-        Called when a peer sends a text message.
-        
-        <div class="apiItemFooter">
-            @param context the <code><a href="#websockets_context">WebSocket context</a></code>
-            <br />
-            @param message the text message sent by the peer
-        </div>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>onPeerMessage</span>(W context, byte[] message)</code>
-    <div class="well">
-        Called when a peer sends a binary message.
-        
-        <div class="apiItemFooter">
-            @param context the <code><a href="#websockets_context">WebSocket context</a></code>
-            <br />
-            @param message the binary message sent by the peer
-        </div>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>onPeerClosed</span>(W context)</code>
-    <div class="well">
-        Called when the connection with a peer is closed.
-        
-        <div class="apiItemFooter">
-            @param context the <code><a href="#websockets_context">WebSocket context</a></code>
-        </div>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>onEndpointClosed</span>(String endpointId)</code>
-    <div class="well">
-        Called when the whole endpoint is closed.
-        
-        <div class="apiItemFooter">
-            @param endpointId the id of the closed endpoint
-        </div>
-
-    </div>
-</li>
-
+            <li>
+                <code class="apiItem">WebsocketConnectionConfig <span>onPeerPreConnect</span>(R context)</code>
+                <div class="well">
+                    Called when a user requests a WebSocket connection. At this moment, the connection is not
+                    yet established and you can allow or deny the request. You can also decide on which <code>Endpoint</code>
+                    to connect the user to, and which <code>Peer id</code> to assign him.
+                    
+                    <div class="apiItemFooter">
+                        @param context the <code>request context</code> of the initial <code>HTTP</code> request. Remember that
+                        the WebSocket connection is not established yet!
+                    </div>
+                    
+                </div>
+            </li>
             
+            <li>
+                <code class="apiItem">void <span>onEndpointReady</span>(WebsocketEndpointManager endpointManager)</code>
+                <div class="well">
+                    Called when a new Endpoint is created within your application. The <code>Endpoint Manager</code> is passed
+                    as a parameter on your should keep a reference to it. You'll use this Manager to send messages, to close
+                    the connection with some Peers, etc.
+                    <br /><br />
+                    Note that this method <em>should not block</em>! More details <a href="#websockets_controllers_onEndpointReady">below</a>...
+                    
+                    <div class="apiItemFooter">
+                        @param endpointManager the Endpoint Manager.
+                    </div>
+             
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">void <span>onPeerConnected</span>(W context)</code>
+                <div class="well">
+                    Called when a new Peer is connected. At this point, the WebSocket connection is established with the
+                    Peer and you can send him messages.
+                    
+                    <div class="apiItemFooter">
+                        @param context the <code><a href="#websockets_context">WebSocket context</a></code>
+                    </div>
+                    
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">void <span>onPeerMessage</span>(W context, String message)</code>
+                <div class="well">
+                    Called when a Peer sends a text message.
+                    
+                    <div class="apiItemFooter">
+                        @param context the <code><a href="#websockets_context">WebSocket context</a></code>
+                        <br />
+                        @param message the text message sent by the Peer
+                    </div>
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">void <span>onPeerMessage</span>(W context, byte[] message)</code>
+                <div class="well">
+                    Called when a Peer sends a binary message.
+                    
+                    <div class="apiItemFooter">
+                        @param context the <code><a href="#websockets_context">WebSocket context</a></code>
+                        <br />
+                        @param message the binary message sent by the Peer
+                    </div>
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">void <span>onPeerClosed</span>(W context)</code>
+                <div class="well">
+                    Called when the connection with a Peer is closed.
+                    
+                    <div class="apiItemFooter">
+                        @param context the <code><a href="#websockets_context">WebSocket context</a></code>
+                    </div>
+            
+                </div>
+            </li>
+            <li>
+                <code class="apiItem">void <span>onEndpointClosed</span>(String endpointId)</code>
+                <div class="well">
+                    Called when the whole Endpoint is closed.
+                    
+                    <div class="apiItemFooter">
+                        @param endpointId the id of the closed Endpoint
+                    </div>
+            
+                </div>
+            </li>
         </ul>
     </p> 
     
@@ -467,12 +462,12 @@ WebSocket Controllers
     <p>
         The <code>onPeerPreConnect(...)</code> is called <em>before</em> the WebSocket connection is
         actually established with the user. The request, here, is still the original <code>HTTP</code> one, so you receive a
-        <a href="#request_context"><code>request context</code></a> as regular route handlers do.
+        <a href="#request_context">request context</a> as regular <code>Route Handlers</code> do.
     </p>
     <p>
         In that method, you have access to the user's <code>cookies</code> and to all the information about the initial
         <code>HTTP</code> request. This is a perfect place to decide if the requesting user should be allowed
-        to connect to a WebSocket endpoint or not. You may check if he is authenticated, if he has enough
+        to connect to a WebSocket Endpoint or not. You may check if he is authenticated, if he has enough
         rights, etc. 
     </p>
     <p>
@@ -484,15 +479,15 @@ WebSocket Controllers
         <div>
             <p>
                 <pre class="ace ace-java"
->public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+>public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-    ICookie sessionIdCookie = context.cookies().getCookie("sessionId");
+    Cookie sessionIdCookie = context.cookies().getCookie("sessionId");
     if(sessionIdCookie == null || !canUserAccessWebsocketEndpoint(sessionIdCookie.getValue())) {
         context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
         return null;
     }
 
-    return new IWebsocketConnectionConfig() {
+    return new WebsocketConnectionConfig() {
 
         @Override
         public String getEndpointId() {
@@ -512,10 +507,10 @@ WebSocket Controllers
                     <li>
                         <span class="code-line-nbr">1</span> : When a user requests a WebSocket connection, 
                         the <code>onPeerPreConnect(...)</code>
-                        method of the associated controller is called. Note that here we receive the default <code>IDefaultRequestContext</code>
+                        method of the associated Controller is called. Note that here we receive the default <code>DefaultRequestContext</code>
                         request context, but if you are using a 
                         <a href="#extending_request_context">custom request context type</a>, you would
-                        receive an object of your custom type (<code><em>IAppRequestContext</em></code>, for example).
+                        receive an object of your custom type (<code><em>AppRequestContext</em></code>, for example).
                     </li> 
                     <li>
                         <span class="code-line-nbr">3</span> : We get the session id of the current user using
@@ -524,13 +519,13 @@ WebSocket Controllers
                     <li>
                         <span class="code-line-nbr">4-7</span> : If the <em>"sessionId"</em> cookie is not found or if
                         the user associated with this session doesn't have enough rights to
-                        access a WebSocket endpoint, we set the response status as <code>Forbidden</code>
+                        access a WebSocket Endpoint, we set the response status as <code>Forbidden</code>
                         and we return <code>null</code>. By returning <code>null</code>, the WebSocket connection
                         process is cancelled and the <code>HTTP</code> response is sent as is.
                     </li> 
                     <li>
-                        <span class="code-line-nbr">9-20</span> : If the user is allowed to access a WebSocket endpoint, we
-                        return the information required for that connection. We'll look at that <code>IWebsocketConnectionConfig</code> 
+                        <span class="code-line-nbr">9-20</span> : If the user is allowed to access a WebSocket Endpoint, we
+                        return the information required for that connection. We'll look at that <code>WebsocketConnectionConfig</code> 
                         object in the next section.
                     </li>  
                 </ul>
@@ -540,27 +535,28 @@ WebSocket Controllers
     </p>  
     
     <h5>
-        <a class="anchor_small" href="#websockets_controllers_IWebsocketConnectionConfig" id="websockets_controllers_IWebsocketConnectionConfig" title="permanent link"></a>
-        The <em>IWebsocketConnectionConfig(...)</em> object
+        <a class="anchor_small" href="#websockets_controllers_WebsocketConnectionConfig" id="websockets_controllers_WebsocketConnectionConfig" title="permanent link"></a>
+        The <em>WebsocketConnectionConfig(...)</em> object
     </h5>
 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Once you decided that a user can connect to a WebSocket endpoint, you return an instance of
-        <code><em>IWebsocketConnectionConfig</em></code> from the <code>onPeerPreConnect(...)</code> method. 
+        Once you decided that a user can connect to a WebSocket Endpoint, you return an instance of
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/websocket/WebsocketConnectionConfig.html">WebsocketConnectionConfig</a> from 
+        the <code>onPeerPreConnect(...)</code> method. 
     </p>
     <p>
         In this object, you have to specify two things:
         <ul>
             <li>
-                The <code>endpoint id</code> to which the user should be connected to. 
-                Note that you <em>can't</em> use the id of an endpoint that
-                is already managed by another controller, otherwise an exception is thrown. If you use <code>null</code>
-                here, a random endpoint id will be generated. 
+                The <code>Endpoint id</code> to which the user should be connected to. 
+                Note that you <em>can't</em> use the id of an Endpoint that
+                is already managed by another Controller, otherwise an exception is thrown. If you use <code>null</code>
+                here, a random Endpoint id will be generated. 
             </li>
             <li>
-                The <code>peer id</code> to assign to the user. Each peer id must be unique inside a
-                given endpoint, otherwise an exception is thrown. If you return <code>null</code>
+                The <code>Peer id</code> to assign to the user. Each Peer id must be unique inside a
+                given Endpoint, otherwise an exception is thrown. If you return <code>null</code>
                 here, a random id will be generated. 
             </li>
         </ul>
@@ -568,27 +564,27 @@ WebSocket Controllers
     
     <h5>
         <a class="anchor_small" href="#websockets_controllers_multiple_endpoints" id="websockets_controllers_multiple_endpoints" title="permanent link"></a>
-        Multiple endpoints
+        Multiple Endpoints
     </h5>
     
     <p>
-        Note that a single <code>WebSocket controller</code> can manage <em>multiple</em> endpoints. The endpoints are
+        Note that a single <code>WebSocket Controller</code> can manage <em>multiple</em> Endpoints. The Endpoints are
         not hardcoded when the application starts, you dynamically create them, on demand. Simply by connecting
-        a first peer using a new <code>endpoint id</code>, you create the required endpoint. This allows your controller
-        to "group" some peers together, for any reason you may find useful. For example, you may have a
-        chat application with multiple "rooms": each room would be a specific endpoint, with a set of peers
+        a first Peer using a new <code>Endpoint id</code>, you create the required Endpoint. This allows your Controller
+        to "group" some Peers together, for any reason you may find useful. For example, you may have a
+        chat application with multiple "rooms": each room would be a specific Endpoint, with a set of Peers
         connected to it.
     </p>
     <p>
-        If the <code>endpoint id</code> you return in the <code>IWebsocketConnectionConfig</code> object is the 
-        one of an existing endpoint, the user will be
-        connected to it. Next time you send a message using the associated <code>manager</code>, this new peer will
+        If the <code>Endpoint id</code> you return in the <code>WebsocketConnectionConfig</code> object is the 
+        one of an existing Endpoint, the user will be
+        connected to it. Next time you send a message using the associated <code>Manager</code>, this new Peer will
         receive it.
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        If your controller creates more than one endpoint, you have to keep the <code>managers</code> for
-        each of those endpoints!
+        If your Controller creates more than one Endpoint, you have to keep the <code>Managers</code> for
+        each of those Endpoints!
     </p>
     <p>
         For example:
@@ -596,23 +592,23 @@ WebSocket Controllers
             <p>
                 <pre class="ace ace-java"
 >public class MyWebsocketController 
-        implements IWebsocketController&lt;IDefaultRequestContext, IDefaultWebsocketContext&gt; {
+        implements WebsocketController&lt;DefaultRequestContext, DefaultWebsocketContext&gt; {
 
-    private final Map&lt;String, IWebsocketEndpointManager&gt; 
-            endpointManagers = new HashMap&lt;String, IWebsocketEndpointManager&gt;();
+    private final Map&lt;String, WebsocketEndpointManager&gt; 
+            endpointManagers = new HashMap&lt;String, WebsocketEndpointManager&gt;();
 
-    protected Map&lt;String, IWebsocketEndpointManager&gt; getEndpointManagers() {
+    protected Map&lt;String, WebsocketEndpointManager&gt; getEndpointManagers() {
         return this.endpointManagers;
     }
 
-    protected IWebsocketEndpointManager getEndpointManager(String endpointId) {
+    protected WebsocketEndpointManager getEndpointManager(String endpointId) {
         return getEndpointManagers().get(endpointId);
     }
 
     @Override
-    public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+    public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
         
-        return new IWebsocketConnectionConfig() {
+        return new WebsocketConnectionConfig() {
 
             @Override
             public String getEndpointId() {
@@ -627,12 +623,12 @@ WebSocket Controllers
     }
 
     @Override
-    public void onEndpointReady(IWebsocketEndpointManager endpointManager) {
+    public void onEndpointReady(WebsocketEndpointManager endpointManager) {
         getEndpointManagers().put(endpointManager.getEndpointId(), endpointManager);
     }
 
     @Override
-    public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+    public void onPeerMessage(DefaultWebsocketContext context, String message) {
         getEndpointManager(context.getEndpointId()).sendMessage(message);
     }
     
@@ -642,15 +638,15 @@ WebSocket Controllers
     }
 
     @Override
-    public void onPeerConnected(IDefaultWebsocketContext context) {
+    public void onPeerConnected(DefaultWebsocketContext context) {
     }
 
     @Override
-    public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+    public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
     }
 
     @Override
-    public void onPeerClosed(IDefaultWebsocketContext context) {
+    public void onPeerClosed(DefaultWebsocketContext context) {
     }
 }</pre> 
             </p>
@@ -658,35 +654,35 @@ WebSocket Controllers
                 <span class="explanation">Explanation :</span>
                 <ul>
                     <li>
-                        <span class="code-line-nbr">4-5</span> : Here, our controller will manage more than one
-                        endpoints, so we create a <code>Map</code> to keep the association between each endpoint
-                        and its <code>WebSocket manager</code>.
+                        <span class="code-line-nbr">4-5</span> : Here, our Controller will manage more than one
+                        Endpoints, so we create a <code>Map</code> to keep the association between each Endpoint
+                        and its <code>WebSocket Manager</code>.
                     </li> 
                     <li>
-                        <span class="code-line-nbr">20-23</span> : As the <code>endpoint id</code> to use, this example 
-                        returns a random id between 10 different possibilities, randomly distributed to the connecting peers. 
-                        In other words, our controller is going 
-                        to manage up to 10 endpoints, from "endpoint_1" to "endpoint_10".
+                        <span class="code-line-nbr">20-23</span> : As the <code>Endpoint id</code> to use, this example 
+                        returns a random id between 10 different possibilities, randomly distributed to the connecting Peers. 
+                        In other words, our Controller is going 
+                        to manage up to 10 Endpoints, from "endpoint_1" to "endpoint_10".
                     </li> 
                     <li>
                         <span class="code-line-nbr">25-28</span> : By returning <code>null</code> as the
-                        <code>peer id</code>, a random id will be generated.
+                        <code>Peer id</code>, a random id will be generated.
                     </li> 
                     <li>
-                        <span class="code-line-nbr">32-35</span> : When an endpoint is created, we receive its
-                        <code>manager</code> and we add it to our <code>endpointManagers</code> map, using the 
-                        <code>endpoint id</code> as the key. Our <code>onEndpointReady</code> method may be called up 
-                        to 10 times, one time for each endpoint our controller may create.
+                        <span class="code-line-nbr">32-35</span> : When an Endpoint is created, we receive its
+                        <code>Manager</code> and we add it to our <code>endpointManagers</code> map, using the 
+                        <code>Endpoint id</code> as the key. Our <code>onEndpointReady</code> method may be called up 
+                        to 10 times, one time for each Endpoint our Controller may create.
                     </li> 
                     <li>
-                        <span class="code-line-nbr">37-40</span> : Since we manage more than one endpoints,
-                        we have to use the right <code>manager</code> when sending a message!
-                        Here, we echo back any message received by a peer, to all peers connected to the same 
-                        endpoint.
+                        <span class="code-line-nbr">37-40</span> : Since we manage more than one Endpoints,
+                        we have to use the right <code>Manager</code> when sending a message!
+                        Here, we echo back any message received by a Peer, to all Peers connected to the same 
+                        Endpoint.
                     </li> 
                     <li>
-                        <span class="code-line-nbr">42-45</span> : When an endpoint is closed, we don't need its
-                        <code>manager</code> anymore so we remove it from our <code>endpointManagers</code> map.
+                        <span class="code-line-nbr">42-45</span> : When an Endpoint is closed, we don't need its
+                        <code>Manager</code> anymore so we remove it from our <code>endpointManagers</code> map.
                     </li> 
                 </ul>
             </p>  
@@ -695,9 +691,9 @@ WebSocket Controllers
     </p> 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Finally, note that a controller can manage multiple WebSocket endpoints, but only one controller
-        can create and manage a given WebSocket endpoint! If a controller tries to connect a peer to an endpoint
-        that is already managed by another controller, an exception is thrown.
+        Finally, note that a Controller can manage multiple WebSocket Endpoints, but only one Controller
+        can create and manage a given WebSocket Endpoint! If a Controller tries to connect a Peer to an Endpoint
+        that is already managed by another Controller, an exception is thrown.
     </p>
     
     <h5>
@@ -707,29 +703,29 @@ WebSocket Controllers
     
     <p>
         It's important to know that the <code>onEndpointReady(...)</code> method is called
-        <em>synchronously</em> by Spincast, when the connection with the very first peer 
+        <em>synchronously</em> by Spincast, when the connection with the very first Peer 
         is being established. This means that this method <em>should not block</em>
-        or the connection with the first peer will never succeed!
+        or the connection with the first Peer will never succeed!
     </p>
     <p>
         Spincast calls <code>onEndpointReady(...)</code> synchronously to make sure you have access 
-        to the endpoint <code>manager</code> <em>before</em>
-        the first peer is connected and therefore <em>before</em> you start receiving 
+        to the Endpoint <code>Manager</code> <em>before</em>
+        the first Peer is connected and therefore <em>before</em> you start receiving 
         events from him.
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         You may be tempted to start some kind of <em>loop</em> in this  <code>onEndpointReady(...)</code> method, to
-        send messages to the connected peers, at some interval. Instead, start 
+        send messages to the connected Peers, at some interval. Instead, start 
         a new <code>Thread</code> to run the loop, and let the current thread continue.
     </p>
     <p>
-        For example, this example will send the current time to all peers connected to the endpoint, every second.
-        It does so without blocking the <code>onEndpointReady(...)</code> method, which is the correct way to do it:
+        In the following example, we will send the current time to all Peers connected to the Endpoint, every second.
+        We do so without blocking the <code>onEndpointReady(...)</code> method :
         <div>
             <p>
                 <pre class="ace ace-java"
->public void onEndpointReady(IWebsocketEndpointManager endpointManager) {
+>public void onEndpointReady(WebsocketEndpointManager endpointManager) {
 
     getEndpointManagers().put(endpointManager.getEndpointId(), endpointManager);
 
@@ -742,7 +738,7 @@ WebSocket Controllers
 
             while(true) {
             
-                IWebsocketEndpointManager manager = getEndpointManager(endpointId);
+                WebsocketEndpointManager manager = getEndpointManager(endpointId);
                 if(manager == null) {
                     break;
                 }
@@ -770,18 +766,16 @@ WebSocket Controllers
     </h5>
     
     <p>
-        By default, <code>pings</code> are automatically sent to each peer every 20 seconds or so. This 
-        validates that the peers are still connected. When those pings find that a connection has been
-        closed, <code>onPeerClosed(...)</code> is called on the WebSocket controller.
+        By default, <code>pings</code> are automatically sent to each Peer every 20 seconds or so. This 
+        validates that the Peers are still connected. When those pings find that a connection has been
+        closed, <code>onPeerClosed(...)</code> is called on the WebSocket Controller.
     </p>
     <p>
         You can turn on/off those automatic pings and change other configurations, depending on the
-        <code>server</code> implementation you use. 
-        Here are the <a href="/public/javadoc/org/spincast/plugins/undertow/config/ISpincastUndertowConfig.html">configurations</a>
-        available when using the default implementation.
+        <code>Server</code> implementation you use. 
+        Here are the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/config/SpincastUndertowConfig.html">configurations</a>
+        available when using the default Server, Undertow.
     </p>
-    
-    
 </section>     
 
 {#==========================================
@@ -794,33 +788,33 @@ WebSocket context
     </h3>
     
     <p>
-        Most methods of a <code>WebSocket controller</code> receive a <code>WebSocket context</code>.
-        This context object is similar to a <a href="#request_context"><code>request context</code></a> received
-        by a regular <code>route handler</code>:
+        Most methods of a <code>WebSocket Controller</code> receive a <code>WebSocket context</code>.
+        This context object is similar to a <a href="#request_context">Request Context</a> received
+        by a regular <code>Route Handler</code> :
         it gives access to information about the event (the 
-        <code>endpoint</code>, the <code>peer</code>, etc.) and also provides easy access to 
+        <code>Endpoint</code>, the <code>Peer</code>, etc.) and also provides easy access to 
         utility methods and <code>add-ons</code>.
     </p>
     <p>
-        WebSocket specific methods:
+        WebSocket specific methods :
         <ul>
             <li>
-                <code>getEndpointId()</code>: The id of the endpoint the current peer is connected to.
+                <code>getEndpointId()</code>: The id of the Endpoint the current Peer is connected to.
             </li>
             <li>
-                <code>getPeerId()</code>: The id of the current peer.
+                <code>getPeerId()</code>: The id of the current Peer.
             </li>
             <li>
                 <code>sendMessageToCurrentPeer(String message)</code>: Sends a text message to the
-                current peer.
+                current Peer.
             </li>
             <li>
                 <code>sendMessageToCurrentPeer(byte[] message)</code>: Sends a binary message to the
-                current peer.
+                current Peer.
             </li>
             <li>
                 <code>closeConnectionWithCurrentPeer()</code>: Closes the connection with the
-                current peer.
+                current Peer.
             </li>
             
         </ul>
@@ -829,17 +823,17 @@ WebSocket context
         Utility methods and add-ons:    
         <ul>
             <li>
-                <code>getLocaleToUse()</code>: The best Locale to use for this peer, as resolved during the
+                <code>getLocaleToUse()</code>: The best Locale to use for this Peer, as resolved during the
                 initial <code>HTTP</code> request.
             </li>
             <li>
-                <code>json()</code>: Easy access to the <a href="/public/javadoc/org/spincast/core/json/IJsonManager.html">Json Manager</a>.
+                <code>json()</code>: Easy access to the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>.
             </li>
             <li>
-                <code>xml()</code>: Easy access to the <a href="/public/javadoc/org/spincast/core/xml/IXmlManager.html">XML Manager</a>.
+                <code>xml()</code>: Easy access to the <a class="javadoc" href="/public/javadoc/org/spincast/core/xml/XmlManager.html">XMLManager</a>.
             </li>
             <li>
-                <code>templating()</code>: Easy access to the <a href="/public/javadoc/org/spincast/core/templating/ITemplatingEngine.html">Templating Engine</a>.
+                <code>templating()</code>: Easy access to the <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a>.
             </li>
             <li>
                 <code>guice()</code>: Easy access to the application's Guice context.
@@ -847,7 +841,6 @@ WebSocket context
         </ul>
     </p>
 
-    
 </section>
 
 {#==========================================
@@ -860,23 +853,23 @@ Extending the WebSocket context
     </h3>
     
     <p>
-        The same way you can extend the <code>request context</code> type, which is the
-        object passed to your <code>route handlers</code> for regular <code>HTTP</code> requests, you can also extend the
-        <code>WebSocket context</code> type, passed to your WebSocket controller, when an event occurs.
+        The same way you can extend the <code>Request Context</code> type, which is the
+        object passed to your <code>Route Handlers</code> for regular <code>HTTP</code> requests, you can also extend the
+        <code>WebSocket Context</code> type, passed to your WebSocket Controller, when an event occurs.
     </p>
     <p>
-        First, make sure you read the <a href="#extending_request_context">Extending the request context</a> section: it
-        contains more details and the process of extending the WebSocket context is very similar!
+        First, make sure you read the <a href="#extending_request_context">Extending the Request Context</a> section : it
+        contains more details and the process of extending the WebSocket Context is very similar!
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        The first thing to do is to create a custom interface for the new <code>WebSocket context</code> type:
+        The first thing to do is to create a custom interface for the new <code>WebSocket Context</code> type :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public interface IAppWebsocketContext extends IWebsocketContext&lt;IAppWebsocketContext&gt; {
+>public interface AppWebsocketContext extends WebsocketContext&lt;AppWebsocketContext&gt; {
     public void customMethod(String message);
 }</pre> 
             </p>
@@ -885,7 +878,8 @@ Extending the WebSocket context
                 <ul>
                     <li>
                         <span class="code-line-nbr">1</span> : A custom WebSocket context type extends the
-                        base <code>IWebsocketContext</code> interface and parameterizes it using its <em>own</em> type.
+                        base <a class="javadoc" href="/public/javadoc/org/spincast/core/websocket/WebsocketContext.html">WebsocketContext</a>
+                        interface and parameterizes it using its <em>own</em> type.
                     </li> 
                 </ul>
             </p>  
@@ -900,14 +894,14 @@ Extending the WebSocket context
         <div>
             <p>
                 <pre class="ace ace-java"
->public class AppWebsocketContext extends WebsocketContextBase&lt;IAppWebsocketContext&gt;
-                                        implements IAppWebsocketContext {
+>public class AppWebsocketContextDefault extends WebsocketContextBase&lt;AppWebsocketContext&gt;
+                                                implements AppWebsocketContext {
 
     @AssistedInject
-    public AppWebsocketContext(@Assisted("endpointId") String endpointId,
-                               @Assisted("peerId") String peerId,
-                               @Assisted IWebsocketPeerManager peerManager,
-                               WebsocketContextBaseDeps&lt;IAppWebsocketContext&gt; deps) {
+    public AppWebsocketContextDefault(@Assisted("endpointId") String endpointId,
+                                      @Assisted("peerId") String peerId,
+                                      @Assisted WebsocketPeerManager peerManager,
+                                      WebsocketContextBaseDeps&lt;AppWebsocketContext&gt; deps) {
         super(endpointId,
               peerId,
               peerManager,
@@ -924,9 +918,10 @@ Extending the WebSocket context
                 <span class="explanation">Explanation :</span>
                 <ul>
                     <li>
-                        <span class="code-line-nbr">1-2</span> : The implementation extends <code>WebsocketContextBase</code> 
+                        <span class="code-line-nbr">1-2</span> : The implementation extends 
+                        <a class="javadoc" href="/public/javadoc/org/spincast/core/websocket/WebsocketContextBase.html">WebsocketContextBase</a>
                         so all the default methods/add-ons are kept. Of course, it also implements 
-                        our custom <code>IAppWebsocketContext</code>.
+                        our custom <code>AppWebsocketContext</code>.
                     </li> 
                     <li>
                         <span class="code-line-nbr">4-13</span> : Don't worry about this scary constructor too much,
@@ -936,7 +931,7 @@ Extending the WebSocket context
                     </li> 
                     <li>
                         <span class="code-line-nbr">15-18</span> : We implement our custom method. This dummy example simply
-                        sends a message to the current peer, prefixed with <em>"customMethod: "</em>. Note that the 
+                        sends a message to the current Peer, prefixed with <em>"customMethod: "</em>. Note that the 
                         <code>sendMessageToCurrentPeer(...)</code> method is inherited from <code>WebsocketContextBase</code>.
                     </li> 
                 </ul>
@@ -946,7 +941,7 @@ Extending the WebSocket context
     </p> 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Finally, you must let Spincast know about your custom <code>WebSocket context</code> type. You do this by overriding the 
+        Finally, you must let Spincast know about your custom <code>WebSocket Context</code> type. You do this by overriding the 
         <code>getWebsocketContextImplementationClass()</code> method defined in Spincast's 
         <code>SpincastCoreGuiceModule</code> Guice module. For example, in a custom <code>AppModule</code>:
     </p>
@@ -955,25 +950,25 @@ Extending the WebSocket context
             <p>
                 <pre class="ace ace-java"
 >@Override
-protected Class&lt;? extends IWebsocketContext&lt;?&gt;&gt; getWebsocketContextImplementationClass() {
-    return AppWebsocketContext.class;
+protected Class&lt;? extends WebsocketContext&lt;?&gt;&gt; getWebsocketContextImplementationClass() {
+    return AppWebsocketContextDefault.class;
 }</pre> 
             </p>
         </div>
     </p> 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        If you both extended the <code>request context</code> type and the <code>WebSocket context</code> type, the
-        parameterized version of your router would look like:
-        <code>IRouter&lt;IAppRequestContext, IAppWebsocketContext&gt;</code>.
+        If you both extended the <code>Request Context</code> type and the <code>WebSocket Context</code> type, the
+        parameterized version of your Router would look like :
+        <code>Router&lt;AppRequestContext, AppWebsocketContext&gt;</code>.
     </p>
     <p>
-        But you could also create an unparameterized version of it, for easier usage:
+        But you could also create an unparameterized version of it, for easier usage! :
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public interface IAppRouter extends IRouter&lt;IAppRequestContext, IAppWebsocketContext&gt; {
+>public interface AppRouter extends Router&lt;AppRequestContext, AppWebsocketContext&gt; {
     // nothing required
 }</pre> 
             </p>
@@ -981,11 +976,7 @@ protected Class&lt;? extends IWebsocketContext&lt;?&gt;&gt; getWebsocketContextI
     </p>   
     <p>
         Note that if you use the <a href="#quick_start">Quick Start</a> to start your application, both 
-        the <code>request context</code> type and the <code>WebSocket context</code> type have
+        the <code>Request Context</code> type <em>and</em> the <code>WebSocket Context</code> type have
         already been extended and the unparameterized routing components have already been created for you!
     <p>
-    
 </section>
-
-
-

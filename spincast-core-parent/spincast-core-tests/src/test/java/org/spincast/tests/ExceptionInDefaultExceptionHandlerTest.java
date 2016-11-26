@@ -6,23 +6,23 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Type;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.config.ISpincastDictionary;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.controllers.SpincastFrontController;
-import org.spincast.core.exceptions.PublicException;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.exchange.IRequestContextFactory;
+import org.spincast.core.exceptions.PublicExceptionDefault;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.RequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.guice.SpincastRequestScope;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRouter;
-import org.spincast.core.server.IServer;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.Router;
+import org.spincast.core.server.Server;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
@@ -31,18 +31,18 @@ import com.google.inject.Module;
 
 public class ExceptionInDefaultExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBase {
 
-    public static class CustomFrontController extends SpincastFrontController<IDefaultRequestContext, IDefaultWebsocketContext> {
+    public static class CustomFrontController extends SpincastFrontController<DefaultRequestContext, DefaultWebsocketContext> {
 
         @Inject
-        public CustomFrontController(IRouter<IDefaultRequestContext, IDefaultWebsocketContext> router,
-                                     ISpincastConfig spincastConfig,
-                                     ISpincastDictionary spincastDictionary,
-                                     IServer server,
-                                     IRequestContextFactory<IDefaultRequestContext> requestCreationFactory,
+        public CustomFrontController(Router<DefaultRequestContext, DefaultWebsocketContext> router,
+                                     SpincastConfig spincastConfig,
+                                     SpincastDictionary spincastDictionary,
+                                     Server server,
+                                     RequestContextFactory<DefaultRequestContext> requestCreationFactory,
                                      SpincastRequestScope spincastRequestScope,
                                      @RequestContextType Type requestContextType,
-                                     IJsonManager jsonManager,
-                                     IXmlManager xmlManager) {
+                                     JsonManager jsonManager,
+                                     XmlManager xmlManager) {
             super(router,
                   spincastConfig,
                   spincastDictionary,
@@ -79,23 +79,23 @@ public class ExceptionInDefaultExceptionHandlerTest extends SpincastDefaultNoApp
     @Test
     public void lastResortExceptionHandler() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
-                throw new PublicException("original message");
+            public void handle(DefaultRequestContext context) {
+                throw new PublicExceptionDefault("original message");
             }
         });
 
-        getRouter().ALL("/*{path}").exception().save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").exception().save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new RuntimeException("custom handler exception");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         // The original message should have been kept!
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());

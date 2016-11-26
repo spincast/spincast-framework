@@ -25,7 +25,7 @@ Docs : "HTTP Caching"
         		"No Cache" headers
         	</li>
         </ul>
-        Finally, Spincast also provides a mechanism for <a href="#http_caching_cache_busting"><code>Cache Busting</code></a>.
+        Finally, Spincast also provides a mechanism for <a href="#http_caching_cache_busting">Cache Busting</a>.
     </p>
 </section>
 
@@ -35,7 +35,7 @@ Docs : "HTTP Caching"
         Cache-Control
     </h4>
     <p>
-    	The <code>Cache-Control</code> header (and the similar, but older, <code>Expires</code> header) is used to
+    	The <code>Cache-Control</code> header (and the similar, but older, <code><em>Expires</em></code> header) is used to
     	tell a client how much time (in seconds) it should use its cached copy of a resource
     	before asking the server for a fresh copy.
     </p>
@@ -54,7 +54,7 @@ Docs : "HTTP Caching"
         </div>
     </p> 
     <p>	
-    	There are three available options when using this <code>cache(...)</code> method :
+    	There are three options available when using this <code>cache(...)</code> method :
         <ul>
         	<li>
         		The number of seconds the client should uses its cached version without
@@ -83,7 +83,7 @@ Docs : "HTTP Caching"
             <p>
                 <pre class="ace ace-java"
 >@Override
-public void myHandler(IAppRequestContext context) {
+public void myHandler(AppRequestContext context) {
     context.cacheHeaders().cache(3600);
     context.response().sendPlainText("This will be cached for 3600 seconds!");
 }</pre> 
@@ -100,21 +100,21 @@ public void myHandler(IAppRequestContext context) {
         Default caching
     </h4>
     <p>
-    	When you do not explicitly set any caching options for a <code>static resource</code>, some defaults are automatically used. Those
-    	defaults are configurable using the <a href="/public/javadoc/org/spincast/core/config/ISpincastConfig.html"><code>ISpincastConfig</code></a> 
+    	When you do not explicitly set any caching options for a <code>Static Resource</code>, some defaults are automatically used. Those
+    	defaults are configurable using the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> 
    		class.
     </p>
 
    	<p>
-		There are two variations for those static resources default caching configurations :
+		There are two variations for those Static Resources default caching configurations :
 	</p>
 	<ul>
 		<li>
-			One for plain static resources. The default is to send headers so the resource
+			One for plain Static Resources. The default is to send headers so the resource
 			is  cached for <code>86400</code> seconds (1 day).
 		</li>
 		<li>
-			One for <a href="#dynamic_resources"><em>dynamic</em> resources</a>. The default is to send headers so the resource
+			One for <a href="#dynamic_resources"><em>Dynamic</em> Resources</a>. The default is to send headers so the resource
 			is cached for <code>3600</code> seconds (1 hour).
 		
 			When a resource can be generated, it often means that the resource may change more frequently. This is why
@@ -123,16 +123,16 @@ public void myHandler(IAppRequestContext context) {
 	</ul>
 	<p>
 		<img class="inlineIcon" src="/public/images/icons/para.png" /> 
-		When a static/dynamic resource is served, a <code>Last-Modified</code> header is also automatically
+		When a Static/Dynamic Resource is served, a <code>Last-Modified</code> header is also automatically
 		sent. This means that even when the client <em>does</em> ask for a fresh copy of a resource, it will often
 		receive a <code>"304 - Not Modified"</code> response and will therefore again use its
 		cached copy, without unnecessary data being transferred over the network.
 	</p>
 	<p>
 		<img class="inlineIcon" src="/public/images/icons/para.png" /> 
-		Finally, note that no default caching headers are sent for regular routes. You have to explictly use 
+		Finally, note that no default caching headers are sent for regular Routes. You have to explictly use 
 		<code>cache(...)</code> to send some. But if you use <code>cache()</code> as is, without any parameter, then
-		default values will be used (still configurable using the <a href="/public/javadoc/org/spincast/core/config/ISpincastConfig.html"><code>ISpincastConfig</code></a> 
+		default values will be used (still configurable using the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> 
 		class).
 	</p>
 </section>
@@ -150,7 +150,7 @@ public void myHandler(IAppRequestContext context) {
     </p>
     <p>
     	If you want to tell the client that it should disable <em>any</em> kind of caching for a resource,
-    	you can use the <code>noCache(...)</code> method. This can be done when building a route :
+    	you can use the <code>noCache(...)</code> method. This can be done when building a Route :
     </p>
     <p>
         <div>
@@ -161,14 +161,14 @@ public void myHandler(IAppRequestContext context) {
         </div>
     </p> 
     <p>
-    	Or can be used dynamically, in a route handler :
+    	Or can be used dynamically, in a <code>Route Handler</code> :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
 >@Override
-public void myHandler(IAppRequestContext context) {
+public void myHandler(AppRequestContext context) {
     context.cacheHeaders().noCache();
     context.response().sendPlainText("This will be never be cached!");
 }</pre> 
@@ -177,7 +177,7 @@ public void myHandler(IAppRequestContext context) {
     </p> 
     <p>
     	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
-    	Finally, note that you can not use the <code>noCache()</code> options on a <code>static resource</code> since
+    	Finally, note that you can not use the <code>noCache()</code> options on a <code>Static Resource</code> since
     	this would defeat the notion of a "static" resource.
     </p>
 </section>
@@ -198,13 +198,13 @@ public void myHandler(IAppRequestContext context) {
     <p>
         <div>
             <p>
-                <pre class="ace ace-html"
+                <pre class="ace ace-pebble"
 >&lt;link rel="stylesheet" href="/public/css/main.css"&gt;</pre> 
             </p> 
         </div>
     </p>
     <p>
-    	The associated route may be :
+    	The associated Route may be :
     </p>
     <p>
         <div>
@@ -227,7 +227,7 @@ public void myHandler(IAppRequestContext context) {
     	variable to its URL. This template variable is provided by Spincast, you simply need to add
     	it in your HTML pages. For example, if you use <a href="/plugins/spincast-pebble">Pebble</a>, 
     	which is the default
-    	templating engine provided with Spincast, you need to use 
+    	<code>Templating Engine</code> provided with Spincast, you need to use 
     	<code><em>"{% verbatim %}{{cacheBuster}}{% endverbatim %}"</em></code> as the cache buster token. 
     	We recommend that you add this token right before the file name of the resource :
     </p>
@@ -235,8 +235,11 @@ public void myHandler(IAppRequestContext context) {
         <div>
             <p>
             	{% verbatim %}
-                <pre class="ace ace-html" data-ace-hi="0,41,0,56"
->&lt;link rel="stylesheet" href="/public/css/{{cacheBuster}}main.css"&gt;</pre> 
+                <pre class="ace ace-pebble" data-ace-hi="1,41,1,56"
+>
+
+&lt;link rel="stylesheet" href="/public/css/{{cacheBuster}}main.css"&gt;
+</pre> 
 				{% endverbatim %}
             </p> 
         </div>
@@ -250,8 +253,11 @@ public void myHandler(IAppRequestContext context) {
     <p>
         <div>
             <p>
-                <pre class="ace ace-html" data-ace-hi="0,41,0,66"
->&lt;link rel="stylesheet" href="/public/css/spincastcb_1469634250814_main.css"&gt;</pre> 
+                <pre class="ace ace-pebble" data-ace-hi="1,41,1,66"
+>
+
+&lt;link rel="stylesheet" href="/public/css/spincastcb_1469634250814_main.css"&gt;
+</pre> 
             </p> 
         </div>
     </p>
@@ -285,7 +291,7 @@ public void myHandler(IAppRequestContext context) {
     	By default, the cache busting code provided by Spincast will change every time the application is restarted. You can modify
     	this behavior and/or the format of the token by overriding the <code>getCacheBusterCode()</code> and
     	<code>removeCacheBusterCodes(...)</code> methods from 
-    	<a href="/public/javadoc/org/spincast/core/utils/ISpincastUtils.html">ISpincastUtils</a>.	
+    	<a class="javadoc" href="/public/javadoc/org/spincast/core/utils/SpincastUtils.html">SpincastUtils</a>.	
     </p>
     <p>
     	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
@@ -305,7 +311,7 @@ public void myHandler(IAppRequestContext context) {
     <p>
     	The client, when it wants to retrieve/modify/delete a resource it already has a copy of, sends a request
     	for that resource by passing the <code>Etags</code> and/or <code>Last modification date</code> it currently has for that
-    	resource. The server validates those values with the current information of the resource and decides if the
+    	resource. The Server validates those values with the current information of the resource and decides if the
     	current resource should be retrieved/modified/deleted. Some variations using those headers are even used to
     	validate if a client can <em>create</em> a new resource.
     </p>
@@ -323,7 +329,7 @@ public void myHandler(IAppRequestContext context) {
     
     <p>
 		The most popular use for freshness headers is to return a <code>304 - Not Modified</code> response when a
-		client asks for a fresh copy of a resource, but that resource has not changed. Doing so, the response 
+		client asks for a fresh copy of a resource but that resource has not changed. Doing so, the response 
 		is very fast since no unnecessary data is actually transmitted over the network : the client simply continue to use its 
 		cached copy.
     </p>
@@ -365,7 +371,7 @@ public void myHandler(IAppRequestContext context) {
     	appropriate. First, the resource must be generated for this hash to be computed.
     	But maybe you shouldn't have let the request access the resource in the first place! Also, maybe there is
     	a far better way to generate a unique <code>ETag</code> for your resource than to hash its body, using one of its
-    	property for example. Finally, what happens if you need to "stream" that resource? 
+    	field for example. Finally, what happens if you need to "stream" that resource? 
     	If you need to <em>flush</em> the response more than once when
     	serving it? In that case, the "after" filter wouldn't be able to hash the body properly and 
     	send it as an <code>ETag</code> header.
@@ -385,7 +391,8 @@ public void myHandler(IAppRequestContext context) {
         Freshness management using the cacheHeaders() add-on 
     </h5>
     <p>
-		There are three methods on the <code>cacheHeaders()</code> add-on made to deal with freshness headers :
+		There are three methods on the <code>cacheHeaders()</code> add-on made to deal with freshness headers in a
+        <code>Route Handler</code> :
 		
     	<ul>
     		<li>
@@ -456,24 +463,24 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
     </h5>
     <p>
 		Let's first repeat that, as we <a href="#http_caching_default">previously said</a>, 
-		the <code>static resources</code> have their
-		<code>Last modification date</code> automatically managed. The server simply validates the modification
+		the Static Resources have their
+		<code>Last modification date</code> automatically managed. The Server simply validates the modification
 		date of the resource's file on disk and use this information to decide if a new copy of the resource should be
-		returned or not. In other words, the validation pattern we are going to explain here only concerns <em>regular routes</em>, where
-		<code>route handlers</code> manage the target resources.
+		returned or not. In other words, the validation pattern we are going to explain here only concerns <em>regular Routes</em>, where
+		<code>Route Handlers</code> manage the target resources.
     </p>
     <p>
     	<img class="inlineIcon" src="/public/images/icons/para.png" />
-		The freshness validation pattern looks like this, in a route handler :
+		The freshness validation pattern looks like this, in a <code>Route Handler</code> :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public void myRouteHandler(IAppRequestContext context) {
+>public void myRouteHandler(AppRequestContext context) {
 
 	// 1. Gets the current resource, if any
-    IMyResource resource = getMyResource();
+    MyResource resource = getMyResource();
     String resourceEtag = computeEtag(resource);
 
 	// 2. Sets the current ETag and validates the freshness of the
@@ -488,7 +495,6 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
 	// it can create/return/update/delete the resource.
 	
     // ...
-    
 };</pre> 
             </p> 
             <p>
@@ -522,11 +528,11 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
                     </li>
                     <li>
                         <span class="code-line-nbr">11</span> : If the <code>validate(...)</code> method returns
-                        <code>true</code>, our route handler should return immediately, without further processing!
+                        <code>true</code>, our <code>Route Handler</code> should return immediately, without further processing!
                     </li>
                     <li>
                         <span class="code-line-nbr">14-18</span> : If the <code>validate(...)</code> method returns
-                        <code>false</code>, the main part of our route handler can run, as usual.
+                        <code>false</code>, the main part of our <code>Route Handler</code> can run, as usual.
                     </li>
                     
                 </ul>
@@ -553,10 +559,10 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
         <div>
             <p>
                 <pre class="ace ace-java"
->public void createHandler(IAppRequestContext context) {
+>public void createHandler(AppRequestContext context) {
 
 	// Let's say the resource is "null" here.
-	IMyResource resource = getMyResource();
+	MyResource resource = getMyResource();
 	
 	// The ETag will be "null" too.
 	String resourceEtag = computeEtag(resource);
@@ -588,9 +594,9 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
         <div>
             <p>
                 <pre class="ace ace-java"
->public void getHandler(IAppRequestContext context) {
+>public void getHandler(AppRequestContext context) {
 
-	IMyResource resource = getMyResource();
+	MyResource resource = getMyResource();
 	String resourceEtag = computeEtag(resource);
 	if(context.cacheHeaders().eTag(resourceEtag)
 	                         .validate(resource != null)) {
@@ -601,7 +607,7 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
         throw new NotFoundException();
     }
     
-    return context.response().sendJsonObj(resource);
+    return context.response().sendJson(resource);
 }</pre> 
             </p> 
         </div>
@@ -609,7 +615,7 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
     <p>
     	<img class="inlineIcon" src="/public/images/icons/para.png" />
 		To conclude, you may now see that proper management of HTTP freshness headers 
-		sadly can't be fully automated. A filter is simply not enough!
+		sadly can't be fully automated. A <code>Filter</code> is simply not enough!
 		But, by using the 
 		<code>cacheHeaders()</code> add-on and its <code>validate(...)</code> method, a
 		<code>REST</code> endpoint can follow the HTTP specification and be very
@@ -619,7 +625,4 @@ context.cacheHeaders().lastModified(resourceModificationDate);</pre>
     </p>
  
 </section>
-
-
-            
-            
+ 

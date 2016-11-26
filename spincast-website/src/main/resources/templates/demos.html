@@ -3,7 +3,7 @@ Demos
 ==========================================#}
 {% extends "./layout.html" %}
 
-{% block sectionClasses %}demos {% block subSectionClasses %}{% endblock %}{% endblock %}
+{% block sectionClasses %}demos hasSubMenu {% block subSectionClasses %}{% endblock %}{% endblock %}
 {% block meta_title %}Demos / Tutorials / Showcase{% endblock %}
 {% block meta_description %}Demos, tutorials and examples{% endblock %}
 
@@ -15,11 +15,11 @@ Demos
     	<img class="inlineIcon subMenuIcon" src="/public/images/icons/subMenu.png" />
         <ul>
             <li id="menu_demos_hello_world"><a href="/demos-tutorials/hello-world">Hello World!</a></li>
+            <li id="menu_demos_html_forms"><a href="/demos-tutorials/html-forms">Forms &amp; Validation</a></li>
             <li id="menu_demos_websockets"><a href="/demos-tutorials/websockets">WebSockets</a></li>
             <li id="menu_demos_http_auth"><a href="/demos-tutorials/http-authentication">HTTP Authentication</a></li>
             <li id="menu_demos_todo_list"><a href="/demos-tutorials/todo-list">TODO List</a></li>
             <li id="menu_demos_full_website"><a href="/demos-tutorials/full-website">Full Website</a></li>
-            {# <li id="menu_demos_form_validation"><a href="/demos-tutorials/form-validation">Form validation</a></li> #}
             {# <li id="menu_demos_form_auth"><a href="/demos-tutorials/form-authentication">Form Authentication/Session</a></li> #}
  
         </ul>

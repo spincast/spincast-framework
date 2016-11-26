@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.exceptions.SkipRemainingHandlersException;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.server.IServer;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.server.Server;
 import org.spincast.core.websocket.exceptions.WebsocketEndpointAlreadyManagedByAnotherControllerException;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
@@ -22,48 +22,48 @@ import com.google.inject.assistedinject.AssistedInject;
  * a HTTP request to a WebSocket connection, once the 
  * potential "before" filters have been ran.
  */
-public class WebsocketRouteHandler<R extends IRequestContext<?>, W extends IWebsocketContext<?>> implements IHandler<R> {
+public class WebsocketRouteHandler<R extends RequestContext<?>, W extends WebsocketContext<?>> implements Handler<R> {
 
     protected final Logger logger = LoggerFactory.getLogger(WebsocketRouteHandler.class);
 
-    private final IWebsocketRoute<R, W> websocketRoute;
-    private final IServer server;
-    private final IWebsocketEndpointHandlerFactory<R, W> websocketServerEndpointHandlerFactory;
-    private final IWebsocketEndpointToControllerManager websocketEndpointToControllerManager;
+    private final WebsocketRoute<R, W> websocketRoute;
+    private final Server server;
+    private final WebsocketEndpointHandlerFactory<R, W> websocketServerEndpointHandlerFactory;
+    private final WebsocketEndpointToControllerManager websocketEndpointToControllerManager;
     private final Map<String, Object> endpointCreationLock = new ConcurrentHashMap<String, Object>();
     private final Object endpointLockCreationLock = new Object();
 
-    private final Map<String, IWebsocketEndpointHandler> serverEndpointHandlers =
-            new HashMap<String, IWebsocketEndpointHandler>();
+    private final Map<String, WebsocketEndpointHandler> serverEndpointHandlers =
+            new HashMap<String, WebsocketEndpointHandler>();
 
     @AssistedInject
-    public WebsocketRouteHandler(@Assisted IWebsocketRoute<R, W> websocketRoute,
-                                 IServer server,
-                                 IWebsocketEndpointHandlerFactory<R, W> websocketServerEndpointHandlerFactory,
-                                 IWebsocketEndpointToControllerManager websocketEndpointToControllerKeysMap) {
+    public WebsocketRouteHandler(@Assisted WebsocketRoute<R, W> websocketRoute,
+                                 Server server,
+                                 WebsocketEndpointHandlerFactory<R, W> websocketServerEndpointHandlerFactory,
+                                 WebsocketEndpointToControllerManager websocketEndpointToControllerKeysMap) {
         this.websocketRoute = websocketRoute;
         this.server = server;
         this.websocketServerEndpointHandlerFactory = websocketServerEndpointHandlerFactory;
         this.websocketEndpointToControllerManager = websocketEndpointToControllerKeysMap;
     }
 
-    protected IWebsocketRoute<R, W> getWebsocketRoute() {
+    protected WebsocketRoute<R, W> getWebsocketRoute() {
         return this.websocketRoute;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected Map<String, IWebsocketEndpointHandler> getServerEndpointHandlers() {
+    protected Map<String, WebsocketEndpointHandler> getServerEndpointHandlers() {
         return this.serverEndpointHandlers;
     }
 
-    protected IWebsocketEndpointHandlerFactory<R, W> getWebsocketServerEndpointHandlerFactory() {
+    protected WebsocketEndpointHandlerFactory<R, W> getWebsocketServerEndpointHandlerFactory() {
         return this.websocketServerEndpointHandlerFactory;
     }
 
-    protected IWebsocketEndpointToControllerManager getWebsocketEndpointToControllerManager() {
+    protected WebsocketEndpointToControllerManager getWebsocketEndpointToControllerManager() {
         return this.websocketEndpointToControllerManager;
     }
 
@@ -94,7 +94,7 @@ public class WebsocketRouteHandler<R extends IRequestContext<?>, W extends IWebs
         // This allows the controller to decide of the ids to use for the
         // endpoind and for the peer.
         //==========================================
-        IWebsocketConnectionConfig connectionConfig =
+        WebsocketConnectionConfig connectionConfig =
                 getWebsocketRoute().getWebsocketController().onPeerPreConnect(context);
 
         //==========================================
@@ -137,11 +137,11 @@ public class WebsocketRouteHandler<R extends IRequestContext<?>, W extends IWebs
                                                    ex.getNewControllerKey());
                     }
 
-                    IWebsocketEndpointManager websocketEndpointManager = getServer().getWebsocketEndpointManager(endpointId);
+                    WebsocketEndpointManager websocketEndpointManager = getServer().getWebsocketEndpointManager(endpointId);
                     if(websocketEndpointManager != null) {
                         throw new RuntimeException("No existing controller was found to manage the WebSocket endpoint '" +
                                                    endpointId + "' " +
-                                                   "but we found a " + IWebsocketEndpointManager.class.getSimpleName() +
+                                                   "but we found a " + WebsocketEndpointManager.class.getSimpleName() +
                                                    " object in the server.");
 
                     }
@@ -149,7 +149,7 @@ public class WebsocketRouteHandler<R extends IRequestContext<?>, W extends IWebs
                     //==========================================
                     // Creates an handler for the endpoint.
                     //==========================================
-                    IWebsocketEndpointHandler websocketEndpointHandler =
+                    WebsocketEndpointHandler websocketEndpointHandler =
                             createWebsocketEndpointHandler(endpointId, getWebsocketRoute().getWebsocketController());
 
                     //==========================================
@@ -201,13 +201,13 @@ public class WebsocketRouteHandler<R extends IRequestContext<?>, W extends IWebs
         throw new SkipRemainingHandlersException();
     }
 
-    protected IWebsocketEndpointHandler createWebsocketEndpointHandler(final String endpointId,
-                                                                       final IWebsocketController<R, W> controller) {
+    protected WebsocketEndpointHandler createWebsocketEndpointHandler(final String endpointId,
+                                                                       final WebsocketController<R, W> controller) {
 
-        final IWebsocketEndpointHandler controllerHandler =
+        final WebsocketEndpointHandler controllerHandler =
                 getWebsocketServerEndpointHandlerFactory().create(endpointId, controller);
 
-        return new IWebsocketEndpointHandler() {
+        return new WebsocketEndpointHandler() {
 
             @Override
             public void onPeerMessage(String peerId, byte[] message) {

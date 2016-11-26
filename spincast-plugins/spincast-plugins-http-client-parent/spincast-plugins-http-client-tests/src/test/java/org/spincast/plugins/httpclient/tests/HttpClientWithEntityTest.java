@@ -6,19 +6,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.http.HttpEntity;
@@ -33,25 +33,25 @@ import com.google.inject.Inject;
 public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Inject
-    protected IXmlManager xmlManager;
+    protected XmlManager xmlManager;
 
     @Test
     public void postEmptyEntity() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals("", context.request().getBodyAsString());
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = POST("/").send();
+        HttpResponse response = POST("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -61,16 +61,16 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void postAddEntityFormDataValue() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                String value = context.request().getFormDataFirst("key1");
+                String value = context.request().getFormData().getString("key1");
                 assertNotNull(value);
                 assertEquals("value1", value);
 
-                value = context.request().getFormDataFirst("key2");
+                value = context.request().getFormData().getString("key2");
                 assertNotNull(value);
                 assertEquals("value2", value);
 
@@ -78,7 +78,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IHttpResponse response = POST("/").addEntityFormDataValue("key1", "value1")
+        HttpResponse response = POST("/").addEntityFormDataValue("key1", "value1")
                                           .addEntityFormDataValue("key2", "value2").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -89,23 +89,24 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void postSetEntityFormData() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                List<String> values = context.request().getFormData("key1");
+                JsonArray values = context.request().getFormData().getJsonArray("key1");
                 assertNotNull(values);
                 assertEquals(2, values.size());
 
-                assertEquals("value1", values.get(0));
-                assertEquals("value2", values.get(1));
+                assertEquals("value1", values.getString(0));
+                assertEquals("value2", values.getString(1));
 
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = POST("/").setEntityFormData("key1", Lists.newArrayList("value1", "value2"))
+        HttpResponse response = POST("/").setEntityFormData("key1[0]", Lists.newArrayList("value1"))
+                                          .setEntityFormData("key1[1]", Lists.newArrayList("value2"))
                                           .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -116,10 +117,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void postSetEntityString() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String body = context.request().getBodyAsString();
                 assertNotNull(body);
@@ -133,7 +134,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/").setEntityString("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                          .send();
 
@@ -145,10 +146,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void postSetEntityHttpEntity() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String body = context.request().getBodyAsString();
                 assertNotNull(body);
@@ -168,7 +169,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             HttpEntity entity =
                     new InputStreamEntity(stream, ContentType.parse(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()));
 
-            IHttpResponse response = POST("/").setEntity(entity).send();
+            HttpResponse response = POST("/").setEntity(entity).send();
 
             assertEquals(HttpStatus.SC_OK, response.getStatus());
             assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -182,10 +183,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void postSendBinaryEntity() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 byte[] bytes = context.request().getBodyAsByteArray();
                 assertNotNull(bytes);
@@ -209,7 +210,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             HttpEntity entity =
                     new InputStreamEntity(stream, ContentType.parse("image/jpeg"));
 
-            IHttpResponse response = POST("/").setEntity(entity).send();
+            HttpResponse response = POST("/").setEntity(entity).send();
 
             assertEquals(HttpStatus.SC_OK, response.getStatus());
             assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -223,12 +224,12 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void postSetEntityStringJson() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.request().getJsonBodyAsJsonObject();
+                JsonObject jsonObj = context.request().getJsonBody();
                 assertNotNull(jsonObj);
                 assertEquals("test", jsonObj.getString("name"));
 
@@ -242,7 +243,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/").setEntityString("{\"name\":\"test\"}", ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                          .send();
 
@@ -254,12 +255,12 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void putSetJsonEntity() throws Exception {
 
-        getRouter().PUT("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().PUT("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.request().getJsonBodyAsJsonObject();
+                JsonObject jsonObj = context.request().getJsonBody();
                 assertNotNull(jsonObj);
                 assertEquals("test", jsonObj.getString("name"));
 
@@ -273,10 +274,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IJsonObject obj = this.jsonManager.create();
+        JsonObject obj = this.jsonManager.create();
         obj.put("name", "test");
 
-        IHttpResponse response = PUT("/").setEntityJson(obj).send();
+        HttpResponse response = PUT("/").setEntityJson(obj).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -286,12 +287,12 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void patchSetEntityStringJson() throws Exception {
 
-        getRouter().PATCH("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().PATCH("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.request().getJsonBodyAsJsonObject();
+                JsonObject jsonObj = context.request().getJsonBody();
                 assertNotNull(jsonObj);
                 assertEquals("test", jsonObj.getString("name"));
 
@@ -305,7 +306,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 PATCH("/").setEntityString("{\"name\":\"test\"}", ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                           .send();
 
@@ -317,10 +318,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void uploadFile() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     File uploadedFile = context.request().getUploadedFileFirst("someName");
@@ -334,17 +335,17 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void overwriteEntity() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     File uploadedFile = context.request().getUploadedFileFirst("someName");
@@ -358,7 +359,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFormDataValue("key1", "value1")
+        HttpResponse response = POST("/one").addEntityFormDataValue("key1", "value1")
                                              .addEntityFileUpload("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -366,13 +367,14 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void setEntityJson() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.request().getJsonBodyAsJsonObject();
+                JsonObject jsonObj = context.request().getJsonBody();
                 assertNotNull(jsonObj);
+
                 assertEquals("test", jsonObj.getString("name"));
 
                 String contentType = context.request().getContentType();
@@ -385,10 +387,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IJsonObject obj = this.jsonManager.create();
+        JsonObject obj = this.jsonManager.create();
         obj.put("name", "test");
 
-        IHttpResponse response = POST("/").setEntityJson(obj).send();
+        HttpResponse response = POST("/").setEntityJson(obj).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -398,12 +400,12 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
     @Test
     public void setEntityXml() throws Exception {
 
-        getRouter().POST("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                IJsonObject jsonObj = context.request().getXmlBodyAsJsonObject();
+                JsonObject jsonObj = context.request().getXmlBodyAsJsonObject();
                 assertNotNull(jsonObj);
                 assertEquals("test", jsonObj.getString("name"));
 
@@ -417,10 +419,10 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
             }
         });
 
-        IJsonObject obj = this.jsonManager.create();
+        JsonObject obj = this.jsonManager.create();
         obj.put("name", "test");
 
-        IHttpResponse response = POST("/").setEntityXml(obj).send();
+        HttpResponse response = POST("/").setEntityXml(obj).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

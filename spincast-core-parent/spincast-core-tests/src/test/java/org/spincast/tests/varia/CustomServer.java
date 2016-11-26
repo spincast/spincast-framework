@@ -8,32 +8,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.controllers.IFrontController;
-import org.spincast.core.cookies.ICookie;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.controllers.FrontController;
+import org.spincast.core.cookies.Cookie;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IStaticResource;
+import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.websocket.IWebsocketEndpointHandler;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
+import org.spincast.core.websocket.WebsocketEndpointHandler;
+import org.spincast.core.websocket.WebsocketEndpointManager;
 
 import com.google.inject.Inject;
 
 /**
  * The server itself.
  */
-public class CustomServer implements IServer {
+public class CustomServer implements Server {
 
-    private final ISpincastConfig spincastConfig;
-    private final IFrontController frontController;
+    private final SpincastConfig spincastConfig;
+    private final FrontController frontController;
 
     public String serverFlag = "";
 
     @Inject
-    public CustomServer(ISpincastConfig spincastConfig,
-                        IFrontController frontController) {
+    public CustomServer(SpincastConfig spincastConfig,
+                        FrontController frontController) {
         assertNotNull(spincastConfig);
         assertNotNull(frontController);
         this.spincastConfig = spincastConfig;
@@ -41,11 +41,11 @@ public class CustomServer implements IServer {
         this.serverFlag += "constructor";
     }
 
-    protected ISpincastConfig getSpincastConfig() {
+    protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
-    protected IFrontController getFrontController() {
+    protected FrontController getFrontController() {
         return this.frontController;
     }
 
@@ -78,7 +78,7 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public void addStaticResourceToServe(IStaticResource<?> staticResource) {
+    public void addStaticResourceToServe(StaticResource<?> staticResource) {
     }
 
     @Override
@@ -86,12 +86,12 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public IStaticResource<?> getStaticResourceServed(String urlPath) {
+    public StaticResource<?> getStaticResourceServed(String urlPath) {
         return null;
     }
 
     @Override
-    public Set<IStaticResource<?>> getStaticResourcesServed() {
+    public Set<StaticResource<?>> getStaticResourcesServed() {
         return null;
     }
 
@@ -126,11 +126,11 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public void addCookies(Object exchange, Map<String, ICookie> cookies) {
+    public void addCookies(Object exchange, Map<String, Cookie> cookies) {
     }
 
     @Override
-    public Map<String, ICookie> getCookies(Object exchange) {
+    public Map<String, Cookie> getCookies(Object exchange) {
         return null;
     }
 
@@ -167,7 +167,7 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public Map<String, List<String>> getFormDatas(Object exchange) {
+    public Map<String, List<String>> getFormData(Object exchange) {
         return null;
     }
 
@@ -234,12 +234,12 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public List<IWebsocketEndpointManager> getWebsocketEndpointManagers() {
+    public List<WebsocketEndpointManager> getWebsocketEndpointManagers() {
         return null;
     }
 
     @Override
-    public IWebsocketEndpointManager websocketCreateEndpoint(String endpointId, IWebsocketEndpointHandler endpointHandler) {
+    public WebsocketEndpointManager websocketCreateEndpoint(String endpointId, WebsocketEndpointHandler endpointHandler) {
         return null;
     }
 
@@ -256,7 +256,7 @@ public class CustomServer implements IServer {
     }
 
     @Override
-    public IWebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
+    public WebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
         return null;
     }
 

@@ -10,7 +10,7 @@ import org.spincast.plugins.httpclient.SpincastHttpClientConfigDefault;
  * Websocket support plugin.
  */
 public class SpincastHttpClientWithWebsocketConfigDefault extends SpincastHttpClientConfigDefault
-                                                          implements ISpincastHttpClientWithWebsocketConfig {
+                                                          implements SpincastHttpClientWithWebsocketConfig {
 
     @Override
     public boolean isWebsocketAutomaticPingEnabled() {

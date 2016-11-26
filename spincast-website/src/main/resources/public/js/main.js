@@ -89,9 +89,10 @@ app.ace.Range = ace.require('ace/range').Range;
 
 app.aceEditor = function(acePre) {
     var editor = ace.edit(acePre);
+    editor.$blockScrolling = Infinity;
     editor.setHighlightActiveLine(false);
     editor.setDisplayIndentGuides(false);
-    editor.setTheme("ace/theme/eclipse");
+
     editor.setReadOnly(true);
     editor.setAutoScrollEditorIntoView(true);
     editor.setOption("minLines", 2);
@@ -99,13 +100,22 @@ app.aceEditor = function(acePre) {
     editor.setFontSize(14);
     editor.setShowPrintMargin(false);
     editor.renderer.setScrollMargin(0, 4, 0, 0);
+    editor.getSession().setUseWorker(false);
     
-    if($(acePre).hasClass("ace-xml")) {
-        editor.getSession().setMode("ace/mode/xml");
+    // Loads the mode and the theme
+    var aceMode = $(acePre).attr('class').match(/\bace-([-_a-zA-Z]+)\b/)[1];
+    if(aceMode) {
+    	editor.getSession().setMode("ace/mode/" + aceMode);
+    	if(aceMode === "java") {
+    		editor.setTheme("ace/theme/eclipse");
+    	} else {
+    		editor.setTheme("ace/theme/idle_fingers");
+    	}  
     } else {
-        editor.getSession().setMode("ace/mode/java");
-    }  
-    
+        editor.setTheme("ace/theme/idle_fingers");
+        editor.getSession().setMode("ace/mode/text");
+    }
+
     // Used to store the markers we manage.
     editor.markerIds = {};
     
@@ -118,17 +128,19 @@ app.aceEditor = function(acePre) {
     // This prevents the matching end XML tag to be "selected"
     // on the first display.
     editor.moveCursorTo(0,1);
-    
+
     // Default highlighting?
     var rangeStr = $(acePre).attr("data-ace-hi");
     if(rangeStr) {
-        
+
+    	let markersNbr = 0;
         var pipeTokens = rangeStr.split("|");
         for(var i = 0; i < pipeTokens.length; i++) {
             var pipeToken = pipeTokens[i];
             var tokens = pipeToken.split(","); 
             if(tokens && tokens.length == 4) {
-                var marker = editor.session.addMarker(new app.ace.Range(tokens[0], tokens[1], tokens[2], tokens[3]),'ace_active-line', 'text');
+                var marker = editor.session.addMarker(new app.ace.Range(tokens[0], tokens[1], tokens[2], tokens[3]),'ace_active-line', 'text'); 
+                markersNbr++;
             }
         }
     }
@@ -136,7 +148,7 @@ app.aceEditor = function(acePre) {
 
 app.aceInit = function() {
 	
-    //Init Ace editors when the <pre> are visible
+    // Init Ace editors when the <pre> are visible
     $('.ace').bind('inview', function (event, visible) {
         if(visible == true) {
         	if($(this).hasClass("ace_editor")) {
@@ -146,6 +158,28 @@ app.aceInit = function() {
         }
     });
     
+    $('.ace_active-line').bind('inview', function (event, visible) {
+        if(visible == true) {
+        	$(this).css("width", 300);
+        }
+    });
+    
+    // Ajust the Ace inline highlights, when they are created...
+    $(".ace").arrive(".ace_active-line", function() {
+        var hi = $(this);
+        
+        let width = hi.width();
+        let height = hi.height();
+        let position = hi.position();
+        let left = position.left;
+        let top = position.top;
+        
+        hi.css("width", width + 14);
+        hi.css("height", height + 6);  
+        hi.css("left", left - 6);  
+        hi.css("top", top - 1); 
+    });
+    
     // Trigger a first check for Ace editors and
     // relocates the page at the correct hash position or otherwise
     // the ace editors make the page being too low.
@@ -153,7 +187,6 @@ app.aceInit = function() {
     if(window.location.hash) {
         window.location = window.location;
     }
-
 }
 
 /******************************************
@@ -197,6 +230,35 @@ app.affix = function(selector, trigger) {
           top: trigger
         }
     });
+}
+
+app.alertMessage = function(alertType, alertText) {
+	
+	toastr.options = {
+			  "closeButton": true,
+			  "debug": false,
+			  "newestOnTop": false,
+			  "progressBar": true,
+			  "positionClass": "toast-top-full-width",
+			  "preventDuplicates": false,
+			  "onclick": null,
+			  "showDuration": "300",
+			  "hideDuration": "1000",
+			  "timeOut": "7000",
+			  "extendedTimeOut": "1000",
+			  "showEasing": "swing",
+			  "hideEasing": "linear",
+			  "showMethod": "fadeIn",
+			  "hideMethod": "fadeOut" 
+			}
+	
+	if(alertType === "SUCCESS") {
+		toastr.success(alertText);
+	} else if(alertType === "WARNING") {
+		toastr.warning(alertText);
+	} else {
+		toastr.error(alertText);
+	}
 }
 
 /******************************************

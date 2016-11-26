@@ -2,7 +2,7 @@ package org.spincast.plugins.dictionary;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.config.ISpincastDictionary;
+import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
 import com.google.inject.Scopes;
@@ -25,11 +25,11 @@ public class SpincastDictionaryPluginGuiceModule extends SpincastPluginGuiceModu
     }
 
     protected void bindSpincastDictionary() {
-        bind(ISpincastDictionary.class).to(bindSpincastDictionaryImplClass()).in(Scopes.SINGLETON);
+        bind(SpincastDictionary.class).to(bindSpincastDictionaryImplClass()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends ISpincastDictionary> bindSpincastDictionaryImplClass() {
-        return SpincastDictionary.class;
+    protected Class<? extends SpincastDictionary> bindSpincastDictionaryImplClass() {
+        return SpincastDictionaryDefault.class;
     }
 
 }

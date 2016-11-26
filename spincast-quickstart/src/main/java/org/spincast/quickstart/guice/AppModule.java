@@ -1,33 +1,30 @@
 package org.spincast.quickstart.guice;
 
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.quickstart.App;
 import org.spincast.quickstart.config.AppConfig;
-import org.spincast.quickstart.config.IAppConfig;
+import org.spincast.quickstart.config.AppConfigDefault;
 import org.spincast.quickstart.controller.AppController;
-import org.spincast.quickstart.controller.IAppController;
-import org.spincast.quickstart.exchange.AppRequestContext;
+import org.spincast.quickstart.exchange.AppRequestContextDefault;
 import org.spincast.quickstart.exchange.AppRouter;
-import org.spincast.quickstart.exchange.AppWebsocketContext;
-import org.spincast.quickstart.exchange.IAppRouter;
+import org.spincast.quickstart.exchange.AppRouterDefault;
+import org.spincast.quickstart.exchange.AppWebsocketContextDefault;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 
 /**
  * Guice module for the application.
- * It extends SpincastDefaultGuiceModule so we start with
+ * 
+ * It extends SpincastDefaultGuiceModule so starts with
  * all the default bindings.
  */
 public class AppModule extends SpincastDefaultGuiceModule {
 
-    /**
-     * Constructor
-     */
     public AppModule(String[] mainArgs) {
         super(mainArgs);
     }
@@ -37,31 +34,31 @@ public class AppModule extends SpincastDefaultGuiceModule {
         super.configure();
 
         //==========================================
-        // One instance only of our configuration class.
+        // One instance only of our configuration object.
         //==========================================
-        bind(AppConfig.class).in(Scopes.SINGLETON);
+        bind(AppConfigDefault.class).in(Scopes.SINGLETON);
 
         //==========================================
-        // Bind our configuration implementation class to our
-        // IAppConfig interface.
+        // Bind our configuration implementation class to the
+        // AppConfig interface.
         //==========================================
-        bind(IAppConfig.class).to(AppConfig.class).in(Scopes.SINGLETON);
+        bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
 
         //==========================================
-        // One instance only of our router class.
+        // One instance only of our Router class.
         //==========================================
-        bind(AppRouter.class).in(Scopes.SINGLETON);
+        bind(AppRouterDefault.class).in(Scopes.SINGLETON);
 
         //==========================================
-        // Bind our router implementation to our custom
-        // and already parameterized "IAppRouter" interface.
+        // Bind our Router implementation to our custom
+        // and already parameterized "AppRouter" interface.
         //==========================================
-        bind(IAppRouter.class).to(AppRouter.class).in(Scopes.SINGLETON);
+        bind(AppRouter.class).to(AppRouterDefault.class).in(Scopes.SINGLETON);
 
         //==========================================
         // Bind our controller.
         //==========================================
-        bind(IAppController.class).to(AppController.class).in(Scopes.SINGLETON);
+        bind(AppController.class).in(Scopes.SINGLETON);
 
         //==========================================
         // Bind the App itself.
@@ -70,40 +67,40 @@ public class AppModule extends SpincastDefaultGuiceModule {
     }
 
     /**
-     * Tells Spincast to use our custom request context type
+     * Tells Spincast to use our custom Request Context type
      * instead of the default one. Spincast will automatically find the
-     * associated interface, "IAppRequestContext", and will use
-     * it to parameterize some of the components, like "IRouter".
+     * associated interface, "AppRequestContext", and will use
+     * it to parameterize some of the components, like "Router".
      */
     @Override
-    protected Class<? extends IRequestContext<?>> getRequestContextImplementationClass() {
-        return AppRequestContext.class;
+    protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
+        return AppRequestContextDefault.class;
     }
 
     /**
-     * Tells Spincast to use our custom Websocket context type
+     * Tells Spincast to use our custom Websocket Context type
      * instead of the default one. Spincast will automatically find the
-     * associated interface, "IAppWebsocketContext", and will use
-     * it to parameterize some of the components, like "IRouter".
+     * associated interface, "AppWebsocketContext", and will use
+     * it to parameterize some of the components, like "Router".
      */
     @Override
-    protected Class<? extends IWebsocketContext<?>> getWebsocketContextImplementationClass() {
-        return AppWebsocketContext.class;
+    protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return AppWebsocketContextDefault.class;
     }
 
     /**
      * Instead of installing the default "spincast-default-plugin" plugin,
      * which only provides hardcoded values for the Spincast configurations,
-     * we directly bind the required "ISpincastConfig" component to our
+     * we directly bind the required "SpincastConfig" component to our
      * custom implementation class.
      */
     @Override
     protected void bindConfigPlugin() {
-        bind(ISpincastConfig.class).to(AppConfig.class).in(Scopes.SINGLETON);
+        bind(SpincastConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
     }
 
     /**
-     * Inline, we override the router implementation bound by the 
+     * Inline, we override the Router implementation bound by the 
      * "spincast-routing" plugin, so our custom class is used.
      */
     @Override
@@ -112,7 +109,7 @@ public class AppModule extends SpincastDefaultGuiceModule {
 
             @Override
             protected Key<?> getRouterImplementationKey() {
-                return Key.get(AppRouter.class);
+                return Key.get(AppRouterDefault.class);
             }
         });
     }

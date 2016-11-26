@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.junit.Test;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.SpincastTestBase;
@@ -22,14 +22,14 @@ import com.google.inject.Injector;
 public class SpincastUtilsTest extends SpincastTestBase {
 
     @Inject
-    private ISpincastUtils spincastUtils;
+    private SpincastUtils spincastUtils;
 
     @Override
     protected Injector createInjector() {
         return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
@@ -311,6 +311,22 @@ public class SpincastUtilsTest extends SpincastTestBase {
         String result = getSpincastUtils().removeCacheBusterCodes("111spincastcb_0123456789012_222");
         assertNotNull(result);
         assertEquals("111222", result);
+    }
+
+    @Test
+    public void readClasspathFile() throws Exception {
+
+        String content = getSpincastUtils().readClasspathFile("/someFile.txt");
+        assertNotNull(content);
+        assertEquals("Le bœuf et l'éléphant!", content);
+    }
+
+    @Test
+    public void readClasspathFileNoSlash() throws Exception {
+
+        String content = getSpincastUtils().readClasspathFile("someFile.txt");
+        assertNotNull(content);
+        assertEquals("Le bœuf et l'éléphant!", content);
     }
 
 }

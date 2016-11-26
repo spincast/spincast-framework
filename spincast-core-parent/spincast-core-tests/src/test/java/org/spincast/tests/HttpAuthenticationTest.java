@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 public class HttpAuthenticationTest extends SpincastDefaultNoAppIntegrationTestBase {
@@ -35,18 +35,18 @@ public class HttpAuthenticationTest extends SpincastDefaultNoAppIntegrationTestB
         assertNotNull(path);
         assertEquals("/one", path);
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("one");
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
@@ -55,7 +55,7 @@ public class HttpAuthenticationTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void notProtected() throws Exception {
 
-        IHttpResponse response = GET("/two").send();
+        HttpResponse response = GET("/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("two", response.getContentAsString());
     }
@@ -63,14 +63,14 @@ public class HttpAuthenticationTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void noAuthSent() throws Exception {
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatus());
     }
 
     @Test
     public void authSentValid() throws Exception {
 
-        IHttpResponse response = GET("/one").setHttpAuthCredentials("user1", "pass1").send();
+        HttpResponse response = GET("/one").setHttpAuthCredentials("user1", "pass1").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("one", response.getContentAsString());
     }
@@ -78,7 +78,7 @@ public class HttpAuthenticationTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void authSentValid2() throws Exception {
 
-        IHttpResponse response = GET("/one").setHttpAuthCredentials("user2", "pass2").send();
+        HttpResponse response = GET("/one").setHttpAuthCredentials("user2", "pass2").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("one", response.getContentAsString());
     }
@@ -86,14 +86,14 @@ public class HttpAuthenticationTest extends SpincastDefaultNoAppIntegrationTestB
     @Test
     public void authSentInvalid() throws Exception {
 
-        IHttpResponse response = GET("/one").setHttpAuthCredentials("user2", "passxxx").send();
+        HttpResponse response = GET("/one").setHttpAuthCredentials("user2", "passxxx").send();
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatus());
     }
 
     @Test
     public void authSentInvalid2() throws Exception {
 
-        IHttpResponse response = GET("/one").setHttpAuthCredentials("user3", "pass2").send();
+        HttpResponse response = GET("/one").setHttpAuthCredentials("user3", "pass2").send();
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatus());
     }
 

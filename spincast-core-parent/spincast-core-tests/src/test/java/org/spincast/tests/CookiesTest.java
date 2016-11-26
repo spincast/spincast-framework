@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -28,12 +28,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String random = UUID.randomUUID().toString();
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie(SpincastTestUtils.TEST_STRING + "name");
+                Cookie cookie = getCookieFactory().createCookie(SpincastTestUtils.TEST_STRING + "name");
                 cookie.setValue(SpincastTestUtils.TEST_STRING + random);
                 context.cookies().addCookie(cookie);
 
@@ -41,15 +41,15 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("test", response.getContentAsString());
 
-        Map<String, ICookie> cookies = response.getCookies();
+        Map<String, Cookie> cookies = response.getCookies();
         assertEquals(1, cookies.size());
-        ICookie cookie = cookies.get(SpincastTestUtils.TEST_STRING + "name");
+        Cookie cookie = cookies.get(SpincastTestUtils.TEST_STRING + "name");
         assertNotNull(cookie);
         assertEquals(SpincastTestUtils.TEST_STRING + "name", cookie.getName());
         assertEquals(SpincastTestUtils.TEST_STRING + random, cookie.getValue());
@@ -60,23 +60,23 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String random = UUID.randomUUID().toString();
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("name");
+                Cookie cookie = getCookieFactory().createCookie("name");
                 cookie.setValue(random);
                 context.cookies().addCookie(cookie);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("name");
+                Cookie cookie = context.cookies().getCookie("name");
                 assertNotNull(cookie);
                 assertEquals(random, cookie.getValue());
                 assertFalse(cookie.isExpired());
@@ -95,11 +95,11 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        Map<String, ICookie> cookies = response.getCookies();
-        ICookie cookie = cookies.get("name");
+        Map<String, Cookie> cookies = response.getCookies();
+        Cookie cookie = cookies.get("name");
         assertNotNull(cookie);
         assertEquals("name", cookie.getName());
         assertEquals(random, cookie.getValue());
@@ -116,32 +116,32 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String random = UUID.randomUUID().toString();
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("name");
+                Cookie cookie = getCookieFactory().createCookie("name");
                 cookie.setValue(random);
                 context.cookies().addCookie(cookie);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("name");
+                Cookie cookie = context.cookies().getCookie("name");
                 assertNull(cookie);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        Map<String, ICookie> cookies = response.getCookies();
-        ICookie cookie = cookies.get("name");
+        Map<String, Cookie> cookies = response.getCookies();
+        Cookie cookie = cookies.get("name");
         assertNotNull(cookie);
         assertEquals("name", cookie.getName());
         assertEquals(random, cookie.getValue());
@@ -160,15 +160,15 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
         final String random1 = UUID.randomUUID().toString();
         final String random2 = UUID.randomUUID().toString();
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                Map<String, ICookie> cookies = context.cookies().getCookies();
+                Map<String, Cookie> cookies = context.cookies().getCookies();
                 assertEquals(cookies.size(), 2);
 
-                ICookie cookie = cookies.get("name1");
+                Cookie cookie = cookies.get("name1");
                 assertEquals(random1, cookie.getValue());
 
                 cookie = cookies.get("name2");
@@ -178,57 +178,57 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        ICookie cookie = getCookieFactory().createCookie("name1", random1);
+        Cookie cookie = getCookieFactory().createCookie("name1", random1);
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
 
-        ICookie cookie2 = getCookieFactory().createCookie("name2", random2);
+        Cookie cookie2 = getCookieFactory().createCookie("name2", random2);
         cookie2.setDomain(getSpincastConfig().getServerHost());
         cookie2.setPath("/");
 
-        IHttpResponse response = GET("/one").addCookie(cookie).addCookie(cookie2).send();
+        HttpResponse response = GET("/one").addCookie(cookie).addCookie(cookie2).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        Map<String, ICookie> cookies = response.getCookies();
+        Map<String, Cookie> cookies = response.getCookies();
         assertEquals(cookies.size(), 0);
     }
 
     @Test
     public void invalidCookieNull() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.cookies().addCookie(null);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
-        Map<String, ICookie> cookies = response.getCookies();
+        Map<String, Cookie> cookies = response.getCookies();
         assertEquals(cookies.size(), 0);
     }
 
     @Test
     public void invalidCookieEmptyName() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("");
+                Cookie cookie = getCookieFactory().createCookie("");
                 context.cookies().addCookie(cookie);
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
-        Map<String, ICookie> cookies = response.getCookies();
+        Map<String, Cookie> cookies = response.getCookies();
         assertEquals(cookies.size(), 0);
     }
 
@@ -238,12 +238,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
         final String random = UUID.randomUUID().toString();
         final Date expires = DateUtils.addDays(new Date(), 1);
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("name1",
+                Cookie cookie = getCookieFactory().createCookie("name1",
                                                                  random,
                                                                  "/one",
                                                                  "localhost",
@@ -256,12 +256,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        Map<String, ICookie> cookies = response.getCookies();
+        Map<String, Cookie> cookies = response.getCookies();
         assertEquals(1, cookies.size());
-        ICookie cookie = cookies.get("name1");
+        Cookie cookie = cookies.get("name1");
         assertNotNull(cookie);
         assertEquals("name1", cookie.getName());
         assertEquals("localhost", cookie.getDomain());
@@ -279,12 +279,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         final String random = UUID.randomUUID().toString();
         final Integer maxAge = 1000;
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("name1");
+                Cookie cookie = getCookieFactory().createCookie("name1");
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(maxAge);
 
@@ -292,10 +292,10 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        ICookie cookie = response.getCookie("name1");
+        Cookie cookie = response.getCookie("name1");
         assertNotNull(cookie);
 
         //==========================================
@@ -315,12 +315,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
     public void setExpiresUsingMaxAgeZero() throws Exception {
 
         final String random = UUID.randomUUID().toString();
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("name1");
+                Cookie cookie = getCookieFactory().createCookie("name1");
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(0);
 
@@ -328,10 +328,10 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        ICookie cookie = response.getCookie("name1");
+        Cookie cookie = response.getCookie("name1");
         assertNotNull(cookie);
         assertNull(cookie.getExpires());
     }
@@ -340,12 +340,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
     public void setExpiresUsingMaxAgeUnderZero() throws Exception {
 
         final String random = UUID.randomUUID().toString();
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = getCookieFactory().createCookie("name1");
+                Cookie cookie = getCookieFactory().createCookie("name1");
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(-1);
 
@@ -353,10 +353,10 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-        ICookie cookie = response.getCookie("name1");
+        Cookie cookie = response.getCookie("name1");
         assertNull(cookie);
     }
 
@@ -364,12 +364,12 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
     public void resetCookies() throws Exception {
 
         final String random = UUID.randomUUID().toString();
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
-                ICookie cookie = context.cookies().getCookie("name1");
+                Cookie cookie = context.cookies().getCookie("name1");
                 assertNotNull(cookie);
                 Date expires = cookie.getExpires();
                 assertTrue(expires == null || expires.after(new Date()));
@@ -380,7 +380,7 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
                 expires = cookie.getExpires();
                 assertTrue(expires.before(new Date()));
 
-                ICookie cookie2 = getCookieFactory().createCookie("name2", "val2");
+                Cookie cookie2 = getCookieFactory().createCookie("name2", "val2");
                 context.cookies().addCookie(cookie2);
 
                 cookie = context.cookies().getCookie("name2");
@@ -396,16 +396,16 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
                 cookie = context.cookies().getCookie("name2");
                 assertNull(cookie);
 
-                ICookie cookie3 = getCookieFactory().createCookie("name3", "val3");
+                Cookie cookie3 = getCookieFactory().createCookie("name3", "val3");
                 context.cookies().addCookie(cookie3);
             }
         });
 
-        ICookie cookie = getCookieFactory().createCookie("name1", random);
+        Cookie cookie = getCookieFactory().createCookie("name1", random);
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
 
-        IHttpResponse response = GET("/one").addCookie(cookie).send();
+        HttpResponse response = GET("/one").addCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         cookie = response.getCookie("name1");

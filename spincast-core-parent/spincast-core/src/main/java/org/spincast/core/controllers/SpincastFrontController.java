@@ -8,32 +8,32 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.config.ISpincastDictionary;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.exceptions.CustomStatusCodeException;
 import org.spincast.core.exceptions.ForwardRouteException;
-import org.spincast.core.exceptions.ICustomStatusCodeException;
-import org.spincast.core.exceptions.IPublicException;
-import org.spincast.core.exceptions.IResponseResetableException;
 import org.spincast.core.exceptions.NotFoundException;
+import org.spincast.core.exceptions.PublicException;
 import org.spincast.core.exceptions.RedirectException;
+import org.spincast.core.exceptions.ResponseResetableException;
 import org.spincast.core.exceptions.SkipRemainingHandlersException;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.exchange.IRequestContextFactory;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.exchange.RequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
 import org.spincast.core.guice.SpincastRequestScope;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.routing.IRouteHandlerMatch;
-import org.spincast.core.routing.IRouter;
-import org.spincast.core.routing.IRoutingResult;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.RouteHandlerMatch;
+import org.spincast.core.routing.Router;
+import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.routing.RoutingType;
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -42,33 +42,33 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
-public class SpincastFrontController<R extends IRequestContext<R>, W extends IWebsocketContext<?>> implements IFrontController {
+public class SpincastFrontController<R extends RequestContext<R>, W extends WebsocketContext<?>> implements FrontController {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastFrontController.class);
 
-    private final IRouter<R, W> router;
-    private final ISpincastConfig spincastConfig;
-    private final ISpincastDictionary spincastDictionary;
-    private final IServer server;
-    private final IRequestContextFactory<R> requestCreationFactory;
+    private final Router<R, W> router;
+    private final SpincastConfig spincastConfig;
+    private final SpincastDictionary spincastDictionary;
+    private final Server server;
+    private final RequestContextFactory<R> requestCreationFactory;
     private final SpincastRequestScope spincastRequestScope;
     private final Type requestContextType;
-    private final IJsonManager jsonManager;
-    private final IXmlManager xmlManager;
+    private final JsonManager jsonManager;
+    private final XmlManager xmlManager;
 
     /**
      * The constructor.
      */
     @Inject
-    public SpincastFrontController(IRouter<R, W> router,
-                                   ISpincastConfig spincastConfig,
-                                   ISpincastDictionary spincastDictionary,
-                                   IServer server,
-                                   IRequestContextFactory<R> requestCreationFactory,
+    public SpincastFrontController(Router<R, W> router,
+                                   SpincastConfig spincastConfig,
+                                   SpincastDictionary spincastDictionary,
+                                   Server server,
+                                   RequestContextFactory<R> requestCreationFactory,
                                    SpincastRequestScope spincastRequestScope,
                                    @RequestContextType Type requestContextType,
-                                   IJsonManager jsonManager,
-                                   IXmlManager xmlManager) {
+                                   JsonManager jsonManager,
+                                   XmlManager xmlManager) {
         this.router = router;
         this.spincastConfig = spincastConfig;
         this.spincastDictionary = spincastDictionary;
@@ -80,23 +80,23 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         this.xmlManager = xmlManager;
     }
 
-    protected IRouter<R, W> getRouter() {
+    protected Router<R, W> getRouter() {
         return this.router;
     }
 
-    protected ISpincastConfig getSpincastConfig() {
+    protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
-    protected ISpincastDictionary getSpincastDictionary() {
+    protected SpincastDictionary getSpincastDictionary() {
         return this.spincastDictionary;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IRequestContextFactory<R> getRequestContextFactory() {
+    protected RequestContextFactory<R> getRequestContextFactory() {
         return this.requestCreationFactory;
     }
 
@@ -108,11 +108,11 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         return this.requestContextType;
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
@@ -128,7 +128,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         //==========================================
         getSpincastRequestScope().enter();
         R requestContext = null;
-        IRoutingResult<R> routingResult = null;
+        RoutingResult<R> routingResult = null;
         try {
 
             exchange = validateExchange(exchange);
@@ -193,15 +193,15 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
                 //==========================================
                 // If the headers are not sent yet, we reset everything.
                 //==========================================
-                if(!(ex instanceof IResponseResetableException) || ((IResponseResetableException)ex).isResetResponse()) {
+                if(!(ex instanceof ResponseResetableException) || ((ResponseResetableException)ex).isResetResponse()) {
                     resetResponse(requestContext);
                 }
 
                 //==========================================
                 // Default exception HTTP status.
                 //==========================================
-                if(ex instanceof ICustomStatusCodeException) {
-                    requestContext.response().setStatusCode(((ICustomStatusCodeException)ex).getStatusCode());
+                if(ex instanceof CustomStatusCodeException) {
+                    requestContext.response().setStatusCode(((CustomStatusCodeException)ex).getStatusCode());
                 } else {
                     requestContext.response().setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
                 }
@@ -239,19 +239,19 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     /**
      * Prepares a direct Not Found routing.
      */
-    protected IRoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext) {
+    protected RoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext) {
         return prepareNotFoundRouting(exchange, requestContext, false);
     }
 
     /**
      * Prepares a direct Not Found routing.
      */
-    protected IRoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext, boolean alreadyTried) {
+    protected RoutingResult<R> prepareNotFoundRouting(Object exchange, R requestContext, boolean alreadyTried) {
 
         //==========================================
         // Get the Not Found handler
         //==========================================
-        IRoutingResult<R> routingResult = getRouter().route(requestContext, RoutingType.NOT_FOUND);
+        RoutingResult<R> routingResult = getRouter().route(requestContext, RoutingType.NOT_FOUND);
 
         //==========================================
         // If no route matches for Not Found, we
@@ -287,7 +287,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      * Add the default Not Found route.
      */
     protected void addDefaultNotFoundRoute() {
-        getRouter().ALL(IRouter.DEFAULT_ROUTE_PATH)
+        getRouter().ALL(Router.DEFAULT_ROUTE_PATH)
                    .notFound()
                    .save(getDefaultNotFoundHandler());
     }
@@ -295,9 +295,9 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     /**
      * Create the default Not Found handler
      */
-    protected IHandler<R> getDefaultNotFoundHandler() {
+    protected Handler<R> getDefaultNotFoundHandler() {
 
-        IHandler<R> handler = new IHandler<R>() {
+        Handler<R> handler = new Handler<R>() {
 
             @Override
             public void handle(R context) {
@@ -342,13 +342,13 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     }
 
     protected String getNotFoundJsonContent(String message) {
-        IJsonObject jsonObj = getJsonManager().create();
+        JsonObject jsonObj = getJsonManager().create();
         jsonObj.put("error", message);
         return jsonObj.toJsonString();
     }
 
     protected String getNotFoundXmlContent(String message) {
-        IJsonObject jsonObj = getJsonManager().create();
+        JsonObject jsonObj = getJsonManager().create();
         jsonObj.put("error", message);
         return getXmlManager().toXml(jsonObj);
     }
@@ -374,13 +374,13 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      * Custom exception handling.
      */
     protected void customExceptionHandling(Throwable ex, R requestContext,
-                                           IRoutingResult<R> originalRoutingResult) throws Throwable {
+                                           RoutingResult<R> originalRoutingResult) throws Throwable {
 
         try {
             //==========================================
             // Do we have a custom exception handler?
             //==========================================
-            IRoutingResult<R> exceptionRoutingResult = getRouter().route(requestContext, RoutingType.EXCEPTION);
+            RoutingResult<R> exceptionRoutingResult = getRouter().route(requestContext, RoutingType.EXCEPTION);
             if(exceptionRoutingResult != null) {
 
                 requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
@@ -438,7 +438,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void addRequestContextInCustomRequestScope(R requestContext) {
 
-        Key key = Key.get(new TypeLiteral<IRequestContext<?>>() {});
+        Key key = Key.get(new TypeLiteral<RequestContext<?>>() {});
         getSpincastRequestScope().seed(key, requestContext);
 
         key = Key.get(getRequestContextType());
@@ -448,7 +448,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
     /**
      * Call the handlers, in order they are specified.
      */
-    protected void callRouteHandlers(R requestContext, IRoutingResult<R> routingResult) throws Exception {
+    protected void callRouteHandlers(R requestContext, RoutingResult<R> routingResult) throws Exception {
 
         //==========================================
         // Saves the current routing result
@@ -459,12 +459,12 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         //==========================================
         // Calls the "handle()" method on each handlers.
         //==========================================
-        for(IRouteHandlerMatch<R> routeHandlerMatch : routingResult.getRouteHandlerMatches()) {
+        for(RouteHandlerMatch<R> routeHandlerMatch : routingResult.getRouteHandlerMatches()) {
 
             requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH,
                                            routeHandlerMatch);
 
-            IHandler<R> handlerMethod = routeHandlerMatch.getHandler();
+            Handler<R> handlerMethod = routeHandlerMatch.getHandler();
 
             //==========================================
             // A route handle may throw a ForwardRouteException to
@@ -497,12 +497,33 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      */
     protected void manageRedirectException(RedirectException ex,
                                            R context,
-                                           IRoutingResult<R> routingResult) {
+                                           RoutingResult<R> routingResult) {
 
-        if(!context.response().isHeadersSent()) {
-            context.response().resetEverything();
+        if(context.response().isHeadersSent()) {
+            this.logger.error("Headers already sent, we can't sent redirection headers!");
+        } else {
+
+            //==========================================
+            // We do not reset cookies here
+            //==========================================
+            context.response().resetEverything(false);
+
+            if(ex.getFlashMessage() != null) {
+                context.response().redirect(ex.getNewUrl(),
+                                            ex.isRedirectPermanently(),
+                                            ex.getFlashMessage());
+            } else if(ex.getFlashMessageType() != null && ex.getFlashMessageText() != null) {
+                context.response().redirect(ex.getNewUrl(),
+                                            ex.isRedirectPermanently(),
+                                            ex.getFlashMessageType(),
+                                            ex.getFlashMessageText(),
+                                            ex.getFlashMessageVariables());
+            } else {
+                context.response().redirect(ex.getNewUrl(),
+                                            ex.isRedirectPermanently());
+            }
         }
-        context.response().redirect(ex.getNewUrl(), ex.isRedirectPermanently());
+
         context.response().flush(true);
     }
 
@@ -511,7 +532,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      */
     protected void manageForwardRouteException(ForwardRouteException ex,
                                                R context,
-                                               IRoutingResult<R> originalRoutingResult) throws Exception {
+                                               RoutingResult<R> originalRoutingResult) throws Exception {
 
         //==========================================
         // Do we have reached the number of time a request
@@ -549,7 +570,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         //==========================================
         context = createForwardedRequestContext(context, ex.getNewRoute());
 
-        IRoutingResult<R> routingResult = getRouter().route(context);
+        RoutingResult<R> routingResult = getRouter().route(context);
         if(routingResult == null) {
             this.logger.warn("A route forwarding was asked but the requested route doesn't have any match : " + ex.getNewRoute());
             throw new NotFoundException(false);
@@ -612,7 +633,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      * Find the route handlers to call.
      * 
      */
-    protected IRoutingResult<R> findRouteMatch(R requestContext) {
+    protected RoutingResult<R> findRouteMatch(R requestContext) {
         return getRouter().route(requestContext);
     }
 
@@ -620,8 +641,8 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      * Default exception handling.
      */
     protected void defaultExceptionHandling(Object exchange, Throwable ex) throws Throwable {
-        if(ex instanceof IPublicException) {
-            defaultPublicExceptionHandling(exchange, (IPublicException)ex);
+        if(ex instanceof PublicException) {
+            defaultPublicExceptionHandling(exchange, (PublicException)ex);
         } else {
             defaultPrivateExceptionHandling(exchange, ex);
         }
@@ -631,7 +652,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
      * Default exception handling for exceptions with 
      * public information.
      */
-    protected void defaultPublicExceptionHandling(Object exchange, IPublicException publicException) throws Throwable {
+    protected void defaultPublicExceptionHandling(Object exchange, PublicException publicException) throws Throwable {
 
         if(getServer().isResponseHeadersSent(exchange)) {
             this.logger.info("Can't sent proper public error response, headers are already sent :\n" +
@@ -677,8 +698,8 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
         }
 
         int statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
-        if(exception instanceof ICustomStatusCodeException) {
-            statusCode = ((ICustomStatusCodeException)exception).getStatusCode();
+        if(exception instanceof CustomStatusCodeException) {
+            statusCode = ((CustomStatusCodeException)exception).getStatusCode();
         }
 
         sendErrorUsingBestMatchContentType(exchange, errorMessage, statusCode);
@@ -743,7 +764,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
 
     protected String getInternalErrorJsonContent(String errorMessage) {
 
-        IJsonObject jsonObject = getJsonManager().create();
+        JsonObject jsonObject = getJsonManager().create();
         jsonObject.put("error", errorMessage);
 
         return jsonObject.toJsonString();
@@ -751,7 +772,7 @@ public class SpincastFrontController<R extends IRequestContext<R>, W extends IWe
 
     protected String getInternalErrorXmlContent(String errorMessage) {
 
-        IJsonObject jsonObject = getJsonManager().create();
+        JsonObject jsonObject = getJsonManager().create();
         jsonObject.put("error", errorMessage);
 
         return getXmlManager().toXml(jsonObject);

@@ -20,27 +20,25 @@ Default Configurations
     
     <p>
         To know what are the default Spincast configurations,
-        have a look at the
-        <a href="/plugins/spincast-config#spincast_config">Spincast Config plugin</a> page, which is the
-        default implementation of the "<code>ISpincastConfig</code>" interface. But here are some
-        important ones:
+        have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> javadoc. 
+        Here, we're simply going to introduce the most important ones :
     </p>
     <p>
         <ul>
             <li>
-                <code>getServerHost()</code> : The host/IP the HTTP server
+                <code>getServerHost()</code> : The host/IP the HTTP Server
                 will listen on. The default is <code>0.0.0.0</code>, which
-                means the server will listen on any IP.
+                means the Server will listen on any IP.
             </li>
             <li>
-                <code>getHttpServerPort()</code> : The port the server
+                <code>getHttpServerPort()</code> : The port the Server
                 will listen to for <code>HTTP</code> <em>(unsecure)</em> requests.
-                If <code>&lt;= 0</code>, the server won't listen on <code>HTTP</code> requests.
+                If <code>&lt;= 0</code>, the Server won't listen on <code>HTTP</code> requests.
             </li>
             <li>
-                <code>getHttpsServerPort()</code> : The port the server
+                <code>getHttpsServerPort()</code> : The port the Server
                 will listen to for <code>HTTPS</code> <em>(secure)</em> requests.
-                If <code>&lt;= 0</code>, the server won't listen on <code>HTTPS</code> requests.
+                If <code>&lt;= 0</code>, the Server won't listen on <code>HTTPS</code> requests.
                 If you use <code>HTTPS</code>, you also have to provide some extra
                 configurations related to the <code class="block">SSL</code>
                 certificate to use.
@@ -53,191 +51,217 @@ Default Configurations
                 sure you change this to <code>false</code> before deploying to
                 production!
             </li>
-
+            <li>
+                <code>getPublicServerSchemeHostPort()</code> : This configuration is
+                quite important and you should override it in your application and adjust
+                it from environment to environment! It tells Spincast what is the 
+                <em>base public URL</em> used to reach your application. 
+                <p>
+                For example, your application may be accessed using a URL such as
+                <code>http://www.example.com</code> but can in fact be behind a reverse-router 
+                and actually started on the <code>"localhost"</code> host and on 
+                port <code>"12345"</code>.
+                The problem is that the public base URL (<code>"http://www.example.com"</code>) <em>can't</em> be 
+                automatically found, but Spincast still requires it to :
+                <ul>
+                    <li>
+                        Generate an absolute URL for a link to provide to the user.
+                    </li>
+                    <li>
+                        Set a cookie using the appropriated domain.
+                    </li>
+                </ul>
+                <p>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
+                By default, the <code>getPublicServerSchemeHostPort()</code> configuration
+                will be <code>"http://localhost:44419"</code>. This default can be used for development 
+                purposes, but <em>must</em> be changed when releasing to another environment.
+                <p>
+                It is so important to override this configuration that Spincast has a validation
+                in place : when an application starts, an exception will be thrown if those
+                conditions are all meet :
+                <ul>
+                    <li>
+                        The <code>environment name</code> is not "local".
+                    </li>
+                    <li>
+                        <code>isDebugEnabled()</code> configuration returns <code>false</code>.
+                    </li>
+                    <li>
+                        The <code>public host</code> is still <code>"localhost"</code>.
+                    </li>
+                </ul>
+                In other words, Spincast tries to catch the case where an application
+                is running anywhere else than locally, without the default public base URL
+                ajusted.
+                <p>
+                Note that you can disable this startup validation using the 
+                <code>isValidateLocalhostHost()</code> configuration.
+            </li>
         </ul>
     </p>
 </section>
 
 {#==========================================
-Templating engine
+Flash Messages
 ==========================================#}     
-<section id="templating_engine">
+<section id="flash_messages">
     <h4>
-        <a class="anchor_small" href="#templating_engine" title="permanent link"></a>
-        Templating engine (view engine)
+        <a class="anchor_small" href="#flash_messages" title="permanent link"></a>
+        Flash messages
     </h4>
     
     <p>
-        The templating engine (also called <em>view engine</em>, or <em>template engine</em>), is the component you use
-        to generate dynamic <code>HTML</code> pages. It can be used for other purposes, for example to generate
-        the body of an email when some placeholders have to be replaced in the base template, but its
-        most frequent use is to generate <code>HTML</code> pages.
+        A <code>Flash message</code> is a message that is displayed to the user <em>only once</em>.
+        It is most of the time used to display
+        a confirmation message to the user when a form is submitted and the page
+        redirected.
     </p>
     <p>
-        You can inject the <a href="/plugins/spincast-pebble#templatingengine"><code>ITemplatingEngine</code></a> component 
-        anywhere you need it, but to generate <code>HTML</code> pages the preferred way is to use the
-        methods provided by the <code><em>response()</em></code> <code>add-on</code>, on
-        the <code>request context</code> objects:
+        A good practice on a website is indeed to redirect the user to a new 
+        page when a form has been POSTed and is valid : that way, even if the 
+        user refreshes the resulting page, the form
+        won't be resubmitted. But this pattern leads to a question : how to display
+        a confirmation message on the page the user is redirected to? Flash
+        messages are the answer to this question.
     </p>
     <p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public class AppController {
-
-    public void myRouteHandler(IAppRequestContext context) {
-
-        IUser user = getUser();
-
-        Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-        params.put("user", user);
-
-        // A template which is on the classpath:
-        context.response().sendHtmlTemplate("/templates/user.html",
-                                            params);
-
-        // Or, a template which is on the file system:
-        context.response().sendHtmlTemplate("/usr/www/myProject/templates/user.html",
-                                            false,
-                                            SpincastStatics.params("user", user));
-    }
-}</pre> 
-            </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">11</span> : We use the <code>response()</code>
-                            add-on to access the <code>sendHtmlTemplate(...)</code> method. This method
-                            takes two parameters: the path to the <code>HTML</code> template to use (listed below)
-                            and a set of variables to use to generate the final output. By default, the 
-                            <code>templating engine</code> will try to find the template file <em>on the classpath</em>.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">12</span> : We pass a <code>user</code>
-                            object to the <code>templating engine</code> so it can use it to
-                            generate the final <code>HTML</code>. Here, we do so using a classic 
-                            <code>Map&lt;String, Object&gt;</code> structure (<span class="code-line-nbr">7-8</span>).
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">15-16</span> : By passing <code>false</code> as
-                            a second parameter to the <code>sendHtmlTemplate(...)</code> method, we can also tell
-                            the <code>templating engine</code> to search for the template
-                            <em>on the file system</em>, and not on the classpath.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">17</span> : <code>SpincastStatics.params(...)</code>
-                            is a utility method provided by Spincast to easily create 
-                            <code>Map&lt;String, Object&gt;</code> parameters, <em>inline</em>. It is equivalent to
-                            creating a <code>new HashMap&lt;String, Object&gt;()</code> as in the first example (<span class="code-line-nbr">7-8</span>).
-                        </li>
-                        
-                    </ul>
-                </p>  
-        </div>
-    </p>  
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Here's an example template file which would be on the classpath 
-        (for example, at <code>src/resources/templates/user.html</code>, in the
-        project). Note that the syntax used inside your templates depends on the 
-        implementation of the <code>templating engine</code> 
-        you use! In this example, we use the default implementation, 
-        <a href="/plugins/spincast-pebble">Pebble</a>:
+        (All our <a href="/demos-tutorials/html-forms/single-field">Forms + Validation demos</a>
+        use <code>Flash messages</code> to display a confirmation message when the Form is
+        submitted and is valid... Try them!)
     </p>
     <p>
-        <div>
-            <p>
-                {% verbatim %}
-                <pre class="ace ace-html" data-ace-hi="7,18,7,31"
->&lt;!doctype html&gt;
-&lt;html&gt;
-    &lt;head&gt;
-        &lt;meta charset="UTF-8"&gt;
-        &lt;title&gt;Test&lt;/title&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;h1&gt;Hello {{user.name}}!&lt;/h1&gt; 
-    &lt;/body&gt;
-&lt;/html&gt;</pre> 
-             {% endverbatim %}
-            </p> 
-        </div>
-    </p>  
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Note that you can also access the <code>templating engine</code> via its own <code><em>"templating()"</em></code>
-        <code>add-on</code>, on the <code>request context</code> objects. 
-        This can be useful when you need to generate some dynamic content
-        without sending it as the <code>response</code> for the current request:
-    </p>
-    <p>
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="6,34,6,47"
->public class AppController {
-
-    public void myRouteHandler(IAppRequestContext context) {
-
-        IUser user = getUser();
-        
-        String emailBody = context.templating().fromTemplate("/templates/email.html", 
-                                                             SpincastStatics.params("user", user));
-        // Do something with the 'emailBody'...
-    }
-}</pre> 
-            </p> 
-        </div>
-    </p>  
-    
-    <h5>
-        <a class="anchor_small" href="#templating_default_vars" id="templating_default_vars" title="permanent link"></a>
-        Default templating variables
-    </h5>
-    <p>
-        Spincast automatically adds some variables that can be used by the templating engine, in the scope of
-        a request. Those variables are added by the "before" filter 
-        <a href="/public/javadoc/org/spincast/core/filters/ISpincastFilters.html#addDefaultGlobalTemplateVariables-R-"><code>addDefaultGlobalTemplateVariables(...)</code></a>
-    </p>
-    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        A <code>Flash message</code> is most of the time used to display a confirmation
+        (success) message to the user, but it, in fact, supports three "levels" :
         <ul>
-        	<li>
-        		<strong><em>langAbrv</em></strong> : The abreviation of the current Locale to use. For example : <code>"en"</code>.
-        	</li>
-        	<li>
-        		<strong><em>cacheBuster</em></strong> : The current <a href="#http_caching_cache_busting">cache buster</a> code.
-        	</li>
-        	<li>
-        		<strong><em>routeId</em></strong> : The id of the current route (its main handler).
-        	</li>
-        	<li>
-        		<strong><em>fullUrl</em></strong> : The full URL of the current request.
-        	</li>
-        	<li>
-        		<strong><em>isHttps</em></strong> : Is the current URL secure (HTTPS)?
-        	</li>
-        	<li>
-        		<strong><em>pathParams</em></strong> : The parameters parsed from the path of the request. To be used
-        		like {% verbatim %}<code>{{pathParams.myParam}}</code>{% endverbatim %}.
-        	</li>
-        	<li>
-        		<strong><em>qsParams</em></strong> : The parameters parsed from the queryString of the request. Note that
-        		a queryString parameter can contain more than one values. To access the first value, use something like :
-        		 {% verbatim %}<code>{{qsParams.myParam[0]}}</code>{% endverbatim %}.
-        	</li>
-        	<li>
-        		<strong><em>cookies</em></strong> : The current cookies <em>objects</em>. To be used
-        		like {% verbatim %}<code>{{cookies.myCookie.value}}</code>{% endverbatim %}.
-        	</li>
-        	<li>
-        		<strong><em>requestScopedVars</em></strong> : The request scoped variables added by the various handlers. To be used
-        		like {% verbatim %}<code>{{requestScopedVars.myVar}}</code>{% endverbatim %}.
-        	</li>
-        	
+            <li>
+                <em>Success</em>
+            </li>
+            <li>
+                <em>Warning</em>
+            </li>
+            <li>
+                <em>Error</em>
+            </li>
         </ul>
+        A Flash message can also have some variables associated with it 
+        (in the form of an <code>JsonObject</code>), 
+        and those variables can be used when the <code>Flash message</code> is retrieved.  
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        You can specify a <code>Flash message</code> :
+        <ul>
+            <li>
+                By using the <code>.response().redirect(...)</code> method
+                in a <code>Route Handler</code>
+                <p>
+
+                    <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+    context.response().redirect("/some-url/",
+                                FlashMessageLevel.SUCCESS,
+                                "The form has been processed successfully.");
+}</pre> 
+    
+            </li>
+            <li>
+                By throwing a <a class="javadoc" href="/public/javadoc/org/spincast/core/exceptions/RedirectException.html">RedirectException</a>
+                    <p>
+                    <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+    throw new RedirectException("/some-url/",
+                                FlashMessageLevel.SUCCESS,
+                                "The form has been processed successfully.");
+}</pre> 
+      
+            </li>
+        </ul>
+    </p>
+    <p>
+        Of course, it doesn't make sense to specify a <code>Flash message</code>
+        when redirecting the user to an external website!
+    </p>
+    <p>
+        <code>Flash messages</code>, when retrieved, are automatically added as a
+        global variable for the <code>Templating Engine</code>. It is, in fact, converted to
+        an <a href="#alert_messages">Alert message</a>.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        How are <code>Flash messages</code> actually implemented? If Spincast 
+        has validated that the user supports cookies, it uses one
+        to store the "id" of the <code>Flash message</code> and to retrieve it
+        on the page the user is redirected to. If cookies are disabled, 
+        or if their support has not been validated yet, the "id" of the 
+        <code>Flash message</code>is added as a queryString parameter to
+        the URL of the page the user is redirected to.
     </p>
    
 </section>
+
+{#==========================================
+Alert Messages
+==========================================#}     
+<section id="alert_messages">
+    <h4>
+        <a class="anchor_small" href="#alert_messages" title="permanent link"></a>
+        Alert messages
+    </h4>
+    
+    {% if alertDemoMsg is not empty | default(false) %}
+        <p class="alert alert-success">
+            <strong>✔</strong> {{alertDemoMsg}}
+        </p> 
+    {% endif %}
+    <p>
+        An <code>Alert message</code> is a message that has a <code>Success</code>,
+        <code>Warning</code> or <code>Error</code> level and that is displayed to 
+        the user, usually at the top of the page or of a section. It aims to inform 
+        the user about the result of an action, for example.
+    </p>
+    <p>
+        There are multiple ways to display an Alert message on a website.
+        The Spincast website uses <a href="http://codeseven.github.io/toastr/">Toastr.js</a>
+        when javascript is enabled <span id="taostrDemo"></span>, and a plain
+        <code><em>&lt;div&gt;</em></code> when javascript is disabled 
+        <code>(<a href="?alert=1#alert_messages"><img class="inlineIcon" src="/public/images/icons/run.png"> Try it!</a>)</code>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        An Alert message is simply some text and a level associated with it,
+        both added as a templating variable. You can easily implement your own
+        way to pass such messages to be displayed to the user, but Spincast suggests a 
+        convention and some utilities :
+    </p>
+    <p>
+        <ul>
+            <li>
+                The Alert messages are provided to the <code>Templating Engine</code>
+                 as a variable associated with the <code><em>"spincast.alerts"</em></code> key.
+            </li>
+            <li>
+                There is a dedicated <code>"addAlert(...)"</code> method on the
+                <code>response()</code> add-on to easily add one from a <code>Route handler</code> :
+                <p>
+                <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+    context.response().addAlert(AlertLevel.ERROR, 
+                                "Your submission is not valid!");
+}</pre> 
+            </li>
+        </ul>
+        
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Note that <a href="#flash_messages">Flash messages</a> will be automatically
+        converted to Alert messages when it's time to render a template! 
+        This means that as long as you add code to display Alert messages in your interface,
+        Flash messages will also be displayed properly.
+    </p>
+   
+</section>
+   
    
 {#==========================================
 SSL
@@ -255,7 +279,7 @@ SSL
     </p>
     <p>
         If you download the <a href="#quick_start">Quick Start</a> application, you will
-        find two files explaining the required procedure:
+        find two files explaining the required procedure :
         
         <ul>
             <li>
@@ -267,483 +291,13 @@ SSL
             <li>
                 <code>/varia/ssl_certificate_howto/lets-encrypt.txt</code>
                 <br />
-                Shows how to use a <a href="https://letsencrypt.org/"><code>Let's Encrypt</code></a> 
+                Shows how to use a <a href="https://letsencrypt.org/">Let's Encrypt</a> 
                 certificate. <code>Let's Encrypt</code> is a provider of <em>free</em>, but totally valid,
-                <code>SSL certificates</code>. Instructions in this file will probably work for certificates 
+                SSL certificates. Instructions in this file will probably work for certificates 
                 obtained from other providers, but we haven't tested it yet.
             </li> 
         </ul>
     </p>
-</section>
-
-{#==========================================
-IJsonObject
-==========================================#}     
-<section id="jsonobject">
-    <h4>
-        <a class="anchor_small" href="#jsonobject" title="permanent link"></a>
-        IJsonObject / IJsonArray
-    </h4>
-    
-    <p>
-        The <code>IJsonObject</code> and <code>IJsonArray</code>
-        are components provided by Spincast to mimic real <code>Json</code> objects and arrays. 
-    </p>
-    
-    <p>
-        Spincast uses those objects in many places. For example,
-        to get the content of a request for which a <code>Json</code> body has been sent
-        via <code>Ajax</code> :
-    </p>
-    <p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public void myHandler(IAppRequestContext context) {
-    IJsonObject json = context.request().getJsonBodyAsJsonObject();
-    // ...
-}}</pre> 
-            </p>
-        </div>
-    </p>   
-    <p>
-        Or to get submitted <code>Form Datas</code> :
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public void myHandler(IAppRequestContext context) {
-    IJsonObject formDatas = context.request().getFormDatas();
-    // ...
-}</pre> 
-            </p>
-        </div>
-    </p> 
-    
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        <code>IJsonObject</code> and <code>IJsonArray</code> expose <code>put(...)</code> / <code>add(...)</code>
-        methods for all the types they manage natively, 
-        and a <code>putConvert(...)</code> / <code>addConvert(...)</code>
-        method to add any other type. 
-    </p>
-    <p>
-        When adding an object of a type that is not managed natively, this object is converted to an <code>IJsonObject</code> (or an <code>IJsonArray</code>,
-        if the source is an <code>array</code> or a <code>Collection</code>) by serializing and deserializing it
-        using 
-        <a href="/public/javadoc/org/spincast/core/json/IJsonManager.html#toJsonString-java.lang.Object-"><code>IJsonManager#toJsonString(...)</code></a>
-        and <a href="/public/javadoc/org/spincast/core/json/IJsonManager.html#create-java.lang.String-"><code>IJsonManager#create(...)</code></a>.
-        By default, this is done using <a href="/plugins/spincast-jackson-json">Jackson</a>.
-    </p>
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        The <code>IJsonObject</code> and <code>IJsonArray</code> objects also have getters. 
-        For example, on <code>IJsonObject</code> :
-        <ul>
-            <li>
-                <code>String getString(String key)</code>
-            </li>
-            <li>
-                <code>String getString(String key, String defaultValue)</code>
-            </li> 
-            <li>
-                <code>Integer getInteger(String key)</code>
-            </li> 
-            <li>
-                <code>IJsonObject getJsonObject(String key)</code>
-            </li> 
-            <li>
-                ...
-            </li> 
-        </ul> 
-        
-        On <code>IJsonArray</code>, getters require an <em>index</em> instead of a key :
-        
-        <ul>
-            <li>
-                <code>String getString(int index)</code>
-            </li>
-            <li>
-                <code>String getString(int index, String defaultValue)</code>
-            </li> 
-            <li>
-                ...
-            </li> 
-        </ul> 
-        
-        Every getter has an overloaded version that you can use to provide a <code>default value</code> in case
-        the requested element if not found. By default <code>null</code> is returned if the element is not found.
-    </p>
-    
-    <h5>
-        <a class="anchor_small" href="#jsonobject_creation" id="jsonobject_creation" title="permanent link"></a>
-        Creating an <em>IJsonObject</em> or an <em>IJsonArray</em>
-    </h5>
-    
-    <p>
-        You can create an <code>IJsonObject</code> or an <code>IJsonArray</code> using the <code>IJsonManager</code>
-        component. This component can be injected by Guice, or it can be accessed through the
-        <code>json()</code> add-on, when you are inside a route handler :
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public void myHandler(IAppRequestContext context) {
-
-    // IJsonArray creation
-    IJsonArray array = context.json().createArray();
-    array.add(111);
-    array.add(222);
-
-    // IJsonObject creation
-    IJsonObject obj = context.json().create();
-    obj.put("name", "Stromgol");
-    obj.put("lastName", "Laroche");
-    
-    // Or, using the IJsonManager directly :
-    IJsonObject obj2 = getJsonManager().create();
-
-    context.response().sendJsonObj(obj);
-}</pre> 
-            </p>
-        </div>
-    </p>     
-    
-    <h5>
-        <a class="anchor_small" href="#jsonobject_cloning_immutability" id="jsonobject_cloning_immutability" title="permanent link"></a>
-        Cloning and Immutability
-    </h5>
-    <p>
-        By default, any element added to an <code>IJsonObject</code> or an <code>IJsonArray</code> is added <em>as is</em>, without
-        being cloned. 
-        This means that if you add an <code>IJsonObject</code> or an <code>IJsonArray</code> element, any external modification
-        <em>will</em> affect the added element, and vice-versa, since they both refere to the same instance. This allows you to do
-        something like :
-    </p>
-    <p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->IJsonArray colors = getJsonManager().createArray();
-IJsonObject obj = getJsonManager().create();
-
-// Add the array to the obj :
-obj.put("colors", colors);
-
-// Later... add elements to the array :
-colors.add("red");
-colors.add("blue");
-
-// This returns "red" : the array inside the IJsonObject
-// is the same instance than the external one.
-String firstColor = obj.getJsonArray("colors").getString(0);
-</pre> 
-            </p>
-        </div>
-    </p>   
-    <p>
-        But sometimes this behavior is not wanted. You may need the external object and the added object
-        to be two <em>distinct</em> instances, so modifications to one don't affect the other! 
-        In those cases, you can call the <code><em>"clone()"</em></code> method on the original 
-        <code>IJsonObject</code> or <code>IJsonArray</code> object. You can also use <code>"true"</code>
-        as the <code>"clone"</code> parameter when using <code>put(...)</code>/<code>add(...)</code> methods,
-        to achieve the same result :
-    </p>
-    <p>
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="4,26,4,30|6,24,6,32"
->IJsonArray colors = getJsonManager().createArray();
-IJsonObject obj = getJsonManager().create();
-
-// Add a *clone* of the array to the object :
-obj.put("colors", colors, true);
-// Or, same result :
-obj.put("colors", colors.clone());
-
-// Add elements to the array :
-colors.add("red");
-colors.add("blue");
-
-// This will now return null since a *new* instance of the 
-// array has been added to the IJsonObject!
-String firstColor = obj.getJsonArray("colors").getString(0);
-</pre> 
-            </p>
-        </div>
-    </p>  
-    <p>
-        The generated clones is a <em>deep copy</em> of the original object, which means the root
-        object and <em>all the children</em> are cloned.
-    </p>
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        We also decided to make <code>IJsonObject</code> and <code>IJsonArray</code> objects 
-        <em>mutable</em> by default. This is a 
-        conscious decision to make those objects easier to work with : you can add and remove elements from them at any time.
-    </p>
-    <p>
-        If you need more safety, if you work with a complex multi-threaded application, or if you simply prefer to have an 
-        immutable version of those objects, you
-        can get one using their <code><em>.clone(false)</em></code> method, by making sure the <code>"mutable"</code> parameter
-        is set to <code>false</code> :
-    </p>
-    <p>
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="3,32,3,45"
->IJsonObject obj = getJsonManager().create();
-obj.put("name", "Stromgol");
-
-IJsonObject immutableClone = obj.clone(false);
-
-// This will now throw an exception! :
-immutableClone.put("nope", "doesn't work");
-</pre> 
-            </p>
-        </div>
-    </p>
-    When you create such immutable clones, the root element and <em>all the children</em> are cloned as immutable.
-    In fact, <code>IJsonObject</code> and <code>IJsonArray</code> objects are always <em>fully</em> mutable or <em>fully</em>
-    immutable... Note that if you try to add an immutable object to a mutable one, 
-    a mutable clone will be created from the immutable object before being added.
-    </p>
-    <p>
-        At runtime, you can validate if your object is mutable or not using : 
-        <em><code>if(obj instanceof <a href="/public/javadoc/org/spincast/core/json/Immutable.html">Immutable</a>)</code></em>.
-    </p>
-    
-    <h5>
-        <a class="anchor_small" href="#jsonobject_methods" id="jsonobject_methods" title="permanent link"></a>
-        <em>IJsonObject</em> methods
-    </h5>
-    <p>
-        Have a look at the <a href="/public/javadoc/org/spincast/core/json/IJsonObject.html"><code>IJsonObject</code></a> 
-        Javadoc for a complete list of available methods. Here are some interesting ones, other than <code>put(...)</code>,
-        <code>getXXX(...)</code> and <code>clone(...)</code>, that we already introduced : 
-    </p>
-    <p>
-        <ul class="apiList">
-            
-            <li>
-                <code class="apiItem">int <span>size</span>()</code>
-                <div class="well">
-                     The number of properties on the object.
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">boolean <span>isKeyExists</span>(String key)</code>
-                <div class="well">
-                     Does the <code>IJsonObject</code> contain the specified <code>key</code>?
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">IJsonObject <span>merge</span>(Map&lt;String, Object&gt; map, boolean clone)</code>
-                <div class="well">
-                     Merges a <code>Map&lt;String, Object&gt;</code> into the <code>IJsonObject</code>. 
-                     You can specify if the added elements must be cloned or
-                     not (in case some are <code>IJsonObject</code> or <code>IJsonArray</code>).
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">IJsonObject <span>merge</span>(IJsonObject jsonObj, boolean clone)</code>
-                <div class="well">
-                     Merges an external <code>IJsonObject</code> into the <code>IJsonObject</code>.                      
-                     You can specify if the added elements must be cloned or
-                     not (in case some are <code>IJsonObject</code> or <code>IJsonArray</code>).
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">IJsonObject <span>remove</span>(String key)</code>
-                <div class="well">
-                     Removes an element using its <code>key</code>.
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">IJsonObject <span>getJsonObjectOrEmpty</span>(String key)</code>
-                <div>and</div>
-                <code class="apiItem">IJsonArray <span>getJsonArrayOrEmpty</span>(String key)</code>
-                <div class="well">
-                     Gets an <code>IJsonObject</code> or <code>IJsonArray</code> or returns an empty
-                     instance if it's not found. This allows you to try to get a deep element or use a default
-                     value if this element is not found, without any potential <code>NullPointerException</code>. For 
-                     example :
-                     
-                    <p>
-                        <div>
-                            <p>
-                                <pre class="ace ace-java"
->// This won't throw any NPE, even if the "myArrayKey"
-// array or its first element don't exist :
-String value = obj.getJsonArrayOrEmpty("myArrayKey")
-                  .getJsonObjectOrEmpty(0)
-                  .getString("someKey", "defaultValue");
-</pre> 
-                            </p>
-                        </div>
-                    </p>
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">XXX <span>getArrayFirstXXX</span>(String key, String defaultValue)</code>
-                <div class="well">
-                     For all types managed by <code>IJsonObject</code>, a <code>getArrayFirstXXX(...)</code>
-                     method exists. With those methods, you can get an <code>IJsonArray</code> 
-                     using the specified <code>key</code> and returns the first element of the array.
-                     <p>
-                     This is useful in situations where you know an array only contains a single element : 
-                     
-                    <p>
-                        <div>
-                            <p>
-                                <pre class="ace ace-java"
->// This :
-String value = obj.getArrayFirstString("myArrayKey", "defaultValue")
-
-// ... is a shortcut for :
-String value = obj.getJsonArrayOrEmpty("myArrayKey").getString(0, "defaultValue")
-</pre> 
-                            </p>
-                        </div>
-                    </p>
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">String <span>toJsonString</span>(boolean pretty)</code>
-                <div class="well">
-                     Converts the <code>IJsonObject</code> object to a <code>Json</code> string.
-                     If <code>pretty</code> is true, the resulting <code>Json</code> will be formatted.
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">Map&lt;String, Object&gt; <span>convertToPlainMap</span>()</code>
-                <div class="well">
-                     If you need to use the elements from an <code>IJsonObject</code> in a class that doesn't
-                     know how to handle this type, you can convert it to a plain <code>Map&lt;String, Object&gt;</code>.
-                     For example, Spincast uses this to pass the elements of an <code>IJsonObject</code> to the default <code>Pebble</code>
-                     templating engine, as the variables to use to render a template. Pebble doesn't know about
-                     <code>IJsonObject</code> objects but knows how to deal with
-                     a plain <code>Map&lt;String, Object&gt;</code>.
-                     <p>
-                         Any <code>IJsonObject</code> element will be converted to
-                         a <code>Map&lt;String, Object&gt;</code> and any <code>IJsonArray</code> element to
-                         a <code>List&lt;Object&gt;</code>.
-                     </p>
-                </div>
-            </li>
-            
-        </ul>
-    </p>
-    
-    <h5>
-        <a class="anchor_small" href="#jsonobject_array_methods" id="jsonobject_array_methods" title="permanent link"></a>
-        <em>IJsonArray</em> methods
-    </h5>
-    <p>
-        Have a look at the <a href="/public/javadoc/org/spincast/core/json/IJsonArray.html"><code>IJsonArray</code></a> Javadoc
-        for a complete list of available methods. Here are some interesting ones, other than <code>add(...)</code>,
-        <code>getXXX(...)</code> and <code>clone(...)</code>, that we already introduced : 
-    </p>
-    <p>
-        <ul class="apiList">
-            
-           <li>
-                <code class="apiItem">int <span>size</span>()</code>
-                <div class="well">
-                     Returns the size of the array.
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">IJsonArray <span>remove</span>(int index)</code>
-                <div class="well">
-                     Removes an element at the specified index.
-                </div>
-            </li>
- 
-            <li>
-                <code class="apiItem">IJsonObject <span>getJsonObjectOrEmpty</span>(int index)</code>
-                <div>and</div>
-                <code class="apiItem">IJsonArray <span>getJsonArrayOrEmpty</span>(int index)</code>
-                <div class="well">
-                     Gets an <code>IJsonObject</code> or <code>IJsonArray</code> or returns an empty
-                     instance if it's not found. This allows you to try to get a deep element or use a default
-                     value if this element is not found, without any potential <code>NullPointerException</code>. For 
-                     example :
-                     
-                    <p>
-                        <div>
-                            <p>
-                                <pre class="ace ace-java"
->// This won't throw any NPE, even if "getJsonArrayOrEmpty(0)"
-// doesn't exist :
-String value = array.getJsonObjectOrEmpty(0)
-                    .getString("someKey", "defaultValue");
-</pre> 
-                            </p>
-                        </div>
-                    </p>
-                </div>
-            </li>
-            
-            <li>
-                <code class="apiItem">XXX <span>getArrayFirstXXX</span>(int index, String defaultValue)</code>
-                <div class="well">
-                     For all types managed by <code>IJsonArray</code>, a <code>getArrayFirstXXX(...)</code>
-                     method exists. With those methods, you can get an <code>IJsonArray</code> 
-                     using the specified <code>index</code> and returns the first element of the array.
-                     <p>
-                     This is useful in situations where you know an array only contains a single element : 
-                     
-                    <p>
-                        <div>
-                            <p>
-                                <pre class="ace ace-java"
->// This :
-String value = array.getArrayFirstString(3, "defaultValue")
-
-// ... is a shortcut for :
-String value = array.getJsonArrayOrEmpty(3).getString(0, "defaultValue")
-</pre> 
-                            </p>
-                        </div>
-                    </p>
-                </div>
-            </li>
-            <li>
-                <code class="apiItem">String <span>toJsonString</span>(boolean pretty)</code>
-                <div class="well">
-                     Converts the <code>IJsonArray</code> object to a <code>Json</code> string.
-                     If <code>pretty</code> is <code>true</code>, the resulting <code>Json</code> will be formatted.
-                </div>
-            </li>
-            <li>
-                <code class="apiItem">List&lt;Object&gt; <span>convertToPlainList</span>()</code>
-                <div class="well">
-                    Converts the <code>IJsonArray</code> to a plain <code>List&lt;Object&gt;</code>. 
-                    Any <code>IJsonObject</code> element will be converted to
-                    a <code>Map&lt;String, Object&gt;</code> and any <code>IJsonArray</code> element to
-                    a <code>List&lt;Object&gt;</code>.
-                </div>
-            </li>
-            <li>
-                <code class="apiItem">List&lt;String&gt; <span>convertToStringList</span>()</code>
-                <div class="well">
-                    Converts the <code>IJsonArray</code> to a <code>List&lt;String&gt;</code>.
-                    The <code>toString()</code> method will be called on any non null
-                    element.
-                </div>
-            </li>
-            
-        </ul>
-    </p>
-
 </section>
 
 {#==========================================
@@ -756,169 +310,165 @@ Spincast Utilities
     </h4>
     
     <p>
-        Spincast provides some generic utilities, accessible via the <code>ISpincastUtils</code>
-        interface:
+        Spincast provides some generic utilities, accessible via the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/SpincastUtils.html">SpincastUtils</a>
+        interface :
     </p>
     <p>
         <ul class="apiList">
 
-<li>
-    <code class="apiItem">void <span>zipDirectory</span>(File directoryToZip, File targetZipFile, boolean includeDirItself)</code>
-    <div class="well">
-         Zips a directory.
-
-        <div class="apiItemFooter">
-            @param targetZipFile the target .zip file. If the parent directories don't
- exist, tries to create them.
-<br />@param If <code>true</code>, the directory itself will be included in the
- zip file, otherwise only its content will be.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>zipExtract</span>(File zipFile, File targetDir)</code>
-    <div class="well">
-         Extracts a .zip file to the specified directory.
-
-        <div class="apiItemFooter">
-            @param targetDir The target directory. If it doesn't exist, tried to
- create it (and its parents, if required).
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getMimeTypeFromMultipleSources</span>(String responseContentTypeHeader,                                                  String resourcePath,                                                  String requestPath)</code>
-    <div class="well">
-         Gets the <code>mime type</code> using multiple sources of information.
-
-        <div class="apiItemFooter">
-            @param contentTypeHeader an already existing Content-Type header on the
- response. Can be null.
-<br />@param resourcePath the path (absolute or relative) to the target resource. Can be null.
-<br />@param requestPath the path of the current request. Can be null.
-<br />@return the <code>mime type</code> or <code>null</code> if it can't be
- decided.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getMimeTypeFromPath</span>(String path)</code>
-    <div class="well">
-         Gets the <code>mime type</code> from a path, using its extension.
-
-        <div class="apiItemFooter">
-            @return the <code>mime type</code> or <code>null</code> if it can't be
- decided.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getMimeTypeFromExtension</span>(String extension)</code>
-    <div class="well">
-         Gets the <code>mime type</code> from the extension.
-
-        <div class="apiItemFooter">
-            @return the <code>mime type</code> or <code>null</code> if it can't be
- decided.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Locale <span>getLocaleBestMatchFromAcceptLanguageHeader</span>(String acceptLanguageHeader)</code>
-    <div class="well">
-         Gets the best Locale to use given a "Accept-Language" HTTP header.
-
-        <div class="apiItemFooter">
-            @return the best Locale to use or <code>null</code>
- if the given header can't be parsed.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isContentTypeToSkipGziping</span>(String contentType)</code>
-    <div class="well">
-         Should the specified <code>Content-Type</code> be gzipped?
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
-    <div class="well">
-         Returns the working directory: the directory
- in which the executable .jar is located.
-
-        <div class="apiItemFooter">
-            @return the working directory or <code>null</code> if the application is
- running inside an IDE.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getSpincastCurrentVersion</span>()</code>
-    <div class="well">
-         Gets the current Spincast version.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getCacheBusterCode</span>()</code>
-    <div class="well">
-         The cache buster to use.
- <p>
- This should probably change each time
- the application is restarted or at least redeployed.
- </p>
- <p>
- It should also be in such a format that it's possible to
- remove it from a given text.
- </p>
- <p>
- This must be kept in sync with
- <code>removeCacheBusterCode</code>!
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>removeCacheBusterCodes</span>(String text)</code>
-    <div class="well">
-         Removes the cache buster code occurences from the
- given text.
- <p>
- Note that this won't simply remove the <em>current</em>
- cache busting code, it will remove <em>any</em> valid cache busting code...
- This is what we want since we don't want a client sending a request
- containing an old cache busting code to break!
- </p>
- <p>
- This must be kept in sync with
- <code>getCacheBusterCode</code>!
- </p>
-
-    </div>
-</li>
-
-
-
-
+            <li>
+                <code class="apiItem">void <span>zipDirectory</span>(File directoryToZip, File targetZipFile, boolean includeDirItself)</code>
+                <div class="well">
+                     Zips a directory.
             
+                    <div class="apiItemFooter">
+                        @param targetZipFile the target .zip file. If the parent directories don't
+             exist, tries to create them.
+            <br />@param If <code>true</code>, the directory itself will be included in the
+             zip file, otherwise only its content will be.
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">void <span>zipExtract</span>(File zipFile, File targetDir)</code>
+                <div class="well">
+                     Extracts a .zip file to the specified directory.
+            
+                    <div class="apiItemFooter">
+                        @param targetDir The target directory. If it doesn't exist, tried to
+             create it (and its parents, if required).
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getMimeTypeFromMultipleSources</span>(String responseContentTypeHeader,                                                  String resourcePath,                                                  String requestPath)</code>
+                <div class="well">
+                     Gets the <code>mime type</code> using multiple sources of information.
+            
+                    <div class="apiItemFooter">
+                        @param contentTypeHeader an already existing Content-Type header on the
+             response. Can be null.
+            <br />@param resourcePath the path (absolute or relative) to the target resource. Can be null.
+            <br />@param requestPath the path of the current request. Can be null.
+            <br />@return the <code>mime type</code> or <code>null</code> if it can't be
+             decided.
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getMimeTypeFromPath</span>(String path)</code>
+                <div class="well">
+                     Gets the <code>mime type</code> from a path, using its extension.
+            
+                    <div class="apiItemFooter">
+                        @return the <code>mime type</code> or <code>null</code> if it can't be
+             decided.
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getMimeTypeFromExtension</span>(String extension)</code>
+                <div class="well">
+                     Gets the <code>mime type</code> from the extension.
+            
+                    <div class="apiItemFooter">
+                        @return the <code>mime type</code> or <code>null</code> if it can't be
+             decided.
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">Locale <span>getLocaleBestMatchFromAcceptLanguageHeader</span>(String acceptLanguageHeader)</code>
+                <div class="well">
+                     Gets the best Locale to use given a "Accept-Language" HTTP header.
+            
+                    <div class="apiItemFooter">
+                        @return the best Locale to use or <code>null</code>
+             if the given header can't be parsed.
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isContentTypeToSkipGziping</span>(String contentType)</code>
+                <div class="well">
+                     Should the specified <code>Content-Type</code> be gzipped?
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
+                <div class="well">
+                     Returns the working directory: the directory
+             in which the executable .jar is located.
+            
+                    <div class="apiItemFooter">
+                        @return the working directory or <code>null</code> if the application is
+             running inside an IDE.
+            
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getSpincastCurrentVersion</span>()</code>
+                <div class="well">
+                     Gets the current Spincast version.
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getCacheBusterCode</span>()</code>
+                <div class="well">
+                     The cache buster to use.
+             <p>
+             This should probably change each time
+             the application is restarted or at least redeployed.
+             </p>
+             <p>
+             It should also be in such a format that it's possible to
+             remove it from a given text.
+             </p>
+             <p>
+             This must be kept in sync with
+             <code>removeCacheBusterCode</code>!
+             </p>
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>removeCacheBusterCodes</span>(String text)</code>
+                <div class="well">
+                     Removes the cache buster code occurences from the
+             given text.
+             <p>
+             Note that this won't simply remove the <em>current</em>
+             cache busting code, it will remove <em>any</em> valid cache busting code...
+             This is what we want since we don't want a client sending a request
+             containing an old cache busting code to break!
+             </p>
+             <p>
+             This must be kept in sync with
+             <code>getCacheBusterCode</code>!
+             </p>
+            
+                </div>
+            </li> 
             
         </ul>
     </p> 
@@ -936,16 +486,19 @@ Spincast Utilities
     </h4>
     
     <p>
-        Both <code>SpincastCoreGuiceModule</code> and <code>SpincastDefaultGuiceModule</code>
+        Both <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastCoreGuiceModule.html">SpincastCoreGuiceModule</a> 
+        and <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a>
         Guice modules have a constructor which accepts
         <code>String[] mainArgs</code>. You can pass to it the arguments received in
-        your <code>main(...)</code> method. For example:
+        your <code>main(...)</code> method. For example :
     </p>
     <p>
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="0,24,0,37|2,73,2,77"
->public static void main(String[] args) {
+                <pre class="ace ace-java" data-ace-hi="1,24,1,37|3,73,3,77"
+>
+
+public static void main(String[] args) {
 
     Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
 
@@ -957,13 +510,13 @@ Spincast Utilities
     </p>   
     <p>
         By doing so, those arguments will be bound, using a <code>@MainArgs</code>
-        annotation. You can then inject them anywhere you need:
+        annotation. You can then inject them anywhere you need :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java" data-ace-hi="5,21,5,48"
->public class AppConfig extends SpincastConfig implements IAppConfig {
+>public class AppConfig extends SpincastConfig implements AppConfig {
 
     private final String[] mainArgs;
 
@@ -1014,18 +567,18 @@ Using an init() method
     </p>
     <p>
         The trick is that Guice calls any <code>@Inject</code> annotated methods
-        once the object is created, so let's use this to our advantage:
+        once the object is created, so let's use this to our advantage :
     </p>
     <p>
         <div>
             <p>
                 <pre class="ace ace-java"
->public class UserService implements IUserService {
+>public class UserService implements UserService {
 
-    private final ISpincastConfig spincastConfig;
+    private final SpincastConfig spincastConfig;
 
     @Inject
-    public UserService(ISpincastConfig spincastConfig) {
+    public UserService(SpincastConfig spincastConfig) {
         this.spincastConfig = spincastConfig;
     }
 

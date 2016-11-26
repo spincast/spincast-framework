@@ -3,12 +3,12 @@ package org.spincast.tests.varia;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientHandler;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientHandler;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 
-public class WebsocketClientTest implements IWebsocketClientHandler {
+public class WebsocketClientTest implements WebsocketClientHandler {
 
     private final List<String> stringMessageReceived = new ArrayList<String>();
     private final List<byte[]> bytesMessageReceived = new ArrayList<byte[]>();

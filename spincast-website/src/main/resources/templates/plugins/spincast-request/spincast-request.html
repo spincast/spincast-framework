@@ -3,9 +3,9 @@ Spincast Request plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-request{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-request{% endblock %}
 {% block meta_title %}Plugins - Spincast Request{% endblock %}
-{% block meta_description %}Spincast Request plugin to access information about the current HTTP request.{% endblock %}
+{% block meta_description %}Spincast Request plugin to access information about HTTP requests.{% endblock %}
 
 {% block scripts %}
 <script>
@@ -30,17 +30,17 @@ Spincast Request plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
-            <h2 class="shortTop noBottom"><a href="#top"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Request <span>plugin</span></a></h2>
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Request <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/request/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/request/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -54,32 +54,59 @@ Spincast Request plugin
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#request_context_addon">The request context add-on</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#request_context_example">Quick Example</a></li>
-                        <li><a href="#request_context_methods">Addon methods</a></li> 
-                    </ul>
-                </li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
-            <section id="overview">
 
+            <section id="overview">
 	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
 	            <p>
-	                The <code>Spincast Request</code> plugin provides a request context <code>add-on</code>:
-                    "<code>IRequestRequestContextAddon</code>". This add-on allows your <code>route handlers</code> to get information
-                    about the current request. It is mounted as <code>.request()</code>
-	                on the default Spincast request context. 
+	                The <code>Spincast Request</code> plugin provides a Request Context <code>add-on</code>:
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/RequestRequestContextAddon.html">RequestRequestContextAddon</a>. 
+                    This add-on allows your <code>Route Handlers</code> to get information
+                    about the current HTTP request. It is mounted as <code>.request()</code>
+	                on the default Spincast <code>Request Context</code>. 
+	            </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Make sure you read the section dedicated to the <a href="/documentation#request_context">Request Context</a> 
+                    for more information on how to use the <code>.request()</code> add-on.
+                </p>
+                
+            </section>
+            
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
+	            <p>
+	                <ul>
+                        <li>
+                            Using the <code>.request()</code> add-on from a <code>Route Handler</code> :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java" data-ace-hi="1,27,1,37"
+>public void myHandler(AppRequestContext context) {
+    String userId = context.request().getPathParam("userId");
+    //...
+}</pre>
+                                </p>
+                            </div> 
+                        </li>
+                    </ul>
 	            </p>
             </section>
+            
             
 	        <section id="installation">
 	            <h3>
@@ -100,7 +127,7 @@ Spincast Request plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-request&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -113,7 +140,7 @@ Spincast Request plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastRequestPluginGuiceModule(IAppRequestContext.class, IAppWebsocketContext.class)
+        new SpincastRequestPluginGuiceModule(AppRequestContext.class, AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -141,598 +168,23 @@ Spincast Request plugin
 	            </p>
             </section>
             
-            <section id="request_context_addon">
-	            <h3>
-                    <a class="anchor" href="#request_context_addon" title="permanent link"></a>
-                    The request context add-on
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
-	            <p>
-	            </p>
-	            <div id="request_context_example">
-		            <p>
-		                <div>
-		                    <p>
-		                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
-		                        <pre class="ace ace-java" data-ace-hi="1,27,1,37"
->public void myHandler(IAppRequestContext context) {
-    String userId = context.request().getPathParam("userId");
-    //...
-}</pre> 
-		                    </p>
-		                </div>
-		            </p>
-	            </div>
-                <div id="request_context_methods">
-		            <p>
-		                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Add-on methods :</h4>
-		                <ul class="apiList">
-           
-           
-                     
-<li>
-    <code class="apiItem">HttpMethod <span>getHttpMethod</span>()</code>
-    <div class="well">
-         Gets the request's <code>HTTP method</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ContentTypeDefaults <span>getContentTypeBestMatch</span>()</code>
-    <div class="well">
-         Finds the best <code>Content-Type</code> to use for a response
- using the <code>"Accept"</code> header of the request. It will
- fallback to <code>ContentTypeDefaults.TEXT</code> if nothing more specific
- is found.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isJsonShouldBeReturn</span>()</code>
-    <div class="well">
-         Will return <code>true</code> if the request specifies
- that <code>Json</code> is the most appropriate format
- to return.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isHTMLShouldBeReturn</span>()</code>
-    <div class="well">
-         Will return <code>true</code> if the request specifies
- that <code>HTML</code> is the most appropriate format
- to return.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isXMLShouldBeReturn</span>()</code>
-    <div class="well">
-         Will return <code>true</code> if the request specifies
- that <code>XML</code> is the most appropriate format
- to return.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isPlainTextShouldBeReturn</span>()</code>
-    <div class="well">
-         Will return <code>true</code> if the request specifies
- that <code>plain-text</code> is the most appropriate format
- to return.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Locale <span>getLocaleBestMatch</span>()</code>
-    <div class="well">
-         Find the best <code>Locale</code> to use for a response
- using the <code>"Accept-Language"</code> header of
- the request.
- Returns the default <code>Locale</code> (taken from the configurations)
- if nothing more specific is found.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getHeaders</span>()</code>
-    <div class="well">
-         Returns all headers of the current request. A single header can have multiple values.
- The implementation is a <code>TreeMap</code> which is<i>case insensitive</i> for the keys.
- The map is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;String&gt; <span>getHeader</span>(String name)</code>
-    <div class="well">
-         Returns the values of the specified header from the current request or
- an empty list if not found.
- The <code>name</code> is <i>case insensitive</i>.
- The list is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getHeaderFirst</span>(String name)</code>
-    <div class="well">
-         The first value of the specified header from the current request.
- The <code>name</code> is <i>case insensitive</i>.
- Returns <code>null</code> if the header is not found.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getContentType</span>()</code>
-    <div class="well">
-         The Content-Type of the request, if any.
-
-        <div class="apiItemFooter">
-            @return the <code>Content-Type</code> of the request or <code>null</code>
- if none was specified.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFullUrl</span>()</code>
-    <div class="well">
-         Returns the current full URL, including the queryString, if any.
- Cache buster codes are removed, if there were any.
- <p>
- In case the request has been forwarded, this will be the *new*,
- the current URL. Use <code>getFullUrlOriginal()</code>
- to get the original URL, before the request was forwarded.
- </p>
- <p>
- If a reverse proxy has been used, this URL will contain the
- <code>scheme</code>, <code>host</code> and <code>port</code> from the
- <em>original</em> URL, as seen by the user.
- In general, this is what you want to use in your application.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFullUrl</span>(boolean keepCacheBusters)</code>
-    <div class="well">
-         Returns the current full URL, including the queryString, if any.
- <p>
- In case the request has been forwarded, this will be the *new*,
- the current URL. Use <code>getFullUrlOriginal()</code>
- to get the original URL, before the request was forwarded.
- </p>
- <p>
- If a reverse proxy has been used, this URL will contain the
- <code>scheme</code>, <code>host</code> and <code>port</code> from the
- <em>original</em> URL, as seen by the user.
- In general, this is what you want to use in your application.
- </p>
-
-        <div class="apiItemFooter">
-            @param keepCacheBusters if <code>true</code>, the returned URL will contain
- the cache buster codes, if there were any. The default behavior is to
- automatically remove them.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFullUrlOriginal</span>()</code>
-    <div class="well">
-         If the request has been forwarded, this is going to return the original
- URL, not the current, forwarded, one.
- Cache buster codes are removed, if there were any.
- <p>
- Use <code>getFullUrl()</code> to get the current, potentially
- forwarded URL.
- </p>
- <p>
- If a reverse proxy has been used, this URL will contain the
- <code>scheme</code>, <code>host</code> and <code>port</code> from the
- <em>original</em> URL, as seen by the user.
- In general, this is what you want to use in your application.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFullUrlOriginal</span>(boolean keepCacheBusters)</code>
-    <div class="well">
-         If the request has been forwarded, this is going to return the original
- URL, not the current, forwarded, one.
- <p>
- Use <code>getFullUrl()</code> to get the current, potentially
- forwarded URL.
- </p>
- <p>
- If a reverse proxy has been used, this URL will contain the
- <code>scheme</code>, <code>host</code> and <code>port</code> from the
- <em>original</em> URL, as seen by the user.
- In general, this is what you want to use in your application.
- </p>
-
-        <div class="apiItemFooter">
-            @param keepCacheBusters if <code>true</code>, the returned URL will contain
- the cache buster codes, if there were any. The default behavior is to
- automatically remove them.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFullUrlProxied</span>()</code>
-    <div class="well">
-         If a reverse proxy has been used, this URL will contain the
- <code>scheme</code>, <code>host</code> and <code>port</code>
- as forwarded by the reserve proxy, <em>not as seen by the user</em>.
- Cache buster codes are removed, if there were any.
- <p>
- If the request has been forwarded, this is going to return the original
- URL, not the current, forwarded, one.
- </p>
- <p>
- In general, you should probably use <code>getFullUrl()</code>
- or <code>getFullUrlOriginal()</code> instead of this
- one.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFullUrlProxied</span>(boolean keepCacheBusters)</code>
-    <div class="well">
-         If a reverse proxy has been used, this URL will contain the
- <code>scheme</code>, <code>host</code> and <code>port</code>
- as forwarded by the reserve proxy, <em>not as seen by the user</em>.
- Cache buster codes are removed, if there were any.
- <p>
- If the request has been forwarded, this is going to return the original
- URL, not the current, forwarded, one.
- </p>
- <p>
- In general, you should probably use <code>getFullUrl()</code>
- or <code>getFullUrlOriginal()</code> instead of this
- one.
- </p>
-
-        <div class="apiItemFooter">
-            @param keepCacheBusters if <code>true</code>, the returned URL will contain
- the cache buster codes, if there were any. The default behavior is to
- automatically remove them.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getRequestPath</span>()</code>
-    <div class="well">
-         The path of the request (no querystring).
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getRequestPath</span>(boolean keepCacheBusters)</code>
-    <div class="well">
-         The path of the request (no querystring).
-
-        <div class="apiItemFooter">
-            @param keepCacheBusters if <code>true</code>, the returned path will contain
- the cache buster codes, if there were any. The default behavior is to
- automatically remove them.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, String&gt; <span>getPathParams</span>()</code>
-    <div class="well">
-         The values parsed from the dynamic parameters of the route path.
- The map is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getPathParam</span>(String name)</code>
-    <div class="well">
-         A specific value parsed from a dynamic parameter of the route path.
- The <code>name</code> is <i>case sensitive</i>, since you have easy control over it.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getQueryString</span>(boolean withQuestionMark)</code>
-    <div class="well">
-         The queryString of the request.
- Returns an empty String if there is no queryString.
-
-        <div class="apiItemFooter">
-            @param withQuestionMark if <code>true</code> and the queryString
- is not empty, the result will be prefixed with "?".
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getQueryStringParams</span>()</code>
-    <div class="well">
-         The parameters taken from the queryString of the request.
- A queryString parameter may have multiple values.
- Returns an empty list if there is no queryString.
- The map is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;String&gt; <span>getQueryStringParam</span>(String name)</code>
-    <div class="well">
-         A specific parameter taken from the queryString of the request.
- A queryString parameter may have multiple values.
- Returns an empty list if the parameter doesn't exist.
- The list is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getQueryStringParamFirst</span>(String name)</code>
-    <div class="well">
-         The first (and often only) value of a specific parameter taken from the
- queryString of the request.
- Returns <code>null</code> if the parameter doesn't exist.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">InputStream <span>getBodyAsInputStream</span>()</code>
-    <div class="well">
-         The raw InputStream of the request's body.
- Note that what's read from the InputStream cannot be read again!
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">byte[] <span>getBodyAsByteArray</span>()</code>
-    <div class="well">
-         The bytes of the request's body.
- Note that the bytes read cannot be read again!
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getBodyAsString</span>()</code>
-    <div class="well">
-         The request's body as a String, using the <code>UTF-8</code> encoding.
- Note that the characters read cannot be read again!
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getBodyAsString</span>(String encoding)</code>
-    <div class="well">
-         The request's body as a String, using the specified encoding.
- Note that the characters read cannot be read again!
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonObject <span>getJsonBodyAsJsonObject</span>()</code>
-    <div class="well">
-         The request's body deserialized to a <code>IJsonObject</code>. A valid <code>Json</code> body
- is expected.
- Note that this can only be called once.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, Object&gt; <span>getJsonBodyAsMap</span>()</code>
-    <div class="well">
-         The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>Json</code> body
- is expected.
- Note that this can only be called once.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">&lt;T&gt; T <span>getJsonBody</span>(Class&lt;T&gt; clazz)</code>
-    <div class="well">
-         The request's body deserialized to the specified <code>class</code>. A valid <code>Json</code> body
- is expected.
- Note that this can only be called once.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IJsonObject <span>getXmlBodyAsJsonObject</span>()</code>
-    <div class="well">
-         The request's body deserialized to a <code>IJsonObject</code>. A valid <code>XML</code> body
- is expected.
- Note that this can only be called once.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, Object&gt; <span>getXmlBodyAsMap</span>()</code>
-    <div class="well">
-         The request's body deserialized to a <code>Map&lt;String, Object&gt;</code>. A valid <code>XML</code> body
- is expected.
- Note that this can only be called once.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">&lt;T&gt; T <span>getXmlBody</span>(Class&lt;T&gt; clazz)</code>
-    <div class="well">
-         The request's body deserialized to the specified <code>class</code>. A valid <code>XML</code> body
- is expected.
- Note that this can only be called once.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, List&lt;String&gt;&gt; <span>getFormDatas</span>()</code>
-    <div class="well">
-         The parameters submitted from a <code>FORM</code> via a <code>POST</code> method.
- More than one value with the same <code>key</code> is possible.
- The names are <i>case sensitive</i>.
- The map is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;String&gt; <span>getFormData</span>(String name)</code>
-    <div class="well">
-         A specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
- More than one value with the same <code>name</code> is possible.
- The <code>name</code> is <i>case sensitive</i>.
- The list is immutable.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getFormDataFirst</span>(String name)</code>
-    <div class="well">
-         The first (and often only) value of a specific parameter submitted from a <code>FORM</code> via a <code>POST</code> method.
- The <code>name</code> is <i>case sensitive</i>.
- Returns <code>null</code> if the parameter doesn't exist.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, List&lt;File&gt;&gt; <span>getUploadedFiles</span>()</code>
-    <div class="well">
-         The uploaded files, with their names as the keys.
- More than one uploaded file with the same name is possible.
- The map is immutable.
- Returns an empty map if there are no uploadded file.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;File&gt; <span>getUploadedFiles</span>(String name)</code>
-    <div class="well">
-         The uploaded files of the specified name.
- More than one uploaded file with the same <code>name</code> is possible.
- The list is immutable.
- Returns an empty list if no uploaded files of this name exists.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">File <span>getUploadedFileFirst</span>(String name)</code>
-    <div class="well">
-         The first (and often only) uploaded file of the specified name.
- Returns <code>null</code> if no uploaded file of this name exists.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isHttps</span>()</code>
-    <div class="well">
-         Is the request a secure HTTPS one?
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;IETag&gt; <span>getEtagsFromIfNoneMatchHeader</span>()</code>
-    <div class="well">
-         Returns the <code>ETags</code> from
- the <code>If-None-Match</code> header, if any.
-
-        <div class="apiItemFooter">
-            @return the <code>If-None-Match</code> ETags or an empty
- list if there is none.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;IETag&gt; <span>getEtagsFromIfMatchHeader</span>()</code>
-    <div class="well">
-         Returns the <code>ETags</code> from
- the <code>If-Match</code> header, if any.
-
-        <div class="apiItemFooter">
-            @return the <code>If-Match</code> ETags or an empty list
- if there is none.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Date <span>getDateFromIfModifiedSinceHeader</span>()</code>
-    <div class="well">
-         Return the value of the <code>If-Modified-Since</code>
- header as a Date or <code>null</code> if it doesn't
- exist.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Date <span>getDateFromIfUnmodifiedSinceHeader</span>()</code>
-    <div class="well">
-         Return the value of the <code>If-Unmodified-Since</code>
- header as a Date or <code>null</code> if it doesn't
- exist.
-
-    </div>
-</li>
-
-
-    
- 
-                            
-                            
-		                </ul>
-		            </p>
-	            </div>
+                <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/RequestRequestContextAddon.html">RequestRequestContextAddon</a>
+                        </li>
+                    </ul>
+                </p> 
             </section>
+
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.JsonManager;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.jacksonjson.IJsonMixinInfo;
 import org.spincast.plugins.jacksonjson.JsonMixinInfo;
+import org.spincast.plugins.jacksonjson.JsonMixinInfoDefault;
 import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,16 +20,16 @@ import com.google.inject.multibindings.Multibinder;
 public class IgnorePropertyMixinTest extends SpincastTestBase {
 
     @Inject
-    IJsonManager jsonManager;
+    JsonManager jsonManager;
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
     /**
-     * Our IUser mixin
+     * Our User mixin
      */
-    public static abstract class IUserMixin implements IUser {
+    public static abstract class UserMixin implements User {
 
         //==========================================
         // Ignore this property!
@@ -65,8 +65,8 @@ public class IgnorePropertyMixinTest extends SpincastTestBase {
             //==========================================
             protected void bindJsonMixins() {
 
-                Multibinder<IJsonMixinInfo> jsonMixinsBinder = Multibinder.newSetBinder(binder(), IJsonMixinInfo.class);
-                jsonMixinsBinder.addBinding().toInstance(new JsonMixinInfo(IUser.class, IUserMixin.class));
+                Multibinder<JsonMixinInfo> jsonMixinsBinder = Multibinder.newSetBinder(binder(), JsonMixinInfo.class);
+                jsonMixinsBinder.addBinding().toInstance(new JsonMixinInfoDefault(User.class, UserMixin.class));
             }
         };
     }
@@ -74,7 +74,7 @@ public class IgnorePropertyMixinTest extends SpincastTestBase {
     @Test
     public void mixinIgnoreProperty() throws Exception {
 
-        IUser user = new User();
+        User user = new UserDefault();
         user.setName("Stromgol");
         user.setAge(123);
         user.setTitle("alien");

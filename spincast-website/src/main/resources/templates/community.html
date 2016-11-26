@@ -39,10 +39,10 @@ Community
     
         <nav id="toc" class="col-md-3">
             <ul class="nav nav-stacked">
-                <li>
+                <li class="openable">
                     <a href="#top">Forum / Help</a>
                 </li>
-                <li>
+                <li class="openable">
                     <a href="#developers">Developers</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#source_code">Source code</a></li>
@@ -95,7 +95,8 @@ Community
                                 Contributions and suggestions are appreciated!
                             </li>
                             <li id="formatter">
-                                Use this <a href="/public/varia/Spincast-Eclipse-Formatter.xml">Formatter</a> (Eclipse export).
+                                Use this <a href="/public/varia/Spincast-Eclipse-Formatter.xml">Formatter</a> (Eclipse export) or disable any
+                                automatic formatting in your IDE and follow our standards manually.
                                 <ul>
                                     <li>
                                         Instructions
@@ -165,7 +166,7 @@ String sql = "SELECT color " +
                                 Prefer <em>constructor</em> injection, with <code>final</code> member variables, when possible.
                             </li>
                             <li>
-                                Interfaces must begin with a <code>"I"</code> (<code>IServer</code> for example). Don't use
+                                Interfaces must begin with a <code>"I"</code> (<code>Server</code> for example). Don't use
                                 <code>"Impl"</code> as a suffix for concrete classes. <em>(Well, ok, this one may be controversial too!)</em>
                             </li>
                             <li>

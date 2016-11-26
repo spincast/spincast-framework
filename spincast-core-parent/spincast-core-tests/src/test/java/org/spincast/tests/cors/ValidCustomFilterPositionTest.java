@@ -5,14 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.httpclient.IHttpResponse;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
+import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -27,7 +27,7 @@ public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrati
     protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
 
         @Inject
-        public TestRoutingConfig(ISpincastConfig spincastConfig) {
+        public TestRoutingConfig(SpincastConfig spincastConfig) {
             super(spincastConfig);
         }
 
@@ -44,7 +44,7 @@ public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrati
             @Override
             protected void configure() {
                 super.configure();
-                bind(ISpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
+                bind(SpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
             }
         };
     }
@@ -55,15 +55,15 @@ public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrati
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 

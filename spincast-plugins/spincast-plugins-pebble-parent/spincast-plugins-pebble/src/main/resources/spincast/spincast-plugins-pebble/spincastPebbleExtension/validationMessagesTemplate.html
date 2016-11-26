@@ -1,0 +1,17 @@
+<div class="validationMessages">
+    {% for message in validation.messages %}
+    
+        {% set symbol = "✘ " %}
+        {% set msgClass = "msgError" %}
+        {% if message.level == "SUCCESS" %}
+            {% set msgClass = "msgSuccess" %}
+            {% set symbol = "✔ " %}
+        {% elseif message.level == "WARNING" %}
+            {% set msgClass = "msgWarning" %}
+            {% set symbol = "<span class='validationSymbolWarning'>!</span>" %}
+        {% endif %}
+        
+        <span class='help-block {{msgClass}}'>{{symbol | raw}}{{message.text}}</span>
+        
+    {% endfor %}
+</div>

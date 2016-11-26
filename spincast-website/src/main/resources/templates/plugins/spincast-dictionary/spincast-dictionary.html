@@ -3,7 +3,7 @@ Spincast Dictionary plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-dictionary{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-dictionary{% endblock %}
 {% block meta_title %}Plugins - Spincast Dictionary{% endblock %}
 {% block meta_description %}Spincast Dictionary plugin provides the default labels required by Spincast.{% endblock %}
 
@@ -26,27 +26,27 @@ Spincast Dictionary plugin
 
     <ol class="breadcrumb">
         <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
-        <li class="active">Spincast Dictionary plugin</li>
+        <li class="active">Spincast Dictionary Addon plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Dictionary <span>plugin</span></h2></a>
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Dictionary Addon <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/dictionary/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/dictionary/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
     <div id="sectionTitleFixed" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Dictionary <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Dictionary Addon <span>plugin</span></h2></a>
         </div>
     </div>
 
@@ -55,33 +55,33 @@ Spincast Dictionary plugin
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#spincast_dictionary">The <code>ISpincastDictionary</code> interface</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#methods">Methods</a></li> 
-                    </ul>
-                </li>  
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
 	            <p>
 	                The <code>Spincast Dictionary</code> plugin provides an implementation
-                    of the <a href="#spincast_dictionary"><code>ISpincastDictionary</code></a> interface to provide labels required
-                    by Spincast. 
-	            </p>
-                <p>
-                    The current implementation is very simple: the labels are simply hardcoded, in english.
+                    of the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastDictionary.html">SpincastDictionary</a> 
+                    interface to provide labels required by Spincast : 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a>
+	                The provided implementation is very simple : the labels are simply hardcoded, in english.
                 </p>
-                
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Have a look at the 
+                    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-dictionary-parent/spincast-plugins-dictionary/src/main/java/org/spincast/plugins/dictionary/SpincastDictionaryDefault.java">source code of SpincastDictionaryDefault</a> 
+                    to see what the default labels are.
+                </p>
             </section>
+            
+          
             
 	        <section id="installation">
                 <h3>
@@ -102,7 +102,7 @@ Spincast Dictionary plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-dictionary&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -115,8 +115,8 @@ Spincast Dictionary plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastDictionaryPluginGuiceModule(IAppRequestContext.class, 
-                                                IAppWebsocketContext.class)
+        new SpincastDictionaryPluginGuiceModule(AppRequestContext.class, 
+                                                AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -144,58 +144,24 @@ Spincast Dictionary plugin
 	            </p>
             </section>
             
-            <section id="spincast_dictionary">
-                <h3 class="noTop">
-                    <a class="anchor" href="#spincast_dictionary" title="permanent link"></a>
-                    The <code>ISpincastDictionary</code> interface
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastDictionary.html">SpincastDictionary</a> 
+                        </li>
+                    </ul>
                 </p> 
-                
-                <div id="methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-
-
-<li>
-    <code class="apiItem">String <span>route_notFound_default_message</span>()</code>
-    <div class="well">
-        The message to display if the default <code>Not Found</code>
- route is used.
-
-        <div class="apiItemFooter">
-            @return the message to display
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>exception_default_message</span>()</code>
-    <div class="well">
-        The message to display if the default <code>Exception</code>
- route is used.
-
-        <div class="apiItemFooter">
-            @return the message to display
-
-        </div>
-    </div>
-</li>
-
-
-
-
-
-                        </ul>
-                    </p>
-                </div>
             </section>
-
+            
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

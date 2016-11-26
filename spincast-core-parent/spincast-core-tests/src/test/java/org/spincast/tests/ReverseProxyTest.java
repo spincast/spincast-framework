@@ -5,11 +5,11 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.net.HttpHeaders;
@@ -19,10 +19,10 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void none() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlOriginal());
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlProxied());
@@ -31,7 +31,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?titi=toto").send();
+        HttpResponse response = GET("/one?titi=toto").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -43,10 +43,10 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void proto() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlOriginal());
                 assertNotEquals(context.request().getFullUrl(), context.request().getFullUrlProxied());
@@ -55,7 +55,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
+        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                                                       .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -68,10 +68,10 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void protoHost() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlOriginal());
                 assertNotEquals(context.request().getFullUrl(), context.request().getFullUrlProxied());
@@ -80,7 +80,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
+        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                                                       .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                                                       .send();
 
@@ -94,10 +94,10 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void protoHostAndPort() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlOriginal());
                 assertNotEquals(context.request().getFullUrl(), context.request().getFullUrlProxied());
@@ -106,7 +106,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
+        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                                                       .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                                                       .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
                                                       .send();
@@ -119,10 +119,10 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void hostAndPort() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlOriginal());
                 assertNotEquals(context.request().getFullUrl(), context.request().getFullUrlProxied());
@@ -131,7 +131,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
+        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
                                                       .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
                                                       .send();
 
@@ -143,10 +143,10 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void protoPort() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 assertEquals(context.request().getFullUrl(), context.request().getFullUrlOriginal());
                 assertNotEquals(context.request().getFullUrl(), context.request().getFullUrlProxied());
@@ -155,7 +155,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
+        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
                                                       .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
                                                       .send();
 

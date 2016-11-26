@@ -1,48 +1,30 @@
 package org.spincast.website.models;
 
-/**
- * Spincast news entry implementation.
- */
-public class NewsEntry implements INewsEntry {
+import java.util.Date;
 
-    private final long id;
-    private final String publishedDateISO;
-    private final String title;
-    private final String description;
+/**
+ * Spincast news entry.
+ */
+public interface NewsEntry {
 
     /**
-     * Constructor
+     * The news entry's id
      */
-    public NewsEntry(long id, String publishedDateISO, String title, String description) {
-        this.id = id;
-        this.publishedDateISO = publishedDateISO;
-        this.title = title;
-        this.description = description;
-    }
+    public long getId();
 
-    @Override
-    public long getId() {
-        return this.id;
-    }
+    /**
+     * The published date
+     */
+    public Date getPublishedDate();
 
-    @Override
-    public String getPublishedDate() {
-        return this.publishedDateISO;
-    }
+    /**
+     * The title of the news entry.
+     */
+    public String getTitle();
 
-    @Override
-    public String getTitle() {
-        return this.title;
-    }
-
-    @Override
-    public String getDescription() {
-        return this.description;
-    }
-
-    @Override
-    public String toString() {
-        return getPublishedDate() + " - " + getTitle();
-    }
+    /**
+     * The description of the news entry.
+     */
+    public String getDescription();
 
 }

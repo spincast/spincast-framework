@@ -5,10 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.server.IServer;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
@@ -54,7 +54,7 @@ public class CustomServerTest extends SpincastDefaultNoAppIntegrationTestBase {
             @Override
             protected void bindServerPlugin() {
 
-                bind(IServer.class).to(CustomServer.class).in(Scopes.SINGLETON);
+                bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
             }
         };
     }
@@ -72,16 +72,16 @@ public class CustomServerTest extends SpincastDefaultNoAppIntegrationTestBase {
     public void test2() throws Exception {
         assertEquals("constructorstart", getCustomServer().serverFlag);
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 assertTrue(context.exchange() instanceof CustomExchange);
                 testFlag = "one";
             }
         });
 
-        IServer serverRaw = getInjector().getInstance(IServer.class);
+        Server serverRaw = getInjector().getInstance(Server.class);
         assertNotNull(serverRaw);
         assertTrue(serverRaw instanceof CustomServer);
 

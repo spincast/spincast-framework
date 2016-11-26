@@ -15,13 +15,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.server.IServer;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.websocket.IWebsocketConnectionConfig;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
-import org.spincast.plugins.httpclient.websocket.IWebsocketClientWriter;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.server.Server;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.core.websocket.WebsocketEndpointManager;
+import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.RandomUtils;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
@@ -92,12 +92,12 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
     protected class Controller extends DefaultWebsocketControllerTest {
 
-        public Controller(IServer server) {
+        public Controller(Server server) {
             super(server);
         }
 
         @Override
-        public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+        public void onPeerMessage(DefaultWebsocketContext context, String message) {
 
             //==========================================
             // Validates that this message has not already been received.
@@ -112,7 +112,7 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
         private final String controllerId;
         private final String endpointId;
-        private IWebsocketClientWriter writer;
+        private WebsocketClientWriter writer;
         private final String peerId;
 
         public Peer(String controllerId, String endpointId, String peerId) {
@@ -133,11 +133,11 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
             return this.peerId;
         }
 
-        public IWebsocketClientWriter getWriter() {
+        public WebsocketClientWriter getWriter() {
             return this.writer;
         }
 
-        public void setWriter(IWebsocketClientWriter writer) {
+        public void setWriter(WebsocketClientWriter writer) {
             this.writer = writer;
         }
 
@@ -173,19 +173,19 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
             Controller controller = new Controller(getServer()) {
 
                 @Override
-                public IWebsocketConnectionConfig onPeerPreConnect(IDefaultRequestContext context) {
+                public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
                     //==========================================
                     // We specify the endpointId and peerId to use by coookie,
                     // so the calling code can control them.
                     //==========================================
-                    final ICookie endpointIdCookie = context.cookies().getCookie("endpointId");
+                    final Cookie endpointIdCookie = context.cookies().getCookie("endpointId");
                     assertNotNull(endpointIdCookie);
 
-                    final ICookie peerIdCookie = context.cookies().getCookie("peerId");
+                    final Cookie peerIdCookie = context.cookies().getCookie("peerId");
                     assertNotNull(peerIdCookie);
 
-                    return new IWebsocketConnectionConfig() {
+                    return new WebsocketConnectionConfig() {
 
                         @Override
                         public String getEndpointId() {
@@ -200,7 +200,7 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
                 }
 
                 @Override
-                public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+                public void onPeerMessage(DefaultWebsocketContext context, String message) {
                     super.onPeerMessage(context, message);
 
                     if(message.startsWith("echoall_")) {
@@ -245,7 +245,7 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
                     String peerId = createPeerId(controllerPos, endpointPos, peerPos);
 
                     Peer peer = new Peer(controllerId, endpointId, peerId);
-                    IWebsocketClientWriter writer =
+                    WebsocketClientWriter writer =
                             websocket("/ws" + controllerPos).addCookie("endpointId", endpointId)
                                                             .addCookie("peerId", peerId)
                                                             .connect(peer);
@@ -334,7 +334,7 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
             String endpointId = getRandomEndpointId();
             Controller controller = getControllerByEndpointId(endpointId);
-            IWebsocketEndpointManager endpointManager = controller.getEndpointManager(endpointId);
+            WebsocketEndpointManager endpointManager = controller.getEndpointManager(endpointId);
             List<Peer> peers = new ArrayList<>(getPeersByEndpointId(endpointId));
 
             //==========================================
@@ -456,7 +456,7 @@ public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
 
             String endpointId = getRandomEndpointId();
             Controller controller = getControllerByEndpointId(endpointId);
-            final IWebsocketEndpointManager endpointManager = controller.getEndpointManager(endpointId);
+            final WebsocketEndpointManager endpointManager = controller.getEndpointManager(endpointId);
             List<Peer> peers = new ArrayList<>(getPeersByEndpointId(endpointId));
 
             final Peer peer1 = peers.get(0);

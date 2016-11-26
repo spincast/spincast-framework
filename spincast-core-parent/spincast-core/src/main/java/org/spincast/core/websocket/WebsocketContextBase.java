@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastRequestScoped;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.locale.ILocaleResolver;
-import org.spincast.core.templating.ITemplatingEngine;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Binding;
 import com.google.inject.Injector;
@@ -24,17 +24,17 @@ import com.google.inject.Singleton;
 /**
  * The base implementation for a WebSocket context object.
  */
-public abstract class WebsocketContextBase<W extends IWebsocketContext<?>> {
+public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
 
     protected final Logger logger = LoggerFactory.getLogger(WebsocketContextBase.class);
 
     private final String endpointId;
     private final String peerId;
-    private final IWebsocketPeerManager peerManager;
-    private final ILocaleResolver localeResolver;
-    private final IJsonManager jsonManager;
-    private final IXmlManager xmlManager;
-    private final ITemplatingEngine templatingEngine;
+    private final WebsocketPeerManager peerManager;
+    private final LocaleResolver localeResolver;
+    private final JsonManager jsonManager;
+    private final XmlManager xmlManager;
+    private final TemplatingEngine templatingEngine;
     private final Provider<Injector> injectorProvider;
 
     private Map<Key<?>, Object> instanceFromGuiceCache;
@@ -44,7 +44,7 @@ public abstract class WebsocketContextBase<W extends IWebsocketContext<?>> {
      */
     public WebsocketContextBase(String endpointId,
                                 String peerId,
-                                IWebsocketPeerManager peerManager,
+                                WebsocketPeerManager peerManager,
                                 WebsocketContextBaseDeps<W> deps) {
         this.endpointId = endpointId;
         this.peerId = peerId;
@@ -56,7 +56,7 @@ public abstract class WebsocketContextBase<W extends IWebsocketContext<?>> {
         this.injectorProvider = deps.getInjectorProvider();
     }
 
-    public IWebsocketPeerManager peerManager() {
+    public WebsocketPeerManager peerManager() {
         return this.peerManager;
     }
 
@@ -80,15 +80,15 @@ public abstract class WebsocketContextBase<W extends IWebsocketContext<?>> {
         peerManager().closeConnection();
     }
 
-    public IJsonManager json() {
+    public JsonManager json() {
         return this.jsonManager;
     }
 
-    public IXmlManager xml() {
+    public XmlManager xml() {
         return this.xmlManager;
     }
 
-    public ITemplatingEngine templating() {
+    public TemplatingEngine templating() {
         return this.templatingEngine;
     }
 
@@ -134,7 +134,7 @@ public abstract class WebsocketContextBase<W extends IWebsocketContext<?>> {
         return obj;
     }
 
-    protected ILocaleResolver getLocaleResolver() {
+    protected LocaleResolver getLocaleResolver() {
         return this.localeResolver;
     }
 

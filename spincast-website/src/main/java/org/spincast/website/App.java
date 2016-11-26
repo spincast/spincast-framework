@@ -5,19 +5,22 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.filters.ISpincastFilters;
-import org.spincast.core.server.IServer;
+import org.spincast.core.filters.SpincastFilters;
+import org.spincast.core.server.Server;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.website.controllers.AdminController;
-import org.spincast.website.controllers.DemoFormAuthController;
-import org.spincast.website.controllers.DemoFormValidationController;
-import org.spincast.website.controllers.DemosTutorialsController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
 import org.spincast.website.controllers.MainPagesController;
 import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
-import org.spincast.website.exchange.IAppRequestContext;
-import org.spincast.website.exchange.IAppRouter;
+import org.spincast.website.controllers.demos.DemoFormAuthController;
+import org.spincast.website.controllers.demos.DemoHtmlFormsDynamicFieldsController;
+import org.spincast.website.controllers.demos.DemoHtmlFormsFileUploadController;
+import org.spincast.website.controllers.demos.DemoHtmlFormsMultipleFieldsController;
+import org.spincast.website.controllers.demos.DemoHtmlFormsSingleFieldController;
+import org.spincast.website.controllers.demos.DemosTutorialsController;
+import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.exchange.AppRouter;
 import org.spincast.website.guice.AppModule;
 
 import com.google.common.collect.Lists;
@@ -83,32 +86,39 @@ public class App {
     //==========================================
     // The application
     //==========================================
-    private final IServer server;
-    private final IAppConfig appConfig;
-    private final IAppRouter router;
+    private final Server server;
+    private final AppConfig appConfig;
+    private final AppRouter router;
     private final MainPagesController appController;
     private final ErrorController errorController;
     private final FeedController feedController;
     private final AdminController adminController;
     private final DemosTutorialsController demosTutorialsControllerController;
     private final DemoFormAuthController demoFormAuthController;
-    private final DemoFormValidationController demoFormValidationController;
-    private final ISpincastFilters<IAppRequestContext> spincastFilters;
+    private final DemoHtmlFormsSingleFieldController demoHtmlFormsSingleFieldController;
+    private final DemoHtmlFormsMultipleFieldsController demoHtmlFormsMultipleFieldsController;
+    private final DemoHtmlFormsDynamicFieldsController demoHtmlFormsDynamicFieldsController;
+    private final DemoHtmlFormsFileUploadController demoHtmlFormsFileUploadController;
+
+    private final SpincastFilters<AppRequestContext> spincastFilters;
     private final WebsocketsDemoEchoAllController websocketsDemoEchoAllController;
 
     @Inject
-    public App(IServer server,
-               IAppConfig config,
-               IAppRouter router,
+    public App(Server server,
+               AppConfig config,
+               AppRouter router,
                MainPagesController appController,
                ErrorController errorController,
                FeedController feedController,
                AdminController adminController,
                DemosTutorialsController demosTutorialsControllerController,
                DemoFormAuthController demoFormAuthController,
-               DemoFormValidationController demoFormValidationController,
-               ISpincastFilters<IAppRequestContext> spincastFilters,
-               WebsocketsDemoEchoAllController websocketsDemoEchoAllController) {
+               DemoHtmlFormsSingleFieldController demoHtmlFormsSingleFieldController,
+               DemoHtmlFormsMultipleFieldsController demoHtmlFormsMultipleFieldsController,
+               DemoHtmlFormsDynamicFieldsController demoHtmlFormsDynamicFieldsController,
+               SpincastFilters<AppRequestContext> spincastFilters,
+               WebsocketsDemoEchoAllController websocketsDemoEchoAllController,
+               DemoHtmlFormsFileUploadController demoHtmlFormsFileUploadController) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
@@ -118,20 +128,23 @@ public class App {
         this.adminController = adminController;
         this.demosTutorialsControllerController = demosTutorialsControllerController;
         this.demoFormAuthController = demoFormAuthController;
-        this.demoFormValidationController = demoFormValidationController;
+        this.demoHtmlFormsSingleFieldController = demoHtmlFormsSingleFieldController;
+        this.demoHtmlFormsMultipleFieldsController = demoHtmlFormsMultipleFieldsController;
+        this.demoHtmlFormsDynamicFieldsController = demoHtmlFormsDynamicFieldsController;
         this.spincastFilters = spincastFilters;
         this.websocketsDemoEchoAllController = websocketsDemoEchoAllController;
+        this.demoHtmlFormsFileUploadController = demoHtmlFormsFileUploadController;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IAppConfig getConfig() {
+    protected AppConfig getConfig() {
         return this.appConfig;
     }
 
-    protected IAppRouter getRouter() {
+    protected AppRouter getRouter() {
         return this.router;
     }
 
@@ -159,16 +172,28 @@ public class App {
         return this.demoFormAuthController;
     }
 
-    protected DemoFormValidationController getDemoFormValidationController() {
-        return this.demoFormValidationController;
+    protected DemoHtmlFormsSingleFieldController getDemoHtmlFormsSingleFieldController() {
+        return this.demoHtmlFormsSingleFieldController;
     }
 
-    protected ISpincastFilters<IAppRequestContext> getSpincastFilters() {
+    protected DemoHtmlFormsMultipleFieldsController getDemoHtmlFormsMultipleFieldsController() {
+        return this.demoHtmlFormsMultipleFieldsController;
+    }
+
+    protected DemoHtmlFormsDynamicFieldsController getDemoHtmlFormsDynamicFieldsController() {
+        return this.demoHtmlFormsDynamicFieldsController;
+    }
+
+    protected SpincastFilters<AppRequestContext> getSpincastFilters() {
         return this.spincastFilters;
     }
 
     protected WebsocketsDemoEchoAllController getWebsocketsDemoEchoAllController() {
         return this.websocketsDemoEchoAllController;
+    }
+
+    protected DemoHtmlFormsFileUploadController getDemoHtmlFormsFileUploadController() {
+        return this.demoHtmlFormsFileUploadController;
     }
 
     /**
@@ -235,7 +260,7 @@ public class App {
      */
     protected void addRoutes() {
 
-        IAppRouter router = getRouter();
+        AppRouter router = getRouter();
 
         MainPagesController appCtl = getAppController();
         DemosTutorialsController demoCtl = getDemosTutorialsController();
@@ -284,8 +309,11 @@ public class App {
         //==========================================
         router.file("/").pathRelative("/pages/index.html").save(appCtl::index);
         router.file("/presentation").pathRelative("/pages/presentation.html").save(appCtl::presentation);
-        router.file("/news").pathRelative("/pages/news.html").save(appCtl::news);
-        router.file("/news").pathRelative("/pages/news.html").save(appCtl::news);
+
+        // Can't be a static resource since it accepts a "page"
+        // querystring parameter which changes the content.
+        router.GET("/news").save(appCtl::news);
+
         router.file("/news/${newsId:<N>}").pathRelative("/pages/news/${newsId:<N>}.html").save(appCtl::newsEntry);
         router.file("/documentation").pathRelative("/pages/documentation.html").save(appCtl::documentation);
         router.file("/download").pathRelative("/pages/download.html").save(appCtl::download);
@@ -332,8 +360,27 @@ public class App {
         //router.POST("/demos-tutorials/form-authentication/login").save(getDemoFormAuthController()::login);
         //router.POST("/demos-tutorials/form-authentication/register").save(getDemoFormAuthController()::login);
 
-        //router.GET("/demos-tutorials/form-validation").save(getDemoFormValidationController()::index);
-        //router.POST("/demos-tutorials/form-validation").save(getDemoFormValidationController()::submit);
+        router.redirect("/demos-tutorials/html-forms").to("/demos-tutorials/html-forms/single-field");
+
+        router.GET("/demos-tutorials/html-forms/single-field")
+              .save(getDemoHtmlFormsSingleFieldController()::singleField);
+        router.POST("/demos-tutorials/html-forms/single-field")
+              .save(getDemoHtmlFormsSingleFieldController()::singleFieldSubmit);
+
+        router.GET("/demos-tutorials/html-forms/multiple-fields")
+              .save(getDemoHtmlFormsMultipleFieldsController()::multipleFields);
+        router.POST("/demos-tutorials/html-forms/multiple-fields")
+              .save(getDemoHtmlFormsMultipleFieldsController()::multipleFieldsSubmit);
+
+        router.GET("/demos-tutorials/html-forms/dynamic-fields")
+              .save(getDemoHtmlFormsDynamicFieldsController()::dynamicFields);
+        router.POST("/demos-tutorials/html-forms/dynamic-fields")
+              .save(getDemoHtmlFormsDynamicFieldsController()::dynamicFieldsSubmit);
+
+        router.GET("/demos-tutorials/html-forms/file-upload")
+              .save(getDemoHtmlFormsFileUploadController()::fileUpload);
+        router.POST("/demos-tutorials/html-forms/file-upload")
+              .save(getDemoHtmlFormsFileUploadController()::fileUploadSubmit);
 
     }
 }

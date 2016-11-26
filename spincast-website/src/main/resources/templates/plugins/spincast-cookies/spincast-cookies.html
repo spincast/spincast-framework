@@ -3,7 +3,7 @@ Spincast Cookies plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-cookies{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-cookies {% endblock %}
 {% block meta_title %}Plugins - Spincast Cookies{% endblock %}
 {% block meta_description %}Spincast Cookies plugin provides functionalities to read and write cookies.{% endblock %}
 
@@ -30,17 +30,17 @@ Spincast Cookies plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
+        <div class="col-xs-12"> 
             <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Cookies <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/cookies/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/cookies/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -54,48 +54,98 @@ Spincast Cookies plugin
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable">
-                    <a href="#request_context_addon">The request context add-on</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#request_context_example">Quick Example</a></li>
-                        <li><a href="#request_context_methods">Methods</a></li> 
-                    </ul>
-                </li>
-                <li class="openable">
-                    <a href="#cookie_creation">Creating a new cookie</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#cookie_creation_addon">Using the <code>add-on</code></a></li>
-                        <li><a href="#cookie_creation_factory">Using the <code>ICookieFactory</code> factory</a></li>
-                    </ul>
-                </li>
-                <li class="openable">
-                    <a href="#cookie">The <code>ICookie</code> object</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#cookie_methods">Methods</a></li>
-                    </ul>
-                </li>
-
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
                 <p>
-                    The <code>Spincast Cookies</code> plugin provides functionalities
-                    to read and write cookies. It mainly consists of a request context <code>add-on</code> :
-                    "<a href="#request_context_addon"><code>ICookiesRequestContextAddon</code></a>", which is 
-                    mounted as <code>.cookies()</code> on the default Spincast request context. 
+                    This plugin provides functionalities
+                    to read and write HTTP cookies. It mainly consists of an implementation of the request context <code>add-on</code>,
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookiesRequestContextAddon.html">CookiesRequestContextAddon</a>, 
+                    which is mounted as <code>.cookies()</code> on the default Spincast Request Context. The implementation class
+                    is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cookies/SpincastCookiesRequestContextAddon.html">SpincastCookiesRequestContextAddon</a>.
                 </p>
                 <p>
-                    The plugin also provides an implementation for the "<a href="#cookie"><code>ICookie</code></a>" object.
+                    The plugin also provides an implementation for the <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html">Cookie</a> 
+                    interface : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cookies/CookieDefault.html">CookieDefault</a>.
                 </p>
+            </section>
+            
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
+	            <p>
+	                <ul>
+                        <li>
+                            Using the <code>.cookies()</code> add-on from a <code>Route Handler</code> 
+                            to get a cookie :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+    Cookie myCookie = context.cookies().getCookie("myCookie");
+    //...
+}</pre>
+                                </p>
+                            </div> 
+                        </li>
+                        <li>
+                            Creating a cookie using the <code>.cookies()</code> add-on :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java"
+>public void myHandler(AppRequestContext context) {
+    context.cookies().addCookie("myCookie", "someValue");
+    //...
+}</pre>
+                                </p>
+                            </div> 
+                        </li>
+                        <li>
+                            Using the injected <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookieFactory.html">CookieFactory</a> 
+                            instance to create a cookie :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java"
+>public class SomeService {
+
+    private final CookieFactory cookieFactory;
+
+    @Inject
+    public AppService(CookieFactory cookieFactory) {
+        this.cookieFactory = cookieFactory;
+    }
+
+    protected CookieFactory getCookieFactory() {
+        return this.cookieFactory;
+    }
+
+    public Cookie someServiceMethod() {
+        Cookie cookie = getCookieFactory().createCookie("myCookie", "some value");
+        return cookie;
+    }
+}</pre>
+                                </p>
+                            </div> 
+                        </li>
+                        
+                    </ul>
+	            </p>
             </section>
             
             <section id="installation">
@@ -117,7 +167,7 @@ Spincast Cookies plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-cookies&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
                         </p>
                     </div>  
@@ -130,7 +180,7 @@ Spincast Cookies plugin
                             <pre class="ace ace-java" data-ace-hi="2,8,2,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastCookiesPluginGuiceModule(IAppRequestContext.class, IAppWebsocketContext.class)
+        new SpincastCookiesPluginGuiceModule(AppRequestContext.class, AppWebsocketContext.class)
         // other modules...
         );</pre> 
                         </p>
@@ -158,391 +208,31 @@ Spincast Cookies plugin
                 </p>
             </section>
             
-            <section id="request_context_addon">
+            
+            
+            <section id="javadoc">
                 <h3>
-                    <a class="anchor" href="#request_context_addon" title="permanent link"></a>
-                    The request context add-on
-                </h3>
-                <div id="request_context_example">
-                    <p>
-                        <div>
-                            <p>
-                                <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Quick example :</h4>
-                                <pre class="ace ace-java" data-ace-hi="1,30,1,40"
->public void myHandler(IAppRequestContext context) {
-    ICookie myCookie = context.cookies().getCookie("myCookie");
-    if(myCookie != null) {
-        System.out.println(myCookie.getName() + " : " + myCookie.getValue());
-    }
-    //...
-}</pre> 
-                            </p>
-                        </div>
-                    </p>
-                </div>
-
-                <div id="request_context_methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-                        
-                        
-                        
-     
-<li>
-    <code class="apiItem">Map&lt;String, ICookie&gt; <span>getCookies</span>()</code>
-    <div class="well">
-        Gets the current cookies in a Map, using their names as the keys.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICookie <span>getCookie</span>(String name)</code>
-    <div class="well">
-        Gets a cookie.
-
-        <div class="apiItemFooter">
-            @return the cookie or <code>null</code> if not found.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>addCookie</span>(ICookie cookie)</code>
-    <div class="well">
-        Adds a cookie.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>addCookie</span>(String name, String value)</code>
-    <div class="well">
-        Adds a cookie using the specified name and value.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>addCookie</span>(String name, String value, String path, String domain, Date expires, boolean secure,                           boolean httpOnly, boolean discard, int version)</code>
-    <div class="well">
-        Adds a cookie, using all possible configurations.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>deleteCookie</span>(String name)</code>
-    <div class="well">
-        Deletes a cookie. In fact, this sets the cookie's <code>expires date</code> in the
- past so the user's browser will remove it.
- <code>isExpired()</code> will return <code>true</code> after you called
- this method.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>deleteAllCookies</span>()</code>
-    <div class="well">
-        Deletes all cookies. In fact, this sets their <code>expires date</code> in the
- past so the user's browser will remove them.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>resetCookies</span>()</code>
-    <div class="well">
-        Resets the current cookies to the original ones
- of the request.
-
-    </div>
-</li>
-
-
-
-                            
-                        </ul>
-                    </p>
-                </div>
-            </section>
-
-            <section id="cookie_creation">
-            
-                <h3 class="noTop">
-                    <a class="anchor" href="#cookie_creation" title="permanent link"></a>
-                    Creating a new cookie
-                </h3>
-                <div id="cookie_creation_addon">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Using the <code>add-on</code></h4>
-                        You can create a new cookie directly from your <code>request context</code> object. This is by far the
-                        easiest way to do it:
-                    
-                        <pre class="ace ace-java" data-ace-hi="14,25,14,83"
->public void myHandler(IAppRequestContext context) {
-    context.cookies().addCookie("myCookie", "some value");
-}</pre> 
-                    </p>
-                </div>
-                <div id="cookie_creation_factory">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Using the <code>ICookieFactory</code> factory</h4>
-                        When you don't have access to the <code>request context</code> object directly, for example if you have
-                        some kind of service which creates the cookie and passes it back to your
-                        <code>route handler</code>, you can use the <code>ICookieFactory</code> factory. Why a factory and not simply
-                        use "<code>ICookie cookie = new Cookie()</code>"? Well, technically you can do that too. But
-                        using a Guice's <a href="https://github.com/google/guice/wiki/AssistedInject">assisted factory</a> allows
-                        your cookie implementation to easily have access to any dependencies it needs.
-                    </p>
-                    <p>
-                        <div>
-                            <p>
-                                <pre class="ace ace-java" data-ace-hi="14,25,14,83"
->public class AppService {
-
-    private final ICookieFactory cookieFactory;
-
-    @Inject
-    public AppService(ICookieFactory cookieFactory) {
-        this.cookieFactory = cookieFactory;
-    }
-
-    protected ICookieFactory getCookieFactory() {
-        return this.cookieFactory;
-    }
-
-    public ICookie someServiceMethod() {
-        ICookie cookie = getCookieFactory().createCookie("myCookie", "some value");
-        return cookie;
-    }
-}</pre> 
-                            </p>
-                        </div>
-                    </p> 
-                </div>
-
-                <div id="cookie_factory_methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Factory methods :</h4>
-                        <ul class="apiList">
-                        
-                        
-                        
-<li>
-    <code class="apiItem">ICookie <span>createCookie</span>(@Assisted(&quot;name&quot;) String name)</code>
-    <div class="well">
-        Creates a cookie using the given name (<code>null</code> value).
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICookie <span>createCookie</span>(@Assisted(&quot;name&quot;) String name,                                 @Assisted(&quot;value&quot;) String value)</code>
-    <div class="well">
-        Creates a cookie using the given name and value.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ICookie <span>createCookie</span>(@Assisted(&quot;name&quot;) String name,                                 @Assisted(&quot;value&quot;) String value,                                 @Assisted(&quot;path&quot;) String path,                                 @Assisted(&quot;domain&quot;) String domain,                                 @Assisted(&quot;expires&quot;) Date expires,                                 @Assisted(&quot;secure&quot;) boolean secure,                                 @Assisted(&quot;httpOnly&quot;) boolean httpOnly,                                 @Assisted(&quot;discard&quot;) boolean discard,                                 @Assisted(&quot;version&quot;) int version)</code>
-    <div class="well">
-        Creates a cookie using all possible configurations.
-
-    </div>
-</li>
-
-
-                  
- 
-                            
-                        </ul>
-                    </p>
-                </div>
-            </section>
-            
-            <section id="cookie">
-            
-                <h3 class="noTop">
-                    <a class="anchor" href="#cookie" title="permanent link"></a>
-                    The <code>ICookie</code> object
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
-                    The <code>ICookie</code> represents an HTTP cookie. This is what you get
-                    when you read a cookie and what you need to provide to write one.
-                </p>
-                <div id="cookie_methods">
-                    <p>
-                        <h4><img class="inlineIcon" src="/public/images/icons/para.png" /> Methods :</h4>
-                        <ul class="apiList">
-                        
-                        
-       
-<li>
-    <code class="apiItem">String <span>getName</span>()</code>
-    <div class="well">
-        Gets the cookie name.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getValue</span>()</code>
-    <div class="well">
-        Gets the cookie value.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setValue</span>(String value)</code>
-    <div class="well">
-        Sets the cookie value.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getPath</span>()</code>
-    <div class="well">
-        Gets the cookie path.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setPath</span>(String path)</code>
-    <div class="well">
-        Sets the cookie path.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getDomain</span>()</code>
-    <div class="well">
-        Gets the cookie domain.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setDomain</span>(String domain)</code>
-    <div class="well">
-        Sets the cookie domain.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Date <span>getExpires</span>()</code>
-    <div class="well">
-        Gets the date the cookie will expire at.
-<br />If the date is in the past, the cookie will be deleted.
-<br />If <code>null</code> the cookie will live for the current session
- (this is the default).
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setExpires</span>(Date expires)</code>
-    <div class="well">
-        Sets the date the cookie will expire.
-<br />If the date is in the past, the cookie will be deleted.
-<br />If <code>null</code> the cookie will live for the current session
- (this is the default).
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setExpiresUsingMaxAge</span>(Integer maxAge)</code>
-    <div class="well">
-        Sets the number of seconds for a cookie to live.
-<br />If <code>maxAge</code> &lt; 0 : The "Expires date" will be in the past and the cookie will
- therefore be deleted.
-<br />If <code>maxAge</code> == 0 : The "Expires date" will be <code>null</code> and the cookie will live
- for the session only.
-<br />If <code>maxAge</code> &gt; 0 :  The "Expires date" will be the current date + <code>'maxAge'</code> seconds.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isExpired</span>()</code>
-    <div class="well">
-        Is this cookie expired?
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isSecure</span>()</code>
-    <div class="well">
-        Is the "secure" feature on?
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setSecure</span>(boolean secure)</code>
-    <div class="well">
-        Sets the "secure" feature on or off.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isHttpOnly</span>()</code>
-    <div class="well">
-        Is the cookie availableto the server
- and not to javascript?
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>setHttpOnly</span>(boolean httpOnly)</code>
-    <div class="well">
-        Sets if the cookie is available only for to the server
- anbd not to javascript.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">boolean <span>isDiscard</span>()</code>
-    <div class="well">
-        Is this cookie to be discarded?
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getVersion</span>()</code>
-    <div class="well">
-        Gets the cookie version.
-
-    </div>
-</li>
-
-
-       
-                      
-                      
-                        </ul>
-                   </p>
-               </div>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html">Cookie</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookiesRequestContextAddon.html">CookiesRequestContextAddon</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookieFactory.html">CookieFactory</a> 
+                        </li>   
+                    </ul>
+                </p> 
             </section>
-
+            
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

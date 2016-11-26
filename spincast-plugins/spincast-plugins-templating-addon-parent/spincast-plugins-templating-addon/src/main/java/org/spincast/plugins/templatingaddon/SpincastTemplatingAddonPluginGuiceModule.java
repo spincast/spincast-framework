@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
-import org.spincast.core.templating.ITemplatingRequestContextAddon;
+import org.spincast.core.templating.TemplatingRequestContextAddon;
 
 /**
  * Guice module for the Spincast Templating Addon plugin.
@@ -26,7 +26,7 @@ public class SpincastTemplatingAddonPluginGuiceModule extends SpincastPluginGuic
 
     protected void bindRequestContextAddon() {
 
-        bind(parameterizeWithRequestContext(ITemplatingRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastTemplatingRequestContextAddon.class))
+        bind(parameterizeWithRequestContext(TemplatingRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastTemplatingRequestContextAddon.class))
                                                                                   .in(SpincastGuiceScopes.REQUEST);
     }
 

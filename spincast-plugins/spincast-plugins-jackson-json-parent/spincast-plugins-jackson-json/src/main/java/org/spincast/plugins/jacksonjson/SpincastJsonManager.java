@@ -1,31 +1,33 @@
 package org.spincast.plugins.jacksonjson;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
-import org.spincast.core.json.IJsonArray;
-import org.spincast.core.json.IJsonArrayImmutable;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.json.IJsonObjectFactory;
-import org.spincast.core.json.IJsonObjectImmutable;
-import org.spincast.core.json.exceptions.CantConvertException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.json.JsonObjectFactory;
+import org.spincast.core.json.JsonObjectOrArray;
+import org.spincast.core.json.JsonPathUtils;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
@@ -51,22 +53,28 @@ import com.google.inject.Provider;
 /**
  * Spincast Jackson Json manager
  */
-public class SpincastJsonManager implements IJsonManager {
+public class SpincastJsonManager implements JsonManager {
 
-    private final IJsonObjectFactory jsonObjectFactory;
+    protected final Logger logger = LoggerFactory.getLogger(SpincastJsonManager.class);
+
+    private final JsonObjectFactory jsonObjectFactory;
     private final Provider<Injector> guiceProvider;
-    private final Set<IJsonMixinInfo> jsonMixinInfos;
-    private final ISpincastJsonManagerConfig spincastJsonManagerConfig;
+    private final Set<JsonMixinInfo> jsonMixinInfos;
+    private final SpincastConfig spincastConfig;
+    private final SpincastJsonManagerConfig spincastJsonManagerConfig;
+    private final JsonPathUtils jsonPathUtils;
+    private final SpincastUtils spincastUtils;
 
     private ObjectMapper objectMapper;
-    private JsonSerializer<IJsonObject> jsonObjectSerializer;
-    private JsonDeserializer<IJsonObject> jsonObjectDeserializer;
-    private JsonSerializer<IJsonArray> jsonArraySerializer;
-    private JsonDeserializer<IJsonArray> jsonArrayDeserializer;
+    private JsonSerializer<JsonObject> jsonObjectSerializer;
+    private JsonDeserializer<JsonObject> jsonObjectDeserializer;
+    private JsonSerializer<JsonArray> jsonArraySerializer;
+    private JsonDeserializer<JsonArray> jsonArrayDeserializer;
     private JsonSerializer<Date> dateSerializer;
+    private JsonSerializer<BigDecimal> bigDecimalSerializer;
     private DefaultPrettyPrinter jacksonPrettyPrinter;
 
-    // All thread safe!
+    // All FastDateFormat are thread safe!
     private static FastDateFormat iso8601DateParserDefault;
     private static FastDateFormat iso8601DateParser1;
     private static FastDateFormat iso8601DateParser2;
@@ -81,33 +89,51 @@ public class SpincastJsonManager implements IJsonManager {
 
     @Inject
     public SpincastJsonManager(Provider<Injector> guiceProvider,
-                               IJsonObjectFactory jsonObjectFactory,
-                               @Nullable Set<IJsonMixinInfo> jsonMixinInfos,
-                               ISpincastJsonManagerConfig spincastJsonManagerConfig) {
+                               JsonObjectFactory jsonObjectFactory,
+                               @Nullable Set<JsonMixinInfo> jsonMixinInfos,
+                               SpincastJsonManagerConfig spincastJsonManagerConfig,
+                               SpincastConfig spincastConfig,
+                               JsonPathUtils jsonPathUtils,
+                               SpincastUtils spincastUtils) {
         this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
 
         if(jsonMixinInfos == null) {
-            jsonMixinInfos = new HashSet<IJsonMixinInfo>();
+            jsonMixinInfos = new HashSet<JsonMixinInfo>();
         }
         this.jsonMixinInfos = jsonMixinInfos;
         this.spincastJsonManagerConfig = spincastJsonManagerConfig;
+        this.spincastConfig = spincastConfig;
+        this.jsonPathUtils = jsonPathUtils;
+        this.spincastUtils = spincastUtils;
     }
 
     protected Injector getGuice() {
         return this.guiceProvider.get();
     }
 
-    protected IJsonObjectFactory getJsonObjectFactory() {
+    protected JsonObjectFactory getJsonObjectFactory() {
         return this.jsonObjectFactory;
     }
 
-    protected Set<IJsonMixinInfo> getJsonMixinInfos() {
+    protected Set<JsonMixinInfo> getJsonMixinInfos() {
         return this.jsonMixinInfos;
     }
 
-    protected ISpincastJsonManagerConfig getSpincastJsonManagerConfig() {
+    protected SpincastJsonManagerConfig getSpincastJsonManagerConfig() {
         return this.spincastJsonManagerConfig;
+    }
+
+    protected SpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
+    }
+
+    protected JsonPathUtils getJsonPathUtils() {
+        return this.jsonPathUtils;
+    }
+
+    protected SpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
     }
 
     protected DefaultPrettyPrinter getJacksonPrettyPrinter() {
@@ -187,18 +213,18 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     protected void configureMixins(ObjectMapper objectMapper) {
-        for(IJsonMixinInfo jsonMixinInfo : getJsonMixinInfos()) {
+        for(JsonMixinInfo jsonMixinInfo : getJsonMixinInfos()) {
             objectMapper.addMixIn(jsonMixinInfo.getTargetClass(), jsonMixinInfo.getMixinClass());
         }
     }
 
-    protected JsonSerializer<IJsonObject> getJsonObjectSerializer() {
+    protected JsonSerializer<JsonObject> getJsonObjectSerializer() {
 
         if(this.jsonObjectSerializer == null) {
-            this.jsonObjectSerializer = new JsonSerializer<IJsonObject>() {
+            this.jsonObjectSerializer = new JsonSerializer<JsonObject>() {
 
                 @Override
-                public void serialize(IJsonObject jsonObject,
+                public void serialize(JsonObject jsonObject,
                                       JsonGenerator gen,
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
@@ -215,13 +241,13 @@ public class SpincastJsonManager implements IJsonManager {
         return this.jsonObjectSerializer;
     }
 
-    protected JsonSerializer<IJsonArray> getJsonArraySerializer() {
+    protected JsonSerializer<JsonArray> getJsonArraySerializer() {
 
         if(this.jsonArraySerializer == null) {
-            this.jsonArraySerializer = new JsonSerializer<IJsonArray>() {
+            this.jsonArraySerializer = new JsonSerializer<JsonArray>() {
 
                 @Override
-                public void serialize(IJsonArray jsonArray,
+                public void serialize(JsonArray jsonArray,
                                       JsonGenerator gen,
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
@@ -244,16 +270,16 @@ public class SpincastJsonManager implements IJsonManager {
             this.dateSerializer = new JsonSerializer<Date>() {
 
                 @Override
-                public void serialize(Date jsonObject,
+                public void serialize(Date date,
                                       JsonGenerator gen,
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(jsonObject == null) {
+                    if(date == null) {
                         return;
                     }
 
-                    String dateStr = getIso8601DateParserDefault().format(jsonObject);
+                    String dateStr = getIso8601DateParserDefault().format(date);
                     gen.writeObject(dateStr);
                 }
             };
@@ -261,22 +287,45 @@ public class SpincastJsonManager implements IJsonManager {
         return this.dateSerializer;
     }
 
-    protected JsonDeserializer<IJsonObject> getJsonObjectDeserializer() {
+    protected JsonSerializer<BigDecimal> getBigDecimalSerializer() {
 
-        if(this.jsonObjectDeserializer == null) {
-            this.jsonObjectDeserializer = new JsonDeserializer<IJsonObject>() {
+        if(this.bigDecimalSerializer == null) {
+            this.bigDecimalSerializer = new JsonSerializer<BigDecimal>() {
 
                 @Override
-                public IJsonObject deserialize(JsonParser jsonParser,
-                                               DeserializationContext context)
-                                                                               throws IOException,
-                                                                               JsonProcessingException {
+                public void serialize(BigDecimal bigDecimal,
+                                      JsonGenerator gen,
+                                      SerializerProvider serializers)
+                                                                      throws IOException, JsonProcessingException {
 
-                    IJsonObject jsonObject = getJsonObjectFactory().create();
+                    if(bigDecimal == null) {
+                        return;
+                    }
+                    gen.writeObject(bigDecimal.toPlainString());
+                }
+            };
+        }
+        return this.bigDecimalSerializer;
+    }
+
+    protected JsonDeserializer<JsonObject> getJsonObjectDeserializer() {
+
+        if(this.jsonObjectDeserializer == null) {
+            this.jsonObjectDeserializer = new JsonDeserializer<JsonObject>() {
+
+                @Override
+                public JsonObject deserialize(JsonParser jsonParser,
+                                              DeserializationContext context)
+                                                                              throws IOException,
+                                                                              JsonProcessingException {
+
+                    JsonObject jsonObject = getJsonObjectFactory().create();
 
                     JsonToken jsonToken = jsonParser.getCurrentToken();
                     if(jsonToken == JsonToken.START_OBJECT) {
                         jsonToken = jsonParser.nextToken();
+                    } else {
+                        throw new RuntimeException("Invalid json object");
                     }
 
                     while(jsonToken != null) {
@@ -284,6 +333,7 @@ public class SpincastJsonManager implements IJsonManager {
                         if(jsonToken != JsonToken.FIELD_NAME) {
                             break;
                         }
+
                         String name = jsonParser.getCurrentName();
                         jsonToken = jsonParser.nextToken();
 
@@ -294,10 +344,10 @@ public class SpincastJsonManager implements IJsonManager {
                             jsonObject.put(name, getJsonArrayDeserializer().deserialize(jsonParser, context));
 
                         } else if(jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
-                            jsonObject.putConvert(name, jsonParser.getEmbeddedObject());
+                            jsonObject.put(name, jsonParser.getEmbeddedObject());
 
                         } else if(jsonToken == JsonToken.VALUE_NULL) {
-                            jsonObject.putConvert(name, null);
+                            jsonObject.put(name, null);
 
                         } else if(jsonToken == JsonToken.VALUE_STRING) {
                             jsonObject.put(name, jsonParser.getText());
@@ -310,7 +360,7 @@ public class SpincastJsonManager implements IJsonManager {
 
                         } else if(jsonToken == JsonToken.VALUE_NUMBER_INT ||
                                   jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
-                            jsonObject.putConvert(name, jsonParser.getNumberValue());
+                            jsonObject.put(name, jsonParser.getNumberValue());
 
                         } else {
                             throw new RuntimeException("Unmanaged json token type : " + jsonToken);
@@ -318,6 +368,7 @@ public class SpincastJsonManager implements IJsonManager {
 
                         jsonToken = jsonParser.nextToken();
                     }
+
                     return jsonObject;
                 }
             };
@@ -326,22 +377,24 @@ public class SpincastJsonManager implements IJsonManager {
         return this.jsonObjectDeserializer;
     }
 
-    protected JsonDeserializer<IJsonArray> getJsonArrayDeserializer() {
+    protected JsonDeserializer<JsonArray> getJsonArrayDeserializer() {
 
         if(this.jsonArrayDeserializer == null) {
-            this.jsonArrayDeserializer = new JsonDeserializer<IJsonArray>() {
+            this.jsonArrayDeserializer = new JsonDeserializer<JsonArray>() {
 
                 @Override
-                public IJsonArray deserialize(JsonParser jsonParser,
-                                              DeserializationContext context)
-                                                                              throws IOException,
-                                                                              JsonProcessingException {
+                public JsonArray deserialize(JsonParser jsonParser,
+                                             DeserializationContext context)
+                                                                             throws IOException,
+                                                                             JsonProcessingException {
 
-                    IJsonArray jsonArray = getJsonObjectFactory().createArray();
+                    JsonArray jsonArray = getJsonObjectFactory().createArray();
 
                     JsonToken jsonToken = jsonParser.getCurrentToken();
                     if(jsonToken == JsonToken.START_ARRAY) {
                         jsonToken = jsonParser.nextToken();
+                    } else {
+                        throw new RuntimeException("Invalid json array");
                     }
 
                     while(jsonToken != null) {
@@ -357,10 +410,10 @@ public class SpincastJsonManager implements IJsonManager {
                             jsonArray.add(deserialize(jsonParser, context));
 
                         } else if(jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
-                            jsonArray.addConvert(jsonParser.getEmbeddedObject());
+                            jsonArray.add(jsonParser.getEmbeddedObject());
 
                         } else if(jsonToken == JsonToken.VALUE_NULL) {
-                            jsonArray.addConvert(null);
+                            jsonArray.add(null);
 
                         } else if(jsonToken == JsonToken.VALUE_STRING) {
                             jsonArray.add(jsonParser.getText());
@@ -373,7 +426,7 @@ public class SpincastJsonManager implements IJsonManager {
 
                         } else if(jsonToken == JsonToken.VALUE_NUMBER_INT ||
                                   jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
-                            jsonArray.addConvert(jsonParser.getNumberValue());
+                            jsonArray.add(jsonParser.getNumberValue());
 
                         } else {
                             throw new RuntimeException("Unmanaged json token type : " + jsonToken);
@@ -390,30 +443,31 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     protected void registerCustomModules(ObjectMapper objectMapper) {
-        registerIJsonObjectModule(objectMapper);
-        registerDateModule(objectMapper);
+        registerJsonObjectModule(objectMapper);
+        registerCustomTypeSerializerModule(objectMapper);
     }
 
     /**
-     * Register our custom (de)serializers for IJsonObject
+     * Register our custom (de)serializers for JsonObject
      */
-    protected void registerIJsonObjectModule(ObjectMapper objectMapper) {
+    protected void registerJsonObjectModule(ObjectMapper objectMapper) {
 
         SimpleModule module = new SimpleModule();
-        module.addSerializer(IJsonObject.class, getJsonObjectSerializer());
-        module.addDeserializer(IJsonObject.class, getJsonObjectDeserializer());
-        module.addSerializer(IJsonArray.class, getJsonArraySerializer());
-        module.addDeserializer(IJsonArray.class, getJsonArrayDeserializer());
+        module.addSerializer(JsonObject.class, getJsonObjectSerializer());
+        module.addDeserializer(JsonObject.class, getJsonObjectDeserializer());
+        module.addSerializer(JsonArray.class, getJsonArraySerializer());
+        module.addDeserializer(JsonArray.class, getJsonArrayDeserializer());
         objectMapper.registerModule(module);
     }
 
     /**
-     * Register our custom serializers for dates.
+     * Register our custom serializers for some types.
      */
-    protected void registerDateModule(ObjectMapper objectMapper) {
+    protected void registerCustomTypeSerializerModule(ObjectMapper objectMapper) {
 
         SimpleModule module = new SimpleModule();
         module.addSerializer(Date.class, getDateSerializer());
+        module.addSerializer(BigDecimal.class, getBigDecimalSerializer());
         objectMapper.registerModule(module);
     }
 
@@ -446,7 +500,7 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public <T> T fromJsonString(String jsonString, Class<T> clazz) {
+    public <T> T fromString(String jsonString, Class<T> clazz) {
         try {
             T jsonObj = getObjectMapper().readValue(jsonString, clazz);
             injectDependencies(jsonObj);
@@ -457,7 +511,7 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public <T> T fromJsonInputStream(InputStream inputStream, Class<T> clazz) {
+    public <T> T fromInputStream(InputStream inputStream, Class<T> clazz) {
         try {
             T jsonObj = getObjectMapper().readValue(inputStream, clazz);
             injectDependencies(jsonObj);
@@ -468,7 +522,7 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public Map<String, Object> fromJsonStringToMap(String jsonString) {
+    public Map<String, Object> fromStringToMap(String jsonString) {
         try {
             Map<String, Object> map = getObjectMapper().readValue(jsonString, new TypeReference<Map<String, Object>>() {});
             return map;
@@ -478,7 +532,7 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public Map<String, Object> fromJsonInputStreamToMap(InputStream inputStream) {
+    public Map<String, Object> fromInputStreamToMap(InputStream inputStream) {
         try {
             Map<String, Object> map = getObjectMapper().readValue(inputStream,
                                                                   new TypeReference<Map<String, Object>>() {});
@@ -489,14 +543,14 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonObject create() {
+    public JsonObject create() {
         return getJsonObjectFactory().create();
     }
 
     @Override
-    public IJsonObject create(String jsonString) {
+    public JsonObject fromString(String jsonString) {
         try {
-            IJsonObject obj = getObjectMapper().readValue(jsonString, IJsonObject.class);
+            JsonObject obj = getObjectMapper().readValue(jsonString, JsonObject.class);
             return obj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -504,576 +558,81 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonObject create(Map<String, ?> params) {
-        return create(params, false);
+    public JsonObject fromMap(Map<String, ?> params) {
+        return fromMap(params, false);
     }
 
     @Override
-    public IJsonObject create(Map<String, ?> params, boolean parseKeyAsFieldPath) {
+    public JsonObject fromMap(Map<String, ?> params, boolean parseKeysAsJsonPaths) {
 
-        if(!parseKeyAsFieldPath) {
-            return getJsonObjectFactory().create(params);
-        }
-
-        //==========================================
-        // Parse keys as FieldPaths
-        //==========================================
-        IJsonObject root = getJsonObjectFactory().create();
+        JsonObject root = getJsonObjectFactory().create();
         if(params == null || params.size() == 0) {
             return root;
         }
 
-        if(params.size() > getMaxNumberOfFieldPathKeys()) {
-            throw new RuntimeException("Too many keys to parse : " + params.size() + " as FieldPaths. " +
-                                       "The maximum is currently set to " + getMaxNumberOfFieldPathKeys());
+        if(parseKeysAsJsonPaths && params.size() > getMaxNumberOfKeysWhenConvertingMapToJsonObject()) {
+            throw new RuntimeException("Too many keys to parse : " + params.size() + " as JsonPaths. " +
+                                       "The maximum is currently set to " + getMaxNumberOfKeysWhenConvertingMapToJsonObject());
         }
 
         for(Entry<String, ?> entry : params.entrySet()) {
 
-            String fieldPath = entry.getKey();
+            String key = entry.getKey();
             Object value = entry.getValue();
 
-            parseFieldPathAndMerge(root, fieldPath, value);
+            if(parseKeysAsJsonPaths) {
+                putElementAtJsonPath(root, key, value, true);
+            } else {
+                root.putNoKeyParsing(key, value);
+            }
         }
 
         return root;
-
     }
 
-    protected void parseFieldPathAndMerge(IJsonObject root,
-                                          String fieldPath,
-                                          Object value) {
-
-        Objects.requireNonNull(root, "The root object can't be NULL");
-        if(fieldPath == null) {
-            return;
-        }
-
-        if(fieldPath.length() > getFieldPathKeyMaxLength()) {
-            throw new RuntimeException("A FieldPath is too long to be parsed. This FieldPath starts with : " +
-                                       fieldPath.substring(0, Math.min(30, (fieldPath.length() - 1))));
-        }
-
-        //==========================================
-        // Initial validations
-        //==========================================
-        if(fieldPath.startsWith(".") || fieldPath.endsWith(".")) {
-            throw new RuntimeException("FieldPath parsing error on character '.'. The FieldPath can't start or end with the " +
-                                       "'.' character. FieldPath : " + fieldPath);
-        }
-        if(fieldPath.endsWith("[")) {
-            throw new RuntimeException("FieldPath parsing error on character '['. The FieldPath can't end with the " +
-                                       "'[' character. FieldPath : " + fieldPath);
-        }
-        if(fieldPath.startsWith("]")) {
-            throw new RuntimeException("FieldPath parsing error on character '['. The FieldPath can't start with the " +
-                                       "']' character. FieldPath : " + fieldPath);
-        }
-
-        //==========================================
-        // We parse the FieldPath, one character at the time.
-        //==========================================
-        IJsonObject currentObj = root;
-        IJsonArray currentArray = null;
-        int currentArrayIndex = 0;
-        StringBuilder tokenBuilder = new StringBuilder();
-        boolean isInBrackets = false;
-        boolean isInQuotes = false;
-        boolean isInDoubleQuotes = false;
-        char ch = '\0';
-        char previousChar = '\0';
-        for(int i = 0; i < fieldPath.length(); i++) {
-
-            previousChar = ch;
-            ch = fieldPath.charAt(i);
-
-            //==========================================
-            // The '.' character
-            //==========================================
-            if(ch == '.') {
-
-                //==========================================
-                // In quotes, this character has no
-                // special meaning.
-                //==========================================
-                if(isInQuotes || isInDoubleQuotes) {
-                    tokenBuilder.append(ch);
-                    continue;
-                }
-
-                if(isInBrackets) {
-                    throw new RuntimeException("FieldPath parsing error on character '.'. A dot is not valid inside brackets but " +
-                                               "outside quotes. FieldPath : " + fieldPath);
-                }
-
-                if(currentObj != null) {
-
-                    //==========================================
-                    // Empty token : invalid name for an object
-                    //==========================================
-                    String token = tokenBuilder.toString();
-                    if("".equals(token)) {
-                        throw new RuntimeException("FieldPath parsing error on character '.'. A token is empty. FieldPath : " +
-                                                   fieldPath);
-                    }
-                    tokenBuilder = new StringBuilder();
-
-                    //==========================================
-                    // Creates a new object on the current object, 
-                    // if this object doesn't already exist.
-                    //==========================================
-                    IJsonObject obj;
-                    try {
-                        obj = currentObj.getJsonObject(token);
-                    } catch(CantConvertException ex) {
-                        throw new RuntimeException("FieldPath parsing error on character '.'. " +
-                                                   "The key '" + token + "' already exists, but the associated value is " +
-                                                   "not of type IJsonObject as expected here. FieldPath : " +
-                                                   fieldPath);
-                    }
-
-                    if(obj == null) {
-                        obj = create();
-                        currentObj.put(token, obj);
-                    }
-
-                    //==========================================
-                    // This object is now our current object.
-                    //==========================================
-                    currentObj = obj;
-                    currentArray = null;
-
-                } else {
-
-                    //==========================================
-                    // Creates a new object on the current array, 
-                    // if this object doesn't already exist.
-                    //==========================================
-                    IJsonObject obj;
-                    try {
-                        obj = currentArray.getJsonObject(currentArrayIndex);
-                    } catch(CantConvertException ex) {
-                        throw new RuntimeException("FieldPath parsing error on character '.'. " +
-                                                   "The element of the array at index '" + currentArrayIndex +
-                                                   "' already exists, but is " +
-                                                   "not of type IJsonObject as expected here. FieldPath : " +
-                                                   fieldPath);
-                    }
-
-                    if(obj == null) {
-                        obj = create();
-                        currentArray.set(currentArrayIndex, obj);
-                    }
-
-                    currentObj = obj;
-                    currentArray = null;
-                }
-
-            //==========================================@formatter:off 
-            // The '[' character
-            //==========================================@formatter:on
-            } else if(ch == '[') {
-
-                //==========================================
-                // In quotes, this character has no
-                // special meaning.
-                //==========================================
-                if(isInQuotes || isInDoubleQuotes) {
-                    tokenBuilder.append(ch);
-                    continue;
-                }
-
-                if(isInBrackets) {
-                    throw new RuntimeException("FieldPath parsing error on character '['.The '[' is not valid inside " +
-                                               "already started brackets. FieldPath : " + fieldPath);
-                }
-
-                String token = tokenBuilder.toString();
-                tokenBuilder = new StringBuilder();
-
-                //==========================================
-                // If what's inside the bracket is a String key, then
-                // we create an object.
-                // If it's an integer index, we create an array.
-                //==========================================
-                char nextChar = fieldPath.charAt(i + 1);
-                if(nextChar == '"' || nextChar == '\'') {
-
-                    IJsonObject obj = null;
-                    if(currentObj != null) {
-
-                        //==========================================
-                        // If the FieldPath starts with a
-                        // quoted key (for example : "['some key']" ), then 
-                        // we do not create a new object since it already exists
-                        // (its the root object).
-                        //
-                        // Also, we only create a new object if it doesn't
-                        // already exist.
-                        //==========================================
-                        if(i != 0) {
-                            try {
-                                obj = currentObj.getJsonObject(token);
-                            } catch(CantConvertException ex) {
-                                throw new RuntimeException("FieldPath parsing error on character '['. " +
-                                                           "The key '" + token +
-                                                           "' already exists, but the associated value is " +
-                                                           "not of type IJsonObject, as expected here. FieldPath : " +
-                                                           fieldPath);
-                            }
-
-                            if(obj == null) {
-                                obj = create();
-                                currentObj.put(token, obj);
-                            }
-                            currentObj = obj;
-                            currentArray = null;
-                        }
-
-                    } else {
-
-                        //==========================================
-                        // Creates a new object on the current array, 
-                        // if this object doesn't already exist.
-                        //==========================================
-                        try {
-                            obj = currentArray.getJsonObject(currentArrayIndex);
-                        } catch(CantConvertException ex) {
-                            throw new RuntimeException("FieldPath parsing error on character '['. " +
-                                                       "The index '" + currentArrayIndex +
-                                                       "' points to an already existing element, but " +
-                                                       "not of type IJsonObject. FieldPath : " +
-                                                       fieldPath);
-                        }
-
-                        if(obj == null) {
-                            obj = create();
-                            currentArray.set(currentArrayIndex, obj);
-                        }
-
-                        currentObj = obj;
-                        currentArray = null;
-                    }
-
-                //==========================================@formatter:off 
-                // We are dealing with an integer index,
-                // we have to create an array if requried.
-                //==========================================@formatter:on
-                } else {
-
-                    IJsonArray array;
-                    if(currentObj != null) {
-
-                        //==========================================
-                        // The root object is not an array so the
-                        // FieldPath Key can't start with something
-                        // like "[0]"
-                        //==========================================
-                        if(i == 0) {
-                            throw new RuntimeException("FieldPath parsing error on character '['. The root object is not " +
-                                                       "an array. FieldPath : " +
-                                                       fieldPath);
-                        }
-
-                        //==========================================
-                        // The index can't be empty
-                        //==========================================
-                        if("".equals(token)) {
-                            throw new RuntimeException("FieldPath parsing error on character '['. A token is empty . FieldPath : " +
-                                                       fieldPath);
-                        }
-
-                        //==========================================
-                        // Creates a new array on the current object, 
-                        // if this array doesn't already exist.
-                        //==========================================
-                        try {
-                            array = currentObj.getJsonArray(token);
-                        } catch(CantConvertException ex) {
-                            throw new RuntimeException("FieldPath parsing error on character '['. " +
-                                                       "The key '" + token +
-                                                       "' points to an already existing element, but " +
-                                                       "not of type IJsonArray, as expected here. " +
-                                                       "FieldPath : " + fieldPath);
-                        }
-
-                        if(array == null) {
-                            array = createArray();
-                        }
-
-                        currentObj.put(token, array);
-
-                    } else {
-
-                        //==========================================
-                        // Creates a new array on the current array, 
-                        // if this array doesn't already exist.
-                        //==========================================
-                        try {
-                            array = currentArray.getJsonArray(currentArrayIndex);
-                        } catch(CantConvertException ex) {
-                            throw new RuntimeException("FieldPath parsing error on character '['. " +
-                                                       "The index '" + currentArrayIndex +
-                                                       "' points to an already existing element, but " +
-                                                       "not of type IJsonArray. FieldPath : " +
-                                                       fieldPath);
-                        }
-
-                        if(array == null) {
-                            array = createArray();
-                            currentArray.set(currentArrayIndex, array);
-                        }
-                    }
-
-                    currentObj = null;
-                    currentArray = array;
-                }
-
-                isInBrackets = true;
-
-            //==========================================@formatter:off 
-            // The ']' character
-            //==========================================@formatter:on
-            } else if(ch == ']') {
-
-                //==========================================
-                // In quotes, this  character has no
-                // special meaning.
-                //==========================================
-                if(isInQuotes || isInDoubleQuotes) {
-                    tokenBuilder.append(ch);
-                    continue;
-                }
-
-                if(!isInBrackets) {
-                    throw new RuntimeException("FieldPath parsing error on character ']'. No start bracket found. FieldPath : " +
-                                               fieldPath);
-                }
-
-                //==========================================
-                // Next char must be ".", "[" or the end 
-                // of the FieldPath.
-                //==========================================
-                if(i < (fieldPath.length() - 1)) {
-                    char nextChar = fieldPath.charAt(i + 1);
-                    if(nextChar != '.' && nextChar != '[') {
-                        throw new RuntimeException("FieldPath parsing error on character ']'. The character following a ']', if any, must " +
-                                                   "be '.' or '['. Here, the following character is '" + nextChar +
-                                                   "'. FieldPath : " + fieldPath);
-                    }
-                }
-
-                //==========================================
-                // Empty token : invalid name for an index/key
-                //==========================================
-                String token = tokenBuilder.toString();
-                if("".equals(token)) {
-                    throw new RuntimeException("FieldPath parsing error on character ']'. A key or an index was expected. FieldPath : " +
-                                               fieldPath);
-                }
-
-                //==========================================
-                // What's inside the brackets is a key
-                //==========================================
-                if((token.startsWith("\"") && token.endsWith("\"")) || (token.startsWith("'") && token.endsWith("'"))) {
-                    String key = token.substring(1, token.length() - 1);
-                    if("".equals(key)) {
-                        throw new RuntimeException("FieldPath parsing error on character ']'. A key can't be empty. FieldPath : " +
-                                                   fieldPath);
-                    }
-                    //==========================================
-                    // This becomes our token :
-                    //==========================================
-                    tokenBuilder = new StringBuilder(key);
-
-                //==========================================@formatter:off 
-                // What's inside the beckets is an index
-                //==========================================@formatter:on
-                } else {
-
-                    Integer index = null;
-                    try {
-                        index = Integer.parseInt(token);
-                    } catch(NumberFormatException ex) {
-                        throw new RuntimeException("FieldPath parsing error on character ']'. The index '" + token +
-                                                   "' is not a valid integer. " +
-                                                   "You have to use quotes or double-quotes for an object key, or a valid integer for an array index. FieldPath : " +
-                                                   fieldPath);
-                    }
-
-                    if(currentArray == null) {
-                        throw new RuntimeException("FieldPath parsing error on character ']'. Expecting a non-null array here. FieldPath : " +
-                                                   fieldPath);
-                    }
-
-                    //==========================================
-                    // We keep the current array index.
-                    //==========================================
-                    currentArrayIndex = index;
-
-                    //==========================================
-                    // Reset the token builder
-                    //==========================================
-                    tokenBuilder = new StringBuilder();
-                }
-
-                isInBrackets = false;
-
-            //==========================================@formatter:off 
-            // The '"' character
-            //==========================================@formatter:on
-            } else if(ch == '"') {
-
-                //==========================================
-                // In single quotes, when not inside brackets, or
-                // when preceding by a "\", the '"' character has no
-                // special meaning.
-                //==========================================
-                if(isInBrackets && !isInQuotes && previousChar != '\\') {
-
-                    //==========================================
-                    // Otherwise, it starts or ends a key.
-                    //==========================================
-                    isInDoubleQuotes = !isInDoubleQuotes;
-                }
-
-                tokenBuilder.append(ch);
-
-            //==========================================@formatter:off 
-            // The "'" character
-            //==========================================@formatter:on
-            } else if(ch == '\'') {
-
-                //==========================================
-                // In double quotes, when not inside brackets, or
-                // when preceding by a "\", the "'" character has no
-                // special meaning.
-                //==========================================
-                if(isInBrackets && !isInDoubleQuotes && previousChar != '\\') {
-
-                    //==========================================
-                    // Otherwise, it starts or ends a key.
-                    //==========================================
-                    isInQuotes = !isInQuotes;
-                }
-                tokenBuilder.append(ch);
-
-            //========================================== @formatter:off 
-            // Any other character!
-            //========================================== @formatter:on
-            } else {
-
-                if(isInQuotes || isInDoubleQuotes) {
-
-                    //==========================================
-                    // Only the special characters and "\" can be
-                    // escaped by a "\".
-                    //==========================================
-                    if(previousChar == '\\') {
-
-                        if(ch != '\\') {
-                            throw new RuntimeException("FieldPath parsing error on the '" + ch + "' character. " +
-                                                       "This character can't be escaped. If you want to use a '\'  inside a " +
-                                                       "name, you need to escape it : \"\\\\\". FieldPath : " +
-                                                       fieldPath);
-                        } else {
-                            tokenBuilder.append(ch);
-                            ch = '\0';
-                            continue;
-                        }
-                    }
-
-                    //==========================================
-                    // We do not add the '\' character, except if it's
-                    // doubled (it's already added above!).
-                    //==========================================
-                    if(ch == '\\') {
-                        continue;
-                    }
-
-                } else if(isInBrackets) {
-
-                    if(!(ch >= '0' && ch <= '9')) {
-                        throw new RuntimeException("FieldPath parsing error on the '" + ch + "' character. " +
-                                                   "Invalid character in the index, expecting a digit, got " +
-                                                   "'" + ch + "'. FieldPath : " +
-                                                   fieldPath);
-                    }
-
-                } else {
-
-                    //==========================================
-                    // Validates the char to be used a an object 
-                    // property name without quotes.
-                    //==========================================
-                    if(ch == '.' || ch == '[' || ch == ']') {
-                        throw new RuntimeException("The characters '.', '[' and ']' are not valid inside a object " +
-                                                   "name or a property name, if this " +
-                                                   "name is not in quotes. In FieldPath : " + fieldPath);
-                    }
-                }
-
-                tokenBuilder.append(ch);
-            }
-        }
-
-        //==========================================
-        // We reached the end of the FieldPath...
-        //==========================================
-
-        if(isInQuotes) {
-            throw new RuntimeException("FieldPath parsing error on the last character. Some brackets were not " +
-                                       "closed properly. FieldPath : " + fieldPath);
-        }
-
-        String token = tokenBuilder.toString();
-
-        if(currentObj != null) {
-
-            //==========================================
-            // The last key to add already exists on
-            // the object.
-            //==========================================
-            if(currentObj.isKeyExists(token)) {
-                throw new RuntimeException("FieldPath parsing error on the last character. The key '" + token + "' " +
-                                           "already exists. FieldPath : " +
-                                           fieldPath);
-            }
-
-            currentObj.putConvert(token, value, true);
-
-        } else if(currentArray != null) {
-
-            //==========================================
-            // The last index to with the value has to be
-            // added is already used on the array.
-            //==========================================
-            String currentElementStr = currentArray.getString(currentArrayIndex);
-            if(currentElementStr != null) {
-                throw new RuntimeException("FieldPath parsing error on the last character. The array " +
-                                           "already contains a value at index '" + currentArrayIndex + "'. FieldPath : " +
-                                           fieldPath);
-            }
-
-            currentArray.setConvert(currentArrayIndex, value, true);
-
-        } else {
-            throw new RuntimeException("Not supposed. Invalid parsing of FieldPath : " + fieldPath);
-        }
-    }
-
-    protected int getMaxNumberOfFieldPathKeys() {
-        return getSpincastJsonManagerConfig().getMaxNumberOfFieldPathKeys();
-    }
-
-    protected int getFieldPathKeyMaxLength() {
-        return getSpincastJsonManagerConfig().getFieldPathKeyMaxLength();
+    protected int getMaxNumberOfKeysWhenConvertingMapToJsonObject() {
+        return getSpincastConfig().getMaxNumberOfKeysWhenConvertingMapToJsonObject();
     }
 
     @Override
-    public IJsonObject create(InputStream inputStream) {
+    public Object getElementAtJsonPath(JsonObject obj, String jsonPath) {
+        return getJsonPathUtils().getElementAtJsonPath(obj, jsonPath);
+    }
+
+    @Override
+    public Object getElementAtJsonPath(JsonObject obj, String jsonPath, Object defaultValue) {
+        return getJsonPathUtils().getElementAtJsonPath(obj, jsonPath, defaultValue);
+    }
+
+    @Override
+    public Object getElementAtJsonPath(JsonArray array, String jsonPath) {
+        return getJsonPathUtils().getElementAtJsonPath(array, jsonPath);
+    }
+
+    @Override
+    public Object getElementAtJsonPath(JsonArray array, String jsonPath, Object defaultValue) {
+        return getJsonPathUtils().getElementAtJsonPath(array, jsonPath, defaultValue);
+    }
+
+    @Override
+    public void putElementAtJsonPath(JsonObjectOrArray objOrArray, String jsonPath, Object value) {
+        putElementAtJsonPath(objOrArray, jsonPath, value, false);
+    }
+
+    @Override
+    public void putElementAtJsonPath(JsonObjectOrArray objOrArray, String jsonPath, Object value, boolean clone) {
+
+        if(clone) {
+            value = clone(value);
+        }
+
+        getJsonPathUtils().putElementAtJsonPath(objOrArray, jsonPath, value);
+    }
+
+    @Override
+    public JsonObject fromInputStream(InputStream inputStream) {
         try {
-            IJsonObject obj = getObjectMapper().readValue(inputStream, IJsonObject.class);
+            JsonObject obj = getObjectMapper().readValue(inputStream, JsonObject.class);
             return obj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -1081,30 +640,36 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonObjectImmutable createImmutable(IJsonObject jsonObject) {
-
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        if(jsonObject != null) {
-            for(Entry<String, Object> entry : jsonObject) {
-                Object elementClone = clone(entry.getValue(), false);
-                map.put(entry.getKey(), elementClone);
-            }
+    public JsonObject fromFile(File jsonFile) {
+        try {
+            JsonObject obj = getObjectMapper().readValue(jsonFile, JsonObject.class);
+            return obj;
+        } catch(Exception ex) {
+            throw SpincastStatics.runtimize(ex);
         }
-        map = Collections.unmodifiableMap(map);
-
-        return getJsonObjectFactory().createImmutable(map);
     }
 
     @Override
-    public IJsonArray createArray() {
+    public JsonObject fromFile(String jsonFilePath) {
+        File file = new File(jsonFilePath);
+        return fromFile(file);
+    }
+
+    @Override
+    public JsonObject fromClasspathFile(String path) {
+        String content = getSpincastUtils().readClasspathFile(path);
+        return fromString(content);
+    }
+
+    @Override
+    public JsonArray createArray() {
         return getJsonObjectFactory().createArray();
     }
 
     @Override
-    public IJsonArray createArray(String jsonString) {
+    public JsonArray fromStringArray(String jsonString) {
         try {
-            IJsonArray obj = getObjectMapper().readValue(jsonString, IJsonArray.class);
+            JsonArray obj = getObjectMapper().readValue(jsonString, JsonArray.class);
             return obj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -1112,11 +677,11 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonArray createArray(List<?> elements) {
-        IJsonArray array = createArray();
+    public JsonArray fromListArray(List<?> elements) {
+        JsonArray array = createArray();
         if(elements != null) {
             for(Object element : elements) {
-                array.addConvert(element);
+                array.add(element);
             }
         }
 
@@ -1124,9 +689,9 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonArray createArray(InputStream inputStream) {
+    public JsonArray fromInputStreamArray(InputStream inputStream) {
         try {
-            IJsonArray obj = getObjectMapper().readValue(inputStream, IJsonArray.class);
+            JsonArray obj = getObjectMapper().readValue(inputStream, JsonArray.class);
             return obj;
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -1134,19 +699,8 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonArrayImmutable createArrayImmutable(IJsonArray jsonArray) {
-
-        List<Object> elements = new ArrayList<Object>();
-
-        if(jsonArray != null) {
-            for(Object element : jsonArray) {
-                Object elementClone = clone(element, false);
-                elements.add(elementClone);
-            }
-        }
-        elements = Collections.unmodifiableList(elements);
-
-        return getJsonObjectFactory().createArrayImmutable(elements);
+    public String convertToJsonDate(Date date) {
+        return getIso8601DateParserDefault().format(date);
     }
 
     /**
@@ -1187,26 +741,6 @@ public class SpincastJsonManager implements IJsonManager {
     }
 
     @Override
-    public IJsonObject cloneJsonObject(IJsonObject jsonObject) {
-        return cloneJsonObject(jsonObject, true);
-    }
-
-    @Override
-    public IJsonObject cloneJsonObject(IJsonObject jsonObject, boolean mutable) {
-        return (IJsonObject)clone(jsonObject, mutable);
-    }
-
-    @Override
-    public IJsonArray cloneJsonArray(IJsonArray jsonArray) {
-        return cloneJsonArray(jsonArray, true);
-    }
-
-    @Override
-    public IJsonArray cloneJsonArray(IJsonArray jsonArray, boolean mutable) {
-        return (IJsonArray)clone(jsonArray, mutable);
-    }
-
-    @Override
     public Object convertToNativeType(Object originalObject) {
 
         if(originalObject == null) {
@@ -1225,8 +759,8 @@ public class SpincastJsonManager implements IJsonManager {
            (originalObject instanceof BigDecimal) ||
            (originalObject instanceof byte[]) ||
            (originalObject instanceof Date) ||
-           (originalObject instanceof IJsonObject) ||
-           (originalObject instanceof IJsonArray)) {
+           (originalObject instanceof JsonObject) ||
+           (originalObject instanceof JsonArray)) {
 
             return originalObject;
         }
@@ -1236,42 +770,52 @@ public class SpincastJsonManager implements IJsonManager {
         //==========================================
         if(originalObject instanceof Collection<?>) {
 
-            IJsonArray array = createArray();
+            JsonArray array = createArray();
             for(Object element : (Collection<?>)originalObject) {
-                array.addConvert(element);
+                array.add(element);
             }
             return array;
 
         } else if(originalObject instanceof Object[]) {
 
-            IJsonArray array = createArray();
+            JsonArray array = createArray();
             for(Object element : (Object[])originalObject) {
-                array.addConvert(element);
+                array.add(element);
             }
             return array;
 
         } else if(originalObject instanceof Map) {
 
-            IJsonObject obj = create();
+            JsonObject obj = create();
 
             Map<?, ?> map = (Map<?, ?>)originalObject;
             for(Entry<?, ?> entry : map.entrySet()) {
                 if(entry.getKey() == null) {
-                    throw new RuntimeException("Cannot convert a Map to a IJsonObject when a key is NULL.");
+                    throw new RuntimeException("Cannot convert a Map to a JsonObject when a key is NULL.");
                 }
-                obj.putConvert(String.valueOf(entry.getKey()),
-                               entry.getValue());
+                obj.putNoKeyParsing(String.valueOf(entry.getKey()),
+                                    entry.getValue());
             }
 
             return obj;
         }
 
         //==========================================
-        // Converts to a IJsonObject
+        // Converts to a JsonObject
         //==========================================
         String jsonStr = toJsonString(originalObject);
-        IJsonObject jsonObject = create(jsonStr);
+        JsonObject jsonObject = fromString(jsonStr);
         return jsonObject;
+    }
+
+    @Override
+    public JsonObject cloneJsonObject(JsonObject jsonObject, boolean mutable) {
+        return (JsonObject)clone(jsonObject, mutable);
+    }
+
+    @Override
+    public JsonArray cloneJsonArray(JsonArray jsonArray, boolean mutable) {
+        return (JsonArray)clone(jsonArray, mutable);
     }
 
     @Override
@@ -1297,50 +841,66 @@ public class SpincastJsonManager implements IJsonManager {
            (originalObject instanceof Date)) {
             return originalObject;
 
-        } else if(originalObject instanceof IJsonObject) {
+        } else if(originalObject instanceof JsonObject) {
 
-            if(!mutable) {
+            JsonObject jsonObj = (JsonObject)originalObject;
 
-                //==========================================
-                // Already immutable!
-                //==========================================
-                if(originalObject instanceof IJsonObjectImmutable) {
-                    return originalObject;
-                }
-
-                return createImmutable((IJsonObject)originalObject);
+            //==========================================
+            // Already immutable, no need to clone!
+            //==========================================
+            if(!mutable && !jsonObj.isMutable()) {
+                return jsonObj;
             }
 
-            IJsonObject clone = create();
-            for(Entry<String, Object> entry : (IJsonObject)originalObject) {
-                clone.putConvert(entry.getKey(), clone(entry.getValue(), true));
+            Map<String, Object> map = new HashMap<String, Object>();
+            for(Entry<String, Object> entry : jsonObj) {
+                Object elementClone = clone(entry.getValue(), mutable);
+                map.put(entry.getKey(), elementClone);
+            }
+            return getJsonObjectFactory().create(map, mutable);
+
+        } else if(originalObject instanceof JsonArray) {
+
+            JsonArray array = (JsonArray)originalObject;
+
+            //==========================================
+            // Already immutable, no need to clone!
+            //==========================================
+            if(!mutable && !array.isMutable()) {
+                return array;
             }
 
-            return clone;
-
-        } else if(originalObject instanceof IJsonArray) {
-
-            if(!mutable) {
-
-                //==========================================
-                // Already immutable!
-                //==========================================
-                if(originalObject instanceof IJsonArrayImmutable) {
-                    return originalObject;
-                }
-
-                return createArrayImmutable((IJsonArray)originalObject);
+            List<Object> elements = new ArrayList<Object>();
+            for(Object element : array) {
+                Object elementClone = clone(element, mutable);
+                elements.add(elementClone);
             }
 
-            IJsonArray clone = createArray();
-            for(Object element : (IJsonArray)originalObject) {
-                clone.addConvert(clone(element));
-            }
-            return clone;
+            return getJsonObjectFactory().createArray(elements, mutable);
 
         } else {
             return convertToNativeType(originalObject);
         }
+    }
+
+    @Override
+    public void removeElementAtJsonPath(JsonObject obj, String jsonPath) {
+        getJsonPathUtils().removeElementAtJsonPath(obj, jsonPath);
+    }
+
+    @Override
+    public void removeElementAtJsonPath(JsonArray array, String jsonPath) {
+        getJsonPathUtils().removeElementAtJsonPath(array, jsonPath);
+    }
+
+    @Override
+    public boolean isElementExists(JsonObject obj, String jsonPath) {
+        return getJsonPathUtils().isElementExists(obj, jsonPath);
+    }
+
+    @Override
+    public boolean isElementExists(JsonArray array, String jsonPath) {
+        return getJsonPathUtils().isElementExists(array, jsonPath);
     }
 
 }

@@ -28,8 +28,8 @@ public class SpincastJUnitRunnerTester extends SpincastJUnitRunner {
     protected String getTestExpectedToFail() {
 
         String testExpectedToFail = null;
-        if(getTestClassInstance() instanceof ITestExpectedToFailProvider) {
-            testExpectedToFail = ((ITestExpectedToFailProvider)getTestClassInstance()).getTestExpectedToFail();
+        if(getTestClassInstance() instanceof TestExpectedToFailProvider) {
+            testExpectedToFail = ((TestExpectedToFailProvider)getTestClassInstance()).getTestExpectedToFail();
         }
 
         return testExpectedToFail;

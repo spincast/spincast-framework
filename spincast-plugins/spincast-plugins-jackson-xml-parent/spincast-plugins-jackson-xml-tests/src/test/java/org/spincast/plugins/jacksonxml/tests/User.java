@@ -1,39 +1,17 @@
 package org.spincast.plugins.jacksonxml.tests;
 
-public class User implements IUser {
+public interface User {
 
-    private String name;
-    private int age;
-    private String title;
+    public String getName();
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
+    public void setName(String name);
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
+    public int getAge();
 
-    @Override
-    public int getAge() {
-        return this.age;
-    }
+    public void setAge(int age);
 
-    @Override
-    public void setAge(int age) {
-        this.age = age;
-    }
+    public String getTitle();
 
-    @Override
-    public String getTitle() {
-        return "Title is: " + this.title;
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public void setTitle(String title);
 
 }

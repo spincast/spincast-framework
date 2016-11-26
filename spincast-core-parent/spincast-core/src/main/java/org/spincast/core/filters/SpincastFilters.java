@@ -1,524 +1,323 @@
 package org.spincast.core.filters;
 
-import java.io.File;
-import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exceptions.SkipRemainingHandlersException;
-import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.server.IServer;
-import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.core.utils.SpincastStatics;
-import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.http.HttpStatus;
-
-import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 
 /**
- * Spincast filters implementations.
+ * Some filters provided by Spincast.
  */
-public class SpincastFilters<R extends IRequestContext<?>> implements ISpincastFilters<R> {
-
-    protected final Logger logger = LoggerFactory.getLogger(SpincastFilters.class);
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV = "langAbrv";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION = "spincastCurrrentVersion";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT =
-            "spincastCurrrentVersionIsSnapshot";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER = "cacheBuster";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID = "routeId";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL = "fullUrl";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS = "isHttps";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS = "pathParams";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS = "qsParams";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES = "cookies";
-
-    public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES = "requestScopedVars";
-
-    private final ICorsFilter corsFilter;
-    private final ISpincastConfig spincastConfig;
-    private final IServer server;
-    private final ISpincastUtils spincastUtils;
+public interface SpincastFilters<R extends RequestContext<?>> {
 
     /**
-     * Constructor
+     * Used by Spincast to save a "dynamic resource" once it is
+     * generated.
+     * 
+     * @return true if the resource was succesfully saved on disk.
      */
-    @Inject
-    public SpincastFilters(ICorsFilter corsFilter,
-                           ISpincastConfig spincastConfig,
-                           IServer server,
-                           ISpincastUtils spincastUtils) {
-        this.corsFilter = corsFilter;
-        this.spincastConfig = spincastConfig;
-        this.server = server;
-        this.spincastUtils = spincastUtils;
-    }
+    public boolean saveGeneratedResource(R context, String pathForGeneratedResource);
 
-    protected ICorsFilter getCorsFilter() {
-        return this.corsFilter;
-    }
+    /**
+     * Adds some recommended security headers.
+     * 
+     * @see https://www.owasp.org/index.php/List_of_useful_HTTP_headers
+     */
+    public void addSecurityHeaders(R context);
 
-    protected ISpincastConfig getSpincastConfig() {
-        return this.spincastConfig;
-    }
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * <p>
+     * This overload allows all origins, allows cookies,
+     * allows all HTTP methods, all headers will be allowed to
+     * be sent by the browser, but no extra headers will
+     * be available to be read by the browser.
+     * </p>
+     * 
+     * <p>
+     * By default, only those headers are available to be read :
+     * <ul>
+     * <li>Cache-Control</li>
+     * <li>Content-Language</li>
+     * <li>Content-Type</li>
+     * <li>Expires</li>
+     * <li>Last-Modified</li>
+     * <li>Pragma</li>
+     * </ul>
+     * </p>
+     * 
+     * <p>
+     * Send a Max-Age of 24h. The Max-Age is the
+     * maximum number of seconds a
+     * preflight response can be cached without querying
+     * again. 
+     * </p>
+     * 
+     * <p>
+     * If you want to allow everything AND to add extra headers 
+     * to be read, use :
+     * </p>
+     * <p>
+     * cors(context, 
+     *      Sets.newHashSet("*"), 
+     *      Sets.newHashSet("extra-header-to-read1", "extra-header-to-read2"));
+     */
+    public void cors(R context);
 
-    protected IServer getServer() {
-        return this.server;
-    }
-
-    protected ISpincastUtils getSpincastUtils() {
-        return this.spincastUtils;
-    }
-
-    @Override
-    public boolean saveGeneratedResource(R context, String pathForGeneratedResource) {
-
-        try {
-
-            File resourceFile = new File(pathForGeneratedResource);
-
-            //==========================================
-            // Check if the main handler has saved the 
-            // generated resource by itself...
-            //==========================================
-            if(resourceFile.exists()) {
-                this.logger.info("The resource already exists. We don't save it here.");
-                return true;
-            }
-
-            if(HttpStatus.SC_OK != context.response().getStatusCode()) {
-                this.logger.info("Nothing will be saved since the response code is not " + HttpStatus.SC_OK);
-                return false;
-            }
-
-            if(context.response().isHeadersSent()) {
-                this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
-                                 "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
-                                 "request!");
-                return false;
-            }
-
-            byte[] unsentBytes = context.response().getUnsentBytes();
-
-            FileUtils.writeByteArrayToFile(resourceFile, unsentBytes);
-
-            return true;
-
-        } catch(Exception ex) {
-            this.logger.error("Unable to save the generated resource '" + pathForGeneratedResource + "' :\n" +
-                              SpincastStatics.getStackTrace(ex));
-
-            // We still let the reponse being sent...
-            return false;
-        }
-    }
-
-    @Override
-    public void addSecurityHeaders(R context) {
-
-        //context.response().addHeaderValue("Content-Security-Policy", "default-src: 'self'");
-        context.response().addHeaderValue("X-Xss-Protection", "1; mode=block");
-        context.response().addHeaderValue("X-Frame-Options", "SAMEORIGIN");
-        context.response().addHeaderValue("x-content-type-options", "nosniff");
-    }
-
-    @Override
-    public void cors(R context) {
-
-        cors(context,
-             getCorsDefaultAllowedOrigins(),
-             getCorsDefaultExtraHeadersAllowedToBeRead(),
-             getCorsDefaultExtraHeadersAllowedToBeSent(),
-             getCorsDefaultIsCookiesAllowed(),
-             getCorsDefaultAllowedMethods(),
-             getCorsDefaultMaxAgeInSeconds());
-    }
-
-    @Override
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * <p>
+     * This overload allows allows cookies,
+     * allows all HTTP methods for the
+     * specified origins, all headers will be allowed to
+     * be sent by the browser, but no extra headers will
+     * be available to be read by the browser.
+     * </p>
+     * 
+     * <p>
+     * By default, only those headers are available to be read :
+     * <ul>
+     * <li>Cache-Control</li>
+     * <li>Content-Language</li>
+     * <li>Content-Type</li>
+     * <li>Expires</li>
+     * <li>Last-Modified</li>
+     * <li>Pragma</li>
+     * </ul>
+     * </p>
+     * 
+     * <p>
+     * Send a Max-Age of 24h. The Max-Age is the
+     * maximum number of seconds a
+     * preflight response can be cached without querying
+     * again. 
+     * </p>
+     * 
+     * If you want to allow everything for those origins AND to 
+     * add extra headers to be read, use :
+     * 
+     * cors(context, 
+     *      allowedOrigins, 
+     *      Sets.newHashSet("extra-header-to-read1", "extra-header-to-read2"));
+     * 
+     * @param allowedOrigins The origins to allow ("http://api.bob.com"
+     *     for example). If one of the origins is "*", then all origins
+     *     will be allowed!
+     */
     public void cors(R context,
-                     Set<String> allowedOrigins) {
+                     Set<String> allowedOrigins);
 
-        cors(context,
-             allowedOrigins,
-             getCorsDefaultExtraHeadersAllowedToBeRead(),
-             getCorsDefaultExtraHeadersAllowedToBeSent(),
-             getCorsDefaultIsCookiesAllowed(),
-             getCorsDefaultAllowedMethods(),
-             getCorsDefaultMaxAgeInSeconds());
-    }
-
-    @Override
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * <p>
+     * This overload allows cookies, allows all HTTP methods and
+     * all headers will be allowed to be sent by the browser, for the
+     * specified origins.
+     * </p>
+     * 
+     * <p>
+     * Send a Max-Age of 24h. The Max-Age is the
+     * maximum number of seconds a
+     * preflight response can be cached without querying
+     * again. 
+     * </p>
+     * 
+     * @param allowedOrigins The origins to allow ("http://api.bob.com"
+     *     for example). If one of the origins is "*", then all origins
+     *     will be allowed!
+     *     
+     * @param extraHeadersAllowedToBeRead The extra headers the browser will
+     *     have permission to read from the response. 
+     *     
+     *     By default, only those headers are available :
+     *     Cache-Control
+     *     Content-Language
+     *     Content-Type
+     *     Expires
+     *     Last-Modified
+     *     Pragma
+     */
     public void cors(R context,
                      Set<String> allowedOrigins,
-                     Set<String> extraHeadersAllowedToBeRead) {
-        cors(context,
-             allowedOrigins,
-             extraHeadersAllowedToBeRead,
-             getCorsDefaultExtraHeadersAllowedToBeSent(),
-             getCorsDefaultIsCookiesAllowed(),
-             getCorsDefaultAllowedMethods(),
-             getCorsDefaultMaxAgeInSeconds());
-    }
+                     Set<String> extraHeadersAllowedToBeRead);
 
-    @Override
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * <p>
+     * This overload allows all cookies and all HTTP methods, for the specified origins. 
+     * </p>
+     * 
+     * <p>
+     * Send a Max-Age of 24h. The Max-Age is the
+     * maximum number of seconds a
+     * preflight response can be cached without querying
+     * again. 
+     * </p>
+     * 
+     * @param allowedOrigins The origins to allow ("http://api.bob.com"
+     *     for example). If one of the origins is "*", then all origins
+     *     will be allowed!
+     *     
+     * @param extraHeadersAllowedToBeRead The extra headers the browser will
+     *     have permission to read from the response. 
+     *     By default, only those headers are exposed :
+     *     Cache-Control
+     *     Content-Language
+     *     Content-Type
+     *     Expires
+     *     Last-Modified
+     *     Pragma
+     *     
+     * @param extraHeadersAllowedToBeSent The extra headers the
+     *     browser will be allowed to send with the actual 
+     *     (post preflight) request. 
+     *     
+     * @param allowCookies Should cookies be allowed?
+     */
     public void cors(R context,
                      Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
-                     Set<String> extraHeadersAllowedToBeSent) {
+                     Set<String> extraHeadersAllowedToBeSent);
 
-        cors(context,
-             allowedOrigins,
-             extraHeadersAllowedToBeRead,
-             extraHeadersAllowedToBeSent,
-             getCorsDefaultIsCookiesAllowed(),
-             getCorsDefaultAllowedMethods(),
-             getCorsDefaultMaxAgeInSeconds());
-    }
-
-    @Override
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * <p>
+     * This overload allows all HTTP methods, for the specified origins. 
+     * </p>
+     * 
+     * <p>
+     * Send a Max-Age of 24h. The Max-Age is the
+     * maximum number of seconds a
+     * preflight response can be cached without querying
+     * again. 
+     * </p>
+     * 
+     * @param allowedOrigins The origins to allow ("http://api.bob.com"
+     *     for example). If one of the origins is "*", then all origins
+     *     will be allowed!
+     *     
+     * @param extraHeadersAllowedToBeRead The extra headers the browser will
+     *     have permission to read from the response. 
+     *     By default, only those headers are exposed :
+     *     Cache-Control
+     *     Content-Language
+     *     Content-Type
+     *     Expires
+     *     Last-Modified
+     *     Pragma
+     *     
+     * @param extraHeadersAllowedToBeSent The extra headers the
+     *     browser will be allowed to send with the actual 
+     *     (post preflight) request. 
+     *     
+     * @param allowCookies Should cookies be allowed?
+     */
     public void cors(R context,
                      Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
                      Set<String> extraHeadersAllowedToBeSent,
-                     boolean allowCookies) {
+                     boolean allowCookies);
 
-        cors(context,
-             allowedOrigins,
-             extraHeadersAllowedToBeRead,
-             extraHeadersAllowedToBeSent,
-             allowCookies,
-             getCorsDefaultAllowedMethods(),
-             getCorsDefaultMaxAgeInSeconds());
-    }
-
-    @Override
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * <p>
+     * Send a Max-Age of 24h. The Max-Age is the
+     * maximum number of seconds a
+     * preflight response can be cached without querying
+     * again. 
+     * </p>
+     * 
+     * @param allowedOrigins The origins to allow ("http://api.bob.com"
+     *     for example). If one of the origins is "*", then all origins
+     *     are allowed!
+     *     
+     * @param extraHeadersAllowedToBeRead The extra headers the browser will
+     *     have permission to read from the response. 
+     *     By default, only those headers are available :
+     *     Cache-Control
+     *     Content-Language
+     *     Content-Type
+     *     Expires
+     *     Last-Modified
+     *     Pragma
+     * 
+     * @param extraHeadersAllowedToBeSent The extra headers the
+     *     browser will be allowed to send with the actual 
+     *     (post preflight) request. If one of the headers is "*", 
+     *     then all headers are allowed to be sent!
+     *     
+     * @param allowCookies Should cookies be allowed?
+     *     
+     * @param allowedMethods The HTTP method allowed. "OPTIONS" will
+     *        be addded if not specified, as it should always be
+     *        allowed.
+     */
     public void cors(R context,
                      Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
                      Set<String> extraHeadersAllowedToBeSent,
                      boolean allowCookies,
-                     Set<HttpMethod> allowedMethods) {
+                     Set<HttpMethod> allowedMethods);
 
-        cors(context,
-             allowedOrigins,
-             extraHeadersAllowedToBeRead,
-             extraHeadersAllowedToBeSent,
-             allowCookies,
-             allowedMethods,
-             getCorsDefaultMaxAgeInSeconds());
-    }
-
-    @Override
+    /**
+     * Cross-Origin Resource Sharing (Cors) handling.
+     * 
+     * @param allowedOrigins The origins to allow ("http://api.bob.com"
+     *     for example). If one of the origins is "*", then all origins
+     *     are allowed!
+     *     
+     * @param extraHeadersAllowedToBeRead The extra headers the browser will
+     *     have permission to read from the response. 
+     *     By default, only those headers are available :
+     *     Cache-Control
+     *     Content-Language
+     *     Content-Type
+     *     Expires
+     *     Last-Modified
+     *     Pragma
+     * 
+     * @param extraHeadersAllowedToBeSent The extra headers the
+     *     browser will be allowed to send with the actual 
+     *     (post preflight) request. If one of the headers is "*", 
+     *     then all headers are allowed to be sent!
+     *     
+     * @param allowCookies Should cookies be allowed?
+     *     
+     * @param allowedMethods The HTTP method allowed. "OPTIONS" will
+     *        be addded if not specified, as it should always be
+     *        allowed.
+     *        
+     * @param maxAgeInSeconds The maximum number of seconds a
+     *        preflight response can be cached without querying
+     *        again. If &lt;= 0, the "Access-Control-Max-Age" header
+     *        won't be sent.     
+     */
     public void cors(R context,
                      Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
                      Set<String> extraHeadersAllowedToBeSent,
                      boolean allowCookies,
                      Set<HttpMethod> allowedMethods,
-                     int maxAgeInSeconds) {
+                     int maxAgeInSeconds);
 
-        ICorsFilterClient corsFilterClient = createCorsFilterClient(context,
-                                                                    allowedOrigins,
-                                                                    extraHeadersAllowedToBeRead,
-                                                                    extraHeadersAllowedToBeSent,
-                                                                    allowCookies,
-                                                                    allowedMethods,
-                                                                    maxAgeInSeconds);
+    public void cache(R context);
 
-        CorsFilterResponse corsResult = getCorsFilter().apply(corsFilterClient);
+    public void cache(R context, int seconds);
 
-        if(corsResult == CorsFilterResponse.NOT_CORS) {
+    public void cache(R context, int seconds, boolean isPrivate);
 
-            //==========================================
-            // Not a cors request, or same origin...
-            // No need to do anything here.
-            //==========================================
-            return;
-
-        } else if(corsResult == CorsFilterResponse.HEADERS_ALREADY_SENT) {
-
-            //==========================================
-            // Headers already sent? There is nothing we can do...
-            //==========================================
-            return;
-
-        } else if(corsResult == CorsFilterResponse.INVALID_CORS_REQUEST) {
-
-            //==========================================
-            // Invalid request, we return OK without the
-            // cors headers.
-            //==========================================
-            throw new SkipRemainingHandlersException();
-
-        } else if(corsResult == CorsFilterResponse.SIMPLE) {
-
-            //==========================================
-            // Simple cors request (not a Preflight).
-            // We added the required headers and our job is now done.
-            // The routing process can continue...
-            //==========================================
-            return;
-
-        } else if(corsResult == CorsFilterResponse.PREFLIGHT) {
-
-            //==========================================
-            // We always skip all remaining handlers 
-            // on a Preflight request!
-            // For example if the request is for a "dynamic resource",
-            // we don't want to run the "saveGeneratedResource" after
-            // filter, which would save an empty resource.
-            //==========================================
-            throw new SkipRemainingHandlersException();
-
-        } else {
-            throw new RuntimeException("Unmanaged cors result: " + corsResult);
-        }
-    }
+    public void cache(R context, int seconds, boolean isPrivate, Integer cdnSeconds);
 
     /**
-     * Creates a client for the cors filter.
+     * Adds some default variables so they are available
+     * to any template rendering (in a request scope).
      */
-    protected ICorsFilterClient createCorsFilterClient(final R context,
-                                                       final Set<String> allowedOrigins,
-                                                       final Set<String> extraHeadersAllowedToBeRead,
-                                                       final Set<String> extraHeadersAllowedToBeSent,
-                                                       final boolean allowCookies,
-                                                       final Set<HttpMethod> allowedMethods,
-                                                       final int maxAgeInSeconds) {
-        return new ICorsFilterClient() {
-
-            @Override
-            public void setStatusCode(int code) {
-                context.response().setStatusCode(code);
-            }
-
-            @Override
-            public void resetEverything() {
-                context.response().resetEverything();
-            }
-
-            @Override
-            public boolean requestContainsCookies() {
-
-                Map<String, ICookie> cookies = context.cookies().getCookies();
-                return (cookies != null) && (cookies.size() > 0);
-            }
-
-            @Override
-            public boolean isHeadersSent() {
-                return context.response().isHeadersSent();
-            }
-
-            @Override
-            public boolean isAllowCookies() {
-                return allowCookies;
-            }
-
-            @Override
-            public int getMaxAgeInSeconds() {
-                return maxAgeInSeconds;
-            }
-
-            @Override
-            public HttpMethod getHttpMethod() {
-                return context.request().getHttpMethod();
-            }
-
-            @Override
-            public String getHeaderFirst(String name) {
-                return context.request().getHeaderFirst(name);
-            }
-
-            @Override
-            public String getFullUrl() {
-                return context.request().getFullUrl();
-            }
-
-            @Override
-            public Set<String> getExtraHeadersAllowedToBeSent() {
-                return extraHeadersAllowedToBeSent;
-            }
-
-            @Override
-            public Set<String> getExtraHeadersAllowedToBeRead() {
-                return extraHeadersAllowedToBeRead;
-            }
-
-            @Override
-            public Set<String> getAllowedOrigins() {
-                return allowedOrigins;
-            }
-
-            @Override
-            public Set<HttpMethod> getAllowedMethods() {
-                return allowedMethods;
-            }
-
-            @Override
-            public void addHeaderValue(String name, String value) {
-                context.response().addHeaderValue(name, value);
-            }
-        };
-    }
-
-    /**
-     * If &lt;= 0, the "Access-Control-Max-Age" header
-     * won't be sent.
-     */
-    protected int getCorsDefaultMaxAgeInSeconds() {
-        return 86400; // 24h
-    }
-
-    /**
-     * The origins allowed, by default.
-     */
-
-    protected Set<String> getCorsDefaultAllowedOrigins() {
-
-        //==========================================
-        // All origins allowed.
-        //==========================================
-        return Sets.newHashSet("*");
-    }
-
-    /**
-     * The extra headers allowed to be read, by default,
-     */
-    protected Set<String> getCorsDefaultExtraHeadersAllowedToBeRead() {
-
-        //==========================================
-        // No extra header allowed.
-        //==========================================
-        return null;
-    }
-
-    /**
-     * The extra headers allowed to be sent, by default,
-     */
-    protected Set<String> getCorsDefaultExtraHeadersAllowedToBeSent() {
-
-        //==========================================
-        // All headers allowed.
-        //==========================================
-        return Sets.newHashSet("*");
-    }
-
-    /**
-     * Are cookies allowed by default?
-     */
-    protected boolean getCorsDefaultIsCookiesAllowed() {
-
-        //==========================================
-        // Cookies allowed.
-        //==========================================
-        return true;
-    }
-
-    /**
-     * The HTTP methods allowed by default.
-     */
-    protected Set<HttpMethod> getCorsDefaultAllowedMethods() {
-
-        //==========================================
-        // All methods
-        //==========================================
-        return Sets.newHashSet(HttpMethod.values());
-    }
-
-    @Override
-    public void cache(R context) {
-        cache(context, getCacheSecondsByDefault());
-    }
-
-    @Override
-    public void cache(R context, int seconds) {
-        cache(context, seconds, isCachePrivateByDefault());
-    }
-
-    @Override
-    public void cache(R context, int seconds, boolean isPrivate) {
-        cache(context, seconds, isPrivate, getCacheCdnSecondsByDefault());
-    }
-
-    @Override
-    public void cache(R context, int seconds, boolean isPrivate, Integer cdnSeconds) {
-        context.cacheHeaders().cache(seconds, isPrivate, cdnSeconds);
-    }
-
-    protected int getCacheSecondsByDefault() {
-        return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbr();
-    }
-
-    protected boolean isCachePrivateByDefault() {
-        return getSpincastConfig().isDefaultRouteCacheFilterPrivate();
-    }
-
-    protected Integer getCacheCdnSecondsByDefault() {
-        return getSpincastConfig().getDefaultRouteCacheFilterSecondsNbrCdns();
-    }
-
-    @Override
-    public void addDefaultGlobalTemplateVariables(R context) {
-
-        //==========================================
-        // The Language abreviation
-        //==========================================
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV,
-                                                         context.getLocaleToUse().getLanguage());
-
-        //==========================================
-        // The current Spincast version
-        //==========================================
-        String currentVersion = getSpincastUtils().getSpincastCurrentVersion();
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION,
-                                                         currentVersion);
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT,
-                                                         currentVersion.contains("-SNAPSHOT"));
-
-        //==========================================
-        // Cache buster
-        //==========================================
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER,
-                                                         getSpincastUtils().getCacheBusterCode());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES,
-                                                         context.variables().getAll());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID,
-                                                         context.routing().getRoutingResult().getMainRouteHandlerMatch()
-                                                                .getSourceRoute().getId());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL,
-                                                         context.request().getFullUrl());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS,
-                                                         context.request().isHttps());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS,
-                                                         context.routing().getRoutingResult().getMainRouteHandlerMatch()
-                                                                .getPathParams());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS,
-                                                         context.request().getQueryStringParams());
-
-        context.templating().addTemplatingGlobalVariable(DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES,
-                                                         context.cookies().getCookies());
-
-    }
+    public void addDefaultGlobalTemplateVariables(R context);
 
 }

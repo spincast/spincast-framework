@@ -2,66 +2,49 @@ package org.spincast.website.services;
 
 import java.util.List;
 
-import org.spincast.website.IAppConfig;
-import org.spincast.website.models.INewsEntriesAndTotalNbr;
-import org.spincast.website.models.INewsEntry;
-import org.spincast.website.repositories.INewsRepository;
-
-import com.google.inject.Inject;
+import org.spincast.website.models.NewsEntriesAndTotalNbr;
+import org.spincast.website.models.NewsEntry;
 
 /**
- * Spincast news service implementation.
+ * Spincast News service.
  */
-public class NewsService implements INewsService {
-
-    private final INewsRepository newsRepository;
-    private final IAppConfig appConfig;
+public interface NewsService {
 
     /**
-     * Constructor
+     * Gets all the news entries.
+     * 
+     * @param ascOrder If <code>true</code>, returns the entries by their
+     * publication date in ascending order. Otherwise, in descending
+     * order.
      */
-    @Inject
-    public NewsService(INewsRepository newsRepository,
-                       IAppConfig appConfig) {
-        this.newsRepository = newsRepository;
-        this.appConfig = appConfig;
-    }
+    public List<NewsEntry> getNewsEntries(boolean ascOrder);
 
-    protected INewsRepository getNewsRepository() {
-        return this.newsRepository;
-    }
+    /**
+     * Gets news entries.
+     * 
+     * @param startPos The position of the first entry to return. The first element
+     * is "1", not "0".
+     * @param endPos The position of the last entry to return (inclusive).
+     * 
+     * @param ascOrder If <code>true</code>, returns the entries by their
+     * publication date in ascending order. Otherwise, in descending
+     * order.
+     * 
+     * @return the news entries list and the total number of entries in the 
+     * repository.
+     */
+    public NewsEntriesAndTotalNbr getNewsEntries(int startPos, int endPos, boolean ascOrder);
 
-    protected IAppConfig getAppConfig() {
-        return this.appConfig;
-    }
+    /**
+     * Gets a specific news entry.
+     * 
+     * @return the news entry or <code>null</code> if not found.
+     */
+    public NewsEntry getNewsEntry(long newsId);
 
-    @Override
-    public List<INewsEntry> getNewsEntries(boolean ascOrder) {
-        return getNewsRepository().getNewsEntries(ascOrder);
-    }
-
-    @Override
-    public INewsEntriesAndTotalNbr getNewsEntries(int startPos, int endPos, boolean ascOrder) {
-        return getNewsRepository().getNewsEntriesAndTotalNbr(startPos, endPos, ascOrder);
-    }
-
-    @Override
-    public INewsEntry getNewsEntry(long newsId) {
-        return getNewsRepository().getNewsEntry(newsId);
-    }
-
-    @Override
-    public List<INewsEntry> getFeedNewsEntries() {
-
-        int newsEntriesTotalNumber = getNewsRepository().getNewsEntriesTotalNumber();
-
-        int nbrNewsEntriesPerFeedRequest = getAppConfig().getNbrNewsEntriesPerFeedRequest();
-        int startPos = newsEntriesTotalNumber - nbrNewsEntriesPerFeedRequest + 1;
-        if(startPos < 1) {
-            startPos = 1;
-        }
-
-        return getNewsRepository().getNewsEntries(startPos, newsEntriesTotalNumber, true);
-    }
+    /**
+     * Gets the news entries for the RSS feed.
+     */
+    public List<NewsEntry> getFeedNewsEntries();
 
 }

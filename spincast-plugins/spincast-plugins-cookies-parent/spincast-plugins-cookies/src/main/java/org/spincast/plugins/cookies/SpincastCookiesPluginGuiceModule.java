@@ -2,9 +2,9 @@ package org.spincast.plugins.cookies;
 
 import java.lang.reflect.Type;
 
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.cookies.ICookieFactory;
-import org.spincast.core.cookies.ICookiesRequestContextAddon;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.cookies.CookieFactory;
+import org.spincast.core.cookies.CookiesRequestContextAddon;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
 
@@ -31,13 +31,13 @@ public class SpincastCookiesPluginGuiceModule extends SpincastPluginGuiceModuleB
 
     protected void bindRequestContextAddon() {
 
-        bind(parameterizeWithRequestContext(ICookiesRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastCookiesRequestContextAddon.class))
+        bind(parameterizeWithRequestContext(CookiesRequestContextAddon.class)).to(parameterizeWithContextInterfaces(SpincastCookiesRequestContextAddon.class))
                                                                                .in(SpincastGuiceScopes.REQUEST);
     }
 
     protected void bindCookieFactory() {
-        install(new FactoryModuleBuilder().implement(ICookie.class, Cookie.class)
-                                          .build(ICookieFactory.class));
+        install(new FactoryModuleBuilder().implement(Cookie.class, CookieDefault.class)
+                                          .build(CookieFactory.class));
     }
 
 }

@@ -4,7 +4,7 @@ package org.spincast.core.exceptions;
  * Exception that will forward the request to another route.
  * 
  */
-public class ForwardRouteException extends ResponseResetableException {
+public class ForwardRouteException extends ResponseResetableExceptionDefault {
 
     private static final long serialVersionUID = 1L;
 

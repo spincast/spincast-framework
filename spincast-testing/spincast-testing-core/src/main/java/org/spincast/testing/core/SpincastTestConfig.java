@@ -1,12 +1,12 @@
 package org.spincast.testing.core;
 
-import org.spincast.plugins.config.SpincastConfig;
+import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 /**
  * Default configurations for Spincast tests.
  */
-public class SpincastTestConfig extends SpincastConfig {
+public class SpincastTestConfig extends SpincastConfigDefault {
 
     private int serverPort = -1;
 
@@ -38,5 +38,20 @@ public class SpincastTestConfig extends SpincastConfig {
             this.serverPort = SpincastTestUtils.findFreePort();
         }
         return this.serverPort;
+    }
+
+    @Override
+    public String getPublicServerSchemeHostPort() {
+        return "http://" + getServerHost() + ":" + getHttpServerPort();
+    }
+
+    @Override
+    public boolean isValidateLocalhostHost() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnableCookiesValidator() {
+        return false;
     }
 };

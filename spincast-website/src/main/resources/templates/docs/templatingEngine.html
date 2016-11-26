@@ -1,0 +1,517 @@
+{#==========================================
+Docs : "Templating Engine"
+==========================================#}
+
+<section id="templating_engine">
+    <h3>
+        <a class="anchor" href="#templating_engine" title="permanent link"></a>
+        Templating Engine
+    </h3>
+    
+    <p>
+        The Templating Engine (also called <em>view engine</em>, or <em>template engine</em>), is the component that you 
+        use to generate dynamic text content. It can be used for multiple purposes but its
+        most frequent use is to generate <code>HTML</code> pages.
+    </p>
+    <p>
+        The default Templating Engine included with Spincast by default is <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>.
+    </p>
+
+    <h4>
+        <a class="anchor_small" href="#templating_rendering" id="templating_rendering" title="permanent link"></a>
+        Using the Templating Engine
+    </h4>
+    <p>
+        To evaluate a template, you can inject the <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a> 
+        component anywhere you need it. But the preferred way to generate <code>HTML</code> pages is to use the
+        <code>sendTemplateXXX(...)</code> methods on the <code><em>response()</em></code> add-on :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    JsonObject model = context.response().getModel();
+        
+    // ... adds variables to the model
+        
+    // Renders the response model using a template
+    // and sends the result as HTML
+    context.response().sendTemplateHtml("/templates/myTemplate.html");
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        You can also evaluate a template without sending it as the response. The
+        <code>templating()</code> add-on give you direct access to the Templating Engine.
+        Here's an example where you manually evaluate a template to generate the content 
+        of an email :
+    </p>
+    <p>
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    User user = getUser();
+    
+    JsonObject params = context.json().create();
+    params.put("user", user);
+    
+    String emailBody = context.templating().fromTemplate("/templates/email.html", params);
+        
+    // ... do something with the content
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+      Note that, by default, the path to a template is a <em>classpath</em> path. To
+      load a template from the <em>file system</em> instead, use <code>false</code> as the
+      <code>"isClasspathPath"</code> parameter :
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="8,57,8,62"
+>public void myRouteHandler(AppRequestContext context) {
+
+    User user = getUser();
+    
+    JsonObject params = context.json().create();
+    params.put("user", user);
+    
+    String emailBody = context.templating().fromTemplate("/templates/email.html", 
+                                                         false, // From the file system!
+                                                         params);
+    
+    // ... do something with the content
+}</pre> 
+            </p>
+        </div>
+      
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Finally you can evaluate an inline template :
+    </p>
+    <p>
+        <div>
+            <p>
+                {% verbatim %}<pre class="ace ace-java" data-ace-hi="8,50,8,64"
+>public void myRouteHandler(AppRequestContext context) {
+
+    // We can use a standard Map&lt;String, Object&gt; instead
+    // of a JsonObject for the parameters
+    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+    params.put("name", "Stromgol");
+
+    // This will be evaluated to "Hi Stromgol!"
+    String result = context.templating().evaluate("Hi {{name}}!", params);
+    
+    // ... do something with the result
+}</pre>{% endverbatim %} 
+            </p>
+        </div>
+    </p>
+    
+
+    <h4>
+        <a class="anchor_small" href="#templating_creation" id="templating_creation" title="permanent link"></a>
+        Templates basics (<em>using Pebble</em>)
+    </h4>
+    <p>
+        The syntax to use for your templates depends on the Templating Engine implementation. 
+        Here, we'll show some examples using the <em>default</em> Templating Engine, Pebble.
+        Make sure you read the <a href="http://www.mitchellbosecke.com/pebble/documentation">Pebble documentation</a>
+        if you want to learn more...
+    </p>
+    
+    <h5>
+        <a class="anchor_small" href="#templating_using_model" id="templating_using_model" title="permanent link"></a>
+        Using the response model
+    </h5>
+    <p>
+        If you are using the default way to render an <code>HTML</code> page, suing the
+        <code>response().sendTemplateHtml(...)</code> method, you can use the 
+        <a href="#sending_response_model">response model</a> as a container for the
+        parameters your template needs. The response model becomes the root of all
+        available variables when your template is rendered. For example, your
+        <code>Route Handler</code> may look like :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    // Gets the response model
+    JsonObject model = context.response().getModel();
+  
+    // Creates a "user" on adds it to the
+    // response model
+    JsonObject user = context.json().create();
+    user.put("name", "Stromgol");
+    model.put("user", user);
+
+    // Renders a template and sends it as HTML
+    context.response().sendTemplateHtml("/templates/myTemplate.html");
+}</pre> 
+            </p>
+        </div>
+        
+        The template, located on the classpath (at 
+        <code><em>"src/main/resources/templates/myTemplate.html"</em></code> 
+        in a Maven project) may look like this :  
+    </p>
+
+    <p>
+        <div>
+            <p>
+                {% verbatim %}
+                <pre class="ace ace-pebble"
+>&lt;!doctype html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;title&gt;My application&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello <strong>{{user.name}}</strong>!&lt;/h1&gt; 
+    &lt;/body&gt;
+&lt;/html&gt;</pre> 
+             {% endverbatim %}
+            </p> 
+        </div>
+    </p>  
+    
+    <h5>
+        <a class="anchor_small" href="#templating_using_jsonpaths" id="templating_using_jsonpaths" title="permanent link"></a>
+        Using JsonPaths
+    </h5>
+    <p>
+        When accessing the variables in a template, you can use <a href="#jsonobject_jsonpaths">JsonPaths</a>. 
+        Here are some examples :
+        {% verbatim %}
+        <ul>
+            <li>
+                <code>{{user.name}}</code> : The "name" attribute on the user object.
+            </li>
+            <li>
+                <code>{{user.books[2].title}}</code> : The "title" attribute of the third book of the user object.
+            </li>
+            <li>
+                <code>{{user['some key']}}</code> or <code>{{user["some key"]}}</code> : The "some key" attribute 
+                of the user object. Here brackets are required because of the space in the key.
+            </li>
+        </ul>
+        {% endverbatim %}
+    </p> 
+    
+    <h4>
+        <a class="anchor_small" href="#templating_default_vars" id="templating_default_vars" title="permanent link"></a>
+        Default templating variables
+    </h4>
+    <p>
+        Spincast automatically provides some variables that can be used 
+        when rendering a template. Those variables will always be available
+        to any template rendering (except if you are not in the scope of an HTTP request).
+        Spincast adds those variables using a "before" <code>Filter</code> :
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/filters/SpincastFilters.html#addDefaultGlobalTemplateVariables-R-">addDefaultGlobalTemplateVariables(...)</a>
+    </p>
+    <p>
+        The provided variables are :
+        <ul>
+        	<li>
+        		<strong><em>"pathParams"</em></strong> : The parameters parsed from the path of the request. To be used
+        		like {% verbatim %}<code>{{pathParams.myParam}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>"qsParams"</em></strong> : The parameters parsed from the queryString of the request. Note that
+        		a single queryString variable may contain more than one values. To access the first value, use something like :
+        		 {% verbatim %}<code>{{qsParams.myParam[0]}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>"cookies"</em></strong> : The current 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html">Cookies</a>. To be used
+        		like {% verbatim %}<code>{{cookies.myCookie.value}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>"requestScopedVars"</em></strong> : The <em>request scoped</em> variables added by the 
+                various Route Handlers. To be used
+        		like {% verbatim %}<code>{{requestScopedVars.myVar}}</code>{% endverbatim %}.
+        	</li>
+        	<li>
+        		<strong><em>"langAbrv"</em></strong> : The abreviation of the current Locale to use. For example : <code>"en"</code>.
+        	</li>
+        	<li>
+        		<strong><em>"cacheBuster"</em></strong> : The current <a href="#http_caching_cache_busting">cache buster</a> code.
+        	</li>
+        	<li>
+        		<strong><em>"routeId"</em></strong> : The id of the current route (of its main Route Handler).
+        	</li>
+        	<li>
+        		<strong><em>"fullUrl"</em></strong> : The full URL of the current request.
+        	</li>
+        	<li>
+        		<strong><em>"isHttps"</em></strong> : Is the current URL secure (HTTPS)?
+        	</li>
+        	<li>
+        		<strong><em>"alerts"</em></strong> : The <a href="#alert_messages">Alert messages</a>, if any. Those
+                also include <a href="#flash_messages">Flash messages</a> (Spincast automatically converts Flash messages
+                to Alert messages). They also contain Alert messages that you may have
+                explictly added using the <code>addAlert(...)</code> method of the <code>response()</code>
+                add-on. For example :
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java"
+>public void myRouteHandler(AppRequestContext context) {
+
+    context.response().addAlert(AlertLevel.ERROR, "Some message");
+}</pre> 
+                    </p>
+                </div>
+        	</li>
+        </ul>
+    </p>
+    
+
+    <h5>
+        <a class="anchor_small" href="#templating_using_layout" id="templating_using_layout" title="permanent link"></a>
+        Layout
+    </h5>
+    <p>
+        If you are building a <a href="#quick_tutorial_traditional">traditional website</a> and use templates to render <code>HTML</code>,
+        make sure you read the 
+        <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/basic-usage#user-content-template-inheritance">"Template Inheritance"</a>,
+        <a href="http://www.mitchellbosecke.com/pebble/documentation/tag/extends">"extends"</a> and 
+        <a href="http://www.mitchellbosecke.com/pebble/documentation/tag/include">"include"</a> sections
+        of the Pebble documentation to learn how to create a layout for your website! This is an important foundation for 
+        a scalable website structure.
+    </p>
+    <p>
+        {% verbatim %}
+        You can browse this 
+        <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/resources/templates">Spincast website sources</a> 
+        themselves to see how we use such layout using some <code>{% block %}</code>. 
+        The <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/resources/templates/layout.html"><em>layout.html</em></a>
+        file is the root of our layout.
+        {% endverbatim %}
+    </p>
+</section>
+
+<section id="templating_filters_and_functions">
+    <h3>
+        <a class="anchor" href="#templating_filters_and_functions" title="permanent link"></a>
+        Provided functions and filters
+    </h3>
+    <p>
+        Spincast provides some 
+        <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble#user-content-functions">functions</a> 
+        and 
+        <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble#user-content-filters">filters</a>
+        for Pebble out of the box. They are defined in the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleExtensionDefault.html">SpincastPebbleExtensionDefault</a> class.
+    </p> 
+    
+    <h4>
+        <a class="anchor_small" id="templating_functions" href="#templating_functions" title="permanent link"></a>
+        Functions
+    </h4>
+    <p>
+        <ul class="apiList">
+            <li>
+                <a class="anchor_small" id="templating_functions_get" href="#templating_functions_get" title="permanent link"></a>
+                <code class="apiItem"><span>get</span>(String pathExpression)</code>
+                <div class="well">
+                    <p>
+                        This function receives the path to an element as a string, evaluates it, and
+                        returns the element if it exists or <code>null</code> otherwise.
+                        In other words, it allows you to dynamically create the path to an element. For example :
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,14,1,67"
+>
+
+{% set user = get("myForm.users[" + generateRandomPosition() + "]") %}
+{% if user is not null %}
+    &lt;p&gt;The name of the random user is {{user.name}}&lt;/p&gt;
+{% endif %}</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>   
+                </div>
+            </li>
+        </ul>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" id="templating_filters" href="#templating_filters" title="permanent link"></a>
+        Filters
+    </h4>
+
+    <p>
+        <ul class="apiList">
+            <li>
+                <a class="anchor_small" id="templating_filters_get" href="#templating_filters_get" title="permanent link"></a>
+                <code class="apiItem"><em>pathExpression</em> | <span> get</span>()</code>
+                <div class="well">
+                    <p>
+                        This filter does the same as the <code>get()</code> function :
+                        it receives the path to an element as a string, evaluates it, and
+                        returns the element if it exists or <code>null</code> otherwise.
+                    </p>
+                    <p>
+                        The difference with the <code>get()</code> function is that you can use <em>undefined</em>
+                        elements with this filter and no exception is going to be thrown, even if 
+                        <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/basic-usage#user-content-type-safety"><code>strictVariables</code></a> 
+                        is on.
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,14,1,77"
+>
+
+{% set user = "may.not.exist.users[" + generateRandomPosition() + "]" | get() %}
+{% if user is not null %}
+    &lt;p&gt;The name of the random user is {{user.name}}&lt;/p&gt;
+{% endif %}</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>  
+                </div>
+            </li>
+            <li>
+                <a class="anchor_small" id="templating_filters_checked" href="#templating_filters_checked" title="permanent link"></a>
+                <code class="apiItem"><em>someElements</em> | <span> checked</span>(String[] matchingValues)</code>
+                <div class="well">
+                    <p>
+                        This filter outputs the string <code>"checked"</code> if at least
+                        one element from <code><em>someElements</em></code> matches one of the element from
+                        the <code>matchingValues</code>. Both sides can either be a single element or
+                        an array of elements. For example :
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="4,11,4,45"
+>&lt;label for="drinkTea"&gt;
+    &lt;input type="radio" 
+           id="drinkTea" 
+           name="user.favDrink"
+           {{user.favDrink | checked("tea")}}
+           value="tea"/&gt; Tea&lt;/label&gt;</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div>
+                    </p>
+                    <p>
+                        Note that the elements are compared using 
+                        <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/ObjectConverter.html#isEquivalent-java.lang.Object-java.lang.Object-"><em>equivalence</em></a>, 
+                        not using <em>equality</em>. So the String <code>"true"</code>
+                        matches the <code>true</code> boolean and <code>"123.00"</code> matches <code>123</code>, for example.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <a class="anchor_small" id="templating_filters_selected" href="#templating_filters_selected" title="permanent link"></a>
+                <code class="apiItem"><em>someElements</em> | <span> selected</span>(String[] matchingValues)</code>
+                <div class="well">
+                    <p>   
+                        This filter outputs the string <code>"selected"</code> if at least
+                        one element from <code><em>someElements</em></code> matches one of the element from
+                        the <code>matchingValues</code>. Both sides can either be a single element or
+                        an array of elements. For example :
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,24,1,59"
+>&lt;select name="user.favDrink" class="form-control"&gt;
+    &lt;option value="tea" {{user.favDrink | selected("tea")}}&gt;Tea&lt;/option&gt;
+    &lt;option value="coffee" {{user.favDrink | selected("coffee")}}&gt;Coffee&lt;/option&gt;
+    &lt;option value="beer" {{user.favDrink | selected("beer")}}&gt;WBeer&lt;/option&gt;
+&lt;/select&gt;</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>    
+                    <p>
+                        Note that the elements elements are compared using 
+                        <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/ObjectConverter.html#isEquivalent-java.lang.Object-java.lang.Object-"><em>equivalence</em></a>, 
+                        not using <em>equality</em>. So the String <code>"true"</code>
+                        matches the <code>true</code> boolean and <code>"123.00"</code> matches <code>123</code>, for example.
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </p>
+    
+    <p>
+        The remaining filters are all about <em>validation</em>. Make sure you read
+        the dedicated <a href="#forms_validation_filters">Validation Filters</a> section to learn more
+        about them and to see some examples!
+        <ul class="apiList">
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span> validationMessages</span>()</code>
+                <div class="well">
+                    <p>
+                        This filter uses a template fragment to output the 
+                        <code>Validation Messages</code> associated with a field. 
+                    </p>
+                </div>
+            </li>
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span> validationGroupMessages</span>()</code>
+                <div class="well">
+                    <p>
+                        This filter is similar to <code>validationMessages()</code> but uses a different 
+                        template. It is made to output the <code>Validation Messages</code> of a <em>group of fields</em>, 
+                        instead of a single field. 
+                    </p>
+                </div>
+            </li>
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span> validationClass</span>()</code>
+                <div class="well">
+                    <p>
+                        The <code>validationClass(...)</code> filter checks if there are 
+                         <code>Validation Messages</code> and, if so, it outputs a <em>class name</em>.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span> validationFresh</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span> validationSubmitted</span>()</code>
+                <div class="well">
+                    <p>
+                        Those two filters are used to determine if a form is displayed for the first time,
+                         or if it has been submitted and is currently redisplayed with 
+                         potential <code>Validation Messages</code>.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationHasErrors</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationHasWarnings</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationHasSuccesses</span>()</code><br />
+                <code class="apiItem"><em>ValidationMessages</em> | <span>validationIsValid</span>()</code>
+                <div class="well">
+                    <p>
+                        Those four filters check if there are <code>Validation Messages</code> of a
+                         certain level and return <code>true</code> or <code>false</code>.
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </p>
+    
+</section>
+
+
+            

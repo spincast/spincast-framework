@@ -4,23 +4,23 @@ import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Objects;
 
-import org.spincast.core.cookies.ICookieFactory;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.routing.IRouter;
-import org.spincast.core.server.IServer;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.plugins.httpclient.builders.IConnectRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IDeleteRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IGetRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IHeadRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IOptionsRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IPatchRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IPostRequestBuilder;
-import org.spincast.plugins.httpclient.builders.IPutRequestBuilder;
-import org.spincast.plugins.httpclient.builders.ITraceRequestBuilder;
-import org.spincast.plugins.httpclient.websocket.IHttpClient;
+import org.spincast.core.cookies.CookieFactory;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.Router;
+import org.spincast.core.server.Server;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.plugins.httpclient.builders.ConnectRequestBuilder;
+import org.spincast.plugins.httpclient.builders.DeleteRequestBuilder;
+import org.spincast.plugins.httpclient.builders.GetRequestBuilder;
+import org.spincast.plugins.httpclient.builders.HeadRequestBuilder;
+import org.spincast.plugins.httpclient.builders.OptionsRequestBuilder;
+import org.spincast.plugins.httpclient.builders.PatchRequestBuilder;
+import org.spincast.plugins.httpclient.builders.PostRequestBuilder;
+import org.spincast.plugins.httpclient.builders.PutRequestBuilder;
+import org.spincast.plugins.httpclient.builders.TraceRequestBuilder;
+import org.spincast.plugins.httpclient.websocket.HttpClient;
 import org.spincast.plugins.httpclient.websocket.SpincastHttpClientWithWebsocketPluginGuiceModule;
-import org.spincast.plugins.httpclient.websocket.builders.IWebsocketRequestBuilder;
+import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilder;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 
@@ -32,7 +32,7 @@ import com.google.inject.Module;
  * to be started.
  * 
  * <p>
- * This requires a "IServer" to be bound in the Guice 
+ * This requires a "Server" to be bound in the Guice 
  * context : it will automatically be stopped after the
  * test class is ran.
  * </p>
@@ -45,20 +45,20 @@ import com.google.inject.Module;
  * All client data (such as cookies) are cleared before each test.
  * </p>
  */
-public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, W extends IWebsocketContext<?>>
+public abstract class SpincastIntegrationTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                                  extends SpincastTestBase {
 
     @Inject
-    private IHttpClient httpClient;
+    private HttpClient httpClient;
 
     @Inject
-    private IServer server;
+    private Server server;
 
     @Inject
-    private IRouter<R, W> router;
+    private Router<R, W> router;
 
     @Inject
-    private ICookieFactory cookieFactory;
+    private CookieFactory cookieFactory;
 
     /**
      * We make sure the Spincast HTTP Client with WebSocket
@@ -86,19 +86,19 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
         }
     }
 
-    protected IHttpClient getHttpClient() {
+    protected HttpClient getHttpClient() {
         return this.httpClient;
     }
 
-    protected IRouter<R, W> getRouter() {
+    protected Router<R, W> getRouter() {
         return this.router;
     }
 
-    protected ICookieFactory getCookieFactory() {
+    protected CookieFactory getCookieFactory() {
         return this.cookieFactory;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
@@ -153,17 +153,17 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
                (isHttps ? getSpincastConfig().getHttpsServerPort() : getSpincastConfig().getHttpServerPort()) + pathOrUrl;
     }
 
-    protected IWebsocketRequestBuilder websocket(String path) {
+    protected WebsocketRequestBuilder websocket(String path) {
         return websocket(path, false, false);
     }
 
-    protected IWebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl) {
+    protected WebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl) {
         return websocket(pathOrUrl, isFullUrl, false);
     }
 
-    protected IWebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+    protected WebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
 
-        IWebsocketRequestBuilder builder = getHttpClient().websocket(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        WebsocketRequestBuilder builder = getHttpClient().websocket(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         return builder;
     }
 
@@ -175,7 +175,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IGetRequestBuilder GET(String path) {
+    protected GetRequestBuilder GET(String path) {
         return GET(path, false, false);
     }
 
@@ -190,7 +190,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IGetRequestBuilder GET(String pathOrUrl, boolean isFullUrl) {
+    protected GetRequestBuilder GET(String pathOrUrl, boolean isFullUrl) {
         return GET(pathOrUrl, isFullUrl, false);
     }
 
@@ -208,9 +208,9 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IGetRequestBuilder GET(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+    protected GetRequestBuilder GET(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
 
-        IGetRequestBuilder client = getHttpClient().GET(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+        GetRequestBuilder client = getHttpClient().GET(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -233,7 +233,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IPostRequestBuilder POST(String path) {
+    protected PostRequestBuilder POST(String path) {
         return POST(path, false, false);
     }
 
@@ -248,7 +248,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IPostRequestBuilder POST(String pathOrUrl, boolean isFullUrl) {
+    protected PostRequestBuilder POST(String pathOrUrl, boolean isFullUrl) {
         return POST(pathOrUrl, isFullUrl, false);
     }
 
@@ -266,8 +266,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IPostRequestBuilder POST(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IPostRequestBuilder client = getHttpClient().POST(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected PostRequestBuilder POST(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        PostRequestBuilder client = getHttpClient().POST(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -282,7 +282,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IPutRequestBuilder PUT(String path) {
+    protected PutRequestBuilder PUT(String path) {
         return PUT(path, false, false);
     }
 
@@ -297,7 +297,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IPutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl) {
+    protected PutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl) {
         return PUT(pathOrUrl, isFullUrl, false);
     }
 
@@ -315,8 +315,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IPutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IPutRequestBuilder client = getHttpClient().PUT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected PutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        PutRequestBuilder client = getHttpClient().PUT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -331,7 +331,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IDeleteRequestBuilder DELETE(String path) {
+    protected DeleteRequestBuilder DELETE(String path) {
         return DELETE(path, false, false);
     }
 
@@ -346,7 +346,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IDeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl) {
+    protected DeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl) {
         return DELETE(pathOrUrl, isFullUrl, false);
     }
 
@@ -364,8 +364,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IDeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IDeleteRequestBuilder client = getHttpClient().DELETE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected DeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        DeleteRequestBuilder client = getHttpClient().DELETE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -380,7 +380,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IOptionsRequestBuilder OPTIONS(String path) {
+    protected OptionsRequestBuilder OPTIONS(String path) {
         return OPTIONS(path, false, false);
     }
 
@@ -395,7 +395,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IOptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl) {
+    protected OptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl) {
         return OPTIONS(pathOrUrl, isFullUrl, false);
     }
 
@@ -413,8 +413,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IOptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IOptionsRequestBuilder client = getHttpClient().OPTIONS(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected OptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        OptionsRequestBuilder client = getHttpClient().OPTIONS(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -429,7 +429,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected ITraceRequestBuilder TRACE(String path) {
+    protected TraceRequestBuilder TRACE(String path) {
         return TRACE(path, false, false);
     }
 
@@ -444,7 +444,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected ITraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl) {
+    protected TraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl) {
         return TRACE(pathOrUrl, isFullUrl, false);
     }
 
@@ -462,8 +462,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected ITraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        ITraceRequestBuilder client = getHttpClient().TRACE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected TraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        TraceRequestBuilder client = getHttpClient().TRACE(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -478,7 +478,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IConnectRequestBuilder CONNECT(String path) {
+    protected ConnectRequestBuilder CONNECT(String path) {
         return CONNECT(path, false, false);
     }
 
@@ -493,7 +493,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl) {
+    protected ConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl) {
         return CONNECT(pathOrUrl, isFullUrl, false);
     }
 
@@ -511,8 +511,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IConnectRequestBuilder client = getHttpClient().CONNECT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected ConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        ConnectRequestBuilder client = getHttpClient().CONNECT(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -527,7 +527,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IPatchRequestBuilder PATCH(String path) {
+    protected PatchRequestBuilder PATCH(String path) {
         return PATCH(path, false, false);
     }
 
@@ -542,7 +542,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IPatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl) {
+    protected PatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl) {
         return PATCH(pathOrUrl, isFullUrl, false);
     }
 
@@ -560,8 +560,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IPatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IPatchRequestBuilder client = getHttpClient().PATCH(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected PatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        PatchRequestBuilder client = getHttpClient().PATCH(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }
@@ -576,7 +576,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param path the relative path to be appended to the
      * base test URL.
      */
-    protected IHeadRequestBuilder HEAD(String path) {
+    protected HeadRequestBuilder HEAD(String path) {
         return HEAD(path, false, false);
     }
 
@@ -591,7 +591,7 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * so, it will be used as is. Otherwise it will be appended to the
      * base test URL. 
      */
-    protected IHeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl) {
+    protected HeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl) {
         return HEAD(pathOrUrl, isFullUrl, false);
     }
 
@@ -609,8 +609,8 @@ public abstract class SpincastIntegrationTestBase<R extends IRequestContext<?>, 
      * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected IHeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
-        IHeadRequestBuilder client = getHttpClient().HEAD(createTestUrl(pathOrUrl, isFullUrl, isHttps));
+    protected HeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
+        HeadRequestBuilder client = getHttpClient().HEAD(createTestUrl(pathOrUrl, isFullUrl, isHttps));
         if(isDisableSllCetificateErrors()) {
             client.disableSslCertificateErrors();
         }

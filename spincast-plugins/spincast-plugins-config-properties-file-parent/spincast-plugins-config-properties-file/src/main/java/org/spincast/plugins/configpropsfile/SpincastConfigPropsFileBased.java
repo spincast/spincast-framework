@@ -8,11 +8,11 @@ import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.utils.ISpincastUtils;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.plugins.config.SpincastConfig;
+import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +22,7 @@ import com.google.inject.Inject;
  * This configuration implementation will try to find a
  * properties file to load the configurations.
  */
-public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpincastConfig, IFreeKeyConfig {
+public class SpincastConfigPropsFileBased extends SpincastConfigDefault implements SpincastConfig, FreeKeyConfig {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastConfigPropsFileBased.class);
 
@@ -36,23 +36,24 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     public static final String APP_PROPERTIES_KEY_HTTPS_SERVER_KEYSTORE_STOREPASS = "spincast.httpsServer.keystore.storepass";
     public static final String APP_PROPERTIES_KEY_HTTPS_SERVER_KEYSTORE_KEYPASS = "spincast.httpsServer.keystore.keypass";
 
-    private final ISpincastUtils spincastUtils;
+    private final SpincastUtils spincastUtils;
     private final String[] mainArgs;
-    private final ISpincastConfigPropsFileBasedConfig pluginConfig;
+    private final SpincastConfigPropsFileBasedConfig pluginConfig;
 
     private boolean specificAppPropertiesFilePathInited = false;
     private String specificAppPropertiesFilePath;
     private Properties appProperties;
     private boolean appPropertiesLoaded = false;
     private String foundPropertiesFilePath;
+    private String publicServerSchemeHostPort;
 
     /**
      * Constructor
      */
     @Inject
-    public SpincastConfigPropsFileBased(ISpincastUtils spincastUtils,
+    public SpincastConfigPropsFileBased(SpincastUtils spincastUtils,
                                         @MainArgs @Nullable String[] mainArgs,
-                                        ISpincastConfigPropsFileBasedConfig pluginConfig) {
+                                        SpincastConfigPropsFileBasedConfig pluginConfig) {
         super();
         this.spincastUtils = spincastUtils;
 
@@ -64,11 +65,11 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
         this.pluginConfig = pluginConfig;
     }
 
-    protected ISpincastConfigPropsFileBasedConfig getPluginConfig() {
+    protected SpincastConfigPropsFileBasedConfig getPluginConfig() {
         return this.pluginConfig;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
@@ -353,6 +354,38 @@ public class SpincastConfigPropsFileBased extends SpincastConfig implements ISpi
     @Override
     public String getHttpsKeyStoreKeypass() {
         return getConfig(getConfigKeyHttpsServerKeystoreKeyPass(), super.getHttpsKeyStoreStorePass());
+    }
+
+    @Override
+    public String getPublicServerSchemeHostPort() {
+
+        if(this.publicServerSchemeHostPort == null) {
+            StringBuilder builder = new StringBuilder();
+            if(getHttpsServerPort() > -1) {
+                builder.append("https://")
+                       .append(getServerHost());
+                int port = getHttpsServerPort();
+                if(port != 443) {
+                    builder.append(":").append(port);
+                }
+            } else {
+                builder.append("http://")
+                       .append(getServerHost());
+                int port = getHttpsServerPort();
+                if(port != 80) {
+                    builder.append(":").append(port);
+                }
+            }
+
+            this.publicServerSchemeHostPort = builder.toString();
+        }
+
+        return this.publicServerSchemeHostPort;
+    }
+
+    @Override
+    public String getQueryParamFlashMessageId() {
+        return "flash";
     }
 
 }

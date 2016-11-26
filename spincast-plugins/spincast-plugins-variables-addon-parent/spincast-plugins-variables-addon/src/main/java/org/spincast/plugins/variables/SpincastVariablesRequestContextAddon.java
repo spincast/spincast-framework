@@ -4,14 +4,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.exchange.IVariablesRequestContextAddon;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.exchange.VariablesRequestContextAddon;
+import org.spincast.core.json.JsonObject;
 
 import com.google.inject.Key;
 
-public class SpincastVariablesRequestContextAddon<R extends IRequestContext<?>>
-                                                 implements IVariablesRequestContextAddon<R> {
+public class SpincastVariablesRequestContextAddon<R extends RequestContext<?>>
+                                                 implements VariablesRequestContextAddon<R> {
 
     private final Map<String, Object> requestScopedVariables = new HashMap<String, Object>();
 
@@ -56,12 +56,12 @@ public class SpincastVariablesRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IJsonObject getAsJsonObject(String key) {
+    public JsonObject getAsJsonObject(String key) {
         Object obj = getRequestScopedVariables().get(key);
         if(obj == null) {
             return null;
         }
-        return (IJsonObject)obj;
+        return (JsonObject)obj;
     }
 
     @Override

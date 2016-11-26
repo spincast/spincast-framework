@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 public class RequestPathParamsAndQueryStringParamsTest extends SpincastDefaultNoAppIntegrationTestBase {
@@ -19,10 +19,10 @@ public class RequestPathParamsAndQueryStringParamsTest extends SpincastDefaultNo
     @Test
     public void paramsAndQueryStringParams() throws Exception {
 
-        getRouter().GET("/${param1}/two/${param2}/four/*{param3}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/${param1}/two/${param2}/four/*{param3}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String val = context.request().getPathParam("param1");
                 assertEquals("one", val);
@@ -67,7 +67,7 @@ public class RequestPathParamsAndQueryStringParamsTest extends SpincastDefaultNo
 
         String url = createTestUrl("/one/two/three/four/five/six/") + "?key1=val1&key2=vala&key2=valb";
 
-        IHttpResponse response = GET(url, true).send();
+        HttpResponse response = GET(url, true).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

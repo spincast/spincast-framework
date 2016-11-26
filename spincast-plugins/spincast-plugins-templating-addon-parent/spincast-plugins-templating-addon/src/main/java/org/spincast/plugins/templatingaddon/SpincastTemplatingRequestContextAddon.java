@@ -4,29 +4,31 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.locale.ILocaleResolver;
-import org.spincast.core.templating.ITemplatingEngine;
-import org.spincast.core.templating.ITemplatingRequestContextAddon;
+import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.templating.TemplatingRequestContextAddon;
 
 import com.google.inject.Inject;
 
-public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
-                                                  implements ITemplatingRequestContextAddon<R> {
+public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
+                                                  implements TemplatingRequestContextAddon<R> {
 
     private final R requestContext;
-    private final ITemplatingEngine templatingEngine;
-    private final ILocaleResolver localeResolver;
-    private final IJsonManager jsonManager;
+    private final TemplatingEngine templatingEngine;
+    private final LocaleResolver localeResolver;
+    private final JsonManager jsonManager;
     private Map<String, Object> templatingGlobalVariables;
 
     @Inject
     public SpincastTemplatingRequestContextAddon(R requestContext,
-                                                 ITemplatingEngine templatingEngine,
-                                                 ILocaleResolver localeResolver,
-                                                 IJsonManager jsonManager) {
+                                                 TemplatingEngine templatingEngine,
+                                                 LocaleResolver localeResolver,
+                                                 JsonManager jsonManager) {
         this.requestContext = requestContext;
         this.templatingEngine = templatingEngine;
         this.localeResolver = localeResolver;
@@ -37,15 +39,15 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
         return this.requestContext;
     }
 
-    protected ITemplatingEngine getTemplatingEngine() {
+    protected TemplatingEngine getTemplatingEngine() {
         return this.templatingEngine;
     }
 
-    protected ILocaleResolver getLocaleResolver() {
+    protected LocaleResolver getLocaleResolver() {
         return this.localeResolver;
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
@@ -73,18 +75,18 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
             params = new HashMap<String, Object>();
         }
 
-        IJsonObject model = getJsonManager().create(params);
+        JsonObject model = getJsonManager().fromMap(params);
 
         return evaluate(content, model, locale);
     }
 
     @Override
-    public String evaluate(String content, IJsonObject model) {
+    public String evaluate(String content, JsonObject model) {
         return evaluate(content, model, getLocaleToUse());
     }
 
     @Override
-    public String evaluate(String content, IJsonObject model, Locale locale) {
+    public String evaluate(String content, JsonObject model, Locale locale) {
 
         if(model == null) {
             model = getJsonManager().create();
@@ -97,17 +99,17 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public String fromTemplate(String templatePath, IJsonObject model) {
+    public String fromTemplate(String templatePath, JsonObject model) {
         return fromTemplate(templatePath, true, model, getLocaleToUse());
     }
 
     @Override
-    public String fromTemplate(String templatePath, IJsonObject model, Locale locale) {
+    public String fromTemplate(String templatePath, JsonObject model, Locale locale) {
         return fromTemplate(templatePath, true, model, locale);
     }
 
     @Override
-    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject model) {
+    public String fromTemplate(String templatePath, boolean isClasspathPath, JsonObject model) {
         return fromTemplate(templatePath, isClasspathPath, model, getLocaleToUse());
     }
 
@@ -127,13 +129,12 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public String fromTemplate(String templatePath, boolean isClasspathPath, IJsonObject model, Locale locale) {
+    public String fromTemplate(String templatePath, boolean isClasspathPath, JsonObject model, Locale locale) {
 
-        if(model == null) {
-            model = getJsonManager().create();
-        }
-
-        return fromTemplate(templatePath, isClasspathPath, model.convertToPlainMap(), locale);
+        return fromTemplate(templatePath,
+                            isClasspathPath,
+                            (model != null ? model.convertToPlainMap() : null),
+                            locale);
     }
 
     @Override
@@ -151,7 +152,23 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
 
     @Override
     public void addTemplatingGlobalVariable(String key, Object value) {
+
+        value = convertTemplatingGlobalVariableValue(value);
         getTemplatingGlobalVariables().put(key, value);
+    }
+
+    /**
+     * Converts JsonObject and JsonArray to plain Maps and Lists.
+     */
+    protected Object convertTemplatingGlobalVariableValue(Object value) {
+        if(value != null) {
+            if(value instanceof JsonObject) {
+                value = ((JsonObject)value).convertToPlainMap();
+            } else if(value instanceof JsonArray) {
+                value = ((JsonArray)value).convertToPlainList();
+            }
+        }
+        return value;
     }
 
     @Override
@@ -177,6 +194,25 @@ public class SpincastTemplatingRequestContextAddon<R extends IRequestContext<?>>
     @Override
     public String createPlaceholder(String variable) {
         return getTemplatingEngine().createPlaceholder(variable);
+    }
+
+    @Override
+    public Map<String, Object> getSpincastReservedMap() {
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map =
+                (Map<String, Object>)getTemplatingGlobalVariable(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
+        if(map == null) {
+            map = new HashMap<String, Object>();
+            addTemplatingGlobalVariable(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP,
+                                        map);
+        } else if(!(map instanceof Map)) {
+            throw new RuntimeException("The '" +
+                                       SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP +
+                                       "' root variable is reserved for Spincast and must be an instance of Map<String, Object>.");
+        }
+
+        return map;
     }
 
 }

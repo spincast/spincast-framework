@@ -3,7 +3,7 @@ package org.spincast.plugins.configpropsfile;
 /**
  * Default configuration for the .properties based config plugin.
  */
-public class SpincastConfigPropsFileBasedConfigDefault implements ISpincastConfigPropsFileBasedConfig {
+public class SpincastConfigPropsFileBasedConfigDefault implements SpincastConfigPropsFileBasedConfig {
 
     @Override
     public int getSpecificPathMainArgsPosition() {

@@ -1,6 +1,6 @@
 package org.spincast.tests.https;
 
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
 import org.spincast.testing.core.SpincastTestConfig;
@@ -55,7 +55,7 @@ public class HttpsTestInvalidKeyStoreType extends SpincastDefaultNoAppIntegratio
         return new SpincastDefaultTestingModule() {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigClass() {
+            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
                 return HttpsTestConfig.class;
             }
         };

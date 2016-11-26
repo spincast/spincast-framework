@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.spincast</groupId>
             <artifactId>spincast-shaded-dependencies</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
@@ -37,6 +37,10 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-validator</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
                 <exclusion>

@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
+import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exceptions.ForwardRouteException;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IHandler;
-import org.spincast.core.server.IServer;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.Handler;
+import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.collect.Lists;
@@ -30,24 +30,24 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void defaultReset() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("one");
                 throw new ForwardRouteException("/two");
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -57,24 +57,24 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void reset() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("one");
                 throw new ForwardRouteException("/two", true);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -84,24 +84,24 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void noReset() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("one");
                 throw new ForwardRouteException("/two", false);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -111,28 +111,28 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void forwardTwoTimesPlusPathParam() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("one");
                 throw new ForwardRouteException("/two", true);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("two");
                 throw new ForwardRouteException("/three/four", false);
             }
         });
 
-        getRouter().GET("/three/${param}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/three/${param}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String param = context.request().getPathParam("param");
                 assertNotNull(param);
@@ -140,7 +140,7 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -153,39 +153,39 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
         int routeForwardingMaxNumber = getSpincastConfig().getRouteForwardingMaxNumber();
         assertTrue(routeForwardingMaxNumber < 3);
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two");
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/three");
             }
         });
 
-        getRouter().GET("/three").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/three").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/four");
             }
         });
 
-        getRouter().GET("/four").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/four").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("four");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
     }
@@ -193,18 +193,18 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void forwardMustChangeSomeRequestInfo() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two?q=two", true);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String expected = createTestUrl("/two?q=two");
                 String fullUrl = context.request().getFullUrl();
@@ -218,7 +218,7 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
             }
         });
 
-        IHttpResponse response = GET("/one?q=one").send();
+        HttpResponse response = GET("/one?q=one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
@@ -226,18 +226,18 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void forwardMustKeepSomeRequestInfo() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two?q=two", true);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 // Keep the headers
                 String header = context.request().getHeaderFirst(HttpHeaders.ACCEPT);
@@ -245,7 +245,7 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
                 assertEquals(ContentTypeDefaults.JSON.getMainVariation(), header);
 
                 // Keep the cookies
-                ICookie cookie = context.cookies().getCookie("name1");
+                Cookie cookie = context.cookies().getCookie("name1");
                 assertNotNull(cookie);
                 assertEquals("toto", cookie.getValue());
 
@@ -256,7 +256,7 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
 
                 // The server getFullUrl() also still returns the original
                 // URL.
-                IServer server = context.guice().getInstance(IServer.class);
+                Server server = context.guice().getInstance(Server.class);
                 String originalUrl = server.getFullUrlOriginal(context.exchange());
                 assertEquals(expected, originalUrl);
             }
@@ -265,32 +265,32 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
         Map<String, List<String>> headers = new HashMap<String, List<String>>();
         headers.put(HttpHeaders.ACCEPT, Lists.newArrayList(ContentTypeDefaults.JSON.getMainVariation()));
 
-        ICookie cookie = getCookieFactory().createCookie("name1", "toto");
+        Cookie cookie = getCookieFactory().createCookie("name1", "toto");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
 
-        IHttpResponse response = GET("/one?q=one").addCookie(cookie).setHeaders(headers).send();
+        HttpResponse response = GET("/one?q=one").addCookie(cookie).setHeaders(headers).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void forwardMustKeepSomeRequestPostInfo() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two?q=two", true);
             }
         });
 
-        getRouter().POST("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 // Keep the body
-                IJsonObject jsonObj = context.request().getJsonBodyAsJsonObject();
+                JsonObject jsonObj = context.request().getJsonBody();
                 assertNotNull(jsonObj);
                 assertNotNull(jsonObj.getString("name"));
                 assertEquals("toto", jsonObj.getString("name"));
@@ -302,7 +302,7 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
             }
         });
 
-        IHttpResponse response = POST("/one?q=one").setEntityString("{\"name\":\"toto\"}",
+        HttpResponse response = POST("/one?q=one").setEntityString("{\"name\":\"toto\"}",
                                                                     ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                                    .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -312,23 +312,23 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void forwardNotFound() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two?q=two", true);
             }
         });
 
-        getRouter().notFound(new IHandler<IDefaultRequestContext>() {
+        getRouter().notFound(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 context.response().sendPlainText("ok");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("ok", response.getContentAsString());
@@ -337,23 +337,23 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void forwardMustRespectHttpMethod() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 throw new ForwardRouteException("/two?q=two", true);
             }
         });
 
-        getRouter().POST("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
     }
@@ -361,24 +361,24 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
     @Test
     public void isForwarded() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 assertFalse(context.routing().isForwarded());
                 throw new ForwardRouteException("/two?q=two", true);
             }
         });
 
-        getRouter().GET("/two").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 assertTrue(context.routing().isForwarded());
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }

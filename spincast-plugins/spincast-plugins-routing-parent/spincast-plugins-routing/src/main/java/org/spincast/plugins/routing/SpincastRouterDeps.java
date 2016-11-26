@@ -1,18 +1,18 @@
 package org.spincast.plugins.routing;
 
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.config.ISpincastDictionary;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.filters.ISpincastFilters;
-import org.spincast.core.routing.IRedirectRuleBuilderFactory;
-import org.spincast.core.routing.IRouteBuilderFactory;
-import org.spincast.core.routing.IStaticResourceBuilderFactory;
-import org.spincast.core.routing.IStaticResourceFactory;
-import org.spincast.core.server.IServer;
-import org.spincast.core.websocket.IWebsocketContext;
-import org.spincast.core.websocket.IWebsocketRouteBuilderFactory;
-import org.spincast.core.websocket.IWebsocketRouteHandlerFactory;
-import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.filters.SpincastFilters;
+import org.spincast.core.routing.RedirectRuleBuilderFactory;
+import org.spincast.core.routing.RouteBuilderFactory;
+import org.spincast.core.routing.StaticResourceBuilderFactory;
+import org.spincast.core.routing.StaticResourceFactory;
+import org.spincast.core.server.Server;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.core.websocket.WebsocketRouteBuilderFactory;
+import org.spincast.core.websocket.WebsocketRouteHandlerFactory;
+import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
 
 import com.google.inject.Inject;
 
@@ -36,41 +36,41 @@ import com.google.inject.Inject;
  *     </li>  
  * </ul>
  */
-public class SpincastRouterDeps<R extends IRequestContext<?>, W extends IWebsocketContext<?>> {
+public class SpincastRouterDeps<R extends RequestContext<?>, W extends WebsocketContext<?>> {
 
-    private final IRouteHandlerMatchFactory<R> routeHandlerMatchFactory;
-    private final IRouteBuilderFactory<R, W> routeBuilderFactory;
-    private final IRedirectRuleBuilderFactory<R, W> redirectRuleBuilderFactory;
-    private final IStaticResourceBuilderFactory<R, W> staticResourceBuilderFactory;
-    private final IStaticResourceFactory<R> staticResourceFactory;
-    private final ISpincastRouterConfig spincastRouterConfig;
-    private final IRouteFactory<R> routeFactory;
-    private final ISpincastConfig spincastConfig;
-    private final ISpincastDictionary spincastDictionary;
-    private final ISpincastFilters<R> spincastFilters;
-    private final IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
-    private final IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
-    private final IServer server;
-    private final ISpincastRoutingUtils spincastRoutingUtils;
+    private final RouteHandlerMatchFactory<R> routeHandlerMatchFactory;
+    private final RouteBuilderFactory<R, W> routeBuilderFactory;
+    private final RedirectRuleBuilderFactory<R, W> redirectRuleBuilderFactory;
+    private final StaticResourceBuilderFactory<R, W> staticResourceBuilderFactory;
+    private final StaticResourceFactory<R> staticResourceFactory;
+    private final SpincastRouterConfig spincastRouterConfig;
+    private final RouteFactory<R> routeFactory;
+    private final SpincastConfig spincastConfig;
+    private final SpincastDictionary spincastDictionary;
+    private final SpincastFilters<R> spincastFilters;
+    private final WebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
+    private final WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
+    private final Server server;
+    private final SpincastRoutingUtils spincastRoutingUtils;
 
     /**
      * Constructor
      */
     @Inject
-    public SpincastRouterDeps(ISpincastRouterConfig spincastRouterConfig,
-                              IRouteFactory<R> routeFactory,
-                              ISpincastConfig spincastConfig,
-                              ISpincastDictionary spincastDictionary,
-                              IServer server,
-                              ISpincastFilters<R> spincastFilters,
-                              IRouteBuilderFactory<R, W> routeBuilderFactory,
-                              IRedirectRuleBuilderFactory<R, W> redirectRuleBuilderFactory,
-                              IStaticResourceBuilderFactory<R, W> staticResourceBuilderFactory,
-                              IRouteHandlerMatchFactory<R> routeHandlerMatchFactory,
-                              IStaticResourceFactory<R> staticResourceFactory,
-                              IWebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory,
-                              IWebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory,
-                              ISpincastRoutingUtils spincastRoutingUtils) {
+    public SpincastRouterDeps(SpincastRouterConfig spincastRouterConfig,
+                              RouteFactory<R> routeFactory,
+                              SpincastConfig spincastConfig,
+                              SpincastDictionary spincastDictionary,
+                              Server server,
+                              SpincastFilters<R> spincastFilters,
+                              RouteBuilderFactory<R, W> routeBuilderFactory,
+                              RedirectRuleBuilderFactory<R, W> redirectRuleBuilderFactory,
+                              StaticResourceBuilderFactory<R, W> staticResourceBuilderFactory,
+                              RouteHandlerMatchFactory<R> routeHandlerMatchFactory,
+                              StaticResourceFactory<R> staticResourceFactory,
+                              WebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory,
+                              WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory,
+                              SpincastRoutingUtils spincastRoutingUtils) {
 
         this.spincastRouterConfig = spincastRouterConfig;
         this.routeFactory = routeFactory;
@@ -88,59 +88,59 @@ public class SpincastRouterDeps<R extends IRequestContext<?>, W extends IWebsock
         this.spincastRoutingUtils = spincastRoutingUtils;
     }
 
-    public IRouteHandlerMatchFactory<R> getRouteHandlerMatchFactory() {
+    public RouteHandlerMatchFactory<R> getRouteHandlerMatchFactory() {
         return this.routeHandlerMatchFactory;
     }
 
-    public IRouteBuilderFactory<R, W> getRouteBuilderFactory() {
+    public RouteBuilderFactory<R, W> getRouteBuilderFactory() {
         return this.routeBuilderFactory;
     }
 
-    public IRedirectRuleBuilderFactory<R, W> getRedirectRuleBuilderFactory() {
+    public RedirectRuleBuilderFactory<R, W> getRedirectRuleBuilderFactory() {
         return this.redirectRuleBuilderFactory;
     }
 
-    public IStaticResourceBuilderFactory<R, W> getStaticResourceBuilderFactory() {
+    public StaticResourceBuilderFactory<R, W> getStaticResourceBuilderFactory() {
         return this.staticResourceBuilderFactory;
     }
 
-    public IStaticResourceFactory<R> getStaticResourceFactory() {
+    public StaticResourceFactory<R> getStaticResourceFactory() {
         return this.staticResourceFactory;
     }
 
-    public ISpincastRouterConfig getSpincastRouterConfig() {
+    public SpincastRouterConfig getSpincastRouterConfig() {
         return this.spincastRouterConfig;
     }
 
-    public IRouteFactory<R> getRouteFactory() {
+    public RouteFactory<R> getRouteFactory() {
         return this.routeFactory;
     }
 
-    public ISpincastConfig getSpincastConfig() {
+    public SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
-    public ISpincastDictionary getSpincastDictionary() {
+    public SpincastDictionary getSpincastDictionary() {
         return this.spincastDictionary;
     }
 
-    public ISpincastFilters<R> getSpincastFilters() {
+    public SpincastFilters<R> getSpincastFilters() {
         return this.spincastFilters;
     }
 
-    public IWebsocketRouteBuilderFactory<R, W> getWebsocketRouteBuilderFactory() {
+    public WebsocketRouteBuilderFactory<R, W> getWebsocketRouteBuilderFactory() {
         return this.websocketRouteBuilderFactory;
     }
 
-    public IWebsocketRouteHandlerFactory<R, W> getWebsocketRouteHandlerFactory() {
+    public WebsocketRouteHandlerFactory<R, W> getWebsocketRouteHandlerFactory() {
         return this.websocketRouteHandlerFactory;
     }
 
-    public IServer getServer() {
+    public Server getServer() {
         return this.server;
     }
 
-    public ISpincastRoutingUtils getSpincastRoutingUtils() {
+    public SpincastRoutingUtils getSpincastRoutingUtils() {
         return this.spincastRoutingUtils;
     }
 

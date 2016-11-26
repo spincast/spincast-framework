@@ -3,11 +3,11 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
@@ -16,26 +16,26 @@ public class ResponseContentModificationTest extends SpincastDefaultNoAppIntegra
     @Test
     public void changeContent() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.response().setStatusCode(HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
                 context.response().sendPlainText("plain text");
             }
         });
-        getRouter().ALL("/*{path}").pos(1).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.response().resetEverything();
                 context.response().sendHtml("html");
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -45,10 +45,10 @@ public class ResponseContentModificationTest extends SpincastDefaultNoAppIntegra
     @Test
     public void changeContentHeaderSent() throws Exception {
 
-        getRouter().GET("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 context.response().setStatusCode(HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
 
@@ -62,10 +62,10 @@ public class ResponseContentModificationTest extends SpincastDefaultNoAppIntegra
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
-        getRouter().ALL("/*{path}").pos(1).save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 String unsentCharacters = context.response().getUnsentCharacters();
                 assertEquals(SpincastTestUtils.TEST_STRING, unsentCharacters);
@@ -75,7 +75,7 @@ public class ResponseContentModificationTest extends SpincastDefaultNoAppIntegra
             }
         });
 
-        IHttpResponse response = GET("/one").send();
+        HttpResponse response = GET("/one").send();
 
         //==========================================
         // Headers and sent content can't be changed

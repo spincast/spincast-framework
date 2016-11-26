@@ -9,7 +9,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.plugins.undertow.config.ISpincastUndertowConfig;
+import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -18,11 +18,11 @@ import io.undertow.websockets.core.WebSocketCallback;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
 
-public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsocketEndpointWriter {
+public class SpincastUndertowWebsocketEndpointWriter implements UndertowWebsocketEndpointWriter {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastUndertowWebsocketEndpointWriter.class);
 
-    private final ISpincastUndertowConfig spincastUndertowConfig;
+    private final SpincastUndertowConfig spincastUndertowConfig;
     private final Map<String, WebSocketChannel> channels;
     private byte[] pingBytes;
 
@@ -41,7 +41,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
      */
     @AssistedInject
     public SpincastUndertowWebsocketEndpointWriter(@Assisted Map<String, WebSocketChannel> channels,
-                                                   ISpincastUndertowConfig spincastUndertowConfig) {
+                                                   SpincastUndertowConfig spincastUndertowConfig) {
         this.channels = channels;
         this.spincastUndertowConfig = spincastUndertowConfig;
     }
@@ -50,7 +50,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
         return this.channels;
     }
 
-    protected ISpincastUndertowConfig getSpincastUndertowConfig() {
+    protected SpincastUndertowConfig getSpincastUndertowConfig() {
         return this.spincastUndertowConfig;
     }
 
@@ -66,7 +66,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
     }
 
     @Override
-    public void sendPings(final IWebsocketPeersWriteCallback callback) {
+    public void sendPings(final WebsocketPeersWriteCallback callback) {
 
         write(getChannelsMap().keySet(), new IWriteExecutor() {
 
@@ -85,7 +85,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
     @Override
     public void sendMessage(Set<String> peerIds,
                             final String message,
-                            final IWebsocketPeersWriteCallback callback) {
+                            final WebsocketPeersWriteCallback callback) {
 
         write(peerIds, new IWriteExecutor() {
 
@@ -104,7 +104,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
     @Override
     public void sendMessage(Set<String> peerIds,
                             final byte[] bytes,
-                            final IWebsocketPeersWriteCallback callback) {
+                            final WebsocketPeersWriteCallback callback) {
 
         write(peerIds, new IWriteExecutor() {
 
@@ -130,7 +130,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements IUndertowWebsock
     public void sendClosingConnection(final int closingCode,
                                       final String closingReason,
                                       Set<String> peerIds,
-                                      final IClosedEventSentCallback callback) {
+                                      final ClosedEventSentCallback callback) {
 
         if(peerIds == null || peerIds.size() == 0) {
             callback.done();

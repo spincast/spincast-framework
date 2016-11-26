@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.routing.utils.IReplaceDynamicParamsResult;
-import org.spincast.plugins.routing.utils.ISpincastRoutingUtils;
+import org.spincast.plugins.routing.utils.ReplaceDynamicParamsResult;
+import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
 import org.spincast.testing.core.SpincastTestBase;
 
 import com.google.inject.Guice;
@@ -23,9 +23,9 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
     }
 
     @Inject
-    protected ISpincastRoutingUtils spincastRoutingUtils;
+    protected SpincastRoutingUtils spincastRoutingUtils;
 
-    protected ISpincastRoutingUtils getSpincastRoutingUtils() {
+    protected SpincastRoutingUtils getSpincastRoutingUtils() {
         return this.spincastRoutingUtils;
     }
 
@@ -35,7 +35,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         String path = "/test";
         Map<String, String> dynamicParams = new HashMap<String, String>();
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/test", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -46,7 +46,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         String path = null;
         Map<String, String> dynamicParams = new HashMap<String, String>();
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals(null, result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -57,7 +57,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         String path = "/test";
         Map<String, String> dynamicParams = null;
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/test", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -68,7 +68,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         String path = null;
         Map<String, String> dynamicParams = null;
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals(null, result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -80,7 +80,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param1", "value1");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/value1", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -92,7 +92,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param1", "value1");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/value1", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -104,7 +104,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param2", "value2");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/${param1}", result.getPath());
         assertEquals(true, result.isPlaceholdersRemaining());
     }
@@ -117,7 +117,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         dynamicParams.put("param1", "value1");
         dynamicParams.put("param2", "value2");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/test/value1/value2", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -130,7 +130,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         dynamicParams.put("param1", "value1");
         dynamicParams.put("param2", "value2");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/test/value1/value2", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -143,7 +143,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         dynamicParams.put("param1", "value1");
         dynamicParams.put("param2", "value2");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/test/value1/value1", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -155,7 +155,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param1", "123");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/123", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -167,7 +167,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param1", "123");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/123", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -181,7 +181,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         dynamicParams.put("param2", "456");
         dynamicParams.put("param3", "789");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/test/123/titi/456/789/789/test2", result.getPath());
         assertEquals(false, result.isPlaceholdersRemaining());
     }
@@ -193,7 +193,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param1", "123");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/${param1:}", result.getPath());
         assertEquals(true, result.isPlaceholdersRemaining());
     }
@@ -205,7 +205,7 @@ public class SpincastRoutingUtilsTest extends SpincastTestBase {
         Map<String, String> dynamicParams = new HashMap<String, String>();
         dynamicParams.put("param1", "123");
 
-        IReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
+        ReplaceDynamicParamsResult result = getSpincastRoutingUtils().replaceDynamicParamsInPath(path, dynamicParams);
         assertEquals("/${param1<coco>}", result.getPath());
         assertEquals(true, result.isPlaceholdersRemaining());
     }

@@ -3,7 +3,7 @@ Spincast Undertow plugin
 ==========================================#}
 {% extends "../../layout.html" %}
 
-{% block sectionClasses %}plugins plugins-spincast-undertow{% endblock %}
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-undertow{% endblock %}
 {% block meta_title %}Plugins - Spincast Undertow{% endblock %}
 {% block meta_description %}Spincast Undertow plugin provides the default HTTP server for a Spincast application.{% endblock %}
 
@@ -30,17 +30,17 @@ Spincast Undertow plugin
     </ol>
     
     <div id="sectionTitle" class="row"> 
-        <div class="col-xs-12">
+        <div class="col-xs-12"> 
             <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Undertow <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
-                     <a href="/public/javadoc/index.html?org/spincast/plugins/undertow/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/undertow/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
-            </div> 
+            </div>  
         </div>
     </div>
     
@@ -55,30 +55,30 @@ Spincast Undertow plugin
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable"><a href="#methods">Methods</a></li>
-                <li class="openable"><a href="#config">Configurations</a></li>
-                <li class="openable"><a href="#reverse_proxy">Reverse Proxy</a></li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
+                <li class="openable"><a href="#config">Configuration</a></li>
             </ul>
         </nav>
         
         <div id="toc-content" class="col-md-9">
-        
+
             <section id="overview">
-            
-                <h3>
+	            <h3>
                     <a class="anchor" href="#overview" title="permanent link"></a>
                     Overview
                 </h3>
 	            <p>
 	                The <code>Spincast Undertow</code> plugin provides an implementation
-                    of the <code>IServer</code> interface using the <a href="http://undertow.io">Undertow</a> server. 
+                    of the <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a> 
+                    interface using the <a href="http://undertow.io">Undertow</a> server. 
 	            </p>
-                <p>
-                    <a href="http://undertow.io"><img src="/public/images/undertow.png" /></a>
-                </p>
+	            <p class="center">
+	                <a href="http://undertow.io"><img src="/public/images/undertow.png" /></a>
+	            </p>
                 
             </section>
             
+
 	        <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
@@ -98,7 +98,7 @@ Spincast Undertow plugin
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-undertow&lt;/artifactId&gt;
-    &lt;version&gt;{{spincastCurrrentVersion}}&lt;/version&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
 	                    </p>
 	                </div>  
@@ -111,7 +111,7 @@ Spincast Undertow plugin
 	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110"
 >Injector guice = Guice.createInjector(
         new SpincastCoreGuiceModule(args),
-        new SpincastUndertowPluginGuiceModule(IAppRequestContext.class, IAppWebsocketContext.class)
+        new SpincastUndertowPluginGuiceModule(AppRequestContext.class, AppWebsocketContext.class)
         // other modules...
         );</pre> 
 	                    </p>
@@ -139,295 +139,51 @@ Spincast Undertow plugin
 	            </p>
             </section>
             
-            <section id="methods">
+            
+            <section id="javadoc">
                 <h3>
-                    <a class="anchor" href="#methods" title="permanent link"></a>
-                    Methods
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
                 </h3>
                 <p>
-                    Few of the <code>IServer</code>'s methods are made to be used directly.
-                    We are only going to list those here, so have a look at the <code>IServer</code>'s 
-                    <a href="/public/javadoc/index.html?org/spincast/core/server/IServer.html">Javadoc</a>
-                    for a listing of all the available methods.
-                </p>
-
-                <div>
-                    <p>
-                        <ul class="apiList">
-          
-          
-                        
-<li>
-    <code class="apiItem">void <span>start</span>()</code>
-    <div class="well">
-        Starts the server.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>stop</span>()</code>
-    <div class="well">
-        Stops the server
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>createHttpAuthenticationRealm</span>(String pathPrefix, String realmName)</code>
-    <div class="well">
-        Creates HTTP authentication protection (realm) for the
- specified path prefix.
-
-        <div class="apiItemFooter">
-            @param realmName The name of the realm. Must be unique on this server,
- otherwise an exception is thrown. This allows the application to add
- user to the realm using its name.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">Map&lt;String, String&gt; <span>getHttpAuthenticationRealms</span>()</code>
-    <div class="well">
-        Returns the existing HTTP authentication realms, the
- key being the realm's name and the value being the
- prefix path associated to this realm.
- <p>
-<br />The map is immutable.
- </p>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>addHttpAuthentication</span>(String realmName,                                       String username,                                       String password)</code>
-    <div class="well">
-        Adds a user to an HTTP protected realm.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>removeHttpAuthentication</span>(String username, String realmName)</code>
-    <div class="well">
-        Removes a user to an HTTP protected realm.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>removeHttpAuthentication</span>(String username)</code>
-    <div class="well">
-        Removes a user from all HTTP protected realms.
-
-    </div>
-</li>
-
-
-<li>
-    <code class="apiItem">IWebsocketEndpointManager <span>websocketCreateEndpoint</span>(String endpointId, IWebsocketEndpointHandler endpointHandler)</code>
-    <div class="well">
-        Creates a new WebSocket endpoint.
-
-        <div class="apiItemFooter">
-            @return the manager for this endpoint.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>websocketCloseEndpoint</span>(String endpointId)</code>
-    <div class="well">
-        Closes a WebSocket endpoint. No more connections will
- be accepter
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>websocketCloseEndpoint</span>(String endpointId, int closingCode, String closingReason)</code>
-    <div class="well">
-        Closes the entire WebSocket endpoint.
-<br />All peer connections of this endpoint will be
- closed.
-
-        <div class="apiItemFooter">
-            @param closingCode The closing code.
-<br />@param closingReason The closing reason.
-
-        </div>
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">void <span>websocketConnection</span>(Object exchange,                                     String endpointId,                                     String peerId)</code>
-    <div class="well">
-        Transforms the request to a peer WebSocket connection
- on the endpoint 'endpointId'.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">List&lt;IWebsocketEndpointManager&gt; <span>getWebsocketEndpointManagers</span>()</code>
-    <div class="well">
-        Returns the managers of the existing WebSockets endpoints.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">IWebsocketEndpointManager <span>getWebsocketEndpointManager</span>(String endpointId)</code>
-    <div class="well">
-        Returns the manager for a WebSockets endpoint.
-
-        <div class="apiItemFooter">
-            @return the manager or <code>null</code> if not found.
-
-        </div>
-    </div>
-</li>
-
-
-                        </ul>
-                        
-                    </p>
-                </div> 
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/SpincastUndertowServer.html">SpincastUndertowServer</a>
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/config/SpincastUndertowConfig.html">SpincastUndertowConfig</a>
+                        </li> 
+                    </ul>
+                </p> 
             </section>
+            
+            
             
             <section id="config">
                 <h3>
                     <a class="anchor" href="#config" title="permanent link"></a>
-                    Configurations
+                    Configuration
                 </h3>
                 <p>
-                    You can bind the <code>ISpincastUndertowConfig</code> interface
+                    You can bind a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/config/SpincastUndertowConfig.html">SpincastUndertowConfig</a> component
                     if you want to change some default configurations. 
                     The default implementation class for those configurations 
-                    is <code>SpincastUndertowConfigDefault</code>.
-                </p>
-                <p>
-                    Here are the available configurations:
-                </p>
-                <div>
-                    <p>
-                        <ul class="apiList">
-          
-<li>
-    <code class="apiItem">boolean <span>isWebsocketAutomaticPing</span>()</code>
-    <div class="well">
-        If <code>true</code>, pings will automatically
- be sent to peers of a WebSocket endpoint as an
- heartbeat.
-<br />Enabled by default.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketAutomaticPingIntervalSeconds</span>()</code>
-    <div class="well">
-        When the automatic WebSocket pings are enabled, this is the
- interval (in seconds) between two pings.
-<br />Defaults to <code>20</code> seconds.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getWebsocketPingMessageString</span>()</code>
-    <div class="well">
-        The ping text to use. Must be <code>&lt; 125</code> characters.
-<br />Defaults to <code>"__ping"</code>
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketDefaultClosingCode</span>()</code>
-    <div class="well">
-        The default code to use when sending a
- "closing WebSocket connection" event to a peer.
-<br />Valid codes can be found <a href="https://tools.ietf.org/html/rfc6455#section-7.4.1">here</a>
-<br />Defaults to <code>1000</code>, a normal closure.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">String <span>getWebsocketDefaultClosingReason</span>()</code>
-    <div class="well">
-        The default reason to use when sending a
- "closing WebSocket connection" event to a peer.
-<br />Defaults to an empty message.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketThreadExecutorForAppEventsThreadNumber</span>()</code>
-    <div class="well">
-        The maximum number of concurrent threads used when
- sending WebSocket events to the application.
-<br />Defaults to <code>100</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">int <span>getWebsocketThreadExecutorForAppEventsTimeoutAmount</span>()</code>
-    <div class="well">
-        The timeout <code>amount</code> before cancelling a task when
- sending WebSocket events to the application.
-<br />Defaults to <code>60</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">TimeUnit <span>getWebsocketThreadExecutorForAppEventsTimeoutTimeUnit</span>()</code>
-    <div class="well">
-        The timeout <code>TimeUnit</code> before cancelling a task when
- sending WebSocket events to the application.
-<br />Defaults to <code>SECONDS</code>.
-
-    </div>
-</li>
-
-<li>
-    <code class="apiItem">ThreadFactory <span>getWebsocketThreadExecutorForAppEventsThreadFactory</span>()</code>
-    <div class="well">
-        The <code>ThreadFactory</code> to use to create threads when
- sending WebSocket events to the application.
-<br />Defaults to <code>null</code>.
-
-    </div>
-</li>
-
-
-
-
-
-                        </ul>
-                        
-                    </p>
-                </div> 
-            </section>
-            
-            <section id="reverse_proxy">
-            
-                <h3>
-                    <a class="anchor" href="#reverse_proxy" title="permanent link"></a>
+                    is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/config/SpincastUndertowConfigDefault.html">SpincastUndertowConfigDefault</a>. 
+                </p> 
+                
+                
+                <h4>
+                    <a class="anchor_small" href="#reverse_proxy" id="reverse_proxy" title="permanent link"></a>
                     Reverse Proxy
-                </h3>
+                </h4>
 	            <p>
 	                If you use a reverse proxy, such as <a href="https://www.nginx.com/">Nginx</a> or
-	                <a href="https://httpd.apache.org/">Apache</a>, make sure you set those headers
-	                if the forwarded <code>scheme</code>, <code>host</code> or <code>port</code> are different then the
-	                original ones:
+	                <a href="https://httpd.apache.org/">Apache</a>, make sure it sets those HTTP headers
+                    if the forwarded <code>scheme</code>, <code>host</code> or <code>port</code> are different then the
+	                original ones :
 	            </p>
                 <ul>
                 	<li>
@@ -441,17 +197,17 @@ Spincast Undertow plugin
                 	</li>
                 </ul>  
 	            <p>
-	                The Undertow plugin will use those headers to provide the correct information
-	                when <a href="/public/javadoc/org/spincast/core/server/IServer.html#getFullUrlOriginal-java.lang.Object-"><code>getFullUrlOriginal()</code></a>
+	                The Spincast Undertow plugin will use those headers to provide the correct information
+	                when <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html#getFullUrlOriginal-java.lang.Object-"><code>getFullUrlOriginal()</code></a>
 	                is called.
 	            </p>
                 
+                
             </section>
-
-
+            
+            
         </div>
     </div>
-    
 </div> 
 
 {% endblock %}

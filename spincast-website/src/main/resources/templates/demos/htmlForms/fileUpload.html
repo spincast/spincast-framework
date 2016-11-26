@@ -1,0 +1,228 @@
+{#==========================================
+Demos - HTML Forms - File upload
+==========================================#}
+{% extends "../htmlForms.html" %}
+
+{% block demoSectionClasses %}demo_html_forms_single{% endblock %}
+{% block meta_title %}Demos - HTML Forms - File upload{% endblock %}
+{% block meta_description %}File upload using Spincast{% endblock %}
+
+{% set demoId = "fileUpload" %}
+
+{% block demoBody %}
+
+<h4>
+    <a class="anchor_small" href="#demo" id="demo" title="permanent link"></a>
+    File Upload
+</h4>
+
+<p>
+    Select a file and submit it.
+</p>
+<p>
+    Only an <em>image</em> of less than 200KB will be accepted! Otherwise, you're
+    going to see some validation messages.
+</p>
+
+{% if uploadFileBase64ImageSrc is not empty | default(false) %}
+    <p id="uploadedImageDiv">
+        Uploaded image : <img id="uploadedImage" src="{{uploadFileBase64ImageSrc}}" />
+    </p>
+{% endif %}
+
+<div class="row tallTop">     
+    <div class="col-sm-12">
+
+        <form class="form-horizontal" action="#form" method="post" 
+              novalidate="novalidate" accept-charset="UTF-8" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="form-group {{validation['demoForm.fileToUpload'] | validationClass()}}">
+                            <label for="fileToUpload" class="col-sm-4 control-label">File to upload *</label>
+                            <div class="col-sm-8">
+                            
+                                <label for="fileToUpload" class="btn btn-default btn-file">
+                                    Browse 
+                                    <input type="file" 
+                                           style="display: none;" 
+                                           id="fileToUpload" 
+                                           class="form-control"
+                                           name="demoForm.fileToUpload"
+                                           onchange="$('#upload-file-info').html($(this).val());" />
+                                </label>
+                                <span class="label label-default" id="upload-file-info"></span>
+                                {{validation['demoForm.fileToUpload'] | validationMessages()}}
+                                
+                                <div class="shortTop">
+                                    <button id="subBtn" type="submit" class="btn btn-primary">Upload file</button>
+                                </div>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-1 colImg">
+                            <img src="/public/images/icons/arrowRight.png" />
+                        </div>
+                        <div class="col-sm-11">
+                        
+                            <span class="validationsTitle">Validations to test :</span>
+                            
+                            <ul class="list-group validations">
+                            
+                                <li class="list-group-item">
+                                    <span class="validationsNumber">1. </span>
+                                    The file needs to be a valid image.
+                                </li> 
+                                <li class="list-group-item">
+                                    <span class="validationsNumber">2. </span>
+                                    The file must be 200KB or less.
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<h4>
+    <a class="anchor_small" href="#code" id="code" title="permanent link"></a>
+    Code
+</h4>
+<p>
+    <ul>
+        <li>
+            The controller (the backend part) : 
+            <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsFileUploadController.java"><em>DemoHtmlFormsFileUploadController.java</em></a>
+        </li>
+        <li>
+            The <code>HTML</code> template (the frontend part) : 
+            <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/resources/templates/demos/htmlForms/fileUpload.html"><em>fileUpload.html</em></a>
+        </li>
+    </ul>
+</p>
+
+
+<h4>
+    <a class="anchor_small" href="#how_to" id="how_to" title="permanent link"></a>
+    How to
+</h4>
+<p>
+    Uploading a file is very easy. On the client-side :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>
+
+&lt;form action="#form" method="post" accept-charset="UTF-8" enctype="multipart/form-data"&gt;
+      
+    //...
+    
+    &lt;input type="file" name="demoForm.fileToUpload" /&gt;
+
+    // ...
+
+    {{validation['demoForm.fileToUpload'] | validationMessages()}}
+    
+    // ...
+
+    &lt;button id="subBtn" type="submit" class="btn btn-primary"&gt;Submit&lt;/button&gt;
+
+&lt;/form&gt;</pre>       
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">2</span> : A form dedicated to the upload of a file
+                    must have the <code>enctype="multipart/form-data"</code> attribute.
+                </li>
+                <li>
+                    <span class="code-line-nbr">6</span> : The <code>file</code> input, with
+                    a meaningful <code>"name"</code> attribute.
+                </li>
+                <li>
+                    <span class="code-line-nbr">10</span> : The potential
+                    <a href="/documentation#validation_messages">Validation Messages</a> resulting 
+                    from the validation of the file.
+                </li>
+            </ul>
+        </p>
+    </div>  
+    {% endverbatim %}
+</p>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    On the server side, we get the uploaded file using its <code>"name"</code>. Note that
+    multiple uploaded files can have the same name, but since we only have one here, we
+    use the <code>getUploadedFile<strong>First</strong>(...)</code> method from our
+    <a href="/documentation#request_context">Request Context</a> :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>File uploadedFile = context.request().getUploadedFileFirst("demoForm.fileToUpload");</pre>       
+        </p>
+    </div>  
+</p>
+<p>
+    We can then run validation on thie file and process it. Here's for example how we
+    validate that it is actually an image :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>try {
+    ImageIO.read(uploadedFile).toString();
+} catch(Exception e) {
+    validation.addError("demoForm.fileToUpload",
+                        "FILE_NOT_KNOWN_IMAGE_TYPE",
+                        "The file must be a valid image of type PNG, JPEG, GIF or BMP.");
+}</pre>       
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">2</span> : We use the 
+                    <code>javax.imageio.ImageIO</code> class to try to read
+                    the image. It's it's not a valid image, an exception is
+                    thrown.
+                </li>
+                <li>
+                    <span class="code-line-nbr">4-6</span> : We add a
+                    <a href="/documentation#validation_messages">Validation Message</a>
+                    to our <a href="/documentation#validation_sets">Validation Set</a>
+                    to record the fact that the validation failed.
+                </li>
+            </ul>
+        </p>
+    </div> 
+</p>
+
+
+<h4>
+    <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
+    More info
+</h4>
+<p>
+    Make sure you also try the first demo of this section, <a href="/demos-tutorials/html-forms/single-field">Introduction - Single field</a>
+    which introduces forms and validation using Spincast.
+</p>
+<p>
+    Otherwise, you can learn everything about those topics in the <a href="/documentation#validation">Validation</a> 
+    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+</p>
+
+{% endblock %}

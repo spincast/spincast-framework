@@ -43,22 +43,19 @@ About
     <div class="row">
         <nav id="toc" class="col-md-3">
             <ul class="nav nav-stacked">
-                <li class="openable">
-                    <a href="#why">Why Spincast?</a>
-                </li>
+                <li class="openable"> <a href="#why">Why Spincast?</a></li>
                 <li class="openable">
                     <a href="#choices">The choices we made</a>
-                    <ul class="nav nav-stacked">
+                    <ul class="nav nav-stacked open">
                         <li><a href="#java">Java</a></li>
                         <li><a href="#dependency_injection">Dependency injection</a></li>
                         <li><a href="#configuration_over_convention">Configuration over convention</a></li>
+                        <li><a href="#annotations">Plain Java code over annotations</a></li>
                         <li><a href="#not_asynchronous">Not asynchronous</a></li>
                         <li><a href="#private_methods">No private methods</a></li>
                     </ul>
                 </li>
-                <li class="openable">
-                    <a href="#contact">Contact</a>
-                </li>
+                <li class="openable"><a href="#contact">Contact</a></li>
             </ul>
         </nav>
         
@@ -206,6 +203,43 @@ About
                         Configuration FTW!
                     </p>
                 </div>
+                
+                {#==========================================
+                The choices we made / Plain Java code over annotations
+                ==========================================#}
+                <div id="annotations">
+                    <h4><a class="anchor_small" href="#annotations" title="permanent link"></a> Plain Java code over annotations</h4>
+                    <p>
+                        Annotations are a double-edged sword. They are simple to use and often convenient, but they also
+                        tend to <em>hide logic</em> and make things seem to work automagically. This is sometimes fine, but when you 
+                        need to understand exactly how things work, or when you need flexibility and control,
+                        annotations can be a real pain.
+                    </p>    
+                    <p> 
+                        Annotations are also limited in the way they can be used. They don't support Java code so adding 
+                        logic to them is hard : you can't use <code>if / else</code> conditions, you can't
+                        call <code>methods</code>, etc. Some people try to get around this limitation by using
+                        some kind of expression language, something like <code>@MyAnnotation("${myVar + 42}")</code>... But this is
+                        only a hack : there is no type safety and it feels very unnatural in a  Java application.
+                    </p>      
+                    
+                    <p> 
+                        Annotations are very good at being <em>flags</em>, or at providing basic information about
+                        an element. For example, the <code>@Inject</code> or <code>@Override</code> annotations are
+                        perfectly fine : they don't hide anything and serve purely as <em>indications</em>. But some frameworks 
+                        have a tendency to use annotations for pretty much <em>everything</em>, and this is something
+                        we do not agree with.
+                    </p>    
+
+                    <p> 
+                        Spincast doesn't use many annotations
+                        and will in general favor plain Java code when it's time to configure something. The 
+                        <a href="/documentation#validation">Validation</a> utilities we provide is a good example : 
+                        they are purely based
+                        on Java code, not on annotations such as <a href="http://hibernate.org/validator/">Hibernate validator</a>.
+                    </p> 
+ 
+                </div>
 
                 {#==========================================
                 The choices we made / Not asynchronous
@@ -285,9 +319,9 @@ About
                 <p>
                     If you want to contact us privately (without using the <a href="https://groups.google.com/forum/#!forum/spincast">forum</a>),
                     you can send an email to <a href="https://ca.linkedin.com/in/juliendev">Julien Lamarre</a>, 
-                    Spincast lead developer. <a href="http://www.google.com/recaptcha/mailhide/d?k=01Nnh5Nl-8h7LmGXH_0bspGQ==&amp;c=qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501Nnh5Nl-8h7LmGXH_0bspGQ\75\75\46c\75qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" 
+                    Spincast lead developer. 
+                    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Nnh5Nl-8h7LmGXH_0bspGQ==&amp;c=qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501Nnh5Nl-8h7LmGXH_0bspGQ\75\75\46c\75qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" 
                     title="Reveal this e-mail address">Click Here</a> to get Julien's email address.
-                </p>
             </section>
 
         </div>

@@ -10,25 +10,25 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.websocket.IWebsocketConnectionConfig;
-import org.spincast.core.websocket.IWebsocketController;
-import org.spincast.core.websocket.IWebsocketEndpointManager;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.core.websocket.WebsocketController;
+import org.spincast.core.websocket.WebsocketEndpointManager;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.exchange.AppRequestContext;
 
 import com.google.inject.Inject;
 
 /**
  * WebSockets demo controller
  */
-public class WebsocketsDemoEchoAllController implements IWebsocketController<IAppRequestContext, IDefaultWebsocketContext> {
+public class WebsocketsDemoEchoAllController implements WebsocketController<AppRequestContext, DefaultWebsocketContext> {
 
     protected final Logger logger = LoggerFactory.getLogger(WebsocketsDemoEchoAllController.class);
 
-    private IWebsocketEndpointManager endpointManager;
+    private WebsocketEndpointManager endpointManager;
 
     private static List<String> peerNamesAll;
     private volatile static int peerNamePos = 0;
@@ -82,12 +82,12 @@ public class WebsocketsDemoEchoAllController implements IWebsocketController<IAp
         return peerNamesAll;
     }
 
-    protected IWebsocketEndpointManager getEndpointManager() {
+    protected WebsocketEndpointManager getEndpointManager() {
         return this.endpointManager;
     }
 
     @Override
-    public IWebsocketConnectionConfig onPeerPreConnect(IAppRequestContext context) {
+    public WebsocketConnectionConfig onPeerPreConnect(AppRequestContext context) {
 
         if(getEndpointManager() != null && getEndpointManager().getPeersIds().size() > 100) {
             context.response().setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
@@ -95,7 +95,7 @@ public class WebsocketsDemoEchoAllController implements IWebsocketController<IAp
             return null;
         }
 
-        return new IWebsocketConnectionConfig() {
+        return new WebsocketConnectionConfig() {
 
             @Override
             public String getEndpointId() {
@@ -120,18 +120,18 @@ public class WebsocketsDemoEchoAllController implements IWebsocketController<IAp
     }
 
     @Override
-    public void onEndpointReady(IWebsocketEndpointManager endpointManager) {
+    public void onEndpointReady(WebsocketEndpointManager endpointManager) {
         this.endpointManager = endpointManager;
     }
 
     @Override
-    public void onPeerConnected(IDefaultWebsocketContext context) {
+    public void onPeerConnected(DefaultWebsocketContext context) {
         this.logger.debug("Peer connected : " + context.getPeerId());
         context.sendMessageToCurrentPeer("Your generated peer id is " + context.getPeerId());
     }
 
     @Override
-    public void onPeerMessage(IDefaultWebsocketContext context, String message) {
+    public void onPeerMessage(DefaultWebsocketContext context, String message) {
         this.logger.debug("message received from peer '" + context.getPeerId() + "': " + message);
 
         //==========================================
@@ -141,7 +141,7 @@ public class WebsocketsDemoEchoAllController implements IWebsocketController<IAp
     }
 
     @Override
-    public void onPeerMessage(IDefaultWebsocketContext context, byte[] message) {
+    public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
         try {
             this.logger.debug("message received from peer '" + context.getPeerId() + "': " + new String(message, "UTF-8"));
         } catch(Exception ex) {
@@ -150,7 +150,7 @@ public class WebsocketsDemoEchoAllController implements IWebsocketController<IAp
     }
 
     @Override
-    public void onPeerClosed(IDefaultWebsocketContext context) {
+    public void onPeerClosed(DefaultWebsocketContext context) {
         this.logger.debug("Peer '" + context.getPeerId() + "' closed the connection.");
     }
 

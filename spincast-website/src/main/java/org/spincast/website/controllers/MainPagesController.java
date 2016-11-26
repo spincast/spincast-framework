@@ -7,17 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.website.AppConfig;
 import org.spincast.website.AppConstants;
-import org.spincast.website.IAppConfig;
-import org.spincast.website.exchange.IAppRequestContext;
-import org.spincast.website.models.INewsEntriesAndTotalNbr;
-import org.spincast.website.models.INewsEntry;
-import org.spincast.website.services.INewsService;
+import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.models.NewsEntriesAndTotalNbr;
+import org.spincast.website.models.NewsEntry;
+import org.spincast.website.services.NewsService;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -27,17 +25,17 @@ public class MainPagesController {
     protected final Logger logger = LoggerFactory.getLogger(MainPagesController.class);
 
     private final String[] mainArgs;
-    private final IJsonManager jsonManager;
-    private final ISpincastUtils spincastUtils;
-    private final INewsService newsService;
-    private final IAppConfig appConfig;
+    private final JsonManager jsonManager;
+    private final SpincastUtils spincastUtils;
+    private final NewsService newsService;
+    private final AppConfig appConfig;
 
     @Inject
     public MainPagesController(@MainArgs String[] mainArgs,
-                               IJsonManager jsonManager,
-                               ISpincastUtils spincastUtils,
-                               INewsService newsService,
-                               IAppConfig appConfig) {
+                               JsonManager jsonManager,
+                               SpincastUtils spincastUtils,
+                               NewsService newsService,
+                               AppConfig appConfig) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
@@ -49,58 +47,63 @@ public class MainPagesController {
         return this.mainArgs;
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
-    protected INewsService getNewsService() {
+    protected NewsService getNewsService() {
         return this.newsService;
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 
-    public void index(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/index.html", (IJsonObject)null);
+    public void index(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/index.html");
     }
 
-    public void presentation(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/presentation.html", (IJsonObject)null);
+    public void presentation(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/presentation.html");
     }
 
-    public void documentation(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/documentation.html", (IJsonObject)null);
+    public void documentation(AppRequestContext context) {
+
+        if(context.request().getQueryStringParamFirst("alert") != null) {
+            context.response().getModel().put("alertDemoMsg", "This is an example Success Alert message, using no javascript!");
+        }
+
+        context.response().sendTemplateHtml("/templates/documentation.html");
     }
 
-    public void download(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/download.html", (IJsonObject)null);
+    public void download(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/download.html");
     }
 
-    public void plugins(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/plugins.html", (IJsonObject)null);
+    public void plugins(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/plugins.html");
     }
 
-    public void community(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/community.html", (IJsonObject)null);
+    public void community(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/community.html");
     }
 
-    public void about(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/about.html", (IJsonObject)null);
+    public void about(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/about.html");
     }
 
-    public void more(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/more.html", (IJsonObject)null);
+    public void more(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/more.html");
     }
 
     /**
      * A Plugin documentation
      */
-    public void plugin(IAppRequestContext context) {
+    public void plugin(AppRequestContext context) {
 
         String pluginName = context.request().getPathParam("pluginName");
 
@@ -117,7 +120,7 @@ public class MainPagesController {
             throw new NotFoundException("Plugin not found");
         }
 
-        context.response().sendTemplateHtml(pluginDocTemplatePath, (IJsonObject)null);
+        context.response().sendTemplateHtml(pluginDocTemplatePath);
     }
 
     /**
@@ -147,7 +150,7 @@ public class MainPagesController {
         return pluginDocTemplatePath;
     }
 
-    public void news(IAppRequestContext context) {
+    public void news(AppRequestContext context) {
 
         int page = 1;
         String pageStr = context.request().getQueryStringParamFirst("page");
@@ -169,7 +172,7 @@ public class MainPagesController {
         int startPos = ((page - 1) * nbrNewsEntriesPerPage) + 1;
         int endPos = (startPos - 1) + nbrNewsEntriesPerPage;
 
-        INewsEntriesAndTotalNbr newsEntriesAndTotalNbr = getNewsService().getNewsEntries(startPos, endPos, false);
+        NewsEntriesAndTotalNbr newsEntriesAndTotalNbr = getNewsService().getNewsEntries(startPos, endPos, false);
 
         if(page > 1 && newsEntriesAndTotalNbr.getNewsEntries().size() == 0) {
             context.response().redirect("/news", false);
@@ -183,16 +186,20 @@ public class MainPagesController {
 
         int nbrPageTotal = (int)Math.floor((newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() - 1) / nbrNewsEntriesPerPage) + 1;
 
-        // @formatter:off
-        context.response().sendTemplateHtml("/templates/news.html",
-                                            SpincastStatics.params("newsEntries", newsEntriesAndTotalNbr.getNewsEntries(),
-                                                                   "currentPage", page,
-                                                                   "nextPage", nextPage,
-                                                                   "nbrPageTotal", nbrPageTotal));
-         // @formatter:on
+        context.response().getModel().put("newsEntries", newsEntriesAndTotalNbr.getNewsEntries());
+        context.response().getModel().put("currentPage", page);
+        context.response().getModel().put("nextPage", nextPage);
+        context.response().getModel().put("nbrPageTotal", nbrPageTotal);
+
+        context.response().sendTemplateHtml("/templates/news.html");
+
     }
 
-    public void newsEntry(IAppRequestContext context) {
+    public void newsEntryTest(AppRequestContext context) {
+
+    }
+
+    public void newsEntry(AppRequestContext context) {
 
         long newsId;
         try {
@@ -201,13 +208,13 @@ public class MainPagesController {
             throw new NotFoundException("The news entry was not found.");
         }
 
-        INewsEntry newsEntry = getNewsService().getNewsEntry(newsId);
+        NewsEntry newsEntry = getNewsService().getNewsEntry(newsId);
         if(newsEntry == null) {
             throw new NotFoundException("The news entry '" + newsId + "' was not found.");
         }
 
-        context.response().sendTemplateHtml("/templates/newsEntry.html",
-                                            SpincastStatics.params("newsEntry", newsEntry));
+        context.response().getModel().put("newsEntry", newsEntry);
+        context.response().sendTemplateHtml("/templates/newsEntry.html");
     }
 
 }

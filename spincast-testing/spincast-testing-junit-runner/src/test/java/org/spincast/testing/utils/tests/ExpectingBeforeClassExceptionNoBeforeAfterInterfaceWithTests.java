@@ -6,12 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 import org.spincast.testing.utils.SpincastJUnitRunner;
-import org.spincast.testing.utils.tests.utils.ITestExpectedToFailProvider;
+import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 import org.spincast.testing.utils.tests.utils.SpincastJUnitRunnerTester;
 
 @RunWith(SpincastJUnitRunnerTester.class)
 @ExpectingBeforeClassException
-public class ExpectingBeforeClassExceptionNoBeforeAfterInterfaceWithTests implements ITestExpectedToFailProvider {
+public class ExpectingBeforeClassExceptionNoBeforeAfterInterfaceWithTests implements TestExpectedToFailProvider {
 
     @Override
     public String getTestExpectedToFail() {

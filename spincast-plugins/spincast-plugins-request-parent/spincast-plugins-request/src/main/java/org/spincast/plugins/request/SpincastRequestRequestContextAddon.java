@@ -9,30 +9,36 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.exchange.IRequestContext;
-import org.spincast.core.exchange.IRequestRequestContextAddon;
-import org.spincast.core.json.IJsonArray;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.exchange.RequestRequestContextAddon;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.ETag;
+import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IETag;
-import org.spincast.core.routing.IETagFactory;
-import org.spincast.core.server.IServer;
+import org.spincast.core.server.Server;
+import org.spincast.core.session.FlashMessage;
+import org.spincast.core.session.FlashMessagesHolder;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.core.utils.ISpincastUtils;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.utils.SpincastUtils;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
@@ -42,8 +48,8 @@ import org.spincast.shaded.org.apache.http.client.utils.URLEncodedUtils;
 
 import com.google.inject.Inject;
 
-public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
-                                               implements IRequestRequestContextAddon<R> {
+public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
+                                               implements RequestRequestContextAddon<R> {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastRequestRequestContextAddon.class);
 
@@ -61,9 +67,9 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     private String queryStringNonDecoded = "";
     private String queryStringDecoded = "";
 
-    private List<IETag> ifMatchETags = null;
+    private List<ETag> ifMatchETags = null;
     private Object ifMatchETagsLock = new Object();
-    private List<IETag> ifNoneMatchETags = null;
+    private List<ETag> ifNoneMatchETags = null;
     private Object ifNoneMatchETagsLock = new Object();
 
     private Date ifModifiedSinceDate = null;
@@ -74,26 +80,33 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
 
     private Map<String, List<String>> queryStringParams;
     private Map<String, List<String>> formDatasAsImmutableMap;
-    private IJsonObject formDatasAsImmutableJsonObject;
+    private JsonObject formDatasAsImmutableJsonObject;
     private Map<String, List<File>> uploadedFiles;
     private Map<String, List<String>> headers;
 
     private final R requestContext;
-    private final IServer server;
-    private final IJsonManager jsonManager;
-    private final IXmlManager xmlManager;
-    private final ISpincastUtils spincastUtils;
-    private final ISpincastConfig spincastConfig;
-    private final IETagFactory etagFactory;
+    private final Server server;
+    private final JsonManager jsonManager;
+    private final XmlManager xmlManager;
+    private final SpincastUtils spincastUtils;
+    private final SpincastConfig spincastConfig;
+    private final ETagFactory etagFactory;
+    private final FlashMessagesHolder flashMessagesHolder;
+
+    private boolean flashMessageRetrieved = false;
+    private FlashMessage flashMessage;
+
+    private Pattern formDataArrayPattern;
 
     @Inject
     public SpincastRequestRequestContextAddon(R requestContext,
-                                              IServer server,
-                                              IJsonManager jsonManager,
-                                              IXmlManager xmlManager,
-                                              ISpincastUtils spincastUtils,
-                                              ISpincastConfig spincastConfig,
-                                              IETagFactory etagFactory) {
+                                              Server server,
+                                              JsonManager jsonManager,
+                                              XmlManager xmlManager,
+                                              SpincastUtils spincastUtils,
+                                              SpincastConfig spincastConfig,
+                                              ETagFactory etagFactory,
+                                              FlashMessagesHolder flashMessagesHolder) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
@@ -101,34 +114,39 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         this.spincastUtils = spincastUtils;
         this.spincastConfig = spincastConfig;
         this.etagFactory = etagFactory;
+        this.flashMessagesHolder = flashMessagesHolder;
     }
 
     protected R getRequestContext() {
         return this.requestContext;
     }
 
-    protected IServer getServer() {
+    protected Server getServer() {
         return this.server;
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected IXmlManager getXmlManager() {
+    protected XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
-    protected ISpincastConfig getSpincastConfig() {
+    protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
-    protected IETagFactory getEtagFactory() {
+    protected ETagFactory getEtagFactory() {
         return this.etagFactory;
+    }
+
+    protected FlashMessagesHolder getFlashMessagesHolder() {
+        return this.flashMessagesHolder;
     }
 
     protected Object getExchange() {
@@ -163,6 +181,14 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     @Override
     public boolean isPlainTextShouldBeReturn() {
         return ContentTypeDefaults.TEXT == getContentTypeBestMatch();
+    }
+
+    protected Pattern getFormDataArrayPattern() {
+
+        if(this.formDataArrayPattern == null) {
+            this.formDataArrayPattern = Pattern.compile(".*(\\[(0|[1-9]+[0-9]?)\\])$");
+        }
+        return this.formDataArrayPattern;
     }
 
     @Override
@@ -518,9 +544,9 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IJsonObject getJsonBodyAsJsonObject() {
-        IJsonObject obj = getJsonBody(IJsonObject.class);
-        return obj;
+    public JsonObject getJsonBody() {
+        JsonObject obj = getJsonBody(JsonObject.class);
+        return obj.clone(false);
     }
 
     @Override
@@ -538,7 +564,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
                 return null;
             }
 
-            return getJsonManager().fromJsonInputStream(inputStream, clazz);
+            return getJsonManager().fromInputStream(inputStream, clazz);
 
         } catch(Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -546,9 +572,9 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IJsonObject getXmlBodyAsJsonObject() {
-        IJsonObject obj = getXmlBody(IJsonObject.class);
-        return obj;
+    public JsonObject getXmlBodyAsJsonObject() {
+        JsonObject obj = getXmlBody(JsonObject.class);
+        return obj.clone(false);
     }
 
     @Override
@@ -574,10 +600,10 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public Map<String, List<String>> getFormDatasAsMap() {
+    public Map<String, List<String>> getFormDataRaw() {
         if(this.formDatasAsImmutableMap == null) {
 
-            Map<String, List<String>> formDatasServer = getServer().getFormDatas(getExchange());
+            Map<String, List<String>> formDatasServer = getServer().getFormData(getExchange());
             Map<String, List<String>> formDatasFinal = new HashMap<String, List<String>>();
 
             if(formDatasServer == null) {
@@ -599,32 +625,128 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public IJsonObject getFormDatas() {
+    public JsonObject getFormData() {
 
         if(this.formDatasAsImmutableJsonObject == null) {
-            IJsonObject obj = getJsonManager().create(getFormDatasAsMap(), true);
-            this.formDatasAsImmutableJsonObject = obj.clone(false); // false => immutable clone
+
+            Map<String, List<String>> formDatasRaw = getFormDataRaw();
+
+            Map<String, Map<Integer, String>> formDataArrays = new LinkedHashMap<String, Map<Integer, String>>();
+            JsonObject obj = getJsonManager().create();
+            for(Entry<String, List<String>> entry : formDatasRaw.entrySet()) {
+
+                String key = entry.getKey();
+                if(key == null) {
+                    continue;
+                }
+
+                List<String> values = entry.getValue();
+
+                //==========================================
+                // If the key ends with "[X]" we considere
+                // that it is part of an *ordered* array, which
+                // means the position of the elements are defined.
+                //==========================================
+                Matcher matcher = getFormDataArrayPattern().matcher(key);
+                if(matcher.matches()) {
+
+                    if(values.size() > 1) {
+                        this.logger.error("More than one Form Data received with the array " +
+                                          "index name \"" + key + "\", " +
+                                          "we'll only keep the last element.");
+
+                        values = values.subList(values.size() - 1, values.size());
+                    }
+                    String value = values.get(0);
+
+                    String arrayPart = matcher.group(1);
+                    String indexStr = matcher.group(2);
+
+                    Integer index = Integer.parseInt(indexStr);
+
+                    key = key.substring(0, key.length() - arrayPart.length());
+
+                    Map<Integer, String> valuesMap = formDataArrays.get(key);
+                    if(valuesMap == null) {
+
+                        //==========================================
+                        // TreeMap : we sort the values using there
+                        // required position in the final array.
+                        //==========================================
+                        valuesMap = new TreeMap<>();
+                        formDataArrays.put(key, valuesMap);
+                    }
+                    valuesMap.put(index, value);
+                } else {
+
+                    //==========================================
+                    // If there are multiple elements with the same key,
+                    // we create an array.
+                    // Also if the key ends with "[]" we also considere
+                    // the element as being is part of an array.
+                    //
+                    // The elemens in this array are ordred as they
+                    // are received.
+                    //==========================================
+                    if(values.size() > 1 || key.endsWith("[]")) {
+
+                        if(key.endsWith("[]")) {
+                            key = key.substring(0, key.length() - "[]".length());
+                        }
+
+                        JsonArray array = getJsonManager().createArray();
+                        array.addAll(values);
+                        obj.put(key, array);
+                    } else {
+                        if(values.size() > 0) {
+                            obj.put(key, values.get(0));
+                        } else {
+                            obj.put(key, null);
+                        }
+                    }
+                }
+            }
+
+            //==========================================
+            // We add the ordered arrays
+            //==========================================
+            for(Entry<String, Map<Integer, String>> entry : formDataArrays.entrySet()) {
+
+                String key = entry.getKey();
+                Map<Integer, String> valuesMap = entry.getValue();
+
+                //==========================================
+                // The base array may already exist...
+                //==========================================
+                JsonArray array;
+                Object arrayObj = obj.getObject(key);
+                if(arrayObj != null && (arrayObj instanceof JsonArray)) {
+                    array = (JsonArray)arrayObj;
+                } else {
+                    array = getJsonManager().createArray();
+                }
+
+                LinkedList<Integer> indexes = new LinkedList<Integer>(valuesMap.keySet());
+                Integer lastIndex = indexes.getLast();
+                for(int i = 0; i <= lastIndex; i++) {
+                    if(valuesMap.containsKey(i)) {
+                        array.add(valuesMap.get(i));
+                    } else if(!array.isElementExists(i)) {
+                        array.add(null);
+                    }
+                }
+
+                obj.put(key, array);
+            }
+
+            //==========================================
+            // We make it immutable! This allows the caching
+            // of already evaluated JsonPaths...
+            //==========================================
+            this.formDatasAsImmutableJsonObject = obj.clone(false);
         }
 
         return this.formDatasAsImmutableJsonObject;
-    }
-
-    @Override
-    public List<String> getFormData(String name) {
-        IJsonArray arr = getFormDatas().getJsonArray(name, null);
-        if(arr == null) {
-            return new ArrayList<String>();
-        }
-        return arr.convertToStringList();
-    }
-
-    @Override
-    public String getFormDataFirst(String name) {
-        List<String> values = getFormData(name);
-        if(values != null && values.size() > 0) {
-            return values.get(0);
-        }
-        return null;
     }
 
     @Override
@@ -699,7 +821,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public List<IETag> getEtagsFromIfMatchHeader() {
+    public List<ETag> getEtagsFromIfMatchHeader() {
 
         if(this.ifMatchETags == null) {
             synchronized(this.ifMatchETagsLock) {
@@ -713,7 +835,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
     }
 
     @Override
-    public List<IETag> getEtagsFromIfNoneMatchHeader() {
+    public List<ETag> getEtagsFromIfNoneMatchHeader() {
 
         if(this.ifNoneMatchETags == null) {
             synchronized(this.ifNoneMatchETagsLock) {
@@ -726,9 +848,9 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
         return this.ifNoneMatchETags;
     }
 
-    protected List<IETag> parseETagHeader(String headerName) {
+    protected List<ETag> parseETagHeader(String headerName) {
 
-        List<IETag> etags = new ArrayList<IETag>();
+        List<ETag> etags = new ArrayList<ETag>();
 
         List<String> eTagHeaders = getHeader(headerName);
         if(eTagHeaders != null) {
@@ -739,7 +861,7 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
                 String[] tokens = eTagHeader.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 for(String eTagStr : tokens) {
                     try {
-                        IETag eTag = getEtagFactory().deserializeHeaderValue(eTagStr);
+                        ETag eTag = getEtagFactory().deserializeHeaderValue(eTagStr);
                         etags.add(eTag);
                     } catch(Exception ex) {
                         this.logger.info("Invalid " + headerName + " ETag header value received: " + eTagStr);
@@ -792,6 +914,48 @@ public class SpincastRequestRequestContextAddon<R extends IRequestContext<?>>
             this.logger.info("Invalid '" + headerName + "' date received: " + value);
         }
         return null;
+    }
+
+    @Override
+    public boolean isFlashMessageExists() {
+        return getFlashMessage(false) != null;
+    }
+
+    @Override
+    public FlashMessage getFlashMessage() {
+        if(!this.flashMessageRetrieved) {
+            this.flashMessageRetrieved = true;
+            this.flashMessage = getFlashMessage(true);
+        }
+
+        return this.flashMessage;
+    }
+
+    protected FlashMessage getFlashMessage(boolean removeIt) {
+
+        String flashMessageId = null;
+
+        //==========================================
+        // TODO Maybe we should use a user session.
+        //==========================================
+        Cookie cookie = getRequestContext().cookies().getCookie(getSpincastConfig().getCookieNameFlashMessage());
+        if(cookie != null) {
+            flashMessageId = cookie.getValue();
+            if(removeIt) {
+                getRequestContext().cookies().deleteCookie(getSpincastConfig().getCookieNameFlashMessage());
+            }
+        //==========================================@formatter:off 
+        // In the queryString?
+        //==========================================@formatter:on
+        } else {
+            flashMessageId = getQueryStringParamFirst(getSpincastConfig().getQueryParamFlashMessageId());
+        }
+
+        FlashMessage flashMessage = null;
+        if(flashMessageId != null) {
+            flashMessage = getFlashMessagesHolder().getFlashMessage(flashMessageId, removeIt);
+        }
+        return flashMessage;
     }
 
 }

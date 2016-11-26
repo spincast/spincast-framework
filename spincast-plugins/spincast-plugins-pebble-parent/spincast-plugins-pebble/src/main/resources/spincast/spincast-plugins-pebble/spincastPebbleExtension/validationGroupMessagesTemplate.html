@@ -1,0 +1,14 @@
+<div class="validationGroupMessages">
+    {% for message in validation.messages %}
+    
+        {% set msgClass = "msgError" %}
+        {% if message.level == "SUCCESS" %}
+            {% set msgClass = "msgSuccess" %}
+        {% elseif message.level == "WARNING" %}
+            {% set msgClass = "msgWarning" %}
+        {% endif %}
+        
+        <span class='help-block {{msgClass}}'>{{message.text}}</span>
+        
+    {% endfor %}
+</div>

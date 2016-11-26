@@ -1,0 +1,1655 @@
+{#==========================================
+Docs : "Validation"
+==========================================#}
+
+<section id="validation">
+    <h3>
+        <a class="anchor" href="#validation" title="permanent link"></a>
+        Validation
+    </h3>
+    <p>
+        Spincast provides a good set of utilities to validate objects. We decided to base those utilities 
+        on plain Java code and not on annotations. Validation annotations may seem convenient at first, 
+        but, in a real project, you quickly realize that you can't express all the details you need : you can't use complex 
+        logic, you can't validate an element
+        based on the result of the validation of another element, etc. In general, you end up writing plain Java code anyway 
+        in addition to those annotations... But then your validation logic is scattered in many places and this is
+        not the ideal.
+    </p>
+    <p> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" />  
+        In Spincast, you validate an object using three main steps :
+        
+        <ol class="normal">
+            <li>
+                You create a <a href="#validation_sets">Validation Set</a> instance. This is a
+                container where the results of the validation will be saved.
+            </li>
+            <li>
+                <p>
+                    You use <a href="#validation_predefined">Predefined Validations</a> or custom
+                    validation code to actually validate the object. Those validations may result
+                    in <a href="#validation_messages">Validation Messages</a>. Most of the time those
+                    are <code><em>Error</em> Validation Messages</code> resulting from failed validations
+                    (<em>"This email is invalid"</em>, for example). 
+                </p>
+            </li>
+            <li>
+                When the validation is all done, you use the resulting <code>Validation Messages</code> by retrieving 
+                them from the <code>Validation Set</code>. In general, you want to display them to a user, or
+                you generate some kind of report.
+            </li> 
+        </ol>
+    </p> 
+    <p>
+        Here's a quick example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>// Creation of a Validation Set
+ValidationSet myValidationSet = getValidationFactory().createValidationSet();
+
+// The object we're going to validate
+User user = getUser();
+
+// Validates the email of the user using the 
+// "validationEmail()" predefined validation
+myValidationSet.validationEmail()
+               .key("email")
+               .element(user.getEmail())
+               .validate();
+                                           
+// Validates the username of the user, using
+// custom validation code
+String username = user.getUsername();
+if(username == null || username.length() &lt; 3 || username.length() &gt; 42) {
+    myValidationSet.addError("username",
+                             "USERNAME_INVALID",
+                             "Must contain between 3 and 42 characters.");  
+}
+
+// Uses/Displays the resulting Validation Messages
+if(!myValidationSet.isValid()) {
+    
+    Map&lt;String, List&lt;ValidationMessage&gt;&gt; validationMessages = myValidationSet.getMessages();
+    
+    // ... do something with the messages
+}
+</pre>
+                  
+            </p>
+        </div> 
+    </p> 
+    <p>
+        In the <a href="#validation_jsonobject">JsonObject validation</a> section, we'll see that 
+        validation is even easier when done using <a href="#jsonobject">JsonObjects</a>...
+    </p>
+
+    <h4>
+        <a class="anchor_small" href="#validation_sets" id="validation_sets" title="permanent link"></a>
+        The Validation Set
+    </h4>
+    <p>
+        At the core of a validation process, is a <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html">ValidationSet</a>.
+        A <code>Validation Set</code> is a set of <a href="#validation_messages">Validation Messages</a> and of
+        utility methods. It acts as a container to save the results of the various validations 
+        run on an object.
+    </p> 
+    <p>
+        For example, let's say we validate a <code>User</code> object. At the end of this validation, the resulting <code>Validation Set</code> may 
+        contain two <code>Validation Messages</code>&nbsp;:
+        
+        <ul>
+            <li>
+                An <code><em>Error</em> Validation Message</code> : <em>"The email is invalid."</em>
+            </li>
+            <li>
+                A <code><em>Success</em> Validation Message</code> : <em>"This username is available!"</em>
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        There are two ways of creating a <code>Validation Set</code> instance : 
+        
+        <ul>
+            <li>
+                By injecting and using the 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationFactory.html">ValidationFactory</a> :
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java"
+>ValidationFactory validationFactory = getValidationFactory();
+ValidationSet validationSet = validationFactory.createValidationSet();</pre> 
+                    </p>
+                </div>
+            </li>
+            <li>
+                By using the <code>validationSet(...)</code> method on a <code>JsonObject</code> :
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java"
+>JsonObject responseModel = context.response().getModel();
+JsonObjectValidationSet validationSet = responseModel.validationSet();</pre> 
+                    </p>
+                </div>
+                
+                <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                When you get a <code>Validation Set</code> this way, it is <em>bound</em> to the
+                <code>JsonObject</code> it originates from. A
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/JsonObjectValidationSet.html"><em>JsonObjectValidationSet</em></a> 
+                is returned instead of a plain <code>Validation Set</code>, and you have access to extra methods dedicated
+                to validate the associated <code>JsonObject</code>. We'll see that in details in the
+                <a href="#validation_jsonobject">JsonObject validation</a> section.
+            </li>
+        </ul>
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        A <code>Validation Set</code> is more than a simple container to store the
+        validation results. It also provides <a href="#validation_predefined">Predefined Validations</a> 
+        and a bunch of other utility methods. Those utility methods are :
+        
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">ValidationSet <span>addMessage</span>(String validationKey, ValidationMessage validationMessage)</code>
+                <div class="well">
+                     Adds a new <code>Validation Message</code> to this set, using the
+             specified validation key.
+            
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationSet <span>addMessage</span>(String validationKey, ValidationLevel messageLevel, String code, String text)</code>
+                <div class="well">
+                     Creates and adds a new <code>Validation Message</code>.
+            
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationSet <span>addError</span>(String validationKey, String code, String text)</code>
+                <div class="well">
+                     Creates and adds a new <code>Error Validation Message</code>.
+            
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationSet <span>addWarning</span>(String validationKey, String code, String text)</code>
+                <div class="well">
+                     Creates and adds a new <code>Warning Validation Message</code>.
+            
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationSet <span>addSuccess</span>(String validationKey, String code, String text)</code>
+                <div class="well">
+                     Creates and adds a new <code>Success Validation Message</code>.
+            
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationSet <span>mergeValidationSet</span>(ValidationSet set)</code>
+                <div class="well">
+                     Merges an existing <code>Validation Set</code>.
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationSet <span>mergeValidationSet</span>(String validationKeyPrefix, ValidationSet result)</code>
+                <div class="well">
+                     <p>
+                         Merges an existing <code>Validation Set</code> but prefixes all the
+                         validation keys with the specified <code>validationKeyPrefix</code>.
+                     </p>
+                     <p>
+                         The <code><em>validationKeyPrefix</em></code> parameter allows you to merge a <code>Validation Set</code>
+                         resulting from a validation not performed directly on your current <code>Validation Set</code>
+                         (you may be reusing an external Validator for example) and still have the keys of
+                         the merged <code>Validation Messages</code> to properly represent <code>JsonPaths</code> 
+                         on your current Set. We'll talk about that in a next section...
+                     </p>
+            
+                    <div class="apiItemFooter">
+                        @return itself (fluent style)
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>hasMessages</span>()</code>
+                <div class="well">
+                     Does this <code>Validation Set</code> contain any 
+                     <code>Validation Messages</code>?
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>hasMessages</span>(String validationKey)</code>
+                <div class="well">
+                    Are there some <code>Validation Messages</code> associated with the
+                    specified validation key?
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isWarning</span>()</code>
+                <div class="well">
+                    Returns <code>true</code> if the <code>Validation Set</code>
+                    contains at least one <code><em>Warning</em> Validation Message</code>, but no
+                    <code><em>Error</em> Validation Messages</code>.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isWarning</span>(String validationKey)</code>
+                <div class="well">
+                    Returns <code>true</code> if there is
+                    at least one <code><em>Warning</em> Validation Message</code>, but no
+                    <code><em>Error</em> Validation Messages</code> associated with the
+                    specified validation key.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isSuccess</span>()</code>
+                <div class="well">
+                    Returns <code>true</code> if the validation set
+                    only contains <code><em>Success</em> Validation Messages</code>
+                    (or contains no messages at all).
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isSuccess</span>(String validationKey)</code>
+                <div class="well">
+                    Returns <code>true</code> if there are
+                    only <code><em>Success</em> Validation Messages</code>associated with the
+                    specified validation key (or contains no messages at all).
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isError</span>()</code>
+                <div class="well">
+                    Returns <code>true</code> if the validation set
+                    contains at least one <code><em>Error</em> Validation Message</code>.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isError</span>(String validationKey)</code>
+                <div class="well">
+                    Returns <code>true</code> if there is at least
+                    one <code><em>Error</em> Validation Message</code> associated with the
+                    specified validation key.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isValid</span>()</code>
+                <div class="well">
+                    <p>
+                        Returns <code>true</code> if the <code>Validation Set</code>
+                        does not contain any <code><em>Error</em> Validation Messages</code>.
+                        The set can contain <code><em>Warning</em> Validation Message</code>
+                        and <code><em>Success</em> Validation Message</code>.
+                    </p>
+                    <p>
+                        This is a synonym of <code>!isError()</code>.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">boolean <span>isValid</span>(String validationKey)</code>
+                <div class="well">
+                    <p>
+                        Returns <code>true</code> if there are no
+                        <code><em>Error</em> Validation Messages</code> associated with the
+                        specified validation key.
+                        There can be <code><em>Warning</em> Validation Message</code>
+                        and <code><em>Success</em> Validation Message</code>.
+                    </p>
+                    <p>
+                        This is a synonym of <code>!isError(validationKey)</code>.
+                    </p>
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">Map&lt;String, List&lt;ValidationMessage&gt;&gt; <span>getMessages</span>()</code>
+                <div class="well">
+                    <p>
+                        Gets the <code>Validation Messages</code>, with their
+                        associated <em>validation keys</em> as the leys of the Map.
+                    </p>
+                    <p>
+                        The Map and the List values are immutable.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">List&lt;ValidationMessage&gt; <span>getMessages</span>(String validationKey)</code>
+                <div class="well">
+                    <p>
+                        Gets the <code>Validation Messages</code> associated with the
+                        specified validation key.
+                    </p>
+                    <p>
+                        The Map and the List values are immutable.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getMessagesFormatted</span>(ValidationMessageFormatType formatType)</code>
+                <div class="well">
+                     Quick way to get a <em>formatted version</em> of the <code>Validation Messages</code>.
+            
+                    <div class="apiItemFooter">
+                        <br />@param formatType The type of output for the messages (Text, HTML, Json or XML).
+                        <br />@return the formatted messages or <code>null</code> if
+                         there are no validation messages.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">String <span>getMessagesFormatted</span>(String validationKey, ValidationMessageFormatType formatType)</code>
+                <div class="well">
+                     Quick way to get a <em>formatted version</em> of the <code>Validation Messages</code>
+                     associated with the specified validation key.
+            
+                    <div class="apiItemFooter">
+                        <br />@param formatType The type of output for the messages (Text, HTML, Json or XML).
+                        <br />@return the formatted messages or <code>null</code> if
+                         there are no validation messages.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">public JsonObject <span>convertToJsonObject</span>()</code>
+                <div class="well">
+                    <p>
+                        Converts the <code>Validation Set</code> to a <code>JsonObject</code> object.
+                        Read the <a href="#validation_to_jsonobject">Converting to a JsonObject </a> 
+                        section to see what the resulting
+                        <code>JsonObject</code> object looks like!
+                     </p>
+                     <p>
+                         The resulting <code>JsonObject</code> object
+                         is <em>immutable</em>.
+                     </p>
+                </div>
+            </li>
+        </ul>
+    </p> 
+    
+    <h4>
+        <a class="anchor_small" href="#validation_messages" id="validation_messages" title="permanent link"></a>
+        Validation Messages
+    </h4>
+    <p>
+        A <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationMessage.html">ValidationMessage</a>
+        is composed of three things :
+        
+        <ul>
+            <li>
+                A <code>Validation Level</code>. This level can be :
+                <ul>
+                    <li>
+                        <code>Error</code>  
+                    </li>
+                    <li>
+                        <code>Warning</code>  
+                    </li>
+                    <li>
+                        <code>Success</code>  
+                    </li>
+                </ul>
+            </li>
+            <li>
+                A <code>text</code>, which is the description of the validation result. For
+                example : <em>"This email is invalid"</em>.
+            </li>
+            <li>
+                A <code>code</code>, which in general is a constant representing the 
+                <em>type</em> of validation this <code>Validation Message</code> is associated with. 
+                For example : <code>"VALIDATION_TYPE_EMAIL"</code>.
+            </li>
+        </ul>
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        When you add a <code>Validation Message</code> to a <code>Validation Set</code>, you
+        do so using a <a href="#validation_keys">validation key</a>. The validation key allows you
+        to retrieve the <code>Validation Messages</code> associated with a specific element from 
+        the <code>Validation Set</code>.
+    </p> 
+    <p>
+        Here's a quick example where we perform a validation and create a
+        <code>Validation Message</code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>
+
+ValidationSet validatorSet = validationFactory.createValidationSet();
+JsonObject user = getUser();
+        
+String thirdBookTitle = user.getString("user.books[2].title");
+if(containsNsfwWords(thirdBookTitle)) {
+    
+    ValidationMessage message = 
+            getValidationFactory().createMessage(ValidationLevel.WARNING, 
+                                                 "NSFW_MATERIAL", 
+                                                 "This book contains NSFW material.");
+                                                 
+    validatorSet.addMessage("user.books[2].title", message);
+}</pre> 
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">2</span> : We create a <code>Validation Set</code>.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">3</span> : The <code>user</code> (as a <code>JsonObject</code>) 
+                        that we're going to validate.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">5</span> : We get the title of the third book
+                        of the <code>user</code>. We use a
+                        <a href="#jsonobject_jsonpaths">JsonPath</a> to target it!
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">6</span> : We perform a manual validation
+                        on that title. We could use
+                        a <a href="#validation_predefined">Predefined Validation</a> too.  
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">8</span> : We create a <code>Validation Message</code> to
+                        represent the validation result.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">9</span> : The <code>level</code> of this Validation Message.
+                        Here, it's going to be a <code><em>Warning</em> Validation Message</code>. The two other possible levels are
+                        <code>Error</code> and <code>Success</code>.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">10</span> : The <code>code</code> (or <em>"type"</em>) of the validation 
+                        the <code>Validation Message</code> is associated with.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">11</span> : The <code>text</code> for the <code>Validation Message</code>.
+                    </li>
+                    
+                    <li>
+                        <span class="code-line-nbr">13</span> : We add the <code>Validation Message</code> to the
+                        <code>Validation Set</code> using the <code><em>"user.books[2].title"</em></code> validation key. 
+                        We'll see in the next section that using the
+                        <code>JsonPath</code> of the validated element as its validation key is often
+                        a good idea!
+                    </li> 
+                </ul>
+            </p>
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        <code>Validation Sets</code> also provides some methods to quickly add
+        <code>Validation Messages</code>, without having to create the messages manually.
+        For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="1,12,1,21|4,12,4,24|7,12,7,24"
+>// Creates and adds an Error Validation Message
+validatorSet.addError("user.books[2].title", "LENGTH", "The title is too long");
+
+// Creates and adds a Warning Validation Message
+validatorSet.addWarning("user.books[2].title", "LENGTH", "The title is rather long");
+
+// Creates and adds a Success Validation Message
+validatorSet.addSuccess("user.books[2].title", "LENGTH", "The title length is perfect");
+</pre> 
+            </p>
+        </div>  
+    </p> 
+    
+    <h4>
+        <a class="anchor_small" href="#validation_keys" id="validation_keys" title="permanent link"></a>
+        Validation Keys
+    </h4>
+    <p>
+        A <code><em>validation key</em></code> is used to associate
+        <code>Validation Messages</code> to the validated element they have been created for. 
+        You can think of a <code>Validation Set</code> as a big 
+        <code>Map&lt;String, List&lt;ValidationMessage&gt;&gt;</code> where the keys
+        are <code>validation keys</code> and where the values are the
+        <code>Validation Messages</code>.
+    </p>
+    <p> 
+        If you validate a simple <em>email</em> element for example, you could use <code><em>"email"</em></code> 
+        or <code><em>"email-validation"</em></code> as the validation key. It's up to you to choose
+        a meaningful name for the key : you will later use it to retrieve all the <code>Validation Messages</code>
+        associated with this element so you can display them, create a report from them, etc.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Even if you <em>can</em> use any string as a validation key, we suggest that
+        you stick to some conventions since a validation key must be unique and should well 
+        represent the element it is associated with. 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        The convention we suggest is that, when possible, you 
+        <em>use the <code>JsonPath</code> of the validated element as the validation key</em>.
+    </p>
+    <p>
+        Let's say we validate this <code>user</code> object :
+
+        <div>
+            <p>
+                <pre class="ace ace-json"
+>{
+    "name": "Stromgol",
+    "email": "test@example.com"
+    "books": [
+        {
+            "title" : "Dune",
+            "author": "Frank Herbert"
+        },
+        {
+            "title" : "The Hitchhiker's Guide to the Galaxy",
+            "author" : "Douglas Adams"
+        }
+    ]
+}</pre>       
+            </p>
+        </div> 
+    </p>
+    <p>
+        First, we will validate the email :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="8,28,8,33"
+>JsonObject user = getUser();
+
+// We create a Validation Set
+ValidationSet validationSet = getValidationFactory().createValidationSet();
+
+if(!isEmailValid(user.getString("email"))) {
+
+    // We add a Validation Message using "email" as the validation key
+    validationSet.addError("email", "EMAIL_VALIDATION", "Invalid email");  
+}</pre> 
+                  
+            </p>
+        </div> 
+    </p>
+    <p>
+        We can later retrieve the <code>Validation Messages</code> associated
+        with the email element using that <code>"email"</code> validation key :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="1,72,1,77"
+>
+
+List&lt;ValidationMessage&gt; validationMessages = validationSet.getMessages("email");
+</pre> 
+                  
+            </p>
+        </div> 
+    </p>
+    <p>
+        Very straightforward! But now let's try to do the thing with 
+        <em>the title of the first book</em> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="7,28,7,33|10,72,10,77"
+>// Gets the title of the first book, using its JsonPath
+String title = user.getString("books[0].title");
+
+if(!isTitleValid(title) {
+
+    // We add a Validation Message using "title" as the validation key...
+    // This may not be a good idea!
+    validationSet.addError("title", "TITLE_VALIDATION", "Invalid title");  
+}
+ 
+List&lt;ValidationMessage&gt; validationMessages = validationSet.getMessages("title");
+</pre>        
+            </p>
+        </div>  
+    </p>
+    <p>
+        We may be tempted to use a very short name as the validation key, <code>"title"</code>
+        for example. It would work, but it's not a very good idea... The problem is that now 
+        the validation key <em>doesn't well represent
+        the validated element it is associated with</em>. Remember that each validation key
+        must be unique. What happens if we also want to validate the
+        title of the <em>second</em> book? Or if there are more than one user with books to validate?
+        What validation keys will we use then? We can't use the same <code>"title"</code> 
+        validation key for more than one element!
+    </p>
+    <p>
+        Since each element of a <code>JsonObject</code> already has a unique identifier, which is its
+        <a href="#jsonobject_jsonpaths">JsonPath</a>, why not use this identifier as
+        its validation key? 
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="8,28,8,42|11,72,11,86"
+>// Gets the title of the first book, using its JsonPath
+String title = user.getString("books[0].title");
+
+if(!isTitleValid(title) {
+
+    // We add a Validation Message using the JsonPath
+    // of the validated element as the validation key : 
+    // much better!
+    validationSet.addError("books[0].title", "TITLE_VALIDATION", "Invalid title");  
+}
+ 
+List&lt;ValidationMessage&gt; validationMessages = validationSet.getMessages("books[0].title");
+</pre>        
+            </p>
+        </div>  
+
+    </p>
+    <p> 
+        Now there won't be any conflict, even if there are a lot of validation keys in our
+        <code>Validation Set</code>, and every key will be clearly indicate which validated
+        element it is associated with!
+    </p>
+    <p> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Note that there are situations where you <em>can't</em> use a <code>JsonPath</code>
+        for a validation key. You don't always validate elements individually, for instance. Sometimes, 
+        a <em>combination</em> of elements is invalid, and therefore no <code>JsonPath</code>
+        is available.
+    </p>
+    <p> 
+        In those situations, we suggest that you scope the validation key as much as possible, and that you 
+        use creativity in order to make the key unique and meaningful!
+    </p>
+    <p> 
+        For example, let's say that an <code>HTML</code> form has been submitted
+        and you need to validate that two passwords from it match. If they don't match,
+        you could had an <code>Error Validation Message</code> for <em>both</em> of those elements, or only
+        for the second one (you could say that only the second one is invalid since it doesn't match the first one).
+        But you could also want to add a <code>Validation Message</code> to represent that invalid <em>combination</em>,
+        not the fields taken individually. 
+        You may want to display a <code>"The passwords
+        don't match"</code> error in the <em>section</em> where both fields are, for example.
+    </p>
+    <p> 
+        In such situations, you can't use a <code>JsonPath</code> as the validation key, since you are
+        not referring to a single element. But we suggest that you still try to <em>scope</em> the validation key, 
+        so it is as unique and meaningful as possible. For example, that key could be
+        <code>"myForm.user.<strong>passwordsMatch</strong>"</code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,39,5,60|6,39,6,60|12,28,12,54"
+>ValidationSet validationSet = getValidationFactory().createValidationSet();
+
+JsonObject formData = context.request().getFormData();
+
+// Gets the passwords using their JsonPath
+String password1 = formData.getString("myForm.user.password1", "");
+String password2 = formData.getString("myForm.user.password2", "");
+if(!password1.equals(password2)) {
+
+    // Use a scoped and meaningful
+    // validation key, even if it's not 
+    // a true JsonPath!
+    validationSet.addError("myForm.user.passwordsMatch", 
+                           "PASSWORDS_MATCH", 
+                           "The password don't match!");  
+</pre>        
+            </p>
+        </div>  
+         
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        A question remains : what happens to this <em>"Use the JsonPath of a validated element as its validation key"</em>
+        convention when we validate an element 
+        <em>using an external Validator</em>? For example, we may have a <code>TitleValidator</code>
+        that can be reused in multiple places in our application. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="6,35,6,65"
+>ValidationSet validationSet = getValidationFactory().createValidationSet();
+
+String title = getUser().getString("books[0].title");
+
+TitleValidator titleValidator = getTitleValidator();
+
+ValidationSet titleValidationSet = titleValidator.validate(title);
+
+validationSet.mergeValidationSet(titleValidationSet);
+
+// Oups! 
+// The validation key is "title" here, not "books[0].title" as we
+// would like...
+List&lt;ValidationMessage&gt; messages = validationSet.getMessages("title");
+</pre>        
+            </p>
+            
+            External validators return a <code>Validation Set</code> and you merge 
+            this set to your own local set [<span class="code-line-nbr">9</span>] (you can learn
+            more about merging <code>Validation Sets</code> in the 
+            <a href="#validation_sharing_sets">Sharing / Merging Validation Sets</a> section).
+        </div>  
+        
+    </p>
+    <p>
+        The problem here is that <code>TitleValidator</code> has no idea of the position of the
+        <code>"title"</code> element inside our <em>local</em> user object! It will see the <code>"title"</code> element
+        as being a root element and therefore it won't generate a validation key respecting our <em>local</em>
+        <code>JsonPath</code>... It will probably simply use <code>"title"</code> as the validation key.
+    </p>
+    <p>
+        For this reason, the <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html#mergeValidationSet-java.lang.String-org.spincast.core.validation.ValidationSet-">mergeValidationSet(...)</a> 
+        method accepts a <code><em>"validationKeyPrefix"</em></code> parameter. If this parameter is specified, all the validation keys
+        will be prefixed with it when merged :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="10,34,10,43|14,62,14,76"
+>ValidationSet validationSet = getValidationFactory().createValidationSet();
+
+String title = getUser().getString("books[0].title");
+
+TitleValidator titleValidator = getTitleValidator();
+
+// We use the external validator
+ValidationSet titleValidationSet = titleValidator.validate(title);
+
+// We prefixe the merged validation keys
+validationSet.mergeValidationSet("books[0].", titleValidationSet);
+
+// The Validation Messages can now be retrieved using
+// JsonPaths thast are valid on our validated root object!
+List&lt;ValidationMessage&gt; messages = validationSet.getMessages("books[0].title");
+</pre>        
+            </p>
+        </div>  
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        There is also a <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html#prefixValidationKeys-java.lang.String-">prefixValidationKeys(...)</a>
+        method which can be used to prefix the validation keys of a <code>Validation Set</code> <em>directly</em>, without having to merge
+        this set into another one. This can be useful, for example if you want to prefix the validation keys before adding
+        a <code>Validation Set</code> to a <code><em>JsonObject</em></code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,13,5,49"
+>// Uses an external validator
+ValidationSet validationSet = getExternalValidator().validate(someObject);
+        
+// Prefixes the resulting validation keys
+// *directly on the Validation Set*
+validationSet.prefixValidationKeys("someObject.");
+
+// Adds the Validation Set (with the validation keys
+// now modified) to the response model
+context.response().getModel().put("validation", validationSet);</pre>        
+            </p>
+        </div>    
+    </p>
+    
+    
+    <h4>
+        <a class="anchor_small" href="#validation_predefined" id="validation_predefined" title="permanent link"></a>
+        Predefined Validations
+    </h4>
+    <p>
+        Spincast provides some predefined validations to help validate an object.
+        They are defined on the <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html">ValidationSet</a> 
+        interface so there are easily accessible during a validation process. Let's have a look at an example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="8,41,8,62|13,31,13,54"
+>// We create an inital Validation Set
+ValidationSet myValidatorSet = getValidationFactory().createValidationSet();
+
+// This is a username we're going to validate!
+String username = getSomeUsername();
+
+// Validates that the username is not blank and, only if 
+// it's not, validates that it contains at least 3 characters.
+ValidationSet lastResult = myValidatorSet.validationNotBlank()
+                                         .key("username")
+                                         .element(username)
+                                         .validate();
+if(lastResult.isValid()) {
+    lastResult = myValidatorSet.validationMinLength(3)
+                               .key("username")
+                               .element(username)
+                               .validate();
+}
+</pre> 
+            </p>
+            <p>
+                <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                Notice that a predefined validation returns it's own <code>Validation Set</code> [<span class="code-line-nbr">9</span>]! This
+                allows you to conditionally apply a validation <em>depending on the result of a previous
+                one</em> [<span class="code-line-nbr">13</span>].
+            </p> 
+        </div>
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        To use a predefined validation :
+        
+        <ul>
+            <li>
+                You call the associated <code>validateXXXXXX(...)</code> method
+                on your <code>Validation Set</code>. For example : <code>myValidatorSet.validationNotBlank()</code>.
+                This starts a builder to create the validation.
+            </li>
+            <li>
+                You specify a <code>validation key</code> 
+                using the <code>"key(...)"</code> method on the builder. This key associate 
+                the resulting <code>Validation Messages</code> to the validated elements.
+                For example :
+                <code>.key("username")</code>.
+            </li>
+            <li>
+                You specify the <code>element</code> to validate. For example :
+                <code>.element(username)</code>.
+            </li>
+            <li>
+                You finally call <code>.validate()</code> to perform the actual validation.
+            </li> 
+        </ul>
+    </p> 
+    <p>
+        When the <code>validate()</code> method is called, the validation
+        is perform and :
+        
+        <ul>
+            <li>
+                The resulting <code>Validation Messages</code> are automatically added to the root <code>Validation Set</code>.
+            </li>
+            <li>
+                A new <code>Validation Set</code>, <em>representing this particular validation only</em>, is
+                returned. This allows you to conditionally apply a validation depending on the result of a previous
+                one.
+            </li>
+        </ul>
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Here's the list the predefined validations available on a <code>Validation Set</code> :
+        <ul class="apiList">
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationNotBlank</span>()</code>
+                <div class="well">
+                     Starts the creation of a "not blank" validation (<code>null</code>, empty or 
+                     spaces only).
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationBlank</span>()</code>
+                <div class="well">
+                     Starts the creation of a "must be blank" validation.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationEmail</span>()</code>
+                <div class="well">
+                     Starts the creation of an email validation.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationNotNull</span>()</code>
+                <div class="well">
+                     Starts the creation of a "not null" validation.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationNull</span>()</code>
+                <div class="well">
+                     Starts the creation of a "must be null" validation.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationPattern</span>(String pattern)</code>
+                <div class="well">
+                     Starts the creation of a "pattern must match" validation.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationNotPattern</span>(String pattern)</code>
+                <div class="well">
+                     Starts the creation of a "pattern must not match" validation.
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationSize</span>(int size, boolean ignoreNullValues)</code>
+                <div class="well">
+                     Starts the creation of a "size" validation.
+            
+                    <div class="apiItemFooter">
+                        @param ignoreNullValues If <code>true</code>, <code>null</code> values will
+                        be ignored in the total count. For example, if the validation
+                        is run on a <code>JsonArray</code> which is <code>[null, null "abc"]</code>,
+                        then the size would be : <em>"3"</em> if <code>ignoreNullValues</code> is <code>false</code>, 
+                        <em>"1"</em> if it's <code>true</code>.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationMinSize</span>(int minSize, boolean ignoreNullValues)</code>
+                <div class="well">
+                     Starts the creation of a "minimum size" validation.
+            
+                    <div class="apiItemFooter">
+                        @param ignoreNullValues If <code>true</code>, <code>null</code> values will
+                        be ignored in the total count. For example, if the validation
+                        is run on a <code>JsonArray</code> which is <code>[null, null "abc"]</code>,
+                        then the size would be : <em>"3"</em> if <code>ignoreNullValues</code> is <code>false</code>, 
+                        <em>"1"</em> if it's <code>true</code>.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationMaxSize</span>(int maxSize, boolean ignoreNullValues)</code>
+                <div class="well">
+                     Starts the creation of a "maximum size" validation.
+            
+                    <div class="apiItemFooter">
+                        @param ignoreNullValues If <code>true</code>, <code>null</code> values will
+                        be ignored in the total count. For example, if the validation
+                        is run on a <code>JsonArray</code> which is <code>[null, null "abc"]</code>,
+                        then the size would be : <em>"3"</em> if <code>ignoreNullValues</code> is <code>false</code>, 
+                        <em>"1"</em> if it's <code>true</code>.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationLength</span>(int length)</code>
+                <div class="well">
+                     Starts the creation of a "length" validation.
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationMinLength</span>(int minLength)</code>
+                <div class="well">
+                     Starts the creation of a "minimum length" validation.
+             <p>
+             A <code>null</code> value makes this validation fail, otherwise
+             <code>toString()</code> is called on the object to
+             check its "length".
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationMaxLength</span>(int maxLength)</code>
+                <div class="well">
+                     Starts the creation of a "maximum length" validation.
+             <p>
+             A <code>null</code> value is a success, otherwise
+             <code>toString()</code> is called on the object to
+             check its "length".
+            
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationEquivalent</span>(Object reference)</code>
+                <div class="well">
+                    <p>
+                        Starts the creation of a "equivalent" validation.
+                    </p>
+                    <p>
+                        To validate if an element is <em>equivalent</em> to another,
+                        one is converted to the type of the other (when this is required).
+                        If this conversion fails, the elements are not equivalent. When both
+                        elements are of the same type, they are compared using their <code>equals(...)</code>
+                        method. This process is done in the
+                        <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/ObjectConverter.html#isEquivalent-java.lang.Object-java.lang.Object-">ObjectConverter#isEquivalent(...)</a>
+                        method.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationNotEquivalent</span>(Object reference)</code>
+                <div class="well">
+                    <p>
+                        Starts the creation of a "not equivalent" validation.
+                    </p>
+                    <p>
+                        To validate if an element is <em>equivalent</em> to another,
+                        one is converted to the type of the other (when this is required).
+                        If this conversion fails, the elements are not equivalent. When both
+                        elements are of the same type, they are compared using their <code>equals(...)</code>
+                        method. This process is done in the
+                        <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/ObjectConverter.html#isEquivalent-java.lang.Object-java.lang.Object-">ObjectConverter#isEquivalent(...)</a>
+                        method.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationLess</span>(Object reference) throws CantCompareException</code>
+                <div class="well">
+                
+                    <p>
+                        Starts the creation of a "less than" validation.
+                    </p>
+                    <p>
+                        To validate if an element is <em>less</em> than another,
+                        one is converted to the type of the other (when this is required).
+                        If this conversion fails, the elements can't be compared.
+                        The resulting type of the elements must implement the <code>Comparable</code> interface,
+                        so the <code>compareTo(...)</code> method is used to compare the two elements.
+                    </p>
+                    <p>
+                         An <code>null</code> element is always less than a <code>non-null</code> element.
+                    </p>
+                    <div class="apiItemFooter">
+                        @throws CantCompareException if the two elements can't be compared
+                        together.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationGreater</span>(Object reference) throws CantCompareException</code>
+                <div class="well">
+                
+                    <p>
+                        Starts the creation of a "greater than" validation.
+                    </p>
+                    <p>
+                        To validate if an element is <em>greater</em> than another,
+                        one is converted to the type of the other (when this is required).
+                        If this conversion fails, the elements can't be compared.
+                        The resulting type of the elements must implement the <code>Comparable</code> interface,
+                        so the <code>compareTo(...)</code> method is used to compare the two elements.
+                    </p>
+                    <p>
+                         An <code>null</code> element is always less than a <code>non-null</code> element.
+                    </p>
+                    <div class="apiItemFooter">
+                        @throws CantCompareException if the two elements can't be compared
+                        together.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationEquivalentOrLess</span>(Object reference) throws CantCompareException</code>
+                <div class="well">
+                
+                    <p>
+                        Starts the creation of a "equivalent or less" validation.
+                    </p>
+                    <p>
+                        To validate if an element is <em>equivalent or less</em> than another,
+                        one is converted to the type of the other (when this is required).
+                        If this conversion fails, the elements can't be compared.
+                        The resulting type of the elements must implement the <code>Comparable</code> interface,
+                        so the <code>compareTo(...)</code> method is used to compare the two elements.
+                    </p>
+                    <p>
+                         An <code>null</code> element is always less than a <code>non-null</code> element.
+                    </p>
+                    <div class="apiItemFooter">
+                        @throws CantCompareException if the two elements can't be compared
+                        together.
+                    </div>
+                </div>
+            </li>
+            
+            <li>
+                <code class="apiItem">ValidationBuilderKey <span>validationEquivalentOrGreater</span>(Object reference) throws CantCompareException</code>
+                <div class="well">
+                
+                    <p>
+                        Starts the creation of a "equivalent or greater" validation.
+                    </p>
+                    <p>
+                        To validate if an element is <em>equivalent or greater</em> than another,
+                        one is converted to the type of the other (when this is required).
+                        If this conversion fails, the elements can't be compared.
+                        The resulting type of the elements must implement the <code>Comparable</code> interface,
+                        so the <code>compareTo(...)</code> method is used to compare the two elements.
+                    </p>
+                    <p>
+                         An <code>null</code> element is always less than a <code>non-null</code> element.
+                    </p>
+                    <div class="apiItemFooter">
+                        @throws CantCompareException if the two elements can't be compared
+                        together.
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </p>
+    
+    <h4>
+        <a class="anchor_small" href="#validation_predefined_options" id="validation_predefined_options" title="permanent link"></a>
+        Predefine Validation options
+    </h4>
+    <p>
+        Some options are available during the process of using a predefine validation :
+        
+        <ul>
+            <li>
+                <p>
+                    Instead of validating a single element, using the
+                    <code>"element(...)"</code> method of the builder, you can validate
+                    a <code><em>JsonArray</em></code> of elements by using
+                    the <code>"all(...)"</code> method. Doing so, all the
+                    elements of the array will be validated and some 
+                    <code>Validation Messages</code> will potentially be added 
+                    for each of them!
+                </p>
+                <p>
+                    Note that, when such array is validated, the generated <code>validation keys</code>
+                    are going to be the key of the array + the
+                    position of the elements in the array. For example :
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="12,41,12,63"
+>ValidationSet myValidatorSet = validationFactory.createValidationSet();
+
+JsonArray titles = getJsonManager().createArray();
+titles.add("A valid title");
+titles.add("");
+titles.add("  ");
+titles.add(null);
+
+// Using ".all(titles)", this validates all the elements
+// of the array
+ValidationSet lastResult = myValidatorSet.validationNotBlank()
+                                         .key("titles")
+                                         .all(titles)
+                                         .validate();</pre> 
+                        </p>
+                    </div>
+                    In this example, the resulting <code>Validation Set</code> will contain
+                    three <code>Error Validation Messages</code> : one with the key <code>"titles[1]"</code>,
+                    one with the key <code>"titles[2]"</code>, and one with the key <code>"titles[3]"</code>.
+                    The first title (<code>"titles[0]"</code>) is valid so no <code>Validation Message</code> 
+                    will be added for it.  
+                </p>    
+            </li>
+            <li>
+                By default a <code>Validation Message</code> is added 
+                <em>only when the validation fails</em>. If you want to add a <code><em>Success</em> Validation Message</code>,
+                when the validation is sucessful, you can use the <code>"addMessageOnSuccess(...)"</code> method.
+                For example :
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java" data-ace-hi="9,41,9,63"
+>ValidationSet myValidatorSet = validationFactory.createValidationSet();
+
+JsonArray titles = getJsonManager().createArray();
+titles.add("A valid title");
+titles.add("");
+
+ValidationSet lastResult = myValidatorSet.validationNotBlank()
+                                         .key("titles")
+                                         .all(titles)
+                                         .addMessageOnSuccess()
+                                         .validate();</pre> 
+                    </p>
+                </div>
+                In this example, the resulting <code>Validation Set</code> will contain
+                two <code>Validation Messages</code> : a <code><em>Success</em> Validation Message</code> 
+                with the key <code>"titles[0]"</code> and an <code><em>Error</em> Validation Message</code> 
+                with the key <code>"titles[1]"</code>.  
+            </li>
+            <li>
+                When using the <code>"addMessageOnSuccess(...)"</code> method, you can
+                specify the <code>text</code> that is going to be used for the message 
+                (instead of the default one). For
+                example : 
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java" data-ace-hi="9,41,9,90"
+>ValidationSet myValidatorSet = validationFactory.createValidationSet();
+
+JsonArray titles = getJsonManager().createArray();
+titles.add("A valid title");
+titles.add("");
+
+ValidationSet lastResult = myValidatorSet.validationNotBlank()
+                                         .key("titles")
+                                         .all(titles)
+                                         .addMessageOnSuccess("A custom Success message!")
+                                         .validate();</pre> 
+                    </p>
+                </div> 
+            </li>
+            <li>
+                When a validation fails, an <code><em>Error</em> Validation Message</code> is generated by default.
+                If you want the failure of a validation to generate a 
+                <code><em>Warning</em> Validation Message</code> instead,
+                use the <code>"treatErrorAsWarning()"</code> method. But remember that a <code>Validation Set</code>
+                containing <code>Warning Validation Message</code> is still considered as being
+                <em>valid</em>, only <code><em>Error</em> Validation Messages</code> make it invalid! For example :
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java" data-ace-hi="7,41,7,63"
+>ValidationSet myValidatorSet = validationFactory.createValidationSet();
+
+String username = "";
+
+ValidationSet lastResult = myValidatorSet.validationNotBlank()
+                                         .key("username")
+                                         .element(username)
+                                         .treatErrorAsWarning()
+                                         .validate();
+                                         
+// There is now one *Warning* Validation Message
+// in our Validation Set
+myValidatorSet.getMessages().size(); // == 1
+
+// The level of the Validation Set is "Warning"
+myValidatorSet.isWarning(); // true
+myValidatorSet.isError(); // false
+myValidatorSet.isSuccess(); // false
+
+// The Validation Set is still valid!
+myValidatorSet.isValid(); // true</pre> 
+                  
+                    </p>
+                </div> 
+            </li>
+            <li>
+                You can specify the text to use for a <code>Validation Message</code> 
+                when a validation fails, using the 
+                <code>"failMessageText(...)"</code> method. The specified
+                text will then be used for the <code>Error Validation Message</code> if one
+                is generated, but also for a <code>Warning Validation Message</code> if
+                <code>"treatErrorAsWarning()"</code> is used.
+            </li>
+            <li>
+                <p>
+                    You can specify that a validation must <em>not be run</em> if some <code>Validation Messages</code>
+                    at a specific level already exist in the <code>Validation Set</code>.
+                </p>
+                <p>
+                    Let's say for example that
+                    you want to validate that a <code>username</code> contains at least 3 characters 
+                    but you only want to perform this validation <em>if the <code>username</code> is not blank 
+                    in the first place</em>! You
+                    could do this programmatically, but you can also pass a special parameter to the 
+                    <code>validate(...)</code> method : 
+                </p>
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-java" data-ace-hi="14,27,14,59"
+>ValidationSet myValidatorSet = validationFactory.createValidationSet();
+
+String username = "";
+
+ValidationSet lastResult = myValidatorSet.validationNotBlank()
+                                         .key("username")
+                                         .element(username)
+                                         .validate();
+
+// This validation is only going to be performed if
+// the Validation Set doesn't contain any errors yet                            
+lastResult = myValidatorSet.validationMinLength(3)
+                           .key("username")
+                           .element(username)
+                           .validate(ValidationLevel.ERROR);
+</pre> 
+                  
+                    </p>
+                </div> 
+                <p>
+                    In this example, the resulting <code>Validation Set</code> will only contain
+                    <em>one</em> <code>Validation Message</code> : the one for the
+                    "Not Blank" validation. The "Minimum Length" validation
+                    is not performed since the <code>Validation Set</code> already contains a
+                    <code>Validation Message</code> at the <code>Error</code> level!
+                </p>
+                <p>
+                    Also note that <code>"validate(<strong>true</strong>)"</code> is a shortcut for
+                    <code>"validate(ValidationLevel.ERROR)"</code>. It means 
+                    <em>"Only run this validation 
+                    is the Validation Set is still valid!"</em>.
+                </p>
+            </li>
+        </ul>   
+    </p> 
+    <p> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        If you are validating a <code><em>JsonArray</em></code>, by using the <code>"all(...)"</code> method, 
+        then a couple of extra methods are also available :
+        <ul>
+            <li>
+                <p>
+                    <code>arrayItselfAddFailMessage()</code> : if you call this
+                    method, a <code>Validation Message</code> will be added <em>for the array itself</em> if
+                    the validation for at least one of its elements fails. The validation key for this 
+                    message will be the specified validation key (remember that
+                    the keys for the <em>elements</em> of the array are going to be the 
+                    specified validation key + the position of the elements in the array).
+                </p>
+                <p>
+                    You can also specify the <code>text</code> to use for that message (instead of the default one) :
+                    <code>arrayItselfAddFailMessage("Some elements are invalid!")</code>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>arrayItselfAddSuccessMessage()</code> : if you call this
+                    method, a <code>Validation Message</code> will be added <em>for the array itself</em> if
+                    the validation is successful for all its elements. The validation key for this 
+                    message will be the specified validation key (remember that
+                    the keys for the <em>elements</em> of the array are the specified validation key + 
+                    the position of the elements in the array).
+                </p>
+                <p>
+                    You can also specify the <code>text</code> to use for the message (instead of the default one) :
+                    <code>arrayItselfAddSuccessMessage("All good!")</code>
+                </p>
+            </li>
+        </ul>   
+    </p> 
+    
+    <h4>
+        <a class="anchor_small" href="#validation_jsonobject" id="validation_jsonobject" title="permanent link"></a>
+        JsonObject validation
+    </h4>
+    <p>
+        Validating a <a href="#jsonobject">JsonObject</a> is very easy : you simply
+        use its <code>"validationSet()"</code> method to get a <code>Validation Set</code> specifically 
+        made to validate it. For example :
+        
+                <div>
+                    <p>
+                        <pre class="ace ace-java" data-ace-hi="1,48,1,64"
+>JsonObject user = getUser();
+JsonObjectValidationSet userValidationSet = user.validationSet();
+ValidationSet lastResult = userValidationSet.validationEmail()
+                                            .jsonPath("email")
+                                            .validate();</pre> 
+                  
+                    </p>
+                    <p>
+                        <span class="explanation">Explanation :</span>
+                        <ul>
+                            <li>
+                                <span class="code-line-nbr">2</span> : When you get a
+                                <code>Validation Set</code> from a <code>JsonObject</code>, the type
+                                of this set is <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/JsonObjectValidationSet.html">JsonObjectValidationSet</a>. 
+                                This type extends the <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html">ValidationSet</a> base type
+                                and adds some extra functionalities.
+                            </li>
+                            <li>
+                                <span class="code-line-nbr">4</span> : Because this <code>Validation Set</code>
+                                is bound to a specific <code>JsonObject</code>, a new 
+                                <code>"jsonPath(...)"</code> method is available! It allows you
+                                to specify the <a href="#jsonobject_jsonpaths">JsonPath</a> to the 
+                                element to validate on the current object, and will also be used as
+                                the <em>validation key</em>.
+                            </li>
+                        </ul>
+                    </p>
+                </div> 
+    </p> 
+    <p>
+        By calling the <code>"validationSet()"</code> method on a <code>JsonObject</code>, you get a
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/JsonObjectValidationSet.html">JsonObjectValidationSet</a>
+        instance. This type extends the <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html">ValidationSet</a> base type
+        and adds some extra functionalities.
+    </p> 
+    <p>
+        With a <code>JsonObjectValidationSet</code>, you don't need
+        to specify a <code>"key(...)"</code> to use or an <code>"element(...)"</code> to validate! You
+        simply specify the <code><em>jsonPath(...)</em></code> to the element to
+        validate. The resulting <code>Validation Messages</code>, if any,
+        will have that <code>JsonPath</code> as their validation keys. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="9,44,9,62|14,66,14,73"
+>JsonObject user = getJsonManager().create();
+user.put("email", "nope");
+
+JsonObjectValidationSet userValidationSet = user.validationSet();
+
+// The Validation Set is bound to the "user" object here,
+// so we use a JsonPath starting from this object as the root
+// to target the "email" element to validate 
+ValidationSet lastResult = userValidationSet.validationEmail()
+                                            .jsonPath("email")
+                                            .validate();
+
+// The generated validation key is the JsonPath of
+// the validated element!
+List&lt:ValidationMessage&gt; messages = userValidationSet.getMessages("email");
+System.out.println(messages.size()); // prints "1"
+
+ValidationMessage message = messages.get(0);
+System.out.println(message.getValidationLevel()); // prints "ERROR"
+System.out.println(message.getCode()); // prints "VALIDATION_TYPE_EMAIL"
+System.out.println(message.getText()); // prints "Invalid email address"</pre> 
+                  
+            </p>
+        </div> 
+    </p> 
+    <p>
+        Finally, note that there is also a <code><em>"jsonPathAll(...)"</em></code> method to validate
+        all the elements of a <code>JsonArray</code>.
+    </p> 
+    
+
+    <h4>
+        <a class="anchor_small" href="#validation_sharing_sets" id="validation_sharing_sets" title="permanent link"></a>
+        Sharing / Merging Validation Sets
+    </h4>
+    <p>
+        You can <em>merge</em> a <code>Validation Set</code> into another one using the
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html#mergeValidationSet-org.spincast.core.validation.ValidationSet-">mergeValidationSet()</a>
+        method. This allows you to make some elements being validated by an <em>external validator</em>
+        and then merge the resulting <code>Validation Messages</code> in your local <code>Validation Set</code>.
+    </p>
+    <p>
+        Let's say you have a <code>CompanyValidator</code> object that 
+        provides a <code>validateCompany(...)</code> method able to validate
+        a "company" <code>JsonObject</code> :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>// The user object we're going to validate
+JsonObject user = getUser();
+
+// The local Validation Set bound to our "user" object
+JsonObjectValidationSet userValidationSet = user.validationSet();
+
+// We validate the email of the user directly
+ValidationSet lastResult = userValidationSet.validationEmail()
+                                            .jsonPath("email")
+                                            .validate();
+                                            
+// We use an *external validator* to validate the company
+// of the user
+ValidationSet companyValidationSet = 
+        getCompanyValidator().validateCompany(user.getJsonObject("company"));
+
+// We merge the Validation Set of the company validation
+// to our local set!
+userValidationSet.mergeValidationSet("company.", companyValidationSet);
+</pre>        
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">2</span> : Let's say this is a <code>user</code> object
+                        containing an <code>email</code> and a <code>company</code>
+                        field, and we want to validate it.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">5</span> : We get the <code>Validation Set</code>
+                        of the user : this set will contain all the <code>Validation Messages</code> at the end
+                        of the validation process.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">8-10</span> : We validate the email of the user
+                        using a <a href="#validation_predefined">predefined validation</a> on our local
+                        <code>Validation Set</code>.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">14-15</span> : We use an <em>external</em> validator
+                        to validate the "company" element of the user! This validation returns
+                        a <code>Validation Set</code> containing the <code>Validation Messages</code>
+                        resulting from this company validation.
+                    </li>
+                    <li>
+                        <p>
+                            <span class="code-line-nbr">19</span> : We <em>merge</em> the
+                            <code>Validation Set</code> for the company element into our user <code>Validation Set</code>, 
+                            and we <em>scope</em> its validation keys using the <code>"company."</code> prefix.
+                        </p>
+                        <p>
+                            At this point, the user <code>Validation Set</code> contain both the <code>Validation Messages</code>
+                            for the <code>email</code> field, and the <code>Validation Messages</code> for 
+                            the <code>company</code> field. If printed, the set
+                            would look something like this, given that both the <code>email</code> and
+                            the <code>company</code> were invalid :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-text" 
+>messages = 
+{
+    email = [Invalid email address - VALIDATION_TYPE_EMAIL] java.util.ArrayList
+    company.name = [Can't be empty - VALIDATION_TYPE_NOT_BLANK] java.util.ArrayList
+}</pre> 
+                                </p>
+                            </div> 
+                        </p>
+                    </li> 
+                </ul>
+            </p>
+        </div> 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        When you merge two <code>Validation Sets</code>, don't forget to <em>scope</em> the merged 
+        validation keys (if required)... Learn more about this in the <a href="#validation_keys">Validation Keys</a>
+        section!
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Being able to share and merge <code>Validation Sets</code> allows you to be creative and structure your
+        application as you wish. You can have standalone validators that are used in multiple places and situations.
+    </p>
+    
+    
+    <h4>
+        <a class="anchor_small" href="#validation_to_jsonobject" id="validation_to_jsonobject" title="permanent link"></a>
+        Converting to a JsonObject
+    </h4>
+    <p>
+        When your validation is done, you will want to use the <code>Validation Messages</code> saved in
+        the <code>Validation Set</code>. In some cases, you need to serialize them to <code>Json</code>, for example to
+        send them as a response to an <code>Ajax</code> call.
+    </p>
+    <p>
+        To do that, you simply call the <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html#convertToJsonObject--">convertToJsonObject()</a> 
+        method on the <code>Validation Set</code>. This will convert the set to a <a href="#jsonobject">JsonObject</a> which, in turn, 
+        can easily be serialized to a plain <code>Json</code> string.
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        When you convert a <code>Validation Set</code> to a <code>JsonObject</code>, an 
+        <em>extra root element</em> is added (in addition to the <code>Validation Messages</code>) : 
+        <code>"_"</code>. This special <code>"_"</code> element <em>summarizes</em> the validation performed using the 
+        <code>Validation Set</code>. It contains those fields :
+        
+        <ul>
+            <li>
+               <code>isValid</code> : Is the whole set valid? It is if it contains no <code>Error Validation Messages</code>.  
+            </li>
+            <li>
+               <code>hasErrors</code> : Does the set contain <code>Error Validation Messages</code>? 
+            </li>
+            <li>
+               <code>hasWarnings</code> : Does the set contain <code>Warning Validation Messages</code>? 
+            </li>
+            <li>
+               <code>hasSuccesses</code> : Does the set contain <code>Success Validation Messages</code>? 
+            </li>
+        </ul>
+    </p> 
+    <p>
+        Have a look at the <a href="#forms_validation_messages">Displaying validation messages</a> section to
+        see the use of this <code>"_"</code> element in action!
+    </p> 
+
+</section> 
+
+   

@@ -11,12 +11,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.spincast.core.cookies.ICookie;
-import org.spincast.core.exchange.IDefaultRequestContext;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.routing.Handler;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -30,15 +30,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -64,15 +64,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -106,7 +106,7 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        IHttpResponse response = GET("/").send();
+        HttpResponse response = GET("/").send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -132,7 +132,7 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example1.com")
                                          .send();
 
@@ -163,15 +163,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                    .cors(Sets.newHashSet("http://example1.com", "https://example1.com"))
                    .save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -207,15 +207,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                    .cors(Sets.newHashSet("http://example3.com"))
                    .save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -247,15 +247,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                    .cors(Sets.newHashSet("https://example1.com"))
                    .save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -289,15 +289,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                                          "extra-header-to-be-read-2"))
                    .save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -345,15 +345,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                          null,
                          false);
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .send();
 
@@ -393,15 +393,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                          false)
                    .save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                           .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                           .send();
 
@@ -438,15 +438,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
                          false)
                    .save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = DELETE("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = DELETE("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                             .send();
 
@@ -473,15 +473,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                           .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                           .send();
 
@@ -515,19 +515,19 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        ICookie cookie = getCookieFactory().createCookie("name1", "value2");
+        Cookie cookie = getCookieFactory().createCookie("name1", "value2");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
 
-        IHttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                          .addCookie(cookie)
                                          .send();
@@ -562,15 +562,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
                                              .send();
@@ -611,15 +611,15 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
 
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
-        getRouter().ALL("/*{path}").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
                 fail();
             }
         });
 
-        IHttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
+        HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                              .addHeaderValue(HttpHeaders.HOST, "example2.com")
                                              .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PUT")
                                              .send();

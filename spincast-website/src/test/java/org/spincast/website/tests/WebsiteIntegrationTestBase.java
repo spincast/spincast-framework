@@ -3,16 +3,16 @@ package org.spincast.website.tests;
 import java.io.File;
 import java.nio.file.Files;
 
-import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.websocket.IDefaultWebsocketContext;
-import org.spincast.core.websocket.IWebsocketContext;
+import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.SpincastIntegrationTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.website.App;
-import org.spincast.website.AppConfig;
-import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.AppConfigDefault;
+import org.spincast.website.exchange.AppRequestContext;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -22,7 +22,7 @@ import com.google.inject.Module;
  * our application.
  */
 public abstract class WebsiteIntegrationTestBase extends
-                                                 SpincastIntegrationTestBase<IAppRequestContext, IDefaultWebsocketContext> {
+                                                 SpincastIntegrationTestBase<AppRequestContext, DefaultWebsocketContext> {
 
     protected File tempAppPropertiesFile;
 
@@ -57,7 +57,7 @@ public abstract class WebsiteIntegrationTestBase extends
     }
 
     protected String getAppConfigPropertiesFileContent() {
-        return AppConfig.APP_PROPERTIES_KEY_HTTP_SERVER_PORT + "=" + SpincastTestUtils.findFreePort() + "\n";
+        return AppConfigDefault.APP_PROPERTIES_KEY_HTTP_SERVER_PORT + "=" + SpincastTestUtils.findFreePort() + "\n";
     }
 
     protected void deleteTestAppPropertiesFile() {
@@ -70,7 +70,7 @@ public abstract class WebsiteIntegrationTestBase extends
      */
     @Override
     protected Injector createInjector() {
-        return App.createApp(getMainArgs(), getTestOverridingModule(IAppRequestContext.class, IDefaultWebsocketContext.class));
+        return App.createApp(getMainArgs(), getTestOverridingModule(AppRequestContext.class, DefaultWebsocketContext.class));
     }
 
     protected String[] getMainArgs() {
@@ -85,8 +85,8 @@ public abstract class WebsiteIntegrationTestBase extends
 
     }
 
-    protected Module getTestOverridingModule(Class<? extends IRequestContext<?>> requestContextClass,
-                                             Class<? extends IWebsocketContext<?>> websocketContextClass) {
+    protected Module getTestOverridingModule(Class<? extends RequestContext<?>> requestContextClass,
+                                             Class<? extends WebsocketContext<?>> websocketContextClass) {
 
         // No extra overriding bindings required by default.
         return getDefaultOverridingModule(requestContextClass, websocketContextClass);

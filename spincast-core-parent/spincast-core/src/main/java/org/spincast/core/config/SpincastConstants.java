@@ -6,11 +6,6 @@ package org.spincast.core.config;
 public abstract class SpincastConstants {
 
     /**
-     * Name of the Cookie to save the user <code>Locale</code>.
-     */
-    public static final String COOKIE_NAME_LOCALE_TO_USE = "locale";
-
-    /**
      * Request scoped variables that Spincast may set.
      * 
      */
@@ -26,7 +21,7 @@ public abstract class SpincastConstants {
         /**
          * The current route handler match.
          * 
-         * The associated value is of type: IRouteHandlerMatch&lt;R&gt;.
+         * The associated value is of type: RouteHandlerMatch&lt;R&gt;.
          */
         public static final String ROUTE_HANDLER_MATCH = RequestScopedVariables.class.getName() + "ROUTE_HANDLER_MATCH";
 
@@ -118,6 +113,61 @@ public abstract class SpincastConstants {
         public static final String X_FORWARDED_HOST = "X-Forwarded-Host";
         public static final String X_FORWARDED_PORT = "X-Forwarded-Port";
 
+    }
+
+    /**
+     * Global templating variables added by Spincast.
+     * <p>
+     * In short, the "spincast" root variable is reserved, 
+     * it is a Map&lt;String, Object&gt;, and Spincast adds
+     * its variables in it.
+     */
+    public static final class TemplatingGlobalVariables {
+
+        private TemplatingGlobalVariables() {
+        }
+
+        //==========================================
+        // The root Map
+        //==========================================
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP = "spincast";
+
+        //==========================================
+        // All keys Spincast may add to its reserved 
+        // root Map.
+        //==========================================
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV = "langAbrv";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION = "spincastCurrrentVersion";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_SPINCAST_CURRENT_VERSION_IS_SNAPSHOT =
+                "spincastCurrrentVersionIsSnapshot";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER = "cacheBuster";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID = "routeId";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL = "fullUrl";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS = "isHttps";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS = "pathParams";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_QUERYSTRING_PARAMS = "qsParams";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES = "cookies";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_REQUEST_SCOPED_VARIABLES = "requestScopedVars";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS = "alerts";
+    }
+
+    /**
+     * Model variables added by Spincast.
+     * <p>
+     * The variables will be added under the root
+     * variables reserved for Spincast, which name is configurable
+     * using {@link SpincastConfig#getSpincastModelRootVariableName()}
+     * and is "spincast" by default.
+     */
+    public static final class ResponseModelVariables {
+
+        private ResponseModelVariables() {
+        }
+
+        //==========================================
+        // The Alerts messages (+ the Flash messages)
+        //==========================================
+        public static final String DEFAULT_RESPONSE_MODEL_VAR_ALERTS = "alerts";
     }
 
 }

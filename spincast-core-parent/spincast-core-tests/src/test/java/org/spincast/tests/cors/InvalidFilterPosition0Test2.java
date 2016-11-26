@@ -1,9 +1,9 @@
 package org.spincast.tests.cors;
 
-import org.spincast.core.config.ISpincastConfig;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.routing.ISpincastRouterConfig;
+import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
@@ -17,7 +17,7 @@ public class InvalidFilterPosition0Test2 extends SpincastDefaultNoAppIntegration
     protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
 
         @Inject
-        public TestRoutingConfig(ISpincastConfig spincastConfig) {
+        public TestRoutingConfig(SpincastConfig spincastConfig) {
             super(spincastConfig);
         }
 
@@ -34,7 +34,7 @@ public class InvalidFilterPosition0Test2 extends SpincastDefaultNoAppIntegration
             @Override
             protected void configure() {
                 super.configure();
-                bind(ISpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
+                bind(SpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
             }
         };
     }

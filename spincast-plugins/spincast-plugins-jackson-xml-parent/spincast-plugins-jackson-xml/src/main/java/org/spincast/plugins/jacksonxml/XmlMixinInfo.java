@@ -1,26 +1,18 @@
 package org.spincast.plugins.jacksonxml;
 
 /**
- * An simple implementation of IXmlMixinInfo.
+ * Mixin for Jackson.
  */
-public class XmlMixinInfo implements IXmlMixinInfo {
+public interface XmlMixinInfo {
 
-    private final Class<?> targetClass;
-    private final Class<?> mixinClass;
+    /**
+     * The class to apply the mixin to.
+     */
+    public Class<?> getTargetClass();
 
-    public XmlMixinInfo(Class<?> targetClass, Class<?> mixinClass) {
-        this.targetClass = targetClass;
-        this.mixinClass = mixinClass;
-    }
-
-    @Override
-    public Class<?> getTargetClass() {
-        return this.targetClass;
-    }
-
-    @Override
-    public Class<?> getMixinClass() {
-        return this.mixinClass;
-    }
+    /**
+     * The mixin class.
+     */
+    public Class<?> getMixinClass();
 
 }

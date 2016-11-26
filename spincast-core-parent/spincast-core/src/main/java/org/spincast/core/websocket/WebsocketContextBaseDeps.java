@@ -1,9 +1,9 @@
 package org.spincast.core.websocket;
 
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.locale.ILocaleResolver;
-import org.spincast.core.templating.ITemplatingEngine;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -29,22 +29,22 @@ import com.google.inject.Provider;
  *     </li>  
  * </ul>
  */
-public class WebsocketContextBaseDeps<W extends IWebsocketContext<?>> {
+public class WebsocketContextBaseDeps<W extends WebsocketContext<?>> {
 
-    private final ILocaleResolver localeResolver;
-    private final IJsonManager jsonManager;
-    private final IXmlManager xmlManager;
-    private final ITemplatingEngine templatingEngine;
+    private final LocaleResolver localeResolver;
+    private final JsonManager jsonManager;
+    private final XmlManager xmlManager;
+    private final TemplatingEngine templatingEngine;
     private final Provider<Injector> injectorProvider;
 
     /**
      * Constructor
      */
     @Inject
-    public WebsocketContextBaseDeps(ILocaleResolver localeResolver,
-                                    IJsonManager jsonManager,
-                                    IXmlManager xmlManager,
-                                    ITemplatingEngine templatingEngine,
+    public WebsocketContextBaseDeps(LocaleResolver localeResolver,
+                                    JsonManager jsonManager,
+                                    XmlManager xmlManager,
+                                    TemplatingEngine templatingEngine,
                                     Provider<Injector> injectorProvider) {
         this.localeResolver = localeResolver;
         this.jsonManager = jsonManager;
@@ -53,19 +53,19 @@ public class WebsocketContextBaseDeps<W extends IWebsocketContext<?>> {
         this.injectorProvider = injectorProvider;
     }
 
-    public ILocaleResolver getLocaleResolver() {
+    public LocaleResolver getLocaleResolver() {
         return this.localeResolver;
     }
 
-    public IJsonManager getJsonManager() {
+    public JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    public IXmlManager getXmlManager() {
+    public XmlManager getXmlManager() {
         return this.xmlManager;
     }
 
-    public ITemplatingEngine getTemplatingEngine() {
+    public TemplatingEngine getTemplatingEngine() {
         return this.templatingEngine;
     }
 

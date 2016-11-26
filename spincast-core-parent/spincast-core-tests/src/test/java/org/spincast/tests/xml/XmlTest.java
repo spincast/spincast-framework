@@ -10,13 +10,13 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 
 import org.junit.Test;
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.json.IJsonArray;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.json.JsonObjectArrayBase;
-import org.spincast.core.xml.IXmlManager;
+import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,23 +25,23 @@ import com.google.inject.Inject;
 public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
     @Inject
-    protected IJsonManager jsonManager;
+    protected JsonManager jsonManager;
 
     @Inject
-    protected IXmlManager xmlManager;
+    protected XmlManager xmlManager;
 
     @Test
     public void toXml() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("someBoolean", true);
         jsonObj.put("someInt", 123);
 
-        IJsonArray jsonArray = this.jsonManager.createArray();
+        JsonArray jsonArray = this.jsonManager.createArray();
         jsonArray.add("toto");
         jsonArray.add(123);
 
-        IJsonObject jsonObj2 = this.jsonManager.create();
+        JsonObject jsonObj2 = this.jsonManager.create();
         jsonObj2.put("anotherBoolean", true);
         jsonObj2.put("anotherInt", 44444);
         jsonObj2.put("innerObj", jsonObj);
@@ -70,10 +70,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlArrayElementIsJsonObject() throws Exception {
 
-        IJsonObject jsonObject = this.jsonManager.create();
-        IJsonArray array = this.jsonManager.createArray();
+        JsonObject jsonObject = this.jsonManager.create();
+        JsonArray array = this.jsonManager.createArray();
         jsonObject.put("someArray", array);
-        IJsonObject inner = this.jsonManager.create();
+        JsonObject inner = this.jsonManager.create();
         inner.put("fieldName", "email");
         inner.put("message", "Not a valid email address.");
         inner.put("type", "VALIDATION_TYPE_EMAIL");
@@ -167,11 +167,11 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlArrayElementIsAnotherArray() throws Exception {
 
-        IJsonObject jsonObject = this.jsonManager.create();
-        IJsonArray array = this.jsonManager.createArray();
+        JsonObject jsonObject = this.jsonManager.create();
+        JsonArray array = this.jsonManager.createArray();
         jsonObject.put("someArray", array);
 
-        IJsonArray inner = this.jsonManager.createArray();
+        JsonArray inner = this.jsonManager.createArray();
         inner.add("aaa");
         inner.add("bbb");
         inner.add("ccc");
@@ -179,11 +179,11 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String xml = this.xmlManager.toXml(jsonObject, true);
 
-        IJsonObject resultObj = this.xmlManager.fromXml(xml);
+        JsonObject resultObj = this.xmlManager.fromXml(xml);
         assertNotNull(resultObj);
-        IJsonArray arr1 = resultObj.getJsonArray("someArray");
+        JsonArray arr1 = resultObj.getJsonArray("someArray");
         assertNotNull(arr1);
-        IJsonArray arr2 = arr1.getJsonArray(0);
+        JsonArray arr2 = arr1.getJsonArray(0);
         assertNotNull(arr2);
         assertEquals("aaa", arr2.getString(0));
         assertEquals("bbb", arr2.getString(1));
@@ -193,41 +193,41 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlArrayElementsAreJsonObjectAnotherArray() throws Exception {
 
-        IJsonObject jsonObject = this.jsonManager.create();
+        JsonObject jsonObject = this.jsonManager.create();
 
-        IJsonObject innerObj = this.jsonManager.create();
+        JsonObject innerObj = this.jsonManager.create();
         innerObj.put("name", "Stromgol");
         jsonObject.put("inner1", innerObj);
 
-        IJsonArray array = this.jsonManager.createArray();
+        JsonArray array = this.jsonManager.createArray();
         jsonObject.put("someArray", array);
 
-        IJsonArray inner = this.jsonManager.createArray();
+        JsonArray inner = this.jsonManager.createArray();
         inner.add("aaa");
         inner.add("bbb");
         inner.add("ccc");
-        IJsonObject innerObj2 = this.jsonManager.create();
+        JsonObject innerObj2 = this.jsonManager.create();
         innerObj2.put("name", "Stromgol2");
         inner.add(innerObj2);
         array.add(inner);
 
         String xml = this.xmlManager.toXml(jsonObject, true);
 
-        IJsonObject resultObj = this.xmlManager.fromXml(xml);
+        JsonObject resultObj = this.xmlManager.fromXml(xml);
         assertNotNull(resultObj);
 
-        IJsonObject in1 = resultObj.getJsonObject("inner1");
+        JsonObject in1 = resultObj.getJsonObject("inner1");
         assertNotNull(in1);
         assertEquals("Stromgol", in1.getString("name"));
 
-        IJsonArray arr1 = resultObj.getJsonArray("someArray");
+        JsonArray arr1 = resultObj.getJsonArray("someArray");
         assertNotNull(arr1);
-        IJsonArray arr2 = arr1.getJsonArray(0);
+        JsonArray arr2 = arr1.getJsonArray(0);
         assertNotNull(arr2);
         assertEquals("aaa", arr2.getString(0));
         assertEquals("bbb", arr2.getString(1));
         assertEquals("ccc", arr2.getString(2));
-        IJsonObject in2 = arr2.getJsonObject(3);
+        JsonObject in2 = arr2.getJsonObject(3);
         assertNotNull(in2);
         assertEquals("Stromgol2", in2.getString("name"));
     }
@@ -249,14 +249,14 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>\n";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
 
-        IJsonObject inner = array.getJsonObject(0);
+        JsonObject inner = array.getJsonObject(0);
         assertNotNull(inner);
         assertEquals("email", inner.getString("fieldName"));
         assertEquals("Not a valid email address.", inner.getString("message"));
@@ -276,14 +276,14 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>\n";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
 
-        IJsonObject inner = array.getJsonObject(0);
+        JsonObject inner = array.getJsonObject(0);
         assertNotNull(inner);
         assertEquals("email", inner.getString("fieldName"));
     }
@@ -468,14 +468,14 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         // It seems Jackson ignore the "directValue"
         // value here.
         //==========================================
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
 
-        IJsonObject inner = array.getJsonObject(0);
+        JsonObject inner = array.getJsonObject(0);
         assertNotNull(inner);
         assertEquals("email", inner.getString("fieldName"));
     }
@@ -498,14 +498,14 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         // It seems Jackson ignore the "directValue"
         // value here.
         //==========================================
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
 
-        IJsonObject inner = array.getJsonObject(0);
+        JsonObject inner = array.getJsonObject(0);
         assertNotNull(inner);
         assertEquals("email", inner.getString("fieldName"));
     }
@@ -513,7 +513,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlPretty() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         jsonObj.put("someInt", 123);
 
         String xml = this.xmlManager.toXml(jsonObj, true);
@@ -572,15 +572,15 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonObject innerObj = jsonObject.getJsonObject("innerObj");
+        JsonObject innerObj = jsonObject.getJsonObject("innerObj");
         assertNotNull(innerObj);
         assertEquals(true, innerObj.getBoolean("someBoolean"));
         assertEquals(new Integer(123), innerObj.getInteger("someInt"));
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(2, array.size());
         assertEquals("toto", array.getString(0));
@@ -596,10 +596,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonObject innerObj = jsonObject.getJsonObject("innerObj");
+        JsonObject innerObj = jsonObject.getJsonObject("innerObj");
         assertNotNull(innerObj);
 
     }
@@ -613,10 +613,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
     }
 
@@ -637,17 +637,17 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonObject someObj = jsonObject.getJsonObject("someObj");
+        JsonObject someObj = jsonObject.getJsonObject("someObj");
         assertNotNull(someObj);
         assertEquals(new Integer(222), someObj.getInteger("tutu"));
-        IJsonObject otherObj = someObj.getJsonObject("otherObj");
+        JsonObject otherObj = someObj.getJsonObject("otherObj");
         assertNotNull(otherObj);
         assertEquals("333", otherObj.getString("coco"));
 
-        IJsonObject thirdObj = otherObj.getJsonObject("thirdObj");
+        JsonObject thirdObj = otherObj.getJsonObject("thirdObj");
         assertNotNull(thirdObj);
         assertEquals("444", thirdObj.getString("kiki"));
     }
@@ -663,10 +663,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
          // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonObject falseArray = jsonObject.getJsonObject("someArray");
+        JsonObject falseArray = jsonObject.getJsonObject("someArray");
         assertNotNull(falseArray);
         assertEquals("nope", falseArray.getString("isArray"));
         assertEquals("123", falseArray.getString("element"));
@@ -683,10 +683,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
         assertEquals("111", array.getString(0));
@@ -706,10 +706,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
         // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
         assertEquals("111", array.getString(0));
@@ -735,10 +735,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</JsonObject>";
          // @formatter:on
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = this.xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
-        IJsonArray array = jsonObject.getJsonArray("someArray");
+        JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(1, array.size());
 
@@ -751,12 +751,12 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void toXmlMultiFieldElementInArray() throws Exception {
 
-        IJsonObject jsonObject = this.jsonManager.create();
+        JsonObject jsonObject = this.jsonManager.create();
 
-        IJsonArray array = this.jsonManager.createArray();
+        JsonArray array = this.jsonManager.createArray();
         jsonObject.put("someArray", array);
 
-        IJsonObject inner = this.jsonManager.create();
+        JsonObject inner = this.jsonManager.create();
         inner.put("fieldName", "email");
         inner.put("message", "Not a valid email address.");
         inner.put("type", "VALIDATION_TYPE_EMAIL");
@@ -764,14 +764,14 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String xml = this.xmlManager.toXml(jsonObject, true);
 
-        IJsonObject result = this.xmlManager.fromXml(xml);
+        JsonObject result = this.xmlManager.fromXml(xml);
         assertNotNull(result);
 
-        IJsonArray resultArray = result.getJsonArray("someArray");
+        JsonArray resultArray = result.getJsonArray("someArray");
         assertNotNull(resultArray);
         assertEquals(1, resultArray.size());
 
-        IJsonObject resultInner = resultArray.getJsonObject(0);
+        JsonObject resultInner = resultArray.getJsonObject(0);
         assertNotNull(resultInner);
         assertEquals("email", resultInner.getString("fieldName"));
         assertEquals("Not a valid email address.", resultInner.getString("message"));
@@ -792,11 +792,11 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</someArray>";
         // @formatter:on
 
-        IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals(2, jsonArray.size());
 
-        IJsonArray otherArray = jsonArray.getJsonArray(0);
+        JsonArray otherArray = jsonArray.getJsonArray(0);
         assertNotNull(otherArray);
         assertEquals(1, otherArray.size());
         assertEquals("222", otherArray.getString(0));
@@ -809,7 +809,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         String xml = "<root><name>coco</name></root>";
 
-        IJsonObject obj = this.xmlManager.fromXml(xml);
+        JsonObject obj = this.xmlManager.fromXml(xml);
         assertNotNull(obj);
         assertEquals("coco", obj.getString("name"));
     }
@@ -835,7 +835,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         // It seems Jackson ignore the "directValue"
         // value here.
         //==========================================
-        IJsonObject obj = this.xmlManager.fromXml(xml);
+        JsonObject obj = this.xmlManager.fromXml(xml);
         assertNotNull(obj);
         assertEquals("coco", obj.getString("name"));
     }
@@ -876,11 +876,11 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                     + "</someArray>";
         //@formatter:on
 
-        IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals(1, jsonArray.size());
 
-        IJsonObject obj = jsonArray.getJsonObject(0);
+        JsonObject obj = jsonArray.getJsonObject(0);
         assertNotNull(obj);
         assertEquals("coco", obj.getString("otherObj2"));
     }
@@ -914,32 +914,31 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                     + "</someArray>";
         //@formatter:on
 
-        IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals(3, jsonArray.size());
 
-        IJsonArray otherArray = jsonArray.getJsonArray(0);
+        JsonArray otherArray = jsonArray.getJsonArray(0);
         assertNotNull(otherArray);
         assertEquals(3, otherArray.size());
         assertEquals("222", otherArray.getString(0));
-        IJsonObject someObj = otherArray.getJsonObject(1);
+        JsonObject someObj = otherArray.getJsonObject(1);
         assertNotNull(someObj);
         assertEquals("tutu", someObj.getString("titi"));
         assertEquals(new Integer(333), someObj.getInteger("toto"));
-        IJsonArray thirdArray = someObj.getJsonArray("thirdArray");
+        JsonArray thirdArray = someObj.getJsonArray("thirdArray");
         assertNotNull(thirdArray);
         assertEquals(1, thirdArray.size());
         assertEquals("444", thirdArray.getString(0));
 
-        IJsonObject otherObj = otherArray.getJsonObject(2);
+        JsonObject otherObj = otherArray.getJsonObject(2);
         assertNotNull(otherObj);
 
         assertEquals(new Integer(123), jsonArray.getInteger(1));
 
-        IJsonObject directObj = jsonArray.getJsonObject(2);
+        JsonObject directObj = jsonArray.getJsonObject(2);
         assertNotNull(directObj);
         assertEquals("coco", directObj.getString("directValue"));
-
     }
 
     @Test
@@ -952,7 +951,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</someArray>";
         // @formatter:on
 
-        IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals("111", jsonArray.getString(0));
         assertEquals("222", jsonArray.getString(1));
@@ -972,11 +971,11 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
                      "</someArray>";
         // @formatter:on
 
-        IJsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals("111", jsonArray.getString(0));
 
-        IJsonObject obj = jsonArray.getJsonObject(1);
+        JsonObject obj = jsonArray.getJsonObject(1);
         assertNotNull(obj);
         assertEquals("toto", obj.getString("titi"));
     }
@@ -985,7 +984,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
 
         @JsonIgnore
         @Inject
-        protected ISpincastConfig spincastConfig;
+        protected SpincastConfig spincastConfig;
 
         protected String name;
 
@@ -1000,7 +999,7 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
             this.name = name;
         }
 
-        public ISpincastConfig getSpincastConfig() {
+        public SpincastConfig getSpincastConfig() {
             return this.spincastConfig;
         }
     }
@@ -1052,10 +1051,10 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void dependenciesInjectionOnCreateFromXmlToJsonObject() throws Exception {
 
-        IJsonObject obj = this.xmlManager.fromXml("<TestObject><name>test</name></TestObject>");
+        JsonObject obj = this.xmlManager.fromXml("<TestObject><name>test</name></TestObject>");
         assertNotNull(obj);
 
-        assertTrue(obj instanceof JsonObject);
+        assertTrue(obj instanceof JsonObjectDefault);
 
         Field jsonManagerField = JsonObjectArrayBase.class.getDeclaredField("jsonManager");
         assertNotNull(jsonManagerField);
@@ -1076,13 +1075,13 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void emptyObject() throws Exception {
 
-        IJsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = this.jsonManager.create();
         assertNotNull(jsonObj);
 
         String xml = this.xmlManager.toXml(new NoPropToSerialize());
         assertNotNull(xml);
 
-        IJsonArray jsonArray = this.jsonManager.createArray("[]");
+        JsonArray jsonArray = this.jsonManager.fromStringArray("[]");
         assertNotNull(jsonArray);
         xml = this.xmlManager.toXml(new NoPropToSerialize[0]);
         assertNotNull(xml);
@@ -1112,13 +1111,13 @@ public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
         xml.append("  </channel>\n");
         xml.append("</rss>\n");
 
-        IJsonObject jsonObject = this.xmlManager.fromXml(xml.toString());
+        JsonObject jsonObject = this.xmlManager.fromXml(xml.toString());
         assertNotNull(jsonObject);
 
-        IJsonObject channelObj = jsonObject.getJsonObject("channel");
+        JsonObject channelObj = jsonObject.getJsonObject("channel");
         assertNotNull(channelObj);
 
-        IJsonObject itemObj = channelObj.getJsonObject("item");
+        JsonObject itemObj = channelObj.getJsonObject("item");
         assertNotNull(channelObj);
 
         //==========================================

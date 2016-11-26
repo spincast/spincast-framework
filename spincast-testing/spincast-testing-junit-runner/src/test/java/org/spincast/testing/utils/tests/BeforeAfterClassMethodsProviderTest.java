@@ -4,11 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.spincast.testing.utils.IBeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
 import org.spincast.testing.utils.SpincastJUnitRunner;
 
 @RunWith(SpincastJUnitRunner.class)
-public class BeforeAfterClassMethodsProviderTest implements IBeforeAfterClassMethodsProvider {
+public class BeforeAfterClassMethodsProviderTest implements BeforeAfterClassMethodsProvider {
 
     protected static int nbrInBeforeClass = 0;
     protected static int nbrInAfterClass = 0;

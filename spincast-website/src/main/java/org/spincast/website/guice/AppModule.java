@@ -1,30 +1,30 @@
 package org.spincast.website.guice;
 
-import org.spincast.core.config.ISpincastConfig;
-import org.spincast.core.exchange.IRequestContext;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.RequestContext;
 import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
-import org.spincast.plugins.configpropsfile.ISpincastConfigPropsFileBasedConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
-import org.spincast.plugins.pebble.ISpincastPebbleTemplatingEngineConfig;
+import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
 import org.spincast.website.App;
 import org.spincast.website.AppConfig;
+import org.spincast.website.AppConfigDefault;
 import org.spincast.website.AppConfigPropsFileBasedConfig;
 import org.spincast.website.AppPebbleTemplatingEngineConfig;
 import org.spincast.website.HttpAuthInit;
-import org.spincast.website.IAppConfig;
-import org.spincast.website.controllers.MainPagesController;
-import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
-import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.controllers.MainPagesController;
+import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
+import org.spincast.website.exchange.AppRequestContextDefault;
 import org.spincast.website.exchange.AppRouter;
-import org.spincast.website.exchange.IAppRouter;
+import org.spincast.website.exchange.AppRouterDefault;
 import org.spincast.website.pebble.AppPebbleExtension;
-import org.spincast.website.repositories.INewsRepository;
+import org.spincast.website.repositories.NewsRepository;
 import org.spincast.website.repositories.TemplateFilesRepository;
-import org.spincast.website.services.INewsService;
 import org.spincast.website.services.NewsService;
+import org.spincast.website.services.NewsServiceDefault;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -54,18 +54,19 @@ public class AppModule extends SpincastDefaultGuiceModule {
         // Bind custom configurations for the .properties 
         // file based config plugin.
         //==========================================
-        bind(ISpincastConfigPropsFileBasedConfig.class).to(AppConfigPropsFileBasedConfig.class).in(Scopes.SINGLETON);
+        bind(SpincastConfigPropsFileBasedConfig.class).to(AppConfigPropsFileBasedConfig.class).in(Scopes.SINGLETON);
 
         //==========================================
         // Bind custom configurations for the Pebble plugin.
         //==========================================
         bind(AppPebbleExtension.class).in(Scopes.SINGLETON);
-        bind(ISpincastPebbleTemplatingEngineConfig.class).to(AppPebbleTemplatingEngineConfig.class).in(Scopes.SINGLETON);
+        bind(SpincastPebbleTemplatingEngineConfig.class).to(AppPebbleTemplatingEngineConfig.class).in(Scopes.SINGLETON);
 
         //==========================================
         // The application config
         //==========================================
-        bind(IAppConfig.class).to(AppConfig.class).in(Scopes.SINGLETON);
+        bind(AppConfigDefault.class).in(Scopes.SINGLETON);
+        bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
 
         //==========================================
         // The application controllers
@@ -78,39 +79,39 @@ public class AppModule extends SpincastDefaultGuiceModule {
         //==========================================
         // The application services and repositories
         //==========================================
-        bind(INewsService.class).to(NewsService.class).in(Scopes.SINGLETON);
-        bind(INewsRepository.class).to(TemplateFilesRepository.class).in(Scopes.SINGLETON);
+        bind(NewsService.class).to(NewsServiceDefault.class).in(Scopes.SINGLETON);
+        bind(NewsRepository.class).to(TemplateFilesRepository.class).in(Scopes.SINGLETON);
 
         //==========================================
         // One instance only of our router class.
         //==========================================
-        bind(AppRouter.class).in(Scopes.SINGLETON);
+        bind(AppRouterDefault.class).in(Scopes.SINGLETON);
 
         //==========================================
         // Bind our router implementation to our custom
-        // and already parameterized "IAppRouter" interface.
+        // and already parameterized "AppRouter" interface.
         //==========================================
-        bind(IAppRouter.class).to(AppRouter.class).in(Scopes.SINGLETON);
+        bind(AppRouter.class).to(AppRouterDefault.class).in(Scopes.SINGLETON);
     }
 
     /**
      * We use our application config class instead of the 
-     * default one for the ISpincastConfig interface.
+     * default one for the SpincastConfig interface.
      */
     @Override
     protected void bindConfigPlugin() {
         install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
 
             @Override
-            protected Class<? extends ISpincastConfig> getSpincastConfigImplClass() {
-                return AppConfig.class;
+            protected Class<? extends SpincastConfig> getSpincastConfigImplClass() {
+                return AppConfigDefault.class;
             }
         });
     }
 
     @Override
-    protected Class<? extends IRequestContext<?>> getRequestContextImplementationClass() {
-        return AppRequestContext.class;
+    protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
+        return AppRequestContextDefault.class;
     }
 
     /**
@@ -123,7 +124,7 @@ public class AppModule extends SpincastDefaultGuiceModule {
 
             @Override
             protected Key<?> getRouterImplementationKey() {
-                return Key.get(AppRouter.class);
+                return Key.get(AppRouterDefault.class);
             }
         });
     }

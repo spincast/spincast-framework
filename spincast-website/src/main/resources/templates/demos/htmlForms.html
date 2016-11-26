@@ -1,0 +1,41 @@
+{#==========================================
+Demos - HTML Forms
+==========================================#}
+{% extends "../demos.html" %}
+
+{% block subSectionClasses %}demo_html_forms {% block demoSectionClasses %}{% endblock %}{% endblock %}
+{% block meta_title %}Demo - HTML Forms{% endblock %}
+{% block meta_description %}HTML Forms with validation demo using Spincast{% endblock %}
+
+
+{% block subBody %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop noUnder">
+                Forms &amp; Validation demos
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row"> 
+        <div class="col-xs-12">
+        
+            <ul class="nav nav-tabs demoTabs">
+                <li class="{{demoId == "single" ? "active" : ""}}"><a href="/demos-tutorials/html-forms/single-field">1. Introduction</a></li>
+                <li class="{{demoId == "multiple" ? "active" : ""}}"><a href="/demos-tutorials/html-forms/multiple-fields">2. Multiple Fields / Complex validation</a></li>
+                <li class="{{demoId == "dynamic" ? "active" : ""}}"><a href="/demos-tutorials/html-forms/dynamic-fields">3. Dynamic Fields</a></li>
+                <li class="{{demoId == "fileUpload" ? "active" : ""}}"><a href="/demos-tutorials/html-forms/file-upload">4. File Upload</a></li>
+            </ul>
+            
+            {#==========================================
+            demoBody block
+            ==========================================#}
+            {% block demoBody %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

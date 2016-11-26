@@ -4,18 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.exchange.IDefaultRequestContext;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.routing.IHandler;
+import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.plugins.httpclient.IHttpResponse;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -25,10 +26,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void bodyAsInputStream() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -46,7 +47,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -54,10 +55,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void bodyAsByteArray() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
 
@@ -73,7 +74,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
                                                               ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -82,10 +83,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void bodyAsString() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     String utf8String = context.request().getBodyAsString();
@@ -97,7 +98,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
                                                               ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -106,10 +107,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void bodyAsStringSpecificEncoding() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     String content = context.request().getBodyAsString("ISO-8859-15");
@@ -122,7 +123,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
@@ -130,10 +131,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void bodyAsStringIncorrectEncoding() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     // UTF-8 by default!
@@ -146,7 +147,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
+        HttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
@@ -155,14 +156,24 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void jsonBodyAsJsonObject() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
-                    IJsonObject json = context.request().getJsonBodyAsJsonObject();
+                    JsonObject json = context.request().getJsonBody();
                     assertNotNull(json);
+
+                    //==========================================
+                    // Can't read the InputStream again!
+                    //==========================================
+                    try {
+                        json = context.request().getJsonBody();
+                        fail();
+                    } catch(Exception ex) {
+                        System.out.println(ex);
+                    }
 
                     String name = json.getString("name");
                     assertNotNull(name);
@@ -174,7 +185,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
                                                               ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -183,10 +194,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void jsonBodyAsMap() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     Map<String, Object> map = context.request().getJsonBodyAsMap();
@@ -203,7 +214,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
                                                               ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -217,10 +228,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void jsonBodyAsUserDefinedClass() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     UserTest user = context.request().getJsonBody(UserTest.class);
@@ -233,7 +244,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
                                                               ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                              .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -242,13 +253,13 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void xmlBodyAsJsonObject() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
-                    IJsonObject json = context.request().getXmlBodyAsJsonObject();
+                    JsonObject json = context.request().getXmlBodyAsJsonObject();
                     assertNotNull(json);
 
                     String name = json.getString("name");
@@ -261,7 +272,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/one").setEntityString("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
                                              ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                             .send();
@@ -271,10 +282,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void xmlBodyAsMap() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     Map<String, Object> map = context.request().getXmlBodyAsMap();
@@ -291,7 +302,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/one").setEntityString("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
                                              ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                             .send();
@@ -301,10 +312,10 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Test
     public void xmlBodyAsUserDefinedClass() throws Exception {
 
-        getRouter().POST("/one").save(new IHandler<IDefaultRequestContext>() {
+        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
 
             @Override
-            public void handle(IDefaultRequestContext context) {
+            public void handle(DefaultRequestContext context) {
 
                 try {
                     UserTest user = context.request().getXmlBody(UserTest.class);
@@ -317,7 +328,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
             }
         });
 
-        IHttpResponse response =
+        HttpResponse response =
                 POST("/one").setEntityString("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
                                              ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                             .send();

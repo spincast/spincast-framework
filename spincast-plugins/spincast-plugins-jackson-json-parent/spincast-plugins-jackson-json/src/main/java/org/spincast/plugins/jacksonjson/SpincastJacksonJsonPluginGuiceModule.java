@@ -3,7 +3,9 @@ package org.spincast.plugins.jacksonjson;
 import java.lang.reflect.Type;
 
 import org.spincast.core.guice.SpincastPluginGuiceModuleBase;
-import org.spincast.core.json.IJsonManager;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonPathUtils;
+import org.spincast.core.json.JsonPathPathUtilsDefault;
 
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
@@ -21,16 +23,24 @@ public class SpincastJacksonJsonPluginGuiceModule extends SpincastPluginGuiceMod
     protected void configure() {
 
         bindJsonManager();
+        bindJsonPathUtils();
         bindJsonMixinsMultiBinder();
-
     }
 
     protected void bindJsonManager() {
-        bind(IJsonManager.class).to(getSpincastJsonManager()).in(Scopes.SINGLETON);
+        bind(JsonManager.class).to(getSpincastJsonManager()).in(Scopes.SINGLETON);
     }
 
-    protected Class<? extends IJsonManager> getSpincastJsonManager() {
+    protected Class<? extends JsonManager> getSpincastJsonManager() {
         return SpincastJsonManager.class;
+    }
+
+    protected void bindJsonPathUtils() {
+        bind(JsonPathUtils.class).to(getJsonPathUtilsImplClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends JsonPathUtils> getJsonPathUtilsImplClass() {
+        return JsonPathPathUtilsDefault.class;
     }
 
     protected void bindJsonMixinsMultiBinder() {
@@ -40,7 +50,7 @@ public class SpincastJacksonJsonPluginGuiceModule extends SpincastPluginGuiceMod
         // even if no mixin infos are added.
         //==========================================
         @SuppressWarnings("unused")
-        Multibinder<IJsonMixinInfo> uriBinder = Multibinder.newSetBinder(binder(), IJsonMixinInfo.class);
+        Multibinder<JsonMixinInfo> uriBinder = Multibinder.newSetBinder(binder(), JsonMixinInfo.class);
     }
 
 }

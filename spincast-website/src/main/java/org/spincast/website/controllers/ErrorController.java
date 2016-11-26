@@ -1,20 +1,17 @@
 package org.spincast.website.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.exceptions.ICustomStatusCodeException;
-import org.spincast.core.exceptions.IPublicException;
-import org.spincast.core.json.IJsonObject;
+import org.spincast.core.exceptions.CustomStatusCodeException;
+import org.spincast.core.exceptions.PublicException;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.AppConstants;
-import org.spincast.website.exchange.IAppRequestContext;
+import org.spincast.website.exchange.AppRequestContext;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
@@ -26,9 +23,7 @@ public class ErrorController {
     /**
      * Not Found (404) handler
      */
-    public void notFoundHandler(IAppRequestContext context) {
-
-        Map<String, Object> params = new HashMap<String, Object>();
+    public void notFoundHandler(AppRequestContext context) {
 
         //==========================================
         // Do we have a custom message to display?
@@ -39,7 +34,7 @@ public class ErrorController {
         if(!StringUtils.isBlank(customMessage)) {
             message = customMessage;
         }
-        params.put("message", message);
+        context.response().getModel().put("message", message);
 
         //==========================================
         // Do we have HTML classes for the original section
@@ -51,45 +46,45 @@ public class ErrorController {
         if(htmlSectionClasses == null) {
             htmlSectionClasses = new ArrayList<String>();
         }
-        params.put("htmlSectionClasses", htmlSectionClasses);
+        context.response().getModel().put("htmlSectionClasses", htmlSectionClasses);
 
-        context.response().sendTemplateHtml("/templates/errorNotFound.html", params);
+        context.response().sendTemplateHtml("/templates/errorNotFound.html");
     }
 
     /**
      * Exception handler
      */
-    public void exceptionHandler(IAppRequestContext context) {
+    public void exceptionHandler(AppRequestContext context) {
 
         Exception exception = context.variables().get(SpincastConstants.RequestScopedVariables.EXCEPTION,
                                                       Exception.class);
 
-        if(!(exception instanceof IPublicException)) {
+        if(!(exception instanceof PublicException)) {
             this.logger.error(SpincastStatics.getStackTrace(exception));
         }
 
         //==========================================
         // Custom status code to use?
         //==========================================
-        if(exception instanceof ICustomStatusCodeException) {
-            context.response().setStatusCode(((ICustomStatusCodeException)exception).getStatusCode());
+        if(exception instanceof CustomStatusCodeException) {
+            context.response().setStatusCode(((CustomStatusCodeException)exception).getStatusCode());
         }
 
         //==========================================
         // Public exception?
         //==========================================
-        if(exception instanceof IPublicException) {
+        if(exception instanceof PublicException) {
             if(context.request().isJsonShouldBeReturn()) {
-                context.response().sendJsonObj(exception.getMessage());
+                context.response().sendJson(exception.getMessage());
             } else {
-                context.response().sendTemplateHtml("/templates/exceptionPublic.html",
-                                                    SpincastStatics.params("message", exception.getMessage()));
+                context.response().getModel().put("message", exception.getMessage());
+                context.response().sendTemplateHtml("/templates/exceptionPublic.html");
             }
         } else {
             if(context.request().isJsonShouldBeReturn()) {
-                context.response().sendJsonObj("Server error");
+                context.response().sendJson("Server error");
             } else {
-                context.response().sendTemplateHtml("/templates/exception.html", (IJsonObject)null);
+                context.response().sendTemplateHtml("/templates/exception.html");
             }
         }
 

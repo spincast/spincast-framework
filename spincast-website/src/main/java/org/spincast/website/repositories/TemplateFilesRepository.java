@@ -1,29 +1,23 @@
 package org.spincast.website.repositories;
 
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.spincast.core.templating.ITemplatingEngine;
+import org.spincast.core.json.JsonArray;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
-import org.spincast.website.IAppConfig;
-import org.spincast.website.models.INewsEntriesAndTotalNbr;
-import org.spincast.website.models.INewsEntry;
+import org.spincast.core.utils.SpincastUtils;
+import org.spincast.website.AppConfig;
+import org.spincast.website.models.NewsEntriesAndTotalNbr;
 import org.spincast.website.models.NewsEntry;
+import org.spincast.website.models.NewsEntryDefault;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -32,26 +26,32 @@ import com.google.inject.Inject;
  * Implementation of the News repository that takes the 
  * news entries from template files.
  */
-public class TemplateFilesRepository implements INewsRepository {
+public class TemplateFilesRepository implements NewsRepository {
 
-    private final IAppConfig appConfig;
-    private final ITemplatingEngine templatingEngine;
+    private final AppConfig appConfig;
+    private final TemplatingEngine templatingEngine;
+    private final SpincastUtils spincastUtils;
+    private final JsonManager jsonManager;
 
     private final Object getNewsEntriesLocalLock = new Object();
 
-    private List<INewsEntry> newsEntries;
-    private List<INewsEntry> newsEntriesAsc;
-    private List<INewsEntry> newsEntriesDesc;
-    private Map<Long, INewsEntry> newsEntriesById;
+    private List<NewsEntry> newsEntries;
+    private List<NewsEntry> newsEntriesAsc;
+    private List<NewsEntry> newsEntriesDesc;
+    private Map<Long, NewsEntry> newsEntriesById;
 
     /**
      * Constructor
      */
     @Inject
-    public TemplateFilesRepository(IAppConfig appConfig,
-                                   ITemplatingEngine templatingEngine) {
+    public TemplateFilesRepository(AppConfig appConfig,
+                                   TemplatingEngine templatingEngine,
+                                   SpincastUtils spincastUtils,
+                                   JsonManager jsonManager) {
         this.appConfig = appConfig;
         this.templatingEngine = templatingEngine;
+        this.spincastUtils = spincastUtils;
+        this.jsonManager = jsonManager;
     }
 
     /**
@@ -66,12 +66,20 @@ public class TemplateFilesRepository implements INewsRepository {
         getNewsEntriesLocal();
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 
-    protected ITemplatingEngine getTemplatingEngine() {
+    protected TemplatingEngine getTemplatingEngine() {
         return this.templatingEngine;
+    }
+
+    protected SpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
+    }
+
+    protected JsonManager getJsonManager() {
+        return this.jsonManager;
     }
 
     @Override
@@ -80,17 +88,17 @@ public class TemplateFilesRepository implements INewsRepository {
     }
 
     @Override
-    public List<INewsEntry> getNewsEntries(boolean ascOrder) {
+    public List<NewsEntry> getNewsEntries(boolean ascOrder) {
 
         if(ascOrder) {
-            if(this.newsEntriesAsc == null) {
+            if(this.newsEntriesAsc == null || getAppConfig().isDebugEnabled()) {
 
-                List<INewsEntry> entries = getNewsEntriesLocal();
+                List<NewsEntry> entries = getNewsEntriesLocal();
 
-                Collections.sort(entries, new Comparator<INewsEntry>() {
+                Collections.sort(entries, new Comparator<NewsEntry>() {
 
                     @Override
-                    public int compare(INewsEntry entry1, INewsEntry entry2) {
+                    public int compare(NewsEntry entry1, NewsEntry entry2) {
                         return entry1.getPublishedDate().compareTo(entry2.getPublishedDate());
                     }
                 });
@@ -100,8 +108,8 @@ public class TemplateFilesRepository implements INewsRepository {
             return this.newsEntriesAsc;
 
         } else {
-            if(this.newsEntriesDesc == null) {
-                List<INewsEntry> newsEntriesAsc = getNewsEntries(true);
+            if(this.newsEntriesDesc == null || getAppConfig().isDebugEnabled()) {
+                List<NewsEntry> newsEntriesAsc = getNewsEntries(true);
                 this.newsEntriesDesc = Lists.reverse(newsEntriesAsc);
             }
             return this.newsEntriesDesc;
@@ -109,12 +117,12 @@ public class TemplateFilesRepository implements INewsRepository {
     }
 
     @Override
-    public List<INewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder) {
+    public List<NewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder) {
         return getNewsEntriesAndTotalNbr(startPos, endPos, ascOrder).getNewsEntries();
     }
 
     @Override
-    public INewsEntriesAndTotalNbr getNewsEntriesAndTotalNbr(int startPos, int endPos, boolean ascOrder) {
+    public NewsEntriesAndTotalNbr getNewsEntriesAndTotalNbr(int startPos, int endPos, boolean ascOrder) {
 
         if(startPos < 1) {
             startPos = 1;
@@ -128,15 +136,15 @@ public class TemplateFilesRepository implements INewsRepository {
             endPos = startPos;
         }
 
-        final List<INewsEntry> entries = getNewsEntries(ascOrder);
+        final List<NewsEntry> entries = getNewsEntries(ascOrder);
 
         if(entries.size() == 0 || startPos > entries.size()) {
 
-            return new INewsEntriesAndTotalNbr() {
+            return new NewsEntriesAndTotalNbr() {
 
                 @Override
-                public List<INewsEntry> getNewsEntries() {
-                    return new ArrayList<INewsEntry>();
+                public List<NewsEntry> getNewsEntries() {
+                    return new ArrayList<NewsEntry>();
                 }
 
                 @Override
@@ -152,10 +160,10 @@ public class TemplateFilesRepository implements INewsRepository {
 
         final int startPosFinal = startPos;
         final int endPosFinal = endPos;
-        return new INewsEntriesAndTotalNbr() {
+        return new NewsEntriesAndTotalNbr() {
 
             @Override
-            public List<INewsEntry> getNewsEntries() {
+            public List<NewsEntry> getNewsEntries() {
                 return Collections.unmodifiableList(entries.subList(startPosFinal - 1, endPosFinal)); // endPos is exclusive here
             }
 
@@ -167,16 +175,16 @@ public class TemplateFilesRepository implements INewsRepository {
     }
 
     @Override
-    public INewsEntry getNewsEntry(long newsId) {
+    public NewsEntry getNewsEntry(long newsId) {
         return getNewsEntriesById().get(newsId);
     }
 
-    protected Map<Long, INewsEntry> getNewsEntriesById() {
+    protected Map<Long, NewsEntry> getNewsEntriesById() {
 
-        if(this.newsEntriesById == null) {
-            this.newsEntriesById = new HashMap<Long, INewsEntry>();
-            List<INewsEntry> newsEntries = getNewsEntriesLocal();
-            for(INewsEntry newsEntry : newsEntries) {
+        if(this.newsEntriesById == null || getAppConfig().isDebugEnabled()) {
+            this.newsEntriesById = new HashMap<Long, NewsEntry>();
+            List<NewsEntry> newsEntries = getNewsEntriesLocal();
+            for(NewsEntry newsEntry : newsEntries) {
                 this.newsEntriesById.put(newsEntry.getId(), newsEntry);
             }
         }
@@ -184,41 +192,44 @@ public class TemplateFilesRepository implements INewsRepository {
         return this.newsEntriesById;
     }
 
-    protected List<INewsEntry> getNewsEntriesLocal() {
+    protected List<NewsEntry> getNewsEntriesLocal() {
 
-        if(this.newsEntries == null) {
+        if(this.newsEntries == null || getAppConfig().isDebugEnabled()) {
             synchronized(this.getNewsEntriesLocalLock) {
-                if(this.newsEntries == null) {
+                if(this.newsEntries == null || getAppConfig().isDebugEnabled()) {
 
                     try {
-                        List<INewsEntry> newsEntries = new ArrayList<INewsEntry>();
 
-                        Set<String> newsRelPaths =
-                                new Reflections("news", new ResourcesScanner()).getResources(Pattern.compile(".+\\.html"));
+                        List<NewsEntry> newsEntries = new ArrayList<NewsEntry>();
 
-                        for(String newsRelPath : newsRelPaths) {
+                        JsonObject newsJsonObj = getJsonManager().fromClasspathFile("/news/news-index.json");
 
-                            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(newsRelPath);
-                            try {
-                                StringWriter writer = new StringWriter();
-                                IOUtils.copy(stream, writer, "UTF-8");
-                                String newsEntryContent = writer.toString();
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("appUrlPrefix", getAppConfig().getPublicServerSchemeHostPort());
 
-                                Properties metaProps = getMetaProperties(newsEntryContent);
+                        JsonArray newsArray = newsJsonObj.getJsonArray("news");
+                        for(int i = 0; i < newsArray.size(); i++) {
+                            JsonObject newsObj = newsArray.getJsonObject(i);
 
-                                String idStr = metaProps.getProperty("id");
-                                long id = Long.parseLong(idStr);
-                                String dateStr = metaProps.getProperty("dateUTC");
-                                String title = metaProps.getProperty("title");
-
-                                newsEntryContent = cleanContent(newsEntryContent);
-
-                                INewsEntry entry = new NewsEntry(id, dateStr, title, newsEntryContent);
-                                newsEntries.add(entry);
-                            } finally {
-                                IOUtils.closeQuietly(stream);
+                            String path = newsObj.getString("path");
+                            String newsEntryContent = getSpincastUtils().readClasspathFile(path);
+                            if(newsEntryContent == null) {
+                                throw new RuntimeException("News not found : " + path);
                             }
+
+                            //==========================================
+                            // Replace placeholders
+                            //==========================================
+                            newsEntryContent = getTemplatingEngine().evaluate(newsEntryContent, params);
+
+                            long id = newsObj.getLong("id");
+                            Date date = newsObj.getDate("date");
+                            String title = newsObj.getString("title");
+
+                            NewsEntry entry = new NewsEntryDefault(id, date, title, newsEntryContent);
+                            newsEntries.add(entry);
                         }
+
                         this.newsEntries = newsEntries;
 
                     } catch(Exception ex) {
@@ -229,40 +240,6 @@ public class TemplateFilesRepository implements INewsRepository {
         }
 
         return this.newsEntries;
-    }
-
-    protected Properties getMetaProperties(String newsEntryContent) {
-
-        try {
-            Matcher matcher = Pattern.compile("(?s)<!-- META_START(.*)META_END -->").matcher(newsEntryContent);
-            matcher.find();
-            String propsStr = StringUtils.strip(matcher.group(1), " \t\r\n");
-
-            Properties props = new Properties();
-            props.load(new StringReader(propsStr));
-
-            return props;
-
-        } catch(Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
-    }
-
-    protected String cleanContent(String newsEntryContent) {
-
-        //==========================================
-        // Removes the meta informations
-        //==========================================
-        newsEntryContent = newsEntryContent.replaceAll("(?s)<!-- META_START.*META_END -->", "");
-        newsEntryContent = StringUtils.strip(newsEntryContent, "\r\n");
-
-        //==========================================
-        // Replaces some placeholders
-        //==========================================
-        String appUrlPrefix = getAppConfig().getServerSchemeHostPort();
-        newsEntryContent = getTemplatingEngine().evaluate(newsEntryContent, SpincastStatics.params("appUrlPrefix", appUrlPrefix));
-
-        return newsEntryContent;
     }
 
 }

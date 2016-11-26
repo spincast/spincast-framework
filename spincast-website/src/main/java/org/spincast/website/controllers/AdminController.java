@@ -3,12 +3,11 @@ package org.spincast.website.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.json.IJsonManager;
-import org.spincast.core.json.IJsonObject;
-import org.spincast.core.utils.ISpincastUtils;
-import org.spincast.website.IAppConfig;
-import org.spincast.website.exchange.IAppRequestContext;
-import org.spincast.website.services.INewsService;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.utils.SpincastUtils;
+import org.spincast.website.AppConfig;
+import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.services.NewsService;
 
 import com.google.inject.Inject;
 
@@ -20,17 +19,17 @@ public class AdminController {
     protected final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     private final String[] mainArgs;
-    private final IJsonManager jsonManager;
-    private final ISpincastUtils spincastUtils;
-    private final INewsService newsService;
-    private final IAppConfig appConfig;
+    private final JsonManager jsonManager;
+    private final SpincastUtils spincastUtils;
+    private final NewsService newsService;
+    private final AppConfig appConfig;
 
     @Inject
     public AdminController(@MainArgs String[] mainArgs,
-                           IJsonManager jsonManager,
-                           ISpincastUtils spincastUtils,
-                           INewsService newsService,
-                           IAppConfig appConfig) {
+                           JsonManager jsonManager,
+                           SpincastUtils spincastUtils,
+                           NewsService newsService,
+                           AppConfig appConfig) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
@@ -42,27 +41,27 @@ public class AdminController {
         return this.mainArgs;
     }
 
-    protected IJsonManager getJsonManager() {
+    protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected ISpincastUtils getSpincastUtils() {
+    protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
 
-    protected INewsService getNewsService() {
+    protected NewsService getNewsService() {
         return this.newsService;
     }
 
-    protected IAppConfig getAppConfig() {
+    protected AppConfig getAppConfig() {
         return this.appConfig;
     }
 
-    public void index(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/admin/adminIndex.html", (IJsonObject)null);
+    public void index(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/admin/adminIndex.html");
     }
 
-    public void news(IAppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/admin/adminNews.html", (IJsonObject)null);
+    public void news(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/admin/adminNews.html");
     }
 }

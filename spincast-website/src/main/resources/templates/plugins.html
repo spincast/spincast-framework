@@ -13,7 +13,7 @@ Plugins
 
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-		    <a href="#top"><h2 class="shortTop"> Plugins</h2></a>
+		    <a href="#top"><h2 class="shortTop"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Plugins</h2></a>
         </div>
     </div>
     
@@ -28,8 +28,9 @@ Plugins
             <p>
                 Most plugins provide a Guice module that you have to install in your application. By doing so,
                 extra components are bound and can be used in your application. 
-                The plugins annotated with <img class="inlineIcon" src="/public/images/default-badge.png" /> are
-                already installed if you use the <code>spincast-default</code> artifact!
+                Note that the plugins with a dotted line below their title are
+                already installed if you use the <code>spincast-default</code> artifact (or if you start from the
+                <a href="/documentation#quick_start">Quick Start</a> application)!
             </p>
         </div>
     </div>
@@ -37,396 +38,251 @@ Plugins
 	<div id="pluginsWrapper" class="row">
 	
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Routing</h4>
-                    <p>The default router, and other routing related components.<p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-routing" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-routing" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Routing</h4>
+                        <p class="center"><img src="/public/images/plugins/routing.png" /><p>
+                        <p>
+                            The default Router, and other routing related components.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Request</h4>
-                    <p>Components to access the current HTTP request information.</p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-request" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-request" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Request</h4>
+                        <p class="center"><img src="/public/images/plugins/request.png" /><p>
+                        <p>Components to access HTTP requests information.</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Response</h4>
-                    <p>Components to manipulate the headers and content sent as the response for a request.<p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-response" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-response" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Response</h4>
+                        <p class="center"><img src="/public/images/plugins/response.png" /><p>
+                        <p>Components to help build an HTTP response.<p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Undertow</h4>
-                    <p>
-                        <a href="http://undertow.io">Undertow</a> is the  default HTTP server provided by Spincast.
-                        It is modern, performant, and easily embeddable.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-undertow" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-undertow" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Undertow</h4>
+                        <p class="center"><img src="/public/images/plugins/undertow.png" /><p>
+                        <p>
+                            Undertow is the default HTTP server provided by Spincast.
+                            It is modern, performant, and easily embeddable.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Locale Resolver</h4>
-                    <p>
-                        Provides an implementation of <code>ILocaleResolver</code> which is
-                        used to find the locale/language to use.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-locale-resolver" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-locale-resolver" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Locale Resolver</h4>
+                        <p class="center"><img src="/public/images/plugins/locale-resolver.png" /><p>
+                        <p>
+                            Provides an implementation of the locale resolver
+                            which is used to find the best locale/language to use.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Cookies</h4>
-                    <p>
-                        Provided components to read and write cookies.
-                        <br /><br />
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-cookies" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-cookies" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Cookies</h4>
+                        <p class="center"><img src="/public/images/plugins/cookies.png" /><p>
+                        <p>
+                            Components to read and write HTTP cookies.
+                            <br /><br />
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </div>
-        
+            </a>
+        </div> 
 
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Variables Add-on</h4>
-                    <p>Provides a request context <code>add-on</code> to read and write <em>request scoped</em> variables.
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-variables-addon" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-variables-addon" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Variables Add-on</h4>
+                        <p class="center"><img src="/public/images/plugins/variables.png" /></p>
+                        <p>
+                            Provides a Request Context add-on to read and write <em>request scoped</em> variables.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Templating Add-on</h4>
-                    <p>Provides a request context <code>add-on</code> to easily access templating functionalities.<p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-templating-addon" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-templating-addon" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Templating Add-on</h4>
+                        <p class="center"><img src="/public/images/plugins/templating.png" /></p>
+                        <p>
+                            Provides a Request Context add-on for easy access to the functionnalities of the
+                            Templating Engine.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Pebble</h4>
-                    <p>
-                        Provides an implementation of <code>ITemplatingEngine</code>, for
-                        templating functionalities, using <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-pebble" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-pebble" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Pebble</h4>
+                        <p class="center"><img src="/public/images/plugins/pebble.png" /><p>
+                        <p>
+                            Provides an implementation for the Templating Engine component, 
+                            using Pebble.
+                        </p> 
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Jackson Json</h4>
-                    <p>
-                       Components to work with <code>Json</code>, using
-                        <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-jackson-json" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-jackson-json" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Jackson Json</h4>
+                        <p class="center"><img src="/public/images/plugins/jackson-json.png" /><p>
+                        <p>
+                           Components to work with Json, using Jackson.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Jackson XML</h4>
-                    <p>
-                        Components to work with <code>XML</code>, using
-                        <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-jackson-xml" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-jackson-xml" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Jackson XML</h4>
+                        <p class="center"><img src="/public/images/plugins/jackson-xml.png" /><p>
+                        <p>
+                            Components to work with XML, using Jackson.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
-      
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Config</h4>
-                    <p>
-                        Provides default values for the required Spincast configurations.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-config" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-config" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Config</h4>
+                        <p class="center"><img src="/public/images/plugins/config.png" /><p>
+                        <p>
+                            Provides default values for the required Spincast configurations.
+                        </p>
+
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Dictionary</h4>
-                    <p>
-                        Provides default labels for a Spincast application.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-dictionary" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-dictionary" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast Dictionary</h4>
+                        <p class="center"><img src="/public/images/plugins/dictionary.png" /><p>
+                        <p>
+                            Provides default labels required by any Spincast application.
+                        </p>
+
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast HTTP Caching</h4>
-                    <p>
-                        HTTP Caching management : Etags, Last modification
-                        dates, Cache-Control headers, etc.
-                    </p>
-                    <div class="onPageBadges">
-                        <div class="pluginBadgeCore hint--top hint--bounce" 
-                             data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
-                        <span class="clear" />
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-http-caching" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-http-caching" class="pluginLink">
+                <div class="thumbnail defaultPlugin niceWell">
+                    <div class="caption">
+                        <h4>Spincast HTTP Caching</h4>
+                        <p class="center"><img src="/public/images/plugins/httpcaching.png" /><p>
+                        <p>
+                            HTTP Caching management : Etags, Last modification
+                            dates, Cache-Control headers, etc.
+                        </p>
+   
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Http Client<br />
-                    (no Websocket support)</h4>
-                    
-                    <p>
-                        Client using Apache <a href="https://hc.apache.org/httpcomponents-client-ga/">HttpClient</a>
-                        to easily create and send HTTP requests.
-                    </p>
-                    <div class="onPageBadges">
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-http-client" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-http-client" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Http Client<br />
+                        </h4>
+                        <p class="center"><img src="/public/images/plugins/http-client.png" /><p>
+                        <p>
+                            HTTP Client to easily build and send HTTP requests.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Http Client<br />
-                    (with Websocket support)</h4>
-                    
-                    <p>
-                        Client using Apache <a href="https://hc.apache.org/httpcomponents-client-ga/">HttpClient</a>
-                        and <a href="http://undertow.io/">Undertow</a>'s Websocket utilities
-                        to easily create and send HTTP/WebSocket requests.
-                    </p>
-                    <div class="onPageBadges">
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-http-client-with-websocket" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-http-client-with-websocket" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Http Client<br />
+                            (with Websocket support)
+                        </h4>
+                        <p class="center"><img src="/public/images/plugins/http-client-websocket.png" /><p>
+                        <p>
+                            HTTP Client to easily build and send HTTP/WebSocket requests.
+                        </p> 
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Properties File Config</h4>
-                    <p>
-                        Allows an application to define its configurations in a
-                        <code>.properties</code> file.
-                    </p>
-                    <div class="onPageBadges">
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-properties-file-config" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
+            <a href="/plugins/spincast-properties-file-config" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Properties File Config</h4>
+                        <p class="center"><img src="/public/images/plugins/props-file.png" /><p>
+                        <p>
+                            Allows an application to define its configurations externally, in a
+                            .properties file.
+                        </p> 
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4>Spincast Validation</h4>
-                    <p>
-                        Helps the validations of your beans/models. Provides validation methods to check 
-                        for <code>null</code> values, to validate min/max length, to validate emails, etc.
-                    </p>
-                    <div class="onPageBadges">
-                    </div>  
-                    <p>
-                        <div class="pluginDocBtn">
-                            <a href="/plugins/spincast-validation" class="btn btn-lg hvr-radial-out">
-                            <img class="inlineIcon alignMin5" src="/public/images/icons/download.png" /> Documentation / Installation</a>
-                        </div>
-                    </p> 
-                </div>
-            </div>
+            </a>
         </div>
  
     </div>
