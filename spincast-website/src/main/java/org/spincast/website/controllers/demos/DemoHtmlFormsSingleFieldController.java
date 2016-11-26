@@ -41,9 +41,13 @@ public class DemoHtmlFormsSingleFieldController {
         JsonObject form = context.request().getFormData().getJsonObject("demoForm");
 
         //==========================================
-        // Validates the form
+        // Validates the form and prefixes the
+        // resulting validation keys with "demoForm.".
+        // Doing so, we make sure the keys represent the
+        // JsonPath of the validated element they are
+        // associated with.
         //==========================================
-        ValidationSet validationResult = validateForm(form);
+        ValidationSet validationResult = validateForm(form).prefixValidationKeys("demoForm.");
 
         //==========================================
         // This is only for our demo, to allow the

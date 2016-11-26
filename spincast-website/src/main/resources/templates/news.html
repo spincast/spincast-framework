@@ -1,6 +1,3 @@
-{#==========================================
-Community
-==========================================#}
 {% extends "./layout.html" %}
 
 {% block sectionClasses %}news{% endblock %}
@@ -79,13 +76,13 @@ Moment.js, for dates formatting
         {% if currentPage == 1 %}
             <nav id="toc" class="col-md-3">
                 <ul class="nav nav-stacked">
-                    <li>
+                    <li class="openable">
                         <a href="#top">News</a>
                     </li>
-                    <li>
+                    <li class="openable">
                         <a href="#change_log">Change log</a>
                     </li>
-                    <li>
+                    <li class="openable">
                         <a href="#twitter">Twitter</a>
                     </li>      
                 </ul>

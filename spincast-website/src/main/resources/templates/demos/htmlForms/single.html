@@ -1,6 +1,3 @@
-{#==========================================
-Demos - HTML Forms - Introduction
-==========================================#}
 {% extends "../htmlForms.html" %}
 
 {% block demoSectionClasses %}demo_html_forms_single{% endblock %}
@@ -101,7 +98,7 @@ Demos - HTML Forms - Introduction
             <div class="row">
                 <div class="col-sm-6">
                     <div class="row">
-                        <div class="form-group {{validation['email'] | validationClass()}}">
+                        <div class="form-group {{validation['demoForm.email'] | validationClass()}}">
                             <label for="email" class="col-sm-4 control-label">Email *</label>
                             <div class="col-sm-8">
                                 <input type="text" 
@@ -110,7 +107,7 @@ Demos - HTML Forms - Introduction
                                        name="demoForm.email" 
                                        placeholder="Email"
                                        value="{{demoForm.email | default('')}}">
-                                {{validation['email'] | validationMessages()}}
+                                {{validation['demoForm.email'] | validationMessages()}}
                                 
                                 <div class="validationsDirectBtnDiv">
                                     <button id="subBtn" type="submit" class="btn btn-primary">Submit</button>
@@ -122,7 +119,7 @@ Demos - HTML Forms - Introduction
                     <div class="row">
                     
                         <div class="validationDemoSmallLabel">
-                            <img src="/public/images/icons/tipy.png" /> :
+                            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
                             You can display (or hide) some elements/sections depending on the validation status of a field
                             or of the form itself.
                             For example :
@@ -139,7 +136,7 @@ Demos - HTML Forms - Introduction
                             </div>
                         {% endif %}
                         
-                        {% if validation._ | validationSubmitted() and validation['email'] | validationIsValid() %}
+                        {% if validation._ | validationSubmitted() and validation['demoForm.email'] | validationIsValid() %}
                             <div class="well niceWell valid">
                                 <div class="niceWellTitle">Valid</div>
                                 This <code>&lt;div&gt;</code> is displayed because the form has been submitted and 
@@ -148,31 +145,31 @@ Demos - HTML Forms - Introduction
                                 first time, it doesn't contain any errors so it is considered as being "valid".
                                 You can validate that the form has been submitted using the "<strong>_</strong>" element, 
                                 which represents the form itself (<a href="http://spincast.loc:44420/documentation#validation_to_jsonobject">more info</a>) :
-                                {% verbatim %}<code class="snippet">{% if validation._ | validationSubmitted() and validation['email'] | validationIsValid() %}</code>{% endverbatim %}
+                                {% verbatim %}<code class="snippet">{% if validation._ | validationSubmitted() and validation['demoForm.email'] | validationIsValid() %}</code>{% endverbatim %}
                             </div>
                         {% endif %}
                         
-                        {% if validation['email'] | validationHasSuccesses() %}
+                        {% if validation['demoForm.email'] | validationHasSuccesses() %}
                             <div class="well niceWell success">
                                 <div class="niceWellTitle">Success</div>
                                 This <code>&lt;div&gt;</code> is displayed because the following condition is true :
-                                {% verbatim %}<code class="snippet">{% if validation.demoForm['email'] | validationHasSuccesses() %}</code>{% endverbatim %}
+                                {% verbatim %}<code class="snippet">{% if validation.demoForm['demoForm.email'] | validationHasSuccesses() %}</code>{% endverbatim %}
                              </div>
                         {% endif %}
                         
-                        {% if validation['email'] | validationHasWarnings() %}
+                        {% if validation['demoForm.email'] | validationHasWarnings() %}
                             <div class="well niceWell warning">
                                 <div class="niceWellTitle">Warning</div>
                                 This <code>&lt;div&gt;</code> is displayed because the following condition is true :
-                                {% verbatim %}<code class="snippet">{% if validation['email'] | validationHasWarnings() %}</code>{% endverbatim %}
+                                {% verbatim %}<code class="snippet">{% if validation['demoForm.email'] | validationHasWarnings() %}</code>{% endverbatim %}
                             </div>
                         {% endif %}
                     
-                        {% if validation['email'] | validationHasErrors() %}
+                        {% if validation['demoForm.email'] | validationHasErrors() %}
                             <div class="well niceWell error">
                                 <div class="niceWellTitle">Error</div>
                                 This <code>&lt;div&gt;</code> is displayed because the following condition is true :
-                                {% verbatim %}<code class="snippet">{% if validation['email'] | validationHasErrors() %}</code>{% endverbatim %}
+                                {% verbatim %}<code class="snippet">{% if validation['demoForm.email'] | validationHasErrors() %}</code>{% endverbatim %}
                             </div>
                         {% endif %}
   
@@ -460,10 +457,10 @@ if(!validationResult.isValid() {
     {% verbatim %}
     <div>
         <p>
-            <pre class="ace ace-pebble" data-ace-hi="1,23,1,66|10,8,10,54"
+            <pre class="ace ace-pebble" data-ace-hi="1,23,1,75|10,8,10,63"
 >
 
-&lt;div class="form-group {{validation['email'] | validationClass()}}"&gt;
+&lt;div class="form-group {{validation['demoForm.email'] | validationClass()}}"&gt;
     &lt;label for="email" class="col-sm-4 control-label"&gt;Email *&lt;/label&gt;
     &lt;div class="col-sm-8"&gt;
         &lt;input type="text" 
@@ -472,7 +469,7 @@ if(!validationResult.isValid() {
                name="demoForm.email" 
                placeholder="Email"
                value="{{demoForm.email | default('')}}"&gt;
-        {{validation['email'] | validationMessages()}}
+        {{validation['demoForm.email'] | validationMessages()}}
         
         &lt;div class="validationsDirectBtnDiv"&gt;
             &lt;button id="subBtn" type="submit" class="btn btn-primary"&gt;Submit&lt;/button&gt;
@@ -487,7 +484,7 @@ if(!validationResult.isValid() {
 <p> 
     Since we added the <code>Validation Set</code> to the response model, our template has access
     to its messages through the <code>"validation"</code> element. From this element, we get the <code>Validation Messages</code> associated
-    with our field using the <code>"email"</code> <a href="/documentation#validation_keys">validation key</a>
+    with our field using the <code>"demoForm.email"</code> <a href="/documentation#validation_keys">validation key</a>
     and we pass the result to the <code>validationClass()</code> and <code>validationMessages()</code>
     filters.
     
@@ -519,14 +516,14 @@ if(!validationResult.isValid() {
     {% verbatim %}
     <div>
         <p>
-            <pre class="ace ace-pebble" data-ace-hi="1,1,1,55|7,1,7,12"
+            <pre class="ace ace-pebble" data-ace-hi="1,1,1,64|7,1,7,12"
 >
 
- {% if validation['email'] | validationHasWarnings() %}
+ {% if validation['demoForm.email'] | validationHasWarnings() %}
      &lt;div class="well niceWell warning"&gt;
          &lt;div class="niceWellTitle"&gt;Warning&lt;/div&gt;
          This &lt;code&gt;&amp;lt;div&amp;gt;&lt;/code&gt; is displayed because the following condition is true :
-         {% verbatim %}&lt;code class="snippet"&gt;{% if validation['email'] | validationHasWarnings() %}&lt;/code&gt;{% end<span></span>verbatim %}
+         {% verbatim %}&lt;code class="snippet"&gt;{% if validation['demoForm.email'] | validationHasWarnings() %}&lt;/code&gt;{% end<span></span>verbatim %}
      &lt;/div&gt;
  {% endif %}
 </pre>       
@@ -538,6 +535,100 @@ if(!validationResult.isValid() {
     Make sure you read the <a href="/documentation#forms_validation_filters">Validation Filters</a> section
     of the documentation to see what are the filters related to validation, and how to use them! 
 </p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    One last thing! Let's go back server-side for a minute... You may have noticed in the 
+    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsSingleFieldController.java">code</a> 
+    that, when the <code>Validation Set</code> is ready, <em>we prefix its validation keys with the string <code>"demoForm."</code></em>
+    before we actually use it :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java" data-ace-hi="1,51,1,85"
+>JsonObject form = context.request().getFormData().getJsonObject("demoForm");
+ValidationSet validationResult = validateForm(form).prefixValidationKeys("demoForm.");
+
+// ... uses the Validation Set</pre>       
+        </p>
+    </div>  
+</p>
+<p>
+    Why are we doing this? 
+</p>
+<p>
+    Since we call the <code>validateForm(...)</code> method with <code>"form"</code> as the object to validate, the validations
+    are performed <em>relatively to this object</em>, so <code>"email"</code> is used as the validation keys to store the
+    <code>Validation Messages</code> for this element. But, in our final <code>Validation Set</code>, we would like
+    the validation keys to <em>reflect the <a href="/documentation#jsonobject_jsonpaths">JsonPaths</a>
+    of their associated element</em>. If we were not to prefix the validation keys with <code>"demoForm."</code>, 
+    the template of the <code>"email"</code> field would look like this&nbsp;:
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble" data-ace-hi="1,37,1,42|10,22,10,27"
+>
+
+&lt;div class="form-group {{validation['email'] | validationClass()}}"&gt;
+    &lt;label for="email" class="col-sm-4 control-label"&gt;Email *&lt;/label&gt;
+    &lt;div class="col-sm-8"&gt;
+        &lt;input type="text" 
+               class="form-control" 
+               id="email" 
+               name="demoForm.email" 
+               placeholder="Email"
+               value="{{demoForm.email | default('')}}"&gt;
+        {{validation['email'] | validationMessages()}}
+        
+        &lt;div class="validationsDirectBtnDiv"&gt;
+            &lt;button id="subBtn" type="submit" class="btn btn-primary"&gt;Submit&lt;/button&gt;
+        &lt;/div&gt;    
+    &lt;/div&gt;
+&lt;/div&gt;</pre>       
+        </p>
+    </div>  
+    {% endverbatim %}
+
+</p>
+<p>
+    This would have work (and you can do it if you want), but we think it's way clearer when the validation keys are actually 
+    <em>the
+    string representation of the <a href="/documentation#jsonobject_jsonpaths">JsonPaths</a> of
+    the elements they are associated with</em>. We think that :
+    
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>
+
+{{validation['demoForm.email'] | validationMessages()}}
+</pre>       
+        </p>
+    </div>  
+    {% endverbatim %}
+</p>
+<p>
+    is much better than :
+    {% verbatim %}
+    <div>
+        <p>
+            <pre class="ace ace-pebble"
+>
+
+{{validation['email'] | validationMessages()}}
+</pre>       
+        </p>
+    </div>  
+    {% endverbatim %}
+    since the name of the <code>input</code> field is <code>"demoForm.email"</code>...
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    You can learn more about this topic in the 
+    <a href="/documentation#validation_keys">Validation Keys</a> section!
+</p>  
+
 
 
 <h4>
