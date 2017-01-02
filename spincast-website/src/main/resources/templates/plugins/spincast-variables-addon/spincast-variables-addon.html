@@ -35,7 +35,7 @@
                      <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/variables/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
+                     data-hint="Default plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div>  
         </div>
@@ -51,8 +51,9 @@
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
-                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#add-on">Suggested <em>add-on</em></a></li>
                 <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
@@ -65,31 +66,81 @@
                     Overview
                 </h3>
                 <p>
-                    This plugin provides an implementation for the 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/VariablesRequestContextAddon.html">VariablesRequestContextAddon</a> 
-                    Request Context <code>add-on</code> : 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/variables/SpincastVariablesRequestContextAddon.html">SpincastVariablesRequestContextAddon</a>.
-                    It allows a <code>Route Handler</code> to set 
-                    <em>request scoped</em> variables which will be available to other <code>Route Handlers</code>. 
-                    It is mounted as <code>.variables()</code> on the default Spincast Request Context. 
+                    This plugin provides an <code>add-on</code> to allow a <code>Route Handler</code>
+                    to set <em>request scoped</em> variables which will be available to other <code>Route Handlers</code>.
+                </p>
+            </section>
+
+           <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    <img class="inlineIcon" src="/public/images/default-badge.png" />
+                    <em>If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
+                    this plugin is already installed by default so you have nothing to do!</em>
+                </p>
+                <p>
+                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
+                    plugin by :
+                </p>
+                <p>
+                    1. 
+                    Adding this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-variables-addon&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/variables/SpincastVariablesPluginModule.html">SpincastVariablesPluginModule</a> 
+                    module to your Guice context.
                 </p>
             </section>
             
-            
-            <section id="examples">
-	            <h3>
-                    <a class="anchor" href="#examples" title="permanent link"></a>
-                    Quick Examples
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
                 </h3>
-	            <p>
-	                <ul>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/variables/SpincastVariablesPlugin.html">SpincastVariablesPlugin</a>.
+                </p>
+            </section>
+            
+            <section id="add-on">
+                <h3>
+                    <a class="anchor" href="#add-on" title="permanent link"></a>
+                    Suggested <em>add-on</em>
+                </h3>
+                <p>
+                    <ul>
                         <li>
-                            Using the <code>.variables()</code> add-on from a <code>Route Handler</code> 
-                            to get and set request scoped variables :
-                            
-                            <div>
-                                <p>
-                                    <pre class="ace ace-java"
+                            <strong>Name</strong> : <code>variables()</code>
+                        </li>
+                        <li>
+                            <strong>Component</strong> : <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/VariablesRequestContextAddon.html">VariablesRequestContextAddon</a>
+                        </li>
+                        <li>
+                            <strong>Usage</strong> : to allow a <code>Route Handler</code> to read and write 
+                            <em>request scoped</em> variables.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Example :
+                    
+                      <div>
+                            <p>
+                                <pre class="ace ace-java"
 >public void myHandler(AppRequestContext context) {
 
     // Reads a request scoped variable
@@ -100,74 +151,16 @@
     
     //...
 }</pre>
-                                </p>
-                            </div> 
-                        </li>
-                        
-                    </ul>
-	            </p>
+                        </p>
+                    </div> 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/default-badge.png" />
+                    <em>This add-on is already installed by default on the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/RequestContext.html">Request Context</a> type.</em>
+                </p>
             </section>
-            
-	        <section id="installation">
-                <h3>
-                    <a class="anchor" href="#installation" title="permanent link"></a>
-                    Installation
-                </h3>
-	            <p>
-	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
-	                you have nothing more to do!
-	            </p>
-	            <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
-	                plugin by adding this artifact to your project:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-xml"
->&lt;dependency&gt;
-    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
-    &lt;artifactId&gt;spincast-plugins-variables-addon&lt;/artifactId&gt;
-    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
-&lt;/dependency&gt;</pre> 
-	                    </p>
-	                </div>  
-	            </p>
-	            <p>
-	                <img class="inlineIcon" src="/public/images/icons/para.png" />
-	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
->Injector guice = Guice.createInjector(
-        new SpincastCoreGuiceModule(args),
-        new SpincastVariablesPluginGuiceModule(AppRequestContext.class, 
-                                               AppWebsocketContext.class)
-        // other modules...
-        );</pre> 
-	                    </p>
-	                </div>   
-	            </p>
-	            <p>
-	                ... or by using the <code>install(...)</code> method from your custom Guice module:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="5,8,5,85|6,8,6,100"
->public class AppModule extends SpincastCoreGuiceModule {
 
-    @Override
-    protected void configure() {
-        super.configure();
-        install(new SpincastVariablesPluginGuiceModule(getRequestContextType(), 
-                                                       getWebsocketContextType()));
-        // other modules...
-    }
-    
-    // ...
-}</pre> 
-	                    </p>
-	                </div>   
-	            </p>
-            </section>
             
             
             <section id="javadoc">

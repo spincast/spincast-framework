@@ -4,17 +4,18 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 
-public class MethodReferenceAsHandlersOrLambdasTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class MethodReferenceAsHandlersOrLambdasTest extends IntegrationTestNoAppDefaultContextsBase {
 
     public static class MyController {
 
@@ -24,15 +25,17 @@ public class MethodReferenceAsHandlersOrLambdasTest extends SpincastDefaultNoApp
     }
 
     @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
+    protected Injector createInjector() {
 
-            @Override
-            protected void configure() {
-                super.configure();
-                bind(MyController.class);
-            }
-        };
+        return Spincast.configure()
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+                               bind(MyController.class);
+                           }
+                       })
+                       .init();
     }
 
     @Inject

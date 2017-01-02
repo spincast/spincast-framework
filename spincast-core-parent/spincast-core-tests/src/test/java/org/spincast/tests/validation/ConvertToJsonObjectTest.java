@@ -11,27 +11,19 @@ import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.validation.JsonObjectValidationSet;
-import org.spincast.core.validation.ValidationSet;
 import org.spincast.core.validation.ValidationLevel;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.testing.core.SpincastTestBase;
+import org.spincast.core.validation.ValidationSet;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class ConvertToJsonObjectTest extends SpincastTestBase {
+public class ConvertToJsonObjectTest extends UnitTestDefaultContextsBase {
 
     @Inject
     private JsonManager jsonManager;
 
     protected JsonManager getJsonManager() {
         return this.jsonManager;
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
     @Test

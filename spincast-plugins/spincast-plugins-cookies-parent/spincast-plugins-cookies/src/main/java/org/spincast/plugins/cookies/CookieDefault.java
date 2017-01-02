@@ -13,7 +13,6 @@ import com.google.inject.assistedinject.AssistedInject;
 
 public class CookieDefault implements Cookie {
 
-    private final SpincastConfig spincastConfig;
     private final String name;
 
     private String value;
@@ -31,8 +30,7 @@ public class CookieDefault implements Cookie {
     @AssistedInject
     public CookieDefault(@Assisted("name") String name,
                          SpincastConfig spincastConfig) {
-        this.name = name;
-        this.spincastConfig = spincastConfig;
+        this(name, null, null, null, null, false, false, false, 0, spincastConfig);
     }
 
     /**
@@ -42,9 +40,7 @@ public class CookieDefault implements Cookie {
     public CookieDefault(@Assisted("name") String name,
                          @Assisted("value") String value,
                          SpincastConfig spincastConfig) {
-        this.name = name;
-        this.value = value;
-        this.spincastConfig = spincastConfig;
+        this(name, value, null, null, null, false, false, false, 0, spincastConfig);
     }
 
     /**
@@ -62,6 +58,21 @@ public class CookieDefault implements Cookie {
                          @Assisted("version") int version,
                          SpincastConfig spincastConfig) {
 
+        //==========================================
+        // If no domain was specify, we use the
+        // public host.
+        //==========================================
+        if (domain == null) {
+            domain = spincastConfig.getPublicServerHost();
+        }
+
+        //==========================================
+        // Root path by default
+        //==========================================
+        if (path == null) {
+            path = "/";
+        }
+
         this.name = name;
         this.value = value;
         this.path = path;
@@ -71,11 +82,6 @@ public class CookieDefault implements Cookie {
         this.httpOnly = httpOnly;
         this.discard = discard;
         this.version = version;
-        this.spincastConfig = spincastConfig;
-    }
-
-    protected SpincastConfig getSpincastConfig() {
-        return this.spincastConfig;
     }
 
     @Override
@@ -90,14 +96,6 @@ public class CookieDefault implements Cookie {
 
     @Override
     public String getPath() {
-
-        //==========================================
-        // Root path by default
-        //==========================================
-        if(this.path == null) {
-            this.path = "/";
-        }
-
         return this.path;
     }
 
@@ -108,15 +106,6 @@ public class CookieDefault implements Cookie {
 
     @Override
     public String getDomain() {
-
-        //==========================================
-        // If no domain was specify, we use the
-        // public host.
-        //==========================================
-        if(this.domain == null) {
-            this.domain = getSpincastConfig().getPublicServerHost();
-        }
-
         return this.domain;
     }
 
@@ -138,9 +127,9 @@ public class CookieDefault implements Cookie {
     @Override
     public void setExpiresUsingMaxAge(int maxAge) {
 
-        if(maxAge == 0) {
+        if (maxAge == 0) {
             setExpires(null);
-        } else if(maxAge < 0) {
+        } else if (maxAge < 0) {
             Date date = DateUtils.addYears(new Date(), -1);
             setExpires(date);
         } else {
@@ -153,7 +142,7 @@ public class CookieDefault implements Cookie {
     public boolean isExpired() {
 
         Date expire = getExpires();
-        if(expire == null) {
+        if (expire == null) {
             return false;
         }
 

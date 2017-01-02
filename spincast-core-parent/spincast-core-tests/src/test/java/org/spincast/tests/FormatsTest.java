@@ -18,14 +18,14 @@ import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class FormatsTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class FormatsTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected XmlManager xmlManager;

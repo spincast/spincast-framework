@@ -11,10 +11,6 @@ public class DemosTutorialsController {
 
     protected final Logger logger = LoggerFactory.getLogger(DemosTutorialsController.class);
 
-    public void helloWorld(AppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/demos/helloWorld.html");
-    }
-
     public void webSockets(AppRequestContext context) {
         context.response().getModel().put("isHttps", context.request().isHttps());
         context.response().sendTemplateHtml("/templates/demos/websockets.html");
@@ -34,5 +30,17 @@ public class DemosTutorialsController {
 
     public void todoList(AppRequestContext context) {
         context.response().sendTemplateHtml("/templates/demos/todoList.html");
+    }
+
+    public void helloWorldQuick(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/demos/helloWorld/quick.html");
+    }
+
+    public void helloWorldBetter(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/demos/helloWorld/better.html");
+    }
+
+    public void helloWorldSuper(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/demos/helloWorld/super.html");
     }
 }

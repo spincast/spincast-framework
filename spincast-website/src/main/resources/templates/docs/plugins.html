@@ -1,0 +1,292 @@
+{#==========================================
+Docs : "Plugins"
+==========================================#}
+
+<section id="plugins">
+    <h3>
+        <a class="anchor" href="#plugins" title="permanent link"></a>
+        Plugins
+    </h3>
+</section>
+
+{#==========================================
+What is a plugin?
+==========================================#}     
+<section id="plugins_what">
+    <h4>
+        <a class="anchor_small" href="#plugins_what" title="permanent link"></a>
+        What is a Spincast plugin?
+    </h4>
+    
+    <p>
+        A plugin can be a simple library, like any other Maven artifacts you
+        add to your project. It can provide components and utilities to be used in your
+        application.
+    </p>
+    <p>
+        But a plugin can also <em>contribute to the Guice context of your application</em>. 
+        They can add some bindings to that context and can even modify/remove some!
+        All plugins are applied, in the order they are registered, during the <a href="#bootstrapping">bootstrapping</a>
+        phase.
+    </p>
+    <p>
+        Some plugins may also suggest an <a href="#request_context">add-on</a> to install.
+    </p>
+    
+</section>
+
+{#==========================================
+Installing a plugin
+==========================================#}     
+<section id="plugins_installing">
+    <h4>
+        <a class="anchor_small" href="#plugins_installing" title="permanent link"></a>
+        Installing a plugin
+    </h4>
+    
+    <p>
+        You first need to add the Maven artifact of the plugin to your 
+        <code>pom.xml</code> (or <code>build.gradle</code>). For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;some-wonderful-plugin&lt;/artifactId&gt;
+    &lt;version&gt;1.2.3&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        Most of the plugins need to bind some components to the Guice
+        context of the application. For them to be able to do so, you need to register
+        them using the <code>plugin(...)</code> method of the
+        <a href="#boot_bootstrapper">Bootstrapper</a>. For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="4,12,4,46"
+>public static void main(String[] args) {
+
+    Spincast.configure()
+            .module(new AppModule())
+            .plugin(new SomeWonderfulPlugin())
+            .requestContextImplementationClass(AppRequestContextDefault.class)
+            .mainArgs(args)
+            .init();
+   //...
+}</pre>   
+            </p>
+        </div> 
+    </p>
+    <p>
+        Here, <code><em>SomeWonderfulPlugin</em></code> is the main class of the plugin, the
+        one implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a>
+        interface. To know what class to use to register a plugin, you have to read
+        its documentation.
+    </p>
+    
+</section>
+
+
+{#==========================================
+Installing a Request Context add-on
+==========================================#}     
+<section id="plugins_add_on">
+    <h4>
+        <a class="anchor_small" href="#plugins_add_on" title="permanent link"></a>
+        Installing a Request Context add-on
+    </h4>
+    
+    <p>
+        One of the coolest features of Spincast is the ability to 
+        <a href="/documentation#extending_request_context">extend the Request Context</a> type.
+        The <code>Request Context</code> are objects, associated with a request, that Spincast automatically creates and passes
+        to your <code>Route Handlers</code>. You can extend the type of those object by adding <code>add-ons</code>.
+        Some plugins may suggest that you use one of their components as such <code>add-on</code>. 
+    </p>
+    <p> 
+        To do so, you first add the <code>add-on</code> entry point to your <code>Request Context</code> interface. This entry point is simply
+        a method, with a  meaningful name, and that returns the <code>add-on</code>'s main component :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public interface AppRequestContext extends RequestContext<AppRequestContext> {
+
+    public WonderfulComponent wonderful();
+    
+    //... other add-ons and methods
+}</pre>   
+            </p>
+        </div> 
+    </p>
+    <p>
+        Here, the <code>add-on</code> is named <code>"wonderful()"</code> and its main component is
+        <code>"WonderfulComponent"</code>.
+    </p>
+    <p>
+        Then, you inject a <code>Provider</code> for the main component in your 
+        <code>Request Context</code> implementation, and you use it to return component instances :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="8,29,8,85|15,8,15,53"
+>public class AppRequestContext extends RequestContextBase&lt;AppRequestContext&gt;
+                               implements AppRequestContext {
+
+    private final Provider&lt;WonderfulComponent&gt; wonderfulComponentProvider;
+
+    @AssistedInject
+    public AppRequestContext(@Assisted Object exchange,
+                             RequestContextBaseDeps&lt;AppRequestContext&gt; requestContextBaseDeps,
+                             Provider&lt;WonderfulComponent&gt; wonderfulComponentProvider) {
+        super(exchange, requestContextBaseDeps);
+        this.wonderfulComponentProvider = wonderfulComponentProvider;
+    }
+    
+    @Override
+    public WonderfulComponent wonderful() {
+        return this.wonderfulComponentProvider.get();
+    }
+    
+    //...
+}</pre>   
+            </p>
+        </div> 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        It's a good practice to always use a
+        <a href="https://github.com/google/guice/wiki/InjectingProviders">Provider</a> for the
+        <code>add-on</code>'s component, because it is often not a singleton and may even be 
+        <em>request scoped</em>.
+    </p>
+    <p>
+        You can now use the newly installed <code>add-on</code>, directly in your <code>Route Handlers</code>!
+        For example :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="2,11,2,37"
+>public void myRouteHandler(AppRequestContext context) {
+
+    context.wonderful().doSomething();
+    
+    //...
+}</pre>   
+            </p>
+        </div>  
+    </p>
+    
+</section>
+
+{#==========================================
+Default plugins
+==========================================#}     
+<section id="plugins_default">
+    <h4>
+        <a class="anchor_small" href="#plugins_default" title="permanent link"></a>
+        Default plugins
+    </h4>
+    
+    <p>
+        By using the <code>spincast-default</code> Maven artifact and the
+        <a href="#boot_bootstrapper">Bootstrapper</a>, some plugins are installed by default. Those plugins provide implementations
+        for the main components required in any Spincast application. If you disable one of those plugins, you <em>have</em>
+        to bind by yourself implementations for the components that this plugin was binding.
+        
+        <ul>
+            <li>
+                <em><strong>SpincastCorePlugin</strong></em> : this is the only plugin which is not listed in
+                the <a href="/plugins">plugins</a> section because it is the very core of Spincast. But it's
+                interesting to know that even this core is a plugin!
+            </li>
+            <li>
+                <a href="/plugins/spincast-routing"><strong>Spincast Routing</strong></a> : binds all the components
+                related to routing, allows the creation of the <code>Routes</code> and provides
+                the <code>"routing()"</code> add-on.
+            </li>
+            <li>
+                <a href="/plugins/spincast-request"><strong>Spincast Request</strong></a> : provides
+                the <code>"request()"</code> add-on which allows <code>Route Handlers</code>
+                to get information about the current request.
+            </li>
+            <li>
+                <a href="/plugins/spincast-response"><strong>Spincast Response</strong></a> : provides
+                the <code>"response()"</code> add-on which allows <code>Route Handlers</code>
+                to build the response to send. 
+            </li>
+            <li>
+                <a href="/plugins/spincast-undertow"><strong>Spincast Undertow</strong></a> : provides
+                an implementation for the required HTTP/Websocket 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a> 
+                component, using <a href="http://undertow.io">Undertow</a>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-locale-resolver"><strong>Spincast Locale Resolver</strong></a> : provides
+                an implementation for the required 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a> 
+                component.
+            </li>
+            <li>
+                <a href="/plugins/spincast-cookies"><strong>Spincast Cookies</strong></a> : provides
+                an implementation for cookies related components and a
+                <code>"cookies()"</code> add-on to easily manipulate those cookies inside
+                <code>Route Handlers</code>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-variables-addon"><strong>Spincast Variables add-on</strong></a> : as
+                its name suggests, this plugin simply provides a
+                <code>"variables()"</code> add-on to write and read information in
+                the <em>request</em> scope. This can be used to pass information from
+                a <code>Route Handler</code> to another.
+            </li>
+            <li>
+                <a href="/plugins/spincast-templating-addon"><strong>Spincast Templating add-on</strong></a> :
+                provides a <code>"templating()"</code> add-on giving access to
+                utilities to render some text based templates.
+            </li>
+            <li>
+                <a href="/plugins/spincast-pebble"><strong>Spincast Pebble</strong></a> : provides
+                an implementation for the required 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a> 
+                component, using <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-jackson-json"><strong>Spincast Jackson Json</strong></a> : provides
+                an implementation for the required 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a> 
+                component, using <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-jackson-xml"><strong>Spincast Jackson XML</strong></a> : provides
+                an implementation for the required 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/xml/XmlManager.html">XmlManager</a> 
+                component, using <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-config"><strong>Spincast Config</strong></a> : provides
+                a simple implementation for the required 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> 
+                component, using default values. This default implementation is 
+                <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigDefault.java">SpincastConfigDefault</a>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-dictionary"><strong>Spincast Dictionary</strong></a> : provides
+                an implementation for the required 
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastDictionary.html">SpincastDictionary</a> 
+                component, using default english labels. This default implementation is 
+                <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-dictionary-parent/spincast-plugins-dictionary/src/main/java/org/spincast/plugins/dictionary/SpincastDictionaryDefault.java">SpincastDictionaryDefault</a>.
+            </li>
+            <li>
+                <a href="/plugins/spincast-http-caching"><strong>Spincast HTTP Caching Addon</strong></a> :
+                provides a <code>"cacheHeaders()"</code> add-on to help dealing with
+                HTTP caching.
+            </li>
+        </ul>
+    </p>
+</section>
+

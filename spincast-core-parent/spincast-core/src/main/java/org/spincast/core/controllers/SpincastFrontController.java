@@ -433,7 +433,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     }
 
     /**
-     * Add the request context object in the cutom request scope
+     * Add the request context objects in the cutom request scope
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void addRequestContextInCustomRequestScope(R requestContext) {

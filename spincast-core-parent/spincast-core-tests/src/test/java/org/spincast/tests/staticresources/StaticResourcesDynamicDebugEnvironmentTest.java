@@ -6,21 +6,24 @@ import static org.junit.Assert.assertFalse;
 import java.io.File;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
-import com.google.inject.Module;
 
-public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return TestConfig.class;
+    }
 
     @Inject
     protected SpincastRouterConfig spincastRouterConfig;
@@ -29,7 +32,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultN
         return this.spincastRouterConfig;
     }
 
-    public static class TestConfig extends SpincastTestConfig {
+    public static class TestConfig extends SpincastConfigTestingDefault {
 
         /**
          * Run in "debug" mode.
@@ -46,17 +49,6 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends SpincastDefaultN
         public boolean isDisableWriteToDiskDynamicStaticResource() {
             return true;
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return TestConfig.class;
-            }
-        };
     }
 
     @Test

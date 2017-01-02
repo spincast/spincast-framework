@@ -4,14 +4,11 @@ import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.validation.ValidationFactory;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.testing.core.SpincastTestBase;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public abstract class ValidationTestBase extends SpincastTestBase {
+public abstract class ValidationTestBase extends UnitTestDefaultContextsBase {
 
     @Inject
     private JsonManager jsonManager;
@@ -39,10 +36,5 @@ public abstract class ValidationTestBase extends SpincastTestBase {
 
     protected SpincastDictionary getSpincastDictionary() {
         return this.spincastDictionary;
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 }

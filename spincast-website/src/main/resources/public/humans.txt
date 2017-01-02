@@ -19,6 +19,8 @@ LetterFX - https://github.com/tuxsudo/letterfx
 Impress.js - https://github.com/impress/impress.js
 Moment.js - http://momentjs.com
 Toastr - http://codeseven.github.io/toastr/
+IconMonstr - http://iconmonstr.com/
+
 
 (Sorry for those we forget! Let us know if you want us to add your
 name here. It will be a pleasure!)

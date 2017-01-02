@@ -10,20 +10,22 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
-import org.spincast.testing.core.SpincastTestBase;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class JsonPathsMergeTest extends SpincastTestBase {
+public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
+
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return SpincastTestConfigTest.class;
+    }
 
     @Inject
     protected JsonManager jsonManager;
@@ -32,7 +34,7 @@ public class JsonPathsMergeTest extends SpincastTestBase {
         return this.jsonManager;
     }
 
-    protected static class SpincastTestConfigTest extends SpincastTestConfig {
+    protected static class SpincastTestConfigTest extends SpincastConfigTestingDefault {
 
         @Override
         public int getMaxNumberOfKeysWhenConvertingMapToJsonObject() {
@@ -48,17 +50,6 @@ public class JsonPathsMergeTest extends SpincastTestBase {
         public int getJsonPathArrayIndexMax() {
             return 100;
         }
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return SpincastTestConfigTest.class;
-            }
-        });
     }
 
     @Test

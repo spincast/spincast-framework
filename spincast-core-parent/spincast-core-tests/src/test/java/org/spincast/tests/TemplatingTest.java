@@ -18,7 +18,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -43,7 +43,7 @@ import com.google.inject.Inject;
  * plugin's project!
  * </p>
  */
-public class TemplatingTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class TemplatingTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected TemplatingEngine templatingEngine;

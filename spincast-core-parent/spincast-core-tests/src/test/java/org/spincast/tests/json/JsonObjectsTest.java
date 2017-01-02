@@ -32,31 +32,23 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.testing.core.SpincastTestBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.google.common.collect.Lists;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class JsonObjectsTest extends SpincastTestBase {
+public class JsonObjectsTest extends UnitTestDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;
 
     protected JsonManager getJsonManager() {
         return this.jsonManager;
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
     @Test

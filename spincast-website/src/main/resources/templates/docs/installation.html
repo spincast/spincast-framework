@@ -7,11 +7,6 @@ Docs : "installation"
         <a class="anchor" href="#installation" title="permanent link"></a>
         Installation
     </h3>
-    <p>
-        There are a lot of different ways to use Spincast and to bootstrap your application.
-        In fact, an entire <a href="#bootstrapping">Bootstrapping your app</a> section is dedicated to this topic! But 
-        in this section you'll learn the quickest ways to get started.
-    </p>
     
     {#==========================================
     Section "installation / requirements"
@@ -23,13 +18,21 @@ Docs : "installation"
         </h4>
         <p>
             <ul>
-                <li>A Java 7 JDK or newer</li>
-                <li>A build tool able to use Maven artifacts (<a href="https://maven.apache.org">Maven</a>, 
-                   <a href="http://gradle.org">Gradle</a>, <a href="http://ant.apache.org/ivy">Ivy</a>, etc.)</li>
-                <li>Some Java and web development experience.
-                 <a href="https://github.com/google/guice/wiki/Motivation">Guice</a> experience will help too!</li>
+                <li>
+                    A Java 7 JDK or newer
+                </li>
+                <li>
+                    A build tool able to use <a href="https://maven.apache.org">Maven</a> artifacts.
+                </li>
             </ul>
         </p>
+        <p>
+            Most of the examples and demos on this site required
+            Java 8 (for lambdas and method references). But it is certainly possible to
+            use Spincast with Java 7 : there are <em>no</em> Java 8 specific features in Spincast's core, 
+            only in the examples and demos.
+        </p>
+        
     </div>
 
     {#==========================================
@@ -51,12 +54,11 @@ Docs : "installation"
 
         <p>
             The easiest way to try Spincast is to download the Quick Start application, 
-            which is a simple but working Spincast application. This Quick Start even makes 
-            a good starting point to build a real application! For this Quick Start, you need to have 
-            <a href="https://maven.apache.org/install.html">Maven</a> installed, but the application could easily be tweaked to
-            be used by another tool like Gradle.
+            which also can be used as a template to start a new application. This application already has in
+            place most of the boilerplate code suggested to develop a solid and flexible Spincast application.
         </p>
         <p>
+            How to run :
             <ol>
                 <li>
                     <div>
@@ -67,7 +69,7 @@ Docs : "installation"
                 <li>
                     <div>
                         Decompress the zip file, go inside the "<em>spincast-quick-start</em>"
-                        root directory using a command prompt and run:
+                        root directory using a command prompt and run :
                         <br />
                         <code class="block">mvn clean package</code> 
                         <br />
@@ -85,7 +87,7 @@ Docs : "installation"
                 <li>
                     <div>
                         Once the application is running, open <code><a href="http://localhost:44419">http://localhost:44419</a></code> 
-                        in your browser. Bingo!
+                        in your browser!
                     </div>
                 </li>
                 <li>
@@ -97,16 +99,26 @@ Docs : "installation"
                     </div>
                 </li>
             </ol>
-        </p>    
+        </p>   
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            Note that the Quick Start application is <em>not</em> a simple
+            "Hello World!" application. It contains some advanced (but
+            recommended) features, such as a custom <code>Request Context</code> type
+            and a custom <code>WebSocket Context</code> type! To learn Spincast from scratch, you may first want to 
+            read the three <a href="/demos-tutorials/hello-world/">"Hello World!" tutorials</a>
+            before trying to understand the code of the Quick Start application.
+        </p>
+         
     </div>
 
     {#==========================================
-    Section "installation / using spincast-default"
+    Section "installation / Installing from scratch"
     ==========================================#}
-    <div id="using_default_module">
+    <div id="from_scratch">
         <h4>
-            <a class="anchor_small" href="#using_default_module" title="permanent link"></a>
-            Using spincast-default
+            <a class="anchor_small" href="#from_scratch" title="permanent link"></a>
+            Installing Spincast from scratch
         </h4>
         
         {% if spincast.spincastCurrrentVersionIsSnapshot  %}
@@ -116,19 +128,30 @@ Docs : "installation"
                 as a start for a real application!
             </div>
         {% endif %}
-
+        
         <p>
-            Spincast is modular, and pretty much all components can be replaced. There are some <em>required</em> component
-            interfaces though, and an implementation must be provided for those. This is exactly what the <code>spincast-default</code> 
-            artifact is: an easy way to bind a default implementation for all the required components.
+            If you want to start from scratch, without using the <a href="#quick_start">Quick Start</a> application
+            as a template, you first add the <code><em>org.spincast:spincast-default:{{spincast.spincastCurrrentVersion}}</em></code> 
+            artifact to your <code>pom.xml</code> :
+                    <br />
+                    <pre class="ace ace-xml" 
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-default&lt;/artifactId>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre>
+        </p>
+        
+        <p>
+            This artifact installs a set of <a href="#plugins_default">default plugins</a> and 
+            provides all the required components for a Spincast application to be functional.
         </p>
         
         {% if spincast.spincastCurrrentVersionIsSnapshot  %}
 
              <p>
-                <img class="inlineIcon" src="/public/images/icons/para.png" />
-                Since this is a <code>SNAPSHOT</code> version, you first have to add this repository
-                to your <code>pom.xml</code>:
+                Since this is a <code>SNAPSHOT</code> version, you also have to add this repository
+                to your <code>pom.xml</code> (or <code>build.gradle</code>) :
                 <br />
                 <pre class="ace ace-xml" 
 >&lt;repositories&gt;
@@ -144,85 +167,37 @@ Docs : "installation"
         {% endif %}
         
         <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            When this is done, you can follow the instructions of the <a href="#bootstrapping">Bootstrapping your app</a>
+            section to initialize your application. This process is very simple and simply requires you to use the
+            <code><em>Spincast.init()</em></code> or <code><em>Spincast.configure()</em></code> bootstrapper in 
+            a <code>main(...)</code> method. 
+        </p>
+        <p>
+            Here's a simple Spincast application :
+            
             <div>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    Add the 
-                    <code>org.spincast:spincast-default:{{spincast.spincastCurrrentVersion}}</code> 
-                    dependency to your <code>pom.xml</code> :
-                    <br />
-                    <pre class="ace ace-xml" 
->&lt;dependency>
-    &lt;groupId>org.spincast&lt;/groupId>
-    &lt;artifactId>spincast-default&lt;/artifactId>
-    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
-&lt;/dependency></pre>
-                </p>
-            </div>
-        </p>
-        <p>
-            If you use other tools like Gradle or  Ivy, you probably already know how to use Maven coordinates.
-        </p>
-    
-        <p>
-            This <code>spincast-default</code> artifact gives you access to a Guice module, 
-            <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a>,
-            which binds default implementations. (Look <a href="#required_components">here</a> if you are curious about what
-            those default implementations are!).
-        </p>
-        <p>
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    Then, create a Guice context using that module, in general inside a <code>main(...)</code> 
-                    method:
-                    <br />
                     <pre class="ace ace-java"
->public static void main(String[] args) {
-        
-    Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
-    
-    Server server = guice.getInstance(Server.class);
-    server.start();
-}</pre>     
-    	        </p> 
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">1</span> : A good old Java's <code>main(...)</code> method! This
-                            is the entry point of a standard Spincast application.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">3</span> : The very first thing a Spincast application
-                            does is to create a Guice context. Here, we use the provided
-                            <code>SpincastDefaultGuiceModule</code> module. This is going to bind a default
-                            implementation for all the required components.
-                            By passing the main method's <code>args</code> as a parameter to the constructor, 
-                            the module will bind them using the <code>@MainArgs</code>
-                            annotation so you can easily access them wherever you need (<a href="#main_args">more info</a>).
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">5</span> : We get the <code>server</code> instance from the Guice context.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">6</span> : We start the server.
-                        </li>
-                    </ul>
-                </p>  
-    	        <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-    	            Run this application and point a browser at : <code><a href="http://localhost:44419">http://localhost:44419</a></code>.
-    	            You'll see that the server works, but since no route have been defined, you'll always get
-                    a <code>404 Not Found</code> response!
-    	        </p>
-    	        <p>
-    	            This is the very basic on how to start a Spincast application. But how do you add routes? How to make
-                    your application do something useful? Keep reading if you want to learn about Spincast and its architecture,
-                    or jump to the <a href="#bootstrapping">Bootstrapping your app</a> section is you want 
-                    to see code straight away!
-    	        </p>
-            </div>
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.init();
+    }
+
+    @Inject
+    protected void init(DefaultRouter router, Server server) {
+        router.GET("/").save(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
+        server.start();
+    }
+}</pre>   
+                </p>
+            </div> 
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            There is a <a href="/demos-tutorials/hello-world/quick">tutorial page</a> for this simple "Hello World!"
+            application. On that page you can download and try the application by yourself!
         </p>
     </div>
 </section>

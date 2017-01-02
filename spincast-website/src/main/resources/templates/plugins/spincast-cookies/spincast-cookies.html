@@ -35,7 +35,7 @@
                      <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/cookies/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
+                     data-hint="Default plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div>  
         </div>
@@ -51,8 +51,9 @@
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
-                <li class="openable"><a href="#examples">Quick Examples</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#add-on">Suggested <em>add-on</em></a></li>
                 <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
@@ -65,14 +66,8 @@
                     Overview
                 </h3>
                 <p>
-                    This plugin provides functionalities
-                    to read and write HTTP cookies. It mainly consists of an implementation of the request context <code>add-on</code>,
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookiesRequestContextAddon.html">CookiesRequestContextAddon</a>, 
-                    which is mounted as <code>.cookies()</code> on the default Spincast Request Context. The implementation class
-                    is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cookies/SpincastCookiesRequestContextAddon.html">SpincastCookiesRequestContextAddon</a>.
-                </p>
-                <p>
-                    The plugin also provides an implementation for the <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html">Cookie</a> 
+                    This plugin provides functionalities to read and write HTTP cookies. It also provides an implementation 
+                    for the <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html">Cookie</a> 
                     interface : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cookies/CookieDefault.html">CookieDefault</a>.
                 </p>
             </section>
@@ -145,19 +140,24 @@
 	            </p>
             </section>
             
+            
             <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
                     Installation
                 </h3>
                 <p>
-                    If you use the <code>spincast-default</code> artifact, this plugin is already installed so
-                    you have nothing more to do!
+                    <img class="inlineIcon" src="/public/images/default-badge.png" />
+                    <em>If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
+                    this plugin is already installed by default so you have nothing to do!</em>
                 </p>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    If you start from scratch using the <code>spincast-core</code> artifact, you can use the
-                    plugin by adding this artifact to your project:
+                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
+                    plugin by :
+                </p>
+                <p>
+                    1. 
+                    Adding this Maven artifact to your project:
                     <div>
                         <p>
                             <pre class="ace ace-xml"
@@ -170,41 +170,46 @@
                     </div>  
                 </p>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,110"
->Injector guice = Guice.createInjector(
-        new SpincastCoreGuiceModule(args),
-        new SpincastCookiesPluginGuiceModule(AppRequestContext.class, AppWebsocketContext.class)
-        // other modules...
-        );</pre> 
-                        </p>
-                    </div>   
-                </p>
-                <p>
-                    ... or by using the <code>install(...)</code> method from your custom Guice module:
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="5,8,5,80|6,8,6,100"
->public class AppModule extends SpincastCoreGuiceModule {
-
-    @Override
-    protected void configure() {
-        super.configure();
-        install(new SpincastCookiesPluginGuiceModule(getRequestContextType(), 
-                                                     getWebsocketContextType()));
-        // other modules...
-    }
-    
-    // ...
-}</pre> 
-                        </p>
-                    </div>   
+                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cookies/SpincastCookiesPluginModule.html">SpincastCookiesPluginModule</a> 
+                    module to your Guice context.
                 </p>
             </section>
             
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
+                </h3>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cookies/SpincastCookiesPlugin.html">SpincastCookiesPlugin</a>.
+                </p>
+            </section>
+            
+            <section id="add-on">
+                <h3>
+                    <a class="anchor" href="#add-on" title="permanent link"></a>
+                    Suggested <em>add-on</em>
+                </h3>
+                <p>
+                    <ul>
+                        <li>
+                            <strong>Name</strong> : <code>cookies()</code>
+                        </li>
+                        <li>
+                            <strong>Component</strong> : <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookiesRequestContextAddon.html">CookiesRequestContextAddon</a>
+                        </li>
+                        <li>
+                            <strong>Usage</strong> : to read and write cookies from your <code>Route Handlers</code>.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/default-badge.png" />
+                    <em>This add-on is already installed by default on the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/RequestContext.html">Request Context</a> type.</em>
+                </p>
+            </section>
             
             
             <section id="javadoc">

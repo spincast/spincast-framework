@@ -1,0 +1,117 @@
+{% extends "../helloWorld.html" %}
+
+{% block demoSectionClasses %}demo_hello_world_quick{% endblock %}
+{% block meta_title %}Demo - Hello World - Quick{% endblock %}
+{% block meta_description %}"Hello World!" demo and tutorial using Spincast - Quick version{% endblock %}
+
+{% set demoId = "quick" %}
+
+{% block demoBody %}
+
+<h4>
+    <a class="anchor_small" id="hello_world_quick" href="#hello_world_quick" title="permanent link"></a>
+    <em>1. Quick version!</em>
+</h4>
+<p class="shortTop">
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    First, we add the latest version of the <code>org.spincast:spincast-default</code>
+    Maven artifact to our <code>pom.xml</code> (or <code>build.gradle</code>) :
+    <div>
+        <p>
+            <pre class="ace ace-xml"
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-default&lt;/artifactId>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre> 
+        </p>
+    </div>
+</p>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Then :
+
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.init();
+    }
+
+    @Inject
+    protected void init(DefaultRouter router, Server server) {
+        router.GET("/").save(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
+        server.start();
+    }
+}</pre>   
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span><br />
+            <em class="explTip">( <img class="inlineIcon" src="/public/images/icons/tipy.png" /> Tip : try hovering/clicking the page numbers below! )</em>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">3</span> : A standard <code>main(...)</code>
+                    method is the entry point of our application.
+                </li>
+                <li>
+                    <span class="code-line-nbr">4</span> : <code><em>Spincast.init()</em></code> will 
+                    create a Guice context using the default <a href="/plugins">plugins</a>, will
+                    bind the current <code>App</code> class in the context and will load it.
+                </li>
+                <li>
+                    <span class="code-line-nbr">7-8</span> : This <a href="/documentation#init_method">init method</a>
+                    is going to be called automatically when the Guice context is ready. We inject in it the 
+                    default <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/Router.html">Router</a> and the
+                    default <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a>.
+                </li>
+                <li>
+                    <span class="code-line-nbr">9</span> : We define a <code>Route</code> for the index page
+                    using an inline <code>Route Handler</code> based on a lambda.
+                </li>
+                <li>
+                    <span class="code-line-nbr">10</span> : We start the server.
+                </li>
+            </ul>
+        </p>
+    </div> 
+</p>
+
+<h4>
+    <a class="anchor_small" href="#tryit" id="tryit" title="permanent link"></a>
+    Try it!
+</h4>
+<p>
+    Download this application, and run it by yourself :
+</p>
+<p>
+    <ul>
+        <li>
+            Download <strong><em><a href="/public/demo-apps/spincast-demos-quick.zip">spincast-demos-quick.zip</a></em></strong>.
+        </li>
+        <li>
+            Unzip the file.
+        </li>
+        <li>
+            Enter the root directory using a terminal.
+        </li>
+        <li>
+            Compile the application using Maven :
+            <br />
+            <code>mvn clean package</code> 
+        </li>
+        <li>
+            Launch the application : 
+            <br />
+            <code>java -jar target/spincast-demos-quick-{{spincast.spincastCurrrentVersion}}.jar</code> 
+        </li>   
+    </ul>
+</p>
+<p>
+    The application is then accessible at <a href="http://localhost:44419">http://localhost:44419</a>
+</p>
+
+
+{% endblock %}

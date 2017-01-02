@@ -15,13 +15,13 @@ import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CookiesTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void setCookieCheckEncoding() throws Exception {
@@ -244,14 +244,14 @@ public class CookiesTest extends SpincastDefaultNoAppIntegrationTestBase {
             public void handle(DefaultRequestContext context) {
 
                 Cookie cookie = getCookieFactory().createCookie("name1",
-                                                                 random,
-                                                                 "/one",
-                                                                 "localhost",
-                                                                 expires,
-                                                                 false,
-                                                                 false,
-                                                                 false,
-                                                                 1);
+                                                                random,
+                                                                "/one",
+                                                                "localhost",
+                                                                expires,
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                1);
                 context.cookies().addCookie(cookie);
             }
         });

@@ -6,20 +6,32 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 
-public class HttpClientTestSllSelfSignedNotAccepted extends SpincastDefaultNoAppIntegrationTestBase {
+public class HttpClientTestSllSelfSignedNotAccepted extends IntegrationTestNoAppDefaultContextsBase {
 
-    protected static class HttpsTestConfig extends SpincastTestConfig {
+    @Override
+    public Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(SpincastConfig.class).to(HttpsTestConfig.class).in(Scopes.SINGLETON);
+            }
+        };
+    }
+
+    protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
 
         private int httpsServerPort = -1;
 
@@ -55,17 +67,6 @@ public class HttpClientTestSllSelfSignedNotAccepted extends SpincastDefaultNoApp
         public String getHttpsKeyStoreKeypass() {
             return "myKeyPass";
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return HttpsTestConfig.class;
-            }
-        };
     }
 
     //==========================================

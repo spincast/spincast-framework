@@ -14,7 +14,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -24,7 +24,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
-public class RedirectAndCallOtherRouteHandlersTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RedirectAndCallOtherRouteHandlersTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;

@@ -10,12 +10,13 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 
-public class MultipleEndpointsTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
+public class MultipleEndpointsTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void onlyOneControllerCanManageAGivenEndpoint() throws Exception {

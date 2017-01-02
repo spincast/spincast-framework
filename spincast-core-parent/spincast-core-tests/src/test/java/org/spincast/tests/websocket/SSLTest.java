@@ -8,23 +8,26 @@ import static org.junit.Assert.fail;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
-import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
 
-import com.google.inject.Module;
+public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
-public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return HttpsTestConfig.class;
+    }
 
     /**
      * Custom Test config to start the server on HTTPS.
      */
-    protected static class HttpsTestConfig extends SpincastTestConfig {
+    protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
 
         private int httpsServerPort = -1;
 
@@ -60,17 +63,6 @@ public class SSLTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
         public String getHttpsKeyStoreKeypass() {
             return "myKeyPass";
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return HttpsTestConfig.class;
-            }
-        };
     }
 
     @Test

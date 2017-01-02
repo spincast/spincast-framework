@@ -2,6 +2,7 @@ package org.spincast.quickstart.exchange;
 
 import org.spincast.core.exchange.RequestContextBase;
 import org.spincast.core.exchange.RequestContextBaseDeps;
+import org.spincast.plugins.httpclient.HttpClient;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -12,24 +13,19 @@ import com.google.inject.assistedinject.AssistedInject;
 public class AppRequestContextDefault extends RequestContextBase<AppRequestContext>
                                       implements AppRequestContext {
 
+    private final HttpClient httpClient;
+
     @AssistedInject
-    public AppRequestContextDefault(@Assisted Object exchange, RequestContextBaseDeps<AppRequestContext> requestContextBaseDeps) {
+    public AppRequestContextDefault(@Assisted Object exchange,
+                                    RequestContextBaseDeps<AppRequestContext> requestContextBaseDeps,
+                                    HttpClient httpClient) {
         super(exchange, requestContextBaseDeps);
+        this.httpClient = httpClient;
     }
 
-    /**
-     * Our simple example will take a "name" parameter from the path
-     * ("/greet/${name}" for example) and will output
-     * a greeting message.
-     */
     @Override
-    public void customGreetingMethod() {
-        String name = request().getPathParam("name");
-        if(name == null) {
-            throw new RuntimeException("The 'name' parameter was not found, " +
-                                       "full url : " + request().getFullUrl());
-        }
-
-        response().sendPlainText("Hello " + name + "!");
+    public HttpClient httpClient() {
+        return this.httpClient;
     }
+
 }

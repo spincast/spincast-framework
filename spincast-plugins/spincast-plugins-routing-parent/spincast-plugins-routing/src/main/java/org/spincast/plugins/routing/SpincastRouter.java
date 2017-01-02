@@ -1536,7 +1536,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                       staticResource.getResourcePath(),
                                                       staticResource.getGenerator(),
                                                       staticResource.getCorsConfig(),
-                                                      staticResource.getCacheConfig());
+                                                      staticResource.getCacheConfig(),
+                                                      staticResource.isIgnoreQueryString());
             getServer().addStaticResourceToServe(staticResourceNoDynParams);
         } else if(!splatParamFound && !dynParamFound) {
             getServer().addStaticResourceToServe(staticResource);
@@ -1573,6 +1574,15 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                         if(HttpStatus.SC_OK != context.response().getStatusCode()) {
                             SpincastRouter.this.logger.info("Nothing will be saved since the response code is not " +
                                                             HttpStatus.SC_OK);
+                            return;
+                        }
+
+                        if(!staticResource.isIgnoreQueryString() &&
+                           context.request().getQueryStringParams() != null &&
+                           context.request().getQueryStringParams().size() > 0) {
+                            SpincastRouter.this.logger.info("Nothing will be saved since the queryString contains parameters and " +
+                                                            "'isIgnoreQueryString' is false  : " +
+                                                            context.request().getQueryString(false));
                             return;
                         }
 
@@ -1653,7 +1663,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                                           targetPath,
                                                                           staticResource.getGenerator(),
                                                                           staticResource.getCorsConfig(),
-                                                                          staticResource.getCacheConfig());
+                                                                          staticResource.getCacheConfig(),
+                                                                          staticResource.isIgnoreQueryString());
                                 getServer().addStaticResourceToServe(newStaticResource);
                             }
                         }

@@ -6,8 +6,18 @@ import org.junit.Test;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.website.AppConfig;
+
+import com.google.inject.Inject;
 
 public class PluginsTest extends WebsiteIntegrationTestBase {
+
+    @Inject
+    protected AppConfig appConfig;
+
+    protected AppConfig getAppConfig() {
+        return this.appConfig;
+    }
 
     @Test
     public void pluginValid() throws Exception {

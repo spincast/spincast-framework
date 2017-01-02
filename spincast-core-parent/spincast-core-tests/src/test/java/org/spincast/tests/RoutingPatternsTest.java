@@ -9,13 +9,13 @@ import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class RoutingPatternsTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RoutingPatternsTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected DefaultRouteParamAliasesBinder<DefaultRequestContext, DefaultWebsocketContext> defaultPredefinedRouteParamPatternsBinder;

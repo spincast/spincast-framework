@@ -1,0 +1,53 @@
+<p>
+	This release is <em>huge</em>. We have been working on it for more than 4 months now!
+    The previous released version contained approximately 800 tests, there are now over 1600.
+</p>
+<p>
+    The core of this release is about <a href="{{appUrlPrefix}}/documentation#forms">HTML Forms</a> and
+    <a href="{{appUrlPrefix}}/documentation#validation">Validation</a>. There's a lot more than that, but
+    two are the two big novelties.
+</p>
+<p>
+    <img src="{{appUrlPrefix}}/public/images/demo.png" /> Try the <a href="{{appUrlPrefix}}/demos-tutorials/html-forms/">4 new demos</a>
+</p>
+<p>
+    Spincast supports <code>Json</code> and <code>XML</code> out of the box since day one, so 
+    developing a <code>Single Page Application</code>
+    or a set of <code>REST services</code> has always been easy. But, even if <code>SPAs</code> are more populars than ever
+    these days, any serious web framework must provide excellent support for <em>traditional websites</em> too, where the server
+    generates the <code>HTML</code> to render. As long as your integrate a good
+    <a href="{{appUrlPrefix}}/documentation#templating_engine">Templating Engine</a>, setting this is not too hard.
+    What's more challenging is to provide a good experience when it's time to deal with <code>forms</code> and
+    their validation.... And we think we hit the nail on the head! Spincast now provides an easy way to validate
+    a submitted form and to redisplay it with <a href="{{appUrlPrefix}}/documentation#validation_messages">Validation Messages</a> 
+    resulting from the validation, when required.
+</p>
+<p>
+    Another big change in this release is about <a href="{{appUrlPrefix}}/documentation#jsonobject">JsonObjects</a> : they
+    are now more powerful then ever and they are used pretty much <em>everywhere</em> in Spincast. We added support for what we call
+    <a href="{{appUrlPrefix}}/documentation#jsonobject_jsonpaths">JsonPaths</a> : those make retrieving an element,
+    inside an element, inside an array, inside an element, as simple as :
+</p>
+<p>
+     <code>Date myDate = myJsonObject.getDate("<strong><em>user.books[3].publishingDate</em></strong>")</code>.
+</p>
+<p>
+     We also added a small <a href="{{appUrlPrefix}}/documentation#quick_tutorial">Quick Tutorial</a> section which is an
+     high level view of the main steps involved when building an application using Spincast. And, finally, we cleaned a lot 
+     of code, which now follows more closely Java's standards (no more <code>"I"</code> prefixed interfaces!).
+</p>
+<p>
+     <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/tipy.png" />
+     Spincast is still in beta so our main goal is currently to try to interest <code>developers</code> who could be interested
+     in becoming <em>contributors</em>. This can be YOU! The only requirement is that you share most of 
+     <a href="/about#choices">our views on web development</a> . Our mantra is <em>"Power to the developers!"</em>.
+     We prefere Flexibility over simplicity. Control over magic. Readability over one-liners.
+     <a href="{{appUrlPrefix}}/community">Join us</a>.
+</p>
+
+
+
+
+
+
+

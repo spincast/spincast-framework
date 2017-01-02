@@ -17,5 +17,4 @@ public class AppRouterDefault extends SpincastRouter<AppRequestContext, AppWebso
     public AppRouterDefault(SpincastRouterDeps<AppRequestContext, AppWebsocketContext> spincastRouterDeps) {
         super(spincastRouterDeps);
     }
-
 }

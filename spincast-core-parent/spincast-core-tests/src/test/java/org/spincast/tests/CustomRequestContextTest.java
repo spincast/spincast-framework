@@ -9,31 +9,38 @@ import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
+import org.spincast.testing.core.IntegrationTestNoAppBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
-import org.spincast.tests.CustomRequestContextTest.ICustomRequestContext;
+import org.spincast.tests.CustomRequestContextTest.CustomRequestContext;
 
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class CustomRequestContextTest extends
-                                      SpincastNoAppIntegrationTestBase<ICustomRequestContext, DefaultWebsocketContext> {
+                                      IntegrationTestNoAppBase<CustomRequestContext, DefaultWebsocketContext> {
 
-    public static interface ICustomRequestContext extends RequestContext<ICustomRequestContext> {
+    @Override
+    protected Injector createInjector() {
+        return Spincast.configure()
+                       .requestContextImplementationClass(CustomRequestContextDefault.class)
+                       .init();
+    }
+
+    public static interface CustomRequestContext extends RequestContext<CustomRequestContext> {
 
         public void customMethod();
     }
 
-    public static class CustomRequestContext extends RequestContextBase<ICustomRequestContext>
-                                             implements ICustomRequestContext {
+    public static class CustomRequestContextDefault extends RequestContextBase<CustomRequestContext>
+                                             implements CustomRequestContext {
 
         @AssistedInject
-        public CustomRequestContext(@Assisted Object exchange,
-                                    RequestContextBaseDeps<ICustomRequestContext> requestContextBaseDeps) {
+        public CustomRequestContextDefault(@Assisted Object exchange,
+                                    RequestContextBaseDeps<CustomRequestContext> requestContextBaseDeps) {
             super(exchange, requestContextBaseDeps);
         }
 
@@ -43,24 +50,13 @@ public class CustomRequestContextTest extends
         }
     }
 
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
-                return CustomRequestContext.class;
-            }
-        };
-    }
-
     @Test
     public void customRequestContext() throws Exception {
 
-        getRouter().GET("/").save(new Handler<ICustomRequestContext>() {
+        getRouter().GET("/").save(new Handler<CustomRequestContext>() {
 
             @Override
-            public void handle(ICustomRequestContext context) {
+            public void handle(CustomRequestContext context) {
                 context.customMethod();
             }
         });

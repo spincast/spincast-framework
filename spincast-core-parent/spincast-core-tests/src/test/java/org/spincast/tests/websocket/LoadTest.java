@@ -21,6 +21,7 @@ import org.spincast.core.server.Server;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.core.websocket.WebsocketEndpointManager;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.RandomUtils;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
@@ -28,7 +29,7 @@ import org.spincast.tests.varia.WebsocketClientTest;
 
 import com.google.common.collect.Sets;
 
-public class LoadTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
+public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     protected final int nbrWebsocketControllers = 3;
     protected final int nbrEndpointByController = 3;

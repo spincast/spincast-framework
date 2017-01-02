@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 
@@ -32,7 +32,7 @@ public class AppConfigDefault extends SpincastConfigPropsFileBased implements Ap
     @Inject
     public AppConfigDefault(SpincastUtils spincastUtils,
                             @MainArgs @Nullable String[] mainArgs,
-                            @Nullable SpincastConfigPropsFileBasedConfig pluginConfig) {
+                            @Nullable SpincastConfigPropsFilePluginConfig pluginConfig) {
         super(spincastUtils, mainArgs, pluginConfig);
     }
 

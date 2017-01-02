@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.server.Server;
-import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
+import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.tests.varia.CustomServer;
 
 import com.google.inject.AbstractModule;
@@ -30,14 +30,14 @@ public class PluginNewServerTest {
     }
 
     /**
-     * In this test, we use the default SPincast module,
+     * In this test, we use the default Spincast module,
      * which binds a default server, but we replace the
      * server using a plugin (another module).
      */
     @Test
     public void testCustomServerPlugin() throws Exception {
 
-        Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule())
+        Injector guice = Guice.createInjector(Modules.override(Spincast.getDefaultModule(true))
                                                      .with(new CustomServerModule()));
 
         Server serverRaw = guice.getInstance(Server.class);

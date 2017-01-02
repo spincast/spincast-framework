@@ -920,7 +920,11 @@ ul.apiList li.first {
     text-decoration:underline;
 }
 .explTip {
-	font-size:12px;
+	font-size:14px;
+}
+
+.explTip img {
+	height:16px;
 }
 
 .subIcon {
@@ -1249,13 +1253,7 @@ pre {
     margin-top:14px;
     margin-bottom:0px;
 }
-#required_components ul li, #core_rc_addons ul li {
-    margin-bottom:20px;
-}
 
-#required_components ul li strong code, #core_rc_addons strong code {
-    font-size:16px;
-}
 #core_rc_addons p i {
    margin-top:20px; 
 }
@@ -1461,6 +1459,7 @@ ul.tutoBullets li {
 	display:inline !important;
 	vertical-align: middle !important;
 }
+
 .alignBottom {
 	vertical-align: text-bottom !important;
 }
@@ -1802,6 +1801,11 @@ input.has-no-message:focus, input.has-success:focus {
 
 #htmlFormDemosWarning {
     margin-top:20px;
+}
+
+#superimg {
+    margin-top:60px;
+    text-align:center;
 }
 
 

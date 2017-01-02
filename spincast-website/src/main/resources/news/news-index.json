@@ -59,6 +59,12 @@
 			"date" : "2016-11-26T12:00:00Z",
 			"title" : "HTML Forms &amp; Validation",
 			"path" : "/news/2016-11-26.html"
+		},
+		{
+			"id" : "12",
+			"date" : "2017-01-02T12:00:00Z",
+			"title" : "Bootstrapping++",
+			"path" : "/news/2017-01-02.html"
 		}
 		
 	]

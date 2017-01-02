@@ -3,27 +3,25 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.core.controllers.FrontController;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.tests.varia.CustomFrontController;
 
-import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 
-public class CustomFrontControllerTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CustomFrontControllerTest extends IntegrationTestNoAppDefaultContextsBase {
 
-    /**
-     * Custom module
-     */
     @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
 
             @Override
-            protected Key<?> getFrontControllerKey() {
-                return Key.get(CustomFrontController.class);
+            protected void configure() {
+                bind(FrontController.class).to(CustomFrontController.class).in(Scopes.SINGLETON);
             }
         };
     }
@@ -35,5 +33,4 @@ public class CustomFrontControllerTest extends SpincastDefaultNoAppIntegrationTe
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
     }
-
 }

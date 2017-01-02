@@ -7,15 +7,26 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.ProvisionException;
 import com.google.inject.Scopes;
 
-public class RequestScopeOutOfScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RequestScopeOutOfScopeTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(ServiceClass.class).in(Scopes.SINGLETON);
+            }
+        };
+    }
 
     public static class ServiceClass {
 
@@ -28,18 +39,6 @@ public class RequestScopeOutOfScopeTest extends SpincastDefaultNoAppIntegrationT
         public ServiceClass(DefaultRequestContext requestContext) {
             fail();
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-                bind(ServiceClass.class).in(Scopes.SINGLETON);
-            }
-        };
     }
 
     @Inject

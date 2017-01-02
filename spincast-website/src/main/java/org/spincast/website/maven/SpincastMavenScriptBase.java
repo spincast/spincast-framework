@@ -2,8 +2,6 @@ package org.spincast.website.maven;
 
 import java.io.File;
 
-import com.google.inject.Inject;
-
 /**
  * Base class for scripts running durring a Maven building
  * phase.
@@ -23,7 +21,6 @@ public abstract class SpincastMavenScriptBase {
         this.mainArgs = mainArgs;
     }
 
-    @Inject
     protected void init() {
 
         // Validate paths

@@ -37,7 +37,7 @@
 
             <p>
                 Download the <a href="/public/quickstart/spincast-quick-start.zip">Spincast Quick Start</a> [<i>.zip</i>]
-                application as a starting point to build a new application or to learn how Spincast works. 
+                application as a starting point to build a new application. 
             </p>
             <p>
                 Follow the <a href="/documentation#quick_start">Quick Start guide</a> to learn how to use it.
@@ -71,8 +71,8 @@
             {% endif %}
 
             <p>
-                The Maven artifact to start an application with an implementation for all the 
-                <a href="/documentation#required_components">required components</a>:
+                The Maven artifact to start an application with all the
+                <a href="/documentation#plugins_default">default plugins</a> :
                 
                                 <pre class="ace ace-xml" 
 >&lt;dependency>
@@ -82,15 +82,9 @@
 &lt;/dependency></pre> 
             </p>
             <p>
-                The Maven artifact to start a Spincast application from scratch (you
-                have to bind an implementation for all the <a href="/documentation#required_components">required components</a>, by yourself):
-                                <pre class="ace ace-xml" 
->&lt;dependency>
-    &lt;groupId>org.spincast&lt;/groupId>
-    &lt;artifactId>spincast-core&lt;/artifactId>
-    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
-&lt;/dependency></pre> 
-                
+                Make sure your read the <a href="/documentation#bootstrapping">Bootstrapping your app</a>
+                section of the documentation to know how to start your application with this artifact
+                in place.
             </p>
             
             <h3>

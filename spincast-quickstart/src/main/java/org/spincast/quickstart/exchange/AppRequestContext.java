@@ -1,20 +1,15 @@
 package org.spincast.quickstart.exchange;
 
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.plugins.httpclient.HttpClient;
 
 /**
- * Custom type which allows our application to
- * extend the default Request Context.
- * 
- * Spincast will pass an instance of this class to all matching
- * <code>Route Handlers</code>, when a request arrives.
+ * Interface of our custom Request Context type.
  */
 public interface AppRequestContext extends RequestContext<AppRequestContext> {
 
     /**
-     * A custom method example.
-     * This will simply output a plain text "Hello [NAME]".
+     * Add-on to access the HttpClient factory
      */
-    public void customGreetingMethod();
-
+    public HttpClient httpClient();
 }

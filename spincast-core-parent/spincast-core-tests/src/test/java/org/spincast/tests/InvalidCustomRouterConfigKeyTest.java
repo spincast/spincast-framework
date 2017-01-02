@@ -1,32 +1,30 @@
 package org.spincast.tests;
 
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.routing.SpincastRoutingPluginModule;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
+import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.Module;
 
 @ExpectingBeforeClassException // Expect an exception!
-public class InvalidCustomRouterConfigKeyTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class InvalidCustomRouterConfigKeyTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
+    protected Injector createInjector() {
 
-            @Override
-            protected void bindRoutingPlugin() {
-                install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
+        return Spincast.configure()
+                       .disableDefaultRoutingPlugin()
+                       .module(new SpincastRoutingPluginModule() {
 
-                    @Override
-                    protected Key<?> getRouterImplementationKey() {
-                        return Key.get(SpincastUtils.class); // Invalid!
-                    }
-                });
-            }
-        };
+                           @Override
+                           protected Key<?> getRouterImplementationKey() {
+                               return Key.get(SpincastUtils.class);
+                           }
+                       })
+                       .init();
     }
 
 }

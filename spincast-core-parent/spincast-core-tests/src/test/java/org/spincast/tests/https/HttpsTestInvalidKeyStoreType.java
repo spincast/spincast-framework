@@ -1,18 +1,20 @@
 package org.spincast.tests.https;
 
-import org.spincast.core.config.SpincastConfig;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
-import com.google.inject.Module;
-
 @ExpectingBeforeClassException
-public class HttpsTestInvalidKeyStoreType extends SpincastDefaultNoAppIntegrationTestBase {
+public class HttpsTestInvalidKeyStoreType extends IntegrationTestNoAppDefaultContextsBase {
 
-    protected static class HttpsTestConfig extends SpincastTestConfig {
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return HttpsTestConfig.class;
+    }
+
+    protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
 
         private int httpsServerPort = -1;
 
@@ -48,17 +50,6 @@ public class HttpsTestInvalidKeyStoreType extends SpincastDefaultNoAppIntegratio
         public String getHttpsKeyStoreKeypass() {
             return "secret";
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return HttpsTestConfig.class;
-            }
-        };
     }
 
 }

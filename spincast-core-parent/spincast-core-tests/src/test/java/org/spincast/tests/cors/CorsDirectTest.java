@@ -16,10 +16,10 @@ import org.junit.Test;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.filters.SpincastFilters;
-import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -29,7 +29,7 @@ import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
-public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CorsDirectTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected SpincastFilters<DefaultRequestContext> spincastFilters;
@@ -89,8 +89,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         headers.put(HttpHeaders.HOST, "example1.com");
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example1.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example1.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -127,8 +127,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -171,8 +171,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -215,8 +215,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -254,8 +254,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -295,8 +295,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -344,8 +344,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -394,8 +394,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -443,9 +443,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                          .addHeaderValue(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                                          .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .addHeaderValue(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -496,8 +496,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                          .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         assertTrue(inHandler[0]);
 
@@ -541,9 +541,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -582,9 +582,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         getRouter().cors();
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -631,11 +631,11 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                             "extra-header-to-be-sent-3,extra-header-to-be-sent-4")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                            "extra-header-to-be-sent-3,extra-header-to-be-sent-4")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -683,9 +683,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -732,9 +732,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -776,11 +776,11 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                             "extra-header-to-be-sent-1,extra-header-to-be-sent-2")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                            "extra-header-to-be-sent-1,extra-header-to-be-sent-2")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -832,11 +832,11 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                             "extra-header-to-be-sent-1,extra-header-to-be-sent-2,extra-header-to-be-sent-3")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                            "extra-header-to-be-sent-1,extra-header-to-be-sent-2,extra-header-to-be-sent-3")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -890,11 +890,11 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                             "extra-header-3")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                            "extra-header-3")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -933,11 +933,11 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-                                                             "extra-header-to-be-sent-1")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+                                                            "extra-header-to-be-sent-1")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -980,9 +980,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1035,9 +1035,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1091,9 +1091,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,TRACE")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1136,9 +1136,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1193,9 +1193,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1249,9 +1249,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1306,9 +1306,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         cookie.setPath("/");
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .addCookie(cookie)
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .addCookie(cookie)
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1351,8 +1351,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1395,8 +1395,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -1439,8 +1439,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1480,8 +1480,8 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -1525,9 +1525,9 @@ public class CorsDirectTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "DELETE,PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);

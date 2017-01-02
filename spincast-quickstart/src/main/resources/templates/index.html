@@ -1,16 +1,31 @@
 {% extends "./layout.html" %}
 
-{% block meta_title %}Quick Start Application{% endblock %}
+{% block sectionClasses %}home_page{% endblock %}
+{% block meta_title %}Spincast Quick Start{% endblock %}
 {% block meta_description %}Spincast Quick Start Application{% endblock %}
+
+{% block scripts %}
+
+<script>
+    $(function() {
+    	app.butterflyInit();
+    });
+</script>
+
+{% endblock %}
 
 {% block body %}
 
-<div class="container">
-    <div class="row">
-        <div id="quickText" class="col-md-5 col-sm-12">
-            <h1>{{appName}}</h1>
-            <p>started on port {{serverPort}}</p>
-        </div>
+{#==========================================
+Butterfly from :
+http://www.michaelbromley.co.uk/blog/236/css-javascript-3d-butterfly-case-study
+==========================================#}
+<div class="butterflyCon">
+    <div class="hover-container">
+        <div class="left wing"></div>
+        <div class="right wing"></div>
+        <div class="body"></div>
+        <div class="head"></div>
     </div>
 </div>
 

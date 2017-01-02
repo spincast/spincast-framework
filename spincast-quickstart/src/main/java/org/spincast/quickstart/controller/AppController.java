@@ -1,13 +1,17 @@
 package org.spincast.quickstart.controller;
 
+import java.net.URLEncoder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants.RequestScopedVariables;
+import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.exceptions.PublicException;
 import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.json.JsonObject;
 import org.spincast.quickstart.config.AppConfig;
 import org.spincast.quickstart.exchange.AppRequestContext;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
-import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
@@ -15,6 +19,8 @@ import com.google.inject.Inject;
  * The application controller.
  */
 public class AppController {
+
+    protected final Logger logger = LoggerFactory.getLogger(AppController.class);
 
     private final AppConfig appConfig;
 
@@ -25,6 +31,85 @@ public class AppController {
 
     protected AppConfig getAppConfig() {
         return this.appConfig;
+    }
+
+    /**
+     * Adds some common elements to the response's model.
+     */
+    protected void addCommonModelElements(AppRequestContext context) {
+        context.response().getModel().put("appName", getAppConfig().getAppName());
+        context.response().getModel().put("serverPort", getAppConfig().getHttpServerPort());
+    }
+
+    /**
+     * Index page handler
+     */
+    public void index(AppRequestContext context) {
+
+        addCommonModelElements(context);
+        context.response().sendTemplateHtml("/templates/index.html");
+    }
+
+    /**
+     * Movie info handler
+     */
+    public void movieInfo(AppRequestContext context) {
+
+        JsonObject movieInfo = null;
+
+        //==========================================
+        // Do we have a movie to show info for?
+        //==========================================
+        String movieName = context.request().getQueryStringParamFirst("name");
+        if (!StringUtils.isBlank(movieName)) {
+
+            try {
+
+                // We get the movie info from www.omdbapi.com
+                String url = "https://www.omdbapi.com/?t=" + URLEncoder.encode(movieName, "UTF-8") + "&y=&plot=short&r=json";
+
+                movieInfo = context.httpClient().GET(url).send().getContentAsJsonObject();
+
+                // There is no 404 returned. To know if a movie was found,
+                // the "Response" element must be true.
+                boolean responseOk = movieInfo.getBoolean("Response", false);
+                if (!responseOk) {
+                    throw new NotFoundException("This movie was not found!");
+                }
+
+                // Default image if none is provided
+                String poster = movieInfo.getString("Poster", null);
+                if (StringUtils.isBlank(poster) || (!poster.startsWith("http://") && !poster.startsWith("https://"))) {
+                    movieInfo.put("Poster", "/public/images/noPoster.jpg");
+                }
+
+                // Rating may be "N/A"
+                if (!movieInfo.isCanBeConvertedToDouble("imdbRating")) {
+                    movieInfo.put("imdbRating", "");
+                }
+
+            } catch (NotFoundException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                this.logger.error(ex.getMessage());
+                throw new PublicExceptionDefault("Unable to get the movie information... " +
+                                                 "Maybe omdbapi.com's is down or you don't have Internet connection?");
+            }
+        }
+
+        context.response().getModel().put("movieInfo", movieInfo);
+        context.response().getModel().put("movieName", movieName);
+        addCommonModelElements(context);
+
+        context.response().sendTemplateHtml("/templates/movie.html");
+    }
+
+    /**
+     * "Exception example" handler
+     */
+    public void exceptionExample(AppRequestContext context) {
+
+        throw new RuntimeException("This simulates an exception in the application!");
     }
 
     /**
@@ -41,7 +126,7 @@ public class AppController {
         String specificNotFoundMessage =
                 context.variables().getAsString(RequestScopedVariables.NOT_FOUND_PUBLIC_MESSAGE);
 
-        if(specificNotFoundMessage != null) {
+        if (specificNotFoundMessage != null) {
             notFoundMessage = specificNotFoundMessage;
         }
 
@@ -49,12 +134,13 @@ public class AppController {
         // We return the response in the
         // appropriated format.
         //==========================================
-        if(context.request().isJsonShouldBeReturn()) {
+        if (context.request().isJsonShouldBeReturn()) {
             JsonObject errorObj = context.json().create();
             errorObj.put("message", notFoundMessage);
             context.response().sendJson(errorObj);
         } else {
             context.response().getModel().put("notFoundMessage", notFoundMessage);
+            addCommonModelElements(context);
             context.response().sendTemplateHtml("/templates/notFound.html");
         }
     }
@@ -72,12 +158,14 @@ public class AppController {
         Throwable originalException =
                 context.variables().get(RequestScopedVariables.EXCEPTION, Throwable.class);
 
+        this.logger.error("An exception occured : " + originalException);
+
         //==========================================
         // If the exception that was threw is an instance of 
         // PublicException, it means we should display its
         // message to the user.
         //==========================================
-        if(originalException != null && originalException instanceof PublicException) {
+        if (originalException != null && originalException instanceof PublicException) {
             errorMessage = originalException.getMessage();
         }
 
@@ -85,86 +173,14 @@ public class AppController {
         // We return the response in the
         // appropriated format.
         //==========================================
-        if(context.request().isJsonShouldBeReturn()) {
+        if (context.request().isJsonShouldBeReturn()) {
             JsonObject errorObj = context.json().create();
             errorObj.put("error", errorMessage);
             context.response().sendJson(errorObj);
         } else {
             context.response().getModel().put("errorMessage", errorMessage);
+            addCommonModelElements(context);
             context.response().sendTemplateHtml("/templates/exception.html");
         }
-    }
-
-    /**
-     * Index page handler
-     */
-    public void indexPage(AppRequestContext context) {
-
-        //==========================================
-        // Render an HTML template with some parameters.
-        //==========================================
-        context.response().getModel().put("appName", getAppConfig().getAppName());
-        context.response().getModel().put("serverPort", getAppConfig().getHttpServerPort());
-
-        context.response().sendTemplateHtml("/templates/index.html");
-    }
-
-    /**
-     * /sum route handler
-     */
-    public void sumRoute(AppRequestContext context) {
-
-        String firstNbr = context.request().getFormData().getString("first");
-        if(StringUtils.isBlank(firstNbr)) {
-            throw new PublicExceptionDefault("The 'first' post parameter is required.",
-                                             HttpStatus.SC_BAD_REQUEST);
-        }
-        String secondNbr = context.request().getFormData().getString("second");
-        if(StringUtils.isBlank(secondNbr)) {
-            throw new PublicExceptionDefault("The 'second' post parameter is required.",
-                                             HttpStatus.SC_BAD_REQUEST);
-        }
-
-        String error = null;
-        long sum = 0;
-        do {
-            int firstInt;
-            try {
-                firstInt = Integer.parseInt(firstNbr);
-            } catch(NumberFormatException ex) {
-                error = ex.getMessage();
-                break;
-            }
-
-            int secondInt;
-            try {
-                secondInt = Integer.parseInt(secondNbr);
-            } catch(NumberFormatException ex) {
-                error = ex.getMessage();
-                break;
-            }
-
-            sum = (long)firstInt + (long)secondInt;
-
-            if(sum > Integer.MAX_VALUE) {
-                error = "The sum overflows the maximum integer value, " + Integer.MAX_VALUE;
-                break;
-            }
-            if(sum < Integer.MIN_VALUE) {
-                error = "The sum overflows the minimum integer value, " + Integer.MIN_VALUE;
-                break;
-            }
-
-        } while(false);
-
-        JsonObject resultObj = context.json().create();
-        if(error != null) {
-            context.response().setStatusCode(HttpStatus.SC_BAD_REQUEST);
-            resultObj.put("error", error);
-        } else {
-            resultObj.put("result", String.valueOf(sum));
-        }
-
-        context.response().sendJson(resultObj);
     }
 }

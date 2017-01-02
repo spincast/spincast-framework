@@ -6,24 +6,39 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.plugins.jacksonxml.XmlMixinInfo;
 import org.spincast.plugins.jacksonxml.XmlMixinInfoDefault;
-import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-public class CustomDeserializerMixinTest extends SpincastTestBase {
+public class CustomDeserializerMixinTest extends UnitTestDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+
+                //==========================================
+                // Binds our mixin
+                //==========================================
+                Multibinder<XmlMixinInfo> xmlMixinsBinder = Multibinder.newSetBinder(binder(), XmlMixinInfo.class);
+                xmlMixinsBinder.addBinding().toInstance(new XmlMixinInfoDefault(User.class, UserMixin.class));
+            }
+        };
+    }
 
     @Inject
     XmlManager xmlManager;
@@ -58,31 +73,6 @@ public class CustomDeserializerMixinTest extends SpincastTestBase {
         public abstract String getTitle();
     }
 
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(getTestingModule());
-    }
-
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-                bindXmlMixins();
-            }
-
-            //==========================================
-            // Bind our mixin
-            //==========================================
-            protected void bindXmlMixins() {
-
-                Multibinder<XmlMixinInfo> xmlMixinsBinder = Multibinder.newSetBinder(binder(), XmlMixinInfo.class);
-                xmlMixinsBinder.addBinding().toInstance(new XmlMixinInfoDefault(User.class, UserMixin.class));
-            }
-        };
-    }
-
     @Test
     public void customDeserializer() throws Exception {
 
@@ -93,7 +83,5 @@ public class CustomDeserializerMixinTest extends SpincastTestBase {
         assertEquals("Stromgol", user.getName());
         assertEquals(123, user.getAge());
         assertEquals("Title is: bang!", user.getTitle());
-
     }
-
 }

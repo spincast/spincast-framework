@@ -6,8 +6,8 @@ import org.spincast.core.websocket.DefaultWebsocketContext;
 import com.google.inject.Inject;
 
 /**
- * An implementaiton of the DefaultRouter interface, for easy
- * usage of the default version of the router.
+ * An implementation of the DefaultRouter interface, for easy
+ * usage of the default version of the Router.
  */
 public class DefaultRouterDefault extends SpincastRouter<DefaultRequestContext, DefaultWebsocketContext>
                                   implements DefaultRouter {

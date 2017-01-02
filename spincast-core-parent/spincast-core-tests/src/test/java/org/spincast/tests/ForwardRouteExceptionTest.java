@@ -18,14 +18,14 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.HttpHeaders;
 
-public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class ForwardRouteExceptionTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void defaultReset() throws Exception {
@@ -303,8 +303,8 @@ public class ForwardRouteExceptionTest extends SpincastDefaultNoAppIntegrationTe
         });
 
         HttpResponse response = POST("/one?q=one").setEntityString("{\"name\":\"toto\"}",
-                                                                    ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                                   .send();
+                                                                   ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                                  .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }

@@ -6,22 +6,41 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.validation.JsonObjectValidationSet;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.Scopes;
 
-public class SpincastFunctionsAndFiltersTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class SpincastFunctionsAndFiltersTest extends IntegrationTestNoAppDefaultContextsBase {
 
+    @Override
+    protected Injector createInjector() {
+
+        return Spincast.configure()
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+                               bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigDefaultTest.class)
+                                                                               .in(Scopes.SINGLETON);
+                           }
+                       })
+                       .init();
+    }
+
+    /**
+     * We enable strict variables
+     */
     public static class SpincastPebbleTemplatingEngineConfigDefaultTest extends SpincastPebbleTemplatingEngineConfigDefault {
 
         @Inject
@@ -33,21 +52,6 @@ public class SpincastFunctionsAndFiltersTest extends SpincastDefaultNoAppIntegra
         public boolean isStrictVariablesEnabled() {
             return true;
         }
-    }
-
-    /**
-     * We enable strict variables
-     */
-    @Override
-    protected Module getOverridingModule() {
-        return new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigDefaultTest.class)
-                                                                .in(Scopes.SINGLETON);
-            }
-        };
     }
 
     @Inject

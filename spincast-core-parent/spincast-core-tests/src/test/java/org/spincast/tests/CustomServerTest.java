@@ -6,22 +6,38 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
-import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.tests.varia.CustomExchange;
 import org.spincast.tests.varia.CustomServer;
 
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.Scopes;
 
 /**
  * Creation of a custom server.
  */
-public class CustomServerTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CustomServerTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Injector createInjector() {
+
+        return Spincast.configure()
+                       .disableDefaultServerPlugin()
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+                               bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
+                           }
+                       })
+                       .init();
+    }
 
     //==========================================
     // Remove all routes, even Spincast ones
@@ -37,26 +53,6 @@ public class CustomServerTest extends SpincastDefaultNoAppIntegrationTestBase {
     public void afterTest() {
         super.afterTest();
         testFlag = "";
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-            }
-
-            //==========================================
-            // Bind the custom server
-            //==========================================
-            @Override
-            protected void bindServerPlugin() {
-
-                bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
-            }
-        };
     }
 
     protected CustomServer getCustomServer() {

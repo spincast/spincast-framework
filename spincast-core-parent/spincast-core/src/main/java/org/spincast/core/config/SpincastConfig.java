@@ -333,12 +333,16 @@ public interface SpincastConfig {
     /**
      * If <code>true</code>, Spincast will always try to set a cookie
      * to validate if cookies are enabled on the client.
+     * <p>
+     * This is enabled by default
      */
     public boolean isEnableCookiesValidator();
 
     /**
      * Name of the Cookie to use to validate if 
      * cookies are enabled.
+     * <p>
+     * The default is "spincast_cookies_enabled".
      */
     public String getCookiesValidatorCookieName();
 
@@ -358,6 +362,8 @@ public interface SpincastConfig {
     /**
      * Name of the Cookie to use to 
      * save the user <code>Locale</code>.
+     * <p>
+     * The default is "spincast_locale"
      */
     public String getCookieNameLocale();
 

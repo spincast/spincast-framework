@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Test;
-import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.xml.XmlManager;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -26,13 +26,29 @@ import org.spincast.website.repositories.NewsRepository;
 import org.spincast.website.tests.utils.HardcodedNewsRepository;
 
 import com.google.common.collect.Lists;
-import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import com.google.inject.Module;
 import com.google.inject.Scopes;
-import com.google.inject.util.Modules;
 
 public class FeedTest extends WebsiteIntegrationTestBase {
+
+    @Override
+    protected GuiceTweaker createGuiceTweaker() {
+
+        GuiceTweaker guiceTweaker = super.createGuiceTweaker();
+
+        guiceTweaker.module(new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+
+                //==========================================
+                // Overrides the News repository with our test one.
+                //==========================================
+                bind(NewsRepository.class).to(TestNewsRepository.class).in(Scopes.SINGLETON);
+            }
+        });
+        return guiceTweaker;
+    }
 
     @Inject
     private XmlManager xmlManager;
@@ -78,34 +94,6 @@ public class FeedTest extends WebsiteIntegrationTestBase {
         @Override
         public List<NewsEntry> getNewsEntries(int startPos, int endPos, boolean ascOrder) {
             return getNewsEntriesLocal().subList(startPos - 1, endPos);
-        }
-    }
-
-    /**
-     * Overriding Guice module
-     */
-    @Override
-    protected Module getTestOverridingModule(Class<? extends RequestContext<?>> requestContextType,
-                                             Class<? extends WebsocketContext<?>> websocketContextType) {
-
-        Module baseModule = super.getDefaultOverridingModule(requestContextType, websocketContextType);
-
-        Module localModule = new AbstractModule() {
-
-            @Override
-            protected void configure() {
-
-                //==========================================
-                // Overrides the News repository with our test one.
-                //==========================================
-                bind(NewsRepository.class).to(TestNewsRepository.class).in(Scopes.SINGLETON);
-            }
-        };
-
-        if(baseModule == null) {
-            return localModule;
-        } else {
-            return Modules.combine(baseModule, localModule);
         }
     }
 

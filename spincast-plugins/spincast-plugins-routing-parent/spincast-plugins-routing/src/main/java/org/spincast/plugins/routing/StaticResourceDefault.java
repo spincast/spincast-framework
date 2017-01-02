@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.routing.StaticResourceCorsConfig;
-import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 
 import com.google.inject.assistedinject.Assisted;
@@ -23,6 +23,7 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
     private final Handler<R> generator;
     private final StaticResourceCorsConfig corsConfig;
     private final StaticResourceCacheConfig cacheConfig;
+    private final boolean ignoreQueryString;
 
     @AssistedInject
     public StaticResourceDefault(@Assisted StaticResourceType staticResourceType,
@@ -30,13 +31,15 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
                                  @Assisted("path") String resourcePath,
                                  @Assisted @Nullable Handler<R> generator,
                                  @Assisted @Nullable StaticResourceCorsConfig corsConfig,
-                                 @Assisted @Nullable StaticResourceCacheConfig cacheConfig) {
+                                 @Assisted @Nullable StaticResourceCacheConfig cacheConfig,
+                                 @Assisted boolean ignoreQueryString) {
         this.staticResourceType = staticResourceType;
         this.urlPath = urlPath;
         this.resourcePath = resourcePath;
         this.generator = generator;
         this.corsConfig = corsConfig;
         this.cacheConfig = cacheConfig;
+        this.ignoreQueryString = ignoreQueryString;
     }
 
     @Override
@@ -94,6 +97,11 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
     @Override
     public boolean isFileSytem() {
         return !isClasspath();
+    }
+
+    @Override
+    public boolean isIgnoreQueryString() {
+        return this.ignoreQueryString;
     }
 
     @Override

@@ -15,21 +15,18 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.exchange.RequestRequestContextAddon;
-import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.Router;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.testing.core.SpincastTestBase;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class RoutingTest extends SpincastTestBase {
+public class RoutingTest extends UnitTestDefaultContextsBase {
 
     @Inject
     Router<DefaultRequestContext, DefaultWebsocketContext> router;
@@ -41,11 +38,6 @@ public class RoutingTest extends SpincastTestBase {
 
     protected Router<DefaultRequestContext, DefaultWebsocketContext> getRouter() {
         return this.router;
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
     protected DefaultRequestContext getRequestContextMock(HttpMethod httpMethod, String url) {
@@ -1140,7 +1132,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/one/${param1}/${}/${}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/one/two/three/four/five?test=1"));
+                                                                                                "http://localhost/one/two/three/four/five?test=1"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1263,7 +1255,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/*{}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555"));
+                                                                                                "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1285,7 +1277,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555"));
+                                                                                                "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1346,7 +1338,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("*{param1}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555"));
+                                                                                                "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1407,7 +1399,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/${param1}/*{param2}/${param3}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555"));
+                                                                                                "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1440,7 +1432,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/*{param1}/${param2}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555"));
+                                                                                                "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1470,7 +1462,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/${param1}/*{param2}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555"));
+                                                                                                "http://localhost/111/222/333/444/555"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1499,7 +1491,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/*{param1}/333/444/${param2}/666/${}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555/666/777/"));
+                                                                                                "http://localhost/111/222/333/444/555/666/777/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1528,7 +1520,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/${param1}/222/*{param2}/${param3}/777").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555/666/777/"));
+                                                                                                "http://localhost/111/222/333/444/555/666/777/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1561,7 +1553,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("111/${param1}/${param2}/*{param3}/").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/111/222/333/444/555/666/777/"));
+                                                                                                "http://localhost/111/222/333/444/555/666/777/"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
         RouteHandlerMatch<DefaultRequestContext> routeMatch = routingResult.getRouteHandlerMatches().get(0);
 
@@ -1656,7 +1648,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/one/two/three"));
+                                                                                                "http://localhost/one/two/three"));
         assertNull(routingResult);
 
     }
@@ -1669,7 +1661,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/one/*{any}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/one/two/three"));
+                                                                                                "http://localhost/one/two/three"));
         assertEquals(1, routingResult.getRouteHandlerMatches().size());
 
     }
@@ -1682,7 +1674,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/one/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/one"));
+                                                                                                "http://localhost/one"));
         assertNull(routingResult);
 
         routingResult = router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one/two"));
@@ -1698,7 +1690,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/"));
+                                                                                                "http://localhost/"));
         assertNull(routingResult);
 
         routingResult = router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));
@@ -1713,7 +1705,7 @@ public class RoutingTest extends SpincastTestBase {
         router.GET("/one/${param1}").save(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult = router.route(getRequestContextMock(HttpMethod.GET,
-                                                                                                  "http://localhost/one/"));
+                                                                                                "http://localhost/one/"));
         assertNull(routingResult);
 
         routingResult = router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one/two"));

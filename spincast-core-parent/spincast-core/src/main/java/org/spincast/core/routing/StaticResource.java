@@ -40,6 +40,14 @@ public interface StaticResource<R extends RequestContext<?>> {
     public Handler<R> getGenerator();
 
     /**
+     * If <code>true</code>, only one 
+     * instance of the resource will be generated and cached. If 
+     * <code>false</code> (the default), the resource will always be
+     * generated if there is a queryString.
+     */
+    public boolean isIgnoreQueryString();
+
+    /**
      * The cors configurations for the static resource.
      * 
      * If <code>null</code>, cors won't be enabled for that

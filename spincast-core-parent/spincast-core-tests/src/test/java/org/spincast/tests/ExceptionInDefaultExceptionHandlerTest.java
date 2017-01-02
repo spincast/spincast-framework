@@ -8,11 +8,13 @@ import java.lang.reflect.Type;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.controllers.FrontController;
 import org.spincast.core.controllers.SpincastFrontController;
 import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.exchange.RequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastRequestScope;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.routing.Handler;
@@ -20,16 +22,26 @@ import org.spincast.core.routing.Router;
 import org.spincast.core.server.Server;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
-import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 
-public class ExceptionInDefaultExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class ExceptionInDefaultExceptionHandlerTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(FrontController.class).to(CustomFrontController.class).in(Scopes.SINGLETON);
+            }
+        };
+    }
 
     public static class CustomFrontController extends SpincastFrontController<DefaultRequestContext, DefaultWebsocketContext> {
 
@@ -58,22 +70,6 @@ public class ExceptionInDefaultExceptionHandlerTest extends SpincastDefaultNoApp
         protected void defaultExceptionHandling(Object exchange, Throwable ex) throws Throwable {
             throw new RuntimeException("default handler exception");
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-            }
-
-            @Override
-            protected Key<?> getFrontControllerKey() {
-                return Key.get(CustomFrontController.class);
-            }
-        };
     }
 
     @Test

@@ -112,18 +112,8 @@
                                         default plugins and follow the same standards.
                                     </li>
                                 </ul>
-                                The only potentially controversial thing about this formatter is that we don't add a space after the 
-                                <code>if</code>, <code>for</code>, etc. keywords:
-                                <pre class="ace ace-java"
->if(someCondition) {
-    // blabla
-}</pre>  
-                                Not :
-                                <pre class="ace ace-java"
->if (someCondition) {
-    // blabla
-}</pre>             
-                                Also, the max number of characters per line is 130. Use a widescreen monitor please.
+                            <li>
+                                The max number of characters per line is 130. Use a widescreen monitor please.
                             </li>
                             <li>
                                Sometimes, formatters do crazy things and, other times, you simply don't want a section
@@ -163,10 +153,6 @@ String sql = "SELECT color " +
                                 Prefer <em>constructor</em> injection, with <code>final</code> member variables, when possible.
                             </li>
                             <li>
-                                Interfaces must begin with a <code>"I"</code> (<code>Server</code> for example). Don't use
-                                <code>"Impl"</code> as a suffix for concrete classes. <em>(Well, ok, this one may be controversial too!)</em>
-                            </li>
-                            <li>
                                 Avoid one-liners. Use meaningful variable names. Don't be afraid
                                 to be verbose if it makes your code easier to understand. "<em>Always code as if the guy who ends 
                                 up maintaining your code will be a violent psychopath who knows where you live. 
@@ -190,7 +176,8 @@ String hello = "World";</pre>
 
                             </li>
                             <li>
-                                All text based files must be <code>UTF-8</code> encoded.
+                                All text based files must be <code>UTF-8</code> encoded (except <code>.properties</code>
+                                files which should be <code>ISO-8859-1</code>)
                             </li>
                             <li>
                                 In fact, use <code>UTF-8</code> everywhere an encoding is involved!

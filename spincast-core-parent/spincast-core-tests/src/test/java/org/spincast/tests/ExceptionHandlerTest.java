@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.exceptions.CustomStatusCodeExceptionDefault;
 import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.exchange.DefaultRequestContext;
@@ -15,14 +15,14 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class ExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class ExceptionHandlerTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected SpincastDictionary spincastDictionary;
@@ -130,7 +130,7 @@ public class ExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBas
             @Override
             public void handle(DefaultRequestContext context) {
                 throw new CustomStatusCodeExceptionDefault(SpincastTestUtils.TEST_STRING,
-                                                    HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
+                                                           HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
             }
         });
 
@@ -403,7 +403,7 @@ public class ExceptionHandlerTest extends SpincastDefaultNoAppIntegrationTestBas
                 @SuppressWarnings("unchecked")
                 RoutingResult<DefaultRequestContext> originalRoutingResult =
                         (RoutingResult<DefaultRequestContext>)context.variables()
-                                                                       .get(SpincastConstants.RequestScopedVariables.ORIGINAL_ROUTING_RESULT);
+                                                                     .get(SpincastConstants.RequestScopedVariables.ORIGINAL_ROUTING_RESULT);
 
                 assertNotNull(originalRoutingResult);
                 RouteHandlerMatch<DefaultRequestContext> originalRouteHandlerMatch =

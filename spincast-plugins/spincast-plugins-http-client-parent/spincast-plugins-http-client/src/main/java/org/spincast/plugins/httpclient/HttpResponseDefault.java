@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import org.spincast.core.cookies.Cookie;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.SpincastStatics;
 
 import com.google.inject.assistedinject.Assisted;
@@ -25,6 +27,7 @@ public class HttpResponseDefault implements HttpResponse {
     private final Map<String, List<String>> headers;
     private final Map<String, Cookie> cookies;
     private final boolean isGzipped;
+    private final JsonManager jsonManager;
 
     @AssistedInject
     public HttpResponseDefault(@Assisted("status") int status,
@@ -32,17 +35,24 @@ public class HttpResponseDefault implements HttpResponse {
                                @Assisted("content") @Nullable byte[] content,
                                @Assisted("headers") Map<String, List<String>> headers,
                                @Assisted("cookies") Map<String, Cookie> cookies,
-                               @Assisted("wasZipped") boolean wasZipped) {
+                               @Assisted("wasZipped") boolean wasZipped,
+                               JsonManager jsonManager) {
         this.status = status;
         this.contentType = contentType;
         this.headers = headers;
         this.cookies = cookies;
         this.isGzipped = wasZipped;
 
-        if(content == null) {
+        if (content == null) {
             content = new byte[0];
         }
         this.content = content;
+
+        this.jsonManager = jsonManager;
+    }
+
+    protected JsonManager getJsonManager() {
+        return this.jsonManager;
     }
 
     @Override
@@ -64,19 +74,26 @@ public class HttpResponseDefault implements HttpResponse {
     public String getContentAsString(String encoding) {
 
         try {
-            if(encoding == null) {
+            if (encoding == null) {
                 encoding = "UTF-8";
             }
 
-            if(this.contentAsString == null || !encoding.equals(this.lastContentAsStringEncodingUsed)) {
+            if (this.contentAsString == null || !encoding.equals(this.lastContentAsStringEncodingUsed)) {
                 this.lastContentAsStringEncodingUsed = encoding;
                 this.contentAsString = new String(getContentAsByteArray(), encoding);
             }
 
             return this.contentAsString;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    @Override
+    public JsonObject getContentAsJsonObject() {
+
+        String str = getContentAsString();
+        return getJsonManager().fromString(str);
     }
 
     @Override
@@ -92,7 +109,7 @@ public class HttpResponseDefault implements HttpResponse {
     @Override
     public String getHeaderFirst(String name) {
         List<String> vals = getHeaders().get(name);
-        if(vals != null && vals.size() > 0) {
+        if (vals != null && vals.size() > 0) {
             return vals.get(0);
         }
         return null;
@@ -101,7 +118,7 @@ public class HttpResponseDefault implements HttpResponse {
     @Override
     public List<String> getHeader(String name) {
         List<String> vals = getHeaders().get(name);
-        if(vals == null) {
+        if (vals == null) {
             vals = new ArrayList<String>();
         }
         return vals;
@@ -120,6 +137,11 @@ public class HttpResponseDefault implements HttpResponse {
     @Override
     public boolean isGzipped() {
         return this.isGzipped;
+    }
+
+    @Override
+    public String toString() {
+        return getStatus() + " - " + getContentType();
     }
 
 }

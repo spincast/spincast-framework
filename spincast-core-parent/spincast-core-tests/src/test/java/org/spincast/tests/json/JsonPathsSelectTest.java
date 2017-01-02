@@ -15,26 +15,18 @@ import org.junit.Test;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
-import org.spincast.testing.core.SpincastTestBase;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class JsonPathsSelectTest extends SpincastTestBase {
+public class JsonPathsSelectTest extends UnitTestDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;
 
     protected JsonManager getJsonManager() {
         return this.jsonManager;
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
     }
 
     @Test

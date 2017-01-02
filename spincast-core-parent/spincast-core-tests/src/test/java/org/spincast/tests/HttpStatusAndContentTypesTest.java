@@ -18,7 +18,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 
-public class HttpStatusAndContentTypesTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class HttpStatusAndContentTypesTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     private JsonManager jsonManager;

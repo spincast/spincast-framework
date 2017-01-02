@@ -9,7 +9,7 @@ Docs : "Quick Tutorial"
     </h3>
     
     <p>
-        Here, we'll have a <em>quick</em> tutorial on how to develop
+        Here, we'll present a <em>quick</em> tutorial on how to develop
         a Spincast application : as a traditional website or as a
         <code>SPA</code> application. We won't go into too much details 
         so, to dig deeper, have a look at :
@@ -53,50 +53,66 @@ Docs : "Quick Tutorial"
             
             <ul>
                 <li>
-                    Creating a <code>Guice Context</code>. This is the process
-                    of binding all the components required in your application. Spincast provides a
-                    default <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a> 
-                    Guice module to make this process very easy.
+                    Using the <a href="/documentation#boot_bootstrapper">Bootstrapper</a> to initialize your
+                    application. This is where you specify the components to bind and the plugins to install in
+                    order to create the <em>Guice context</em> for your application.
                 </li>
                 <li>
-                    Defining <code>Routes</code> and <code>Route Handlers</code> (controller methods). We're going to
+                    Defining <code>Routes</code> and <code>Route Handlers</code>. We're going to
                     see those in a minute.
                 </li>
                 <li>
                     Starting the HTTP Server.
                 </li>
             </ul>
-        </p>  
+            
+            Here's a quick example of using the bootstrapper :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>Spincast.configure()
+        .module(new AppModule())
+        .init();</pre>
+                </p>
+            </div>
+        </p> 
+        <p>
+            Please read the whole section dedicated to 
+            <a href="#bootstrapping">bootstrapping</a> for more information about this topic.
+        </p>
         <p>  
             <img class="inlineIcon" src="/public/images/icons/tipy.png" />
             The quickest way to start a Spincast application is to
             download the <a href="#quick_start">Quick Start</a> application and to adapt it
             to your needs.
         </p>  
-        <p>
-            Please read the whole section dedicated to 
-            <a href="#bootstrapping">bootstrapping</a> for more information about this topic.
-        </p>
         
         <h5>
             <a class="anchor_small" href="#quick_tutorial_traditional_routes" id="quick_tutorial_traditional_routes" title="permanent link"></a>
             1.2. Defining Routes
         </h5>
         <p>
-            You define some <code>Routes</code> and you specify which <code>Route Handlers</code> (controllers) should handle them. Those <code>Routes</code> can
-            be all defined together in a dedicated class or can be defined in controllers
-            (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+            You define some <code>Routes</code> and you specify which <code>Route Handlers</code> should handle them. The 
+            <code>Route Handlers</code> are often methods in a controller but can also be defined <em>inline</em>, directly
+            in the <code>Route</code> definitions.
+        </p>
+        <p> 
+            The <code>Routes</code> definitions can be all grouped together in a dedicated class or can be defined in controllers
+            directly (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+        </p>
+        <p> 
             You can learn more about the various routing options in the <a href="#routing">Routing</a>
-            section, but here's a quick example of Route definitions :
+            section, but here's a quick example of <code>Route</code> definitions :
             <div>
                 <p>
                     <pre class="ace ace-java"
->// Using a specific HTTP method
+>// For a GET request. Uses a method reference
+// to target a controller method as the Route Handler :
 router.GET("/books/${bookId}").save(bookController::booksGet);
-router.POST("/books/${bookId}").save(bookController::booksPost);
-        
-// Or, for any HTTP method 
-router.ALL("/books/${bookId}").save(bookController::books);
+       
+// For any HTTP request. Uses an inine Route Handler :
+router.ALL("/hello").save(context -> context.response().sendPlainText("Hello!"));
 </pre>
                 </p>
             </div>
@@ -104,16 +120,16 @@ router.ALL("/books/${bookId}").save(bookController::books);
  
         <h5>
             <a class="anchor_small" href="#quick_tutorial_traditional_route_handlers" id="quick_tutorial_traditional_route_handlers" title="permanent link"></a>
-            1.3. Defining Route Handlers
+            1.3. Route Handlers
         </h5>
         <p>
-            <code>Route Handlers</code> are the methods in your controllers responsible to handle requests.
-            They receive a <a href="#request_context">Request Context</a> object as a parameter, 
-            object which represents the current request. This <code>Request Context</code> is 
+            Most of the time, a <code>Route Handler</code> is implemented as a method in a controller.
+            It receives a <a href="#request_context">Request Context</a> object as a parameter. 
+            This <code>Request Context</code> is 
             <a href="#extending_request_context">extensible</a> and is one
             of the most interesting parts of Spincast! In this quick example, we simply use the 
             default <code>Request Context</code> implementation,
-            <code>"DefaultRequestContext"</code> :
+            <code>"DefaultRequestContext"</code>&nbsp;:
             <div>
                 <p>
                     <pre class="ace ace-java"
@@ -168,15 +184,14 @@ router.ALL("/books/${bookId}").save(bookController::books);
             1.5. Building the response's model 
         </h5>
         <p>
-            You process the current request using any required business logic, and you finally build the
+            You process the current request using any business logic you need, and you build the
             <code>model</code> for the response. This response model
             is a <a href="#jsonobject">JsonObject</a> accessible via
             <code><em>"context.response().getModel()"</em></code> : it is the object
-            containing all the information you want to return as the response. 
+            where you store all the information you want to return as the response. 
         </p>
         <p>
-            In the context of a traditional
-            website, you are going to add to this <code>response model</code> all the variables you want 
+            You may add to this <code>response model</code> the variables you want 
             your templates to have access to :
             <div>
                 <p>
@@ -226,7 +241,8 @@ router.ALL("/books/${bookId}").save(bookController::books);
         </h5>
         <p>
             Here is a template example using the syntax of the default <code>Templating Engine</code>, 
-            <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>.
+            <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. Notice that the variables
+            we added to the <code>response model</code> are available.
             <div>
                 <p>
                     {% verbatim %}<pre class="ace ace-pebble"
@@ -274,29 +290,39 @@ router.ALL("/books/${bookId}").save(bookController::books);
             
             <ul>
                 <li>
-                    Creating a <code>Guice Context</code>. This is the process
-                    of binding all the components required in your application. Spincast provides a
-                    default <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a> 
-                    Guice module to make this process very easy.
+                    Using the <a href="/documentation#boot_bootstrapper">Bootstrapper</a> to initialize your
+                    application. This is where you specify the components to bind and the plugins to install in
+                    order to create the <em>Guice context</em> for your application.
                 </li>
                 <li>
-                    Defining <code>Routes</code> and <code>Route Handlers</code> (controller methods). We're going to
+                    Defining <code>Routes</code> and <code>Route Handlers</code>. We're going to
                     see those in a minute.
                 </li>
                 <li>
                     Starting the HTTP Server.
                 </li>
             </ul>
+            
+            Here's a quick example of using the application builder :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>Spincast.configure()
+        .module(new AppModule())
+        .init();</pre>
+                </p>
+            </div>
         </p>  
+        <p>
+            Please read the whole section dedicated to 
+            <a href="#bootstrapping">bootstrapping</a> for more information about this topic.
+        </p>
         <p>  
             <img class="inlineIcon" src="/public/images/icons/tipy.png" />
             The quickest way to start a Spincast application is to
             download the <a href="#quick_start">Quick Start</a> application and to adapt it
             to your needs.
-        </p>
-        <p>
-            Please read the whole section dedicated to 
-            <a href="#bootstrapping">bootstrapping</a> for more information about this topic.
         </p>
         
         <h5>
@@ -304,12 +330,14 @@ router.ALL("/books/${bookId}").save(bookController::books);
             2.2. Defining Routes
         </h5>
         <p>
-            You define some <code>Routes</code> and you specify which <code>Route Handlers</code> (controllers) should handle them. Those <code>Routes</code> can
-            be all defined together in a dedicated class or can be defined in controllers
-            (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
-            You can learn more about the various routing options in the <a href="#routing">Routing</a>
-            section.
-        <p>
+            You define some <code>Routes</code> and you specify which <code>Route Handlers</code> should handle them. The 
+            <code>Route Handlers</code> are often methods in a controller but can also be defined <em>inline</em>, directly
+            on the <code>Route</code> definitions.
+        </p>
+        <p> 
+            The <code>Routes</code> definitions can be all grouped together in a dedicated class or can be defined in controllers
+            directly (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+        </p>
         </p>
             In general, if you are building a <code>SPA</code>, you want to return a <em>single</em> <code>HTML</code>
             page : that index page is going to load <code>.js</code> files and, using those, will bootstrap your
@@ -349,19 +377,16 @@ router.dir("/public").classpath("/myResources").save();
            <div>
                 <p>
                     <pre class="ace ace-java"
->// Route Handler that evaluates
-// a template to generate the HTML index page
-router.GET("/").save(new DefaultHandler() {
-    @Override
-    public void handle(DefaultRequestContext context) {
+>// Inline Route Handler that evaluates
+// a template to generate the HTML index page.
+router.GET("/").save(context -> {
     
-        // Adds some variables to the response model so
-        // the template has access to them.
-        context.response().getModel().put("randomQuote", getRandomQuote());
-        
-        // Renders the template
-        context.response().sendTemplateHtml("/index.html");
-    }
+    // Adds some variables to the response model so
+    // the template has access to them.
+    context.response().getModel().put("randomQuote", getRandomQuote());
+    
+    // Renders the template
+    context.response().sendTemplateHtml("/index.html"); 
 });
 
 // The resources (.js, .css, images, etc.) will 
@@ -403,16 +428,16 @@ router.POST("/books/${bookId}").save(bookController::booksPost);
 
         <h5>
             <a class="anchor_small" href="#quick_tutorial_spa_route_handlers" id="quick_tutorial_spa_route_handlers" title="permanent link"></a>
-            2.3. Defining Route Handlers
+            2.3. Route Handlers
         </h5>
         <p>
-            <code>Route Handlers</code> are the methods in your controllers responsible to handle requests.
-            They receive a <a href="#request_context">Request Context</a> object as a parameter, 
-            object which represents the current request. This <code>Request Context</code> is 
+            Most of the time, a <code>Route Handler</code> is implemented as a method in a controller.
+            It receives a <a href="#request_context">Request Context</a> object as a parameter. 
+            This <code>Request Context</code> is 
             <a href="#extending_request_context">extensible</a> and is one
             of the most interesting parts of Spincast! In this quick example, we simply use the 
             default <code>Request Context</code> implementation,
-            <code>"DefaultRequestContext"</code> :
+            <code>"DefaultRequestContext"</code>&nbsp;:
             <div>
                 <p>
                     <pre class="ace ace-java"
@@ -478,7 +503,7 @@ router.POST("/books/${bookId}").save(bookController::booksPost);
             <code>Json</code> (or <code>XML</code>) object to return as a response. There are two ways to achieve that.
             The prefered approach, is to create a <em>typed</em> object,
             a book created from a <code>Book</code> class for example, and explicitly
-            send this entity as <code>Json</code>. For example :
+            send this entity as <code>Json</code>. For example&nbsp;:
                     
             <div>
                 <p>
@@ -502,7 +527,7 @@ router.POST("/books/${bookId}").save(bookController::booksPost);
         </p>
         <p>
             You get the response model as a <a href="/documentation#jsonobject">JsonObject</a> 
-            by calling the <code>context.response().getModel()</code> method, you then
+            by calling the <code>context.response().getModel()</code> method, you
             add elements to it and you send it as <code>Json</code> :
 
             <div>

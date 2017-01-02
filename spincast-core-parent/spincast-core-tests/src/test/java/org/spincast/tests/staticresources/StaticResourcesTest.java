@@ -16,7 +16,7 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -27,7 +27,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class StaticResourcesTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected SpincastRouterConfig spincastRouterConfig;

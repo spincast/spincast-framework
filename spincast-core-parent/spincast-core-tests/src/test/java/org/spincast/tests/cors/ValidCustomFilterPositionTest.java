@@ -7,10 +7,10 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
@@ -22,7 +22,18 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class ValidCustomFilterPositionTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(SpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
+            }
+        };
+    }
 
     protected static class TestRoutingConfig extends SpincastRouterConfigDefault {
 
@@ -35,18 +46,6 @@ public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrati
         public int getCorsFilterPosition() {
             return -1;
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-                bind(SpincastRouterConfig.class).to(TestRoutingConfig.class).in(Scopes.SINGLETON);
-            }
-        };
     }
 
     @Test
@@ -64,8 +63,8 @@ public class ValidCustomFilterPositionTest extends SpincastDefaultNoAppIntegrati
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);

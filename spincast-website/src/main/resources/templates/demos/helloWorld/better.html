@@ -1,0 +1,189 @@
+{% extends "../helloWorld.html" %}
+
+{% block demoSectionClasses %}demo_hello_world{% endblock %}
+{% block meta_title %}Demo - Hello World - Better{% endblock %}
+{% block meta_description %}"Hello World!" demo and tutorial using Spincast - Better version{% endblock %}
+
+{% set demoId = "better" %}
+
+{% block demoBody %}
+
+<h4>
+    <a class="anchor_small" href="#form" id="form" title="permanent link"></a>
+    2. Better version
+</h4>
+
+<p class="shortTop">
+    In general, you want to create a <em>custom Guice module</em> for your application, so you can bind custom components.
+    This is what we are going to do in this tutorial.
+    We will also create a <em>controller</em> so our <code>Route Handlers</code> are not defined <em>inline</em> but have their
+    own dedicated method.
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    First, we add the latest version of the <code>org.spincast:spincast-default</code>
+    Maven artifact to our <code>pom.xml</code> (or <code>build.gradle</code>) :
+    <div>
+        <p>
+            <pre class="ace ace-xml"
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-default&lt;/artifactId>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre> 
+        </p>
+    </div>
+</p>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Let's then create our controller :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class AppController {
+
+    public void index(DefaultRequestContext context) {
+
+        JsonObject user = context.json().create();
+        user.put("name", "Stromgol");
+        user.put("age", 42);
+
+        context.response().sendJson(user);
+    }
+}</pre>   
+        </p>
+    </div> 
+</p>
+<p>
+    This controller contains one <code>Route Handler</code> : <em>"index"</em>. A 
+    <code>Route Handler</code> is a method that receives, as a parameter, an object implementing 
+    <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/RequestContext.html">RequestContext</a>.
+    In this simple handler, we create a "user" object as a <a href="/documentation#jsonobject">JsonObject</a>
+    and we send it as <code>"application/json"</code>.
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    
+    Now, let's create a custom Guice module, so we can bind our components :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class AppModule extends SpincastGuiceModuleBase {
+
+    @Override
+    protected void configure() {
+        
+        // Binds our controller
+        bind(AppController.class).in(Scopes.SINGLETON);
+        
+        // ... binds all our other application components here
+    }
+}</pre>   
+        </p>
+    </div> 
+</p>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Finally, let's bootstrap and start the application! We do that in the standard <code>main(...)</code>
+    method, using the <a href="/documentation#boot_bootstrapper">Bootstrapper</a> :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.configure()
+                .module(new AppModule())
+                .init();
+    }
+
+    @Inject
+    protected void init(Server server, DefaultRouter router, AppController ctrl) {
+        router.GET("/").save(ctrl::index);
+        server.start();
+    }
+}</pre>   
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span><br />
+            <ul>
+                <li>
+                    <span class="code-line-nbr">3</span> : A standard <code>main(...)</code>
+                    method is the entry point of our application.
+                </li>
+                <li>
+                    <span class="code-line-nbr">4</span> : <code><em>Spincast.configure()</em></code> 
+                    starts the bootstrapper, so we can configure and initialize our application.
+                </li>
+                <li>
+                    <span class="code-line-nbr">5</span> : We add our custom module
+                    to the Guice context!
+                </li>
+                <li>
+                    <span class="code-line-nbr">6</span> : The <code>init()</code> method will create the Guice
+                    context using the default <a href="/plugins">plugins</a> and our custom module, will bind the current 
+                    <code>App</code> class in the context and will load it.
+                </li>
+                <li>
+                    <span class="code-line-nbr">9-10</span> : This <a href="/documentation#init_method">init method</a>
+                    will be called automatically when the Guice context is ready. We inject in it the 
+                    default <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/Router.html">Router</a>, the
+                    default <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a> and our
+                    controller.
+                </li>
+                <li>
+                    <span class="code-line-nbr">11</span> : We define a <code>Route</code> for the index page
+                    using a <em>method reference</em> targeting our controller's <em>"index"</em> method as 
+                    the <code>Route Handler</code>. Spincast is going to call this method each time a <code>GET</code> request 
+                    for the index page is received.
+                </li>
+                <li>
+                    <span class="code-line-nbr">12</span> : We start the server.
+                </li>
+            </ul>
+        </p>
+    </div> 
+</p>
+
+<h4>
+    <a class="anchor_small" href="#tryit" id="tryit" title="permanent link"></a>
+    Try it!
+</h4>
+<p>
+    Download this application, and run it by yourself :
+</p>
+<p>
+    <ul>
+        <li>
+            Download <strong><em><a href="/public/demo-apps/spincast-demos-better.zip">spincast-demos-better.zip</a></em></strong>.
+        </li>
+        <li>
+            Unzip the file.
+        </li>
+        <li>
+            Enter the root directory using a terminal.
+        </li>
+        <li>
+            Compile the application using Maven :
+            <br />
+            <code>mvn clean package</code> 
+        </li>
+        <li>
+            Launch the application : 
+            <br />
+            <code>java -jar target/spincast-demos-better-{{spincast.spincastCurrrentVersion}}.jar</code> 
+        </li>   
+    </ul>
+</p>
+<p>
+    The application is then accessible at <a href="http://localhost:44419">http://localhost:44419</a>
+</p>
+
+
+
+{% endblock %}

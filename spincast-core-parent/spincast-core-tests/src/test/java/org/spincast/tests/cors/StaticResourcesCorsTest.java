@@ -13,9 +13,9 @@ import java.util.Set;
 import org.junit.Test;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
-import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Handler;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.core.routing.HttpMethod;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -23,7 +23,7 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 
-public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class StaticResourcesCorsTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void noCorsConfig() throws Exception {
@@ -73,8 +73,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -133,8 +133,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         getRouter().file("/").classpath("/image.jpg").cors().save();
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example1.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example1.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -172,8 +172,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -216,8 +216,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -256,8 +256,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "http://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -298,8 +298,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -354,8 +354,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -402,8 +402,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = POST("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                          .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -447,8 +447,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = DELETE("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                            .send();
+                                           .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                           .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);
@@ -482,8 +482,8 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = HEAD("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                          .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                          .send();
+                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -528,9 +528,9 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         cookie.setPath("/");
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                         .addCookie(cookie)
-                                         .send();
+                                        .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                        .addCookie(cookie)
+                                        .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -571,9 +571,9 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNotNull(allowOriginHeader);
@@ -620,9 +620,9 @@ public class StaticResourcesCorsTest extends SpincastDefaultNoAppIntegrationTest
         });
 
         HttpResponse response = OPTIONS("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
-                                             .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                             .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PUT")
-                                             .send();
+                                            .addHeaderValue(HttpHeaders.HOST, "example2.com")
+                                            .addHeaderValue(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PUT")
+                                            .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
         assertNull(allowOriginHeader);

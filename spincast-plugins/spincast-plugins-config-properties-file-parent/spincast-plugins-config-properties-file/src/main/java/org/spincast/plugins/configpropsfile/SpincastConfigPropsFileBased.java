@@ -38,7 +38,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfigDefault implemen
 
     private final SpincastUtils spincastUtils;
     private final String[] mainArgs;
-    private final SpincastConfigPropsFileBasedConfig pluginConfig;
+    private final SpincastConfigPropsFilePluginConfig pluginConfig;
 
     private boolean specificAppPropertiesFilePathInited = false;
     private String specificAppPropertiesFilePath;
@@ -53,7 +53,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfigDefault implemen
     @Inject
     public SpincastConfigPropsFileBased(SpincastUtils spincastUtils,
                                         @MainArgs @Nullable String[] mainArgs,
-                                        SpincastConfigPropsFileBasedConfig pluginConfig) {
+                                        SpincastConfigPropsFilePluginConfig pluginConfig) {
         super();
         this.spincastUtils = spincastUtils;
 
@@ -65,7 +65,7 @@ public class SpincastConfigPropsFileBased extends SpincastConfigDefault implemen
         this.pluginConfig = pluginConfig;
     }
 
-    protected SpincastConfigPropsFileBasedConfig getPluginConfig() {
+    protected SpincastConfigPropsFilePluginConfig getPluginConfig() {
         return this.pluginConfig;
     }
 

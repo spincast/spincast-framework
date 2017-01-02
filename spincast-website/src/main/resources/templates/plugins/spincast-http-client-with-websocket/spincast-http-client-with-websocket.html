@@ -1,7 +1,7 @@
 {% extends "../../layout.html" %}
 
 {% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-http-client-with-websocket{% endblock %}
-{% block meta_title %}Plugins - Spincast HTTP Client with WebSockets support{% endblock %}
+{% block meta_title %}Plugins - Spincast HTTP Client with WebSocket support{% endblock %}
 {% block meta_description %}Client to easily create and send HTTP requests and establish WebSocket connections.{% endblock %}
 
 {% block scripts %}
@@ -23,12 +23,12 @@
 
     <ol class="breadcrumb">
         <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
-        <li class="active">Spincast HTTP Client with WebSockets support plugin</li>
+        <li class="active">Spincast HTTP Client with WebSocket support plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HTTP Client (with WebSockets) <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HTTP Client (with WebSocket) <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
@@ -50,6 +50,8 @@
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#add-on">Suggested <em>add-on</em></a></li>
                 <li class="openable"><a href="#usage">Usage</a></li>
                 <li class="openable"><a href="#config">Configurations</a></li>
                 <li class="openable"><a href="#javadoc">Javadoc</a></li>
@@ -64,7 +66,7 @@
                     Overview
                 </h3>
 	            <p>
-	                This plugin is the same as the regular <a href="/plugins/spincast-http-client">Spincast HTTP Client</a> but
+	                This plugin is the same as the <a href="/plugins/spincast-http-client">Spincast HTTP Client</a> plugin but
                     adds support for <code>WebSockets</code>. 
                 </p>
                 <p>
@@ -73,7 +75,7 @@
                     into an application using it.
                     We wanted to give the possibility to use the <code>HTTP Client</code> without those extra dependencies, if preferred.
                     But note that if you are already using the default <code>Server</code> in your Spincast application, it is also
-                    based on Undertow, so you already pull those dependencies...
+                    based on Undertow, so you already pull those dependencies anyway...
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
@@ -83,67 +85,94 @@
                 </p>  
             </section>
             
-	        <section id="installation">
+            
+          
+            <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
                     Installation
-                </h3>              
-
+                </h3>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    Add this artifact to your project:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-xml"
+                    If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
+                    simply register this plugin using :
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="3,12,3,64"
+>public static void main(String[] args) {
+
+    Spincast.configure()
+            .plugin(new SpincastHttpClientWithWebsocketPlugin())
+            //...
+            .init();
+}</pre> 
+                        </p>
+                    </div>
+                </p>
+                
+                <p>
+                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
+                    plugin by :
+                </p>
+                <p>
+                    1. Adding this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-http-client-with-websocket&lt;/artifactId&gt;
     &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
-	                    </p>
-	                </div>  
-	            </p>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
->Injector guice = Guice.createInjector(
-        new AppModule(args),
-        new SpincastHttpClientWithWebsocketPluginGuiceModule(AppRequestContext.class, 
-                                                             AppWebsocketContext.class)
-        // other modules...
-        );</pre> 
                         </p>
-                    </div>   
+                    </div>  
                 </p>
                 <p>
-                    ... or by using the <code>install(...)</code> method from your custom Guice module:
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="7,8,7,110|8,8,8,110"
->public class AppModule extends SpincastDefaultGuiceModule {
-
-    //...
-
-    @Override
-    protected void configure() {
-        super.configure();
-        install(new SpincastHttpClientWithWebsocketPluginGuiceModule(getRequestContextType(), 
-                                                                     getWebsocketContextType()));
-        // other modules...
-    }
-    
-    // ...
-}</pre> 
-                        </p>
-                    </div>   
+                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/SpincastHttpClientWithWebsocketPluginModule.html">SpincastHttpClientWithWebsocketPluginModule</a> 
+                    module to your Guice context.
                 </p>
-         
-         
             </section>
             
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
+                </h3>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/SpincastHttpClientWithWebsocketPlugin.html">SpincastHttpClientWithWebsocketPlugin</a>.
+                </p>
+            </section>
+            
+            <section id="add-on">
+                <h3>
+                    <a class="anchor" href="#add-on" title="permanent link"></a>
+                    Suggested <em>add-on</em>
+                </h3>
+                <p>
+                    <ul>
+                        <li>
+                            <strong>Name</strong> : <code>httpClient()</code>
+                        </li>
+                        <li>
+                            <strong>Component</strong> : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/websocket/HttpClient.html">HttpClient</a>
+                        </li>
+                        <li>
+                            <strong>Usage</strong> : to be able to make HTTP and WebSockets requests easily from your <code>Route Handlers</code>.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Learn how to <a href="/documentation#plugins_add_on">install an add-on</a> in the dedicated section of the
+                    documentation.
+                </p>
+
+            </section>
+
+
+
+
+    
             <section id="usage">
             
                 <h3>

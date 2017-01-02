@@ -119,7 +119,7 @@ public interface SpincastUtils {
     public String removeCacheBusterCodes(String text);
 
     /**
-     * Reads a file on the classpath on returns it as a
+     * Reads a file on the classpath and returns it as a
      * String.
      * <p>
      * Paths are always considered from the root at the classpath.
@@ -133,7 +133,7 @@ public interface SpincastUtils {
     public String readClasspathFile(String path);
 
     /**
-     * Reads a file on the classpath on returns it as a
+     * Reads a file on the classpath and returns it as a
      * String.
      * <p>
      * Paths are always considered from the root at the classpath.

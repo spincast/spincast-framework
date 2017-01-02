@@ -18,7 +18,7 @@ import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
@@ -27,7 +27,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected ETagFactory eTagFactory;
@@ -927,7 +927,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         values.add("\"111\",W/\"222\"");
         values.add("\"333\"");
         HttpResponse response = GET("/").addHeaderValues(HttpHeaders.IF_NONE_MATCH, values)
-                                         .addHeaderValue(HttpHeaders.IF_NONE_MATCH, "W/\"444\",*").send();
+                                        .addHeaderValue(HttpHeaders.IF_NONE_MATCH, "W/\"444\",*").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1182,7 +1182,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1221,7 +1221,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1261,7 +1261,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1300,7 +1300,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1338,7 +1338,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1377,7 +1377,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1416,7 +1416,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1455,7 +1455,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_UNMODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1493,7 +1493,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_NOT_MODIFIED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1530,7 +1530,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1570,7 +1570,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1610,7 +1610,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_NONE_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1649,7 +1649,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1688,7 +1688,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());
@@ -1727,7 +1727,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"123\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -1767,7 +1767,7 @@ public class CacheHeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.IF_MATCH, "\"nope\"")
-                                         .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
+                                        .addHeaderValue(HttpHeaders.IF_MODIFIED_SINCE, formatDate(date)).send();
 
         assertEquals(HttpStatus.SC_PRECONDITION_FAILED, response.getStatus());
         assertEquals("", response.getContentAsString());

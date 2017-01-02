@@ -4,21 +4,39 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.plugins.jacksonjson.JsonMixinInfo;
 import org.spincast.plugins.jacksonjson.JsonMixinInfoDefault;
-import org.spincast.testing.core.SpincastTestBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-public class UseFieldInsteadOfGetterMixinTest extends SpincastTestBase {
+public class UseFieldInsteadOfGetterMixinTest extends UnitTestDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+
+                //==========================================
+                // Bind our mixin
+                //
+                // To use a *field*, we have to target the *implementation*
+                // class in the Mixin.
+                //==========================================
+                Multibinder<JsonMixinInfo> jsonMixinsBinder = Multibinder.newSetBinder(binder(), JsonMixinInfo.class);
+                jsonMixinsBinder.addBinding().toInstance(new JsonMixinInfoDefault(UserDefault.class, UserMixin.class));
+            }
+        };
+    }
 
     @Inject
     JsonManager jsonManager;
@@ -44,34 +62,6 @@ public class UseFieldInsteadOfGetterMixinTest extends SpincastTestBase {
         @Override
         @JsonIgnore
         public abstract String getTitle();
-    }
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(getTestingModule());
-    }
-
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-                bindJsonMixins();
-            }
-
-            //==========================================
-            // Bind our mixin
-            //
-            // To use a *field*, we have to target the *implementation*
-            // class in the Mixin.
-            //==========================================
-            protected void bindJsonMixins() {
-
-                Multibinder<JsonMixinInfo> jsonMixinsBinder = Multibinder.newSetBinder(binder(), JsonMixinInfo.class);
-                jsonMixinsBinder.addBinding().toInstance(new JsonMixinInfoDefault(UserDefault.class, UserMixin.class));
-            }
-        };
     }
 
     @Test

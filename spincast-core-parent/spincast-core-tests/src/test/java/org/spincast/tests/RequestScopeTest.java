@@ -7,11 +7,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -20,7 +20,23 @@ import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
-public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RequestScopeTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+
+                bind(ServiceClass.class).in(Scopes.SINGLETON);
+                bind(ControllerClass.class).in(Scopes.SINGLETON);
+
+                // Bind a test class in the REQUEST scope
+                bind(TestRequestScopeClass.class).in(SpincastGuiceScopes.REQUEST);
+            }
+        };
+    }
 
     public static class TestRequestScopeClass {
     }
@@ -78,23 +94,6 @@ public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
     @Inject
     protected ControllerClass controllerOk;
 
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-
-                bind(ServiceClass.class).in(Scopes.SINGLETON);
-                bind(ControllerClass.class).in(Scopes.SINGLETON);
-
-                // Bind a test class in the REQUEST scope
-                bind(TestRequestScopeClass.class).in(SpincastGuiceScopes.REQUEST);
-            }
-        };
-    }
-
     @Test
     public void oneInstanceOnly() throws Exception {
 
@@ -104,12 +103,12 @@ public class RequestScopeTest extends SpincastDefaultNoAppIntegrationTestBase {
             public void handle(DefaultRequestContext context) {
 
                 DefaultRequestContext requestContextAsGeneric = context.guice()
-                                                                        .getInstance(DefaultRequestContext.class);
+                                                                       .getInstance(DefaultRequestContext.class);
                 assertNotNull(requestContextAsGeneric);
                 assertTrue(requestContextAsGeneric == context);
 
                 DefaultRequestContext requestContextAsGeneric2 = context.guice()
-                                                                         .getInstance(DefaultRequestContext.class);
+                                                                        .getInstance(DefaultRequestContext.class);
                 assertNotNull(requestContextAsGeneric2);
                 assertTrue(requestContextAsGeneric2 == context);
 

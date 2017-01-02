@@ -1,13 +1,14 @@
 package org.spincast.website;
 
 import java.io.InputStream;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePlugin;
 import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
@@ -20,15 +21,11 @@ import org.spincast.website.controllers.demos.DemoHtmlFormsMultipleFieldsControl
 import org.spincast.website.controllers.demos.DemoHtmlFormsSingleFieldController;
 import org.spincast.website.controllers.demos.DemosTutorialsController;
 import org.spincast.website.exchange.AppRequestContext;
+import org.spincast.website.exchange.AppRequestContextDefault;
 import org.spincast.website.exchange.AppRouter;
 import org.spincast.website.guice.AppModule;
 
-import com.google.common.collect.Lists;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.util.Modules;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -41,51 +38,19 @@ public class App {
      * The entry point for the application.
      */
     public static void main(String[] args) {
-        createApp(args, null);
-    }
 
-    /**
-     * Creates an App instance using the given
-     * parameters, an overriding module, and returns the 
-     * Guice injector.
-     * 
-     * @param overridingModule Mostly useful for the integration tests. Those
-     * can override some bindings by specifying this overriding module.
-     */
-    public static Injector createApp(String[] args, Module overridingModule) {
-
-        if(args == null) {
-            args = new String[]{};
-        }
-
-        //==========================================
-        // Should we override the base app modules
-        // with an overring module?
-        //==========================================
-        Injector guice = null;
-        if(overridingModule != null) {
-            guice = Guice.createInjector(Modules.override(getAppModules(args))
-                                                .with(overridingModule));
-        } else {
-            guice = Guice.createInjector(getAppModules(args));
-        }
-
-        App website = guice.getInstance(App.class);
-        website.start();
-
-        return guice;
-    }
-
-    /**
-     * The app's Guice modules to use.
-     */
-    protected static List<? extends Module> getAppModules(String[] args) {
-        return Lists.newArrayList(new AppModule(args));
+        Spincast.configure()
+                .module(new AppModule())
+                .plugin(new SpincastConfigPropsFilePlugin())
+                .requestContextImplementationClass(AppRequestContextDefault.class)
+                .mainArgs(args)
+                .init();
     }
 
     //==========================================
     // The application
     //==========================================
+
     private final Server server;
     private final AppConfig appConfig;
     private final AppRouter router;
@@ -199,6 +164,7 @@ public class App {
     /**
      * Starts the application!
      */
+    @Inject
     public void start() {
         configureLogback();
         addRoutes();
@@ -328,9 +294,10 @@ public class App {
         //==========================================
         router.redirect("/demos-tutorials").temporarily().to("/demos-tutorials/hello-world");
 
-        router.file("/demos-tutorials/hello-world")
-              .pathRelative("/pages/demos-tutorials/hello-world.html")
-              .save(demoCtl::helloWorld);
+        router.redirect("/demos-tutorials/hello-world").to("/demos-tutorials/hello-world/quick");
+        router.GET("/demos-tutorials/hello-world/quick").save(demoCtl::helloWorldQuick);
+        router.GET("/demos-tutorials/hello-world/better").save(demoCtl::helloWorldBetter);
+        router.GET("/demos-tutorials/hello-world/super").save(demoCtl::helloWorldSuper);
 
         router.file("/demos-tutorials/full-website")
               .pathRelative("/pages/demos-tutorials/full-website.html")

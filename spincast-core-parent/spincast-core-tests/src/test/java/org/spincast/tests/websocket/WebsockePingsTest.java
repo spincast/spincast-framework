@@ -8,15 +8,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.plugins.undertow.ClosedEventSentCallback;
+import org.spincast.plugins.undertow.SpincastUndertowWebsocketEndpointWriter;
 import org.spincast.plugins.undertow.UndertowWebsocketEndpointWriter;
 import org.spincast.plugins.undertow.UndertowWebsocketEndpointWriterFactory;
-import org.spincast.plugins.undertow.SpincastUndertowWebsocketEndpointWriter;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
-import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -26,29 +27,10 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 import io.undertow.websockets.core.WebSocketChannel;
 
-public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
-
-    public static class SpincastUndertowWebsocketEndpointWriterTest extends SpincastUndertowWebsocketEndpointWriter {
-
-        @AssistedInject
-        public SpincastUndertowWebsocketEndpointWriterTest(@Assisted Map<String, WebSocketChannel> channels,
-                                                           SpincastUndertowConfig spincastUndertowConfig) {
-            super(channels, spincastUndertowConfig);
-        }
-
-        @Override
-        public void sendClosingConnection(int closingCode,
-                                          String closingReason,
-                                          Set<String> peerIds,
-                                          ClosedEventSentCallback callback) {
-            // We disable the "Endpoint closed" events normally 
-            // sent to the peers!
-            callback.done();
-        }
-    }
+public class WebsockePingsTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getOverridingModule() {
+    protected Module getExtraOverridingModule() {
 
         return new AbstractModule() {
 
@@ -71,6 +53,25 @@ public class WebsockePingsTest extends SpincastDefaultWebsocketNoAppIntegrationT
                 });
             }
         };
+    }
+
+    public static class SpincastUndertowWebsocketEndpointWriterTest extends SpincastUndertowWebsocketEndpointWriter {
+
+        @AssistedInject
+        public SpincastUndertowWebsocketEndpointWriterTest(@Assisted Map<String, WebSocketChannel> channels,
+                                                           SpincastUndertowConfig spincastUndertowConfig) {
+            super(channels, spincastUndertowConfig);
+        }
+
+        @Override
+        public void sendClosingConnection(int closingCode,
+                                          String closingReason,
+                                          Set<String> peerIds,
+                                          ClosedEventSentCallback callback) {
+            // We disable the "Endpoint closed" events normally 
+            // sent to the peers!
+            callback.done();
+        }
     }
 
     @Test

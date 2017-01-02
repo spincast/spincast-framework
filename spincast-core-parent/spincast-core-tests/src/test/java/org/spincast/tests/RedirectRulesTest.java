@@ -14,7 +14,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -23,7 +23,7 @@ import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
-public class RedirectRulesTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RedirectRulesTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
     public void beforeTest() {

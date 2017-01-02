@@ -73,7 +73,7 @@ public class MainPagesController {
 
     public void documentation(AppRequestContext context) {
 
-        if(context.request().getQueryStringParamFirst("alert") != null) {
+        if (context.request().getQueryStringParamFirst("alert") != null) {
             context.response().getModel().put("alertDemoMsg", "This is an example Success Alert message, using no javascript!");
         }
 
@@ -108,7 +108,7 @@ public class MainPagesController {
         String pluginName = context.request().getPathParam("pluginName");
 
         String pluginDocTemplatePath = getPluginDocTemplatePath(pluginName);
-        if(pluginDocTemplatePath == null) {
+        if (pluginDocTemplatePath == null) {
 
             //==========================================
             // We specify the classes of the current section so the 
@@ -129,14 +129,14 @@ public class MainPagesController {
      */
     protected String getPluginDocTemplatePath(String pluginName) {
 
-        if(StringUtils.isBlank(pluginName)) {
+        if (StringUtils.isBlank(pluginName)) {
             return null;
         }
 
         //==========================================
         // Sanitization
         //==========================================
-        if(!Pattern.matches("[-_0-9a-z]+", pluginName)) {
+        if (!Pattern.matches("[-_0-9a-z]+", pluginName)) {
             this.logger.info("Invalid plugin name tried : " + pluginName);
             return null;
         }
@@ -144,7 +144,7 @@ public class MainPagesController {
         String pluginDocTemplatePath = "/templates/plugins/" + pluginName + "/" + pluginName + ".html";
 
         URL url = MainPagesController.class.getResource(pluginDocTemplatePath);
-        if(url == null) {
+        if (url == null) {
             return null;
         }
         return pluginDocTemplatePath;
@@ -155,14 +155,14 @@ public class MainPagesController {
         int page = 1;
         String pageStr = context.request().getQueryStringParamFirst("page");
 
-        if(pageStr != null) {
+        if (pageStr != null) {
             try {
                 page = Integer.parseInt(pageStr);
-                if(page < 0) {
+                if (page < 0) {
                     context.response().redirect("/news", false);
                     return;
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 // ok
             }
         }
@@ -174,13 +174,13 @@ public class MainPagesController {
 
         NewsEntriesAndTotalNbr newsEntriesAndTotalNbr = getNewsService().getNewsEntries(startPos, endPos, false);
 
-        if(page > 1 && newsEntriesAndTotalNbr.getNewsEntries().size() == 0) {
+        if (page > 1 && newsEntriesAndTotalNbr.getNewsEntries().size() == 0) {
             context.response().redirect("/news", false);
             return;
         }
 
         int nextPage = -1;
-        if(newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() > endPos) {
+        if (newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() > endPos) {
             nextPage = page + 1;
         }
 
@@ -204,12 +204,12 @@ public class MainPagesController {
         long newsId;
         try {
             newsId = Long.parseLong(context.request().getPathParam("newsId"));
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new NotFoundException("The news entry was not found.");
         }
 
         NewsEntry newsEntry = getNewsService().getNewsEntry(newsId);
-        if(newsEntry == null) {
+        if (newsEntry == null) {
             throw new NotFoundException("The news entry '" + newsId + "' was not found.");
         }
 

@@ -10,29 +10,48 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.Scopes;
 
-public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class PebbleTest extends IntegrationTestNoAppDefaultContextsBase {
 
-    public static class SpincastPebbleTemplatingEngineConfigDefaultTest extends SpincastPebbleTemplatingEngineConfigDefault {
+    @Override
+    protected Injector createInjector() {
+
+        return Spincast.configure()
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+                               bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigTesting.class)
+                                                                               .in(Scopes.SINGLETON);
+                           }
+                       })
+                       .init();
+    }
+
+    /**
+     * We enable strict variables
+     */
+    public static class SpincastPebbleTemplatingEngineConfigTesting extends SpincastPebbleTemplatingEngineConfigDefault {
 
         @Inject
-        public SpincastPebbleTemplatingEngineConfigDefaultTest(SpincastConfig spincastConfig) {
+        public SpincastPebbleTemplatingEngineConfigTesting(SpincastConfig spincastConfig) {
             super(spincastConfig);
         }
 
@@ -40,22 +59,6 @@ public class PebbleTest extends SpincastDefaultNoAppIntegrationTestBase {
         public boolean isStrictVariablesEnabled() {
             return true;
         }
-
-    }
-
-    /**
-     * We enable strict variables
-     */
-    @Override
-    protected Module getOverridingModule() {
-        return new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigDefaultTest.class)
-                                                                 .in(Scopes.SINGLETON);
-            }
-        };
     }
 
     @Inject

@@ -7,20 +7,20 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class NotFoundHandlerTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class NotFoundHandlerTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected SpincastDictionary spincastDictionary;

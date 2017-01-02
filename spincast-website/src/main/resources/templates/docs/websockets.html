@@ -941,21 +941,28 @@ Extending the WebSocket context
     </p> 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Finally, you must let Spincast know about your custom <code>WebSocket Context</code> type. You do this by overriding the 
-        <code>getWebsocketContextImplementationClass()</code> method defined in Spincast's 
-        <code>SpincastCoreGuiceModule</code> Guice module. For example, in a custom <code>AppModule</code>:
+        Finally, you must let Spincast know about your custom <code>WebSocket Context</code> type. 
+        This is done by using the 
+        <code>websocketContextImplementationClass(...)</code> of the
+        <a href="#boot_bootstrapper">Bootstrapper</a> :
     </p>
     <p>
         <div>
             <p>
-                <pre class="ace ace-java"
->@Override
-protected Class&lt;? extends WebsocketContext&lt;?&gt;&gt; getWebsocketContextImplementationClass() {
-    return AppWebsocketContextDefault.class;
-}</pre> 
-            </p>
+                <pre class="ace ace-java" data-ace-hi="5,12,5,82"
+>public static void main(String[] args) {
+
+    Spincast.configure()
+            .module(new AppModule())
+            .requestContextImplementationClass(AppRequestContextDefault.class)
+            .websocketContextImplementationClass(AppWebsocketContextDefault.class)
+            .init();
+    //....
+}</pre>
+
+            </p> 
         </div>
-    </p> 
+    </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         If you both extended the <code>Request Context</code> type and the <code>WebSocket Context</code> type, the

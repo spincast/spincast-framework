@@ -4,33 +4,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.plugins.jacksonjson.SpincastJsonManagerConfig;
-import org.spincast.testing.core.SpincastTestBase;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 
-public class JsonPrettyPrintConfigTest extends SpincastTestBase {
+public class JsonPrettyPrintConfigTest extends UnitTestDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;
 
     @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(getTestingModule());
-    }
-
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
-                super.configure();
 
                 //==========================================
                 // Bind custom Json Manager configs

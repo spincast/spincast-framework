@@ -3,21 +3,23 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
-import com.google.inject.Module;
+public class RequestBodyMaxSizeTest extends IntegrationTestNoAppDefaultContextsBase {
 
-public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestBase {
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return TestingSpincastConfig2.class;
+    }
 
-    protected static class TestingSpincastConfig2 extends SpincastTestConfig {
+    protected static class TestingSpincastConfig2 extends SpincastConfigTestingDefault implements SpincastConfigTesting {
 
         //==========================================
         // Max 10 bytes
@@ -26,17 +28,6 @@ public class RequestBodyMaxSizeTest extends SpincastDefaultNoAppIntegrationTestB
         public long getServerMaxRequestBodyBytes() {
             return 10;
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return TestingSpincastConfig2.class;
-            }
-        };
     }
 
     @Test

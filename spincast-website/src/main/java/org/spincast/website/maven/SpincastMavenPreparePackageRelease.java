@@ -8,12 +8,10 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.OS;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.guice.SpincastDefaultGuiceModule;
+import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 /**
  * Script ran at the "prepare-package" phase, when building
@@ -25,10 +23,9 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
      * Main method
      */
     public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
-        SpincastMavenPreparePackageRelease script = guice.getInstance(SpincastMavenPreparePackageRelease.class);
-        script.start();
+        Spincast.configure()
+                .mainArgs(args)
+                .init();
     }
 
     private File javadocSourceGenerationDir;
@@ -53,7 +50,11 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
     /**
      * Starts the script
      */
-    protected void start() {
+    @Override
+    @Inject
+    protected void init() {
+
+        super.init();
 
         log("Starting the aggregated Javadoc generation using a custom Spincast script...");
 

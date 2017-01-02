@@ -1,10 +1,12 @@
 
-
 body {
 	margin-top: 50px;
 	margin-bottom: 50px;
 	background: none;
     height: 100%;
+    overflow: auto;
+}
+body.home_page {
     overflow: hidden;
 }
 
@@ -20,14 +22,87 @@ body {
 	display:inline;
 }
 
-#quickText {
+#appMenu {
 	background-color:#FFFFFF;
 	text-align:center;
 	border:solid #000000 3px;
+	padding-bottom:20px;
+    color:#545454;
+    margin:0px 12px;
 }
 
-#quickText p {
-	text-decoration:underline;
+#appMenu ul li {
+    border-left: dotted 1px #545454;
+}
+#appMenu ul li:first-child {
+    border-left: 0;
+}
+
+
+#appMenu ul a {
+    color:#3D3D3D;
+	font-size:1.2em;
+}
+
+#appMenu ul a:hover {
+    color:#3D3D3D;
+    text-decoration: underline;
+}
+
+.home_page #menu_home a,
+.movie_page #menu_movie a,
+.notFound_page #menu_notFound a,
+.exception_page #menu_exception a
+{
+    font-weight:bold;
+    text-decoration: underline;
+}
+
+.jumbotron {
+    margin-top:100px;
+    text-align:center;
+    font-size:2em;
+}
+
+.jumbotron a {
+    font-size:16px;
+    text-decoration: underline;
+    color:#3D3D3D;
+}
+.jumbotron a:hover {
+    color:#000000;
+    text-decoration: none;
+}
+
+.well {
+    margin-top:20px;
+    padding-top:40px;
+    font-size:20px;
+    max-height:90%;
+    position:relative;
+}
+.well form {
+    margin-bottom:20px;
+}
+
+.table > tbody > tr:first-child > td {
+    border: none;
+}
+
+#omdbapi {
+    position:absolute;
+    top:4px;
+    right:8px;
+    font-size:14px;
+    font-style: italic;
+    color:#3D3D3D;
+}
+#omdbapi a {
+    color:#3D3D3D;
+    text-decoration: underline;
+}
+#omdbapi a:hover {
+    color:#000000;
 }
 
 /*

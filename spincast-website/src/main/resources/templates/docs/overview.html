@@ -63,7 +63,7 @@ Docs : "overview"
 
     
     {#==========================================
-    Section "architecture / architecture"
+    Section "Overview / Architecture"
     ==========================================#}
     <div id="architecture">
         <h4>
@@ -71,52 +71,20 @@ Docs : "overview"
             Architecture
         </h4>
         <p>
-            The core of a Spincast application is its <code>Guice modules</code>. Most of the time, your
-            application's main Guice module will extend the default <code>SpincastDefaultGuiceModule</code>,
-            so you start with a default implementation for all the required components, and not from scratch. Many
-            components are provided by the various <a href="/plugins">Plugins</a>,
-            but your application will also bind components specific to it business logic : 
-            <code>controllers</code>, <code>services</code>, etc.
+            Spincast is composed of a <em>core</em> plugin and a set of <em>default</em>
+            plugins. The core plugin is responsible for validating that an implementation for all the
+            components required in a Spincast application has been bound by other plugins. The
+            default plugins provide such default implementations.
         </p>
+        <p>
+            You use the <a href="#boot_bootstrapper">Bootstrapper</a> to initialize your application. This bootstrapper
+            will automatically bind the core plugin and the default plugins, but will also let
+            you install extra plugin and custom modules for the components specific to your application :
+        </p>
+        
         <p class="center tallBottom">
             <img src="/public/images/arch/code_structure.png" />
         </p>
-        <p>
-            As you can see : 
-            <ul>
-                <li>
-                    Spincast's top Guice module is <code>SpincastCoreGuiceModule</code>. This core module is provided 
-                    by the <code>spincast-core</code> Maven artifact. It binds a couple of components (mostly the <code>Front Controller</code>),
-                    but its main job is to validate that implementations for all the required components have been bound by
-                    the other modules. A Spincast application is made of multiple Guice modules and each of them can validate
-                    that some required bindings have been done by other modules, or else they can throw an exception.
-                    <br />
-                    The interfaces for the required components are also bundled in the <code>spincast-core</code> Maven artifact.
-                </li>
-                <li>
-                     The other big part of Spincast is the various <a href="/plugins">Plugins</a>. Plugins can provide an 
-                     implementation for a required component, but can also provide extra components to add functionalities. 
-                     Most of the time, a Plugin has its own Guice module which you have to install to activate the Plugin.
-                </li>
-                <li>
-                    <code>SpincastDefaultGuiceModule</code> is a Guice module provided by the <code>spincast-default</code> Maven artifact.
-                    Its only job is to install some plugins so a default implementation is provided for all the <a href="#required_components">required components</a>.
-                    Except if you really need <em>full</em> control over all the implementations which are actually bound, you 
-                    would probably start with that default Guice module instead of the <code>core</code> one. Doing so, you can
-                    still tweak/override the bindings, but at least you do not start from scratch.
-                </li>
-                <li>
-                    Finally, you have your application's own Guice module (named  <code><em>AppGuiceModule</em></code> in the previous
-                    image). In this module,
-                    you can override some default bindings. The best example of this would be to override the implementation
-                    of the <code>SpincastConfig</code> component so you can change the <em>port</em> the server will be running on.
-                    Of course, in this module, you're also going to bind your application specific components: the controllers, 
-                    the services, etc. Since all this is standard Guice development, make sure you read 
-                    <a href="https://github.com/google/guice/wiki/GettingStarted">Guice documentation</a> if you have questions about the modules,
-                    the bindings and the injection of dependencies!
-                </li>
-            </ul>   
-        </p> 
     </div>
 
     {#==========================================
@@ -128,8 +96,7 @@ Docs : "overview"
             Request handling
         </h4>
         <p>
-            Now that we have an idea on how is structured a Spincast application, let's see how it handles requests
-            and what are the components involved.
+            Here's how a request made by a user is handled by Spincast :
         </p>
         <div class="archZoom">
         
@@ -140,27 +107,26 @@ Docs : "overview"
             <p>
                 <img class="inlineIcon" src="/public/images/icons/para.png" />
                 First, the embedded HTTP <code>Server</code> receives a request from a user. This server consists 
-                of a <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html"><code>Server</code></a> interface and an
+                of a <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a> interface and an
                 implementation. The default implementation is provided by 
-                the <a href="/plugins/spincast-undertow"><code>spincast-plugins-undertow</code></a>
+                the <a href="/plugins/spincast-undertow">spincast-plugins-undertow</a>
                 plugin which uses the <a href="http://undertow.io">Undertow</a> HTTP/Websocket server.
             </p>
             <p>
-                If the request is for a  <a href="#static_resources">static resource</a>, the server serves it directly without even reaching the
+                If the request is for a  <a href="#static_resources">Static Resource</a>, the server serves it directly without even reaching the
                 framework. Note that it's also possible to generate the resource, using a standard route, so the request <em>does</em>
                 enter the framework. There is even a third option which is what we call 
-                <a href="#dynamic_resources">dynamic resources</a>:
+                <a href="#dynamic_resources">Dynamic Resources</a>:
                 if a request is made for a request which currently doesn't exist, the server will pass the request to the framework, the
                 framework can then create the resource and return it... The following requests for the same resource will use
                 the generated resource and won't reach the framework anymore!
             </p>
             <p>
                 <img class="inlineIcon" src="/public/images/icons/para.png" />
-                If the request is not for a static resource, the server passes it to the first 
-                Spincast component involved : the <code>Front Controller</code>. The <code>Front Controller</code> is at the very center
-                of Spincast! This is one of the very few components which is <em>not</em> provided by a Plugin, but
-                that is actually included in the <code>spincast-core</code> Maven artifact itself. Note that you still <em>can</em> extend the default
-                <code>Front Controller</code> and override some of its methods, though, if you need to tweak one thing or two. 
+                If the request is not for a static resource, the server passes it to the core 
+                Spincast component : the <code>Front Controller</code>. The <code>Front Controller</code> is at the very center
+                of Spincast! This is one of the very few components that is actually bound by the <code>core</code> plugin
+                itself.
             </p>
             <p>
                 The job of the <code>Front Controller</code> is to:
@@ -222,106 +188,27 @@ Docs : "overview"
     </div>
     
     {#==========================================
-    Section "architecture / Required components and their default implementations"
+    The main components
     ==========================================#}
-    <div id="required_components">
+    <div id="main_components">
         <h4>
-            <a class="anchor_small" href="#required_components" title="permanent link"></a>
-            The required components and their default implementations
+            <a class="anchor_small" href="#main_components" title="permanent link"></a>
+            The main components
         </h4>
         <p>
-            The <em>required components</em> are those without which a Spincast application can't even run. 
-            Any class, any <code>Plugin</code>, can assume those components are available, so they can 
+            The <em>main components</em> are those without which a Spincast application can't even run. 
+            Any class, any <code>plugin</code>, can assume those components are available, so they can 
             inject them and use them!
-        </p>    
-        <p>
-            It is Spincast's core module, <code>SpincastCoreGuiceModule</code>,
-            which validates that an implementation for those components is actually bound. If something is missing,
-            an exception is thrown and the appliation is not started.
-        </p>    
-        <p>
-            Default implementations for those required components are bound by the <code>SpincastDefaultGuiceModule</code> 
-            Guice module, which is provided by the <code>spincast-default</code> Maven artifact. Using the
-            <code>SpincastDefaultGuiceModule</code> Guice module as a base is the easiest way to develop a Spincast
-            application since you are assured that all the required components will have been taken care of. 
         </p>
         <p>
-            <img class="inlineIcon" src="/public/images/icons/para.png" />
-            What are those required components and what are their default implementations?
+            Those main components are all installed by the <a href="#plugins_default">default plugins</a>.
+            Have a look at those default plugins for a quick overview of the big blocks constituting Spincast!
         </p>
         <p>
-            <ul>
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/controllers/FrontController.html"><strong>FrontController</strong></a> : 
-                    this is pretty much the only component that the Spincast's <code>core</code> Guice
-                    module, <code>SpincastCoreGuiceModule</code>, binds by itself. Most of the other required components are
-                    bound by modules provided by various <a href="/plugins">Plugins</a>. The default implementation 
-                    is <a class="javadoc" href="/public/javadoc/org/spincast/core/controllers/SpincastFrontController.html">SpincastFrontController</a>. 
-                    In general, you don't have to use this component directly.
-                </li>
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html"><strong>Server</strong></a> : 
-                    the embedded HTTP/WebSocket server. The default implementation, 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/SpincastUndertowServer.html">SpincastUndertowServer</a>, 
-                    uses the <a href="http://undertow.io">Undertow</a> server and is provided by the 
-                    <a href="/plugins/spincast-undertow">Spincast Undertow</a> plugin.
-                </li>
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/Router.html"><strong>Router</strong></a> : the router. 
-                    The default implementation is
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/routing/SpincastRouter.html">SpincastRouter</a>. 
-                    There is also a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/routing/DefaultRouter.html">DefaultRouter</a> interface
-                    which extends <code>Router</code> and parameterizes it with
-                    some default types, <code>DefaultRequestContext</code> and <code>DefaultWebsocketContext</code>. All those
-                    implementations are provided by the 
-                    <a href="/plugins/spincast-routing">Spincast Routing</a> plugin.
-                </li>
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html"><strong>TemplatingEngine</strong></a> : 
-                    the templating engine to generate <code>HTML</code> and other
-                    text containing <em>placeholders</em>. The default implementation, 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/pebble/SpincastPebbleTemplatingEngine.html">SpincastPebbleTemplatingEngine</a>,
-                    uses <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a> and is provided by the
-                    <a href="/plugins/spincast-pebble">Spincast Pebble</a> plugin. 
-                </li>
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html"><strong>JsonManager</strong></a> : 
-                    to read and write <code>Json</code> content. The
-                    default implementation, <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonjson/SpincastJsonManager.html">SpincastJsonManager</a>, uses 
-                    <a href="https://github.com/FasterXML/jackson">Jackson</a> as the
-                    <code>Json</code> library and is provided by the <a href="/plugins/spincast-jackson-json">Spincast Jackson Json</a> 
-                    plugin. 
-                </li> 
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/xml/XmlManager.html"><strong>XmlManager</strong></a> : to read and write <code>XML</code> content. The
-                    default implementation, <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jacksonxml/SpincastXmlManager.html">SpincastXmlManager</a>, uses 
-                    <a href="https://github.com/FasterXML/jackson">Jackson</a> as the
-                    <code>XML</code> library and is provided by the <a href="/plugins/spincast-jackson-xml">Spincast Jackson XML</a> 
-                    plugin. 
-                </li> 
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html"><strong>SpincastConfig</strong></a> : provides configurations
-                    required by Spincast, for example the <code>port</code> on which the server should start. The default implementation,
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a> simply 
-                    hardcodes default values and is provided by the
-                    <a href="/plugins/spincast-config">Spincast Config</a> plugin. 
-                </li> 
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastDictionary.html"><strong>SpincastDictionary</strong></a> : provides some labels
-                    Spincast requires, for example the message to display publicly if the default
-                    <code>Not Found</code> route is used. The default implementation,
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a> simply 
-                    hardcodes english values and is provided by the
-                    <a href="/plugins/spincast-dictionary">Spincast Dictionary</a> plugin. 
-                </li> 
-                <li>
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/CookieFactory.html"><strong>CookieFactory</strong></a> and 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html"><strong>Cookie</strong></a> : 
-                    used to create cookies. The implementations and binding are provided by the
-                    <a href="/plugins/spincast-cookies">Spincast Cookies</a> plugin. 
-                </li> 
-            </ul> 
+            Spincast is very modular and you can replace any plugin, even the default. But, when you do this,
+            you are responsible for providing any required components this plugin was binding.
         </p>
+        
     </div>
     
     {#==========================================

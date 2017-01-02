@@ -92,6 +92,7 @@ public class SpincastUndertowServer implements Server {
     private final CookieFactory cookieFactory;
     private final CorsHandlerFactory corsHandlerFactory;
     private final GzipCheckerHandlerFactory gzipCheckerHandlerFactory;
+    private final SkipResourceOnQueryStringHandlerFactory skipResourceOnQueryStringHandlerFactory;
     private final SpincastResourceHandlerFactory spincastResourceHandlerFactory;
     private final CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory;
     private final FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
@@ -136,6 +137,7 @@ public class SpincastUndertowServer implements Server {
                                   CookieFactory cookieFactory,
                                   CorsHandlerFactory corsHandlerFactory,
                                   GzipCheckerHandlerFactory gzipCheckerHandlerFactory,
+                                  SkipResourceOnQueryStringHandlerFactory skipResourceOnQueryStringHandlerFactory,
                                   SpincastResourceHandlerFactory spincastResourceHandlerFactory,
                                   CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
                                   FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
@@ -149,6 +151,7 @@ public class SpincastUndertowServer implements Server {
         this.cookieFactory = cookieFactory;
         this.corsHandlerFactory = corsHandlerFactory;
         this.gzipCheckerHandlerFactory = gzipCheckerHandlerFactory;
+        this.skipResourceOnQueryStringHandlerFactory = skipResourceOnQueryStringHandlerFactory;
         this.spincastResourceHandlerFactory = spincastResourceHandlerFactory;
         this.cacheBusterRemovalHandlerFactory = cacheBusterRemovalHandlerFactory;
         this.fileClassPathResourceManagerFactory = fileClassPathResourceManagerFactory;
@@ -183,6 +186,10 @@ public class SpincastUndertowServer implements Server {
 
     protected GzipCheckerHandlerFactory getGzipCheckerHandlerFactory() {
         return this.gzipCheckerHandlerFactory;
+    }
+
+    protected SkipResourceOnQueryStringHandlerFactory getSkipResourceOnQueryStringHandlerFactory() {
+        return this.skipResourceOnQueryStringHandlerFactory;
     }
 
     protected SpincastResourceHandlerFactory getSpincastResourceHandlerFactory() {
@@ -633,7 +640,17 @@ public class SpincastUndertowServer implements Server {
                     getGzipCheckerHandlerFactory().create(resourceHandler, file.getAbsolutePath());
             CorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
-            getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
+            //==========================================
+            // If the resource can be generated, it will
+            // always be if a queryString is present (except
+            // if "isIgnoreQueryString" is true).
+            //==========================================
+            HttpHandler firstHandler = corsHandler;
+            if(staticResource.isCanBeGenerated() && !staticResource.isIgnoreQueryString()) {
+                firstHandler = getSkipResourceOnQueryStringHandlerFactory().create(corsHandler, next);
+            }
+
+            getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), firstHandler);
 
         } else if(staticResourceType == StaticResourceType.FILE_FROM_CLASSPATH) {
             String classpathPath = staticResource.getResourcePath();
@@ -682,7 +699,17 @@ public class SpincastUndertowServer implements Server {
             GzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
             CorsHandler corsHandler = getCorsHandlerFactory().create(gzipCheckerHandler, staticResource.getCorsConfig());
 
-            getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), corsHandler);
+            //==========================================
+            // If the resource can be generated, it will
+            // always be if a queryString is present (except
+            // if "isIgnoreQueryString" is true).
+            //==========================================
+            HttpHandler firstHandler = corsHandler;
+            if(staticResource.isCanBeGenerated() && !staticResource.isIgnoreQueryString()) {
+                firstHandler = getSkipResourceOnQueryStringHandlerFactory().create(corsHandler, next);
+            }
+
+            getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), firstHandler);
 
         } else if(staticResourceType == StaticResourceType.DIRECTORY_FROM_CLASSPATH) {
 
@@ -1300,7 +1327,7 @@ public class SpincastUndertowServer implements Server {
 
     @Override
     public WebsocketEndpointManager websocketCreateEndpoint(final String endpointId,
-                                                             final WebsocketEndpointHandler appEndpointHandler) {
+                                                            final WebsocketEndpointHandler appEndpointHandler) {
 
         Object lock = getWebsocketEndpointCreationLock(endpointId);
         synchronized(lock) {
@@ -1324,7 +1351,7 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected WebsocketEndpointHandler createUndertowWebsocketEndpointHandler(final String endpointId,
-                                                                               final WebsocketEndpointHandler appHandler) {
+                                                                              final WebsocketEndpointHandler appHandler) {
         return new WebsocketEndpointHandler() {
 
             @Override

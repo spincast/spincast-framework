@@ -10,35 +10,41 @@ import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.httpclient.HttpResponse;
-import org.spincast.plugins.httpclient.tests.HttpClientRequestContextAddonTest.ICustomRequestContext;
+import org.spincast.plugins.httpclient.tests.HttpClientRequestContextAddonTest.CustomRequestContext;
 import org.spincast.plugins.httpclient.websocket.HttpClient;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
+import org.spincast.testing.core.IntegrationTestNoAppBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class HttpClientRequestContextAddonTest extends
-                                               SpincastNoAppIntegrationTestBase<ICustomRequestContext, DefaultWebsocketContext> {
+public class HttpClientRequestContextAddonTest extends IntegrationTestNoAppBase<CustomRequestContext, DefaultWebsocketContext> {
 
-    public static interface ICustomRequestContext extends RequestContext<ICustomRequestContext> {
+    @Override
+    protected Injector createInjector() {
+        return Spincast.configure()
+                       .requestContextImplementationClass(CustomRequestContextDefault.class)
+                       .init();
+    }
+
+    public static interface CustomRequestContext extends RequestContext<CustomRequestContext> {
 
         public HttpClient http();
     }
 
-    public static class CustomRequestContext extends RequestContextBase<ICustomRequestContext>
-                                             implements ICustomRequestContext {
+    public static class CustomRequestContextDefault extends RequestContextBase<CustomRequestContext>
+                                                    implements CustomRequestContext {
 
         private final HttpClient spincastHttpClientFactory;
 
         @AssistedInject
-        public CustomRequestContext(@Assisted Object exchange,
-                                    RequestContextBaseDeps<ICustomRequestContext> requestContextBaseDeps,
-                                    HttpClient spincastHttpClientFactory) {
+        public CustomRequestContextDefault(@Assisted Object exchange,
+                                           RequestContextBaseDeps<CustomRequestContext> requestContextBaseDeps,
+                                           HttpClient spincastHttpClientFactory) {
             super(exchange, requestContextBaseDeps);
             this.spincastHttpClientFactory = spincastHttpClientFactory;
         }
@@ -49,24 +55,13 @@ public class HttpClientRequestContextAddonTest extends
         }
     }
 
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
-                return CustomRequestContext.class;
-            }
-        };
-    }
-
     @Test
     public void httpClientAddon() throws Exception {
 
-        getRouter().GET("/two").save(new Handler<ICustomRequestContext>() {
+        getRouter().GET("/two").save(new Handler<CustomRequestContext>() {
 
             @Override
-            public void handle(ICustomRequestContext context) {
+            public void handle(CustomRequestContext context) {
 
                 String value = context.request().getHeaderFirst("test-header");
                 assertNotNull(value);
@@ -79,17 +74,17 @@ public class HttpClientRequestContextAddonTest extends
 
         final String url2 = createTestUrl("/two");
 
-        getRouter().GET("/").save(new Handler<ICustomRequestContext>() {
+        getRouter().GET("/").save(new Handler<CustomRequestContext>() {
 
             @Override
-            public void handle(ICustomRequestContext context) {
+            public void handle(CustomRequestContext context) {
 
                 //==========================================
                 // Uses the addon!
                 //==========================================
                 HttpResponse response = context.http().GET(url2)
-                                                .addHeaderValue("test-header", "test-value")
-                                                .send();
+                                               .addHeaderValue("test-header", "test-value")
+                                               .send();
 
                 assertEquals(HttpStatus.SC_OK, response.getStatus());
                 assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());

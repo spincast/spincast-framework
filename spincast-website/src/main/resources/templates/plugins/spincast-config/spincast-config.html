@@ -35,7 +35,7 @@
                      <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/config/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
                 </div>
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
-                     data-hint="Core plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
+                     data-hint="Default plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
                 <span class="clear"></span>
             </div>  
         </div>
@@ -52,6 +52,7 @@
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
                 <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
@@ -82,67 +83,57 @@
                     you may be interested by the <a href="/plugins/spincast-properties-file-config">Spincast Properties File Config</a> plugin. 
                 </p> 
             </section>
-           
-	        <section id="installation">
+            
+            
+            
+            <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
                     Installation
                 </h3>
-	            <p>
-	                If you use the <code>spincast-default</code> artifact, this plugin is already installed so
-	                you have nothing more to do!
-	            </p>
-	            <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-	                If you start from scratch using the <code>spincast-core</code> artifact, you can use the
-	                plugin by adding this artifact to your project:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-xml"
+                <p>
+                    <img class="inlineIcon" src="/public/images/default-badge.png" />
+                    <em>If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
+                    this plugin is already installed by default so you have nothing to do!</em>
+                </p>
+                <p>
+                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
+                    plugin by :
+                </p>
+                <p>
+                    1. 
+                    Adding this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-config&lt;/artifactId&gt;
     &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
-	                    </p>
-	                </div>  
-	            </p>
-	            <p>
-	                <img class="inlineIcon" src="/public/images/icons/para.png" />
-	                You then install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="2,8,2,110"
->Injector guice = Guice.createInjector(
-        new SpincastCoreGuiceModule(args),
-        new SpincastConfigPluginGuiceModule(AppRequestContext.class, AppWebsocketContext.class)
-        // other modules...
-        );</pre> 
-	                    </p>
-	                </div>   
-	            </p>
-	            <p>
-	                ... or by using the <code>install(...)</code> method from your custom Guice module:
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-java" data-ace-hi="5,8,5,79|6,8,6,100"
->public class AppModule extends SpincastCoreGuiceModule {
-
-    @Override
-    protected void configure() {
-        super.configure();
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), 
-                                                    getWebsocketContextType()));
-        // other modules...
-    }
-    
-    // ...
-}</pre> 
-	                    </p>
-	                </div>   
-	            </p>
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigPluginModule.html">SpincastConfigPluginModule</a> 
+                    module to your Guice context.
+                </p>
             </section>
             
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
+                </h3>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigPlugin.html">SpincastConfigPlugin</a>.
+                </p>
+            </section>
+            
+           
+           
+           
             
             <section id="javadoc">
                 <h3>

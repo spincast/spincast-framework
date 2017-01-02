@@ -11,6 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
@@ -28,7 +29,7 @@ import org.spincast.tests.varia.WebsocketClientTest;
  * issue doesn't occure.
  */
 @Ignore
-public class StoppingServerTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
+public class StoppingServerTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     //==========================================
     // We start the serv by ourself

@@ -15,13 +15,13 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void bodyAsInputStream() throws Exception {
@@ -48,7 +48,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
-                                             .send();
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -75,8 +75,8 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                             .send();
+                                                             ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -99,8 +99,8 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                             .send();
+                                                             ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -124,7 +124,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
-                                             .send();
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -148,7 +148,7 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").addEntityFileUpload("someFile_Iso8859-15.txt", true, "someName")
-                                             .send();
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
     }
@@ -186,8 +186,8 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                             .send();
+                                                             ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -215,8 +215,8 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                             .send();
+                                                             ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -245,8 +245,8 @@ public class RequestBodyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = POST("/one").setEntityString("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
-                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
-                                             .send();
+                                                             ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

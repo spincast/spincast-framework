@@ -7,12 +7,13 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.spincast.core.websocket.DefaultWebsocketContext;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.xnio.http.UpgradeFailedException;
 
-public class HttpProtectedTest extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
+public class HttpProtectedTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Override
     public void beforeClass() {

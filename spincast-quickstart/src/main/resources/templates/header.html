@@ -1,17 +1,21 @@
 
 <header>
 
-	{#==========================================
-	Butterfly from :
-	http://www.michaelbromley.co.uk/blog/236/css-javascript-3d-butterfly-case-study
-	==========================================#}
-	<div class="butterflyCon">
-	    <div class="hover-container">
-	        <div class="left wing"></div>
-	        <div class="right wing"></div>
-	        <div class="body"></div>
-	        <div class="head"></div>
-	    </div>
-	</div>
+    <div class="container">
+        <div class="row">
+            <div id="appMenu" class="col-md-5 col-sm-12">
+            
+                <h1>{{appName}}</h1>
+    
+                <ul class="list-inline">
+                    <li id="menu_home"><a href="/">Home</a></li>
+                    <li id="menu_movie"><a href="/movie">Movie Info</a></li>
+                    <li id="menu_notFound"><a href="/i-do-not-exist">Not Found</a></li>
+                    <li id="menu_exception"><a href="/exception-example">Error</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
 
 </header> 

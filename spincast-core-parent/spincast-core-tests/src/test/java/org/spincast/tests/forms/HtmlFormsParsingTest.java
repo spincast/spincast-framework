@@ -15,13 +15,13 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class HtmlFormsParsingTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class HtmlFormsParsingTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -76,7 +76,7 @@ public class HtmlFormsParsingTest extends SpincastDefaultNoAppIntegrationTestBas
         });
 
         HttpResponse response = POST("/").addEntityFormDataValue("name[0]", "Stromgol")
-                                          .addEntityFormDataValue("name[1]", "Slomo").send();
+                                         .addEntityFormDataValue("name[1]", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -132,7 +132,7 @@ public class HtmlFormsParsingTest extends SpincastDefaultNoAppIntegrationTestBas
         });
 
         HttpResponse response = POST("/").addEntityFormDataValue("name", "Stromgol")
-                                          .addEntityFormDataValue("name", "Slomo").send();
+                                         .addEntityFormDataValue("name", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -186,7 +186,7 @@ public class HtmlFormsParsingTest extends SpincastDefaultNoAppIntegrationTestBas
         });
 
         HttpResponse response = POST("/").addEntityFormDataValue("name[]", "Stromgol")
-                                          .addEntityFormDataValue("name[]", "Slomo").send();
+                                         .addEntityFormDataValue("name[]", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -213,8 +213,8 @@ public class HtmlFormsParsingTest extends SpincastDefaultNoAppIntegrationTestBas
         });
 
         HttpResponse response = POST("/").addEntityFormDataValue("name[0]", "Stromgol1")
-                                          .addEntityFormDataValue("name[1]", "first")
-                                          .addEntityFormDataValue("name[1]", "Slomo").send();
+                                         .addEntityFormDataValue("name[1]", "first")
+                                         .addEntityFormDataValue("name[1]", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

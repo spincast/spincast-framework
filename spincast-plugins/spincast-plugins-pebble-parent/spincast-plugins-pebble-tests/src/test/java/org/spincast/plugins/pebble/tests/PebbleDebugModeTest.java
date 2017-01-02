@@ -5,33 +5,40 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
+import com.google.inject.Scopes;
 
-public class PebbleDebugModeTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class PebbleDebugModeTest extends IntegrationTestNoAppDefaultContextsBase {
 
-    public static class SpincastTestConfigTest extends SpincastTestConfig {
+    @Override
+    protected Injector createInjector() {
+
+        return Spincast.configure()
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+                               bind(SpincastConfig.class).to(SpincastTestConfigTest.class)
+                                                         .in(Scopes.SINGLETON);
+                               return;
+                           }
+                       })
+                       .init();
+    }
+
+    public static class SpincastTestConfigTest extends SpincastConfigTestingDefault {
 
         @Override
         public boolean isDebugEnabled() {
             return true;
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return SpincastTestConfigTest.class;
-            }
-        };
     }
 
     @Inject

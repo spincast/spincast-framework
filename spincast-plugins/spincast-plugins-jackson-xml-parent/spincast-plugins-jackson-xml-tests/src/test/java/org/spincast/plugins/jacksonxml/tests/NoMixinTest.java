@@ -5,11 +5,11 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 
 import com.google.inject.Inject;
 
-public class NoMixinTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class NoMixinTest extends UnitTestDefaultContextsBase {
 
     @Inject
     XmlManager xmlManager;

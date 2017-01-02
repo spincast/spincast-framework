@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.spincast.core.cookies.Cookie;
+import org.spincast.core.json.JsonObject;
 
 public interface HttpResponse {
 
@@ -58,6 +59,13 @@ public interface HttpResponse {
      * encoding.
      */
     public String getContentAsString(String encoding);
+
+    /**
+     * Gets the content as a JsonObject. This expects
+     * the content to be a valid Json string or an exception
+     * is thrown.
+     */
+    public JsonObject getContentAsJsonObject();
 
     /**
      * Get the content as <code>byte[]</code>.

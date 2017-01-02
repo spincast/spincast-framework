@@ -10,13 +10,13 @@ import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class HtmlFormsFillingTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class HtmlFormsFillingTest extends IntegrationTestNoAppDefaultContextsBase {
 
     protected String formatHtml(String html) {
 

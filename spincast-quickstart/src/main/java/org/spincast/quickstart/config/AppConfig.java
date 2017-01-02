@@ -5,13 +5,14 @@ import org.spincast.core.config.SpincastConfig;
 /**
  * Application's custom configurations.
  * 
- * Extends <code>SpincastConfig</code> so we can use this class 
- * as the implementation for this interface too.
+ * Extends <code>SpincastConfig</code> so both the
+ * default and the custom configurations will be available through
+ * the <code>AppConfig</code> interface.
  */
 public interface AppConfig extends SpincastConfig {
 
     /**
-     * A custom configuration : return the
+     * A custom configuration : returns the
      * application name.
      */
     public String getAppName();

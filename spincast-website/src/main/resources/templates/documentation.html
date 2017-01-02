@@ -61,7 +61,7 @@
                     <ul class="nav nav-stacked">
                         <li><a href="#requirements">Requirements</a></li>
                         <li><a href="#quick_start"><img id="quickIconSmall" class="inlineIcon" src="/public/images/icons/flash.png" /> Quick Start application</a></li>
-                        <li><a href="#using_default_module">Using spincast-default</a></li>
+                        <li><a href="#from_scratch">Installing from scratch</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -70,7 +70,7 @@
                         <li><a href="#introduction">Introduction</a></li>
                         <li><a href="#architecture">Architecture</a></li>
                         <li><a href="#request_handling">Request handling</a></li>
-                        <li><a href="#required_components">The required components and their default implementations</a></li>
+                        <li><a href="#main_components">The main components</a></li>
                         <li><a href="#dependencies">Transitive dependencies</a></li>
                     </ul>
                 </li>
@@ -84,20 +84,17 @@
                 <li class="openable">
                     <a href="#bootstrapping">Bootstrapping your app</a>
                     <ul class="nav nav-stacked">
-                        <li><a href="#everything_in_main">Everything in the <code>main</code> method</a></li>
-                        <li><a href="#main_class_as_boot">The main class used as the bootstrapping class</a></li>
-                        <li><a href="#custom_guice_module">Using a custom Guice module</a></li>
-                        <li><a href="#overriding_modules">Using overriding modules</a></li> 
-                        <li><a href="#bootstrapping_as_config">Bootstrapping class as the configuration class</a></li> 
-                        <li><a href="#using_controllers">Using controllers and services</a></li>
-                        <li><a href="#boot_with_core">Using <code>SpincastCoreModule</code> directly</a></li> 
+                        <li><a href="#boot_quick">Quick initialization</a></li>
+                        <li><a href="#boot_bootstrapper">The Bootstrapper</a></li>
+                        <li><a href="#boot_tips">Various bootstrapping tips</a></li>
+                        <li><a href="#boot_with_core">Using <em>spincast-core</em> directly</a></li> 
                     </ul>
                 </li>
+                
                 <li class="openable">
                     <a href="#request_context">The Request Context</a>
                     <ul class="nav nav-stacked">
-                        <li><a href="#core_rc_add-ons">The core Request Context <code>add-ons</code></a></li>
-                        <li><a href="#core_rc_methods">The core Request Context methods</a></li>
+                        <li><a href="#core_rc_add-ons">The default <em>add-ons</em></a></li>
                         <li><a href="#extending_request_context">Extending the Request Context</a></li>
                     </ul>
                 </li>
@@ -129,7 +126,7 @@
                         <li><a href="#routing_websockets">WebSockets</a></li>
                         <li><a href="#static_resources">Static Resources</a></li>
                         <li><a href="#dynamic_resources">Dynamic Resources</a></li>
-                        <li><a href="#cors">Cors</a></li>
+                        <li><a href="#cors">CORS</a></li>
                         <li><a href="#http_auth">HTTP Authentication</a></li>
                         <li><a href="#redirections">Redirection rules</a></li>
                         <li><a href="#special_exceptions">Special exceptions</a></li>
@@ -210,12 +207,19 @@
                     <a href="#testing">Testing</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#testing_installation">Installation</a></li>
-                        <li><a href="#testing_app_example">Integration test example</a></li>
-                        <li><a href="#testing_custom_example">Custom context test example</a></li>
+                        <li><a href="#testing_demo">Demo</a></li>
+                        <li><a href="#testing_guice_tweaker">Guice Tweaker</a></li>
+                        <li><a href="#testing_base_classes">Testing base classes</a></li>
                         <li><a href="#testing_runner">Spincast JUnit runner</a></li>
-                        <li><a href="#testing_spincast_test_base">SpincastTestBase</a></li>
-                        <li><a href="#testing_spincast_integration_test_base">SpincastIntegrationTestBase</a></li>
-                        <li><a href="#testing_other_base_classes">Other test base classes</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#plugins">Plugins</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#plugins_what">What is a Spincast plugin?</a></li>
+                        <li><a href="#plugins_installing">Installing a plugin</a></li>
+                        <li><a href="#plugins_add_on">Installing a Request Context add-on</a></li>
+                        <li><a href="#plugins_default">Default plugins</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -227,7 +231,7 @@
                         <li><a href="#ssl">Using a SSL certificate (HTTPS)</a></li>
                         <li><a href="#spincast_utils">Spincast Utilities</a></li>
                         <li><a href="#main_args">@MainArgs</a></li>
-                        <li><a href="#init_method">Using an <code>init()</code> method</a></li>
+                        <li><a href="#init_method">Using an <em>init()</em> method</a></li>
                     </ul>
                 </li>
                 
@@ -308,6 +312,11 @@
             Section "Testing"
             ==========================================#}
             {% include "./docs/testing.html" %}
+
+            {#==========================================
+            Section "Plugins"
+            ==========================================#}
+            {% include "./docs/plugins.html" %}
 
             {#==========================================
             Section "Miscellaneous"

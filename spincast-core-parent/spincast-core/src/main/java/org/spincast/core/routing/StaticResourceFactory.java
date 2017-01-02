@@ -7,9 +7,10 @@ import com.google.inject.assistedinject.Assisted;
 public interface StaticResourceFactory<R extends RequestContext<?>> {
 
     public StaticResource<R> create(@Assisted StaticResourceType staticResourceType,
-                                     @Assisted("url") String url,
-                                     @Assisted("path") String path,
-                                     @Assisted Handler<R> generator,
-                                     @Assisted StaticResourceCorsConfig corsConfig,
-                                     @Assisted StaticResourceCacheConfig cacheConfig);
+                                    @Assisted("url") String url,
+                                    @Assisted("path") String path,
+                                    @Assisted Handler<R> generator,
+                                    @Assisted StaticResourceCorsConfig corsConfig,
+                                    @Assisted StaticResourceCacheConfig cacheConfig,
+                                    @Assisted boolean ignoreQueryString);
 }

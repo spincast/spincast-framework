@@ -38,6 +38,7 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     private StaticResourceCorsConfig corsConfig;
     private StaticResourceCacheConfig cacheConfig;
     private Handler<R> generator;
+    private boolean ignoreQueryString;
     private final StaticResourceFactory<R> staticResourceFactory;
     private final StaticResourceCorsConfigFactory staticResourceCorsConfigFactory;
     private final StaticResourceCacheConfigFactory staticResourceCacheConfigFactory;
@@ -134,6 +135,10 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
 
     public StaticResourceCacheConfig getCacheConfig() {
         return this.cacheConfig;
+    }
+
+    public boolean isIgnoreQueryString() {
+        return this.ignoreQueryString;
     }
 
     @Override
@@ -320,6 +325,11 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
 
     @Override
     public void save(Handler<R> generator) {
+        save(generator, false);
+    }
+
+    @Override
+    public void save(Handler<R> generator, boolean ignoreQueryString) {
 
         if(getRouter() == null) {
             throw new RuntimeException("No router specified, can't save the static resource!");
@@ -338,6 +348,8 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
         if(getPath() == null) {
             throw new RuntimeException("A classpath or a file system path must be specified!");
         }
+
+        this.ignoreQueryString = ignoreQueryString;
 
         StaticResource<R> staticResource = create();
         getRouter().addStaticResource(staticResource);
@@ -371,7 +383,8 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
                                                                              getPath(),
                                                                              getGenerator(),
                                                                              getCorsConfig(),
-                                                                             cacheConfig);
+                                                                             cacheConfig,
+                                                                             isIgnoreQueryString());
         return staticResource;
     }
 

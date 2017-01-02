@@ -8,19 +8,11 @@ import org.spincast.core.json.ElementTransformer;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
-import org.spincast.testing.core.SpincastTestBase;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class JsonTransformersTest extends SpincastTestBase {
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
-    }
+public class JsonTransformersTest extends UnitTestDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;

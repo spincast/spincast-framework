@@ -170,7 +170,7 @@ public void myHandler(AppRequestContext context) {
 >@Override
 public void myHandler(AppRequestContext context) {
     context.cacheHeaders().noCache();
-    context.response().sendPlainText("This will be never be cached!");
+    context.response().sendPlainText("This will never be cached!");
 }</pre> 
             </p> 
         </div>

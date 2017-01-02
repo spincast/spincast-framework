@@ -8,34 +8,26 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-import com.google.inject.Module;
+public class CustomSpincastConfigTest extends IntegrationTestNoAppDefaultContextsBase {
 
-public class CustomSpincastConfigTest extends SpincastDefaultNoAppIntegrationTestBase {
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return CustomSpincastConfig.class;
+    }
 
-    public static class CustomSpincastConfig extends SpincastTestConfig {
+    public static class CustomSpincastConfig extends SpincastConfigTestingDefault implements SpincastConfigTesting {
 
         @Override
         public String getEnvironmentName() {
             return SpincastTestUtils.TEST_STRING;
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return CustomSpincastConfig.class;
-            }
-        };
     }
 
     @Test

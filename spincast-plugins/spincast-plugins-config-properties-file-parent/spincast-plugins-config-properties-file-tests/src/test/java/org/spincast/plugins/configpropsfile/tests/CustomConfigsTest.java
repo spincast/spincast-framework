@@ -12,27 +12,75 @@ import javax.annotation.Nullable;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.MainArgs;
-import org.spincast.core.utils.SpincastUtils;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.core.utils.SpincastUtils;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.configpropsfile.FreeKeyConfig;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfig;
 import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBased;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfigDefault;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginGuiceModule;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePlugin;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginConfig;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginDefault;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.Scopes;
 
-public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CustomConfigsTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    /**
+     * We'll manage the testing configurations by ourself.
+     */
+    @Override
+    protected boolean isEnableGuiceTweakerTestingConfigMecanism() {
+        return false;
+    }
+
+    @Override
+    protected Injector createInjector() {
+
+        return Spincast.configure()
+                       .bindCurrentClass(false)
+                       .disableDefaultConfigPlugin()
+                       .plugin(new SpincastConfigPropsFilePlugin())
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+
+                               bind(SpincastConfig.class).to(PropsFileBasedConfigTesting.class).in(Scopes.SINGLETON);
+                               bind(AppConfig.class).to(PropsFileBasedConfigTesting.class).in(Scopes.SINGLETON);
+
+                               //==========================================
+                               // The configuration for the prop file based
+                               // config plugin
+                               //==========================================
+                               bind(SpincastConfigPropsFilePluginConfig.class).toInstance(new SpincastConfigPropsFilePluginDefault() {
+
+                                   //==========================================
+                                   // We enable the main arg strategy!
+                                   //==========================================
+                                   @Override
+                                   public int getSpecificPathMainArgsPosition() {
+                                       return 1;
+                                   }
+                               });
+                           }
+                       })
+                       .mainArgs(new String[]{this.appPropertiesPath})
+                       .init();
+    }
 
     @Inject
     protected AppConfig appConfig;
 
     protected String appPropertiesPath;
+
+    protected AppConfig getAppConfig() {
+        return this.appConfig;
+    }
 
     //==========================================
     // We create the "app.properties" file to use.
@@ -58,14 +106,6 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
         }
     }
 
-    @Override
-    protected String[] getMainArgsToUse() {
-        //==========================================
-        // Pass the path to our configuation file.
-        //==========================================
-        return new String[]{this.appPropertiesPath};
-    }
-
     public static interface AppConfig extends SpincastConfig, FreeKeyConfig {
 
         public String getTestString();
@@ -85,15 +125,14 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
         public Integer getTestIntegerNotFound();
 
         public Integer getTestIntegerNotFoundDefaultValue();
-
     }
 
-    public static class PropsFileBasedConfig extends SpincastConfigPropsFileBased implements AppConfig {
+    public static class PropsFileBasedConfigTesting extends SpincastConfigPropsFileBased implements AppConfig {
 
         @Inject
-        public PropsFileBasedConfig(SpincastUtils spincastUtils,
-                                    @MainArgs @Nullable String[] mainArgs,
-                                    @Nullable SpincastConfigPropsFileBasedConfig pluginConfig) {
+        public PropsFileBasedConfigTesting(SpincastUtils spincastUtils,
+                                           @MainArgs @Nullable String[] mainArgs,
+                                           @Nullable SpincastConfigPropsFilePluginConfig pluginConfig) {
             super(spincastUtils, mainArgs, pluginConfig);
         }
 
@@ -141,38 +180,11 @@ public class CustomConfigsTest extends SpincastDefaultNoAppIntegrationTestBase {
         public Integer getTestIntegerNotFoundDefaultValue() {
             return getConfigInteger("app.nope", 42);
         }
-    }
 
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
-
-            @Override
-            protected void bindConfigPlugin() {
-                install(new SpincastConfigPropsFilePluginGuiceModule(getRequestContextType(), getWebsocketContextType()));
-            }
-
-            @Override
-            protected void configure() {
-                super.configure();
-
-                bind(SpincastConfigPropsFileBasedConfig.class).toInstance(new SpincastConfigPropsFileBasedConfigDefault() {
-
-                    //==========================================
-                    // We enable the main arg strategy!
-                    //==========================================
-                    @Override
-                    public int getSpecificPathMainArgsPosition() {
-                        return 1;
-                    }
-                });
-                bind(AppConfig.class).to(PropsFileBasedConfig.class).in(Scopes.SINGLETON);
-            }
-        };
-    }
-
-    protected AppConfig getAppConfig() {
-        return this.appConfig;
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
     }
 
     @Test

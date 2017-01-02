@@ -6,21 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.plugins.routing.utils.ReplaceDynamicParamsResult;
 import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
-import org.spincast.testing.core.SpincastTestBase;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
-public class SpincastRoutingUtilsTest extends SpincastTestBase {
-
-    @Override
-    protected Injector createInjector() {
-        return Guice.createInjector(new SpincastDefaultTestingModule());
-    }
+public class SpincastRoutingUtilsTest extends UnitTestDefaultContextsBase {
 
     @Inject
     protected SpincastRoutingUtils spincastRoutingUtils;

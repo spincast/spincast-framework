@@ -4,31 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.jacksonxml.SpincastXmlManagerConfig;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTestBase {
-
-    @Inject
-    protected JsonManager jsonManager;
-
-    @Inject
-    protected XmlManager xmlManager;
+public class XmlPrettyPrintConfigTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule(getMainArgsToUse()) {
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
-                super.configure();
 
                 //==========================================
                 // Bind custom XML Manager configs
@@ -48,6 +41,12 @@ public class XmlPrettyPrintConfigTest extends SpincastDefaultNoAppIntegrationTes
             }
         };
     }
+
+    @Inject
+    protected JsonManager jsonManager;
+
+    @Inject
+    protected XmlManager xmlManager;
 
     @Test
     public void toXmlPretty() throws Exception {

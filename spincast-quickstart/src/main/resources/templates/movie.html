@@ -1,0 +1,73 @@
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}movie_page{% endblock %}
+{% block meta_title %}Spincast Quick Start{% endblock %}
+{% block meta_description %}Spincast Quick Start Application{% endblock %}
+
+{% block scripts %}
+
+<script>
+    $(function() {
+        $("#name").focus();
+    });
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div class="well">
+        <p id="omdbapi">
+            (informations from <a href="https://www.omdbapi.com">omdbapi.com</a>)
+        </p>
+    
+        <form methog="GET">
+            Enter a movie title (english) : 
+            <input id="name" name="name" type="text" value="{{ movieName is not empty ? movieName : "" }}" />
+            <input type="submit" value="Get info" />
+        </form>
+    
+        {% if movieInfo is not empty %}
+            
+            <div class="row">
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="{{movieInfo.Poster}}" />
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-8">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td>Title&nbsp;: </td>
+                                <td>{{movieInfo.Title | default(movieName)}}</td>
+                            </tr>
+                            <tr>
+                                <td>Year&nbsp;: </td>
+                                <td>{{movieInfo.Year | default("N/A")}}</td>
+                            </tr>
+                            <tr>
+                                <td>Director&nbsp;: </td>
+                                <td>{{movieInfo.Director | default("N/A")}}</td>
+                            </tr>
+                            <tr>
+                                <td>Rating&nbsp;: </td>
+                                <td>{{movieInfo.imdbRating is not empty ? movieInfo.imdbRating + "/10" : "N/A"}}</td>
+                            </tr>
+                            <tr>
+                                <td>Plot&nbsp;: </td>
+                                <td>{{movieInfo.Plot | default("N/A")}}</td>
+                            </tr>  
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        {% endif %}
+    </div>
+    
+</div>
+
+{% endblock %}

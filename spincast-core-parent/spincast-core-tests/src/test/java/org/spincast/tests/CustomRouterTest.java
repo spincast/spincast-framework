@@ -7,42 +7,28 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
-import org.spincast.plugins.routing.SpincastRoutingPluginGuiceModule;
+import org.spincast.plugins.routing.SpincastRoutingPlugin;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.CustomRouter;
 
-import com.google.inject.Key;
-import com.google.inject.Module;
+import com.google.inject.Injector;
 
-/**
- * Custom router that will be configured with the default request context
- * object.
- */
-public class CustomRouterTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CustomRouterTest extends IntegrationTestNoAppDefaultContextsBase {
 
     /**
-     * Custom module
+     * Disabled and replaces the default routing plugin.
      */
     @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
+    protected Injector createInjector() {
 
-            @Override
-            protected void bindRoutingPlugin() {
-
-                install(new SpincastRoutingPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
-
-                    @Override
-                    protected Key<?> getRouterImplementationKey() {
-                        return Key.get(CustomRouter.class);
-                    }
-                });
-            }
-        };
+        return Spincast.configure()
+                       .disableDefaultRoutingPlugin()
+                       .plugin(new SpincastRoutingPlugin(CustomRouter.class))
+                       .init();
     }
 
     @Test

@@ -9,19 +9,28 @@ import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketContextBase;
 import org.spincast.core.websocket.WebsocketContextBaseDeps;
 import org.spincast.core.websocket.WebsocketPeerManager;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.WebsocketControllerTestBase;
 import org.spincast.tests.websocket.CustomWebsocketContextTest.AppWebsocketContext;
 
-import com.google.inject.Module;
+import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class CustomWebsocketContextTest extends
-                                        SpincastWebsocketNoAppIntegrationTestBase<DefaultRequestContext, AppWebsocketContext> {
+                                        WebsocketIntegrationTestNoAppBase<DefaultRequestContext, AppWebsocketContext> {
+
+    @Override
+    protected Injector createInjector() {
+
+        return Spincast.configure()
+                       .websocketContextImplementationClass(AppWebsocketContextDefault.class)
+                       .init();
+    }
 
     public static interface AppWebsocketContext extends WebsocketContext<AppWebsocketContext> {
 
@@ -46,17 +55,6 @@ public class CustomWebsocketContextTest extends
         public void customMethod(String message) {
             sendMessageToCurrentPeer("customMethod: " + message);
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
-                return AppWebsocketContextDefault.class;
-            }
-        };
     }
 
     @Test

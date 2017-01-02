@@ -5,21 +5,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
-import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 
-public class WebsocketServerPingsDisabled extends SpincastDefaultWebsocketNoAppIntegrationTestBase {
+public class WebsocketServerPingsDisabled extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getOverridingModule() {
-
-        return new AbstractModule() {
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {

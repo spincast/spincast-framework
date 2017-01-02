@@ -12,12 +12,12 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
@@ -30,7 +30,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class HttpClientWithEntityTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -79,7 +79,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
         });
 
         HttpResponse response = POST("/").addEntityFormDataValue("key1", "value1")
-                                          .addEntityFormDataValue("key2", "value2").send();
+                                         .addEntityFormDataValue("key2", "value2").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -106,8 +106,8 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
         });
 
         HttpResponse response = POST("/").setEntityFormData("key1[0]", Lists.newArrayList("value1"))
-                                          .setEntityFormData("key1[1]", Lists.newArrayList("value2"))
-                                          .send();
+                                         .setEntityFormData("key1[1]", Lists.newArrayList("value2"))
+                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -360,7 +360,7 @@ public class HttpClientWithEntityTest extends SpincastDefaultNoAppIntegrationTes
         });
 
         HttpResponse response = POST("/one").addEntityFormDataValue("key1", "value1")
-                                             .addEntityFileUpload("someFile.txt", true, "someName").send();
+                                            .addEntityFileUpload("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

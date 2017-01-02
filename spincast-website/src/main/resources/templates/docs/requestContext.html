@@ -16,23 +16,24 @@ Docs : "Request Context"
     </p>
     <p>
         Those functionalities are provided by simple methods, or by <code><em>add-ons</em></code>. What
-        we call an <code>"add-on"</code> is an intermediate <code>class</code> containing a set of methods. 
-        and that is available from the <code>Request Context</code> object. For example,
-        here is an example of using the <code>routing()</code> add-on :
+        we call an <code>"add-on"</code> is an intermediate <code>class</code> containing a set of methods
+        made available through the <code>Request Context</code> parameter. 
+        Here's an example of using the <code>routing()</code> add-on :
         
         <div>
             <p>
-                {% verbatim %}<pre class="ace ace-java" data-ace-hi="1,10,1,20"
->
+                {% verbatim %}<pre class="ace ace-java" data-ace-hi="2,14,2,24"
+>public void myHandler(DefaultRequestContext context) {
 
-if(context.routing().isNotFoundRoute()) {
-    //...
+    if(context.routing().isNotFoundRoute()) {
+        //...
+    }
 }</pre>{% endverbatim %} 
             </p>
         </div>
         
         This <code>routing()</code> add-on 
-        is available to any <code>Route Handler</code>, via their <code>Request Context</code> object, and
+        is available to any <code>Route Handler</code>, via its <code>Request Context</code> parameter, and
         provides a set of utility methods.
     </p>
 
@@ -106,11 +107,11 @@ if(context.routing().isNotFoundRoute()) {
     </p>
     <p>
         The <code>templating()</code> add-on does not directly manipulate the request or the response.
-        But it still provides a useful set of methods for the <code>Route Handlers</code>!
+        But it still provides a useful set of methods for the <code>Route Handlers</code>.
     </p> 
     <p> 
         If you have experience with Guice, or with dependency injection in general,
-        you may have noticed that we could simply inject the <code>TemplatingEngine</code>
+        you may be thinking that we could simply inject a <code>TemplatingEngine</code>
         instance in the controller and access it that way :
     </p>
     <p>
@@ -143,11 +144,10 @@ if(context.routing().isNotFoundRoute()) {
         </div>
     </p>
     <p>
-        The two versions lead to the exact same result. But, for functionalities that 
+        The two versions indeed lead to the exact same result. But, for functionalities that 
         are <em>often</em> used inside <code>Route Handlers</code>, or 
-        for functionalities that should be <em>request scoped</em>, we think extending 
-        the <code>Request Context</code> can be
-        very useful.
+        for functionalities that should be <em>request scoped</em>, extending 
+        the <code>Request Context</code> can be very useful.
     </p>
     
     <p>
@@ -188,17 +188,16 @@ if(context.routing().isNotFoundRoute()) {
 
 
 {#==========================================
-Section "Request Context / Core Request Context add-ons"
+Section "Request Context / default add-ons"
 ==========================================#}     
 <section id="core_rc_add-ons">
     <h3>
         <a class="anchor" href="#core_rc_add-ons" title="permanent link"></a>
-        The core Request Context <code>add-ons</code>
+        The default <code>add-ons</code>
     </h3>
 
     <p>
-        Similarly to the <a href="#required_components">required components</a>, there are <code>add-ons</code> 
-        which are <em>always</em> available on a <code>Request Context</code> object,
+        There are <code>add-ons</code> which are <em>always</em> available on a <code>Request Context</code> object,
         in any Spincast application. Let's have a quick look at them :
     </p>
 
@@ -433,32 +432,12 @@ if(context.cacheHeaders().eTag(resourceEtag).lastModified(modifDate).validate(tr
                     </div>   
                 </p>
             </li>
-        </ul>
-    </p>
-    
-</section>   
-
-
-{#==========================================
-Section "Request Context / Core Request Context methods"
-==========================================#}     
-<section id="core_rc_methods">
-    <h3>
-        <a class="anchor" href="#core_rc_methods" title="permanent link"></a>
-        The core Request Context methods
-    </h3>
-    <p>
-        In addition to the <code>add-ons</code> we just listed, there are also
-        other utility methods always available on a <code>Request Context</code> object :
-    </p>
-    <p>
-        <ul class="apiList">
-
+            
             <li>
                 <code class="apiItem">JsonManager <span>json</span>()</code>
                 <p class="well">
                     Provides easy access to the 
-                    <code><a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a></code>,<br /> for
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>,<br /> for
                     Json related methods.
                 </p>
             </li>
@@ -466,7 +445,7 @@ Section "Request Context / Core Request Context methods"
             <li>
                 <code class="apiItem">XmlManager <span>xml</span>()</code>
                 <p class="well">
-                    Provides easy access to the <code><a class="javadoc" href="/public/javadoc/org/spincast/core/xml/XmlManager.html">XmlManager</a></code>,<br /> for 
+                    Provides easy access to the <a class="javadoc" href="/public/javadoc/org/spincast/core/xml/XmlManager.html">XmlManager</a>,<br /> for 
                     XML related methods.
                 </p>
             </li>
@@ -490,7 +469,7 @@ Section "Request Context / Core Request Context methods"
                 <code class="apiItem">Locale <span>getLocaleToUse</span>()</code>
                 <p class="well">
                     The best <code>Locale</code> to use for the current request, as found by the 
-                    <code><a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a></code>.
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a>.
                 </p>
             </li>
             
@@ -498,7 +477,7 @@ Section "Request Context / Core Request Context methods"
                 <code class="apiItem">Object <span>exchange</span>()</code>
                 <p class="well">
                     The underlying <code>"exchange"</code> object, as provided by the HTTP 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html"><code>Server</code></a>.<br />If you know for sure what the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a>.<br />If you know for sure what the 
                     implementation of this object is, you may cast it to access extra functionalities not provided by Spincast out of the box.
                 </p>
             </li>
@@ -629,26 +608,22 @@ Section "Request Context / Extending the Request Context type"
     </p>
     <p>
         Last, but not the least, we need to tell Spincast about
-        our new custom <code>Request Context</code> type! This is done by overriding the
-        <code>getRequestContextImplementationClass()</code> method of the Spincast <code>core</code> module
-        (or via its <code>SpincastDefaultGuiceModule</code> child class) :
+        our new custom <code>Request Context</code> type! This is done by using the 
+        <code>requestContextImplementationClass(...)</code> of the
+        <a href="#boot_bootstrapper">Bootstrapper</a> :
     </p>
     <p>
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="9,49,9,87|10,15,10,39"
->public class AppModule extends SpincastDefaultGuiceModule {
+                <pre class="ace ace-java" data-ace-hi="4,12,4,78"
+>public static void main(String[] args) {
 
-    @Override
-    protected void configure() {
-        super.configure();
-        // ...
-    }
-
-    @Override
-    protected Class&lt;? extends RequestContext&lt;?&gt;&gt; getRequestContextImplementationClass() {
-        return AppRequestContextDefault.class;
-    }
+    Spincast.configure()
+            .module(new AppModule())
+            .requestContextImplementationClass(AppRequestContextDefault.class)
+            .mainArgs(args)
+            .init();
+    //....
 }</pre>
 
             </p> 
@@ -712,7 +687,7 @@ router.GET("/").save(new Handler&lt;AppRequestContext&gt;() {
         </em>
     </p>
     <p>
-        We agree : this may seem like a lot of boilerplate code! But it has to be done <em>only one time</em> and, once in place, 
+        This may seem like a lot of boilerplate code! But it has to be done <em>only one time</em> and, once in place, 
         it's easy to add new methods and <code>add-ons</code> to your <code>Request Context</code> objects! Also, 
         using a <em>unparameterized</em> version of those generic components, it's way nicer. Let's see how
         to creat those unparameterized versions...
@@ -726,7 +701,7 @@ router.GET("/").save(new Handler&lt;AppRequestContext&gt;() {
         You can do for your custom types what we already did for the
         default ones : to create an <em>unparameterized version</em> for each of them. 
         For example, here's how the provided
-        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/routing/DefaultRouter.html"><code>DefaultRouter</code></a> is defined :
+        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/routing/DefaultRouter.html">DefaultRouter</a> is defined :
     </p>
     <p>
         <div>

@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -19,7 +19,7 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected SpincastRouterConfig spincastRouterConfig;
@@ -581,6 +581,139 @@ public class StaticResourcesDynamicTest extends SpincastDefaultNoAppIntegrationT
             fail();
         } catch(Exception ex) {
         }
+    }
+
+    @Test
+    public void queryStringDisableCacheByDefault() throws Exception {
+
+        String generatedCssFilePath = createTestingFilePath("generated.txt");
+        final File generatedCssFile = new File(generatedCssFilePath);
+        assertFalse(generatedCssFile.isFile());
+
+        final int[] nbrTimeCalled = new int[]{0};
+
+        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                try {
+
+                    nbrTimeCalled[0]++;
+
+                    context.response().sendPlainText(context.request().getQueryString(false));
+                } catch(Exception ex) {
+                    throw SpincastStatics.runtimize(ex);
+                }
+            }
+        });
+
+        HttpResponse response = GET("/generated.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+
+        response = GET("/generated.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+
+        response = GET("/generated.txt?test=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("test=123", response.getContentAsString());
+        assertEquals(2, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+    }
+
+    @Test
+    public void queryStringDisableCacheForced() throws Exception {
+
+        String generatedCssFilePath = createTestingFilePath("generated.txt");
+        final File generatedCssFile = new File(generatedCssFilePath);
+        assertFalse(generatedCssFile.isFile());
+
+        final int[] nbrTimeCalled = new int[]{0};
+
+        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                try {
+
+                    nbrTimeCalled[0]++;
+
+                    context.response().sendPlainText(context.request().getQueryString(false));
+                } catch(Exception ex) {
+                    throw SpincastStatics.runtimize(ex);
+                }
+            }
+        }, false); // false!
+
+        HttpResponse response = GET("/generated.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+
+        response = GET("/generated.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+
+        response = GET("/generated.txt?test=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("test=123", response.getContentAsString());
+        assertEquals(2, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+    }
+
+    @Test
+    public void ignoreQueryString() throws Exception {
+
+        String generatedCssFilePath = createTestingFilePath("generated.txt");
+        final File generatedCssFile = new File(generatedCssFilePath);
+        assertFalse(generatedCssFile.isFile());
+
+        final int[] nbrTimeCalled = new int[]{0};
+
+        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                try {
+
+                    nbrTimeCalled[0]++;
+
+                    context.response().sendPlainText(context.request().getQueryString(false));
+                } catch(Exception ex) {
+                    throw SpincastStatics.runtimize(ex);
+                }
+            }
+        }, true); // true!
+
+        HttpResponse response = GET("/generated.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+
+        response = GET("/generated.txt").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
+
+        // Gets the cached version
+        response = GET("/generated.txt?test=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals("", response.getContentAsString());
+        assertEquals(1, nbrTimeCalled[0]);
+        assertTrue(generatedCssFile.isFile());
     }
 
 }

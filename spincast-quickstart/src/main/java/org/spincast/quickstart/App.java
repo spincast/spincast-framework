@@ -1,275 +1,125 @@
 package org.spincast.quickstart;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.filters.SpincastFilters;
-import org.spincast.core.routing.Handler;
 import org.spincast.core.server.Server;
+import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.plugins.httpclient.SpincastHttpClientPlugin;
 import org.spincast.quickstart.config.AppConfig;
 import org.spincast.quickstart.controller.AppController;
-import org.spincast.quickstart.exchange.AppHandler;
 import org.spincast.quickstart.exchange.AppRequestContext;
+import org.spincast.quickstart.exchange.AppRequestContextDefault;
 import org.spincast.quickstart.exchange.AppRouter;
+import org.spincast.quickstart.exchange.AppWebsocketContextDefault;
 import org.spincast.quickstart.guice.AppModule;
 
-import com.google.common.collect.Lists;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.util.Modules;
 
 /**
- * The main class of the application. Everything starts with the
- * <code>main(...)</code> method.
+ * Application main class.
  */
 public class App {
 
     protected final Logger logger = LoggerFactory.getLogger(App.class);
 
     /**
-     * The entry point for the application.
+     * Main method
      */
     public static void main(String[] args) {
-        createApp(args, null);
+
+        /**
+         * We use the bootstrapper to initialize
+         * our application.
+         */
+        Spincast.configure()
+                .module(new AppModule())
+                .plugin(new SpincastHttpClientPlugin())
+                .requestContextImplementationClass(AppRequestContextDefault.class)
+                .websocketContextImplementationClass(AppWebsocketContextDefault.class)
+                .mainArgs(args)
+                .init();
     }
 
     /**
-     * Creates an App instance using the given
-     * parameters, an overriding module, and returns the 
-     * Guice injector.
-     * 
-     * @param overridingModule Mostly useful for the integration tests. Those
-     * can override some bindings by specifying this overriding module.
-     */
-    public static Injector createApp(String[] args, Module overridingModule) {
-
-        if(args == null) {
-            args = new String[]{};
-        }
-
-        //==========================================
-        // Should we override the base app modules
-        // with an overring module?
-        //==========================================
-        Injector guice = null;
-        if(overridingModule != null) {
-            guice = Guice.createInjector(Modules.override(getAppModules(args))
-                                                .with(overridingModule));
-        } else {
-            guice = Guice.createInjector(getAppModules(args));
-        }
-
-        App app = guice.getInstance(App.class);
-        app.start();
-
-        return guice;
-    }
-
-    /**
-     * The app's Guice modules to use.
-     */
-    protected static List<? extends Module> getAppModules(String[] args) {
-        return Lists.newArrayList(new AppModule(args));
-    }
-
-    //==========================================
-    // The application
-    //==========================================
-    private final Server server;
-    private final AppConfig appConfig;
-    private final AppRouter router;
-    private final AppController appController;
-    private final SpincastFilters<AppRequestContext> spincastFilters;
-
-    /**
-     * The application constructor that Guice will call
-     * with the required dependencies.
+     * Init method, automatically called when the Guice context is ready.
      */
     @Inject
-    public App(Server server,
-               AppConfig config,
-               AppRouter router,
-               AppController appController,
-               SpincastFilters<AppRequestContext> spincastFilters) {
-        this.server = server;
-        this.appConfig = config;
-        this.router = router;
-        this.appController = appController;
-        this.spincastFilters = spincastFilters;
-    }
+    protected void init(Server server,
+                        AppConfig config,
+                        AppRouter router,
+                        AppController appController,
+                        SpincastFilters<AppRequestContext> spincastFilters) {
 
-    protected AppConfig getConfig() {
-        return this.appConfig;
-    }
+        addRoutes(router, appController, spincastFilters);
 
-    protected Server getServer() {
-        return this.server;
-    }
+        server.start();
+        this.logger.info("Server started...");
 
-    protected AppRouter getRouter() {
-        return this.router;
-    }
-
-    protected AppController getAppController() {
-        return this.appController;
-    }
-
-    protected SpincastFilters<AppRequestContext> getSpincastFilters() {
-        return this.spincastFilters;
+        displayStartedMessage(config);
     }
 
     /**
-     * Once the application instance is created by Guice, start() is called
-     * and the real work begins!
+     * Route definitions
      */
-    protected void start() {
+    protected void addRoutes(final AppRouter router,
+                             final AppController ctrl,
+                             final SpincastFilters<AppRequestContext> spincastFilters) {
 
         //==========================================
-        // We add the application routes.
+        // Serves everything under "/public" as 
+        // Static Resources.
         //==========================================
-        addRoutes();
+        router.dir("/public").classpath("/public").save();
 
         //==========================================
-        // We start the server!
+        // Some common files which are not expected to
+        // be under a "/public" URL.
         //==========================================
-        getServer().start();
+        router.file("/favicon.ico").classpath("/public/favicon.ico").save();
+        router.file("/robots.txt").classpath("/public/robots.txt").save();
+        router.file("/humans.txt").classpath("/public/humans.txt").save();
+        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").save();
+        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").save();
+        router.file("/tile-wide.png").classpath("/public/tile-wide.png").save();
+        router.file("/tile.png").classpath("/public/tile.png").save();
 
         //==========================================
-        // We display a "started" message.
+        // Add some security headers on every route
         //==========================================
-        displayStartedMessage();
-    }
-
-    /**
-     * Adds the application routes.
-     */
-    protected void addRoutes() {
+        router.before().save(spincastFilters::addSecurityHeaders);
 
         //==========================================
-        // A GET route for the index page.
-        //
-        // Note that, with Java 8, we could simply use 
-        // a method handler :
-        //
-        // getRouter().GET("/", getAppController()::indexPage);
-        //
-        // Or a Lambda :
-        //
-        // getRouter().GET("/").save(context -> getAppController().indexPage(context));
-        //
+        // Index page, can be cached.
         //==========================================
-        getRouter().GET("/").cache(3600).save(new AppHandler() {
-
-            @Override
-            public void handle(AppRequestContext context) {
-                getAppController().indexPage(context);
-            }
-        });
+        router.GET("/").cache(3600).save(ctrl::index);
 
         //==========================================
-        // Another GET route. 
-        // Note that here we are using "Handler<AppRequestContext>" 
-        // instead of "AppHandler" for the handler type : 
-        // they are equivalent.
+        // Movie Info page
         //==========================================
-        getRouter().GET("/greet/${name}").save(new Handler<AppRequestContext>() {
-
-            @Override
-            public void handle(AppRequestContext context) {
-
-                // Example call to a method we added on our
-                // custom Request Context type
-                context.customGreetingMethod();
-            }
-        });
+        router.GET("/movie").save(ctrl::movieInfo);
 
         //==========================================
-        // A POST route. 
-        // This route is the one used in Spincast's 
-        // documentation to demonstrate how to write a test.
+        // Exception example
         //==========================================
-        getRouter().POST("/sum").save(new AppHandler() {
-
-            @Override
-            public void handle(AppRequestContext context) {
-                getAppController().sumRoute(context);
-            }
-        });
+        router.GET("/exception-example").save(ctrl::exceptionExample);
 
         //==========================================
         // "Not Found" handler
         //==========================================
-        getRouter().notFound(new AppHandler() {
-
-            @Override
-            public void handle(AppRequestContext context) {
-                getAppController().notFound(context);
-            }
-        });
+        router.notFound(ctrl::notFound);
 
         //==========================================
         // Exceptions handler
         //==========================================
-        getRouter().exception(new AppHandler() {
-
-            @Override
-            public void handle(AppRequestContext context) {
-                getAppController().exception(context);
-            }
-        });
-
-        //==========================================
-        // Serves everything under "/public" as
-        // static resources.
-        //==========================================
-        getRouter().dir("/public").classpath("/public").save();
-
-        //==========================================
-        // Some default files which
-        // are not under the "/public" URL.
-        //==========================================
-        getRouter().file("/favicon.ico").classpath("/public/favicon.ico").save();
-        getRouter().file("/robots.txt").classpath("/public/robots.txt").save();
-        getRouter().file("/humans.txt").classpath("/public/humans.txt").save();
-        getRouter().file("/browserconfig.xml").classpath("/public/browserconfig.xml").save();
-        getRouter().file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").save();
-        getRouter().file("/tile-wide.png").classpath("/public/tile-wide.png").save();
-        getRouter().file("/tile.png").classpath("/public/tile.png").save();
-
-        //==========================================
-        // Add some security headers on every route.
-        //==========================================
-        getRouter().before().save(new AppHandler() {
-
-            @Override
-            public void handle(AppRequestContext context) {
-                getSpincastFilters().addSecurityHeaders(context);
-            }
-        });
+        router.exception(ctrl::exception);
     }
 
-    /**
-     * Displays a message when the application is started.
-     */
-    protected void displayStartedMessage() {
+    protected void displayStartedMessage(AppConfig config) {
         System.out.println();
         System.out.println("==========================================");
-        System.out.print("Spincast quick start application started on ");
-
-        if(getConfig().getHttpServerPort() > 0) {
-            System.out.print("port " + getConfig().getHttpServerPort());
-        }
-        if(getConfig().getHttpsServerPort() > 0) {
-            if(getConfig().getHttpServerPort() > 0) {
-                System.out.print(" and ");
-            }
-            System.out.print("port " + getConfig().getHttpsServerPort() + " (HTTPS)");
-        }
-        System.out.println();
-        System.out.println("Try hitting the index page or \"/greet/[YourName]\"...");
+        System.out.println("Spincast Quick Start application started!");
+        System.out.println(config.getPublicServerSchemeHostPort());
         System.out.println("==========================================");
     }
 

@@ -30,7 +30,7 @@
         Spincast default config plugin.
         The default plugin is required because the
         configurations not defined here will fallback
-        to the defaults values.
+        to the default values.
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>

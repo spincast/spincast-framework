@@ -14,15 +14,15 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.json.JsonObjectArrayBase;
+import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
-public class XmlTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Inject
     protected JsonManager jsonManager;

@@ -812,13 +812,18 @@ router.GET("/users/${userId}")
         
         <p>
             You can tell Spincast that some files and directories are
-            <code><em>static resources</em></code>.
+            <code><em>Static Resources</em></code>.
             Doing so, those files and directories will be served by the HTTP Server <em>directly</em> :
             the requests for them won't even reach the framework.
         </p> 
+        <p>
+            Note that queryStrings are ignored when a request is made for a Static Resource. If you need
+            queryStrings to make a difference, have a look at <a href="#dynamic_resources">Dynamic Resources</a>.
+        </p> 
 
         <p>
-            Those Static Resources can be on the classpath or on the file system. For example:
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Static Resources can be on the classpath or on the file system. For example:
         </p> 
         
         <p>
@@ -982,6 +987,47 @@ router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").sa
         </p>
         <p>
         	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            By default, if the request for a Dynamic Resource contains a
+            queryString, <em>the resource is always generated</em>, no cached version is used!
+            This allows you to generate a Static Resource which is going to be cached, but also to
+            get a variation on this resource if required, by passing some parameters.
+        </p>
+        <p>
+            Using the previous example, <code>"/css/generated.css"</code> requests would always return the
+            same generated resource (only reaching the framework the first time), 
+            but a <code>"/css/generated.css<strong>?test=123</strong>"</code> request
+            would not use any cached version and would always reach your generator.
+        </p>
+        <p>
+        	If you don't want a queryString to make a difference, if you always
+            want the first generated resource to be cached and served, you can set the
+            <code>"ignoreQueryString"</code> parameter to <code>true</code> :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="10,9,10,13"
+>router.file("/css/generated.css")
+      .pathAbsolute("/user/www/myprojet/public_files/css/generated.css")
+      .save(new DefaultHandler() {
+
+          @Override
+          public void handle(DefaultRequestContext context) {
+
+              String css = generateCssFile(context.request().getRequestPath());
+              context.response().sendCharacters(css, "text/css");
+          }
+      }, true);
+</pre> 
+                </p>
+            </div>
+            
+            Doing so, <code>"/css/generated.css"</code> and 
+            <code>"/css/generated.css<strong>?test=123</strong>"</code>
+            would both always return the same cached resource.
+        </p> 
+        
+        <p>
+        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             The Route of a Dynamic Resource can contain
             <a href="#dynamic_parameters">dynamic parameters</a>, but there are some rules :
         </p> 
@@ -1054,44 +1100,44 @@ router.dir("/generated/*{splat}").pathAbsolute("/someDir/*{splat}").save(generat
     </div>
     
     {#==========================================
-    Section "routing / Cors"
+    Section "routing / CORS"
     ==========================================#}
     <div id="cors">
         <h4>
             <a class="anchor_small" href="#cors" title="permanent link"></a>
-            Cors
+            CORS
         </h4>
 
         <p>
-            Cors, <em><a href="http://www.html5rocks.com/en/tutorials/cors/">Cross-Origin Resource Sharing</a></em>, allows you to
+            CORS, <em><a href="http://www.html5rocks.com/en/tutorials/cors/">Cross-Origin Resource Sharing</a></em>, allows you to
             specify some resources in your application that can be accessed by a browser <em>from another domain</em>. For example,
             let's say your Spincast application runs on domain <code>http://www.example1.com</code>, and you want to allow another
             site, <code>http://www.example2.com</code>, to access some of your APIs, or some of your files. By default, 
-            browsers don't allow such cross domains requests. You have to enable <code>cors</code>
+            browsers don't allow such cross domains requests. You have to enable <code>CORS</code>
             for them to work.
         </p>
         <p>
-            There is a provided <code>Filter</code> to enable cors on regular Routes. Since <code>Filters</code>
+            There is a provided <code>Filter</code> to enable CORS on regular Routes. Since <code>Filters</code>
             are not applied to <code>Static Resources</code>, there is also a special configuration to add
-            <code>cors</code> to those :
+            <code>CORS</code> to those :
         </p>
         <p>
             <div>
                 <p>
                     <pre class="ace ace-java"
->// Enable cors for every Routes of the application,
+>// Enable CORS for every Routes of the application,
 // except for Static Resources.
 getRouter().cors();
 
-// Enable cors for all Routes matching the specified path,
+// Enable CORS for all Routes matching the specified path,
 // except for Static Resources.
 getRouter().cors("/api/*{path}");
 
-// Enable cors on a Static Resource directory.
+// Enable CORS on a Static Resource directory.
 getRouter().dir("/public").classpath("/public_files")
            .cors().save();
            
-// Enable cors on a Static Resource file.
+// Enable CORS on a Static Resource file.
 getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
            .cors().save();</pre> 
 
@@ -1099,7 +1145,7 @@ getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
             </div>
         </p> 
         <p>
-            Here are the available options when configuring cors on a Route :
+            Here are the available options when configuring CORS on a Route :
             <div>
                 <p>
                     <pre class="ace ace-java"

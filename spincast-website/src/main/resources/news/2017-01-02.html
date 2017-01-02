@@ -1,0 +1,49 @@
+<p>
+	This release is all about <a href="{{appUrlPrefix}}/documentation#bootstrapping">bootstrapping a
+    Spincast application</a>. This process has been greatly improved and the creation of the 
+    Guice context associated with an application is now easier. A new component, the 
+    <a href="{{appUrlPrefix}}/documentation#boot_bootstrapper">Bootstrapper</a>, is at the core of this
+    process.
+</p>
+<p>
+    Here's a fully working <em>"Hello World!"</em> Spincast application :
+
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.init();
+    }
+
+    @Inject
+    protected void init(DefaultRouter router, Server server) {
+        router.GET("/").save(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
+        server.start();
+    }
+}</pre>
+                  
+        </p>
+    </div> 
+
+</p>
+<p> 
+    Speaking of <em>"Hello world!"</em> applications, you can now find <em>three</em> of them in the <em>"Demos / Tutorials"</em> section! :
+    <ul>
+        <li>
+            <a href="{{appUrlPrefix}}/demos-tutorials/hello-world/quick">Quick version</a>
+        </li>
+        <li>
+            <a href="{{appUrlPrefix}}/demos-tutorials/hello-world/better">Better version</a>
+        </li>
+        <li>
+            <a href="{{appUrlPrefix}}/demos-tutorials/hello-world/super">Advanced version</a>
+        </li>
+    </ul>
+</p>
+<p>
+    Finally, we introduced a new section in the documentation dedicated to 
+    <a href="{{appUrlPrefix}}/documentation#plugins">plugins</a> : what they really are, how to install them, etc.
+</p>
+

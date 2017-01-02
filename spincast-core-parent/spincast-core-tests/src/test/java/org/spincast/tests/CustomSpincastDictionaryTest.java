@@ -4,19 +4,30 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
-import org.spincast.plugins.dictionary.SpincastDictionaryPluginGuiceModule;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
+import com.google.inject.Scopes;
 
-public class CustomSpincastDictionaryTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class CustomSpincastDictionaryTest extends IntegrationTestNoAppDefaultContextsBase {
+
+    @Override
+    protected Module getExtraOverridingModule() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(SpincastDictionary.class).to(CustomSpincastDictionary.class).in(Scopes.SINGLETON);
+            }
+        };
+    }
 
     public static class CustomSpincastDictionary extends SpincastDictionaryDefault {
 
@@ -29,26 +40,6 @@ public class CustomSpincastDictionaryTest extends SpincastDefaultNoAppIntegratio
         public String route_notFound_default_message() {
             return "Not found custom message";
         }
-    }
-
-    /**
-     * Custom module
-     */
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void bindDictionaryPlugin() {
-                install(new SpincastDictionaryPluginGuiceModule(getRequestContextType(), getWebsocketContextType()) {
-
-                    @Override
-                    protected Class<? extends SpincastDictionary> bindSpincastDictionaryImplClass() {
-                        return CustomSpincastDictionary.class;
-                    }
-                });
-            }
-        };
     }
 
     @Test

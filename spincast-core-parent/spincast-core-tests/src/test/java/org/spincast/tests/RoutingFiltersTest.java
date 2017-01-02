@@ -16,10 +16,10 @@ import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.Router;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 
-public class RoutingFiltersTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class RoutingFiltersTest extends IntegrationTestNoAppDefaultContextsBase {
 
     //==========================================
     // Remove all routes, even Spincast ones

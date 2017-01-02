@@ -29,11 +29,6 @@ import com.google.inject.Singleton;
  * We need to inject *providers* for the add-ons because they depend on the
  * request context this class build!
  * {@link https://github.com/google/guice/wiki/CyclicDependencies#break-the-cycle-with-a-provider}
- * 
- * Note that we're exceptionally not injecting the dependencies in
- * the <em>constructor</em> here, but using setters! This is because this class
- * will most likely be extended and we want to make the process easier,
- * with all those required providers...
  */
 public abstract class RequestContextBase<R extends RequestContext<R>> {
 
@@ -135,56 +130,56 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
     }
 
     protected Map<Key<?>, Object> getInstanceFromGuiceCache() {
-        if(this.instanceFromGuiceCache == null) {
+        if (this.instanceFromGuiceCache == null) {
             this.instanceFromGuiceCache = new HashMap<Key<?>, Object>();
         }
         return this.instanceFromGuiceCache;
     }
 
     public CookiesRequestContextAddon<R> cookies() {
-        if(this.cookiesRequestContextAddon == null) {
+        if (this.cookiesRequestContextAddon == null) {
             this.cookiesRequestContextAddon = getCookiesRequestContextAddonProvider().get();
         }
         return this.cookiesRequestContextAddon;
     }
 
     public VariablesRequestContextAddon<R> variables() {
-        if(this.variablesRequestContextAddon == null) {
+        if (this.variablesRequestContextAddon == null) {
             this.variablesRequestContextAddon = getVariablesRequestContextAddonProvider().get();
         }
         return this.variablesRequestContextAddon;
     }
 
     public RequestRequestContextAddon<R> request() {
-        if(this.requestRequestContextRequestAddon == null) {
+        if (this.requestRequestContextRequestAddon == null) {
             this.requestRequestContextRequestAddon = getRequestRequestContextAddonProvider().get();
         }
         return this.requestRequestContextRequestAddon;
     }
 
     public ResponseRequestContextAddon<R> response() {
-        if(this.responseRequestContextAddon == null) {
+        if (this.responseRequestContextAddon == null) {
             this.responseRequestContextAddon = getResponseRequestContextAddonProvider().get();
         }
         return this.responseRequestContextAddon;
     }
 
     public RoutingRequestContextAddon<R> routing() {
-        if(this.routingRequestContextAddon == null) {
+        if (this.routingRequestContextAddon == null) {
             this.routingRequestContextAddon = getRoutingRequestContextAddonProvider().get();
         }
         return this.routingRequestContextAddon;
     }
 
     public TemplatingRequestContextAddon<R> templating() {
-        if(this.templatingRequestContextAddon == null) {
+        if (this.templatingRequestContextAddon == null) {
             this.templatingRequestContextAddon = getTemplatingRequestContextAddonProvider().get();
         }
         return this.templatingRequestContextAddon;
     }
 
     public CacheHeadersRequestContextAddon<R> cacheHeaders() {
-        if(this.cacheHeadersRequestContextAddon == null) {
+        if (this.cacheHeadersRequestContextAddon == null) {
             this.cacheHeadersRequestContextAddon = getCacheHeadersRequestContextAddonProvider().get();
         }
         return this.cacheHeadersRequestContextAddon;
@@ -208,7 +203,7 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
 
         T obj = null;
         Map<Key<?>, Object> cache = getInstanceFromGuiceCache();
-        if(!cache.containsKey(key)) {
+        if (!cache.containsKey(key)) {
 
             obj = guice().getInstance(key);
 
@@ -217,8 +212,8 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
             // singletons!
             //==========================================
             Binding<T> binding = guice().getBinding(key);
-            if(Scopes.isScoped(binding, SpincastGuiceScopes.REQUEST, SpincastRequestScoped.class) ||
-               Scopes.isScoped(binding, Scopes.SINGLETON, Singleton.class)) {
+            if (Scopes.isScoped(binding, SpincastGuiceScopes.REQUEST, SpincastRequestScoped.class) ||
+                Scopes.isScoped(binding, Scopes.SINGLETON, Singleton.class)) {
                 cache.put(key, obj);
             }
         } else {

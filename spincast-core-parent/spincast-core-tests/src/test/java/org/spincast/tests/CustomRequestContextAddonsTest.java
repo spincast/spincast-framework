@@ -11,26 +11,55 @@ import org.junit.Test;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestContextBase;
 import org.spincast.core.exchange.RequestContextBaseDeps;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastNoAppIntegrationTestBase;
-import org.spincast.tests.CustomRequestContextAddonsTest.ITestRequestContext;
+import org.spincast.testing.core.IntegrationTestNoAppBase;
+import org.spincast.tests.CustomRequestContextAddonsTest.TestRequestContext;
 import org.spincast.tests.varia.RequestContextAddon;
 import org.spincast.tests.varia.RequestContextAddonDefault;
 
+import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class CustomRequestContextAddonsTest extends
-                                            SpincastNoAppIntegrationTestBase<ITestRequestContext, DefaultWebsocketContext> {
+public class CustomRequestContextAddonsTest extends IntegrationTestNoAppBase<TestRequestContext, DefaultWebsocketContext> {
+
+    @Override
+    protected Injector createInjector() {
+        return Spincast.configure()
+                       .requestContextImplementationClass(TestRequestContextDefault.class)
+                       .module(new SpincastGuiceModuleBase() {
+
+                           @Override
+                           protected void configure() {
+
+                               //==========================================
+                               // Bind the request context add-on in Request scope!
+                               //==========================================
+                               bind(RequestContextAddon.class).to(RequestContextAddonDefault.class)
+                                                              .in(SpincastGuiceScopes.REQUEST);
+
+                               //==========================================
+                               // Bind an object as singleton
+                               //==========================================
+                               bind(Singleton.class).in(Scopes.SINGLETON);
+
+                               //==========================================
+                               // Bind an object not as singleton or request scoped
+                               //==========================================
+                               bind(TestNotSingletonNorRequestScoped.class);
+                           }
+                       })
+                       .init();
+    }
 
     public static class Singleton {
     }
@@ -38,17 +67,17 @@ public class CustomRequestContextAddonsTest extends
     public static class TestNotSingletonNorRequestScoped {
     }
 
-    public static interface ITestRequestContext extends RequestContext<ITestRequestContext> {
+    public static interface TestRequestContext extends RequestContext<TestRequestContext> {
 
         public Map<Key<?>, Object> getInstanceFromGuiceCachePublic();
     }
 
-    public static class TestRequestContext extends RequestContextBase<ITestRequestContext>
-                                           implements ITestRequestContext {
+    public static class TestRequestContextDefault extends RequestContextBase<TestRequestContext>
+                                                  implements TestRequestContext {
 
         @AssistedInject
-        public TestRequestContext(@Assisted Object exchange,
-                                  RequestContextBaseDeps<ITestRequestContext> requestContextBaseDeps) {
+        public TestRequestContextDefault(@Assisted Object exchange,
+                                         RequestContextBaseDeps<TestRequestContext> requestContextBaseDeps) {
             super(exchange, requestContextBaseDeps);
         }
 
@@ -61,45 +90,13 @@ public class CustomRequestContextAddonsTest extends
         }
     }
 
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected void configure() {
-                super.configure();
-
-                //==========================================
-                // Bind the request context add-on in Request scope!
-                //==========================================
-                bind(RequestContextAddon.class).to(RequestContextAddonDefault.class)
-                                               .in(SpincastGuiceScopes.REQUEST);
-
-                //==========================================
-                // Bind an object as singleton
-                //==========================================
-                bind(Singleton.class).in(Scopes.SINGLETON);
-
-                //==========================================
-                // Bind an object not as singleton or request scoped
-                //==========================================
-                bind(TestNotSingletonNorRequestScoped.class);
-            }
-
-            @Override
-            protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
-                return TestRequestContext.class;
-            }
-        };
-    }
-
     @Test
     public void cacheForRequestScopedObjects() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
 
             @Override
-            public void handle(ITestRequestContext context) {
+            public void handle(TestRequestContext context) {
 
                 RequestContextAddon requestContextAddon1 = context.get(RequestContextAddon.class);
                 assertNotNull(requestContextAddon1);
@@ -119,10 +116,10 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void cacheForSingletons() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
 
             @Override
-            public void handle(ITestRequestContext context) {
+            public void handle(TestRequestContext context) {
 
                 Singleton singleton = context.get(Singleton.class);
                 assertNotNull(singleton);
@@ -141,10 +138,10 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void noCacheForOtherScopedObjects() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
 
             @Override
-            public void handle(ITestRequestContext context) {
+            public void handle(TestRequestContext context) {
 
                 TestNotSingletonNorRequestScoped testNotSingleton = context.get(TestNotSingletonNorRequestScoped.class);
                 assertNotNull(testNotSingleton);
@@ -165,10 +162,10 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void useAddon() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<ITestRequestContext>() {
+        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
 
             @Override
-            public void handle(ITestRequestContext context) {
+            public void handle(TestRequestContext context) {
                 context.get(RequestContextAddonDefault.class).addonMethod1();
                 String str = context.get(RequestContextAddonDefault.class).addonMethod2();
                 context.response().sendPlainText(str);

@@ -49,9 +49,10 @@
         <nav id="toc" class="longTitle col-md-3">
             <ul class="nav nav-stacked">
                 <li class="openable"><a href="#top">Overview</a></li>
-                <li class="openable"><a href="#examples">Quick Examples</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
-                <li class="openable"><a href="#usage">Usage</a></li> 
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#add-on">Suggested <em>add-on</em></a></li>
                 <li class="openable"><a href="#javadoc">Javadoc</a></li>
             </ul>
         </nav>
@@ -66,7 +67,7 @@
                 </h3>
 	            <p>
 	                Provides an easy way of creating and sending HTTP requests. The interface to inject to
-                    get the provided client is
+                    get a factory to create requests is
                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/HttpClient.html">HttpClient</a>
                 </p>
                 <p>
@@ -89,13 +90,50 @@
                     for a lot of examples!  
                 </p>
             </section>
-            
-            <section id="examples">
+
+
+
+
+            <section id="usage">
 	            <h3>
-                    <a class="anchor" href="#examples" title="permanent link"></a>
-                    Quick Examples
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
                 </h3>
+                <p>
+                    To use Spincast's HTTP Client, you can inject <code>HttpClient</code> where you need it.
+                    This object is a <em>factory</em> : it is thread safe and can be injected in multiple
+                    classes.
+                </p>
+                <p>
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppController {
+
+    private final HttpClient httpClient;
+
+    @Inject
+    public AppController(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    protected HttpClient httpClient() {
+        return this.httpClient;
+    }
+
+    public void myRouteHandler(AppRequestContext context) {
+
+        HttpResponse response = httpClient().GET("https://www.google.com").send();
+        if(response.getStatus() == HttpStatus.SC_OK) {
+            //...
+        }
+    }
+}</pre> 
+                        </p>
+                    </div>   
+                </p>
 	            <p>
+                    <strong>Some examples :</strong>
 	                <ul>
                         <li>
                             Simple <code>GET</code> request. We get the response as a string and print it :
@@ -132,182 +170,126 @@ if(response.getStatus() == 200) { // or use : HttpStatus.SC_OK
                                 </p>
                             </div>
                         </li>
+                        <li>
+                            Make a request to an API that returns <code>Json</code> and
+                            use a <a href="/documentation#jsonobject">JsonObject</a> to represent the response :
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java"
+>String url = "http://example.com/some-api?format=json";
+JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
+</pre> 
+                                </p>
+                            </div>
+                        </li>
                     </ul>
 	            </p>
             </section>
             
-	        <section id="installation">
+            
+            
+           
+            <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>
                     Installation
-                </h3>              
-                <p> 
-                    The Spincast Http Client is already available in the <code><em>test</em></code> Maven scope, 
-                    when you include the <code>spincast-testing-default</code>
-                    or the <code>spincast-testing-core</code> artifacts to help you with your tests. 
-                    If you want to use the Spincast Http Client in your application, and not only in your <em>tests</em>, 
-                    you have to include it as a regular dependency:
+                </h3>
+                <p>
+                    If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
+                    simply register this plugin using :
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="3,12,3,51"
+>public static void main(String[] args) {
+
+    Spincast.configure()
+            .plugin(new SpincastHttpClientPlugin())
+            //...
+            .init();
+}</pre> 
+                        </p>
+                    </div>
                 </p>
                 
                 <p>
-	                <div>
-	                    <p>
-	                        <pre class="ace ace-xml"
+                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
+                    plugin by :
+                </p>
+                <p>
+                    1. Adding this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
 >&lt;dependency&gt;
     &lt;groupId&gt;org.spincast&lt;/groupId&gt;
     &lt;artifactId&gt;spincast-plugins-http-client&lt;/artifactId&gt;
     &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
 &lt;/dependency&gt;</pre> 
-	                    </p>
-	                </div>  
-	            </p>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    Then, install the plugin's Guice module, by passing it to the <code>Guice.createInjector(...)</code> method:
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="2,8,2,110|3,8,3,110"
->Injector guice = Guice.createInjector(
-        new AppModule(args),
-        new SpincastHttpClientPluginGuiceModule(AppRequestContext.class, 
-                                                AppWebsocketContext.class)
-        // other modules...
-        );</pre> 
                         </p>
-                    </div>   
+                    </div>  
                 </p>
                 <p>
-                    ... or by using the <code>install(...)</code> method from your custom Guice module:
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="7,8,7,84|8,8,8,100"
->public class AppModule extends SpincastDefaultGuiceModule {
-
-    //...
-
-    @Override
-    protected void configure() {
-        super.configure();
-        install(new SpincastHttpClientPluginGuiceModule(getRequestContextType(), 
-                                                        getWebsocketContextType()));
-        // other modules...
-    }
-    
-    // ...
-}</pre> 
-                        </p>
-                    </div>   
+                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/SpincastHttpClientPluginModule.html">SpincastHttpClientPluginModule</a> 
+                    module to your Guice context.
                 </p>
-         
-         
             </section>
             
-            <section id="usage">
+            <section id="plugin_class">
                 <h3>
-                    <a class="anchor" href="#usage" title="permanent link"></a>
-                    Usage
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
                 </h3>
                 <p>
-                    To use Spincast's HTTP Client, you can inject <code>HttpClient</code> where you need it.
-                    This object is a <em>builder</em> : it is thread safe and can be injected in multiple
-                    classes. Let's see an example :
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/SpincastHttpClientPlugin.html">SpincastHttpClientPlugin</a>.
                 </p>
-                <p>
-                    <div>
-                        <p>
-                            <pre class="ace ace-java"
->public class AppController {
-
-    private final HttpClient httpClient;
-
-    @Inject
-    public AppController(HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
-    protected HttpClient httpClient() {
-        return this.httpClient;
-    }
-
-    public void myRouteHandler(AppRequestContext context) {
-
-        HttpResponse response = httpClient().GET("https://www.google.com").send();
-        if(response.getStatus() == HttpStatus.SC_OK) {
-            //...
-        }
-    }
-}</pre> 
-                        </p>
-                    </div>   
-                </p>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    If you want, you can also <a href="/documentation#extending_request_context">extend your custom Request Context</a> objects to add 
-                    <code>HttpClient</code> as an <code>add-on</code>. To do that, let's tweak some components:
-                </p>
-                <p>
-                    Your <code>AppRequestContext</code> interface
-                    <div>
-                        <p>
-                            <pre class="ace ace-java"
->public interface AppRequestContext extends RequestContext&lt;AppRequestContext&gt; {
-
-    //...
-    
-    public HttpClient httpClient();
-}</pre> 
-                        </p>
-                    </div>   
-                </p>
-                <p>
-                    The Request Context <code>implementation</code> :
-                    <div>
-                        <p>
-                            <pre class="ace ace-java"
->public class AppRequestContext extends RequestContextBase&lt;AppRequestContext&gt;
-                               implements AppRequestContext {
-
-    private final HttpClient httpClient;
-
-    @AssistedInject
-    public AppRequestContext(@Assisted Object exchange,
-                             RequestContextBaseDeps&lt;AppRequestContext&gt; requestContextBaseDeps,
-                             HttpClient httpClient) {
-        super(exchange, requestContextBaseDeps);
-        this.httpClient = httpClient;
-    }
-    
-    //...
-
-    @Override
-    public HttpClient httpClient() {
-        return this.httpClient;
-    }
-}</pre> 
-                        </p>
-                    </div>   
-                </p>
-                <p>
-                    Then, you can use the HTTP Client directly from your <code>Route Handlers</code>! :
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="4,39,4,89"
->public class AppController {
-
-    public void myRouteHandler(AppRequestContext context) {
-
-        HttpResponse response = context.httpClient().GET("https://www.google.com").send();
-        if(response.getStatus() == HttpStatus.SC_OK) {
-            //...
-        }
-    }
-}</pre> 
-                        </p>
-                    </div>   
-                </p>
-  
             </section>
             
+            <section id="add-on">
+                <h3>
+                    <a class="anchor" href="#add-on" title="permanent link"></a>
+                    Suggested <em>add-on</em>
+                </h3>
+                <p>
+                    <ul>
+                        <li>
+                            <strong>Name</strong> : <code>httpClient()</code>
+                        </li>
+                        <li>
+                            <strong>Component</strong> : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/HttpClient.html">HttpClient</a>
+                        </li>
+                        <li>
+                            <strong>Usage</strong> : to be able to make HTTP requests easily from your <code>Route Handlers</code>.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Example :
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="5,33,5,87"
+>public void myRouteHandler(DefaultRequestContext context) {
+
+    // Make to request to an API and get the response as
+    // a JsonObject
+    String url = "https://example.com/api/test";
+    JsonObject response = context.httpClient().GET(url).send().getContentAsJsonObject();
+    
+    //...
+}</pre>
+                        </p>
+                    </div> 
+                </p>
+                <p>
+                    Learn how to <a href="/documentation#plugins_add_on">install an add-on</a> in the dedicated section of the
+                    documentation.
+                </p>
+
+            </section>
+            
+
             
             <section id="javadoc">
                 <h3>

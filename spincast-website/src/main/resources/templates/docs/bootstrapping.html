@@ -7,20 +7,12 @@ Docs : "bootstrapping"
         <a class="anchor" href="#bootstrapping" title="permanent link"></a>
         Bootstrapping your app
     </h3>
-    
+        
     <p>
-        The flexibility that Guice allows means that there are <em>many</em> ways
-        of structuring your application, and that can be confusing at first.
-        We'll show you some ways of doing it, but once you understand
-        the basics, you could very well invent your own structure...
-    </p> 
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Note that, except if specified otherwise, the following examples all use 
-        the default Guice module, <code><em>SpincastDefaultGuiceModule</em></code>,
-        so this Maven artifact must be added to your project :
-    </p> 
-    <p>
+        Bootstrapping a Spincast application is very easy. Most of the time,
+        you start with the <code>spincast-default</code> Maven artifact in your
+        <code>pom.xml</code> (or <code>build.gradle</code>) :
+
         <div>
             <pre class="ace ace-xml" 
 >&lt;dependency>
@@ -29,928 +21,258 @@ Docs : "bootstrapping"
     &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
 &lt;/dependency></pre>
         </div>
+    </p> 
+    <p>
+    
+        Then, in the <code>main(...)</code> method of your application, 
+        you use the <a class="javadoc" href="http://spincast.loc:44420/public/javadoc/org/spincast/defaults/bootstrapping/Spincast.html">Spincast</a>
+        class to initialize your application. 
+        You can do this the "quick way", or use the <code>Bootstrapper</code> to
+        have more options. Let see both of those approaches...
     </p>
-
-    {#==========================================
-    Section "bootstrapping / everything_in_main"
-    ==========================================#}
-    <div id="everything_in_main">
+    
+    <div id="boot_quick">
         <h4>
-            <a class="anchor_small" href="#everything_in_main" title="permanent link"></a>
-            Everything in the <code>main</code> method
+            <a class="anchor_small" href="#boot_quick" title="permanent link"></a>
+            Quick initialization
         </h4>
-        <p>
-            This is the quickest way to have an up and running Spincast application. It only uses the default components
-            and is not very modular. But it is still a fully working application.
-        </p>
-        <p>
+
+        <p> 
+             The quickest way to initialize a Spincast application is to call <code>Spincast.init()</code> :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="3,8,3,23"
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.init();
+    }
+    
+    // ...
+}</pre> 
+                </p> 
+            </div>
+        </p> 
+        <p> 
+            This will create a Guice context using all the <a href="#plugins_default">default plugins</a>,
+            will bind the current <code>App</code> class itself in that context (as a singleton) and will load the
+            <code>App</code> instance. You then simply
+            have to add an <a href="#init_method">init method</a> to your <code>App</code> class to
+            define Routes, add some logic, and start the HTTP Server :
+            
             <div>
                 <p>
                     <pre class="ace ace-java"
 >public class App {
 
     public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
-
-        DefaultRouter router = guice.getInstance(DefaultRouter.class);
-        router.GET("/").save(new DefaultHandler() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("In index!");
-            }
-        });
-
-        Server server = guice.getInstance(Server.class);
+        Spincast.init();
+    }
+    
+    @Inject
+    protected void init(DefaultRouter router, Server server) {
+        router.GET("/").save(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
         server.start();
     }
 }</pre> 
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">5</span> : We create the Guice context using the provided
-                            <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a> module. 
-                            This will bind a default implementation
-                            for all the required components.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">7</span> : We get the Router from the Guice context.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">8-14</span> : We add a <code>GET</code> route for the <code>"/"</code> index page.
-                            Here, we use an <em>inline</em> handler, but we will see that, with Java 8+, it is possible to use
-                            <code>lambdas</code> or <code>method handlers</code> too.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">16-17</span> : We get the Server instance from the Guice context and
-                            we start it!
-                        </li>
-                    </ul>
-                </p>  
-            </div>
-        </p>   
-    </div>
-    
-    {#==========================================
-    Section "bootstrapping / main_class_as_boot"
-    ==========================================#}
-    <div id="main_class_as_boot">
-        <h4>
-            <a class="anchor_small" href="#main_class_as_boot" title="permanent link"></a>
-            The main class used as the bootstrapping class
-        </h4>
-        <p>
-            In this second example, instead of retrieving the Router and
-            the Server from the Guice context, we let Guice inject them inside
-            our <code>App</code> class. The <code>App</code> class is, in other words, 
-            now part of the Guice context!
-        </p>
-        <p>
-            <div>
-                <pre class="ace ace-java"
->public class App {
-
-    public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args) {
-
-            @Override
-            protected void configure() {
-                super.configure();
-                bind(App.class).in(Scopes.SINGLETON);
-            }
-        });
-
-        App app = guice.getInstance(App.class);
-        app.start();
-    }
-
-    private final Server server;
-    private final DefaultRouter router;
-
-    @Inject
-    public App(Server server, DefaultRouter router) {
-        this.server = server;
-        this.router = router;
-    }
-
-    public void start() {
-
-        this.router.GET("/").save(new DefaultHandler() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("In index!");
-            }
-        });
-
-        this.server.start();
-    }
-}</pre>   
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">1</span> : We will use the <code>App</code> main class not
-                            only as the class containing the <code>main(...)</code> method, but also as the <em>bootstrapping</em>
-                            class...
-                            
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">5-12</span> : Inside the <code>main(...)</code> method, we create 
-                            the Guice context using the provided
-                            <code>SpincastDefaultGuiceModule</code> module, but we also extend it, inline, 
-                            to bind the <code>App</code> class too (line <span class="code-line-nbr">10</span>)!
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">14-15</span> :  
-                            We get the <code>App</code> instance from Guice and we call the
-                            <code>start()</code> method on it! Since the <code>App</code> instance
-                            is now managed by Guice, the required dependencies will be injected automatically
-                            and there is no need to manually retrieve the Server or the Router from Guice anymore.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">21-25</span> : The constructor
-                            that Guice will use (Note the <code>@Inject</code> annotation).
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">27</span> : The <code>start()</code> method
-                            we call once the Guice context is created.  
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">29-34</span> : We add a <code>GET</code> Route for the <code>"/"</code> index page,
-                            here again using an inline Route Handler.
-                        </li>
-                        <li>
-                           <span class="code-line-nbr">37</span> : We start the Server.
-                        </li>
-                    </ul>
-                </p>
-            </div>
-        </p>   
-    </div>
-    
-    {#==========================================
-    Section "bootstrapping / custom_guice_modules"
-    ==========================================#}
-    <div id="custom_guice_module">
-        <h4>
-            <a class="anchor_small" href="#custom_guice_module" title="permanent link"></a>
-            Using a custom Guice module
-        </h4>
-        <p>
-            Here we are finally starting to talk "real life" structure! 
-            Instead of extending the default <code>SpincastDefaultGuiceModule</code> module <em>inline</em>, we will
-            create a <em>custom</em> Guice module for our application. We're also going to create an
-            <code>AppConfig</code> class to extend the default configurations and override some of them.
-        </p>
-
-        <p>
-            <div>
-                <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                First let's create a custom configuration class for our application. 
-                The goal is to override some of the Spincast default
-                configurations and to add some extra configurations, specific to our application.
-
-                <pre class="ace ace-java"
->// The interface
-public interface AppConfig extends SpincastConfig {
-    public String getAppName();
-}
-
-// The implementation
-public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
-
-    @Override
-    public int getHttpServerPort() {
-        return 8042;
-    }
-
-    @Override
-    public String getAppName() {
-        return "My supercalifragilisticexpialidocious app!";
-    }
-}</pre>   
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">2</span> : We define an interface for our custom configurations.
-                            We make this interface extend <code>SpincastConfig</code> because we're going to use it
-                            not only to <em>add</em> new configurations, but also to <em>override</em> some 
-                            default Spincast configurations.  
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">3</span> : We add a new configuration, only required by our application : 
-                            <code>getAppName()</code>. This configuration method will be used to retrieve the name of the application, 
-                            at runtime.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">7</span> : The <code>AppConfigDefault</code> implementation class. We
-                            extend the default <code>SpincastConfigDefault</code>, to start with the default configurations, but 
-                            of course we also implement our custom <code>AppConfig</code> interface.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">9-12</span> : Here, we override a default Spincast configuration : we change
-                            the <code>port</code> the HTTP server will start on to <code>8042</code>! 
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">14-17</span> : We implement our custom, application specific, 
-                            configuration.
-                        </li>
-
-                    </ul>
                 </p> 
             </div>
-        </p>
+        </p> 
+        <p> 
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            This is a simple, but totally functional Spincast application!
+            There is a <a href="/demos-tutorials/hello-world/quick">demo page</a> for this very example.
+            On that page, you can download the sources and run the application by yourself.
+        </p> 
+        <p> 
+            Finally, note that <code>Spincast.init()</code> in fact creates a default <a href="#boot_bootstrapper">Bootstrapper</a>
+            under the hood. We will now see how you can configure this bootstrapper <em>explicitly</em> to have more control 
+            over your application initialization...
+        </p> 
 
-        <div class="subSection">
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    Now that our custom configuration interface and implementation classes are ready, let's create a 
-                    custom Guice module to tweak some bindings.
-                    
-                    <pre class="ace ace-java"
->public class AppModule extends SpincastDefaultGuiceModule {
-
-    public AppModule(String[] mainArgs) {
-        super(mainArgs);
-    }
-
-    @Override
-    protected void configure() {
-        super.configure();
-
-        bind(App.class).in(Scopes.SINGLETON);
-        bind(AppConfigDefault.class).in(Scopes.SINGLETON);
-        bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
-
-        // Here you would also bind your other components : controllers, services, etc.
-    }
-
-    /**
-     * We use our application config instead of the Spincast
-     * default config.
-     */
-    @Override
-    protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), 
-                                                    getWebsocketContextType()) {
-
-            @Override
-            protected Class&lt;? extends SpincastConfig&gt; getSpincastConfigImplClass() {
-                return AppConfigDefault.class;
-            }
-        });
-    }
-}</pre>     
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">1</span> : Our custom Guice module extends 
-                            <code>SpincastDefaultGuiceModule</code> so we do not start from scratch: default
-                            bindings are kept. We're only going to change what's required!
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">3-5</span> : We want to let the <code>SpincastDefaultGuiceModule</code>
-                            parent module bind the main arguments, so we add a constructor to receive them.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">8-9</span> : We override the <code>configure()</code> method
-                            to bind extra stuff. We keep the default bindings by calling <code>super.configure()</code>.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">11</span> : We bind our <code>App</code> class (code listed below) which, again, will be the
-                            bootstrapping class for our application.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">12-13</span> : We bind our app specific configurations. Since our implementation
-                            class, <code>AppConfigDefault</code>, will be used by two different interfaces, <code>AppConfig</code> and
-                            <code>SpincastConfig</code>, we have to bind it itself as a singleton 
-                            (<a href="https://github.com/google/guice/wiki/Scopes#applying-scopes">more info</a>).
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">15</span> : This is a simple example, but in a real application you would
-                            also bind your controllers, your services, your repositories, etc.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">22-32</span> : Since we want Spincast to use our <em>custom</em>
-                            class, <code>AppConfigDefault</code>, as the implementation for the <code>SpincastConfig</code> interface, 
-                            we need to override that binding! There
-                            are a couple of ways to do this, but here we're going to override the
-                            <code>SpincastConfigPluginGuiceModule</code> module installation, <em>inline</em>. You could also
-                            achieve this using an <a href="#overriding_modules">overriding module</a>.
-                        </li>
-                    </ul>
-                </p>  
-            </div>
-        </div>
-        
-        <div>
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-	                And, finally, here's our bootstrapping <code>App</code> class:
-	                <pre class="ace ace-java"
->public class App {
-
-    public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(new AppModule(args));
-
-        App app = guice.getInstance(App.class);
-        app.start();
-    }
-
-    private final Server server;
-    private final DefaultRouter router;
-    private final AppConfig config;
-
-    @Inject
-    public App(Server server, DefaultRouter router, AppConfig config) {
-        this.server = server;
-        this.router = router;
-        this.config = config;
-    }
-
-    protected Server getServer() {
-        return this.server;
-    }
-
-    protected DefaultRouter getRouter() {
-        return this.router;
-    }
-
-    protected AppConfig getConfig() {
-        return this.config;
-    }
-
-    public void start() {
-
-        getRouter().GET("/").save(context -&gt; {
-            context.response().sendPlainText("App name is : \"" +
-                    getConfig().getAppName() + "\" and " + "server port is : " +
-                    getConfig().getHttpServerPort());
-        });
-
-        getServer().start();
-    }
-}</pre>
-                </p>
-	            <p>
-	                <span class="explanation">Explanation :</span>
-	                <ul>
-	                    <li>
-	                        <span class="code-line-nbr">5</span> : In the <code>main(...)</code> method, we
-	                        use our <em>custom</em> <code>AppModule</code> Guice module!
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">7-8</span> : As in the previous example, we use
-	                        the main <code>App</code> class as the bootstrapping class. We get its instance
-	                        from Guice and call its <code>start()</code> method.
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">15-20</span> : In the constructor, we 
-	                        ask Guice to inject a <code>AppConfig</code> instance, in addition to the
-	                        <code>Server</code> and <code>Router</code>.
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">22-32</span> : Let's use <code>getters</code> in this
-	                        example, instead of accessing the member variables directly.
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">34</span> : The <code>start()</code> method
-	                       we call once the Guice context is created.   
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">36</span> : We add a <code>GET</code> route to the <code>"/"</code> index
-	                        page. Here, for the handler, we use a Java 8's <code>lambda</code>.
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">38</span> : In the <code>Route Handler</code>, we can now access
-	                        our new configuration method <code>getAppName()</code>!
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">39</span> : We can also access the <code>getHttpServerPort()</code>
-	                        method that we overrided in our custom configuration implementation class.
-	                    </li>
-	                    <li>
-	                        <span class="code-line-nbr">42</span> : We start the Server. The Server will start on
-	                        port <code>8042</code>.
-	                    </li>
-	                </ul>
-	            </p> 
-            </div>
-        </div>
     </div>
     
-    
-    {#==========================================
-    Section "bootstrapping / overriding_modules"
-    ==========================================#}  
-    <div id="overriding_modules">
+    <div id="boot_bootstrapper">
         <h4>
-            <a class="anchor_small" href="#overriding_modules" title="permanent link"></a>
-            Using overriding modules
+            <a class="anchor_small" href="#boot_bootstrapper" title="permanent link"></a>
+            The Bootstrapper
         </h4>
-        
+        <p> 
+            In most cases, you need more control than simply calling <code>Spincast.init()</code>. 
+            You want to be able to add custom modules to the Guice context, to add extra plugins, etc.
+        </p> 
         <p>
-            Instead of having a custom Guice module that extend <code>SpincastDefaultGuiceModule</code>
-            and changes some bindings by <em>overriding methods</em>, you can also use <em>overriding modules</em>.
-        <p>
-        <p>
+            You do so by using <code>Spincast.configure()</code> instead of 
+            <code>Spincast.init()</code>. This starts a bootstrapper to help
+            configure your application before it is started. Let's see an example :
+            
             <div>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    Let's first create a custom configuration class which changes the <code>port</code> the
-                    server will use :
-                    <br />
-                    
                     <pre class="ace ace-java"
->public class AppConfigDefault extends SpincastConfigDefault {
-    
-    @Override
-    public int getHttpServerPort() {
-        return 8899;
-    }
+>public static void main(String[] args) {
+
+    Spincast.configure()
+            .module(new AppModule())
+            .plugin(new SpincastHttpClientPlugin())
+            .requestContextImplementationClass(AppRequestContextDefault.class)
+            .mainArgs(args)
+            .init();
+    //....
 }</pre> 
                 </p>
                 <p>
                     <span class="explanation">Explanation :</span>
                     <ul>
                         <li>
-                            <span class="code-line-nbr">1</span> : Our custom class extends <code>SpincastConfigDefault</code>
-                            since we want to keep the defaut configurations and only change the <code>port</code> the server 
-                            will use.
+                            <span class="code-line-nbr">3</span> : We start the bootstrapper by calling 
+                            <code>.configure()</code> instead of <code>.init()</code>!
                         </li>
                         <li>
-                            <span class="code-line-nbr">3-6</span> : We override the server <code>port</code>.
+                            <span class="code-line-nbr">4</span> : We add a custom Guice module so
+                            we can bind our application components.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">5</span> : We add an extra <a href="/plugins/spincast-http-client">plugin</a>.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">6</span> : We tell Spincast that we are using a
+                            <a href="/documentation#extending_request_context">custom Request Context</a> type.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">7</span> : We bind the arguments received in the
+                            <code>main(...)</code> method to the Guice context.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">8</span> : We finally call <code>.init()</code> so the Guice
+                            context is created, the current class is bound and then loaded.
                         </li>
                     </ul>
                 </p> 
+                
             </div>
         </p>
-        <div class="subSection">
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    We then create a custom Guice module for our application:
-                    <br />
-                    
-                    <pre class="ace ace-java"
->public class AppModule extends AbstractModule {
-
-    @Override
-    protected void configure() {
         
-        bind(App.class).in(Scopes.SINGLETON);
-        bind(SpincastConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON); 
-        
-        // Here you would also bind your other components : controllers, services, etc.
-    }
-}</pre>     
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">1</span> : Here, our module <em>does not</em> extend
-                            <code>SpincastDefaultGuiceModule</code>! It simply extends Guice's base <code><em>AbstractModule</em></code>.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">6</span> : We bind our <code>App</code> class (listed below).
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">7</span> : We bind the <code>SpincastConfig</code> interface
-                            to our custom <code>AppConfigDefault</code> implementation. This is going to override the 
-                            default binding.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">9</span> : Our example is very simple, but in a real life application you would
-                            also bind your <code>controllers</code>, your <code>services</code>, your <code>repositories</code>, etc.
-                        </li>
-                    </ul>
-                </p> 
-            </div>
-        </div>
-        <div class="subSection">
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    Finally, we create our bootstrapping <code>App</code> class and tell Guice we want to use
-                    the default bindings provided by the <code>SpincastDefaultGuiceModule</code> module, but that
-                    we also want to add/override some bindings using our custom <code>AppModule</code> module!
-                    <br />
-                    
-                    <pre class="ace ace-java"
->public class App {
-
-    public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(Modules.override(new SpincastDefaultGuiceModule(args))
-                                                     .with(new AppModule()));
-
-        App app = guice.getInstance(App.class);
-        app.start();
-    }
-
-    private final Server server;
-    private final DefaultRouter router;
-
-    @Inject
-    public App(Server server, DefaultRouter router) {
-        this.server = server;
-        this.router = router;
-    }
-
-    public void start() {
-
-        this.router.GET("/").save(new DefaultHandler() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("In index!");
-            }
-        });
-
-        this.server.start();
-    }
-}</pre>       
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">5-6</span> : We create the Guice context using 
-                            <code>SpincastDefaultGuiceModule</code> as the base module, but by using 
-                            <a href="http://google.github.io/guice/api-docs/latest/javadoc/com/google/inject/util/Modules.html#override-com.google.inject.Module...-"><code>Modules.override(...).with(...)</code>
-                            </a> we specify that our custom module <em>overrides</em> already existing bindings). 
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">31</span> : Since we overrided the associated binding, the server 
-                            will start on <code>port</code> 8899.
-                        </li>
-                    </ul>
-                </p> 
-            </div>
-        </div>
-    </div>
-
-    {#==========================================
-    Section "bootstrapping / bootstrapping_as_config"
-    ==========================================#}  
-    <div id="bootstrapping_as_config">
-        <h4>
-            <a class="anchor_small" href="#bootstrapping_as_config" title="permanent link"></a>
-            Bootstrapping class as the configuration class
-        </h4>
-        
-        <p>
-            Now we'll see the kind of bootstrapping variations that are possible. Feel free to
-            pick/invent one you are comfortable with.
-        </p>
-        <p>
-            In the following example, the <code>App</code> class not only acts as the bootstrapping
-            class, but as the <code>SpincastConfig</code> implementation too! This will
-            make it easy to override some default configurations.
-        </p>
-        <p>
-            <div>
-                <p>
-                    
-                <pre class="ace ace-java"
->public class App extends SpincastConfigDefault {
-
-    public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(new AppModule(args));
-
-        App app = guice.getInstance(App.class);
-        app.start();
-    }
-
-    private final Server server;
-    private final DefaultRouter router;
-
-    @Inject
-    public App(Server server,
-               DefaultRouter router) {
-        super();
-        this.server = server;
-        this.router = router;
-    }
-
-    protected Server getServer() {
-        return this.server;
-    }
-
-    protected DefaultRouter getRouter() {
-        return this.router;
-    }
-
-    @Override
-    public int getHttpServerPort() {
-        return 8076;
-    }
-
-    public void start() {
-
-        getRouter().GET("/").save(new DefaultHandler() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("In Index!");
-            }
-        });
-
-        getServer().start();
-    }
-}</pre>   
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">1</span> : Our <code>App</code> 
-                            class extends <code>SpincastConfigDefault</code> : it will be
-                            the implementation class for the configurations.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">14-20</span> : We ask Guice to inject the <code>server</code> 
-                            and the <code>router</code>.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">30-33</span> : Since the <code>App</code> now
-                            acts as the configurations implementation class, we can directly override the
-                            server <code>port</code>!  
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">45</span> : The server will start on port
-                            <code>8076</code>.
-                        </li>
-                        
-                    </ul>
-                </p>     
-            </div>
-        </p>
-        <div class="subSection">
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    We ajust our custom <code>AppModule</code> Guice module:
-                    
-                    <pre class="ace ace-java"
->public class AppModule extends SpincastDefaultGuiceModule {
-
-    public AppModule(String[] mainArgs) {
-        super(mainArgs);
-    }
-
-    @Override
-    protected void configure() {
-        super.configure();
-
-        bind(App.class).in(Scopes.SINGLETON);
-
-        // Here you would also bind your other components : controllers, services, etc.
-    }
-
-    @Override
-    protected void bindConfigPlugin() {
-        install(new SpincastConfigPluginGuiceModule(getRequestContextType(), 
-                                                    getWebsocketContextType()) {
-
-            @Override
-            protected Class&lt;? extends SpincastConfig&gt; getSpincastConfigImplClass() {
-                return App.class;
-            }
-        });
-    }
-}</pre> 
-                </p>
-                <p>
-                    <span class="explanation">Explanation :</span>
-                    <ul>
-                        <li>
-                            <span class="code-line-nbr">11</span> : We make sure our <code>App</code> 
-                            bootstrapping class is bound. 
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">16-26</span> : We override the installation of the
-                            <code>SpincastConfigPluginGuiceModule</code> module, so our <code>App</code> class
-                            is used as the implementation for the <code>SpincastConfig</code> interface. 
-                        </li>
-                    </ul>
-                </p>  
-            </div>
-        </div> 
+        <p> 
+            <strong>Bootstapper's options :</strong>
+            <br />
+            Let's now see the bootstrapper's options (Note that none of them is mandatory,
+            except <code><em>requestContextImplementationClass(...)</em></code> if you are using a
+            custom Request Context type and <code><em>websocketContextImplementationClass(...)</em></code> if you are using a
+            custom WebSocket Context type). 
+            
+            <ul>
+                <li>
+                    <code><strong>module(...)</strong></code> : Adds a Guice module.
+                    It can be called multiple time to add more than one module. All the modules
+                    added using this method are going to be <em>combined</em> together.
+                </li>
+                <li>
+                    <code><strong>plugin(...)</strong></code> : To register a <a href="#plugins">plugin</a>.
+                    You can add multiple plugins (in addition to the default ones). They will
+                    be applied in the order they are added to the bootstrapper.
+                </li>
+                <li>
+                    <code><strong>disableAllDefaultPlugins()</strong></code> : Disables <em>all</em>
+                    the default plugins, including the <code>core</code> one. If you think about
+                    using this method, you should probably start 
+                    <a href="#boot_with_core">with the <em>spincast-core</em> artifact</a> 
+                    instead of <code>spincast-default</code>.
+                </li>
+                <li>
+                    <code><strong>disableDefault<em>XXXXXXX</em>Plugin()</strong></code> : Disables 
+                    a default plugin. There is a version of this method for every
+                    default plugin. If you disable a default plugin, you are responsible for
+                    binding the required components the plugin was in charge of!
+                </li>
+                <li>
+                    <code><strong>requestContextImplementationClass(...)</strong></code> : Tells Spincast
+                    that you are using a <a href="#extending_request_context">custom Request Context</a> type.
+                    You need to pass as a parameter the <em>implementation</em> class of your 
+                    custom Request Context type. Calling this method is mandatory if you are using
+                    a custom Request Context type!
+                </li>
+                <li>
+                    <code><strong>websocketContextImplementationClass(...)</strong></code> : Tells Spincast
+                    that you are using a <a href="#websockets_extending_context">custom WebSocket Context</a> type.
+                    You need to pass as a parameter the <em>implementation</em> class of your 
+                    custom WebSocket Context type. Calling this method is mandatory if you are using
+                    a custom WebSocket Context type!
+                </li>
+                <li>
+                    <code><strong>mainArgs(...)</strong></code> : To bind the arguments received in the
+                    <code>main(...)</code> method. They will then be available for injection
+                    using the <code>@MainArgs String[]</code> key.
+                </li>
+                <li>
+                    <code><strong>bindCurrentClass(...)</strong></code> : By default,
+                    the class in which the bootstrapper is created is automatically
+                    bound in the Guice context (as a singleton) and its instance is loaded
+                    when the context is ready. To disable this, you can call <code>bindCurrentClass(false)</code>.
+                </li>
+                <li>
+                    <code><strong>appClass(...)</strong></code> : You can specify which class should be automatically
+                    bound and loaded when the Guice context is ready. Calling this method will disable the
+                    binding of the current class (as calling <code>bindCurrentClass(false)</code> would do).
+                </li>
+                <li>
+                    <code><strong>getDefaultModule(...)</strong></code> : Allows you to get the Guice module
+                    resulting from all the default plugin. You can use this (in association with 
+                    <code>disableAllDefaultPlugins()</code> and <code>module(...)</code>) to tweak the 
+                    Guice module generated by the default plugins.
+                </li>
+            </ul>
+        </p> 
     </div>
     
-    {#==========================================
-    Section "bootstrapping / using controllers and services"
-    ==========================================#}  
-    <div id="using_controllers">
+    <div id="boot_tips">
         <h4>
-            <a class="anchor_small" href="#using_controllers" title="permanent link"></a>
-            Using controllers and services
+            <a class="anchor_small" href="#boot_tips" title="permanent link"></a>
+            Various bootstrapping tips
         </h4>
-        
-        <p>
-            In a real life application, your logic
-            wouldn't all be inside a single <code>App</code> class! You would have <code>controllers</code>,
-            <code>services</code>, <code>repositories</code>, etc. 
-            Here's a quick example of what this could look like.
-        <p>
-        <p>
-            Let's start with a "<code>UserController</code>" controller responsible for 
-            handling <code>users</code> related requests:
-        </p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public interface UserController {
-
-    // Route Handler to get a User as Json
-    public void getUser(DefaultRequestContext context);
-    
-    // ...
-}</pre>
-            </p>
-        </div>
-        <p>
-            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            Here's a possible implementation for this controller. Note that
-            we inject an "UserService" service object, and we use it
-            to get the user from our system (the actual implementation of this service
-            is not important in this example) :
-        </p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public class UserControllerDefault implements UserController {
-
-    private final UserService userService;
-
-    @Inject
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    protected UserService getUserService() {
-        return this.userService;
-    }
-
-    @Override
-    public void getUser(DefaultRequestContext context) {
-
-        String userId = context.request().getPathParam("userId");
-
-        User user = getUserService().getUser(userId);
-
-        context.response().sendJson(user);
-    }
-}</pre>
-            </p>
-            <p>
-                <span class="explanation">Explanation :</span>
-                <ul>
-                    <li>
-                        <span class="code-line-nbr">5-8</span> : In the constructor, we inject
-                        the required <code>UserService</code> service.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">15</span> : We implement our <code>Route Handler</code>.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">17</span> : We get the <code>userId</code> value from 
-                        the request. As we'll see, this user id will be part of the 
-                        path from the Route.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">19</span> : We use the injected <code>service</code> to get
-                        the user from our system. Note that this <code>service</code> could itself uses a
-                        <code>repository</code> object to access a data source where the users
-                        information is stored.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">21</span> : We send the user as
-                        <code>Json</code>. The user object will be serialized and sent using the
-                        <code>"application/json"</code> content-type.
-                    </li>
-                </ul>
-            </p>   
-        </div>
-        <p>
-            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            As in the previous examples, let's once again define our routes directly in the <code>App</code> class
-            (this is not <em>required</em>, by the way! You can 
-            <a href="#router_dynamic">inject the Router anywhere</a> to add
-            routes to it...). 
-            But this time, instead of defining our <code>Route Handlers</code> inline, we're going
-            to do it inside our <code>Controller</code> :
-        </p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public class App {
-
-    public static void main(String[] args) {
-
-        Injector guice = Guice.createInjector(new AppModule(args));
-
-        App app = guice.getInstance(App.class);
-        app.start();
-    }
-
-    private final Server server;
-    private final DefaultRouter router;
-    private final UserController userController;
-
-    @Inject
-    public App(Server server, DefaultRouter router, UserController userController) {
-        this.server = server;
-        this.router = router;
-        this.userController = userController;
-    }
-
-    protected Server getServer() {
-        return this.server;
-    }
-
-    protected DefaultRouter getRouter() {
-        return this.router;
-    }
-
-    protected UserController getUserController() {
-        return this.userController;
-    }
-
-    public void start() {
-
-        getRouter().GET("/users/${userId}").save(getUserController()::getUser);
-
-        getServer().start();
-    }
-}</pre>
-            </p>
-            <p>
-                <span class="explanation">Explanation :</span>
-                <ul>
-                    <li>
-                        <span class="code-line-nbr">16</span> : We inject our <code>Controller</code>
-                        in the constructor.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">36</span> : We define a <code>"/users/${userId}"</code> Route which 
-                        contains a <a href="#dynamic_parameters">dynamic parameter</a> :
-                        "<code>userId</code>". Instead of defining our Route Handler <em>inline</em>, we
-                        use a Java 8's <code>method handler</code> to point to
-                        the <code>getUser(...)</code> Route Handler of our <code>UserController</code>
-                        controller.
-                    </li>
-                    
-                </ul>
-            </p>  
-        </div>
-        <p>
-            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            Finally, we bind everything in our custom Guice module:
-        </p>
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public class AppModule extends SpincastDefaultGuiceModule {
-
-    public AppModule(String[] mainArgs) {
-        super(mainArgs);
-    }
-
-    @Override
-    protected void configure() {
-        super.configure();
-
-        bind(App.class).in(Scopes.SINGLETON);
-        bind(UserController.class).to(UserControllerDefault.class).in(Scopes.SINGLETON);
-        bind(UserService.class).to(UserServiceDefault.class).in(Scopes.SINGLETON);
-    }
-}</pre>
-            </p>
-        </div>
-        <p>
-            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            This example represents what we think is a good architecture to start
-            a real life Spincast application. The only modification we would also recommend, is
-            to use a <em>custom</em> <code>Request Context</code> type instead of the default one.
-            Learn how to do this in <a href="#request_context">The Request Context</a> section!
-        </p>
+        <p> 
+            <ul>
+                <li>
+                    Have a look at the code of the <a href="XXXXX">Quick Start</a> application to
+                    see how it is bootstrapped. Also read the advanced version of the  
+                    <a href="/demos-tutorials/hello-world/super">Hello world! tutorial</a>.
+                </li>
+                <li>
+                    The bootstrapping process is all about creating a regular Guice context, so make sure
+                    you read <a href="https://github.com/google/guice/wiki/Motivation">Guice documentation</a>
+                    if you didn't already!
+                </li>
+                <li>
+                    Be creative! For example, you could make the <code>App</code> class
+                    extend <a href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a>
+                    so you can override some default configurations right in that class!
+                    <em>Everything</em> in Spincast is based on dependency injection so you can
+                    easily replace/extend pretty much anything you want.
+                </li>
+                <li>
+                    Split your application in controllers, services, repositories and utilities
+                    and inject the components you need using the standard <code>@Inject</code>
+                    annotation. Don't put everything in the <code>App</code> class, except if
+                    your application is very small.
+                </li>
+                <li>
+                    Don't forget to register your <em>implementation</em> classes if you
+                    are using a <a href="#extending_request_context">custom Request Context</a> type or a 
+                    <a href="#websockets_extending_context">custom Request Context</a>. You do this using
+                    the <a href="/public/javadoc/org/spincast/defaults/bootstrapping/SpincastBootstrapper.html#requestContextImplementationClass-java.lang.Class-">requestContextImplementationClass(...)</a>
+                    method and the <a href="/public/javadoc/org/spincast/defaults/bootstrapping/SpincastBootstrapper.html#websocketContextImplementationClass-java.lang.Class-">websocketContextImplementationClass(...)</a>
+                    method on the <a href="#boot_bootstrapper">Bootstrapper</a>.
+                </li>
+                <li>
+                    Remember that by using the <a href="#quick_start">Quick Start</a> application as a template,
+                    pretty much everything discussed here <em>has already been implemented for you</em>!
+                    Simply load the code in your favorite IDE, and start adjusting the code to meet the needs of your
+                    application.
+                </li> 
+            </ul>
+        </p> 
     </div>
+    
     
     {#==========================================
     Section "bootstrapping / boot_with_core"
@@ -958,24 +280,26 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
     <div id="boot_with_core">
         <h4>
             <a class="anchor_small" href="#boot_with_core" title="permanent link"></a>
-            Using <code>SpincastCoreModule</code> directly
+            Using <code>spincast-core</code> directly
         </h4>
         <p>
-            In all of the previous examples, we have been using
-            the <code>"spincast-default"</code> Maven artifact, so a default
-            implementation is automatically bound for all the required components.
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            This is an advanced topic that most applications will never need.
         </p> 
         <p>
-            By adding those default implementations, <code>"spincast-default"</code> also
-            add <em>transitive dependencies</em>. For example, dependencies for some 
+            If you need <em>total</em> control over how your application is built, you
+            can decide to start without the <a href="#plugins_default">default plugins</a>
+            and pick, one by one, which one to add.
+        </p> 
+        <p>
+            By using <code>"spincast-default"</code> you add the default plugins as
+            Maven artifact but also a lot of
+            <em>transitive dependencies</em>. For example, dependencies for some 
             <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a> artifacts
             are added by the default 
             <a href="/plugins/spincast-jackson-json">Spincast Jackson Json</a> plugin. Those
             dependencies may conflict with other dependencies you use in your application.
-            This is a situation where you may want to start with the <code><em>"spincast-core"</em></code> 
-            artifact directly, instead of the default one.
-            You may also want to start from scratch to have very fine control over what the resulting application will
-            contain, to reduce the size of the application, etc.
+            This is a situation where you may want to start without the default plugins.
         </p> 
         <p>
             <div>
@@ -997,16 +321,15 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
             Doing so, you start with the <code>core</code> code but you need to provide an implementation
             for all the required components, by yourself. You generaly provide those
             implementations by choosing and installing
-            some <a href="/plugins">plugins</a>: you add their artifacts to your project
-            and you install their Guice modules.
+            some <a href="/plugins">plugins</a> by yourself.
         </p>
         <div>
             <div>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
                     For example, to provide an implementation for the 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html"><code>Server</code></a> 
-                    and for the <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html"><code>TemplatingEngine</code></a> 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a> 
+                    and for the <a class="javadoc" href="/public/javadoc/org/spincast/core/templating/TemplatingEngine.html">TemplatingEngine</a> 
                     components, you could use:
                     
                     <pre class="ace ace-xml" 
@@ -1027,51 +350,25 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
                 </p>
             </div>
         </div>
-        <div class="subSection">
-            <div>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    And then install their Guice modules:
-                    
-                    <pre class="ace ace-java" data-ace-hi="10,8,10,100|11,8,11,100|13,8,13,100|14,8,14,100"
->public class AppModule extends SpincastCoreGuiceModule {
-
-    public AppModule(String[] mainArgs) {
-        super(mainArgs);
-    }
-
-    @Override
-    protected void configure() {
-        super.configure();
-
-        install(new SpincastUndertowPluginGuiceModule(getRequestContextType(), 
-                                                      getWebsocketContextType()));
-                                                      
-        install(new SpincastPebblePluginGuiceModule(getRequestContextType(), 
-                                                    getWebsocketContextType()));
         
-        // ...
-    }
-}</pre>
-                </p> 
-            </div>
-        </div>
-        <div class="subSection">
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Note that by starting without <code>spincast-default</code>, you don't
+            have access to the <a href="#boot_bootstrapper">Bootstrapper</a>!
+            You'll have to create the Guice context by yourself, using the modules provided by the
+            different plugins.
+        </p>
+        <p>
+            If you fail to provide an implementation for a component that would be bound by
+            a default plugin, you will get this kind of error when trying to start your application&nbsp;:
+            
             <div>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    If you fail to provide an implementation for a required component,
-                    you will get this kind of error when trying to start the application:
-                    
-                    <div>
-                        <p>
-                            <pre class="ace ace-text"
+                    <pre class="ace ace-text"
 >&gt; ERROR - No implementation for org.spincast.server.Server was bound.</pre>
-                        </p> 
-                    </div> 
-                </p>
-            </div>   
-        </div>
+                </p> 
+            </div> 
+        </p>
     </div>
 
 </section>  

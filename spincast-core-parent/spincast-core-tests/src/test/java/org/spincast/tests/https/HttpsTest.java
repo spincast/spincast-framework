@@ -3,22 +3,24 @@ package org.spincast.tests.https;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-import com.google.inject.Module;
+public class HttpsTest extends IntegrationTestNoAppDefaultContextsBase {
 
-public class HttpsTest extends SpincastDefaultNoAppIntegrationTestBase {
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return HttpsTestConfig.class;
+    }
 
-    protected static class HttpsTestConfig extends SpincastTestConfig {
+    protected static class HttpsTestConfig extends SpincastConfigTestingDefault implements SpincastConfigTesting {
 
         private int httpsServerPort = -1;
 
@@ -54,17 +56,6 @@ public class HttpsTest extends SpincastDefaultNoAppIntegrationTestBase {
         public String getHttpsKeyStoreKeypass() {
             return "myKeyPass";
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return HttpsTestConfig.class;
-            }
-        };
     }
 
     @Test

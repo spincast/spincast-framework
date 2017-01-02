@@ -8,13 +8,13 @@ import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.net.HttpHeaders;
 
-public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class ReverseProxyTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void none() throws Exception {
@@ -56,7 +56,7 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
-                                                      .send();
+                                                     .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -81,8 +81,8 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
-                                                      .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
-                                                      .send();
+                                                     .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
+                                                     .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -107,9 +107,9 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
-                                                      .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
-                                                      .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
-                                                      .send();
+                                                     .addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
+                                                     .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
+                                                     .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -132,8 +132,8 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeadersExtra.X_FORWARDED_HOST, "someHost")
-                                                      .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
-                                                      .send();
+                                                     .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
+                                                     .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -156,8 +156,8 @@ public class ReverseProxyTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
-                                                      .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
-                                                      .send();
+                                                     .addHeaderValue(HttpHeadersExtra.X_FORWARDED_PORT, "12345")
+                                                     .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

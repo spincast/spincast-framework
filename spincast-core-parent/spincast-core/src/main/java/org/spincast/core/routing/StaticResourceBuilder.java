@@ -68,7 +68,7 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead)    
      */
     public StaticResourceBuilder<R> cors(Set<String> allowedOrigins,
-                                          Set<String> extraHeadersAllowedToBeRead);
+                                         Set<String> extraHeadersAllowedToBeRead);
 
     /**
      * Enables Cross-Origin Resource Sharing (Cors)
@@ -80,8 +80,8 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent)   
      */
     public StaticResourceBuilder<R> cors(Set<String> allowedOrigins,
-                                          Set<String> extraHeadersAllowedToBeRead,
-                                          Set<String> extraHeadersAllowedToBeSent);
+                                         Set<String> extraHeadersAllowedToBeRead,
+                                         Set<String> extraHeadersAllowedToBeSent);
 
     /**
      * Enables Cross-Origin Resource Sharing (Cors)
@@ -94,9 +94,9 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      *                                          boolean allowCookies)   
      */
     public StaticResourceBuilder<R> cors(Set<String> allowedOrigins,
-                                          Set<String> extraHeadersAllowedToBeRead,
-                                          Set<String> extraHeadersAllowedToBeSent,
-                                          boolean allowCookies);
+                                         Set<String> extraHeadersAllowedToBeRead,
+                                         Set<String> extraHeadersAllowedToBeSent,
+                                         boolean allowCookies);
 
     /**
      * Enables Cross-Origin Resource Sharing (Cors)
@@ -111,10 +111,10 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      *                                          )   
      */
     public StaticResourceBuilder<R> cors(Set<String> allowedOrigins,
-                                          Set<String> extraHeadersAllowedToBeRead,
-                                          Set<String> extraHeadersAllowedToBeSent,
-                                          boolean allowCookies,
-                                          int maxAgeInSeconds);
+                                         Set<String> extraHeadersAllowedToBeRead,
+                                         Set<String> extraHeadersAllowedToBeSent,
+                                         boolean allowCookies,
+                                         int maxAgeInSeconds);
 
     /**
      * Adds public cache headers.
@@ -162,6 +162,10 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
     /**
      * Saves the static resource route.
      * 
+     * Note that the generated resource won't be cached 
+     * if there is a queryString on the request : it will 
+     * always be generated. 
+     * <p>
      * If the creation of the resource was not started using
      * an <code>Router</code> object, an exception will be
      * thrown.
@@ -171,6 +175,25 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      * the result will be saved.
      */
     public void save(Handler<R> generator);
+
+    /**
+     * Saves the static resource route.
+     * 
+     * <p>
+     * If the creation of the resource was not started using
+     * an <code>Router</code> object, an exception will be
+     * thrown.
+     * 
+     * @param generator If the resource is not found, the specified
+     * generator will be used to generate it and
+     * the result will be saved.
+     * 
+     * @param ignoreQueryString If <code>true</code>, only one 
+     * instance of the resource will be generated and cached. If 
+     * <code>false</code> (the default), the resource will always be
+     * generated if there is a queryString.
+     */
+    public void save(Handler<R> generator, boolean ignoreQueryString);
 
     /**
      * Creates and returns the static resource without adding it to

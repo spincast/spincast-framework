@@ -16,13 +16,13 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
+public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Test
     public void requestHeaders() throws Exception {
@@ -84,9 +84,9 @@ public class HeadersTest extends SpincastDefaultNoAppIntegrationTestBase {
         });
 
         HttpResponse response = GET("/one").addHeaderValue("header1", "val1 val2")
-                                            .addHeaderValue("header2",
-                                                            URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
-                                            .send();
+                                           .addHeaderValue("header2",
+                                                           URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
+                                           .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("", response.getContentAsString());

@@ -5,25 +5,27 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.exchange.RequestRequestContextAddon;
-import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Router;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.tests.SpincastDefaultNoAppIntegrationTestBase;
-import org.spincast.defaults.tests.SpincastDefaultTestingModule;
+import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastTestConfig;
+import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-import com.google.inject.Module;
+public class RoutingCaseSensitiveTest extends IntegrationTestNoAppDefaultContextsBase {
 
-public class RoutingCaseSensitiveTest extends SpincastDefaultNoAppIntegrationTestBase {
+    @Override
+    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+        return TestingSpincastConfigCaseSensitive.class;
+    }
 
     //==========================================
     // Remove all routes, even Spincast ones
@@ -33,23 +35,12 @@ public class RoutingCaseSensitiveTest extends SpincastDefaultNoAppIntegrationTes
         return true;
     }
 
-    public static class TestingSpincastConfigCaseSensitive extends SpincastTestConfig {
+    public static class TestingSpincastConfigCaseSensitive extends SpincastConfigTestingDefault {
 
         @Override
         public boolean isRoutesCaseSensitive() {
             return true;
         }
-    }
-
-    @Override
-    public Module getTestingModule() {
-        return new SpincastDefaultTestingModule() {
-
-            @Override
-            protected Class<? extends SpincastConfig> getSpincastConfigClass() {
-                return TestingSpincastConfigCaseSensitive.class;
-            }
-        };
     }
 
     @Test

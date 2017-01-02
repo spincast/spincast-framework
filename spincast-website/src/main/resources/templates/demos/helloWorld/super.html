@@ -1,0 +1,558 @@
+{% extends "../helloWorld.html" %}
+
+{% block demoSectionClasses %}demo_hello_world{% endblock %}
+{% block meta_title %}Demo - Hello World - Supercalifragilisticexpialidocious{% endblock %}
+{% block meta_description %}"Hello World!" demo and tutorial using Spincast - Supercalifragilisticexpialidocious version{% endblock %}
+
+{% set demoId = "super" %}
+
+
+{% block scripts %}
+<script>
+
+	$(function() {
+	    let $el = $('#super');
+	    $el.letterfx({"fx":"swirl", "fx_duration":"1s"});	
+	});
+	
+	var img = new Image();
+    img.src = "/public/images/marypoppins.gif";
+	$(".appFooter img").hover(function() {
+		$("#superimg").show();
+		window.scrollTo(0,document.body.scrollHeight);
+	}, function() {
+		$("#superimg").hide();
+	});
+
+</script>
+{% endblock %}
+
+{% block demoBody %}
+
+<h4>
+    <a class="anchor_small" href="#top" title="permanent link"></a>
+    3. Supercalifragilisticexpialidocious version
+</h4>
+
+<div class="alert alert-warning topContextAlert" role="alert"><strong>Warning!</strong> 
+    If you are new to Spincast, you may want to start with the <a href="/demos-tutorials/hello-world/quick"><strong>Quick version</strong></a>
+    or the <a href="/demos-tutorials/hello-world/better"><strong>Better version</strong></a> instead of this one. We often expect a
+    <em>"Hello World!"</em> application to be very simple, and this is not what this 
+    version is about.
+</div>
+
+<p>
+   In this tutorial, we will develop a "Hello World!" application using more advanced Spincast functionalities. We will&nbsp;:
+   
+    <ul>
+        <li>
+            Add an extra plugin.
+        </li>
+        <li>
+            Use a custom <code>Request Context</code> type.
+        </li>
+        <li>
+            Add an <code>add-on</code> to this
+            custom <code>Request Context</code> type.
+        </li>
+        <li>
+            Override the default configurations to change the port the Server will
+            be started on.
+        </li>
+        <li>
+            Create an endpoint that receives a username and returns 
+            the HTML of the Github page associated with this username!
+        </li>
+    </ul>
+</p>
+<p>
+    As you can see in the <a href="/demos-tutorials/hello-world/quick">Quick version</a> tutorial,
+    it is really easy to start a Spincast application if you simply need the default functionalities. 
+    But you can go far beyond that...
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    Spincast is made from the ground up to be extensible, flexible. All the parts can be swapped or be extended since 
+    dependency injection is used everywhere and there are <a href="/about#private_methods">no private methods</a>.
+</p>
+
+<h4>
+    <a class="anchor_small" href="#maven" id="maven" title="permanent link"></a>
+    Spincast artifact
+</h4>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    First, let's add the <code>org.spincast:spincast-default</code>
+    Maven artifact to our <code>pom.xml</code> (or <code>build.gradle</code>) so we start with the
+    <a href="/documentation#plugins_default">default plugins</a>. It is interesting to know that to have <em>total</em> control, 
+    we could also start with 
+    the <code>org.spincast:spincast-<em><strong>core</strong></em></code> artifact instead and pick, one by one, 
+    <a href="/documentation#boot_with_core">which plugins to use</a>. But, most of the time, you'll start
+    with the default artifact :
+    
+    <div>
+        <p>
+            <pre class="ace ace-xml"
+>&lt;dependency>
+    &lt;groupId>org.spincast&lt;/groupId>
+    &lt;artifactId>spincast-default&lt;/artifactId>
+    &lt;version>{{spincast.spincastCurrrentVersion}}&lt;/version>
+&lt;/dependency></pre> 
+        </p>
+    </div>
+</p>
+
+<h4>
+    <a class="anchor_small" href="#plugin" id="plugin" title="permanent link"></a>
+    Adding a plugin
+</h4>
+
+<p>
+    In this application, we're going to use a plugin which is not
+    installed by default : <a href="/plugins/spincast-http-client">Spincast HTTP Client</a>.
+    This plugin provides an easy way to make HTTP requests.
+</p>
+<p>
+    Adding a plugin is, in general, a two steps process. 
+</p>
+<p>
+    1. First, we add its Maven artifact to our <code>pom.xml</code> (or <code>build.gradle</code>) :
+    
+    <div>
+        <p>
+            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-http-client&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+        </p>
+    </div>
+</p>
+<p>
+    2. Then, since most plugins need to add or modify some bindings in the Guice context of an application,
+    we have to <em>register</em> them. This is done using the <code>"plugin(...)"</code> method of the
+    <a href="/documentation#boot_bootstrapper">Bootstrapper</a>&nbsp;:
+    
+    <div>
+        <p>
+            <pre class="ace ace-java" data-ace-hi="3,12,3,51"
+>public static void main(String[] args) {
+
+    Spincast.configure()
+            .plugin(new SpincastHttpClientPlugin())
+            //...
+            .init();
+   //...
+}</pre>   
+        </p>
+    </div> 
+</p>
+<p>
+    We'll come back to this bootstrapping part as it is not complete like this. For now, let's simply notice how
+    the plugin is registered.
+</p>
+
+<h4>
+    <a class="anchor_small" href="#request_context" id="request_context" title="permanent link"></a>
+    Custom Request Context type
+</h4>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Creating a custom <code>Request Context</code> type is optional but suggested. You can very well develop 
+    a complete and production ready Spincast application without one... But it is a powerful feature as it allows
+    plugins to add functionalities to the <code>Request Context</code> objects that are passed to your 
+    <code>Route Handlers</code> when request are received. You can learn more about this in the 
+    <a href="/documentation#request_context">Request Context</a> section. 
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    Note that if you use the <a href="/documentation#quick_start"><strong>Quick Start</strong></a> application as a template
+    for your application, a custom <code>Request Context</code> type is already provided : you simply have to add 
+    <code>add-ons</code> to it, when required.
+</p>
+<p>
+    In this application, we will add a <code><em>"httpClient()"</em></code> <code>add-on</code> to our
+    custom <code>Request Context</code> type, so we can easily make HTTP requests from
+    our <code>Route Handlers</code>.
+</p>
+<p>
+    Here's the interface we are going to use for our custom <code>Request Context</code> :
+    <div>
+        <p>
+            <pre class="ace ace-java" data-ace-hi="5,4,5,35"
+>public interface AppRequestContext extends RequestContext&lt;AppRequestContext&gt; {
+
+    /**
+     * Add-on to access the HttpClient factory
+     */
+    public HttpClient httpClient();
+    
+    //... other add-ons
+}</pre>   
+        </p>
+    </div> 
+</p>
+<p>
+    And an implementation for it :
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class AppRequestContextDefault extends RequestContextBase&lt;AppRequestContext&gt;
+                                      implements AppRequestContext {
+
+    private final HttpClient httpClient;
+    
+    @AssistedInject
+    public AppRequestContextDefault(@Assisted Object exchange,
+                                    RequestContextBaseDeps&lt;AppRequestContext&gt; requestContextBaseDeps,
+                                    HttpClient httpClient) {
+        super(exchange, requestContextBaseDeps);
+        this.httpClient = httpClient;
+    }
+
+    @Override
+    public HttpClient httpClient() {
+        return this.httpClient;
+    }
+}</pre>   
+        </p>
+        <p>
+            Notice that we injected the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/HttpClient.html">HttpClient</a> 
+            component (<span class="code-line-nbr">9</span>) which is in fact a <em>factory</em> to start new HTTP requests. 
+            Our <code>add-on</code> method, <code><em>"httpClient()"</em></code>
+            simply returns this factory (<span class="code-line-nbr">16</span>).
+        </p>
+    </div> 
+    
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    You can learn more about the process of extending the <code>Request Context</code>
+    type in the <a href="/documentation#extending_request_context">dedicated section</a> of the documentation.
+</p>
+
+<h4>
+    <a class="anchor_small" href="#controller" id="controller" title="permanent link"></a>
+    Controller and Route Handlers
+</h4>
+
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    Let's now create a controller, some <code>Route Handlers</code>, and use
+    the new <code>add-on</code> we just added :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java" data-ace-hi="21,28,21,78"
+>public class AppController {
+
+    /**
+     * Simple "Hello World" response on the "/" Route.
+     */
+    public void indexPage(AppRequestContext context) {
+        context.response().sendPlainText("Hello World!");
+    }
+
+    /**
+     * Route Handler for the "/github-source/${username}" Route.
+     * 
+     * We retrieve the HTML source of the GitHub page associated
+     * with the specified username, and return it in a Json object.
+     */
+    public void githubSource(AppRequestContext context) {
+
+        String username = context.request().getPathParam("username");
+
+        String url = "https://github.com/" + username;
+
+        String src = context.httpClient().GET(url).send().getContentAsString();
+
+        JsonObject response = context.json().create();
+        response.put("username", username);
+        response.put("url", url);
+        response.put("source", src);
+
+        context.response().sendJson(response);
+    }
+}</pre>   
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">6</span> : A <code>Route Handler</code> for
+                    the requests hitting the index page. Notice that we receive an
+                    instance of our custom <code>AppRequestContext</code> type as a parameter!
+                </li>
+                <li>
+                    <span class="code-line-nbr">7</span> : Simple use of the <code>"response()" add-on</code>
+                    to send plain text.
+                </li>
+                <li>
+                    <span class="code-line-nbr">16</span> : A second <code>Route Handler</code> for 
+                    a <code>"/github-source/${username}"</code> Route, where a <a href="/documentation#dynamic_parameters">dynamic parameter</a>
+                    is used.
+                </li>
+                <li>
+                    <span class="code-line-nbr">18</span> : We retrieve the value of the <code>"username"</code> dynamic
+                    parameter from the request.
+                </li>
+                <li>
+                    <span class="code-line-nbr">22</span> : We use the new <code>"httpClient()" add-on</code> we added to
+                    our custom <code>Request Context</code> type to retrieve the HTML source of the Github page associated
+                    with that username.
+                </li>
+                <li>
+                    <span class="code-line-nbr">24-27</span> : We create a <a href="/documentation#jsonobject">JsonObject</a>
+                    as the response to send.
+                </li>
+                <li>
+                    <span class="code-line-nbr">29</span> : We send the response as <code>"application/json"</code>.
+                </li>
+            </ul>
+        </p>
+    </div> 
+</p>
+
+<h4>
+    <a class="anchor_small" href="#routes" id="routes" title="permanent link"></a>
+    Route definitions
+</h4>
+
+<p>
+    In this tutorial, we won't define the <code>Routes</code> in the <code>App</code> class,
+    but directly <em>in the controller</em>! Let's do this :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class AppController {
+
+    public void indexPage(AppRequestContext context) { ... }
+
+    public void githubSource(AppRequestContext context) { ... }
+
+    /**
+     * Init method : we inject the Router and then add some Routes to it.
+     */
+    @Inject
+    protected void init(Router&lt;AppRequestContext, DefaultWebsocketContext&gt; router) {
+
+        router.GET("/").save(this::indexPage);
+        router.GET("/github-source/${username}").save(this::githubSource);
+    }   
+}</pre>   
+        </p>
+    </div> 
+</p>
+<p>
+    As you can see <a href="/documentation#router_dynamic">the Router is dynamic</a>, you can inject
+    the Router in any component in order to add <code>Routes</code> to it. Here, our controller simply uses
+    method reference to bind some of its own methods as <code>Route Handlers</code>.
+</p>
+<p>
+    You may also notice that the type of the injected Router is <code><em>Router&lt;AppRequestContext, DefaultWebsocketContext&gt;</em></code>,
+    which is kind of ugly.
+    It is so because we use a custom <code>Request Context</code> type, and all components related to routing have to be aware of
+    it. We won't do it in this tutorial, but it's very easy to create a <a href="/documentation#unparameterized_components">unparameterized version</a>
+    of those routing components so they are prettier and easier to deal with!
+</p>
+
+<h4>
+    <a class="anchor_small" href="#configs" id="configs" title="permanent link"></a>
+    Configurations
+</h4>
+
+<p>
+    We are going to change the port the Server will be started on by overriding the
+    default <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> binding. 
+    To do so, we create a custom class that extends the default 
+    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a>
+    implementation :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class AppConfig extends SpincastConfigDefault {
+
+    // We change the port the Server will be started on
+    @Override
+    public int getHttpServerPort() {
+        return 4242;
+    }
+}</pre>   
+        </p>
+    </div>
+</p>
+
+<h4>
+    <a class="anchor_small" href="#module" id="module" title="permanent link"></a>
+    Application Guice module
+</h4>
+
+<p>
+    Let's now create a Guice module for our application, and bind our custom components to it :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class AppModule extends SpincastGuiceModuleBase {
+
+    @Override
+    protected void configure() {
+
+        bind(AppController.class).asEagerSingleton();
+
+        bind(SpincastConfig.class).to(AppConfig.class).in(Scopes.SINGLETON);
+
+        // ... other bindings
+    }
+}</pre>   
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">6</span> : 
+                    We bind our controller using <em>asEagerSingleton()</em> because it contains an 
+                    <a href="/documentation#init_method">init method</a> in which <code>Routes</code> are
+                    defined and this must occur right when the application starts.
+                </li>
+                <li>
+                    <span class="code-line-nbr">8</span> : 
+                    We change the default <code>SpincastConfig</code> binding so our custom
+                    implementation class is used instead of the default one.
+                </li>
+                <li>
+                    <span class="code-line-nbr">10</span> : 
+                    Notice that, in this application, we don't have many components! But, in a real life application,
+                    this is where you are also going to bind your services, your repositories, your utilities.
+                </li>
+            </ul>
+        </p>
+        
+    </div>  
+</p>
+
+
+<h4>
+    <a class="anchor_small" href="#app" id="app" title="permanent link"></a>
+    The App class
+</h4>
+<p>
+    The only missing piece is the <code>App</code> class itself, where the <code>main(...)</code>
+    method and the <a href="/documentation#boot_bootstrapper">Bootstrapper</a> are defined :
+    
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+    
+        Spincast.configure()
+                .module(new AppModule())
+                .plugin(new SpincastHttpClientPlugin())
+                .requestContextImplementationClass(AppRequestContextDefault.class)
+                .mainArgs(args)
+                .init();
+    }
+
+    @Inject
+    protected void init(Server server) {
+        server.start();
+    }
+}</pre>   
+        </p>
+        <p>
+            <span class="explanation">Explanation :</span>
+            <ul>
+                <li>
+                    <span class="code-line-nbr">3</span> : A standard <code>main(...)</code>
+                    method is the entry point of our application.
+                </li>
+                <li>
+                    <span class="code-line-nbr">5</span> : <code><em>Spincast.configure()</em></code> 
+                    starts the bootstrapper, so we can configure and initialize our application.
+                </li>
+                <li>
+                    <span class="code-line-nbr">6</span> : We register our application module.
+                </li>
+                <li>
+                    <span class="code-line-nbr">7</span> : We register the <code>Spincast HTTP Client</code> 
+                    plugin.
+                </li>
+                <li>
+                    <span class="code-line-nbr">8</span> : Since we use a custom <code>Request Context</code> type, 
+                    we need to let Spincast know about it.
+                </li>
+                <li>
+                    <span class="code-line-nbr">9</span> : We bind the arguments passed to the <code>main(...)</code>
+                    method. Doing so, we can then inject them using the <code>@MainArgs String[]</code> key.
+                </li>
+                
+                <li>
+                    <span class="code-line-nbr">10</span> : The <code>init()</code> method will create the Guice
+                    context, will bind the current <code>App</code> class in the context and will load it.
+                </li>
+                <li>
+                    <span class="code-line-nbr">13-14</span> : This <a href="/documentation#init_method">init method</a>
+                    is going to be called automatically when the Guice context is ready. We inject in it the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a>. We don't need to inject
+                    the <code>Router</code> in this example since the <code>Routes</code> are defined in the
+                    controller.
+                </li>
+                <li>
+                    <span class="code-line-nbr">15</span> : We start the server.
+                </li>
+            </ul>
+        </p>
+    </div>  
+</p>
+
+<h4>
+    <a class="anchor_small" href="#tryit" id="tryit" title="permanent link"></a>
+    Try it!
+</h4>
+<p>
+    Download this application, and run it by yourself :
+</p>
+<p>
+    <ul>
+        <li>
+            Download <strong><em><a href="/public/demo-apps/spincast-demos-supercalifragilisticexpialidocious.zip">spincast-demos-supercalifragilisticexpialidocious.zip</a></em></strong>.
+        </li>
+        <li>
+            Unzip the file.
+        </li>
+        <li>
+            Enter the root directory using a terminal.
+        </li>
+        <li>
+            Compile the application using Maven :
+            <br />
+            <code>mvn clean package</code> 
+        </li>
+        <li>
+            Launch the application : 
+            <br />
+            <code>java -jar target/spincast-demos-supercalifragilisticexpialidocious-{{spincast.spincastCurrrentVersion}}.jar</code> 
+        </li>   
+    </ul>
+</p>
+<p>
+    The application is then accessible at <a href="http://localhost:4242">http://localhost:4242</a>
+</p>
+<p>
+    Don't forget to try the "github-source" Route (you can change the "username" dynamic parameter) : 
+    <a href="http://localhost:4242/github-source/spincast">http://localhost:4242/github-source/spincast</a>.
+</p>
+
+<p id="superimg" style="display:none;">
+    <img src="/public/images/marypoppins.gif" />
+</p>
+
+{% endblock %}

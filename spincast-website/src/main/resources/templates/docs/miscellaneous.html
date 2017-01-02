@@ -19,7 +19,7 @@ Default Configurations
     </h4>
     
     <p>
-        To know what are the default Spincast configurations,
+        To know what are the configurations required by Spincast,
         have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> javadoc. 
         Here, we're simply going to introduce the most important ones :
     </p>
@@ -126,7 +126,7 @@ Flash Messages
         messages are the answer to this question.
     </p>
     <p>
-        (All our <a href="/demos-tutorials/html-forms/single-field">Forms + Validation demos</a>
+        (All the <a href="/demos-tutorials/html-forms/single-field">Forms &amp; Validation demos</a>
         use <code>Flash messages</code> to display a confirmation message when the Form is
         submitted and is valid... Try them!)
     </p>
@@ -470,6 +470,26 @@ Spincast Utilities
                 </div>
             </li> 
             
+            <li>
+                <code class="apiItem">String <span>readClasspathFile</span>(String path)</code>
+                <div class="well">
+                    <p>
+                        Reads a file on the classpath and returns it as a
+                        String.
+                    </p>
+                    <p>
+                        Paths are always considered from the root at the classpath.
+                        You can start the path with a "/" or not, it makes no difference.
+                    </p>
+                    <p>
+                        Uses <code>UTF-8</code> by default.
+                    </p>
+                    <p class="apiItemFooter">
+                        @return the content of the file or <code>null</code>
+                        if not found.
+                    </p>
+                </div>
+            </li> 
         </ul>
     </p> 
 
@@ -486,31 +506,29 @@ Spincast Utilities
     </h4>
     
     <p>
-        Both <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastCoreGuiceModule.html">SpincastCoreGuiceModule</a> 
-        and <a class="javadoc" href="/public/javadoc/org/spincast/defaults/guice/SpincastDefaultGuiceModule.html">SpincastDefaultGuiceModule</a>
-        Guice modules have a constructor which accepts
-        <code>String[] mainArgs</code>. You can pass to it the arguments received in
-        your <code>main(...)</code> method. For example :
+        The <code>mainArgs(...)</code> method of the <a href="#boot_bootstrapper">Bootstrapper</a> allows you
+        to bind the arguments received in your <code>main(...)</code> method. For example :
     </p>
     <p>
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="1,24,1,37|3,73,3,77"
+                <pre class="ace ace-java" data-ace-hi="1,24,1,37|5,12,5,27"
 >
 
 public static void main(String[] args) {
 
-    Injector guice = Guice.createInjector(new SpincastDefaultGuiceModule(args));
-
-    App app = guice.getInstance(App.class);
-    app.start();
+    Spincast.configure()
+            .module(new AppModule())
+            .mainArgs(args)
+            .init();
+    //....
 }</pre> 
             </p>
         </div>
     </p>   
     <p>
-        By doing so, those arguments will be bound, using a <code>@MainArgs</code>
-        annotation. You can then inject them anywhere you need :
+        By doing so, those arguments will be available for injection, using the <code>@MainArgs</code>
+        annotation :
     </p>
     <p>
         <div>

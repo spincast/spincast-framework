@@ -1,5 +1,6 @@
 {% extends "./layout.html" %}
 
+{% block sectionClasses %}exception_page{% endblock %}
 {% block meta_title %}Error{% endblock %}
 {% block meta_description %}Error{% endblock %}
 
@@ -7,8 +8,15 @@
 
 <div class="container">
 
-    <div id="jumb" class="jumbotron">
-        <p>{{errorMessage}}</p>
+    <div class="jumbotron tallTop">
+    
+        <p>
+            {{errorMessage}}
+        </p>
+        <p>
+            <a href="javascript:history.back()">&lt;&lt; back</a>
+        </p>    
+
     </div>
     
 </div> 

@@ -1,11 +1,11 @@
 package org.spincast.website;
 
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFileBasedConfigDefault;
+import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginDefault;
 
 /**
  * Custom configurations for the .properties file based config plugin.
  */
-public class AppConfigPropsFileBasedConfig extends SpincastConfigPropsFileBasedConfigDefault {
+public class AppConfigPropsFileBasedConfig extends SpincastConfigPropsFilePluginDefault {
 
     @Override
     public int getSpecificPathMainArgsPosition() {
