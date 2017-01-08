@@ -65,6 +65,12 @@
 			"date" : "2017-01-02T12:00:00Z",
 			"title" : "Bootstrapping++",
 			"path" : "/news/2017-01-02.html"
+		},
+		{
+			"id" : "13",
+			"date" : "2017-01-08T12:00:00Z",
+			"title" : "Video : Spincast Framework application from scratch in under 3 minutes",
+			"path" : "/news/2017-01-08.html"
 		}
 		
 	]
