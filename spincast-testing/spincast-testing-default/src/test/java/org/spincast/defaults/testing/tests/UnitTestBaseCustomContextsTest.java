@@ -41,7 +41,7 @@ public class UnitTestBaseCustomContextsTest extends UnitTestBase {
     }
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

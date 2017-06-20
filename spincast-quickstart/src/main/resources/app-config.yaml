@@ -1,0 +1,20 @@
+#==========================================
+# Spincast configurations overrides
+#==========================================
+spincast:
+
+    publicAccess:
+        urlBase: http://localhost:44419
+        
+    cookies:
+        validator:
+            name: ck
+        flashMessageCookieName: flash
+        localeCookieName: locale
+
+#==========================================
+# App specific configurations
+#==========================================
+app:
+    name: Spincast Quick Start
+    

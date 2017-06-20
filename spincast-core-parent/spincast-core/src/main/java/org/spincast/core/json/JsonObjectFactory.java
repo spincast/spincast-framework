@@ -15,7 +15,7 @@ public interface JsonObjectFactory {
     public JsonObject create();
 
     /**
-     * Creates an IJonObject based on the specified Map.
+     * Creates an JonObject based on the specified Map.
      * <p>
      * The keys will be parsed as <code>JsonPaths</code>.
      * <p>
@@ -26,7 +26,19 @@ public interface JsonObjectFactory {
      * object and all its children will be mutable, otherwise
      * they will all be immutable.
      */
-    public JsonObject create(Map<String, Object> params, boolean mutable);
+    public JsonObject create(Map<String, Object> initialMap, boolean mutable);
+
+    /**
+     * Creates an JonObject based on the specified JsonObject.
+     * <p>
+     * The JsonObject will be cloned and all its key added to
+     * the created JsonObject.
+     * 
+     * @param mutable if <code>true</code> the resulting
+     * object and all its children will be mutable, otherwise
+     * they will all be immutable.
+     */
+    public JsonObject create(JsonObject objectToClone, boolean mutable);
 
     /**
      * Creates an empty and mutable JsonArray.

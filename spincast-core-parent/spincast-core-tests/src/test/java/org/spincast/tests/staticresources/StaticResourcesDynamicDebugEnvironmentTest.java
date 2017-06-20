@@ -6,14 +6,15 @@ import static org.junit.Assert.assertFalse;
 import java.io.File;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
@@ -21,7 +22,7 @@ import com.google.inject.Inject;
 public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return TestConfig.class;
     }
 
@@ -35,6 +36,14 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestN
     public static class TestConfig extends SpincastConfigTestingDefault {
 
         /**
+         * Constructor
+         */
+        @Inject
+        protected TestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
+
+        /**
          * Run in "debug" mode.
          */
         @Override
@@ -46,8 +55,8 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestN
          * Disable writing of dynamic resources on disk
          */
         @Override
-        public boolean isDisableWriteToDiskDynamicStaticResource() {
-            return true;
+        public boolean isWriteToDiskDynamicStaticResource() {
+            return false;
         }
     }
 
@@ -56,7 +65,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestN
 
         String generatedCssFilePath = createTestingFilePath("generated.css");
         final File generatedCssFile = new File(generatedCssFilePath);
-        if(generatedCssFile.isFile()) {
+        if (generatedCssFile.isFile()) {
             generatedCssFile.delete();
         }
 
@@ -71,7 +80,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestN
                 try {
                     nbrTimeCalled[0]++;
                     context.response().sendCharacters(content1, "text/css");
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

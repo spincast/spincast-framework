@@ -50,7 +50,7 @@ body.home_page {
 }
 
 .home_page #menu_home a,
-.movie_page #menu_movie a,
+.form_page #menu_form a,
 .notFound_page #menu_notFound a,
 .exception_page #menu_exception a
 {
@@ -89,20 +89,8 @@ body.home_page {
     border: none;
 }
 
-#omdbapi {
-    position:absolute;
-    top:4px;
-    right:8px;
-    font-size:14px;
-    font-style: italic;
-    color:#3D3D3D;
-}
-#omdbapi a {
-    color:#3D3D3D;
-    text-decoration: underline;
-}
-#omdbapi a:hover {
-    color:#000000;
+#greetings {
+	font-size: 3em;
 }
 
 /*

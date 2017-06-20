@@ -42,7 +42,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
                              SpincastUtils spincastUtils,
                              ObjectConverter objectConverter,
                              ValidationFactory validationFactory) {
-        this(null,
+        this((Map<String, Object>)null,
              true,
              jsonManager,
              spincastUtils,
@@ -80,16 +80,16 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
         super(mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
 
         Map<String, Object> map;
-        if(initialMap != null) {
+        if (initialMap != null) {
 
             //==========================================
             // If the JsonObject is immutable, all JsonObject
             // and JsonArray from the initial map must be
             // immutable too.
             //==========================================
-            if(!mutable) {
-                for(Object element : initialMap.values()) {
-                    if(element instanceof JsonObjectOrArray && ((JsonObjectOrArray)element).isMutable()) {
+            if (!mutable) {
+                for (Object element : initialMap.values()) {
+                    if (element instanceof JsonObjectOrArray && ((JsonObjectOrArray)element).isMutable()) {
                         throw new RuntimeException("To create an immutable JsonObject from an initial Map, " +
                                                    "all the JsonObject and JsonArray elements of that Map must already be " +
                                                    "immutable too. Here, at least one element is not immutable : " + element);
@@ -105,7 +105,40 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
         // If the JsonObject is immutable, we make the underlying
         // map immutable.
         //==========================================
-        if(!mutable) {
+        if (!mutable) {
+            map = Collections.unmodifiableMap(map);
+        }
+
+        this.map = map;
+    }
+
+    /**
+     * Constructor
+     */
+    @AssistedInject
+    public JsonObjectDefault(@Assisted @Nullable JsonObject configToMerge,
+                             @Assisted boolean mutable,
+                             JsonManager jsonManager,
+                             SpincastUtils spincastUtils,
+                             ObjectConverter objectConverter,
+                             ValidationFactory validationFactory) {
+        super(mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (configToMerge != null) {
+
+            configToMerge = configToMerge.clone(mutable);
+
+            for (Entry<String, Object> entry : configToMerge) {
+                map.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        //==========================================
+        // If the JsonObject is immutable, we make the underlying
+        // map immutable.
+        //==========================================
+        if (!mutable) {
             map = Collections.unmodifiableMap(map);
         }
 
@@ -119,7 +152,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     protected JsonObject putAsIs(String key, Object value) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -148,15 +181,15 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public JsonObject merge(Map<String, Object> map, boolean clone) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
-        if(map == null) {
+        if (map == null) {
             return this;
         }
 
-        for(Entry<String, Object> entry : map.entrySet()) {
+        for (Entry<String, Object> entry : map.entrySet()) {
             put(entry.getKey(), entry.getValue(), clone);
         }
         return this;
@@ -171,7 +204,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     public JsonObject merge(ToJsonObjectConvertible obj) {
 
         JsonObject jsonObj = null;
-        if(obj != null) {
+        if (obj != null) {
             jsonObj = obj.convertToJsonObject();
         }
 
@@ -181,15 +214,15 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public JsonObject merge(JsonObject jsonObj, boolean clone) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
-        if(jsonObj == null) {
+        if (jsonObj == null) {
             return this;
         }
 
-        for(Entry<String, Object> entry : jsonObj) {
+        for (Entry<String, Object> entry : jsonObj) {
 
             //==========================================
             // No JsonPath parsing required.
@@ -206,7 +239,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public JsonObject remove(String jsonPath) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -217,7 +250,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public JsonObject removeNoKeyParsing(String key) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -228,7 +261,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public JsonObject clear() {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -248,10 +281,10 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
 
     @Override
     protected Object getElementNoKeyParsing(String jsonPath, boolean hasDefaultValue, Object defaultValue) {
-        if(isElementExistsNoKeyParsing(jsonPath)) {
+        if (isElementExistsNoKeyParsing(jsonPath)) {
             return getMap().get(jsonPath);
         }
-        if(hasDefaultValue) {
+        if (hasDefaultValue) {
             return defaultValue;
         }
         return null;
@@ -261,12 +294,12 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     public Map<String, Object> convertToPlainMap() {
 
         Map<String, Object> map = new HashMap<String, Object>();
-        for(Entry<String, Object> entry : this) {
+        for (Entry<String, Object> entry : this) {
 
             Object value = entry.getValue();
-            if(value instanceof JsonObject) {
+            if (value instanceof JsonObject) {
                 value = ((JsonObject)value).convertToPlainMap();
-            } else if(value instanceof JsonArray) {
+            } else if (value instanceof JsonArray) {
                 value = ((JsonArray)value).convertToPlainList();
             }
             map.put(entry.getKey(), value);
@@ -289,18 +322,18 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public boolean isEquivalentTo(JsonObject other) {
 
-        if(other == null) {
+        if (other == null) {
             return false;
         }
-        if(other == this) {
+        if (other == this) {
             return true;
         }
 
-        if(other.size() != this.size()) {
+        if (other.size() != this.size()) {
             return false;
         }
 
-        for(Entry<String, Object> entry : getMap().entrySet()) {
+        for (Entry<String, Object> entry : getMap().entrySet()) {
 
             String key = entry.getKey();
             Object thisElement = entry.getValue();
@@ -309,28 +342,28 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
             Object otherElementConverted =
                     getObjectConverter().convertTo(otherElement, (thisElement != null ? thisElement.getClass() : null));
 
-            if(thisElement != null && thisElement instanceof JsonObject) {
-                if(otherElementConverted != null && !(otherElementConverted instanceof JsonObject)) {
+            if (thisElement != null && thisElement instanceof JsonObject) {
+                if (otherElementConverted != null && !(otherElementConverted instanceof JsonObject)) {
                     return false;
                 }
-                if(!((JsonObject)thisElement).isEquivalentTo((JsonObject)otherElementConverted)) {
+                if (!((JsonObject)thisElement).isEquivalentTo((JsonObject)otherElementConverted)) {
                     return false;
                 }
-            } else if(thisElement != null && thisElement instanceof JsonArray) {
-                if(otherElementConverted != null && !(otherElementConverted instanceof JsonArray)) {
+            } else if (thisElement != null && thisElement instanceof JsonArray) {
+                if (otherElementConverted != null && !(otherElementConverted instanceof JsonArray)) {
                     return false;
                 }
-                if(!((JsonArray)thisElement).isEquivalentTo((JsonArray)otherElementConverted)) {
+                if (!((JsonArray)thisElement).isEquivalentTo((JsonArray)otherElementConverted)) {
                     return false;
                 }
-            } else if(thisElement != null && thisElement instanceof byte[]) {
-                if(otherElementConverted != null && !(otherElementConverted instanceof byte[])) {
+            } else if (thisElement != null && thisElement instanceof byte[]) {
+                if (otherElementConverted != null && !(otherElementConverted instanceof byte[])) {
                     return false;
                 }
-                if(!Arrays.equals((byte[])thisElement, (byte[])otherElementConverted)) {
+                if (!Arrays.equals((byte[])thisElement, (byte[])otherElementConverted)) {
                     return false;
                 }
-            } else if(!Objects.equals(thisElement, otherElementConverted)) {
+            } else if (!Objects.equals(thisElement, otherElementConverted)) {
                 return false;
             }
         }
@@ -346,13 +379,13 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @Override
     public void transformAll(ElementTransformer transformer, boolean recursive) {
 
-        for(String key : getMap().keySet()) {
+        for (String key : getMap().keySet()) {
             transform(key, transformer);
-            if(recursive) {
+            if (recursive) {
                 Object obj = getObject(key);
-                if(obj instanceof JsonArray) {
+                if (obj instanceof JsonArray) {
                     ((JsonArray)obj).transformAll(transformer, recursive);
-                } else if(obj instanceof JsonObject) {
+                } else if (obj instanceof JsonObject) {
                     ((JsonObject)obj).transformAll(transformer, recursive);
                 }
             }

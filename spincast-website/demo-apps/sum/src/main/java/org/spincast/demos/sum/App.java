@@ -11,7 +11,7 @@ public class App {
     public static void main(String[] args) {
         Spincast.configure()
                 .module(new AppModule())
-                .init();
+                .init(args);
     }
 
     @Inject

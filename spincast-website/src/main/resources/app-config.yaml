@@ -1,0 +1,9 @@
+server: 
+  port: 44420
+  
+api:
+  base: http://localhost:44420
+
+environment: 
+    name: local
+    isDebug: true

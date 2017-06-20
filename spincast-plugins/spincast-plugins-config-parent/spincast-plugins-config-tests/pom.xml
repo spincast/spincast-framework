@@ -11,7 +11,7 @@
 	<artifactId>spincast-plugins-config-tests</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Tests for the default Spincast Configuration plugin</description>
+    <description>Tests for the Spincast Configurations plugin</description>
     <url>https://www.spincast.org</url>
 
 	<dependencies>
@@ -35,6 +35,16 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        
+        <!--=================================== 
+        Logs to the console
+        ====================================-->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-simple</artifactId>
+		    <version>1.7.24</version>
+		    <scope>test</scope>
+		</dependency>
 
 	</dependencies>
 

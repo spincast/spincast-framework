@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.junit.After;
@@ -14,8 +17,9 @@ import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.guice.GuiceModuleUtils;
 import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
@@ -28,6 +32,7 @@ import org.spincast.testing.utils.TestFailureListener;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Scopes;
 
 /**
@@ -53,16 +58,9 @@ import com.google.inject.Scopes;
  * A {@link GuiceTweaker} instance is used to
  * be able to tweak a Guice context automagaically. This for example
  * allows you to start your actual application, using its main() method,
- * but still be able to mock some components for testing purposes. A
- * Guice tweaker is enabled by default if your test class extend this
- * base class. If {@link SpincastConfig} is bound, its method will be automatically
- * intercepted and testing values are going to be used instead (by default using the
- * {@link SpincastConfigTestingDefault} class).
- * <p>
+ * but still be able to mock some components for testing purposes.
  * Note that the Guice tweaker only works when the Guice context is created
- * using the <code>Spincast</code> class or the <code>SpincastBootstrapper</code>
- * classes from the <code>spincast-default</code> artifact.
- * 
+ * using the standard <code>Spincast</code> bootstrapper.
  */
 @RunWith(SpincastJUnitRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -70,46 +68,23 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
                                        TestFailureListener,
                                        RepeatedClassAfterMethodProvider {
 
+    protected final Logger logger = LoggerFactory.getLogger(SpincastTestBase.class);
+
     private Injector guice;
     private File testingWritableDir;
     private SpincastConfig spincastConfig;
     private GuiceTweaker previousGuiceTweaker;
+    private Map<String, String> extraSystemProperties;
+    private Map<String, String> extraSystemPropertiesOriginal;
 
-    /**
-     * Should a GuiceTweaker ThreadLocal be
-     * created?
-     * <p>
-     * Is <code>true</code> by default.
-     */
-    protected boolean isEnableGuiceTweaker() {
-        return true;
-    }
-
-    /**
-     * If <code>true</code>, a AOP interceptor will be
-     * bound so a call to any of any of {@link SpincastConfig}'s
-     * method will be intercepted and will use the
-     * methods from the <em>testing</em> config instead, 
-     * as returned by {@link #getSpincastConfigTestingImplementation()}.
-     * <p>
-     * Is <code>true</code> by default.
-     */
-    protected boolean isEnableGuiceTweakerTestingConfigMecanism() {
-        return true;
-    }
-
-    /**
-     * Should we add the plugings n general required during
-     * testing?
-     * <p>
-     * Is <code>true</code> by default.
-     */
-    protected boolean isEnableGuiceTweakerExtraPlugins() {
-        return true;
-    }
 
     @Override
     public void beforeClass() {
+
+        //==========================================
+        // Extra System properties to add?
+        //==========================================
+        addExtraSystemProperties();
 
         //==========================================
         // Creates a GuiceTweaker 
@@ -117,115 +92,217 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         // bindings during the Injector creation, if
         // "Spincast.configure()" if used to create that
         // Injector.
-        //
-        // If you build the Injector by yourself, this
-        // tweaker won't have any effect.
         //==========================================
-        boolean useGuiceTweaker = isEnableGuiceTweaker();
-        if (useGuiceTweaker) {
-            this.previousGuiceTweaker = GuiceTweaker.threadLocal.get();
-            GuiceTweaker.threadLocal.set(createGuiceTweaker());
-        }
+        this.previousGuiceTweaker = GuiceTweaker.threadLocal.get();
+        GuiceTweaker.threadLocal.set(createGuiceTweaker());
         try {
             this.guice = createInjector();
         } finally {
-            if (useGuiceTweaker) {
-                if (this.previousGuiceTweaker != null) {
-                    GuiceTweaker.threadLocal.set(this.previousGuiceTweaker);
-                } else {
-                    GuiceTweaker.threadLocal.remove();
-                }
+            if (this.previousGuiceTweaker != null) {
+                GuiceTweaker.threadLocal.set(this.previousGuiceTweaker);
+            } else {
+                GuiceTweaker.threadLocal.remove();
             }
         }
 
-        assertNotNull(this.guice);
+        validateCreatedInjector(this.guice);
         this.guice.injectMembers(this);
     }
 
     /**
-     * Create the Guice Tweaker.
-     * <p>
-     * This is only useful when the Guice Injector is created
-     * starting with <code>Spincast.configure(...)</code>. If
-     * you create the Guice Injector by yourself, using 
-     * <code>Guice.createInjector(...)</code>, this won't
-     * have any effect.
+     * Adds System properties as they are provided by the
+     * {@link #getExtraSystemProperties()} method.
      */
+    protected void addExtraSystemProperties() {
+
+        this.extraSystemProperties = getExtraSystemProperties();
+        if (this.extraSystemProperties != null && this.extraSystemProperties.size() > 0) {
+            this.extraSystemPropertiesOriginal = new HashMap<String, String>();
+            for (Entry<String, String> entry : this.extraSystemProperties.entrySet()) {
+
+                String key = entry.getKey();
+                String original = System.getProperty(key);
+                if (original != null) {
+                    this.extraSystemPropertiesOriginal.put(entry.getKey(), System.getProperty(key));
+                }
+                System.setProperty(key, entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Extra System properties to set before the tests are run.
+     * Those will be automatically reset once the tests are done.
+     */
+    protected Map<String, String> getExtraSystemProperties() {
+        return new HashMap<String, String>();
+    }
+
+    /**
+     * Resets System properties.
+     */
+    protected void resetSystemProperties() {
+
+        if (this.extraSystemProperties != null && this.extraSystemProperties.size() > 0) {
+            for (Entry<String, String> entry : this.extraSystemProperties.entrySet()) {
+                String key = entry.getKey();
+                String original = this.extraSystemPropertiesOriginal.get(key);
+                if (original != null) {
+                    System.setProperty(key, original);
+                } else {
+                    System.clearProperty(key);
+                }
+            }
+        }
+    }
+
+    protected GuiceTweaker getGuiceTweakerFromThreadLocal() {
+        return GuiceTweaker.threadLocal.get();
+    }
+
+    /**
+     * Validates the created Injector, before the 
+     * dependencies are injected in the test class.
+     */
+    protected void validateCreatedInjector(Injector guice) {
+        assertNotNull(guice);
+    }
+
     protected GuiceTweaker createGuiceTweaker() {
 
         GuiceTweaker guiceTweaker = new GuiceTweaker();
 
-        if (isEnableGuiceTweakerTestingConfigMecanism()) {
-            setupSpincastConfigTesting(guiceTweaker);
-        }
-
-        if (isEnableGuiceTweakerExtraPlugins()) {
-            List<SpincastPlugin> plugins = getGuiceTweakerExtraPlugins();
-            if (plugins != null) {
-                for (SpincastPlugin plugin : plugins) {
-                    guiceTweaker.plugin(plugin);
-                }
+        //==========================================
+        // Extra plugins to add?
+        //==========================================
+        List<SpincastPlugin> plugins = getGuiceTweakerPlugins();
+        if (plugins != null) {
+            for (SpincastPlugin plugin : plugins) {
+                guiceTweaker.plugin(plugin);
             }
         }
+
+        //==========================================
+        // Tweak testing configurations?
+        //==========================================
+        if (isGuiceTweakerAutoTestingConfigBindings()) {
+
+            final Class<? extends SpincastConfig> configImplClass = getGuiceTweakerConfigImplementationClass();
+            if (configImplClass == null) {
+                throw new RuntimeException("When auto testing configuration are enabled (ie " +
+                                           "'isGuiceTweakerAutoTestingConfigBindings()' returns true) then the implementation class " +
+                                           "returned by 'getSpincastConfigTestingImplementationClass()' can't be null...");
+            }
+
+            //==========================================
+            // Tells GuiceTweaker to remove the current
+            // configuration bindings.
+            //==========================================
+            guiceTweaker.bindingHierarchyToRemove(SpincastConfig.class);
+
+            guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
+
+                @Override
+                protected void configure() {
+                    bind(configImplClass).in(Scopes.SINGLETON);
+                    bind(SpincastConfig.class).to(configImplClass).in(Scopes.SINGLETON);
+                }
+            });
+        }
+
+        //==========================================
+        // Extra Module to add?
+        //==========================================
+        if (getGuiceTweakerOverridingModule() != null) {
+            guiceTweaker.overridingModule(getGuiceTweakerOverridingModule());
+        }
+
         return guiceTweaker;
     }
 
     /**
-     * The extra plugins added by the Guice Tweaker.
+     * Extra plugins to be added by the Guice Tweaker.
+     * <p>
+     * Most of the time, you want to make sure you
+     * keep the plugins already added by base classes.
+     * For example :
+     * <p>
+     * <code>
+     * List&lt;SpincastPlugin&gt; plugins = super.getGuiceTweakerPlugins();
+     * 
+     * plugins.add(new YourPlugin());
+     * 
+     * return plugins;
+     * </code>
      */
-    protected List<SpincastPlugin> getGuiceTweakerExtraPlugins() {
-
+    protected List<SpincastPlugin> getGuiceTweakerPlugins() {
         // None by default.
-        List<SpincastPlugin> plugins = new ArrayList<SpincastPlugin>();
-        return plugins;
+        return new ArrayList<SpincastPlugin>();
     }
 
     /**
-     * The testing configuration class implementation to use. You can
-     * override {@link #isEnableGuiceTweakerTestingConfigMecanism()} if you
-     * want to disable this class from being used.
+     * If an overriding Module is to be added using the
+     * Guice tweaker.
+     * <p>
+     * In general, you want to keep the Module from the parent by
+     * combining/overriding it with your custom Module. For example : 
+     * <p>
+     * <code>
+     * return Modules.combine(super.getGuiceTweakerOverridingModule(), 
+     *     new SpincastGuiceModuleBase() {
+     *         @Override
+     *         protected void configure() {
+     *             // your bindings...
+     *         }
+     *     }
+     * );
+     * </code>
      */
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
-        return SpincastConfigTestingDefault.class;
-    }
-
-    /**
-     * Adds an OAP interceptor so calls to methods of the original
-     * {@link SpincastConfig} onject will be redirected to the
-     * <em>testing</em> version (as returned by {@link #getSpincastConfigTestingImplementation()}).
-     */
-    protected void setupSpincastConfigTesting(GuiceTweaker guiceTweaker) {
-
-        final Class<? extends SpincastConfigTesting> testingConfigClass = getSpincastConfigTestingImplementation();
-        if (testingConfigClass == null) {
-            return;
-        }
+    protected Module getGuiceTweakerOverridingModule() {
 
         //==========================================
-        // Binds the SpincastConfigTesting key to
-        // the config implementation
+        // Empty Module, so Modules.combine() and
+        // Modules.override() can be used by the extending
+        // classes.
         //==========================================
-        guiceTweaker.module(new SpincastGuiceModuleBase() {
+        return new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
-                bind(SpincastConfigTesting.class).to(testingConfigClass)
-                                                 .in(Scopes.SINGLETON);
-
+                // nothing
             }
-        });
-
-        //==========================================
-        // "Binds" the SpincastConfig key to
-        // the testing implementation using AOP.
-        //==========================================
-        SpincastGuiceModuleBase interceptModule =
-                GuiceModuleUtils.createInterceptorModule(SpincastConfig.class, testingConfigClass);
-        guiceTweaker.module(interceptModule);
+        };
     }
 
-    protected GuiceTweaker getSpincastPluginFromThreadLocal() {
-        return GuiceTweaker.threadLocal.get();
+    /**
+    * Should the SpincastConfig bindings be automatically
+    * configured? If <code>true</code> (the default),
+    * any bindings for components in the hierarchy of {@link SpincastConfig}
+    * will be removed and new bindings will be added using the
+    * testing implementation returned by {@link #getGuiceTweakerConfigImplementationClass()}.
+    * <p>
+    * In a typical Spincast application, those bindings will be removed :
+    * <ul>
+    * <li>SpincastConfig</li>
+    * <li>SpincastConfigDefault</li>
+    * <li>AppConfig</li>
+    * <li>AppConfigDefault</li>
+    * </ul>
+    * <p>
+    * If <code>false</code>, it is your responsibility to make
+    * sure valid testing configurations bindings are used to create the
+    * Guuice context.
+    */
+    protected boolean isGuiceTweakerAutoTestingConfigBindings() {
+        return true;
+    }
+
+    /**
+     * The implementation to use for the <code>SpincastConfig</code> binding
+     * when {@link #isGuiceTweakerAutoTestingConfigBindings()} is enabled.
+     */
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+        return SpincastConfigTestingDefault.class;
     }
 
     @Before
@@ -240,7 +317,26 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
 
     @Override
     public void afterClass() {
+
+        //==========================================
+        // Resets System variables.
+        //==========================================
+        try {
+            resetSystemProperties();
+        } catch (Exception ex) {
+            this.logger.warn(ex.getMessage());
+        }
+
         deleteTempDir();
+    }
+
+    @Override
+    public void beforeClassException(Throwable ex) {
+
+        //==========================================
+        // Resets System variables.
+        //==========================================
+        resetSystemProperties();
     }
 
     @Override
@@ -254,7 +350,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
      */
     @Override
     public void testFailure(Failure failure) {
-        // nothing by default
+        // nothing
     }
 
     @Inject

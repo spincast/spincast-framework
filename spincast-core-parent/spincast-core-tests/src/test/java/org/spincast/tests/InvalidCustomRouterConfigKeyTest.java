@@ -24,7 +24,7 @@ public class InvalidCustomRouterConfigKeyTest extends IntegrationTestNoAppDefaul
                                return Key.get(SpincastUtils.class);
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
 }

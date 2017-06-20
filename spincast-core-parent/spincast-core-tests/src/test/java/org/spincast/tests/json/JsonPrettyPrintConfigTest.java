@@ -19,7 +19,7 @@ public class JsonPrettyPrintConfigTest extends UnitTestDefaultContextsBase {
     protected JsonManager jsonManager;
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

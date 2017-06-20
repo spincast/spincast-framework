@@ -44,7 +44,7 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
 
     protected static List<String> getPeerNamesAll() {
 
-        if(peerNamesAll == null) {
+        if (peerNamesAll == null) {
 
             InputStream stream = null;
             InputStreamReader reader = null;
@@ -58,11 +58,11 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
                 bufReader = new BufferedReader(reader);
 
                 String line = bufReader.readLine();
-                while(line != null) {
+                while (line != null) {
 
                     line = line.trim();
 
-                    if(StringUtils.isAlphanumeric(line) && line.length() >= 5) {
+                    if (StringUtils.isAlphanumeric(line) && line.length() >= 5) {
                         peerNamesAll.add(Character.toUpperCase(line.charAt(0)) + line.substring(1));
                     }
                     line = bufReader.readLine();
@@ -70,7 +70,7 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
 
                 Collections.shuffle(peerNamesAll);
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             } finally {
                 IOUtils.closeQuietly(bufReader);
@@ -89,7 +89,7 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
     @Override
     public WebsocketConnectionConfig onPeerPreConnect(AppRequestContext context) {
 
-        if(getEndpointManager() != null && getEndpointManager().getPeersIds().size() > 100) {
+        if (getEndpointManager() != null && getEndpointManager().getPeersIds().size() > 100) {
             context.response().setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
             context.response().sendPlainText("Maximum number of peers reached.");
             return null;
@@ -111,7 +111,7 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
 
     protected synchronized String generatePeerId() {
 
-        if(peerNamePos > getPeerNamesAll().size() - 1) {
+        if (peerNamePos > getPeerNamesAll().size() - 1) {
             peerNamePos = 0;
         }
 
@@ -144,7 +144,7 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
     public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
         try {
             this.logger.debug("message received from peer '" + context.getPeerId() + "': " + new String(message, "UTF-8"));
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

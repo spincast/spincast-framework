@@ -42,7 +42,7 @@ public class PebbleTest extends IntegrationTestNoAppDefaultContextsBase {
                                                                                .in(Scopes.SINGLETON);
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
     /**

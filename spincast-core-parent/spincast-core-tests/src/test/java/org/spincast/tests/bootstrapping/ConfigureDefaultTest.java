@@ -19,7 +19,7 @@ public class ConfigureDefaultTest {
     public static void main(String[] args) {
 
         Spincast.configure()
-                .init();
+                .init(args);
 
         assertTrue(initCalled);
     }

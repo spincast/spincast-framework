@@ -55,7 +55,7 @@ public class CustomRequestContextTest {
 
         Injector guice = Spincast.configure()
                                  .requestContextImplementationClass(RequestContextTestingDefault.class)
-                                 .init();
+                                 .init(args);
         assertTrue(initCalled);
 
         instance = guice.getInstance(CustomRequestContextTest.class);

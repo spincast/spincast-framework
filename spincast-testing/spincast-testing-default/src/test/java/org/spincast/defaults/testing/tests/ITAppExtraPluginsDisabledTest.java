@@ -1,19 +1,21 @@
 package org.spincast.defaults.testing.tests;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
 import com.google.inject.Inject;
 
 @ExpectingBeforeClassException
-public class ITAppExtraPluginsDisabledTest extends IntegrationTestAppDefaultContextsBase {
+public class ITAppExtraPluginsDisabledTest extends NoAppConfigTestClassBase {
 
     @Override
-    protected boolean isEnableGuiceTweakerExtraPlugins() {
-        return false;
+    protected List<SpincastPlugin> getGuiceTweakerPlugins() {
+        return null;
     }
 
     @Inject
@@ -35,7 +37,7 @@ public class ITAppExtraPluginsDisabledTest extends IntegrationTestAppDefaultCont
         }
 
         public static void main(String[] args) {
-            Spincast.init();
+            Spincast.init(args);
         }
 
         @Inject

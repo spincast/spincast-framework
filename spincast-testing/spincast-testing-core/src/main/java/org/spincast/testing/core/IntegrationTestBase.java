@@ -26,6 +26,7 @@ import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 /**
  * Base class for integration test classes that need 
@@ -35,15 +36,16 @@ import com.google.inject.Inject;
  * This requires a "Server" to be bound in the Guice 
  * context : it will automatically be stopped after the
  * test class is ran.
- * </p>
  * <p>
  * Note that this class doesn't start the server by itself because 
  * this lets the opportunity to test an application by using its true
  * bootstraping process, which usually starts a server itself!
- * </p>
  * <p>
  * All client data (such as cookies) are cleared before each test.
- * </p>
+ * <p>
+ * If you extend this class directly, don't forget to add the
+ * extra plugins required! You can get those by calling
+ * <code>getExtraRequiredPlugins()</code>
  */
 public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                          extends SpincastTestBase {
@@ -60,6 +62,42 @@ public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends
     @Inject
     private CookieFactory cookieFactory;
 
+    /**
+     * The extra required plugins. For integration testing, we need 
+     * the Spincast HTTP Client plugin!
+     */
+    @Override
+    protected List<SpincastPlugin> getGuiceTweakerPlugins() {
+
+        List<SpincastPlugin> plugins = super.getGuiceTweakerPlugins();
+
+        plugins.add(new SpincastHttpClientWithWebsocketPlugin());
+
+        return plugins;
+    }
+
+    @Override
+    protected void validateCreatedInjector(Injector guice) {
+        super.validateCreatedInjector(guice);
+
+        //==========================================
+        // We validate that the required plugin have been
+        // bound.
+        //==========================================
+        try {
+            guice.getBinding(HttpClient.class);
+        } catch (Exception ex) {
+
+            String msg = "By extending the " + IntegrationTestBase.class.getName() + " base class, your " +
+                         "test class *must* bind those extra plugins in the Guice context :\n";
+            for (SpincastPlugin plugin : getGuiceTweakerPlugins()) {
+                msg += "- " + plugin.getClass().getName() + "\n";
+            }
+
+            throw new RuntimeException(msg, ex);
+        }
+    }
+
     @Override
     public void afterClass() {
         super.afterClass();
@@ -74,22 +112,6 @@ public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends
             //==========================================
             getServer().stop(false);
         }
-    }
-
-    /**
-     * The extra plugins added by the Guice Tweaker.
-     * 
-     * For integration testing, we need the Spincast HTTP 
-     * Client plugin!
-     */
-    @Override
-    protected List<SpincastPlugin> getGuiceTweakerExtraPlugins() {
-
-        List<SpincastPlugin> plugins = super.getGuiceTweakerExtraPlugins();
-
-        plugins.add(new SpincastHttpClientWithWebsocketPlugin());
-
-        return plugins;
     }
 
     protected HttpClient getHttpClient() {

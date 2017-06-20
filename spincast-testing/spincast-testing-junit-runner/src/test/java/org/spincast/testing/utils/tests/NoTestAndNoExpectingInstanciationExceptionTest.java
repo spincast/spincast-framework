@@ -5,8 +5,8 @@ import static org.junit.Assert.fail;
 import org.junit.runner.RunWith;
 import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
 import org.spincast.testing.utils.SpincastJUnitRunner;
-import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 import org.spincast.testing.utils.tests.utils.SpincastJUnitRunnerTester;
+import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 
 @RunWith(SpincastJUnitRunnerTester.class)
 public class NoTestAndNoExpectingInstanciationExceptionTest implements
@@ -26,6 +26,11 @@ public class NoTestAndNoExpectingInstanciationExceptionTest implements
     @Override
     public void afterClass() {
         fail("Test initiation was expected to fail.");
+    }
+
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
     }
 
 }

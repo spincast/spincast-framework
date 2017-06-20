@@ -32,6 +32,7 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
+import org.spincast.core.json.JsonObjectFactory;
 import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -47,8 +48,15 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
     @Inject
     protected JsonManager jsonManager;
 
+    @Inject
+    protected JsonObjectFactory jsonObjectFactory;
+
     protected JsonManager getJsonManager() {
         return this.jsonManager;
+    }
+
+    protected JsonObjectFactory getJsonObjectFactory() {
+        return this.jsonObjectFactory;
     }
 
     @Test
@@ -136,7 +144,28 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
 
         String jsonStr = getJsonManager().toJsonString(jsonObj);
         assertNotNull(jsonStr);
-        assertEquals("{\"someDate\":\"2001-04-06T12:00+0000\"}", jsonStr);
+        assertEquals("{\"someDate\":\"2001-04-06T12:00:00.000Z\"}", jsonStr);
+    }
+
+    @Test
+    public void toJsonStringDateWithMilliseconds() throws Exception {
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        cal.clear();
+        cal.set(Calendar.YEAR, 2001);
+        cal.set(Calendar.MONTH, 3);
+        cal.set(Calendar.DATE, 6);
+        cal.set(Calendar.HOUR_OF_DAY, 12);
+        cal.set(Calendar.MILLISECOND, 123);
+        Date someDate = cal.getTime();
+
+        JsonObject jsonObj = getJsonManager().create();
+        jsonObj.put("someDate", someDate);
+
+        String jsonStr = getJsonManager().toJsonString(jsonObj);
+        assertNotNull(jsonStr);
+        assertEquals("{\"someDate\":\"2001-04-06T12:00:00.123Z\"}", jsonStr);
     }
 
     @Test
@@ -3018,6 +3047,84 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
             fail();
         } catch(Exception ex) {
         }
+    }
+
+    @Test
+    public void withInitialMapMutable() throws Exception {
+
+        Map<String, Object> initialMap = new HashMap<String, Object>();
+        initialMap.put("key1", "val1");
+        initialMap.put("key2", "val2");
+
+        JsonObject obj = getJsonObjectFactory().create(initialMap, true);
+        assertNotNull(obj);
+        assertEquals(2, obj.size());
+        assertEquals("val1", obj.getString("key1"));
+        assertEquals("val2", obj.getString("key2"));
+
+        obj.put("key3", "val3");
+        assertEquals(3, obj.size());
+        assertEquals("val3", obj.getString("key3"));
+    }
+
+    @Test
+    public void withInitialMapImmutable() throws Exception {
+
+        Map<String, Object> initialMap = new HashMap<String, Object>();
+        initialMap.put("key1", "val1");
+        initialMap.put("key2", "val2");
+
+        JsonObject obj = getJsonObjectFactory().create(initialMap, false);
+        assertNotNull(obj);
+        assertEquals(2, obj.size());
+        assertEquals("val1", obj.getString("key1"));
+        assertEquals("val2", obj.getString("key2"));
+
+        try {
+            obj.put("key3", "val3");
+            fail();
+        } catch(Exception ex) {
+        }
+        assertEquals(2, obj.size());
+    }
+
+    @Test
+    public void withInitialObjMutable() throws Exception {
+
+        JsonObject initialObj = getJsonManager().create();
+        initialObj.put("key1", "val1");
+        initialObj.put("key2", "val2");
+
+        JsonObject obj = getJsonObjectFactory().create(initialObj, true);
+        assertNotNull(obj);
+        assertEquals(2, obj.size());
+        assertEquals("val1", obj.getString("key1"));
+        assertEquals("val2", obj.getString("key2"));
+
+        obj.put("key3", "val3");
+        assertEquals(3, obj.size());
+        assertEquals("val3", obj.getString("key3"));
+    }
+
+    @Test
+    public void withInitialObjImmutable() throws Exception {
+
+        JsonObject initialObj = getJsonManager().create();
+        initialObj.put("key1", "val1");
+        initialObj.put("key2", "val2");
+
+        JsonObject obj = getJsonObjectFactory().create(initialObj, false);
+        assertNotNull(obj);
+        assertEquals(2, obj.size());
+        assertEquals("val1", obj.getString("key1"));
+        assertEquals("val2", obj.getString("key2"));
+
+        try {
+            obj.put("key3", "val3");
+            fail();
+        } catch(Exception ex) {
+        }
+        assertEquals(2, obj.size());
     }
 
 }

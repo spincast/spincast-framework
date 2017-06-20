@@ -25,8 +25,7 @@ public class MainArgsTest extends IntegrationTestNoAppDefaultContextsBase {
     protected Injector createInjector() {
 
         return Spincast.configure()
-                       .mainArgs(this.args)
-                       .init();
+                       .init(this.args);
     }
 
     protected String[] args = new String[]{"one", "two"};

@@ -17,7 +17,7 @@ import com.google.inject.name.Names;
 public class UnitTestDefaultContextsBaseTest extends UnitTestDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

@@ -61,11 +61,11 @@ public class FeedController {
             feed.setFeedType(feedType);
 
             feed.setTitle("Spincast Framework");
-            feed.setLink(getAppConfig().getPublicServerSchemeHostPort());
+            feed.setLink(getAppConfig().getPublicUrlBase());
             feed.setEncoding("UTF-8");
 
             SyndImage feedImage = new SyndImageImpl();
-            feedImage.setUrl(getAppConfig().getPublicServerSchemeHostPort() + "/public/images/feed.png");
+            feedImage.setUrl(getAppConfig().getPublicUrlBase() + "/public/images/feed.png");
             feedImage.setTitle("Spincast Framework");
             feed.setImage(feedImage);
 
@@ -76,7 +76,7 @@ public class FeedController {
             for(NewsEntry newsEntry : getNewsService().getFeedNewsEntries()) {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setTitle(newsEntry.getTitle());
-                entry.setLink(getAppConfig().getPublicServerSchemeHostPort() + "/news/" + newsEntry.getId());
+                entry.setLink(getAppConfig().getPublicUrlBase() + "/news/" + newsEntry.getId());
                 entry.setPublishedDate(newsEntry.getPublishedDate());
                 SyndContent description = new SyndContentImpl();
                 description.setType("text/html");

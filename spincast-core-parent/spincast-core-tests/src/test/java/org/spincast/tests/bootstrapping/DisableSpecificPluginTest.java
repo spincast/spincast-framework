@@ -39,16 +39,16 @@ public class DisableSpecificPluginTest {
         try {
             Spincast.configure()
                     .disableDefaultConfigPlugin()
-                    .init();
+                    .init(args);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertFalse(initCalled);
 
         Spincast.configure()
                 .disableDefaultConfigPlugin()
                 .module(new SpincastConfigModuleTesting())
-                .init();
+                .init(args);
         assertTrue(initCalled);
     }
 

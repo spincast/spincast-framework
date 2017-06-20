@@ -8,19 +8,22 @@ import static org.junit.Assert.fail;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
+import com.google.inject.Inject;
+
 public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return HttpsTestConfig.class;
     }
 
@@ -31,6 +34,14 @@ public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
         private int httpsServerPort = -1;
 
+        /**
+         * Constructor
+         */
+        @Inject
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
+
         @Override
         public int getHttpServerPort() {
             return -1;
@@ -38,7 +49,7 @@ public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
         @Override
         public int getHttpsServerPort() {
-            if(this.httpsServerPort < 0) {
+            if (this.httpsServerPort < 0) {
                 this.httpsServerPort = SpincastTestUtils.findFreePort();
             }
             return this.httpsServerPort;
@@ -60,7 +71,7 @@ public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
         }
 
         @Override
-        public String getHttpsKeyStoreKeypass() {
+        public String getHttpsKeyStoreKeyPass() {
             return "myKeyPass";
         }
     }
@@ -118,7 +129,7 @@ public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             @SuppressWarnings("unused")
             WebsocketClientWriter writer = websocket("/ws", false, true).connect(client);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Throwable cause = ex.getCause();
             assertNotNull(cause);
             assertTrue(cause instanceof SSLHandshakeException);

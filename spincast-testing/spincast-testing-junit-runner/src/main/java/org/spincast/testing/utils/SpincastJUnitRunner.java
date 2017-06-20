@@ -1,5 +1,7 @@
 package org.spincast.testing.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +111,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() throws Exception {
 
-        if(this.testClassInstance == null) {
+        if (this.testClassInstance == null) {
             this.testClassInstance = getTestClass().getOnlyConstructor().newInstance();
         }
         return this.testClassInstance;
@@ -118,7 +120,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     protected Object getTestClassInstance() {
         try {
             return createTest();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw(ex instanceof RuntimeException) ? (RuntimeException)ex : new RuntimeException(ex);
         }
     }
@@ -132,7 +134,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         String name = super.getName();
 
         int loopsNbr = getTestClassLoopsNbr();
-        if(loopsNbr > 1) {
+        if (loopsNbr > 1) {
             name = name + " [" + loopsNbr + " loops]";
         }
 
@@ -151,7 +153,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         // exist, so we create a dummy one.
         //==========================================
         List<FrameworkMethod> tests = super.computeTestMethods();
-        if((tests == null || tests.size() == 0)) {
+        if ((tests == null || tests.size() == 0)) {
 
             tests = new ArrayList<FrameworkMethod>(tests);
             tests.add(new NoTestsFrameworkMethod());
@@ -193,11 +195,11 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                 //==========================================
                 // Executes the loops
                 //==========================================
-                for(int i = 0; i < loopsNbr; i++) {
+                for (int i = 0; i < loopsNbr; i++) {
 
                     setCurrentClassLoopPosition(i + 1);
 
-                    if(loopsNbr > 1) {
+                    if (loopsNbr > 1) {
                         this.logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopsNbr + " of " +
                                          "test class " + getTestClass().getJavaClass().getName());
                     }
@@ -211,30 +213,36 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                     //==========================================
                     // Calls the "beforeClass()" method
                     //==========================================
-                    if(getTestClassInstance() instanceof BeforeAfterClassMethodsProvider) {
+                    if (getTestClassInstance() instanceof BeforeAfterClassMethodsProvider) {
 
                         try {
 
                             ((BeforeAfterClassMethodsProvider)getTestClassInstance()).beforeClass();
 
-                            if(isExpectingBeforeClassException()) {
+                            if (isExpectingBeforeClassException()) {
                                 String msg = "An exception was expected in the 'beforeClass()' method since " +
                                              "the @" + ExpectingBeforeClassException.class.getSimpleName() +
                                              " is used on the class, but none occured.";
                                 spincastTestError(SPINCAST_TEST_NAME_BEFORE_CLASS_METHOD_VALIDATION, msg);
                             }
-                        } catch(Throwable ex) { // assertions are Errors, not Exceptions
+                        } catch (Throwable ex) { // assertions are Errors, not Exceptions
 
                             setExceptionInBeforeClass();
                             setIgnoreRemainingTests();
 
-                            if(!isExpectingBeforeClassException()) {
+                            if (!isExpectingBeforeClassException()) {
                                 spincastTestError(SPINCAST_TEST_NAME_BEFORE_CLASS_METHOD_VALIDATION, ex);
+                            }
+
+                            try {
+                                ((BeforeAfterClassMethodsProvider)getTestClassInstance()).beforeClassException(ex);
+                            } catch (Exception ex2) {
+                                this.logger.error("Error managing the 'beforeClass' exception : ", ex2);
                             }
                         }
                     } else {
 
-                        if(isExpectingBeforeClassException()) {
+                        if (isExpectingBeforeClassException()) {
                             String msg = "The @" + ExpectingBeforeClassException.class.getSimpleName() + " annotation " +
                                          "can only be used on a class implementing the " +
                                          BeforeAfterClassMethodsProvider.class.getSimpleName() + " interface.";
@@ -250,38 +258,38 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                     //==========================================
                     // Calls the "afterClass()" method, if required
                     //==========================================
-                    if(!isIgnoreRemainingTests() && getTestClassInstance() instanceof BeforeAfterClassMethodsProvider) {
+                    if (!isIgnoreRemainingTests() && getTestClassInstance() instanceof BeforeAfterClassMethodsProvider) {
 
                         try {
                             ((BeforeAfterClassMethodsProvider)getTestClassInstance()).afterClass();
-                        } catch(Throwable ex) { // assertions are Errors, not Exceptions
+                        } catch (Throwable ex) { // assertions are Errors, not Exceptions
                             spincastTestError(SPINCAST_TEST_NAME_AFTER_CLASS_METHOD_VALIDATION, ex);
                             break;
                         }
                     }
 
-                    if(this.atLeastOneTestFailed || i >= (loopsNbr - 1)) {
+                    if (this.atLeastOneTestFailed || i >= (loopsNbr - 1)) {
                         break;
                     }
 
                     //==========================================
                     // Sleep
                     //==========================================
-                    if(sleep > 0) {
+                    if (sleep > 0) {
                         try {
                             Thread.sleep(sleep);
-                        } catch(Exception ex) {
+                        } catch (Exception ex) {
                             //....
                         }
                     }
                 }
             } finally {
 
-                if(getTestClassInstance() instanceof RepeatedClassAfterMethodProvider) {
-                    if(!isExceptionInBeforeClass()) {
+                if (getTestClassInstance() instanceof RepeatedClassAfterMethodProvider) {
+                    if (!isExceptionInBeforeClass()) {
                         try {
                             ((RepeatedClassAfterMethodProvider)getTestClassInstance()).afterClassLoops();
-                        } catch(Throwable ex) { // assertions are Errors, not Exceptions
+                        } catch (Throwable ex) { // assertions are Errors, not Exceptions
                             spincastTestError(SPINCAST_TEST_NAME_AFTER_CLASS_LOOPS_EXCEPTION, ex);
                         }
                     } else {
@@ -291,12 +299,12 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                 }
             }
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw(ex instanceof RuntimeException) ? (RuntimeException)ex : new RuntimeException(ex);
         } finally {
 
             int classLoopsNbr = getTestClassLoopsNbr();
-            if(this.atLeastOneTestFailed && classLoopsNbr > 1) {
+            if (this.atLeastOneTestFailed && classLoopsNbr > 1) {
                 this.logger.error("The test failure occured during the class loop #" + getCurrentClassLoopPosition());
             }
         }
@@ -308,14 +316,14 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     @Override
     protected void runChild(FrameworkMethod method, RunNotifier notifier) {
 
-        if(NoTestsFrameworkMethod.class.getName().equals(method.getDeclaringClass().getName())) {
+        if (NoTestsFrameworkMethod.class.getName().equals(method.getDeclaringClass().getName())) {
             Description description = describeChild(method);
             notifier.fireTestStarted(description);
             notifier.fireTestFinished(description);
             return;
         }
 
-        if(isIgnoreRemainingTests()) {
+        if (isIgnoreRemainingTests()) {
             Description description = describeChild(method);
             notifier.fireTestIgnored(description);
             return;
@@ -326,9 +334,9 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         //==========================================
         int sleep = getMethodLoopsSleep(method.getMethod());
         int loopsNbr = getMethodLoopsNbr(method.getMethod());
-        for(int i = 0; i < loopsNbr; i++) {
+        for (int i = 0; i < loopsNbr; i++) {
 
-            if(loopsNbr > 1) {
+            if (loopsNbr > 1) {
                 this.logger.info("Execution " + (i + 1) + "/" + loopsNbr + " of " +
                                  "test " + method.getMethod().getName() + " from " +
                                  "test class " + getTestClass().getJavaClass().getName());
@@ -336,19 +344,19 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
             super.runChild(method, notifier);
 
-            if(loopsNbr > 1 && this.atLeastOneTestFailed) {
+            if (loopsNbr > 1 && this.atLeastOneTestFailed) {
                 this.logger.error("The test \"" + method.getMethod().getName() + "\" failed during the loop #" + (i + 1));
                 break;
             }
 
-            if(i >= (loopsNbr - 1)) {
+            if (i >= (loopsNbr - 1)) {
                 break;
             }
 
-            if(sleep > 0) {
+            if (sleep > 0) {
                 try {
                     Thread.sleep(sleep);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     //....
                 }
             }
@@ -361,7 +369,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             @Override
             public void testFailure(Failure failure) throws Exception {
                 SpincastJUnitRunner.this.atLeastOneTestFailed = true;
-                if(SpincastJUnitRunner.this.testClassInstance instanceof TestFailureListener) {
+                if (SpincastJUnitRunner.this.testClassInstance instanceof TestFailureListener) {
                     ((TestFailureListener)SpincastJUnitRunner.this.testClassInstance).testFailure(failure);
                 }
             }
@@ -376,7 +384,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
     protected void validateNoBeforeClassAnnotations() {
         List<FrameworkMethod> befores = getTestClass().getAnnotatedMethods(BeforeClass.class);
-        if(befores != null && befores.size() > 0) {
+        if (befores != null && befores.size() > 0) {
             String msg = "The @BeforeClass JUnit annotation can't be used with the " +
                          SpincastJUnitRunner.class.getSimpleName() + " " +
                          "custom runner. Use the beforeClass() method instead by implementing the " +
@@ -388,7 +396,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
     protected void validateNoAfterClassAnnotations() {
         List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(AfterClass.class);
-        if(afters != null && afters.size() > 0) {
+        if (afters != null && afters.size() > 0) {
             String msg = "The @AfterClass JUnit annotation can't be used with the " +
                          SpincastJUnitRunner.class.getSimpleName() + " " +
                          "custom runner. Use the afterClass() method instead by implementing the " +
@@ -400,7 +408,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     protected void validateNoTestsAndNoExpectingBeforeClassExceptionAnnotation() {
 
         List<FrameworkMethod> regularTests = SpincastJUnitRunner.super.computeTestMethods();
-        if((regularTests == null || regularTests.size() == 0) && !isExpectingBeforeClassException()) {
+        if ((regularTests == null || regularTests.size() == 0) && !isExpectingBeforeClassException()) {
             String msg =
                     "There must be at least one @Test or the @" + ExpectingBeforeClassException.class.getSimpleName() + " must " +
                          "be present.";
@@ -414,6 +422,8 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
     protected void spincastTestError(String testName, Throwable exception) {
 
+        this.logger.error("Test error", exception);
+
         Description description = Description.createTestDescription(getTestClass().getJavaClass(),
                                                                     testName);
 
@@ -423,8 +433,20 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         getRunNotifier().fireTestFinished(description);
     }
 
+    protected String getStackTrace(Throwable ex) {
+
+        if (ex == null) {
+            return "";
+        }
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        return sw.toString();
+    }
+
     public boolean isExpectingBeforeClassException() {
-        if(this.isExpectingBeforeClassException == null) {
+        if (this.isExpectingBeforeClassException == null) {
             this.isExpectingBeforeClassException = getTestClass().getAnnotation(ExpectingBeforeClassException.class) != null;
         }
         return this.isExpectingBeforeClassException;
@@ -441,9 +463,9 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     protected int getLoopsNbr(Repeat repeatAnnotation) {
 
         int loopsNbr = 1;
-        if(repeatAnnotation != null) {
+        if (repeatAnnotation != null) {
             loopsNbr = repeatAnnotation.value();
-            if(loopsNbr < 1) {
+            if (loopsNbr < 1) {
                 loopsNbr = 1;
             }
         }
@@ -461,7 +483,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     protected int getLoopsSleep(Repeat repeatAnnotation) {
 
         int sleep = 0;
-        if(repeatAnnotation != null) {
+        if (repeatAnnotation != null) {
             sleep = repeatAnnotation.sleep();
         }
         return sleep;

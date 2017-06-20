@@ -56,15 +56,15 @@ public class CustomCoreModuleTest {
         try {
             Spincast.configure()
                     .disableCorePlugin()
-                    .init();
+                    .init(args);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertFalse(initCalled);
 
         Spincast.configure()
                 .module(new CoreModuleTesting())
-                .init();
+                .init(args);
         assertTrue(initCalled);
     }
 

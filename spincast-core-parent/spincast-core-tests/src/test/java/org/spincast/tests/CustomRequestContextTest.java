@@ -27,7 +27,7 @@ public class CustomRequestContextTest extends
     protected Injector createInjector() {
         return Spincast.configure()
                        .requestContextImplementationClass(CustomRequestContextDefault.class)
-                       .init();
+                       .init(new String[]{});
     }
 
     public static interface CustomRequestContext extends RequestContext<CustomRequestContext> {
@@ -36,11 +36,11 @@ public class CustomRequestContextTest extends
     }
 
     public static class CustomRequestContextDefault extends RequestContextBase<CustomRequestContext>
-                                             implements CustomRequestContext {
+                                                    implements CustomRequestContext {
 
         @AssistedInject
         public CustomRequestContextDefault(@Assisted Object exchange,
-                                    RequestContextBaseDeps<CustomRequestContext> requestContextBaseDeps) {
+                                           RequestContextBaseDeps<CustomRequestContext> requestContextBaseDeps) {
             super(exchange, requestContextBaseDeps);
         }
 

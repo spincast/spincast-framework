@@ -49,3 +49,5 @@ $RECYCLE.BIN/
 *.releaseBackup
 release.properties
 /spincast-website/src/main/resources/public/impress.js-master
+/spincast-website/app-config.yaml
+/spincast-website/writable

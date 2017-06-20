@@ -19,7 +19,7 @@ import com.google.inject.multibindings.Multibinder;
 public class UseFieldInsteadOfGetterMixinTest extends UnitTestDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 

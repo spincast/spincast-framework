@@ -3,15 +3,22 @@ package org.spincast.core.utils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
 /**
- * Some very few static methods.
+ * Some few static methods.
  * 
  * You can still change the underlying instance though, in case
  * you need to change/fix something.
@@ -23,7 +30,7 @@ public class SpincastStatics {
     private static SpincastStatics instance;
 
     protected static SpincastStatics getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new SpincastStatics();
         }
         return instance;
@@ -31,6 +38,51 @@ public class SpincastStatics {
 
     public static void setInstance(SpincastStatics instance) {
         SpincastStatics.instance = instance;
+    }
+
+    // All FastDateFormat are thread safe!
+    private static FastDateFormat iso8601DateParser1;
+    private static FastDateFormat iso8601DateParser2;
+    private static FastDateFormat iso8601DateParser3;
+    private static FastDateFormat iso8601DateParser4;
+    private static FastDateFormat iso8601DateParser5;
+    private static FastDateFormat iso8601DateParser6;
+
+    static {
+        iso8601DateParser1 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", TimeZone.getTimeZone("UTC"));
+        iso8601DateParser2 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ", TimeZone.getTimeZone("UTC"));
+        iso8601DateParser3 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssX", TimeZone.getTimeZone("UTC"));
+        iso8601DateParser4 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mmZ", TimeZone.getTimeZone("UTC"));
+        iso8601DateParser5 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm", TimeZone.getTimeZone("UTC"));
+        iso8601DateParser6 = FastDateFormat.getInstance("yyyy-MM-dd", TimeZone.getTimeZone("UTC"));
+    }
+
+    public static FastDateFormat getIso8601DateParserDefault() {
+        return iso8601DateParser1;
+    }
+
+    protected static FastDateFormat getIso8601DateParser1() {
+        return iso8601DateParser1;
+    }
+
+    protected static FastDateFormat getIso8601DateParser2() {
+        return iso8601DateParser2;
+    }
+
+    protected static FastDateFormat getIso8601DateParser3() {
+        return iso8601DateParser3;
+    }
+
+    protected static FastDateFormat getIso8601DateParser4() {
+        return iso8601DateParser4;
+    }
+
+    protected static FastDateFormat getIso8601DateParser5() {
+        return iso8601DateParser5;
+    }
+
+    protected static FastDateFormat getIso8601DateParser6() {
+        return iso8601DateParser6;
     }
 
     public static RuntimeException runtimize(Exception ex) {
@@ -42,21 +94,21 @@ public class SpincastStatics {
         Objects.requireNonNull(ex, "NULL exception");
 
         // Use the wrapped exception.
-        if(ex instanceof InvocationTargetException) {
+        if (ex instanceof InvocationTargetException) {
             Throwable wrappedException = ((InvocationTargetException)ex).getTargetException();
-            if(wrappedException != null && wrappedException instanceof Exception) {
+            if (wrappedException != null && wrappedException instanceof Exception) {
                 ex = (Exception)wrappedException;
             }
         }
 
-        if(ex instanceof InterruptedException) {
+        if (ex instanceof InterruptedException) {
             RuntimeException exceptionToReturn = manageInterruptedException(ex);
-            if(exceptionToReturn != null) {
+            if (exceptionToReturn != null) {
                 return exceptionToReturn;
             }
         }
 
-        if(ex instanceof RuntimeException) {
+        if (ex instanceof RuntimeException) {
             return (RuntimeException)ex;
         }
 
@@ -83,7 +135,7 @@ public class SpincastStatics {
 
     protected String getStackTraceInstance(Throwable ex) {
 
-        if(ex == null) {
+        if (ex == null) {
             return "";
         }
 
@@ -257,6 +309,88 @@ public class SpincastStatics {
         map.put(key5, value5);
 
         return map;
+    }
+
+    /**
+     * Gets *all* the methods of a clazz, for all visibilities
+     * and for all the parents hierarchy.
+     */
+    public static Set<Method> getAllMethods(Class<?> clazz) {
+        return getInstance().getAllMethodsInstance(clazz);
+    }
+
+    protected Set<Method> getAllMethodsInstance(Class<?> clazz) {
+
+        Objects.requireNonNull(clazz, "The class can't be NULL");
+
+        Set<Method> allMethods = new HashSet<Method>();
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        Method[] methods = clazz.getMethods();
+
+        if (clazz.getSuperclass() != null) {
+            Class<?> superClass = clazz.getSuperclass();
+            Set<Method> superClassMethods = getAllMethods(superClass);
+            allMethods.addAll(superClassMethods);
+        }
+
+        allMethods.addAll(Arrays.asList(declaredMethods));
+        allMethods.addAll(Arrays.asList(methods));
+
+        return allMethods;
+    }
+
+    /**
+     * Parse a ISO 8601 string representation of a date 
+     * to a Date object.
+     */
+    public static Date parseISO8601date(String str) {
+        return getInstance().parseISO8601dateInstance(str);
+    }
+
+    public Date parseISO8601dateInstance(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        Date date = null;
+
+        try {
+            date = getIso8601DateParser1().parse(str);
+            return date;
+        } catch (Exception ex) {
+        }
+
+        try {
+            date = getIso8601DateParser2().parse(str);
+            return date;
+        } catch (Exception ex) {
+        }
+
+        try {
+            date = getIso8601DateParser3().parse(str);
+            return date;
+        } catch (Exception ex) {
+        }
+
+        try {
+            date = getIso8601DateParser4().parse(str);
+            return date;
+        } catch (Exception ex) {
+        }
+
+        try {
+            date = getIso8601DateParser5().parse(str);
+            return date;
+        } catch (Exception ex) {
+        }
+
+        try {
+            date = getIso8601DateParser6().parse(str);
+            return date;
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+
     }
 
 }

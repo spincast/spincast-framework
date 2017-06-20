@@ -1,0 +1,42 @@
+{% extends "./layout.html" %}
+
+{% block sectionClasses %}form_page{% endblock %}
+{% block meta_title %}Spincast Quick Start{% endblock %}
+{% block meta_description %}Spincast Quick Start Application{% endblock %}
+
+{% block scripts %}
+
+<script>
+    $(function() {
+        $("#userName").focus();
+    });
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div class="well jumbotron">
+
+        <form methog="GET">
+           What is your name? : 
+            <input id="userName" name="userName" type="text" value="{{ userName is not empty ? userName : "" }}" />
+            <input type="submit" value="Submit" />
+        </form>
+    
+		{% if greetings is not empty %}
+	        <div id="greetings">
+	           {{greetings}}
+	        </div>
+	        <p>
+	            <a href="javascript:history.back()">&lt;&lt; back</a>
+	        </p>
+        {% endif %}
+      
+    </div>
+    
+</div>
+
+{% endblock %}

@@ -2,16 +2,13 @@ package org.spincast.defaults.testing;
 
 import org.spincast.core.exchange.DefaultRequestContextDefault;
 import org.spincast.core.exchange.RequestContext;
-import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.websocket.DefaultWebsocketContextDefault;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.bootstrapping.SpincastBootstrapper;
 import org.spincast.testing.core.SpincastTestBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 
 /**
  * Base for non integration test classes that
@@ -31,10 +28,10 @@ public class UnitTestBase extends SpincastTestBase {
     public UnitTestBase(Class<? extends RequestContext<?>> requestContextImplementationClass,
                         Class<? extends WebsocketContext<?>> websocketContextImplementationClass) {
 
-        if(requestContextImplementationClass == null) {
+        if (requestContextImplementationClass == null) {
             requestContextImplementationClass = DefaultRequestContextDefault.class;
         }
-        if(websocketContextImplementationClass == null) {
+        if (websocketContextImplementationClass == null) {
             websocketContextImplementationClass = DefaultWebsocketContextDefault.class;
         }
 
@@ -53,44 +50,11 @@ public class UnitTestBase extends SpincastTestBase {
     @Override
     protected Injector createInjector() {
 
-        SpincastBootstrapper builder = Spincast.configure()
-                                             .bindCurrentClass(false)
-                                             .requestContextImplementationClass(getRequestContextImplementationClass())
-                                             .websocketContextImplementationClass(getWebsocketContextImplementationClass());
-        if(getExtraOverridingModule() != null) {
-            builder.module(getExtraOverridingModule());
-        }
-
-        return builder.init();
-    }
-
-    /**
-     * Since we do not call "App.main(...)" in test
-     * class in this branch, we don't need to bind
-     * the current class to the Guice context : the
-     * Server will be started explicitly and the
-     * @Test methods called explicitly.
-     */
-    @Override
-    protected GuiceTweaker createGuiceTweaker() {
-
-        GuiceTweaker guiceTweaker = super.createGuiceTweaker();
-        if(guiceTweaker == null) {
-            guiceTweaker = new GuiceTweaker();
-        }
-        guiceTweaker.bindCurrentClassByDefault(false);
-
-        return guiceTweaker;
-    }
-
-    /**
-     * If all the test class wants to tweak from a default
-     * <code>Spincast.configure()</code> generated Injector is 
-     * to add a module, one can be specified by overriding this
-     * method.
-     */
-    protected Module getExtraOverridingModule() {
-        return null;
+        return Spincast.configure()
+                       .bindCurrentClass(false)
+                       .requestContextImplementationClass(getRequestContextImplementationClass())
+                       .websocketContextImplementationClass(getWebsocketContextImplementationClass())
+                       .init(new String[]{});
     }
 
 }

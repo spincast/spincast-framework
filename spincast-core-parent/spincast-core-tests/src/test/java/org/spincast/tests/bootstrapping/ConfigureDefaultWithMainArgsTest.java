@@ -22,8 +22,7 @@ public class ConfigureDefaultWithMainArgsTest {
     public static void main(String[] args) {
 
         Spincast.configure()
-                .mainArgs(args)
-                .init();
+                .init(args);
 
         assertTrue(initCalled);
     }

@@ -28,7 +28,7 @@ public class HttpClientRequestContextAddonTest extends IntegrationTestNoAppBase<
     protected Injector createInjector() {
         return Spincast.configure()
                        .requestContextImplementationClass(CustomRequestContextDefault.class)
-                       .init();
+                       .init(new String[]{});
     }
 
     public static interface CustomRequestContext extends RequestContext<CustomRequestContext> {

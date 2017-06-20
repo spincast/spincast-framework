@@ -11,8 +11,18 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
-public class SpincastConfigDefault implements SpincastConfig {
+import com.google.inject.Inject;
+
+/**
+ * If you extend this class (which is recommended to implement your
+ * configuration), beware that causing circular dependencies is very 
+ * easy if you inject more dependencies than SpincastConfigPluginConfig!
+ * Indeed, most components depend on the config components.
+ * 
+ */
+public class SpincastConfigDefault extends ConfigFinder implements SpincastConfig {
 
     public static final String ENVIRONMENT_NAME_DEFAULT = "local";
 
@@ -22,6 +32,31 @@ public class SpincastConfigDefault implements SpincastConfig {
     private String publicServerSchemeHostPort;
 
     private URI publicUri;
+
+    /**
+     * Constructor
+     */
+    @Inject
+    protected SpincastConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+        super(spincastConfigPluginConfig.getClasspathFilePath(),
+              spincastConfigPluginConfig.getExternalFilePath(),
+              spincastConfigPluginConfig.getEnvironmentVariablesPrefixes(),
+              spincastConfigPluginConfig.isEnvironmentVariablesStripPrefix(),
+              spincastConfigPluginConfig.getSystemPropertiesPrefixes(),
+              spincastConfigPluginConfig.isSystemPropertiesStripPrefix(),
+              spincastConfigPluginConfig.isExternalFileConfigsOverrideEnvironmentVariables(),
+              spincastConfigPluginConfig.isThrowExceptionIfSpecifiedClasspathConfigFileIsNotFound(),
+              spincastConfigPluginConfig.isThrowExceptionIfSpecifiedExternalConfigFileIsNotFound());
+    }
+
+    @Inject
+    protected void init() {
+
+        //==========================================
+        // Initializes the configurations
+        //==========================================
+        getRawConfigs();
+    }
 
     @Override
     public String getEnvironmentName() {
@@ -54,22 +89,21 @@ public class SpincastConfigDefault implements SpincastConfig {
     }
 
     @Override
-    public String getHttpsKeyStoreKeypass() {
+    public String getHttpsKeyStoreKeyPass() {
         return null;
     }
 
-    protected URI getPubliURI() {
+    protected URI getPublicURI() {
 
-        if(this.publicUri == null) {
+        if (this.publicUri == null) {
             try {
-                this.publicUri = new URI(getPublicServerSchemeHostPort());
-            } catch(Exception ex) {
+                this.publicUri = new URI(getPublicUrlBase());
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
         }
 
         return this.publicUri;
-
     }
 
     /**
@@ -77,40 +111,40 @@ public class SpincastConfigDefault implements SpincastConfig {
      */
     @Override
     public final String getPublicServerScheme() {
-        return getPubliURI().getScheme();
+        return getPublicURI().getScheme();
     }
 
     @Override
     public final String getPublicServerHost() {
-        return getPubliURI().getHost();
+        return getPublicURI().getHost();
     }
 
     @Override
     public final int getPublicServerPort() {
-        return getPubliURI().getPort();
+        return getPublicURI().getPort();
     }
 
     /**
      * You should override this config!!!!
      */
     @Override
-    public String getPublicServerSchemeHostPort() {
+    public String getPublicUrlBase() {
 
-        if(this.publicServerSchemeHostPort == null) {
+        if (this.publicServerSchemeHostPort == null) {
             StringBuilder builder = new StringBuilder();
-            if(getHttpsServerPort() > -1) {
+            if (getHttpsServerPort() > -1) {
                 builder.append("https://");
                 builder.append(getHostForDefaultPublicServerSchemeHostPort());
                 int port = getHttpsServerPort();
-                if(port != 443) {
+                if (port != 443) {
                     builder.append(":").append(port);
                 }
             } else {
                 builder.append("http://");
                 builder.append(getHostForDefaultPublicServerSchemeHostPort());
 
-                int port = getHttpsServerPort();
-                if(port != 80) {
+                int port = getHttpServerPort();
+                if (port != 80) {
                     builder.append(":").append(port);
                 }
             }
@@ -123,7 +157,7 @@ public class SpincastConfigDefault implements SpincastConfig {
 
     protected String getHostForDefaultPublicServerSchemeHostPort() {
         String serverHost = getServerHost();
-        if("0.0.0.0".equals(serverHost)) {
+        if ("0.0.0.0".equals(serverHost)) {
             serverHost = "localhost";
         }
         return serverHost;
@@ -168,21 +202,59 @@ public class SpincastConfigDefault implements SpincastConfig {
         return prefixes;
     }
 
+    /**
+     * Will call {@link #getSpincastWritableDirPath()} to get
+     * the path to use for the writable directory. If this
+     * method returns <code>null</code>, a directory will be
+     * created under the <code>java.io.tmpdir</code> directory.
+     */
     @Override
     public File getSpincastWritableDir() {
 
-        if(this.spincastBaseWritableDir == null) {
+        if (this.spincastBaseWritableDir == null) {
 
-            File baseDir = new File(System.getProperty("java.io.tmpdir"));
-            if(!baseDir.isDirectory()) {
-                throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
+            File baseDir = null;
+            String path = getSpincastWritableDirPath();
+            if (StringUtils.isBlank(path)) {
+                baseDir = new File(System.getProperty("java.io.tmpdir"));
+                if (!baseDir.isDirectory()) {
+                    throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
+                }
+            } else {
+
+                baseDir = new File(path);
+
+                //==========================================
+                // Relative path?
+                //==========================================
+                if (!baseDir.isAbsolute()) {
+
+                    String relativePath = StringUtils.stripStart(path, "./\\");
+
+                    //==========================================
+                    // Directory next to the executable .jar file?
+                    //==========================================
+                    File jarDir = getAppJarDirectory();
+                    if (jarDir != null) {
+                        baseDir = new File(jarDir.getAbsolutePath() + "/" + relativePath);
+                    } else {
+
+                        //==========================================
+                        // Running outside an executable jar?
+                        //==========================================
+                        File noJarDir = getAppRootDirectoryNoJar();
+                        if (noJarDir != null) {
+                            baseDir = new File(noJarDir.getAbsolutePath() + "/" + relativePath);
+                        }
+                    }
+                }
             }
 
             File spincastDir = new File(baseDir, "spincast");
 
-            if(!spincastDir.isDirectory()) {
+            if (!spincastDir.isDirectory()) {
                 boolean result = spincastDir.mkdirs();
-                if(!result) {
+                if (!result) {
                     throw new RuntimeException("Unable to create the Spincast writable directory : " +
                                                spincastDir.getAbsolutePath());
                 }
@@ -195,14 +267,22 @@ public class SpincastConfigDefault implements SpincastConfig {
         return this.spincastBaseWritableDir;
     }
 
-    protected String getSpincastTempDirName() {
-        return "temp";
+    /**
+     * The path to the writable directory.
+     * <p>
+     * The path can be relative or absolute.
+     * 
+     * @return the path or <code>null</code> to use the
+     * default location (using the "java.io.tmpdir" folder).
+     */
+    protected String getSpincastWritableDirPath() {
+        return null;
     }
 
     protected void cleanWritableSpincastDir(File spincastTempDir) {
         try {
             FileUtils.cleanDirectory(spincastTempDir);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Unable to clean the Spincast writable directory: " +
                                        spincastTempDir.getAbsolutePath());
         }
@@ -234,8 +314,8 @@ public class SpincastConfigDefault implements SpincastConfig {
     }
 
     @Override
-    public boolean isDisableWriteToDiskDynamicStaticResource() {
-        return isDebugEnabled();
+    public boolean isWriteToDiskDynamicStaticResource() {
+        return !isDebugEnabled();
     }
 
     @Override
@@ -255,7 +335,7 @@ public class SpincastConfigDefault implements SpincastConfig {
     @Override
     public StaticResourceCacheConfig getDefaultStaticResourceCacheConfig(boolean isDynamicResource) {
 
-        if(this.staticResourceCacheConfig == null) {
+        if (this.staticResourceCacheConfig == null) {
             this.staticResourceCacheConfig = new StaticResourceCacheConfig() {
 
                 @Override
@@ -275,7 +355,7 @@ public class SpincastConfigDefault implements SpincastConfig {
             };
         }
 
-        if(this.dynamicResourceCacheConfig == null) {
+        if (this.dynamicResourceCacheConfig == null) {
             this.dynamicResourceCacheConfig = new StaticResourceCacheConfig() {
 
                 @Override
@@ -295,7 +375,7 @@ public class SpincastConfigDefault implements SpincastConfig {
             };
         }
 
-        if(isDynamicResource) {
+        if (isDynamicResource) {
             return this.dynamicResourceCacheConfig;
         } else {
             return this.staticResourceCacheConfig;

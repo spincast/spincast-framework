@@ -26,7 +26,7 @@ public class GetDefaultModuleTest {
                 .disableCorePlugin()
                 .disableAllDefaultPlugins()
                 .module(defaultModuleWithCore)
-                .init();
+                .init(new String[]{});
         assertTrue(initCalled);
         initCalled = false;
     }
@@ -42,9 +42,9 @@ public class GetDefaultModuleTest {
             Spincast.configure()
                     .disableAllDefaultPlugins()
                     .module(defaultModuleOnly)
-                    .init();
+                    .init(new String[]{});
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertFalse(initCalled);
 
@@ -52,7 +52,7 @@ public class GetDefaultModuleTest {
                 .disableAllDefaultPlugins()
                 .module(defaultModuleOnly)
                 .plugin(new SpincastCorePlugin())
-                .init();
+                .init(new String[]{});
         assertTrue(initCalled);
         initCalled = false;
     }

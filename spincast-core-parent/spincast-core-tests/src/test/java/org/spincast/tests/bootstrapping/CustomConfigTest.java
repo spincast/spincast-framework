@@ -8,6 +8,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.config.SpincastConfigDefault;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 
 import com.google.inject.Inject;
 import com.google.inject.Scopes;
@@ -32,6 +33,14 @@ public class CustomConfigTest {
 
     public static class SpincastConfigTestDefault extends SpincastConfigDefault implements SpincastConfigTest {
 
+        /**
+         * Constructor
+         */
+        @Inject
+        protected SpincastConfigTestDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
+
         @Override
         public int getHttpServerPort() {
             return 42;
@@ -53,7 +62,7 @@ public class CustomConfigTest {
                         bind(SpincastConfigTest.class).to(SpincastConfigTestDefault.class).in(Scopes.SINGLETON);
                     }
                 })
-                .init();
+                .init(args);
 
         assertTrue(initCalled);
     }

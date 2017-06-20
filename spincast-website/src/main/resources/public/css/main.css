@@ -1039,6 +1039,20 @@ a.pluginLink {
     border: 1px solid rgba(145, 255, 0, 1);
 }
 
+.ace-error {
+    background: transparent !important; 
+	border: 0 !important;
+	background-image: url("/public/images/error-border.png") !important;
+	background-position: bottom !important;
+	background-repeat: repeat-x !important;
+}
+
+.ace-error-gutter {
+	background-image: url("/public/images/error-icon.png") !important;
+	background-position: left !important;
+	background-repeat: no-repeat !important;
+}
+
 .ace-pebble .ace_line .ace_keyword, .ace-pebble .ace_line .ace_storage, .ace-pebble .ace_line .ace_variable, .ace-pebble .ace_line .ace_parameter {
     font-weight: bold !important;
     font-style:normal !important;

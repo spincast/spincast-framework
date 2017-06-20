@@ -38,7 +38,7 @@
 >public class App {
 
     public static void main(String[] args) {
-        Spincast.init();
+        Spincast.init(args);
     }
 
     @Inject
@@ -57,7 +57,7 @@
                     method is the entry point of our application.
                 </li>
                 <li>
-                    <span class="code-line-nbr">4</span> : <code><em>Spincast.init()</em></code> will 
+                    <span class="code-line-nbr">4</span> : <code><em>Spincast.init(args)</em></code> will 
                     create a Guice context using the default <a href="/plugins">plugins</a>, will
                     bind the current <code>App</code> class in the context and will load it.
                 </li>

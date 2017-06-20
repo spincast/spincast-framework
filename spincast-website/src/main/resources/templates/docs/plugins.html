@@ -74,8 +74,7 @@ Installing a plugin
             .module(new AppModule())
             .plugin(new SomeWonderfulPlugin())
             .requestContextImplementationClass(AppRequestContextDefault.class)
-            .mainArgs(args)
-            .init();
+            .init(args);
    //...
 }</pre>   
             </p>
@@ -268,11 +267,10 @@ Default plugins
                 component, using <a href="http://wiki.fasterxml.com/JacksonHome">Jackson</a>.
             </li>
             <li>
-                <a href="/plugins/spincast-config"><strong>Spincast Config</strong></a> : provides
-                a simple implementation for the required 
-                <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> 
-                component, using default values. This default implementation is 
-                <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigDefault.java">SpincastConfigDefault</a>.
+                <a href="/plugins/spincast-config"><strong>Spincast Config</strong></a> : 
+                provides everything that is required to configure a Spincast application. It allows you to tweak the
+                default configurations used by the Spincast core components, and to create configurations
+                that are specific to your application. 
             </li>
             <li>
                 <a href="/plugins/spincast-dictionary"><strong>Spincast Dictionary</strong></a> : provides

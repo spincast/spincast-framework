@@ -1,18 +1,22 @@
 package org.spincast.website.tests;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.spincast.core.guice.GuiceTweaker;
-import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginModule;
-import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
+import org.spincast.shaded.org.apache.commons.lang3.tuple.ImmutablePair;
+import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
+import org.spincast.testing.core.AppTestingConfigInfo;
 import org.spincast.testing.core.IntegrationTestAppBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.website.App;
+import org.spincast.website.AppConfig;
 import org.spincast.website.AppConfigDefault;
 import org.spincast.website.exchange.AppRequestContext;
+
+import com.google.inject.Inject;
 
 /**
  * Integration test base class specifically made for 
@@ -21,80 +25,89 @@ import org.spincast.website.exchange.AppRequestContext;
 public abstract class WebsiteIntegrationTestBase extends IntegrationTestAppBase<AppRequestContext, DefaultWebsocketContext> {
 
     /**
-     * We'll manage the testing configurations by ourself.
+     * We specify our testing configurations informations.
      */
     @Override
-    protected boolean isEnableGuiceTweakerTestingConfigMecanism() {
-        return false;
-    }
+    protected AppTestingConfigInfo getAppTestingConfigInfo() {
 
-    @Override
-    protected GuiceTweaker createGuiceTweaker() {
+        return new AppTestingConfigInfo() {
 
-        GuiceTweaker guiceTweaker = super.createGuiceTweaker();
+            @Override
+            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
+                return WebsiteTestingConfig.class;
+            }
 
-        //==========================================
-        // We use the .properties file based Configurations plugin.
-        //==========================================
-        guiceTweaker.module(new SpincastConfigPropsFilePluginModule());
+            @Override
+            public Class<?> getAppConfigInterface() {
+                return AppConfig.class;
+            }
 
-        return guiceTweaker;
-    }
-
-    protected File tempAppPropertiesFile;
-
-    @Override
-    public void beforeClass() {
-        createTestAppConfigPropertiesFile();
-        super.beforeClass();
-    };
-
-    @Override
-    public void afterClass() {
-        deleteTestAppPropertiesFile();
-        super.afterClass();
+            @Override
+            public Class<?> getAppConfigTestingImplementationClass() {
+                return WebsiteTestingConfig.class;
+            }
+        };
     }
 
     /**
-     * We create a test properties file to specify some custom
-     * configurations for our tests.
+     * Our testing configurations.
      */
-    protected void createTestAppConfigPropertiesFile() {
+    public static class WebsiteTestingConfig extends AppConfigDefault {
 
-        try {
-            this.tempAppPropertiesFile = Files.createTempFile(WebsiteIntegrationTestBase.class.getName(), ".properties").toFile();
+        protected Integer port;
 
-            String content = getAppConfigPropertiesFileContent();
-
-            FileUtils.writeStringToFile(this.tempAppPropertiesFile, content, "UTF-8");
-
-        } catch(Exception ex) {
-            throw SpincastStatics.runtimize(ex);
+        @Inject
+        public WebsiteTestingConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
         }
-    }
 
-    protected String getAppConfigPropertiesFileContent() {
-        return AppConfigDefault.APP_PROPERTIES_KEY_HTTP_SERVER_PORT + "=" + SpincastTestUtils.findFreePort() + "\n";
-    }
+        @Override
+        public int getHttpServerPort() {
 
-    protected void deleteTestAppPropertiesFile() {
-        FileUtils.deleteQuietly(this.tempAppPropertiesFile);
+            if (this.port == null) {
+                //==========================================
+                // Starts the application to test on a
+                // free port.
+                //==========================================
+                this.port = SpincastTestUtils.findFreePort();
+            }
+
+            return this.port;
+        }
+
+        @Override
+        public String getPublicUrlBase() {
+            return "http://localhost:" + getHttpServerPort();
+        }
+
+        @Override
+        public boolean isValidateLocalhostHost() {
+            return false;
+        }
+
+        @Override
+        public boolean isEnableCookiesValidator() {
+            return false;
+        }
+
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
+
+        @Override
+        public List<Pair<String, String>> getAdminUsernamesPasswords() {
+
+            List<Pair<String, String>> ids = new ArrayList<Pair<String, String>>();
+            ids.add(new ImmutablePair<String, String>("user1", "pass1"));
+            ids.add(new ImmutablePair<String, String>("user2", "pass2"));
+
+            return ids;
+        }
     }
 
     @Override
     protected void initApp() {
-        App.main(getMainArgs());
-    }
-
-    protected String[] getMainArgs() {
-
-        //==========================================
-        // We pass the path to the test app properties
-        // file as the first arg.
-        //==========================================
-        String[] mainArgs = new String[]{this.tempAppPropertiesFile.getAbsolutePath()};
-
-        return mainArgs;
-
+        App.main(new String[]{});
     }
 }

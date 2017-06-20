@@ -7,11 +7,10 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
 
 import com.google.inject.Inject;
 
-public class ITAppTestingConfigAreUsedTest extends IntegrationTestAppDefaultContextsBase {
+public class ITAppTestingConfigAreUsedTest extends NoAppConfigTestClassBase {
 
     @Inject
     protected App app;
@@ -32,7 +31,7 @@ public class ITAppTestingConfigAreUsedTest extends IntegrationTestAppDefaultCont
         }
 
         public static void main(String[] args) {
-            Spincast.init();
+            Spincast.init(args);
         }
 
         @Inject

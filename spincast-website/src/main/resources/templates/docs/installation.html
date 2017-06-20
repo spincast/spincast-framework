@@ -170,7 +170,7 @@ Docs : "installation"
             <img class="inlineIcon" src="/public/images/icons/para.png" />
             When this is done, you can follow the instructions of the <a href="#bootstrapping">Bootstrapping your app</a>
             section to initialize your application. This process is very simple and simply requires you to use the
-            <code><em>Spincast.init()</em></code> or <code><em>Spincast.configure()</em></code> bootstrapper in 
+            <code><em>Spincast.init(args)</em></code> or <code><em>Spincast.configure()</em></code> bootstrapper in 
             a <code>main(...)</code> method. 
         </p>
         <p>
@@ -182,7 +182,7 @@ Docs : "installation"
 >public class App {
 
     public static void main(String[] args) {
-        Spincast.init();
+        Spincast.init(args);
     }
 
     @Inject

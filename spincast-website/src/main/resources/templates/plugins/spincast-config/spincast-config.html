@@ -2,7 +2,7 @@
 
 {% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-config {% endblock %}
 {% block meta_title %}Plugins - Spincast Config{% endblock %}
-{% block meta_description %}Spincast Config plugin provides the default configurations required by Spincast.{% endblock %}
+{% block meta_description %}Spincast Config plugin provides components to configure your application.{% endblock %}
 
 {% block scripts %}
 <script>
@@ -23,12 +23,12 @@
 
     <ol class="breadcrumb">
         <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
-        <li class="active">Spincast Config Addon plugin</li>
+        <li class="active">Spincast Config plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12"> 
-            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Config Addon <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Config <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
@@ -43,7 +43,7 @@
     
     <div id="sectionTitleFixed" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Config Addon <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Config <span>plugin</span></h2></a>
         </div>
     </div>
 
@@ -65,26 +65,27 @@
                     Overview
                 </h3>
 	            <p>
-	                This plugin provides a default implementation
-                    for the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a>
-                    interface : <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a>.
-                    The implementation is very simple : the default configurations are simply hardcoded.
+	                This plugin provides what is required to configure a Spincast application.
                 </p>
+	            <p>
+	                It provides the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a>
+                    interface that is used by the Spincast core components to get their configurations, and a default implementation for it,
+                    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigDefault.java">SpincastConfigDefault</a>.
+                    The default implementation is very simple: the default configurations values are hardcoded.
+                </p>
+	            <p>
+	                It also provides components to allow you to add configurations specific to your application and to make
+	                those configurations <em>externalizable</em>. Using the suggested strategy, you can have different 
+	                configuration values depending
+	                on the environment the application is running on.
+                </p>
+                
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    A small <a href="http://spincast.loc:44420/documentation#default_config">Default Configurations</a> section
-                    of the documentation introduces the most important configurations. Also, have
-                    a look at the source code of 
-                    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigDefault.java">SpincastConfigDefault</a> 
-                    to see what the default values are.
+                    Make sure you read the <a href="/documentation#configuration">Configuration</a> section of the documentation
+                    to learn how to use and configure this plugin!
                 </p>
-                <p>
-                    Finally, notice that if you want to be able to configure your application using a <code>.properties</code> file,
-                    you may be interested by the <a href="/plugins/spincast-properties-file-config">Spincast Properties File Config</a> plugin. 
-                </p> 
             </section>
-            
-            
             
             <section id="installation">
                 <h3>

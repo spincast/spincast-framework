@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.RepeatedClassAfterMethodProvider;
 import org.spincast.testing.utils.Repeat;
+import org.spincast.testing.utils.RepeatedClassAfterMethodProvider;
 import org.spincast.testing.utils.tests.utils.SpincastJUnitRunnerTester;
 
 @RunWith(SpincastJUnitRunnerTester.class)
@@ -28,6 +28,11 @@ public class RepeatTest implements BeforeAfterClassMethodsProvider, RepeatedClas
         this.test2Called = 0;
     }
 
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
+    }
+
     @Test
     public void test1() throws Exception {
         this.test1Called++;
@@ -38,9 +43,9 @@ public class RepeatTest implements BeforeAfterClassMethodsProvider, RepeatedClas
     @Repeat(value = 2, sleep = 500)
     public void test2() throws Exception {
 
-        if(this.test2Called == 0) {
+        if (this.test2Called == 0) {
             this.test2CalledTime = System.currentTimeMillis();
-        } else if(this.test2Called == 1) {
+        } else if (this.test2Called == 1) {
             long sleep = System.currentTimeMillis() - this.test2CalledTime;
             assertTrue(sleep + "", sleep >= 400);
         }

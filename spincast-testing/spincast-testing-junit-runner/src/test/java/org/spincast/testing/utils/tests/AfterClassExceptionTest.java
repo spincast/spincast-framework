@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
 import org.spincast.testing.utils.SpincastJUnitRunner;
-import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 import org.spincast.testing.utils.tests.utils.SpincastJUnitRunnerTester;
+import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 
 @RunWith(SpincastJUnitRunnerTester.class)
 public class AfterClassExceptionTest implements BeforeAfterClassMethodsProvider, TestExpectedToFailProvider {
@@ -30,6 +30,11 @@ public class AfterClassExceptionTest implements BeforeAfterClassMethodsProvider,
     @Override
     public void afterClass() {
         fail();
+    }
+
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
     }
 
 }

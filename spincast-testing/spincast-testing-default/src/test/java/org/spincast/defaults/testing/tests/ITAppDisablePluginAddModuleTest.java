@@ -11,14 +11,13 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
 import org.spincast.defaults.testing.tests.utils.SpincastUtilsTesting;
 import org.spincast.plugins.localeresolver.SpincastLocaleResolverPlugin;
 
 import com.google.inject.Inject;
 import com.google.inject.Scopes;
 
-public class ITAppDisablePluginAddModuleTest extends IntegrationTestAppDefaultContextsBase {
+public class ITAppDisablePluginAddModuleTest extends NoAppConfigTestClassBase {
 
     @Override
     protected GuiceTweaker createGuiceTweaker() {
@@ -32,7 +31,7 @@ public class ITAppDisablePluginAddModuleTest extends IntegrationTestAppDefaultCo
         //==========================================
         // Custom module
         //==========================================
-        tweaker.module(new SpincastGuiceModuleBase() {
+        tweaker.overridingModule(new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
@@ -74,7 +73,7 @@ public class ITAppDisablePluginAddModuleTest extends IntegrationTestAppDefaultCo
         }
 
         public static void main(String[] args) {
-            Spincast.init();
+            Spincast.init(args);
         }
 
         @Inject

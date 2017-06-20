@@ -23,7 +23,7 @@ public class NoCurrentClassBindingTest {
 
         Injector guice = Spincast.configure()
                                  .bindCurrentClass(false)
-                                 .init();
+                                 .init(args);
         assertNotNull(guice);
         assertFalse(initCalled);
 

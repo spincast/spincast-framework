@@ -18,7 +18,7 @@ import com.google.inject.multibindings.Multibinder;
 public class IgnorePropertyMixinTest extends UnitTestDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 

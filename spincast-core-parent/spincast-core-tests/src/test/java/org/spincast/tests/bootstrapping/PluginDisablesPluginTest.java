@@ -111,7 +111,7 @@ public class PluginDisablesPluginTest {
         Spincast.configure()
                 .plugin(new TestPlugin1())
                 .plugin(new TestPlugin2())
-                .init();
+                .init(args);
         assertTrue(initCalled);
     }
 

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Test;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.GuiceTweaker;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
@@ -36,7 +36,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
 
         GuiceTweaker guiceTweaker = super.createGuiceTweaker();
 
-        guiceTweaker.module(new SpincastGuiceModuleBase() {
+        guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
@@ -80,7 +80,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
                                                                date,
                                                                "my title",
                                                                "<p>my description</p>"));
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
 

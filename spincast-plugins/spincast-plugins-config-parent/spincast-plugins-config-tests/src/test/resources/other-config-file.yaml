@@ -1,0 +1,32 @@
+server:
+    http:
+        port: 55555
+app:
+    test:
+        string: L'éléphant et le bœuf
+        boolean: true
+        integer: 456
+        override: aaa
+        override2: ccc
+        date: 2012-04-23T18:25:43.511Z
+        dates: 
+            - 2013-04-23
+            - 2013-04-23T18:25
+            - 2014-04-23T18:25:43
+            - 2015-04-23T18:25:43.000
+            - 2016-04-23T18:25:43.000Z
+            - 2016-04-23T18:25:43.123
+            - 2016-04-23T18:25:43.123Z
+        strings: 
+            - aaa
+            - bbb
+            - ccc
+        numbers: 
+            - 111
+            - 222
+            - 333
+        bools: 
+            - true
+            - false
+            - true
+

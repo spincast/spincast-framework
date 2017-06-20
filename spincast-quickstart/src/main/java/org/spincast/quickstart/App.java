@@ -37,8 +37,7 @@ public class App {
                 .plugin(new SpincastHttpClientPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
                 .websocketContextImplementationClass(AppWebsocketContextDefault.class)
-                .mainArgs(args)
-                .init();
+                .init(args);
     }
 
     /**
@@ -95,9 +94,9 @@ public class App {
         router.GET("/").cache(3600).save(ctrl::index);
 
         //==========================================
-        // Movie Info page
+        // Form example page
         //==========================================
-        router.GET("/movie").save(ctrl::movieInfo);
+        router.GET("/form").save(ctrl::formExample);
 
         //==========================================
         // Exception example
@@ -116,10 +115,12 @@ public class App {
     }
 
     protected void displayStartedMessage(AppConfig config) {
+        String appName = config.getAppName();
+        String publicUrlBase = config.getPublicUrlBase();
         System.out.println();
         System.out.println("==========================================");
-        System.out.println("Spincast Quick Start application started!");
-        System.out.println(config.getPublicServerSchemeHostPort());
+        System.out.println(appName + " started!");
+        System.out.println(publicUrlBase);
         System.out.println("==========================================");
     }
 

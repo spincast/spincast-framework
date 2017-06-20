@@ -48,7 +48,7 @@ public class JsonPathsCachingTest extends UnitTestDefaultContextsBase {
                                return JsonArrayTest.class;
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
     @Inject
@@ -88,17 +88,12 @@ public class JsonPathsCachingTest extends UnitTestDefaultContextsBase {
 
     public static class JsonObjectTest extends JsonObjectDefault {
 
-        /**
-         * Constructor
-         */
         @AssistedInject
         public JsonObjectTest(JsonManager jsonManager,
                               SpincastUtils spincastUtils,
                               ObjectConverter objectConverter,
                               ValidationFactory validationFactory) {
-            super(null,
-                  true,
-                  jsonManager,
+            super(jsonManager,
                   spincastUtils,
                   objectConverter,
                   validationFactory);
@@ -114,7 +109,6 @@ public class JsonPathsCachingTest extends UnitTestDefaultContextsBase {
                               ObjectConverter objectConverter,
                               ValidationFactory validationFactory) {
             super(initialMap,
-                  true,
                   jsonManager,
                   spincastUtils,
                   objectConverter,
@@ -131,12 +125,20 @@ public class JsonPathsCachingTest extends UnitTestDefaultContextsBase {
                               SpincastUtils spincastUtils,
                               ObjectConverter objectConverter,
                               ValidationFactory validationFactory) {
-            super(initialMap,
-                  mutable,
-                  jsonManager,
-                  spincastUtils,
-                  objectConverter,
-                  validationFactory);
+            super(initialMap, mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+        }
+
+        /**
+         * Constructor
+         */
+        @AssistedInject
+        public JsonObjectTest(@Assisted @Nullable JsonObject configToMerge,
+                              @Assisted boolean mutable,
+                              JsonManager jsonManager,
+                              SpincastUtils spincastUtils,
+                              ObjectConverter objectConverter,
+                              ValidationFactory validationFactory) {
+            super(configToMerge, mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
         }
 
         @Override

@@ -1,12 +1,12 @@
 package org.spincast.website.guice;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePluginConfig;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.website.AppConfig;
 import org.spincast.website.AppConfigDefault;
-import org.spincast.website.AppConfigPropsFileBasedConfig;
 import org.spincast.website.AppPebbleTemplatingEngineConfig;
+import org.spincast.website.AppSpincastConfigPluginConfig;
 import org.spincast.website.HttpAuthInit;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
@@ -34,10 +34,11 @@ public class AppModule extends SpincastGuiceModuleBase {
         bind(HttpAuthInit.class).asEagerSingleton();
 
         //==========================================
-        // Bind custom configurations for the .properties 
-        // file based config plugin.
+        // Custom configurations for the
+        // Spincast Config plugin. Tells Spincast
+        // how/where to load our application configurations.
         //==========================================
-        bind(SpincastConfigPropsFilePluginConfig.class).to(AppConfigPropsFileBasedConfig.class).in(Scopes.SINGLETON);
+        bind(SpincastConfigPluginConfig.class).to(AppSpincastConfigPluginConfig.class).in(Scopes.SINGLETON);
 
         //==========================================
         // Bind custom configurations for the Pebble plugin.

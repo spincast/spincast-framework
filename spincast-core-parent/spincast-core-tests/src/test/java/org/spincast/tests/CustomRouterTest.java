@@ -28,7 +28,7 @@ public class CustomRouterTest extends IntegrationTestNoAppDefaultContextsBase {
         return Spincast.configure()
                        .disableDefaultRoutingPlugin()
                        .plugin(new SpincastRoutingPlugin(CustomRouter.class))
-                       .init();
+                       .init(new String[]{});
     }
 
     @Test
@@ -55,7 +55,7 @@ public class CustomRouterTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getRouter().dir("/one").classpath("/test").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             assertEquals("test123", ex.getMessage());
         }
 

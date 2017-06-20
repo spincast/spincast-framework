@@ -24,8 +24,7 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
      */
     public static void main(String[] args) {
         Spincast.configure()
-                .mainArgs(args)
-                .init();
+                .init(args);
     }
 
     private File javadocSourceGenerationDir;
@@ -40,7 +39,7 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
 
     protected File getJavadocSourceGenerationDir() {
 
-        if(this.javadocSourceGenerationDir == null) {
+        if (this.javadocSourceGenerationDir == null) {
             this.javadocSourceGenerationDir = new File(getProjectBaseDir().getAbsolutePath() + "/../target/site/apidocs");
         }
 
@@ -76,8 +75,8 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
 
             String mavenHome = getMavenInstallatinRoot().getCanonicalPath();
             String executable = "mvn";
-            if(OS.isFamilyWindows()) {
-                if(new File(mavenHome, "/bin/mvn.cmd").exists()) {
+            if (OS.isFamilyWindows()) {
+                if (new File(mavenHome, "/bin/mvn.cmd").exists()) {
                     executable = "mvn.cmd";
                 } else {
                     executable = "mvn.bat";
@@ -85,7 +84,7 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
             }
 
             File mvnBin = new File(mavenHome + "/bin/" + executable);
-            if(!mvnBin.isFile()) {
+            if (!mvnBin.isFile()) {
                 sendException("Maven executable not found: " + mvnBin.getCanonicalPath());
             }
 
@@ -108,7 +107,7 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
             @SuppressWarnings("unused")
             int exitValue = executor.execute(cmdLine);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -121,7 +120,7 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
         try {
 
             File javadocSourceDir = getJavadocSourceGenerationDir();
-            if(!javadocSourceDir.isDirectory()) {
+            if (!javadocSourceDir.isDirectory()) {
                 sendException("The Javadoc source directory was not found: " +
                               javadocSourceDir.getCanonicalPath());
             }
@@ -148,7 +147,7 @@ public class SpincastMavenPreparePackageRelease extends SpincastMavenScriptBase 
             FileUtils.copyDirectory(javadocSourceDir, javadocTargetDir);
             log("Javadoc copied to the website source dir: " + javadocTargetDir.getAbsolutePath());
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

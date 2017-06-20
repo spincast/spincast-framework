@@ -5,6 +5,9 @@ import java.util.List;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Application configurations.
+ */
 public interface AppConfig extends SpincastConfig {
 
     /**

@@ -3,26 +3,37 @@ package org.spincast.tests.https;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
+
+import com.google.inject.Inject;
 
 public class HttpsTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return HttpsTestConfig.class;
     }
 
-    protected static class HttpsTestConfig extends SpincastConfigTestingDefault implements SpincastConfigTesting {
+    protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
 
         private int httpsServerPort = -1;
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public int getHttpServerPort() {
@@ -31,7 +42,7 @@ public class HttpsTest extends IntegrationTestNoAppDefaultContextsBase {
 
         @Override
         public int getHttpsServerPort() {
-            if(this.httpsServerPort < 0) {
+            if (this.httpsServerPort < 0) {
                 this.httpsServerPort = SpincastTestUtils.findFreePort();
             }
             return this.httpsServerPort;
@@ -53,7 +64,7 @@ public class HttpsTest extends IntegrationTestNoAppDefaultContextsBase {
         }
 
         @Override
-        public String getHttpsKeyStoreKeypass() {
+        public String getHttpsKeyStoreKeyPass() {
             return "myKeyPass";
         }
     }

@@ -10,12 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
@@ -23,7 +24,7 @@ import com.google.inject.Inject;
 public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return SpincastTestConfigTest.class;
     }
 
@@ -35,6 +36,14 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
     }
 
     protected static class SpincastTestConfigTest extends SpincastConfigTestingDefault {
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected SpincastTestConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public int getMaxNumberOfKeysWhenConvertingMapToJsonObject() {
@@ -97,7 +106,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -347,7 +356,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -360,7 +369,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -373,7 +382,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -386,7 +395,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -399,7 +408,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -412,7 +421,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -425,7 +434,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -438,7 +447,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -451,7 +460,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -464,7 +473,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -477,7 +486,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -490,7 +499,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -543,7 +552,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -556,7 +565,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -722,7 +731,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -736,7 +745,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -750,7 +759,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -781,7 +790,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -795,7 +804,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -809,7 +818,7 @@ public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
         try {
             getJsonManager().fromMap(params, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
     }

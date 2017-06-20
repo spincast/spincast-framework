@@ -9,20 +9,30 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
+
+import com.google.inject.Inject;
 
 public class CustomSpincastConfigTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return CustomSpincastConfig.class;
     }
 
-    public static class CustomSpincastConfig extends SpincastConfigTestingDefault implements SpincastConfigTesting {
+    public static class CustomSpincastConfig extends SpincastConfigTestingDefault {
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected CustomSpincastConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public String getEnvironmentName() {

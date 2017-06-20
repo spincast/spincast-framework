@@ -1,7 +1,6 @@
 package org.spincast.testing.core;
 
 import org.spincast.core.exchange.RequestContext;
-import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.websocket.WebsocketContext;
 
 /**
@@ -12,28 +11,18 @@ import org.spincast.core.websocket.WebsocketContext;
  * <p>
  * The Server will be explicitly started since no app
  * is going to do so by itself.
+ * <p>
+ * If you extend this base class directly, don't forget to
+ * add the default testing configurations Module if required!
+ * For example :
+ * <p>
+ * <code>
+ * Spincast.configure().module(getDefaultTestingConfigurationsModule()).module(....
+ * </code>
+ *
  */
 public abstract class IntegrationTestNoAppBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                               extends IntegrationTestBase<R, W> {
-
-    /**
-     * Since we do not call "App.main(...)" in test
-     * class in this branch, we don't need to bind
-     * the current class to the Guice context : the
-     * Server will be started explicitly and the
-     * @Test methods called explicitly.
-     */
-    @Override
-    protected GuiceTweaker createGuiceTweaker() {
-
-        GuiceTweaker guiceTweaker = super.createGuiceTweaker();
-        if(guiceTweaker == null) {
-            guiceTweaker = new GuiceTweaker();
-        }
-        guiceTweaker.bindCurrentClassByDefault(false);
-
-        return guiceTweaker;
-    }
 
     @Override
     public void beforeClass() {

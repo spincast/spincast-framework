@@ -13,6 +13,7 @@
 
   `mvn clean package`
 
+- Copy the configurations file, "app-config.yaml" to the */target* folder!
 
 - Launch the application :  
 

@@ -6,7 +6,8 @@ import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
-import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
+import org.spincast.testing.core.AppTestingConfigInfo;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
@@ -16,8 +17,15 @@ public class ITAppCustomConfigTest extends IntegrationTestAppDefaultContextsBase
     /**
      * Custom Spincast Config class
      */
-    public static class SpincastConfigCustom extends SpincastConfigTestingDefault
-                                             implements SpincastConfigTesting {
+    public static class SpincastConfigCustom extends SpincastConfigTestingDefault {
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected SpincastConfigCustom(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public int getHttpServerPort() {
@@ -25,9 +33,26 @@ public class ITAppCustomConfigTest extends IntegrationTestAppDefaultContextsBase
         }
     }
 
+
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
-        return SpincastConfigCustom.class;
+    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+        return new AppTestingConfigInfo() {
+
+            @Override
+            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
+                return SpincastConfigCustom.class;
+            }
+
+            @Override
+            public Class<?> getAppConfigTestingImplementationClass() {
+                return null;
+            }
+
+            @Override
+            public Class<?> getAppConfigInterface() {
+                return null;
+            }
+        };
     }
 
     @Inject
@@ -49,7 +74,7 @@ public class ITAppCustomConfigTest extends IntegrationTestAppDefaultContextsBase
         }
 
         public static void main(String[] args) {
-            Spincast.init();
+            Spincast.init(args);
         }
 
         @Inject

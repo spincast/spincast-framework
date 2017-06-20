@@ -56,7 +56,7 @@
             custom <code>Request Context</code> type.
         </li>
         <li>
-            Override the default configurations to change the port the Server will
+            Use <code>externalized configurations</code> to change the port the Server will
             be started on.
         </li>
         <li>
@@ -143,7 +143,7 @@
     Spincast.configure()
             .plugin(new SpincastHttpClientPlugin())
             //...
-            .init();
+            .init(args);
    //...
 }</pre>   
         </p>
@@ -367,27 +367,66 @@
 </h4>
 
 <p>
-    We are going to change the port the Server will be started on by overriding the
-    default <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> binding. 
+    We are going to change the port the Server is started on by overriding the
+    default <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> binding
+    and use <a href="/documentation#config_strategy_externalize">externalized configurations</a>.
     To do so, we create a custom class that extends the default 
     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a>
-    implementation :
+    implementation. Then, we use the special <em>getters</em> to find the values to use for our configurations :
     
     <div>
         <p>
-            <pre class="ace ace-java"
+            <pre class="ace ace-java" data-ace-hi="12,23,12,48"
 >public class AppConfig extends SpincastConfigDefault {
 
-    // We change the port the Server will be started on
+    @Inject
+    protected AppConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+        super(spincastConfigPluginConfig);
+    }
+
+    /**
+     * We change the port the Server will be started on.
+     */
     @Override
     public int getHttpServerPort() {
-        return 4242;
+        Integer port = getInteger("server.port");
+        if (port == null) {
+            throw new RuntimeException("The 'port' configuration is required!");
+        }
+        return port;
+    }
+
+    /**
+     * It is recommended to *always* override the 
+     * <code>getPublicUrlBase()</code> configuration!
+     */
+    @Override
+    public String getPublicUrlBase() {
+        return getString("api.baseUrl", super.getPublicUrlBase());
     }
 }</pre>   
         </p>
     </div>
 </p>
+<p>
+    In this example, we do not provide a <em>classpath</em> configuration file to provide
+    default values for the externalized configurations, so it is required to provide 
+    an explicit one! This is a <code>YAML</code> file named by default <code>"app-config.yaml"</code>, and has to be placed next 
+    to the <code>.jar</code> of the application before launching it. 
+    Here's what it should look like :
+</p>
+<p> 
+    <div>
+        <p>
+            <pre class="ace ace-yaml" 
+>server: 
+  port: 12345
 
+api:
+  baseUrl: http://localhost:12345</pre>   
+        </p>
+    </div>
+</p>
 <h4>
     <a class="anchor_small" href="#module" id="module" title="permanent link"></a>
     Application Guice module
@@ -437,7 +476,6 @@
     </div>  
 </p>
 
-
 <h4>
     <a class="anchor_small" href="#app" id="app" title="permanent link"></a>
     The App class
@@ -457,8 +495,7 @@
                 .module(new AppModule())
                 .plugin(new SpincastHttpClientPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
-                .mainArgs(args)
-                .init();
+                .init(args);
     }
 
     @Inject
@@ -490,23 +527,20 @@
                     we need to let Spincast know about it.
                 </li>
                 <li>
-                    <span class="code-line-nbr">9</span> : We bind the arguments passed to the <code>main(...)</code>
-                    method. Doing so, we can then inject them using the <code>@MainArgs String[]</code> key.
-                </li>
-                
-                <li>
-                    <span class="code-line-nbr">10</span> : The <code>init()</code> method will create the Guice
+                    <span class="code-line-nbr">9</span> : The <code>init()</code> method will create the Guice
                     context, will bind the current <code>App</code> class in the context and will load it.
+                    We are also using it to bind the arguments passed to the <code>main(...)</code>
+                    method... Doing so, we can then inject them using the <code>@MainArgs String[]</code> key.
                 </li>
                 <li>
-                    <span class="code-line-nbr">13-14</span> : This <a href="/documentation#init_method">init method</a>
+                    <span class="code-line-nbr">12-13</span> : This <a href="/documentation#init_method">init method</a>
                     is going to be called automatically when the Guice context is ready. We inject in it the 
                     <a class="javadoc" href="/public/javadoc/org/spincast/core/server/Server.html">Server</a>. We don't need to inject
                     the <code>Router</code> in this example since the <code>Routes</code> are defined in the
                     controller.
                 </li>
                 <li>
-                    <span class="code-line-nbr">15</span> : We start the server.
+                    <span class="code-line-nbr">14</span> : We start the server.
                 </li>
             </ul>
         </p>
@@ -535,6 +569,12 @@
             Compile the application using Maven :
             <br />
             <code>mvn clean package</code> 
+        </li>
+        <li>
+        	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            Make sure you copy the configuration file "<code>app-config.yaml</code>", provided at the
+            root of the sources, next to the generated <code>.jar</code> file, inside the "target" folder...
+            Otherwise you are going to have an exception when starting the application!
         </li>
         <li>
             Launch the application : 

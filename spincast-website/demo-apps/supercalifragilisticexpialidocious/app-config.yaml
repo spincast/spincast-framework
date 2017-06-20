@@ -1,0 +1,9 @@
+
+# A customs server port
+server: 
+  port: 12345
+
+# This will be used to override the
+# getPublicServerHost() Spincast config.
+api:
+  baseUrl: http://localhost:12345

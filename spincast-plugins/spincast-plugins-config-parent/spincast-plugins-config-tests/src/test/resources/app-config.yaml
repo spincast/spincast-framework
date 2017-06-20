@@ -1,0 +1,10 @@
+app:
+    test1: fromClasspathConfigFile1
+    test2: fromClasspathConfigFile2
+    test3: fromClasspathConfigFile3
+    test4: fromClasspathConfigFile4
+    test7: fromClasspathConfigFile7
+    test9: fromClasspathConfigFile9
+     
+     
+      

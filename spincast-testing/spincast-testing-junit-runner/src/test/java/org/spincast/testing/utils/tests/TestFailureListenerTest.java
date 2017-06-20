@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.TestFailureListener;
 import org.spincast.testing.utils.SpincastJUnitRunner;
+import org.spincast.testing.utils.TestFailureListener;
 
 /**
  * We didn't find a way to test TestFailureListener
@@ -45,5 +45,10 @@ public class TestFailureListenerTest implements TestFailureListener,
     @Override
     public void afterClass() {
         assertTrue(this.testFailureCalled);
+    }
+
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
     }
 }

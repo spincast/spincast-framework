@@ -11,7 +11,7 @@
 	<artifactId>spincast-plugins-config</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>The default Spincast Configuration plugin</description>
+    <description>Spincast Configurations plugin</description>
     <url>https://www.spincast.org</url>
 
 	<dependencies>
@@ -24,6 +24,15 @@
             <artifactId>spincast-core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Snakeyaml - YAML parsing
+        ====================================-->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.18</version>
         </dependency>
 
 	</dependencies>

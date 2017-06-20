@@ -6,34 +6,35 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-import com.google.inject.Module;
-import com.google.inject.Scopes;
+import com.google.inject.Inject;
 
 public class HttpClientTestSllSelfSignedNotAccepted extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    public Module getExtraOverridingModule() {
-        return new SpincastGuiceModuleBase() {
-
-            @Override
-            protected void configure() {
-                bind(SpincastConfig.class).to(HttpsTestConfig.class).in(Scopes.SINGLETON);
-            }
-        };
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+        return HttpsTestConfig.class;
     }
 
     protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
 
         private int httpsServerPort = -1;
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public int getHttpServerPort() {
@@ -42,7 +43,7 @@ public class HttpClientTestSllSelfSignedNotAccepted extends IntegrationTestNoApp
 
         @Override
         public int getHttpsServerPort() {
-            if(this.httpsServerPort < 0) {
+            if (this.httpsServerPort < 0) {
                 this.httpsServerPort = SpincastTestUtils.findFreePort();
             }
             return this.httpsServerPort;
@@ -64,7 +65,7 @@ public class HttpClientTestSllSelfSignedNotAccepted extends IntegrationTestNoApp
         }
 
         @Override
-        public String getHttpsKeyStoreKeypass() {
+        public String getHttpsKeyStoreKeyPass() {
             return "myKeyPass";
         }
     }
@@ -91,7 +92,7 @@ public class HttpClientTestSllSelfSignedNotAccepted extends IntegrationTestNoApp
         try {
             GET("/", false, true).send();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 

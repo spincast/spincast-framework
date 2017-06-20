@@ -205,7 +205,7 @@ public class TemplateFilesRepository implements NewsRepository {
                         JsonObject newsJsonObj = getJsonManager().fromClasspathFile("/news/news-index.json");
 
                         Map<String, Object> params = new HashMap<String, Object>();
-                        params.put("appUrlPrefix", getAppConfig().getPublicServerSchemeHostPort());
+                        params.put("appUrlPrefix", getAppConfig().getPublicUrlBase());
 
                         JsonArray newsArray = newsJsonObj.getJsonArray("news");
                         for(int i = 0; i < newsArray.size(); i++) {

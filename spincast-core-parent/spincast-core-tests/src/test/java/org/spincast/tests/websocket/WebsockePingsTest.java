@@ -30,7 +30,7 @@ import io.undertow.websockets.core.WebSocketChannel;
 public class WebsockePingsTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
 
         return new AbstractModule() {
 

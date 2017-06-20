@@ -1,8 +1,10 @@
 package org.spincast.core.guice;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -10,6 +12,9 @@ import java.util.Set;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spincast.core.utils.SpincastStatics;
 
 import com.google.inject.Binding;
 import com.google.inject.Inject;
@@ -34,6 +39,8 @@ import com.google.inject.util.Modules;
  * Guice modules.
  */
 public class GuiceModuleUtils {
+
+    protected final static Logger logger = LoggerFactory.getLogger(GuiceModuleUtils.class);
 
     private Module module;
     private List<Element> elements;
@@ -232,8 +239,9 @@ public class GuiceModuleUtils {
     }
 
     /**
-     * Creates a module that is going to intercept the calls to <code>toIntercept</code>'s
-     * method and will handle them with the instance of <code>implementationClass</code>.
+     * Creates a module that is going to intercept the calls to all methods defined in
+     * an object implementing <code>toIntercept</code> and will call those of 
+     * <code>implementationClass</code> instead, if available.
      * <p>
      * This allows you, for example, to use a specific implementation for a
      * <code>toIntercept</code> binding, even if an existing binding is done for a
@@ -252,7 +260,7 @@ public class GuiceModuleUtils {
         Objects.requireNonNull(implementationClass, "The implementation class can't be NULL");
 
         final Map<String, Method> toInterceptMethodsMap = new HashMap<String, Method>();
-        Method[] toInterceptMethods = toIntercept.getDeclaredMethods();
+        Set<Method> toInterceptMethods = SpincastStatics.getAllMethods(implementationClass);
         for (Method toInterceptMethod : toInterceptMethods) {
             toInterceptMethodsMap.put(toInterceptMethod.getName(), toInterceptMethod);
         }
@@ -287,7 +295,17 @@ public class GuiceModuleUtils {
 
                         Method toInterceptMethod = toInterceptMethodsMap.get(method.getName());
 
-                        return toInterceptMethod.invoke(getImplementation(), invocation.getArguments());
+                        //==========================================
+                        // Required to be able to call non public methods
+                        //==========================================
+                        toInterceptMethod.setAccessible(true);
+
+                        try {
+                            return toInterceptMethod.invoke(getImplementation(), invocation.getArguments());
+                        } catch (Exception ex) {
+                            logger.error("invocation error", ex);
+                            throw SpincastStatics.runtimize(ex);
+                        }
                     }
                 };
                 requestInjection(interceptor);
@@ -310,6 +328,45 @@ public class GuiceModuleUtils {
                                 interceptor);
             }
         };
+    }
+
+    /**
+     * Remove bindings from a Module.
+     */
+    public static Module removeBindings(Module module, final Set<Key<?>> keysToRemove) {
+
+        if (keysToRemove == null || keysToRemove.size() == 0) {
+            return module;
+        }
+
+        // Default List is immutable.
+        List<Element> elements = new ArrayList<>(Elements.getElements(module));
+
+        // From http://stackoverflow.com/a/2854662/843699
+        for (Iterator<Element> i = elements.iterator(); i.hasNext();) {
+            Element element = i.next();
+
+            boolean remove = element.acceptVisitor(new DefaultElementVisitor<Boolean>() {
+
+                @Override
+                public <T> Boolean visit(Binding<T> binding) {
+                    return keysToRemove.contains(binding.getKey());
+                }
+
+                @Override
+                public Boolean visitOther(Element other) {
+                    return false;
+                }
+            });
+
+            if (remove) {
+                i.remove();
+            }
+        }
+
+        Module newModule = Elements.getModule(elements);
+
+        return newModule;
     }
 
 }

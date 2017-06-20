@@ -5,35 +5,29 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Scopes;
 
 public class PebbleDebugModeTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Injector createInjector() {
-
-        return Spincast.configure()
-                       .module(new SpincastGuiceModuleBase() {
-
-                           @Override
-                           protected void configure() {
-                               bind(SpincastConfig.class).to(SpincastTestConfigTest.class)
-                                                         .in(Scopes.SINGLETON);
-                               return;
-                           }
-                       })
-                       .init();
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+        return SpincastTestConfigTest.class;
     }
 
     public static class SpincastTestConfigTest extends SpincastConfigTestingDefault {
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected SpincastTestConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public boolean isDebugEnabled() {

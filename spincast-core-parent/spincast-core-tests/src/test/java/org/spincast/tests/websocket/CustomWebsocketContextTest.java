@@ -29,7 +29,7 @@ public class CustomWebsocketContextTest extends
 
         return Spincast.configure()
                        .websocketContextImplementationClass(AppWebsocketContextDefault.class)
-                       .init();
+                       .init(new String[]{});
     }
 
     public static interface AppWebsocketContext extends WebsocketContext<AppWebsocketContext> {

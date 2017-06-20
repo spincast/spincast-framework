@@ -3,13 +3,16 @@ package org.spincast.defaults.testing.tests;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.routing.Router;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.defaults.testing.tests.utils.RequestContextTesting;
 import org.spincast.defaults.testing.tests.utils.RequestContextTestingDefault;
 import org.spincast.defaults.testing.tests.utils.WebsocketContextTesting;
 import org.spincast.defaults.testing.tests.utils.WebsocketContextTestingDefault;
+import org.spincast.testing.core.AppTestingConfigInfo;
 import org.spincast.testing.core.IntegrationTestAppBase;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
@@ -20,6 +23,31 @@ public class ITAppCustomContextsTest extends IntegrationTestAppBase<RequestConte
 
     protected App getApp() {
         return this.app;
+    }
+
+    /**
+     * We specify our testing configurations informations.
+     */
+    @Override
+    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+
+        return new AppTestingConfigInfo() {
+
+            @Override
+            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
+                return SpincastConfigTestingDefault.class;
+            }
+
+            @Override
+            public Class<?> getAppConfigInterface() {
+                return null;
+            }
+
+            @Override
+            public Class<?> getAppConfigTestingImplementationClass() {
+                return null;
+            }
+        };
     }
 
     /**
@@ -37,7 +65,7 @@ public class ITAppCustomContextsTest extends IntegrationTestAppBase<RequestConte
             Spincast.configure()
                     .requestContextImplementationClass(RequestContextTestingDefault.class)
                     .websocketContextImplementationClass(WebsocketContextTestingDefault.class)
-                    .init();
+                    .init(args);
         }
 
         @Inject

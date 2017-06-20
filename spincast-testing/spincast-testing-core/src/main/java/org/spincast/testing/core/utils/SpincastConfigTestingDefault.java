@@ -1,33 +1,31 @@
 package org.spincast.testing.core.utils;
 
-import org.spincast.core.config.SpincastConfig;
 import org.spincast.plugins.config.SpincastConfigDefault;
-import org.spincast.testing.core.SpincastConfigTesting;
-import org.spincast.testing.core.SpincastTestBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
+
+import com.google.inject.Inject;
 
 /**
  * Default configurations for Spincast integration 
  * testing.
- * <p>
- * {@link SpincastTestBase} will add an AOP interceptor that is going
- * to redirect calls made to the original {@link SpincastConfig} object
- * to this testing version.
  */
-public class SpincastConfigTestingDefault extends SpincastConfigDefault
-                                          implements SpincastConfigTesting {
+public class SpincastConfigTestingDefault extends SpincastConfigDefault {
 
     private int serverPort = -1;
+
+    /**
+     * Constructor
+     */
+    @Inject
+    protected SpincastConfigTestingDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+        super(spincastConfigPluginConfig);
+    }
 
     /**
      * We do not run in "debug" mode.
      */
     @Override
     public boolean isDebugEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean isRoutesCaseSensitive() {
         return false;
     }
 
@@ -42,20 +40,20 @@ public class SpincastConfigTestingDefault extends SpincastConfigDefault
     @Override
     public int getHttpServerPort() {
 
-        if(this.serverPort == -1) {
+        if (this.serverPort == -1) {
 
             //==========================================
             // We reserve 44419 for the default configuration.
             //==========================================
             do {
                 this.serverPort = SpincastTestUtils.findFreePort();
-            } while(this.serverPort == 44419);
+            } while (this.serverPort == 44419);
         }
         return this.serverPort;
     }
 
     @Override
-    public String getPublicServerSchemeHostPort() {
+    public String getPublicUrlBase() {
         return "http://" + getServerHost() + ":" + getHttpServerPort();
     }
 

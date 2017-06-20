@@ -61,7 +61,6 @@ public class SpincastBootstrapper {
     private static Module defaultModuleWithoutCore;
     private Set<Module> modules;
     private List<SpincastPlugin> plugins;
-    private String[] mainArgs;
     private Set<String> pluginsToDisable;
 
     private boolean disableAllDefaultPlugins = false;
@@ -213,10 +212,6 @@ public class SpincastBootstrapper {
         return this.pluginsToDisable;
     }
 
-    protected String[] getMainArgs() {
-        return this.mainArgs;
-    }
-
     public SpincastBootstrapper requestContextImplementationClass(Class<? extends RequestContext<?>> clazz) {
 
         if (clazz != null && clazz.isInterface()) {
@@ -252,11 +247,6 @@ public class SpincastBootstrapper {
      */
     public SpincastBootstrapper appClass(Class<?> appClass) {
         this.appClass = appClass;
-        return this;
-    }
-
-    public SpincastBootstrapper mainArgs(String[] mainArgs) {
-        this.mainArgs = mainArgs;
         return this;
     }
 
@@ -404,6 +394,22 @@ public class SpincastBootstrapper {
     }
 
     /**
+     * Adds some Guice modules.
+     */
+    public SpincastBootstrapper modules(List<Module> modules) {
+
+        if (modules == null || modules.size() == 0) {
+            return this;
+        }
+
+        for (Module module : modules) {
+            module(module);
+        }
+
+        return this;
+    }
+
+    /**
      * Adds a plugin.
      * 
      * Plugins will be applied in the order they are added.
@@ -414,7 +420,34 @@ public class SpincastBootstrapper {
         return this;
     }
 
-    public Injector init() {
+    /**
+     * Adds some plugin.
+     * 
+     * Plugins will be applied in the order they are added.
+     */
+    public SpincastBootstrapper plugins(List<SpincastPlugin> plugins) {
+
+        if (plugins == null || plugins.size() == 0) {
+            return this;
+        }
+
+        for (SpincastPlugin plugin : plugins) {
+            plugin(plugin);
+        }
+
+        return this;
+    }
+
+    /**
+     * Create the Guice context and starts the 
+     * application.
+     * 
+     * @param mainArgs the application main arguments.
+     * Those will be automatically bound to :
+     * <code>@MainArgs String[]</code> and
+     * <code>@MainArgs List&lt;String&gt;</code>
+     */
+    public Injector init(String[] mainArgs) {
         try {
 
             //==========================================
@@ -425,11 +458,11 @@ public class SpincastBootstrapper {
             }
 
             //==========================================
-            // Is there a ThreadLocal plugin to add?
+            // Is there a GuiceTweaker?
             //==========================================
-            SpincastPlugin spincastPluginThreadLocal = GuiceTweaker.threadLocal.get();
-            if (spincastPluginThreadLocal != null) {
-                getPlugins().add(spincastPluginThreadLocal);
+            GuiceTweaker guiceTweaker = GuiceTweaker.threadLocal.get();
+            if (guiceTweaker != null) {
+                getPlugins().add(guiceTweaker);
             }
 
             //==========================================
@@ -444,7 +477,7 @@ public class SpincastBootstrapper {
             //==========================================
             // Adds "main args" module
             //==========================================
-            addMainArgsModule();
+            addMainArgsModule(mainArgs);
 
             //==========================================
             // Binds the app class, if required.
@@ -480,21 +513,40 @@ public class SpincastBootstrapper {
             //==========================================
             // Combines the standalone modules
             //==========================================
-            Module finalModule = Modules.combine(getModules());
+            Module combinedModule = Modules.combine(getModules());
+
+            //==========================================
+            // GuiceTweaker : tweaks the combined Module
+            // before applying the plugins.
+            //==========================================
+            if (guiceTweaker != null) {
+                combinedModule = guiceTweaker.beforePlugins(combinedModule);
+            }
 
             //==========================================
             // Applies the plugins
             //==========================================
             for (SpincastPlugin plugin : getPlugins()) {
                 if (!getPluginsToDisable().contains(plugin.getId())) {
-                    finalModule = plugin.apply(finalModule);
+                    combinedModule = plugin.apply(combinedModule);
                     this.logger.info("Plugin '" + plugin.getId() + "' applied.");
                 } else {
                     this.logger.info("Plugin '" + plugin.getId() + "' ignored.");
                 }
             }
 
-            Injector guice = Guice.createInjector(finalModule);
+            //==========================================
+            // GuiceTweaker : tweaks the combined Module
+            // after applying the plugins.
+            //==========================================
+            if (guiceTweaker != null) {
+                combinedModule = guiceTweaker.afterPlugins(combinedModule);
+            }
+
+            //==========================================
+            // We create the Guice context!
+            //==========================================
+            Injector guice = Guice.createInjector(combinedModule);
 
             //==========================================
             // Pass the created guice injector to plugins
@@ -576,9 +628,8 @@ public class SpincastBootstrapper {
     /**
      * Adds a module to bind the main args.
      */
-    protected void addMainArgsModule() {
+    protected void addMainArgsModule(String[] mainArgs) {
 
-        String[] mainArgs = getMainArgs();
         if (mainArgs == null) {
             mainArgs = new String[]{};
         }

@@ -22,8 +22,7 @@ public class SpincastMavenPreparePackage extends SpincastMavenScriptBase {
      */
     public static void main(String[] args) {
         Spincast.configure()
-                .mainArgs(args)
-                .init();
+                .init(args);
     }
 
     private final SpincastUtils spincastUtils;
@@ -176,6 +175,11 @@ public class SpincastMavenPreparePackage extends SpincastMavenScriptBase {
             if (gitIgnore.isFile()) {
                 FileUtils.copyFile(gitIgnore, new File(targetDir.getAbsolutePath() + "/.gitignore"));
             }
+            
+            File configFile = new File(appRootDir.getAbsolutePath() + "/app-config.yaml");
+            if (configFile.isFile()) {
+                FileUtils.copyFile(configFile, new File(targetDir.getAbsolutePath() + "/app-config.yaml"));
+            }
 
             //==========================================
             // Replaces some sections in the pom.xml
@@ -192,6 +196,8 @@ public class SpincastMavenPreparePackage extends SpincastMavenScriptBase {
             // @formatter:on
 
             pomContent = pomContent.replaceAll("(?s)<!-- SPINCAST_COORDINATES -->.*<!-- /SPINCAST_COORDINATES -->", cleanCoords);
+
+            pomContent = pomContent.replace("<!--$NO-MVN-MAN-VER$-->", "");
 
             String snapshotRepo = "";
             if (projectVersion.endsWith("-SNAPSHOT")) {

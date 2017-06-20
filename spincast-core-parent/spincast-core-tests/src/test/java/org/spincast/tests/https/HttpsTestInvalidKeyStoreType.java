@@ -1,22 +1,33 @@
 package org.spincast.tests.https;
 
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
-import org.spincast.testing.core.SpincastConfigTesting;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
+
+import com.google.inject.Inject;
 
 @ExpectingBeforeClassException
 public class HttpsTestInvalidKeyStoreType extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return HttpsTestConfig.class;
     }
 
     protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
 
         private int httpsServerPort = -1;
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public int getHttpServerPort() {
@@ -25,7 +36,7 @@ public class HttpsTestInvalidKeyStoreType extends IntegrationTestNoAppDefaultCon
 
         @Override
         public int getHttpsServerPort() {
-            if(this.httpsServerPort < 0) {
+            if (this.httpsServerPort < 0) {
                 this.httpsServerPort = SpincastTestUtils.findFreePort();
             }
             return this.httpsServerPort;
@@ -47,7 +58,7 @@ public class HttpsTestInvalidKeyStoreType extends IntegrationTestNoAppDefaultCon
         }
 
         @Override
-        public String getHttpsKeyStoreKeypass() {
+        public String getHttpsKeyStoreKeyPass() {
             return "secret";
         }
     }

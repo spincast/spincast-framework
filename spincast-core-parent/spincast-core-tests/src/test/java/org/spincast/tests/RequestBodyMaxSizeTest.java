@@ -3,23 +3,34 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
+
+import com.google.inject.Inject;
 
 public class RequestBodyMaxSizeTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return TestingSpincastConfig2.class;
     }
 
-    protected static class TestingSpincastConfig2 extends SpincastConfigTestingDefault implements SpincastConfigTesting {
+    protected static class TestingSpincastConfig2 extends SpincastConfigTestingDefault {
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected TestingSpincastConfig2(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         //==========================================
         // Max 10 bytes

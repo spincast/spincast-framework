@@ -8,6 +8,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPlugin;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.config.SpincastConfigPluginModule;
 
 import com.google.inject.Inject;
@@ -23,6 +24,14 @@ public class ReplaceDefaultPluginTest {
     }
 
     public static class SpincastConfigTest extends SpincastConfigDefault {
+
+        /**
+         * Constructor
+         */
+        @Inject
+        protected SpincastConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
 
         @Override
         public int getHttpServerPort() {
@@ -40,12 +49,12 @@ public class ReplaceDefaultPluginTest {
                         return new SpincastConfigPluginModule(specificSpincastConfigImplClass) {
 
                             @Override
-                            protected Class<? extends SpincastConfig> getDefaultSpincastConfigImplClass() {
+                            protected Class<? extends SpincastConfig> getDefaultConfigImplClass() {
                                 return SpincastConfigTest.class;
                             }
                         };
                     }
-                }).init();
+                }).init(args);
 
         assertTrue(initCalled);
     }

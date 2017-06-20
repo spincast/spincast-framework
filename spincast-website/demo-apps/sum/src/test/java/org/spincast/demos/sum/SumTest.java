@@ -5,12 +5,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.core.AppTestingConfigInfo;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
@@ -19,6 +22,27 @@ public class SumTest extends IntegrationTestAppDefaultContextsBase {
     @Override
     protected void initApp() {
         App.main(null);
+    }
+
+    @Override
+    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+        return new AppTestingConfigInfo() {
+
+            @Override
+            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
+                return SpincastConfigTestingDefault.class;
+            }
+
+            @Override
+            public Class<?> getAppConfigTestingImplementationClass() {
+                return null;
+            }
+
+            @Override
+            public Class<?> getAppConfigInterface() {
+                return null;
+            }
+        };
     }
 
     @Inject

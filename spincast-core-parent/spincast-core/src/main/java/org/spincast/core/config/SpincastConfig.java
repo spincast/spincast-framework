@@ -12,6 +12,15 @@ import org.spincast.core.routing.StaticResourceCacheConfig;
 public interface SpincastConfig {
 
     /**
+     * Returns the name of the environment.
+     * 
+     * The default value is <code>local</code>.
+     * 
+     * @return the name of the environment
+     */
+    public String getEnvironmentName();
+
+    /**
      * Let this to <code>true</code> on development environment,
      * where errors can be publicly displayed, where cache can
      * be disabled, etc. In production set it to <code>false</code>
@@ -47,7 +56,7 @@ public interface SpincastConfig {
      * </ul>
      * </p>
      */
-    public String getPublicServerSchemeHostPort();
+    public String getPublicUrlBase();
 
     /**
      * The public scheme
@@ -140,7 +149,7 @@ public interface SpincastConfig {
      * 
      * @return the "keypass" of the <code>KeyStore</code>
      */
-    public String getHttpsKeyStoreKeypass();
+    public String getHttpsKeyStoreKeyPass();
 
     /**
      * Are the URLS case-sensitive or not, during the route matching 
@@ -153,15 +162,6 @@ public interface SpincastConfig {
      * @see <a href="http://stackoverflow.com/questions/7996919/should-url-be-case-sensitive">Should URL be case sensitive?</a>
      */
     public boolean isRoutesCaseSensitive();
-
-    /**
-     * Returns the name of the environment.
-     * 
-     * The default value is <code>local</code>.
-     * 
-     * @return the name of the environment
-     */
-    public String getEnvironmentName();
 
     /**
      * Maximum number of bytes a request's body can have.
@@ -263,10 +263,10 @@ public interface SpincastConfig {
     /**
      * If <code>true</code>, the dynamic resources (static resource
      * which have a generator in case they don't exist) won't be
-     * saved to disk. THhis means that the generator will always be called,
-     * so chnages during development will be picked up.
+     * saved to disk. This means that the generator will always be called,
+     * so changes during development will be picked up.
      */
-    public boolean isDisableWriteToDiskDynamicStaticResource();
+    public boolean isWriteToDiskDynamicStaticResource();
 
     /**
      * Should the GlobalTemplateVariablesAdderFilter be automatically
@@ -280,7 +280,7 @@ public interface SpincastConfig {
 
     /**
      * If {@link #isAddDefaultTemplateVariablesFilter() addGlobalTemplateVariablesAdderFilter}
-     * erturns <code>true</code>, then this is the position at
+     * returns <code>true</code>, then this is the position at
      * which the filter will be added.
      */
     public int getDefaultTemplateVariablesFilterPosition();
@@ -323,7 +323,7 @@ public interface SpincastConfig {
      * an exception is thrown when the application starts.
      * <p>
      * This validation is to make sure the developers 
-     * didn't forget to override the {@link #getPublicServerSchemeHostPort()}
+     * didn't forget to override the {@link #getPublicUrlBase()}
      * method when they release to a non local environment.
      * <p>
      * You can disable this validation if you want.

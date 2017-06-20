@@ -115,7 +115,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     protected void validation() {
         int corsFilterPosition = getSpincastRouterConfig().getCorsFilterPosition();
-        if(corsFilterPosition >= 0) {
+        if (corsFilterPosition >= 0) {
             throw new RuntimeException("The position of the Cors filter must be less than 0. " +
                                        "Currently : " + corsFilterPosition);
         }
@@ -126,7 +126,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         //==========================================
         // Default variables for the templating engine.
         //==========================================
-        if(getSpincastConfig().isAddDefaultTemplateVariablesFilter()) {
+        if (getSpincastConfig().isAddDefaultTemplateVariablesFilter()) {
             ALL(DEFAULT_ROUTE_PATH).id("spincast_default_template_variables")
                                    .pos(getSpincastConfig().getDefaultTemplateVariablesFilterPosition())
                                    .found().notFound().exception()
@@ -198,7 +198,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     protected Pattern getPattern(String patternStr) {
         Pattern pattern = this.patternCache.get(patternStr);
-        if(pattern == null) {
+        if (pattern == null) {
             pattern = Pattern.compile(patternStr);
             this.patternCache.put(patternStr, pattern);
         }
@@ -213,18 +213,18 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public Route<R> getRoute(String routeId) {
 
-        for(Route<R> route : getGlobalBeforeFiltersRoutes()) {
-            if((routeId == null && route.getId() == null) || (routeId != null && routeId.equals(route.getId()))) {
+        for (Route<R> route : getGlobalBeforeFiltersRoutes()) {
+            if ((routeId == null && route.getId() == null) || (routeId != null && routeId.equals(route.getId()))) {
                 return route;
             }
         }
-        for(Route<R> route : getMainRoutes()) {
-            if((routeId == null && route.getId() == null) || (routeId != null && routeId.equals(route.getId()))) {
+        for (Route<R> route : getMainRoutes()) {
+            if ((routeId == null && route.getId() == null) || (routeId != null && routeId.equals(route.getId()))) {
                 return route;
             }
         }
-        for(Route<R> route : getGlobalAfterFiltersRoutes()) {
-            if((routeId == null && route.getId() == null) || (routeId != null && routeId.equals(route.getId()))) {
+        for (Route<R> route : getGlobalAfterFiltersRoutes()) {
+            if ((routeId == null && route.getId() == null) || (routeId != null && routeId.equals(route.getId()))) {
                 return route;
             }
         }
@@ -233,7 +233,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     protected Map<Integer, List<Route<R>>> getGlobalBeforeFiltersPerPosition() {
-        if(this.globalBeforeFiltersPerPosition == null) {
+        if (this.globalBeforeFiltersPerPosition == null) {
             this.globalBeforeFiltersPerPosition = new TreeMap<Integer, List<Route<R>>>();
         }
         return this.globalBeforeFiltersPerPosition;
@@ -242,12 +242,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public List<Route<R>> getGlobalBeforeFiltersRoutes() {
 
-        if(this.globalBeforeFilters == null) {
+        if (this.globalBeforeFilters == null) {
             this.globalBeforeFilters = new ArrayList<Route<R>>();
 
             Collection<List<Route<R>>> routesLists = getGlobalBeforeFiltersPerPosition().values();
-            if(routesLists != null) {
-                for(List<Route<R>> routeList : routesLists) {
+            if (routesLists != null) {
+                for (List<Route<R>> routeList : routesLists) {
                     this.globalBeforeFilters.addAll(routeList);
                 }
             }
@@ -257,7 +257,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     protected Map<Integer, List<Route<R>>> getGlobalAfterFiltersPerPosition() {
-        if(this.globalAfterFiltersPerPosition == null) {
+        if (this.globalAfterFiltersPerPosition == null) {
             this.globalAfterFiltersPerPosition = new TreeMap<Integer, List<Route<R>>>();
         }
         return this.globalAfterFiltersPerPosition;
@@ -265,12 +265,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     @Override
     public List<Route<R>> getGlobalAfterFiltersRoutes() {
-        if(this.globalAfterFilters == null) {
+        if (this.globalAfterFilters == null) {
             this.globalAfterFilters = new ArrayList<Route<R>>();
 
             Collection<List<Route<R>>> routesLists = getGlobalAfterFiltersPerPosition().values();
-            if(routesLists != null) {
-                for(List<Route<R>> routeList : routesLists) {
+            if (routesLists != null) {
+                for (List<Route<R>> routeList : routesLists) {
                     this.globalAfterFilters.addAll(routeList);
                 }
             }
@@ -282,7 +282,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public List<Route<R>> getMainRoutes() {
 
-        if(this.mainRoutes == null) {
+        if (this.mainRoutes == null) {
             this.mainRoutes = new ArrayList<>();
         }
         return this.mainRoutes;
@@ -291,9 +291,9 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public void addRoute(Route<R> route) {
 
-        if(route == null ||
-           route.getMainHandler() == null ||
-           route.getHttpMethods() == null) {
+        if (route == null ||
+            route.getMainHandler() == null ||
+            route.getHttpMethods() == null) {
             return;
         }
 
@@ -302,23 +302,23 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         validatePath(route.getPath());
 
         List<Integer> positions = route.getPositions();
-        for(int position : positions) {
-            if(position < 0) {
+        for (int position : positions) {
+            if (position < 0) {
                 this.globalBeforeFilters = null; // reset cache
                 List<Route<R>> routes = getGlobalBeforeFiltersPerPosition().get(position);
-                if(routes == null) {
+                if (routes == null) {
                     routes = new ArrayList<Route<R>>();
                     getGlobalBeforeFiltersPerPosition().put(position, routes);
                 }
                 routes.add(route);
 
-            } else if(position == 0) {
+            } else if (position == 0) {
                 // Keep main routes in order they are added.
                 getMainRoutes().add(route);
             } else {
                 this.globalAfterFilters = null; // reset cache
                 List<Route<R>> routes = getGlobalAfterFiltersPerPosition().get(position);
-                if(routes == null) {
+                if (routes == null) {
                     routes = new ArrayList<Route<R>>();
                     getGlobalAfterFiltersPerPosition().put(position, routes);
                 }
@@ -328,35 +328,35 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     protected void validateId(String id) {
-        if(id == null) {
+        if (id == null) {
             return; //ok
         }
 
         Route<R> sameIdRoute = null;
-        for(Route<R> route : getGlobalBeforeFiltersRoutes()) {
-            if(id.equals(route.getId())) {
+        for (Route<R> route : getGlobalBeforeFiltersRoutes()) {
+            if (id.equals(route.getId())) {
                 sameIdRoute = route;
                 break;
             }
         }
-        if(sameIdRoute == null) {
-            for(Route<R> route : getGlobalAfterFiltersRoutes()) {
-                if(id.equals(route.getId())) {
+        if (sameIdRoute == null) {
+            for (Route<R> route : getGlobalAfterFiltersRoutes()) {
+                if (id.equals(route.getId())) {
                     sameIdRoute = route;
                     break;
                 }
             }
         }
-        if(sameIdRoute == null) {
-            for(Route<R> route : getMainRoutes()) {
-                if(id.equals(route.getId())) {
+        if (sameIdRoute == null) {
+            for (Route<R> route : getMainRoutes()) {
+                if (id.equals(route.getId())) {
                     sameIdRoute = route;
                     break;
                 }
             }
         }
 
-        if(sameIdRoute != null) {
+        if (sameIdRoute != null) {
             throw new RuntimeException("A route already use the id '" + id + "' : " + sameIdRoute + ". Ids " +
                                        "must be uniques!");
         }
@@ -367,34 +367,34 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
      * Throws an exception if not valide.
      */
     protected void validatePath(String path) {
-        if(path == null) {
+        if (path == null) {
             return;
         }
 
         Set<String> paramNames = new HashSet<String>();
         String[] pathTokens = path.split("/");
         boolean splatFound = false;
-        for(String pathToken : pathTokens) {
+        for (String pathToken : pathTokens) {
 
-            if(StringUtils.isBlank(pathToken)) {
+            if (StringUtils.isBlank(pathToken)) {
                 continue;
             }
 
-            if(pathToken.startsWith("${") || pathToken.startsWith("*{")) {
+            if (pathToken.startsWith("${") || pathToken.startsWith("*{")) {
 
-                if(!pathToken.endsWith("}")) {
+                if (!pathToken.endsWith("}")) {
                     throw new RuntimeException("A parameter in the path of a route must end with '}'. Incorrect parameter : " +
                                                pathToken);
                 }
 
-                if(pathToken.startsWith("*{")) {
-                    if(splatFound) {
+                if (pathToken.startsWith("*{")) {
+                    if (splatFound) {
                         throw new RuntimeException("The path of a route can only contain one " +
                                                    "splat parameter (the one starting with a '*{'). The path is : " +
                                                    path);
                     }
 
-                    if(pathToken.contains(":")) {
+                    if (pathToken.contains(":")) {
                         throw new RuntimeException("A splat parameter can't contain a pattern (so no ':' allowed) : " +
                                                    pathToken);
                     }
@@ -405,22 +405,22 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                     String token = pathToken.substring(2, pathToken.length() - 1);
 
                     int posColon = token.indexOf(":");
-                    if(posColon > -1) {
+                    if (posColon > -1) {
 
                         token = token.substring(posColon + 1);
 
                         //==========================================
                         // Pattern aliases
                         //==========================================
-                        if(token.startsWith("<")) {
+                        if (token.startsWith("<")) {
 
-                            if(!token.endsWith(">")) {
+                            if (!token.endsWith(">")) {
                                 throw new RuntimeException("A parameter with an pattern alias must have a closing '>' : " +
                                                            pathToken);
                             }
                             token = token.substring(1, token.length() - 1);
                             String pattern = getPatternFromAlias(token);
-                            if(pattern == null) {
+                            if (pattern == null) {
                                 throw new RuntimeException("Pattern not found using alias : " + token);
                             }
                         }
@@ -428,7 +428,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 }
 
                 String paramName = pathToken.substring(2, pathToken.length() - 1);
-                if(!StringUtils.isBlank(paramName) && paramNames.contains(paramName)) {
+                if (!StringUtils.isBlank(paramName) && paramNames.contains(paramName)) {
                     throw new RuntimeException("Two parameters with the same name, '" + paramName + "', in route with path : " +
                                                path);
                 }
@@ -448,7 +448,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         this.globalBeforeFilters = null; // reset cache
         this.globalAfterFilters = null; // reset cache
 
-        if(removeSpincastRoutesToo) {
+        if (removeSpincastRoutesToo) {
 
             getGlobalBeforeFiltersPerPosition().clear();
             getMainRoutes().clear();
@@ -457,29 +457,29 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         } else {
 
             Collection<List<Route<R>>> routeLists = getGlobalBeforeFiltersPerPosition().values();
-            for(List<Route<R>> routes : routeLists) {
-                for(int i = routes.size() - 1; i >= 0; i--) {
+            for (List<Route<R>> routes : routeLists) {
+                for (int i = routes.size() - 1; i >= 0; i--) {
                     Route<R> route = routes.get(i);
-                    if(!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                    if (!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
                         routes.remove(i);
                     }
                 }
             }
 
             routeLists = getGlobalAfterFiltersPerPosition().values();
-            for(List<Route<R>> routes : routeLists) {
-                for(int i = routes.size() - 1; i >= 0; i--) {
+            for (List<Route<R>> routes : routeLists) {
+                for (int i = routes.size() - 1; i >= 0; i--) {
                     Route<R> route = routes.get(i);
-                    if(!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                    if (!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
                         routes.remove(i);
                     }
                 }
             }
 
             List<Route<R>> routes = getMainRoutes();
-            for(int i = routes.size() - 1; i >= 0; i--) {
+            for (int i = routes.size() - 1; i >= 0; i--) {
                 Route<R> route = routes.get(i);
-                if(!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                if (!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
                     routes.remove(i);
                 }
             }
@@ -497,11 +497,11 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     protected boolean startsWithAnyOf(String id, Set<String> prefixes) {
 
-        if(id == null || prefixes == null || prefixes.size() == 0) {
+        if (id == null || prefixes == null || prefixes.size() == 0) {
             return false;
         }
-        for(String prefix : prefixes) {
-            if(id.startsWith(prefix)) {
+        for (String prefix : prefixes) {
+            if (id.startsWith(prefix)) {
                 return true;
             }
         }
@@ -511,15 +511,15 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public void removeRoute(String routeId) {
 
-        if(routeId == null) {
+        if (routeId == null) {
             return;
         }
 
         Collection<List<Route<R>>> routeLists = getGlobalBeforeFiltersPerPosition().values();
-        for(List<Route<R>> routes : routeLists) {
-            for(int i = routes.size() - 1; i >= 0; i--) {
+        for (List<Route<R>> routes : routeLists) {
+            for (int i = routes.size() - 1; i >= 0; i--) {
                 Route<R> route = routes.get(i);
-                if(route != null && routeId.equals(route.getId())) {
+                if (route != null && routeId.equals(route.getId())) {
                     routes.remove(i);
                 }
             }
@@ -527,10 +527,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         this.globalBeforeFilters = null; // reset cache
 
         routeLists = getGlobalAfterFiltersPerPosition().values();
-        for(List<Route<R>> routes : routeLists) {
-            for(int i = routes.size() - 1; i >= 0; i--) {
+        for (List<Route<R>> routes : routeLists) {
+            for (int i = routes.size() - 1; i >= 0; i--) {
                 Route<R> route = routes.get(i);
-                if(route != null && routeId.equals(route.getId())) {
+                if (route != null && routeId.equals(route.getId())) {
                     routes.remove(i);
                 }
             }
@@ -538,9 +538,9 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         this.globalAfterFilters = null; // reset cache
 
         List<Route<R>> routes = getMainRoutes();
-        for(int i = routes.size() - 1; i >= 0; i--) {
+        for (int i = routes.size() - 1; i >= 0; i--) {
             Route<R> route = routes.get(i);
-            if(route != null && routeId.equals(route.getId())) {
+            if (route != null && routeId.equals(route.getId())) {
                 routes.remove(i);
             }
         }
@@ -565,7 +565,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             URL url = new URL(fullUrl);
             HttpMethod httpMethod = requestContext.request().getHttpMethod();
             List<String> acceptedContentTypes = requestContext.request().getHeader(HttpHeaders.ACCEPT);
-            if(acceptedContentTypes == null) {
+            if (acceptedContentTypes == null) {
                 acceptedContentTypes = new ArrayList<String>();
             }
 
@@ -577,7 +577,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             //==========================================
             List<RouteHandlerMatch<R>> mainRouteHandlerMatches = null;
             Route<R> matchingRoute = null;
-            for(Route<R> route : getMainRoutes()) {
+            for (Route<R> route : getMainRoutes()) {
 
                 List<RouteHandlerMatch<R>> routeHandlerMatch = createRegularHandlerMatches(routingType,
                                                                                            route,
@@ -585,7 +585,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                                                            acceptedContentTypes,
                                                                                            url,
                                                                                            0);
-                if(routeHandlerMatch != null && routeHandlerMatch.size() > 0) {
+                if (routeHandlerMatch != null && routeHandlerMatch.size() > 0) {
                     mainRouteHandlerMatches = routeHandlerMatch;
                     matchingRoute = route;
                     break;
@@ -596,21 +596,21 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             // No main matches? Then no "before" or "after"
             // filters either!
             //==========================================
-            if(matchingRoute != null) {
+            if (matchingRoute != null) {
 
                 //==========================================
                 // First, the global "before" filters.
                 //==========================================
-                for(Route<R> route : getGlobalBeforeFiltersRoutes()) {
+                for (Route<R> route : getGlobalBeforeFiltersRoutes()) {
 
                     //==========================================
                     // Should this before filter be skipped?
                     //==========================================
-                    if(route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
+                    if (route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
                         continue;
                     }
 
-                    if(!isRoutingTypeMatch(routingType, route)) {
+                    if (!isRoutingTypeMatch(routingType, route)) {
                         continue;
                     }
 
@@ -620,7 +620,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                                                                        acceptedContentTypes,
                                                                                                        url,
                                                                                                        -1);
-                    if(beforeRouteHandlerMatches != null) {
+                    if (beforeRouteHandlerMatches != null) {
                         routeHandlerMatches.addAll(beforeRouteHandlerMatches);
                     }
                 }
@@ -633,16 +633,16 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 //==========================================
                 // Finally, the global "after" filters.
                 //==========================================
-                for(Route<R> route : getGlobalAfterFiltersRoutes()) {
+                for (Route<R> route : getGlobalAfterFiltersRoutes()) {
 
                     //==========================================
                     // Should this after filter be skipped?
                     //==========================================
-                    if(route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
+                    if (route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
                         continue;
                     }
 
-                    if(!isRoutingTypeMatch(routingType, route)) {
+                    if (!isRoutingTypeMatch(routingType, route)) {
                         continue;
                     }
 
@@ -653,19 +653,19 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                         acceptedContentTypes,
                                                         url,
                                                         1);
-                    if(afterRouteHandlerMatches != null) {
+                    if (afterRouteHandlerMatches != null) {
                         routeHandlerMatches.addAll(afterRouteHandlerMatches);
                     }
                 }
             }
 
-            if(routeHandlerMatches.size() == 0) {
+            if (routeHandlerMatches.size() == 0) {
                 return null;
             }
 
             RoutingResult<R> routingResult = createRoutingResult(routeHandlerMatches);
             return routingResult;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -694,21 +694,21 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                                      URL url,
                                                                      int position) {
 
-        if(!isRoutingTypeMatch(routingType, route)) {
+        if (!isRoutingTypeMatch(routingType, route)) {
             return null;
         }
 
         //==========================================
         // Validate the HTTP method.
         //==========================================
-        if(!isRouteMatchHttpMethod(route, httpMethod)) {
+        if (!isRouteMatchHttpMethod(route, httpMethod)) {
             return null;
         }
 
         //==========================================
         // Validate the Accept content-types.
         //==========================================
-        if(!isRouteMatchAcceptedContentType(route, acceptedContentTypes)) {
+        if (!isRouteMatchAcceptedContentType(route, acceptedContentTypes)) {
             return null;
         }
 
@@ -717,7 +717,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         //==========================================
         String routePath = route.getPath();
         Map<String, String> matchingParams = validatePath(routePath, url);
-        if(matchingParams == null) {
+        if (matchingParams == null) {
             return null;
         }
 
@@ -736,9 +736,9 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         // we add them with the same configurations as it.
         //==========================================
         List<Handler<R>> beforeFilters = route.getBeforeFilters();
-        if(beforeFilters != null) {
-            for(Handler<R> beforeFilter : beforeFilters) {
-                if(beforeFilter != null) {
+        if (beforeFilters != null) {
+            for (Handler<R> beforeFilter : beforeFilters) {
+                if (beforeFilter != null) {
                     RouteHandlerMatch<R> beforeMethodRouteHandlerMatch =
                             createHandlerMatchForBeforeOrAfterFilter(routeHandlerMatch,
                                                                      beforeFilter,
@@ -753,10 +753,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         // we add them with the same configurations as it.
         //==========================================
         List<Handler<R>> afterFilters = route.getAfterFilters();
-        if(afterFilters != null) {
+        if (afterFilters != null) {
 
-            for(Handler<R> afterFilter : afterFilters) {
-                if(afterFilter != null) {
+            for (Handler<R> afterFilter : afterFilters) {
+                if (afterFilter != null) {
                     RouteHandlerMatch<R> afterMethodRouteHandlerMatch =
                             createHandlerMatchForBeforeOrAfterFilter(routeHandlerMatch,
                                                                      afterFilter,
@@ -772,17 +772,17 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     protected boolean isRouteMatchAcceptedContentType(Route<R> route,
                                                       List<String> requestContentTypes) {
 
-        if(requestContentTypes == null || requestContentTypes.size() == 0) {
+        if (requestContentTypes == null || requestContentTypes.size() == 0) {
             return true;
         }
 
         Set<String> routeContentTypes = route.getAcceptedContentTypes();
-        if(routeContentTypes == null || routeContentTypes.size() == 0) {
+        if (routeContentTypes == null || routeContentTypes.size() == 0) {
             return true;
         }
 
-        for(String contentType : requestContentTypes) {
-            if(contentType != null && routeContentTypes.contains(contentType.toLowerCase())) {
+        for (String contentType : requestContentTypes) {
+            if (contentType != null && routeContentTypes.contains(contentType.toLowerCase())) {
                 return true;
             }
         }
@@ -844,12 +844,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         //==========================================
         // URL and route path are the same : match!
         //==========================================
-        if(routesAreCaseSensitive) {
-            if(urlPathSlashesStriped.equals(routePathSlashesStriped)) {
+        if (routesAreCaseSensitive) {
+            if (urlPathSlashesStriped.equals(routePathSlashesStriped)) {
                 return new HashMap<String, String>();
             }
         } else {
-            if(urlPathSlashesStriped.equalsIgnoreCase(routePathSlashesStriped)) {
+            if (urlPathSlashesStriped.equalsIgnoreCase(routePathSlashesStriped)) {
                 return new HashMap<String, String>();
             }
         }
@@ -860,21 +860,21 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         //==========================================
         int pos = routePathSlashesStriped.indexOf("*{");
         boolean hasSplat = true;
-        if(pos < 0) {
+        if (pos < 0) {
             hasSplat = false;
             pos = routePathSlashesStriped.indexOf("${");
-            if(pos < 0) {
+            if (pos < 0) {
                 return null;
             }
         }
 
         String[] routePathTokens = routePathSlashesStriped.split("/");
-        if(routePathTokens.length == 1 && routePathTokens[0].equals("")) {
+        if (routePathTokens.length == 1 && routePathTokens[0].equals("")) {
             routePathTokens = new String[0];
         }
 
         String[] urlPathTokens = urlPathSlashesStriped.split("/");
-        if(urlPathTokens.length == 1 && urlPathTokens[0].equals("")) {
+        if (urlPathTokens.length == 1 && urlPathTokens[0].equals("")) {
             urlPathTokens = new String[0];
         }
 
@@ -883,7 +883,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         // than the route path but can also have more in case
         // a splat "*{" token is used in the route path!
         //==========================================
-        if(!hasSplat && urlPathTokens.length > routePathTokens.length) {
+        if (!hasSplat && urlPathTokens.length > routePathTokens.length) {
             return null;
         }
 
@@ -891,14 +891,14 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
         int routePathTokenPos = 0;
         int urlTokenPos = 0;
-        for(; routePathTokenPos < routePathTokens.length; routePathTokenPos++) {
+        for (; routePathTokenPos < routePathTokens.length; routePathTokenPos++) {
 
             String routePathToken = routePathTokens[routePathTokenPos];
 
             String urlPathToken = "";
-            if(!(routePathToken.startsWith("*{") && urlTokenPos >= urlPathTokens.length)) {
+            if (!(routePathToken.startsWith("*{") && urlTokenPos >= urlPathTokens.length)) {
 
-                if(urlTokenPos + 1 > urlPathTokens.length) {
+                if (urlTokenPos + 1 > urlPathTokens.length) {
                     return null;
                 }
 
@@ -916,13 +916,13 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             // For a token that doesn't start with "${" or "*{", the
             // same value must be in url and in the route path.
             //==========================================
-            if(!routePathToken.startsWith("${") && !routePathToken.startsWith("*{")) {
-                if(routesAreCaseSensitive) {
-                    if(!urlPathToken.equals(routePathToken)) {
+            if (!routePathToken.startsWith("${") && !routePathToken.startsWith("*{")) {
+                if (routesAreCaseSensitive) {
+                    if (!urlPathToken.equals(routePathToken)) {
                         return null;
                     }
                 } else {
-                    if(!urlPathToken.equalsIgnoreCase(routePathToken)) {
+                    if (!urlPathToken.equalsIgnoreCase(routePathToken)) {
                         return null;
                     }
                 }
@@ -932,7 +932,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 String paramValue;
                 try {
                     paramValue = URLDecoder.decode(urlPathToken, "UTF-8");
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
 
@@ -940,27 +940,27 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 // If there a pattern?
                 //==========================================
                 String pattern = null;
-                if(routePathToken.startsWith("${")) {
+                if (routePathToken.startsWith("${")) {
 
                     int posComma = paramName.indexOf(":");
-                    if(posComma > -1) {
+                    if (posComma > -1) {
                         pattern = paramName.substring(posComma + 1);
                         paramName = paramName.substring(0, posComma);
 
-                        if(StringUtils.isBlank(pattern)) {
+                        if (StringUtils.isBlank(pattern)) {
                             pattern = null;
                         } else {
 
                             //==========================================
                             // Is it a pattern alias?
                             //==========================================
-                            if(pattern.startsWith("<") && pattern.endsWith(">")) {
+                            if (pattern.startsWith("<") && pattern.endsWith(">")) {
                                 pattern = getPatternFromAlias(pattern.substring(1, pattern.length() - 1));
                             }
                         }
                     }
 
-                    if(pattern != null && !getPattern(pattern).matcher(urlPathToken).matches()) {
+                    if (pattern != null && !getPattern(pattern).matcher(urlPathToken).matches()) {
                         this.logger.debug("Url token '" + urlPathToken + "' doesn't match pattern '" + pattern + "'.");
                         return null;
                     }
@@ -970,13 +970,13 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 // Splat param : the value can contain multiple
                 // tokens from the url.
                 //==========================================
-                else if(routePathToken.startsWith("*{")) {
+                else if (routePathToken.startsWith("*{")) {
 
                     int nbrTokensInSplat = urlPathTokens.length - routePathTokens.length + 1;
-                    if(nbrTokensInSplat > 1) {
+                    if (nbrTokensInSplat > 1) {
 
                         StringBuilder builder = new StringBuilder(paramValue);
-                        for(int i = 1; i < nbrTokensInSplat; i++) {
+                        for (int i = 1; i < nbrTokensInSplat; i++) {
                             builder.append("/").append(urlPathTokens[urlTokenPos]);
                             urlTokenPos++;
                         }
@@ -987,7 +987,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 //==========================================
                 // We do not collect the parameters without names.
                 //==========================================
-                if(!StringUtils.isBlank(paramName)) {
+                if (!StringUtils.isBlank(paramName)) {
                     params.put(paramName, paramValue);
                 }
             }
@@ -1002,12 +1002,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
      */
     protected String getPatternFromAlias(String alias) {
 
-        if(alias == null) {
+        if (alias == null) {
             return null;
         }
 
-        for(Entry<String, String> entry : getRouteParamPatternAliases().entrySet()) {
-            if(alias.equals(entry.getKey())) {
+        for (Entry<String, String> entry : getRouteParamPatternAliases().entrySet()) {
+            if (alias.equals(entry.getKey())) {
                 return entry.getValue();
             }
         }
@@ -1018,10 +1018,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public void addRouteParamPatternAlias(String alias, String pattern) {
 
-        if(StringUtils.isBlank(alias)) {
+        if (StringUtils.isBlank(alias)) {
             throw new RuntimeException("The alias can't be empty.");
         }
-        if(StringUtils.isBlank(pattern)) {
+        if (StringUtils.isBlank(pattern)) {
             throw new RuntimeException("The pattern can't be empty.");
         }
 
@@ -1113,7 +1113,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public RouteBuilder<R> SOME(String path, HttpMethod... httpMethods) {
 
-        if(httpMethods.length == 0) {
+        if (httpMethods.length == 0) {
             throw new RuntimeException("Using SOME(...), you have to specify at least one HTTP method.");
         }
 
@@ -1123,7 +1123,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public RouteBuilder<R> SOME(String path, Set<HttpMethod> httpMethods) {
 
-        if(httpMethods == null || httpMethods.size() == 0) {
+        if (httpMethods == null || httpMethods.size() == 0) {
             throw new RuntimeException("Using SOME(...), you have to specify at least one HTTP method.");
         }
 
@@ -1193,12 +1193,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     protected RouteBuilder<R> addFilterDefaultRoutingTypes(RouteBuilder<R> builder) {
 
         Set<RoutingType> defaultRoutingTypes = getSpincastRouterConfig().getFilterDefaultRoutingTypes();
-        for(RoutingType routingType : defaultRoutingTypes) {
-            if(routingType == RoutingType.FOUND) {
+        for (RoutingType routingType : defaultRoutingTypes) {
+            if (routingType == RoutingType.FOUND) {
                 builder.found();
-            } else if(routingType == RoutingType.NOT_FOUND) {
+            } else if (routingType == RoutingType.NOT_FOUND) {
                 builder.notFound();
-            } else if(routingType == RoutingType.EXCEPTION) {
+            } else if (routingType == RoutingType.EXCEPTION) {
                 builder.exception();
             } else {
                 throw new RuntimeException("Not managed : " + routingType);
@@ -1440,16 +1440,16 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public void addStaticResource(final StaticResource<R> staticResource) {
 
-        if(staticResource.getUrlPath() == null) {
+        if (staticResource.getUrlPath() == null) {
             throw new RuntimeException("The URL to the resource must be specified!");
         }
 
-        if(staticResource.getResourcePath() == null) {
+        if (staticResource.getResourcePath() == null) {
             throw new RuntimeException("A classpath or a file system path must be specified!");
         }
 
-        if(staticResource.isDirResource() &&
-           getSpincastRoutingUtils().isPathContainDynamicParams(staticResource.getResourcePath())) {
+        if (staticResource.isDirResource() &&
+            getSpincastRoutingUtils().isPathContainDynamicParams(staticResource.getResourcePath())) {
             throw new RuntimeException("You can't use a dynamic (or splat) parameters in the path of the " +
                                        "target resource when using 'dir()'. The resulting path must be fixed, since " +
                                        "the server will try to find the resource in it. It cannot depend on the " +
@@ -1457,7 +1457,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                        "replace them.");
         }
 
-        if(staticResource.isClasspath() && staticResource.getGenerator() != null) {
+        if (staticResource.isClasspath() && staticResource.getGenerator() != null) {
             throw new RuntimeException("A resource generator can only be specified when a file system " +
                                        "path is used, not a classpath path.");
         }
@@ -1467,58 +1467,58 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
         StringBuilder urlWithoutEndingSplatParamBuilder = new StringBuilder("");
         String[] tokens = staticResource.getUrlPath().split("/");
-        for(String token : tokens) {
+        for (String token : tokens) {
 
             token = token.trim();
-            if(StringUtils.isBlank(token)) {
+            if (StringUtils.isBlank(token)) {
                 continue;
             }
 
             boolean isDynParam = false;
             boolean isSplatParam = false;
 
-            if(token.startsWith("${")) {
+            if (token.startsWith("${")) {
                 isDynParam = true;
-            } else if(token.startsWith("*{")) {
+            } else if (token.startsWith("*{")) {
                 isSplatParam = true;
             }
 
-            if(!isSplatParam) {
+            if (!isSplatParam) {
                 urlWithoutEndingSplatParamBuilder.append("/").append(token);
             }
 
-            if(staticResource.isFileResource()) {
+            if (staticResource.isFileResource()) {
 
-                if(isSplatParam) {
+                if (isSplatParam) {
                     throw new RuntimeException("A file resource path can't contain a splat parameter. " +
                                                "Use 'dir()' instead!");
                 }
 
-                if(!staticResource.isCanBeGenerated() && isDynParam) {
+                if (!staticResource.isCanBeGenerated() && isDynParam) {
                     throw new RuntimeException("A file resource path can't contain dynamic parameters if no generator " +
                                                "is used. Use 'dir()', add a generator or use " +
                                                "a regular route instead.");
                 }
             } else {
 
-                if(isDynParam) {
+                if (isDynParam) {
                     throw new RuntimeException("A dir static resource route can't contains any standard dynamic parameter. It can only contain " +
                                                "a splat parameter, at the very end of the path. Invalid token : " + token);
-                } else if(splatParamFound) { // Another splat param already found...
+                } else if (splatParamFound) { // Another splat param already found...
                     throw new RuntimeException("A dir resource path can contain one splat parameter, and only at the very end of the path! " +
                                                "For example, this is invalid as a path : '/one/*{param1}/two', but this is valid : '/one/two/*{param1}'.");
                 }
             }
 
-            if(isDynParam) {
+            if (isDynParam) {
                 dynParamFound = true;
-            } else if(isSplatParam) {
+            } else if (isSplatParam) {
                 splatParamFound = true;
             }
         }
 
         String urlWithoutSplatParam = urlWithoutEndingSplatParamBuilder.toString();
-        if(StringUtils.isBlank(urlWithoutSplatParam)) {
+        if (StringUtils.isBlank(urlWithoutSplatParam)) {
             urlWithoutSplatParam = "/";
         }
 
@@ -1528,7 +1528,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         // - It is a dir resource and contains a splat param. In that
         //   case, we strip the splat part before adding the static resource.
         //==========================================
-        if(staticResource.isDirResource() && splatParamFound) {
+        if (staticResource.isDirResource() && splatParamFound) {
 
             StaticResource<R> staticResourceNoDynParams =
                     getStaticResourceFactory().create(staticResource.getStaticResourceType(),
@@ -1539,7 +1539,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                       staticResource.getCacheConfig(),
                                                       staticResource.isIgnoreQueryString());
             getServer().addStaticResourceToServe(staticResourceNoDynParams);
-        } else if(!splatParamFound && !dynParamFound) {
+        } else if (!splatParamFound && !dynParamFound) {
             getServer().addStaticResourceToServe(staticResource);
         }
 
@@ -1551,7 +1551,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         // shouln't have been sent for that to work!
         //==========================================
         final boolean mustBeRegisteredOnServer = staticResource.isFileResource() && (splatParamFound || dynParamFound);
-        if(staticResource.getGenerator() != null) {
+        if (staticResource.getGenerator() != null) {
 
             Route<R> route = null;
             Handler<R> saveResourceFilter = null;
@@ -1563,7 +1563,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             // generator will always be called so new modifications will
             // be picked up.
             //==========================================
-            if(isCreateStaticResourceOnDisk()) {
+            if (isCreateStaticResourceOnDisk()) {
 
                 final String urlWithoutSplatParamFinal = urlWithoutSplatParam;
                 saveResourceFilter = new Handler<R>() {
@@ -1571,36 +1571,36 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                     @Override
                     public void handle(R context) {
 
-                        if(HttpStatus.SC_OK != context.response().getStatusCode()) {
+                        if (HttpStatus.SC_OK != context.response().getStatusCode()) {
                             SpincastRouter.this.logger.info("Nothing will be saved since the response code is not " +
                                                             HttpStatus.SC_OK);
                             return;
                         }
 
-                        if(!staticResource.isIgnoreQueryString() &&
-                           context.request().getQueryStringParams() != null &&
-                           context.request().getQueryStringParams().size() > 0) {
+                        if (!staticResource.isIgnoreQueryString() &&
+                            context.request().getQueryStringParams() != null &&
+                            context.request().getQueryStringParams().size() > 0) {
                             SpincastRouter.this.logger.info("Nothing will be saved since the queryString contains parameters and " +
                                                             "'isIgnoreQueryString' is false  : " +
                                                             context.request().getQueryString(false));
                             return;
                         }
 
-                        if(context.response().isHeadersSent()) {
+                        if (context.response().isHeadersSent()) {
                             SpincastRouter.this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
                                                             "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
                                                             "request!");
                             return;
                         }
 
-                        if(staticResource.isDirResource()) {
+                        if (staticResource.isDirResource()) {
 
                             String urlPathPrefix = StringUtils.stripStart(urlWithoutSplatParamFinal, "/");
 
                             String requestPath = context.request().getRequestPath();
                             requestPath = StringUtils.stripStart(requestPath, "/");
 
-                            if(!requestPath.startsWith(urlPathPrefix)) {
+                            if (!requestPath.startsWith(urlPathPrefix)) {
                                 throw new RuntimeException("The requestPath '" + requestPath +
                                                            "' should starts with the urlPathPrefix '" + urlPathPrefix +
                                                            "' here!");
@@ -1616,7 +1616,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                 String resourcesRoot =
                                         new File(staticResource.getResourcePath()).getCanonicalFile().getAbsolutePath();
 
-                                if(!resourceToGeneratePath.startsWith(resourcesRoot)) {
+                                if (!resourceToGeneratePath.startsWith(resourcesRoot)) {
                                     throw new RuntimeException("The requestPath '" + resourceToGeneratePath +
                                                                "' should be inside the root resources folder : " + resourcesRoot);
                                 }
@@ -1624,10 +1624,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                 //==========================================
                                 // Save the resource in the dynamic dir.
                                 //==========================================
-                                if(!StringUtils.isBlank(requestPath)) {
+                                if (!StringUtils.isBlank(requestPath)) {
                                     getSpincastFilters().saveGeneratedResource(context, resourceToGeneratePath);
                                 }
-                            } catch(Exception ex) {
+                            } catch (Exception ex) {
                                 throw SpincastStatics.runtimize(ex);
                             }
                         } else {
@@ -1640,7 +1640,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                             ReplaceDynamicParamsResult result =
                                     getSpincastRoutingUtils().replaceDynamicParamsInPath(targetPath,
                                                                                          context.request().getPathParams());
-                            if(result.isPlaceholdersRemaining()) {
+                            if (result.isPlaceholdersRemaining()) {
                                 throw new RuntimeException("Not supposed : there are some remaining placeholders in the " +
                                                            "target path for the generated static resource file : " +
                                                            result.getPath());
@@ -1655,7 +1655,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                             // Do we have to register this new static resource
                             // on the server? it may not already be.
                             //==========================================
-                            if(mustBeRegisteredOnServer) {
+                            if (mustBeRegisteredOnServer) {
 
                                 StaticResource<R> newStaticResource =
                                         getStaticResourceFactory().create(staticResource.getStaticResourceType(),
@@ -1673,7 +1673,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                         // Some Caching headers to send?
                         //==========================================
                         StaticResourceCacheConfig cacheConfig = staticResource.getCacheConfig();
-                        if(cacheConfig != null) {
+                        if (cacheConfig != null) {
                             getSpincastFilters().cache(context,
                                                        cacheConfig.getCacheSeconds(),
                                                        cacheConfig.isCachePrivate(),
@@ -1700,25 +1700,25 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     protected boolean isCreateStaticResourceOnDisk() {
-        return !getSpincastConfig().isDisableWriteToDiskDynamicStaticResource();
+        return getSpincastConfig().isWriteToDiskDynamicStaticResource();
     }
 
     @Override
     public void httpAuth(String pathPrefix, String realmName) {
 
-        if(StringUtils.isBlank(realmName)) {
+        if (StringUtils.isBlank(realmName)) {
             throw new RuntimeException("The realm name can't be empty");
         }
-        if(StringUtils.isBlank(pathPrefix)) {
+        if (StringUtils.isBlank(pathPrefix)) {
             pathPrefix = "/";
-        } else if(!pathPrefix.startsWith("/")) {
+        } else if (!pathPrefix.startsWith("/")) {
             pathPrefix = "/" + pathPrefix;
         }
 
         String[] tokens = pathPrefix.split("/");
-        for(String token : tokens) {
+        for (String token : tokens) {
             token = token.trim();
-            if(token.startsWith("${") || token.startsWith("*{")) {
+            if (token.startsWith("${") || token.startsWith("*{")) {
                 throw new RuntimeException("The path prefix for an HTTP authenticated section can't contain " +
                                            "any dynamic parameters: " + token);
             }

@@ -9,7 +9,7 @@ import com.google.inject.Inject;
 public class App {
 
     public static void main(String[] args) {
-        Spincast.init();
+        Spincast.init(args);
     }
 
     @Inject

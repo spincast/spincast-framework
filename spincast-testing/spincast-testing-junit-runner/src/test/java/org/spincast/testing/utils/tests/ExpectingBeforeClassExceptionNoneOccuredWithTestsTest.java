@@ -4,11 +4,11 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
 import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.ExpectingBeforeClassException;
 import org.spincast.testing.utils.SpincastJUnitRunner;
-import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 import org.spincast.testing.utils.tests.utils.SpincastJUnitRunnerTester;
+import org.spincast.testing.utils.tests.utils.TestExpectedToFailProvider;
 
 @RunWith(SpincastJUnitRunnerTester.class)
 @ExpectingBeforeClassException
@@ -30,8 +30,15 @@ public class ExpectingBeforeClassExceptionNoneOccuredWithTestsTest implements Be
         fail("Test was expected to be ignored");
     }
 
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
+    }
+
     @Test
     public void test1() throws Exception {
         fail("Test was expected to be ignored");
     }
+
+
 }

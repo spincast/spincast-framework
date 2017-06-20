@@ -19,7 +19,7 @@ import com.google.inject.Scopes;
 public class CustomSpincastDictionaryTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

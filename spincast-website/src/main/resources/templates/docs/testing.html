@@ -67,10 +67,10 @@ Testing demo
     </h4>
     <p>
         In this demo, we're going to test a simple application which only has
-        one route : <code>"/sum"</code>. The <code>Route Handler</code>
-        associated with this <code>Route</code> is going to receive two numbers, will
+        one endpoint : <code>"/sum"</code>. The <code>Route Handler</code>
+        associated with this endpoint is going to receive two numbers, will
         add them up, and will return the result as a
-        <code>Json</code> object. Here's the response we would be expecting from the <code>"/sum"</code> endpoint by sending the 
+        <code>Json</code> object. Here's the response we would be expecting from the <code>"/sum"</code> endpoint when sending the 
         parameters <code>"first" = "1"</code> and <code>"second" = "2"</code> :
         
         <div>
@@ -99,7 +99,7 @@ Testing demo
     public static void main(String[] args) {
         Spincast.configure()
                 .module(new AppModule())
-                .init();
+                .init(args);
     }
 
     @Inject
@@ -114,8 +114,9 @@ Testing demo
             </p>
             
             The interesting lines to note here are <span class="code-line-nbr">4-6</span> : we
-            use the bootstrapper to start everything! We'll see that, without touching
-            this bootstrapping, we'll still be able to modify the Guice context, to mock
+            use the standard <a href="http://spincast.loc:44420/documentation#boot_bootstrapper">Bootstrapper</a> to start 
+            everything! We'll see that, without modifying
+            this bootstrapping process, we'll still be able to tweak the Guice context, to mock
             some components.
             
         </div> 
@@ -132,6 +133,27 @@ public class SumTest extends IntegrationTestAppDefaultContextsBase {
     @Override
     protected void initApp() {
         App.main(null);
+    }
+    
+    @Override
+    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+        return new AppTestingConfigInfo() {
+
+            @Override
+            public Class&lt;? extends SpincastConfig&gt; getSpincastConfigTestingImplementationClass() {
+                return SpincastConfigTestingDefault.class;
+            }
+
+            @Override
+            public Class&lt;?&gt; getAppConfigTestingImplementationClass() {
+                return null;
+            }
+
+            @Override
+            public Class&lt;?&gt; getAppConfigInterface() {
+                return null;
+            }
+        };
     }
 
     @Inject
@@ -159,13 +181,19 @@ public class SumTest extends IntegrationTestAppDefaultContextsBase {
                         easily done by calling its <code>main(...)</code> method.
                     </li>
                     <li>
-                        <span class="code-line-nbr">9-10</span> : Here we can see Spincast testing in action! Our 
+                        <span class="code-line-nbr">9-28</span> : We also have to implement the <code>getAppTestingConfigInfo()</code>
+                        method. This is to provide Spincast informations about the configurations we want to use when running
+                        this test class. Have a look at the <a href="#testing_configurations">Testing configurations</a> 
+                        section for more information!
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">30-31</span> : Here we can see Spincast testing in action! Our 
                         test class has now <em>full access to the Guice context of the application</em>. Therefore, we 
                         can inject any component we need. In this test class, we are going to
                         use the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>.
                     </li>
                     <li>
-                        <span class="code-line-nbr">12-15</span> : a first test to implement.
+                        <span class="code-line-nbr">33-36</span> : a first test to implement.
                     </li>
                     
                 </ul>
@@ -175,12 +203,14 @@ public class SumTest extends IntegrationTestAppDefaultContextsBase {
     <p>
         As you can see, simply by extending <code>IntegrationTestAppDefaultContextsBase</code>, and by starting our
         application using its <code>main(...)</code> method, we can write integration tests targeting
-        our running application, and we can use any components from its Guice context.
+        our running application, and we can use any components from its Guice context. There is some boilerplate
+        code to write though (to implement the <code>getAppTestingConfigInfo()</code> method, for example), and this why
+        you would in general create a <em>base class</em> to serve as a parent for all your test classes!
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-        Let's implement that first test. We're going to validate that the <code>"/sum"</code> endpoint
-        of our application works properly :
+        Let's implement our first test. We're going to validate that the <code>"/sum"</code> endpoint
+        of the application works properly :
         
         <div>
             <p>
@@ -451,6 +481,99 @@ Guice Tweaker
             </li>
         </ul>
     </p>
+</section>
+
+{#==========================================
+Testing configurations
+==========================================#}     
+<section id="testing_configurations">
+    <h4>
+        <a class="anchor_small" href="#testing_configurations" title="permanent link"></a>
+        Integration testing configurations
+    </h4>
+    <p>
+    	When running integration tests, you don't want to use the same configurations then the ones
+    	you would when running the application directly. For example, you may want to provide a 
+    	different <code>connection string</code> to use a mocked database instead of the real one.
+    </p>
+    <p>
+    	As we saw in the previous section, the <a href="#testing_guice_tweaker">Guice Tweaker</a> allows you to
+    	change some bindings when testing your application. But configurations is such an important component
+    	to modify, when running tests, that Spincast forces you to specify which implementations to use for
+    	those!
+    </p>
+    <p>
+    	You specify the testing configurations by implementing the
+    	<a class="javadoc" href="/public/javadoc/org/spincast/testing/core/IntegrationTestAppBase.html#getAppTestingConfigInfo--">getAppTestingConfigInfo()</a>
+    	method. This method must return an instance of 
+    	<a class="javadoc" href="/public/javadoc/org/spincast/testing/core/AppTestingConfigInfo.html">AppTestingConfigInfo</a>. This
+    	object tells Spincast :
+    	
+    	<ul>
+    		<li>
+    			<strong><em>getSpincastConfigTestingImplementationClass()</em></strong> : The implementation class to use for 
+    			the <code>SpincastConfig</code> binding. In other words, this hook allows you to easily mock the
+    			configurations used by Spincast core components. Note that you can use the provided
+    			<a class="javadoc" href="/public/javadoc/org/spincast/testing/core/utils/SpincastConfigTestingDefault.html">SpincastConfigTestingDefault</a> 
+    			class here... By returning it directly, or by using it as a parent for a custom implementation. 
+    			This class has some useful defaults, such as finding
+    			a free port to use when starting the HTTP server.
+    		</li>
+    		<li>
+    			<strong><em>getAppConfigInterface()</em></strong> : The interface of your custom configurations
+    			class. You can return <code>null</code> if you don't have a custom configurations class.
+    		</li>
+    		<li>
+    			<strong><em>getAppConfigTestingImplementationClass()</em></strong> : The implementation class to use for 
+    			your custom configurations. You can return <code>null</code> if you don't have a custom configurations class.
+    		</li>
+    	</ul>
+    </p>
+    <p>
+    	Spincast will use the informations returned by this object and will add all the required bindings
+    	automatically. You don't need to do anything by yourself, for example by using the Guice Tweaker, to change the 
+    	bindings for the configurations when running integration tests. You just need to implement the 
+    	<code>getAppTestingConfigInfo()</code> method.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    	In most applications, the testing implementation to use for the <code>SpincastConfig</code> interface and 
+    	the one for your 
+    	custom configurations interface will be the same! Indeed, if you follow
+    	the <a href="#config_strategy_components">suggested way</a> of configuring your application, then your custom
+    	configurations interface <code>AppConfig</code> extends <code>SpincastConfig</code>. 
+    	
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    	Your testing configurations can often be shared between multiple tests classes.
+    	It is therefore a good idea to create an abstract base class, named "AppTestingsBase" or something similar, 
+    	to implement the <code>getAppTestingConfigInfo()</code> method there, and use
+    	this base class as the parent for all your integration test classes. Have a look at
+    	<a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/test/java/org/spincast/website/tests/WebsiteIntegrationTestBase.java">this base class</a> 
+    	for an example.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    	While mocking some configurations is often required, it's still a good
+    	idea to make testing configurations as close as possible as the ones that are going to be used
+    	<em>in production</em>. For example, returning <code>false</code> for the
+    	<a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDebugEnabled--">isDebugEnabled()</a>
+    	method is suggested. That way, you can be confident that once your tests pass, your application will do well
+    	in production.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    	You can mock some <em>Environment Variables</em> used as configurations, by overriding the
+    	<a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/ConfigFinder.html#getEnvironmentVariables--">getEnvironmentVariables()</a>
+    	method in your configurations implementation class.
+    </p>
+    <p>
+    	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+    	You can modify <em>System Properties</em> before running your tests, by overriding the
+    	<a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastTestBase.html#addExtraSystemProperties--">getExtraSystemProperties()</a>
+    	method from the testing base class. Those system properties will be automatically reset once the tests are done.
+    </p>
     
 </section>
 
@@ -578,12 +701,12 @@ Spincast JUnit runner
                 All your <code>@Inject</code> annotated fields and methods are fulfilled.
             </li>
             <li>
-                If an exception occurs in the <code>beforeClass()</code> method, the process stops and the
-                tests are not run.
+                If an exception occures during the execution of the <code>beforeClass()</code> method, 
+                the <code>beforeClassException(...)</code> method will be called, the process will be stop and the tests won't be run.
             </li>
             <li>
-                The tests are then run. Note that since the <code>@FixMethodOrder(MethodSorters.NAME_ASCENDING)</code> annotation is used
-                on the <code>SpincastTestBase</code> parent class, the
+                If no exception occures, the tests are then run. Note that since the <code>@FixMethodOrder(MethodSorters.NAME_ASCENDING)</code> 
+                annotation is used on the <code>SpincastTestBase</code> parent class, the
                 tests will be sorted alphanumerically before they are run. Without this annotation,
                 JUnit doesn't guarantee the order in which your tests are run.
             </li>

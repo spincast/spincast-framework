@@ -342,7 +342,7 @@ public class SpincastUndertowServer implements Server {
             SSLContext sslContext = getSslContextFactory().createSSLContext(getConfig().getHttpsKeyStorePath(),
                                                                             getConfig().getHttpsKeyStoreType(),
                                                                             getConfig().getHttpsKeyStoreStorePass(),
-                                                                            getConfig().getHttpsKeyStoreKeypass());
+                                                                            getConfig().getHttpsKeyStoreKeyPass());
 
             builder = builder.addHttpsListener(httpsServerPort, serverHost, sslContext);
 

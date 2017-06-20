@@ -27,9 +27,7 @@ We have a dedicated page for Spincast news: ![](http://i.imgur.com/OiymQrH.png)[
 
 You can subscribe to our [rss feed](https://www.spincast.org/rss).
 
-Ask question or make suggestions using the [Spincast Google Group](https://groups.google.com/forum/#!forum/spincast).
-
-We're also scanning for questions using the "*#spincast*" tag on [Stack Overflow](http://stackoverflow.com).
+We also plan on scanning for questions using the "*#spincast*" tag on [Stack Overflow](http://stackoverflow.com).
 
 You can follow us on [Twitter](https://twitter.com/spincast).
 

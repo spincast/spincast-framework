@@ -90,7 +90,16 @@
                         <li><a href="#boot_with_core">Using <em>spincast-core</em> directly</a></li> 
                     </ul>
                 </li>
-                
+                <li class="openable">
+                    <a href="#configuration">Configuration</a>
+                    <ul class="nav nav-stacked">
+                      	<li><a href="#config_strategy">Configuration strategy - introduction</a></li>
+                      	<li><a href="#config_strategy_components">Configuration strategy - components</a></li>
+                        <li><a href="#config_strategy_implementation">Configuration strategy - implementation</a></li>
+                        <li><a href="#config_strategy_plugin_config">Configuring the config plugin</a></li>
+                        <li><a href="#config_core">Core configurations</a></li>
+                    </ul>
+                </li>
                 <li class="openable">
                     <a href="#request_context">The Request Context</a>
                     <ul class="nav nav-stacked">
@@ -209,6 +218,7 @@
                         <li><a href="#testing_installation">Installation</a></li>
                         <li><a href="#testing_demo">Demo</a></li>
                         <li><a href="#testing_guice_tweaker">Guice Tweaker</a></li>
+                        <li><a href="#testing_configurations">Testing configurations</a></li>
                         <li><a href="#testing_base_classes">Testing base classes</a></li>
                         <li><a href="#testing_runner">Spincast JUnit runner</a></li>
                     </ul>
@@ -225,7 +235,6 @@
                 <li class="openable">
                     <a href="#miscellaneous">Miscellaneous</a>
                     <ul class="nav nav-stacked">
-                        <li><a href="#default_config">Default configurations</a></li>
                         <li><a href="#flash_messages">Flash messages</a></li>
                         <li><a href="#alert_messages">Alert messages</a></li>
                         <li><a href="#ssl">Using a SSL certificate (HTTPS)</a></li>
@@ -262,6 +271,11 @@
             Section "bootstrapping"
             ==========================================#}
             {% include "./docs/bootstrapping.html" %}
+            
+            {#==========================================
+            Section "configuration"
+            ==========================================#}
+            {% include "./docs/configuration.html" %}
             
             {#==========================================
             Section "Request Context"

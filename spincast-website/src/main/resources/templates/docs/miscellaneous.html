@@ -8,99 +8,6 @@ Docs : "Miscellaneous"
         Miscellaneous
     </h3>
 </section>
-   
-{#==========================================
-Default Configurations
-==========================================#}     
-<section id="default_config">
-    <h4>
-        <a class="anchor_small" href="#default_config" title="permanent link"></a>
-        Default Configurations
-    </h4>
-    
-    <p>
-        To know what are the configurations required by Spincast,
-        have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> javadoc. 
-        Here, we're simply going to introduce the most important ones :
-    </p>
-    <p>
-        <ul>
-            <li>
-                <code>getServerHost()</code> : The host/IP the HTTP Server
-                will listen on. The default is <code>0.0.0.0</code>, which
-                means the Server will listen on any IP.
-            </li>
-            <li>
-                <code>getHttpServerPort()</code> : The port the Server
-                will listen to for <code>HTTP</code> <em>(unsecure)</em> requests.
-                If <code>&lt;= 0</code>, the Server won't listen on <code>HTTP</code> requests.
-            </li>
-            <li>
-                <code>getHttpsServerPort()</code> : The port the Server
-                will listen to for <code>HTTPS</code> <em>(secure)</em> requests.
-                If <code>&lt;= 0</code>, the Server won't listen on <code>HTTPS</code> requests.
-                If you use <code>HTTPS</code>, you also have to provide some extra
-                configurations related to the <code class="block">SSL</code>
-                certificate to use.
-            </li>
-            <li>
-                <code>isDebugEnabled()</code> : If <code>true</code>,
-                a <em>development</em> environment is taken for granted, and
-                internal error messages may be displayed publicly, no cache will be
-                used for the templates, etc. The default is <code>true</code>, so make
-                sure you change this to <code>false</code> before deploying to
-                production!
-            </li>
-            <li>
-                <code>getPublicServerSchemeHostPort()</code> : This configuration is
-                quite important and you should override it in your application and adjust
-                it from environment to environment! It tells Spincast what is the 
-                <em>base public URL</em> used to reach your application. 
-                <p>
-                For example, your application may be accessed using a URL such as
-                <code>http://www.example.com</code> but can in fact be behind a reverse-router 
-                and actually started on the <code>"localhost"</code> host and on 
-                port <code>"12345"</code>.
-                The problem is that the public base URL (<code>"http://www.example.com"</code>) <em>can't</em> be 
-                automatically found, but Spincast still requires it to :
-                <ul>
-                    <li>
-                        Generate an absolute URL for a link to provide to the user.
-                    </li>
-                    <li>
-                        Set a cookie using the appropriated domain.
-                    </li>
-                </ul>
-                <p>
-                <img class="inlineIcon" src="/public/images/icons/para.png" />
-                By default, the <code>getPublicServerSchemeHostPort()</code> configuration
-                will be <code>"http://localhost:44419"</code>. This default can be used for development 
-                purposes, but <em>must</em> be changed when releasing to another environment.
-                <p>
-                It is so important to override this configuration that Spincast has a validation
-                in place : when an application starts, an exception will be thrown if those
-                conditions are all meet :
-                <ul>
-                    <li>
-                        The <code>environment name</code> is not "local".
-                    </li>
-                    <li>
-                        <code>isDebugEnabled()</code> configuration returns <code>false</code>.
-                    </li>
-                    <li>
-                        The <code>public host</code> is still <code>"localhost"</code>.
-                    </li>
-                </ul>
-                In other words, Spincast tries to catch the case where an application
-                is running anywhere else than locally, without the default public base URL
-                ajusted.
-                <p>
-                Note that you can disable this startup validation using the 
-                <code>isValidateLocalhostHost()</code> configuration.
-            </li>
-        </ul>
-    </p>
-</section>
 
 {#==========================================
 Flash Messages
@@ -506,7 +413,7 @@ Spincast Utilities
     </h4>
     
     <p>
-        The <code>mainArgs(...)</code> method of the <a href="#boot_bootstrapper">Bootstrapper</a> allows you
+        The <code>init(...)</code> method of the <a href="#boot_bootstrapper">Bootstrapper</a> allows you
         to bind the arguments received in your <code>main(...)</code> method. For example :
     </p>
     <p>
@@ -519,8 +426,7 @@ public static void main(String[] args) {
 
     Spincast.configure()
             .module(new AppModule())
-            .mainArgs(args)
-            .init();
+            .init(args);
     //....
 }</pre> 
             </p>

@@ -59,7 +59,7 @@ public class CustomDictionaryTest {
                         bind(SpincastDictionaryTest.class).to(SpincastDictionaryTestDefault.class).in(Scopes.SINGLETON);
                     }
                 })
-                .init();
+                .init(args);
 
         assertTrue(initCalled);
     }

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TimeZone;
 
 import javax.annotation.Nullable;
 
@@ -29,7 +28,6 @@ import org.spincast.core.json.JsonPathUtils;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
-import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -74,19 +72,6 @@ public class SpincastJsonManager implements JsonManager {
     private JsonSerializer<BigDecimal> bigDecimalSerializer;
     private DefaultPrettyPrinter jacksonPrettyPrinter;
 
-    // All FastDateFormat are thread safe!
-    private static FastDateFormat iso8601DateParserDefault;
-    private static FastDateFormat iso8601DateParser1;
-    private static FastDateFormat iso8601DateParser2;
-    private static FastDateFormat iso8601DateParser3;
-
-    static {
-        iso8601DateParserDefault = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mmZ", TimeZone.getTimeZone("UTC"));
-        iso8601DateParser1 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssX", TimeZone.getTimeZone("UTC"));
-        iso8601DateParser2 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSZ", TimeZone.getTimeZone("UTC"));
-        iso8601DateParser3 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", TimeZone.getTimeZone("UTC"));
-    }
-
     @Inject
     public SpincastJsonManager(Provider<Injector> guiceProvider,
                                JsonObjectFactory jsonObjectFactory,
@@ -98,7 +83,7 @@ public class SpincastJsonManager implements JsonManager {
         this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
 
-        if(jsonMixinInfos == null) {
+        if (jsonMixinInfos == null) {
             jsonMixinInfos = new HashSet<JsonMixinInfo>();
         }
         this.jsonMixinInfos = jsonMixinInfos;
@@ -137,7 +122,7 @@ public class SpincastJsonManager implements JsonManager {
     }
 
     protected DefaultPrettyPrinter getJacksonPrettyPrinter() {
-        if(this.jacksonPrettyPrinter == null) {
+        if (this.jacksonPrettyPrinter == null) {
             this.jacksonPrettyPrinter = new DefaultPrettyPrinter();
 
             Indenter indenter = new DefaultIndenter(getJacksonPrettyPrinterIndentation(), getJacksonPrettyPrinterNewline());
@@ -156,24 +141,9 @@ public class SpincastJsonManager implements JsonManager {
         return StringUtils.repeat(" ", getSpincastJsonManagerConfig().getPrettyPrinterIndentationSpaceNumber());
     }
 
-    protected FastDateFormat getIso8601DateParserDefault() {
-        return iso8601DateParserDefault;
-    }
-
-    protected FastDateFormat getIso8601DateParser1() {
-        return iso8601DateParser1;
-    }
-
-    protected FastDateFormat getIso8601DateParser2() {
-        return iso8601DateParser2;
-    }
-
-    protected FastDateFormat getIso8601DateParser3() {
-        return iso8601DateParser3;
-    }
 
     protected ObjectMapper getObjectMapper() {
-        if(this.objectMapper == null) {
+        if (this.objectMapper == null) {
 
             ObjectMapper objectMapper = createObjectManager();
             registerCustomModules(objectMapper);
@@ -196,6 +166,8 @@ public class SpincastJsonManager implements JsonManager {
      */
     protected void configureObjectMapper(ObjectMapper objectMapper) {
 
+        objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, isAllowCommentsInJson());
+
         //==========================================
         // To allow serialization of "empty" POJOs (no properties to serialize)
         // (without this setting, an exception is thrown in those cases)
@@ -208,19 +180,31 @@ public class SpincastJsonManager implements JsonManager {
         configureMixins(objectMapper);
     }
 
+    /**
+     * Should comments be accepted in Json?
+     * @see https://github.com/FasterXML/jackson-core/wiki/JsonParser-Features#support-for-non-standard-data-format-constructs
+     */
+    protected boolean isAllowCommentsInJson() {
+
+        //==========================================
+        // Accepted by default
+        //==========================================
+        return true;
+    }
+
     protected void configureEmptyBeans(ObjectMapper objectMapper) {
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
     protected void configureMixins(ObjectMapper objectMapper) {
-        for(JsonMixinInfo jsonMixinInfo : getJsonMixinInfos()) {
+        for (JsonMixinInfo jsonMixinInfo : getJsonMixinInfos()) {
             objectMapper.addMixIn(jsonMixinInfo.getTargetClass(), jsonMixinInfo.getMixinClass());
         }
     }
 
     protected JsonSerializer<JsonObject> getJsonObjectSerializer() {
 
-        if(this.jsonObjectSerializer == null) {
+        if (this.jsonObjectSerializer == null) {
             this.jsonObjectSerializer = new JsonSerializer<JsonObject>() {
 
                 @Override
@@ -229,7 +213,7 @@ public class SpincastJsonManager implements JsonManager {
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(jsonObject == null) {
+                    if (jsonObject == null) {
                         return;
                     }
 
@@ -243,7 +227,7 @@ public class SpincastJsonManager implements JsonManager {
 
     protected JsonSerializer<JsonArray> getJsonArraySerializer() {
 
-        if(this.jsonArraySerializer == null) {
+        if (this.jsonArraySerializer == null) {
             this.jsonArraySerializer = new JsonSerializer<JsonArray>() {
 
                 @Override
@@ -252,7 +236,7 @@ public class SpincastJsonManager implements JsonManager {
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(jsonArray == null) {
+                    if (jsonArray == null) {
                         return;
                     }
 
@@ -266,7 +250,7 @@ public class SpincastJsonManager implements JsonManager {
 
     protected JsonSerializer<Date> getDateSerializer() {
 
-        if(this.dateSerializer == null) {
+        if (this.dateSerializer == null) {
             this.dateSerializer = new JsonSerializer<Date>() {
 
                 @Override
@@ -275,11 +259,11 @@ public class SpincastJsonManager implements JsonManager {
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(date == null) {
+                    if (date == null) {
                         return;
                     }
 
-                    String dateStr = getIso8601DateParserDefault().format(date);
+                    String dateStr = SpincastStatics.getIso8601DateParserDefault().format(date);
                     gen.writeObject(dateStr);
                 }
             };
@@ -289,7 +273,7 @@ public class SpincastJsonManager implements JsonManager {
 
     protected JsonSerializer<BigDecimal> getBigDecimalSerializer() {
 
-        if(this.bigDecimalSerializer == null) {
+        if (this.bigDecimalSerializer == null) {
             this.bigDecimalSerializer = new JsonSerializer<BigDecimal>() {
 
                 @Override
@@ -298,7 +282,7 @@ public class SpincastJsonManager implements JsonManager {
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(bigDecimal == null) {
+                    if (bigDecimal == null) {
                         return;
                     }
                     gen.writeObject(bigDecimal.toPlainString());
@@ -310,7 +294,7 @@ public class SpincastJsonManager implements JsonManager {
 
     protected JsonDeserializer<JsonObject> getJsonObjectDeserializer() {
 
-        if(this.jsonObjectDeserializer == null) {
+        if (this.jsonObjectDeserializer == null) {
             this.jsonObjectDeserializer = new JsonDeserializer<JsonObject>() {
 
                 @Override
@@ -322,44 +306,44 @@ public class SpincastJsonManager implements JsonManager {
                     JsonObject jsonObject = getJsonObjectFactory().create();
 
                     JsonToken jsonToken = jsonParser.getCurrentToken();
-                    if(jsonToken == JsonToken.START_OBJECT) {
+                    if (jsonToken == JsonToken.START_OBJECT) {
                         jsonToken = jsonParser.nextToken();
                     } else {
                         throw new RuntimeException("Invalid json object");
                     }
 
-                    while(jsonToken != null) {
+                    while (jsonToken != null) {
 
-                        if(jsonToken != JsonToken.FIELD_NAME) {
+                        if (jsonToken != JsonToken.FIELD_NAME) {
                             break;
                         }
 
                         String name = jsonParser.getCurrentName();
                         jsonToken = jsonParser.nextToken();
 
-                        if(jsonToken == JsonToken.START_OBJECT) {
+                        if (jsonToken == JsonToken.START_OBJECT) {
                             jsonObject.put(name, deserialize(jsonParser, context));
 
-                        } else if(jsonToken == JsonToken.START_ARRAY) {
+                        } else if (jsonToken == JsonToken.START_ARRAY) {
                             jsonObject.put(name, getJsonArrayDeserializer().deserialize(jsonParser, context));
 
-                        } else if(jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
+                        } else if (jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
                             jsonObject.put(name, jsonParser.getEmbeddedObject());
 
-                        } else if(jsonToken == JsonToken.VALUE_NULL) {
+                        } else if (jsonToken == JsonToken.VALUE_NULL) {
                             jsonObject.put(name, null);
 
-                        } else if(jsonToken == JsonToken.VALUE_STRING) {
+                        } else if (jsonToken == JsonToken.VALUE_STRING) {
                             jsonObject.put(name, jsonParser.getText());
 
-                        } else if(jsonToken == JsonToken.VALUE_TRUE) {
+                        } else if (jsonToken == JsonToken.VALUE_TRUE) {
                             jsonObject.put(name, true);
 
-                        } else if(jsonToken == JsonToken.VALUE_FALSE) {
+                        } else if (jsonToken == JsonToken.VALUE_FALSE) {
                             jsonObject.put(name, false);
 
-                        } else if(jsonToken == JsonToken.VALUE_NUMBER_INT ||
-                                  jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
+                        } else if (jsonToken == JsonToken.VALUE_NUMBER_INT ||
+                                   jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
                             jsonObject.put(name, jsonParser.getNumberValue());
 
                         } else {
@@ -379,7 +363,7 @@ public class SpincastJsonManager implements JsonManager {
 
     protected JsonDeserializer<JsonArray> getJsonArrayDeserializer() {
 
-        if(this.jsonArrayDeserializer == null) {
+        if (this.jsonArrayDeserializer == null) {
             this.jsonArrayDeserializer = new JsonDeserializer<JsonArray>() {
 
                 @Override
@@ -391,41 +375,41 @@ public class SpincastJsonManager implements JsonManager {
                     JsonArray jsonArray = getJsonObjectFactory().createArray();
 
                     JsonToken jsonToken = jsonParser.getCurrentToken();
-                    if(jsonToken == JsonToken.START_ARRAY) {
+                    if (jsonToken == JsonToken.START_ARRAY) {
                         jsonToken = jsonParser.nextToken();
                     } else {
                         throw new RuntimeException("Invalid json array");
                     }
 
-                    while(jsonToken != null) {
+                    while (jsonToken != null) {
 
-                        if(jsonToken == JsonToken.END_ARRAY) {
+                        if (jsonToken == JsonToken.END_ARRAY) {
                             break;
                         }
 
-                        if(jsonToken == JsonToken.START_OBJECT) {
+                        if (jsonToken == JsonToken.START_OBJECT) {
                             jsonArray.add(getJsonObjectDeserializer().deserialize(jsonParser, context));
 
-                        } else if(jsonToken == JsonToken.START_ARRAY) {
+                        } else if (jsonToken == JsonToken.START_ARRAY) {
                             jsonArray.add(deserialize(jsonParser, context));
 
-                        } else if(jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
+                        } else if (jsonToken == JsonToken.VALUE_EMBEDDED_OBJECT) {
                             jsonArray.add(jsonParser.getEmbeddedObject());
 
-                        } else if(jsonToken == JsonToken.VALUE_NULL) {
+                        } else if (jsonToken == JsonToken.VALUE_NULL) {
                             jsonArray.add(null);
 
-                        } else if(jsonToken == JsonToken.VALUE_STRING) {
+                        } else if (jsonToken == JsonToken.VALUE_STRING) {
                             jsonArray.add(jsonParser.getText());
 
-                        } else if(jsonToken == JsonToken.VALUE_TRUE) {
+                        } else if (jsonToken == JsonToken.VALUE_TRUE) {
                             jsonArray.add(true);
 
-                        } else if(jsonToken == JsonToken.VALUE_FALSE) {
+                        } else if (jsonToken == JsonToken.VALUE_FALSE) {
                             jsonArray.add(false);
 
-                        } else if(jsonToken == JsonToken.VALUE_NUMBER_INT ||
-                                  jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
+                        } else if (jsonToken == JsonToken.VALUE_NUMBER_INT ||
+                                   jsonToken == JsonToken.VALUE_NUMBER_FLOAT) {
                             jsonArray.add(jsonParser.getNumberValue());
 
                         } else {
@@ -479,12 +463,12 @@ public class SpincastJsonManager implements JsonManager {
     @Override
     public String toJsonString(Object obj, boolean pretty) {
         try {
-            if(pretty) {
+            if (pretty) {
                 return getObjectMapper().writer(getJacksonPrettyPrinter()).writeValueAsString(obj);
             } else {
                 return getObjectMapper().writeValueAsString(obj);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -494,7 +478,7 @@ public class SpincastJsonManager implements JsonManager {
      * we inject dependencies using Guice.
      */
     protected void injectDependencies(Object obj) {
-        if(obj != null) {
+        if (obj != null) {
             getGuice().injectMembers(obj);
         }
     }
@@ -505,7 +489,7 @@ public class SpincastJsonManager implements JsonManager {
             T jsonObj = getObjectMapper().readValue(jsonString, clazz);
             injectDependencies(jsonObj);
             return jsonObj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -516,7 +500,7 @@ public class SpincastJsonManager implements JsonManager {
             T jsonObj = getObjectMapper().readValue(inputStream, clazz);
             injectDependencies(jsonObj);
             return jsonObj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -526,7 +510,7 @@ public class SpincastJsonManager implements JsonManager {
         try {
             Map<String, Object> map = getObjectMapper().readValue(jsonString, new TypeReference<Map<String, Object>>() {});
             return map;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -537,7 +521,7 @@ public class SpincastJsonManager implements JsonManager {
             Map<String, Object> map = getObjectMapper().readValue(inputStream,
                                                                   new TypeReference<Map<String, Object>>() {});
             return map;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -552,7 +536,7 @@ public class SpincastJsonManager implements JsonManager {
         try {
             JsonObject obj = getObjectMapper().readValue(jsonString, JsonObject.class);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -566,21 +550,21 @@ public class SpincastJsonManager implements JsonManager {
     public JsonObject fromMap(Map<String, ?> params, boolean parseKeysAsJsonPaths) {
 
         JsonObject root = getJsonObjectFactory().create();
-        if(params == null || params.size() == 0) {
+        if (params == null || params.size() == 0) {
             return root;
         }
 
-        if(parseKeysAsJsonPaths && params.size() > getMaxNumberOfKeysWhenConvertingMapToJsonObject()) {
+        if (parseKeysAsJsonPaths && params.size() > getMaxNumberOfKeysWhenConvertingMapToJsonObject()) {
             throw new RuntimeException("Too many keys to parse : " + params.size() + " as JsonPaths. " +
                                        "The maximum is currently set to " + getMaxNumberOfKeysWhenConvertingMapToJsonObject());
         }
 
-        for(Entry<String, ?> entry : params.entrySet()) {
+        for (Entry<String, ?> entry : params.entrySet()) {
 
             String key = entry.getKey();
             Object value = entry.getValue();
 
-            if(parseKeysAsJsonPaths) {
+            if (parseKeysAsJsonPaths) {
                 putElementAtJsonPath(root, key, value, true);
             } else {
                 root.putNoKeyParsing(key, value);
@@ -622,7 +606,7 @@ public class SpincastJsonManager implements JsonManager {
     @Override
     public void putElementAtJsonPath(JsonObjectOrArray objOrArray, String jsonPath, Object value, boolean clone) {
 
-        if(clone) {
+        if (clone) {
             value = clone(value);
         }
 
@@ -634,7 +618,7 @@ public class SpincastJsonManager implements JsonManager {
         try {
             JsonObject obj = getObjectMapper().readValue(inputStream, JsonObject.class);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -644,7 +628,7 @@ public class SpincastJsonManager implements JsonManager {
         try {
             JsonObject obj = getObjectMapper().readValue(jsonFile, JsonObject.class);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -671,7 +655,7 @@ public class SpincastJsonManager implements JsonManager {
         try {
             JsonArray obj = getObjectMapper().readValue(jsonString, JsonArray.class);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -679,8 +663,8 @@ public class SpincastJsonManager implements JsonManager {
     @Override
     public JsonArray fromListArray(List<?> elements) {
         JsonArray array = createArray();
-        if(elements != null) {
-            for(Object element : elements) {
+        if (elements != null) {
+            for (Object element : elements) {
                 array.add(element);
             }
         }
@@ -693,14 +677,14 @@ public class SpincastJsonManager implements JsonManager {
         try {
             JsonArray obj = getObjectMapper().readValue(inputStream, JsonArray.class);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
 
     @Override
     public String convertToJsonDate(Date date) {
-        return getIso8601DateParserDefault().format(date);
+        return SpincastStatics.getIso8601DateParserDefault().format(date);
     }
 
     /**
@@ -708,59 +692,30 @@ public class SpincastJsonManager implements JsonManager {
      */
     @Override
     public Date parseDateFromJson(String str) {
-
-        if(str == null) {
-            return null;
-        }
-
-        Date date = null;
-        try {
-            date = getIso8601DateParserDefault().parse(str);
-            return date;
-        } catch(Exception ex) {
-        }
-
-        try {
-            date = getIso8601DateParser1().parse(str);
-            return date;
-        } catch(Exception ex) {
-        }
-
-        try {
-            date = getIso8601DateParser2().parse(str);
-            return date;
-        } catch(Exception ex) {
-        }
-
-        try {
-            date = getIso8601DateParser3().parse(str);
-            return date;
-        } catch(Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
+        return SpincastStatics.parseISO8601date(str);
     }
 
     @Override
     public Object convertToNativeType(Object originalObject) {
 
-        if(originalObject == null) {
+        if (originalObject == null) {
             return null;
         }
 
         //==========================================
         // Already a native type
         //==========================================
-        if((originalObject instanceof String) ||
-           (originalObject instanceof Integer) ||
-           (originalObject instanceof Long) ||
-           (originalObject instanceof Float) ||
-           (originalObject instanceof Double) ||
-           (originalObject instanceof Boolean) ||
-           (originalObject instanceof BigDecimal) ||
-           (originalObject instanceof byte[]) ||
-           (originalObject instanceof Date) ||
-           (originalObject instanceof JsonObject) ||
-           (originalObject instanceof JsonArray)) {
+        if ((originalObject instanceof String) ||
+            (originalObject instanceof Integer) ||
+            (originalObject instanceof Long) ||
+            (originalObject instanceof Float) ||
+            (originalObject instanceof Double) ||
+            (originalObject instanceof Boolean) ||
+            (originalObject instanceof BigDecimal) ||
+            (originalObject instanceof byte[]) ||
+            (originalObject instanceof Date) ||
+            (originalObject instanceof JsonObject) ||
+            (originalObject instanceof JsonArray)) {
 
             return originalObject;
         }
@@ -768,29 +723,29 @@ public class SpincastJsonManager implements JsonManager {
         //==========================================
         // Array or Collection
         //==========================================
-        if(originalObject instanceof Collection<?>) {
+        if (originalObject instanceof Collection<?>) {
 
             JsonArray array = createArray();
-            for(Object element : (Collection<?>)originalObject) {
+            for (Object element : (Collection<?>)originalObject) {
                 array.add(element);
             }
             return array;
 
-        } else if(originalObject instanceof Object[]) {
+        } else if (originalObject instanceof Object[]) {
 
             JsonArray array = createArray();
-            for(Object element : (Object[])originalObject) {
+            for (Object element : (Object[])originalObject) {
                 array.add(element);
             }
             return array;
 
-        } else if(originalObject instanceof Map) {
+        } else if (originalObject instanceof Map) {
 
             JsonObject obj = create();
 
             Map<?, ?> map = (Map<?, ?>)originalObject;
-            for(Entry<?, ?> entry : map.entrySet()) {
-                if(entry.getKey() == null) {
+            for (Entry<?, ?> entry : map.entrySet()) {
+                if (entry.getKey() == null) {
                     throw new RuntimeException("Cannot convert a Map to a JsonObject when a key is NULL.");
                 }
                 obj.putNoKeyParsing(String.valueOf(entry.getKey()),
@@ -826,52 +781,52 @@ public class SpincastJsonManager implements JsonManager {
     @Override
     public Object clone(Object originalObject, boolean mutable) {
 
-        if(originalObject == null) {
+        if (originalObject == null) {
             return null;
         }
 
-        if((originalObject instanceof String) ||
-           (originalObject instanceof Integer) ||
-           (originalObject instanceof Long) ||
-           (originalObject instanceof Float) ||
-           (originalObject instanceof Double) ||
-           (originalObject instanceof Boolean) ||
-           (originalObject instanceof BigDecimal) ||
-           (originalObject instanceof byte[]) ||
-           (originalObject instanceof Date)) {
+        if ((originalObject instanceof String) ||
+            (originalObject instanceof Integer) ||
+            (originalObject instanceof Long) ||
+            (originalObject instanceof Float) ||
+            (originalObject instanceof Double) ||
+            (originalObject instanceof Boolean) ||
+            (originalObject instanceof BigDecimal) ||
+            (originalObject instanceof byte[]) ||
+            (originalObject instanceof Date)) {
             return originalObject;
 
-        } else if(originalObject instanceof JsonObject) {
+        } else if (originalObject instanceof JsonObject) {
 
             JsonObject jsonObj = (JsonObject)originalObject;
 
             //==========================================
             // Already immutable, no need to clone!
             //==========================================
-            if(!mutable && !jsonObj.isMutable()) {
+            if (!mutable && !jsonObj.isMutable()) {
                 return jsonObj;
             }
 
             Map<String, Object> map = new HashMap<String, Object>();
-            for(Entry<String, Object> entry : jsonObj) {
+            for (Entry<String, Object> entry : jsonObj) {
                 Object elementClone = clone(entry.getValue(), mutable);
                 map.put(entry.getKey(), elementClone);
             }
             return getJsonObjectFactory().create(map, mutable);
 
-        } else if(originalObject instanceof JsonArray) {
+        } else if (originalObject instanceof JsonArray) {
 
             JsonArray array = (JsonArray)originalObject;
 
             //==========================================
             // Already immutable, no need to clone!
             //==========================================
-            if(!mutable && !array.isMutable()) {
+            if (!mutable && !array.isMutable()) {
                 return array;
             }
 
             List<Object> elements = new ArrayList<Object>();
-            for(Object element : array) {
+            for (Object element : array) {
                 Object elementClone = clone(element, mutable);
                 elements.add(elementClone);
             }

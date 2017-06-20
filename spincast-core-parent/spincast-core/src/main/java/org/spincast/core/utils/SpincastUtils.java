@@ -72,13 +72,26 @@ public interface SpincastUtils {
     public boolean isContentTypeToSkipGziping(String contentType);
 
     /**
-     * Returns the working directory: the directory
-     * in which the executable .jar is located.
+     * If the project is running from an executable
+     * .jar file, this will return the directory containing
+     * this .jar file.
      * 
-     * @return the working directory or <code>null</code> if the application is 
-     * running inside an IDE.
+     * @return the directory path or <code>null</code> if the
+     * application is not running from an executable .jar
+     * file.
      */
     public File getAppJarDirectory();
+
+    /**
+     * If the project is not running from an executable
+     * .jar file, this will return the root directory of the
+     * project on the file system.
+     * 
+     * @return the directory path or <code>null</code> if the
+     * application is running from an executable .jar
+     * file.
+     */
+    public File getAppRootDirectoryNoJar();
 
     /**
      * Gets the current Spincast version.

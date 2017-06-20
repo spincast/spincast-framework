@@ -31,7 +31,7 @@ public interface SpincastPebbleTemplatingEngineConfig {
      * <a href="http://www.mitchellbosecke.com/pebble/documentation/tag/cache">more info</a>
      * 
      * @return the max number of items to cache. If <code>&lt;= 0</code>,
-     * thi cache will be disabled.
+     * this cache will be disabled.
      */
     public int getTagCacheTypeItemNbr();
 

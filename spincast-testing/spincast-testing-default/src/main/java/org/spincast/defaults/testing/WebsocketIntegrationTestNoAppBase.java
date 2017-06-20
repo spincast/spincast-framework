@@ -42,23 +42,21 @@ public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext
 
     @Override
     protected Injector createInjector() {
-
-        Module module = new SpincastGuiceModuleBase() {
-
-            @Override
-            protected void configure() {
-                bind(SpincastUndertowConfig.class).toInstance(getSpincastUndertowConfigImplementation());
-            }
-        };
-
-        if(getExtraOverridingModule() != null) {
-            module = Modules.override(module).with(getExtraOverridingModule());
-        }
-
         return Spincast.configure()
-                       .module(module)
-                       .appClass(getClass())
-                       .init();
+                       .bindCurrentClass(false)
+                       .init(new String[]{});
+    }
+
+    @Override
+    protected Module getGuiceTweakerOverridingModule() {
+        return Modules.override(super.getGuiceTweakerOverridingModule())
+                      .with(new SpincastGuiceModuleBase() {
+
+                          @Override
+                          protected void configure() {
+                              bind(SpincastUndertowConfig.class).toInstance(getSpincastUndertowConfigImplementation());
+                          }
+                      });
     }
 
     protected SpincastUndertowConfig getSpincastUndertowConfigImplementation() {
@@ -72,10 +70,6 @@ public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext
                 return getServerPingIntervalSeconds();
             }
         };
-    }
-
-    protected Module getExtraOverridingModule() {
-        return null;
     }
 
     protected final Logger logger = LoggerFactory.getLogger(WebsocketIntegrationTestNoAppBase.class);
@@ -103,7 +97,7 @@ public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext
     protected void closeAllWebsocketEndpoints() {
 
         List<WebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
-        for(WebsocketEndpointManager manager : websocketEndpointManagers) {
+        for (WebsocketEndpointManager manager : websocketEndpointManagers) {
             manager.closeEndpoint(false);
         }
         assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
@@ -116,7 +110,7 @@ public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext
     }
 
     protected String getWebsocketTestExpectedWebsocketV13AcceptHeaderValue() {
-        if(this.expectedWebsocketV13AcceptHeaderValue == null) {
+        if (this.expectedWebsocketV13AcceptHeaderValue == null) {
             this.expectedWebsocketV13AcceptHeaderValue =
                     getSpincastHttpClientUtils().generateExpectedWebsocketV13AcceptHeaderValue(getSecSocketKey());
         }
@@ -128,7 +122,7 @@ public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext
      * Websocket header.
      */
     protected String getSecSocketKey() {
-        if(this.secSocketKey == null) {
+        if (this.secSocketKey == null) {
             this.secSocketKey = UUID.randomUUID().toString();
         }
         return this.secSocketKey;

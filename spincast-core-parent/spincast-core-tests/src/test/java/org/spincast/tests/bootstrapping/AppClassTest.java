@@ -31,7 +31,7 @@ public class AppClassTest {
 
         Spincast.configure()
                 .appClass(AppClass.class)
-                .init();
+                .init(args);
 
         assertFalse(initCalled);
         assertTrue(initNewCalled);

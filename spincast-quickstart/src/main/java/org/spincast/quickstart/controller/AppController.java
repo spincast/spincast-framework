@@ -1,13 +1,9 @@
 package org.spincast.quickstart.controller;
 
-import java.net.URLEncoder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants.RequestScopedVariables;
-import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.exceptions.PublicException;
-import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.json.JsonObject;
 import org.spincast.quickstart.config.AppConfig;
 import org.spincast.quickstart.exchange.AppRequestContext;
@@ -51,57 +47,21 @@ public class AppController {
     }
 
     /**
-     * Movie info handler
+     * Simple Form example handler
      */
-    public void movieInfo(AppRequestContext context) {
+    public void formExample(AppRequestContext context) {
 
-        JsonObject movieInfo = null;
-
-        //==========================================
-        // Do we have a movie to show info for?
-        //==========================================
-        String movieName = context.request().getQueryStringParamFirst("name");
-        if (!StringUtils.isBlank(movieName)) {
-
-            try {
-
-                // We get the movie info from www.omdbapi.com
-                String url = "https://www.omdbapi.com/?t=" + URLEncoder.encode(movieName, "UTF-8") + "&y=&plot=short&r=json";
-
-                movieInfo = context.httpClient().GET(url).send().getContentAsJsonObject();
-
-                // There is no 404 returned. To know if a movie was found,
-                // the "Response" element must be true.
-                boolean responseOk = movieInfo.getBoolean("Response", false);
-                if (!responseOk) {
-                    throw new NotFoundException("This movie was not found!");
-                }
-
-                // Default image if none is provided
-                String poster = movieInfo.getString("Poster", null);
-                if (StringUtils.isBlank(poster) || (!poster.startsWith("http://") && !poster.startsWith("https://"))) {
-                    movieInfo.put("Poster", "/public/images/noPoster.jpg");
-                }
-
-                // Rating may be "N/A"
-                if (!movieInfo.isCanBeConvertedToDouble("imdbRating")) {
-                    movieInfo.put("imdbRating", "");
-                }
-
-            } catch (NotFoundException ex) {
-                throw ex;
-            } catch (Exception ex) {
-                this.logger.error(ex.getMessage());
-                throw new PublicExceptionDefault("Unable to get the movie information... " +
-                                                 "Maybe omdbapi.com's is down or you don't have Internet connection?");
-            }
+        String userName = context.request().getQueryStringParamFirst("userName");
+        String greetings = "";
+        if (!StringUtils.isBlank(userName)) {
+            greetings = "Hi " + userName + "!";
         }
+        context.response().getModel().put("userName", userName);
+        context.response().getModel().put("greetings", greetings);
 
-        context.response().getModel().put("movieInfo", movieInfo);
-        context.response().getModel().put("movieName", movieName);
         addCommonModelElements(context);
 
-        context.response().sendTemplateHtml("/templates/movie.html");
+        context.response().sendTemplateHtml("/templates/form.html");
     }
 
     /**

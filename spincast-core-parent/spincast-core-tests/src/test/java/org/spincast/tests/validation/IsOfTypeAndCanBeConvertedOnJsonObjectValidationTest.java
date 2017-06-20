@@ -2860,7 +2860,7 @@ public class IsOfTypeAndCanBeConvertedOnJsonObjectValidationTest extends Validat
         array.add(null);
         array.add("2016-09-18T18:45+0000");
         array.add(new Date());
-        array.add("2016-09-18");
+        array.add("2016-09");
         array.add("");
         array.add("abc");
         array.add("   ");

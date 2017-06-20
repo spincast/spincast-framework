@@ -71,6 +71,12 @@
 			"date" : "2017-01-08T12:00:00Z",
 			"title" : "Video : Spincast Framework application from scratch in under 3 minutes",
 			"path" : "/news/2017-01-08.html"
+		},
+		{
+			"id" : "14",
+			"date" : "2017-06-20T23:00:00Z",
+			"title" : "Configuring a Spincast application",
+			"path" : "/news/2017-06-20.html"
 		}
 		
 	]

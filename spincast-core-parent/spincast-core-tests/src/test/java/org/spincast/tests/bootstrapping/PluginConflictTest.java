@@ -101,9 +101,9 @@ public class PluginConflictTest {
             Spincast.configure()
                     .plugin(new TestPlugin1())
                     .plugin(new TestPlugin2())
-                    .init();
+                    .init(args);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertFalse(initCalled);
     }

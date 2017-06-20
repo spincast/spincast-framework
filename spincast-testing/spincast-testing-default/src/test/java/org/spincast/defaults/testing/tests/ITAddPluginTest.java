@@ -7,12 +7,11 @@ import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.guice.SpincastPluginBase;
 import org.spincast.core.server.Server;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class ITAddPluginTest extends IntegrationTestAppDefaultContextsBase {
+public class ITAddPluginTest extends NoAppConfigTestClassBase {
 
     public static boolean inited = false;
     public static boolean applied = false;
@@ -51,7 +50,7 @@ public class ITAddPluginTest extends IntegrationTestAppDefaultContextsBase {
     public static class App {
 
         public static void main(String[] args) {
-            Spincast.init();
+            Spincast.init(args);
         }
 
         @Inject

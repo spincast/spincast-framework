@@ -39,9 +39,9 @@ public class DisableDefaultAllTest {
         try {
             Spincast.configure()
                     .disableAllDefaultPlugins()
-                    .init();
+                    .init(args);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertFalse(initCalled);
 
@@ -65,7 +65,7 @@ public class DisableDefaultAllTest {
                 .plugin(new SpincastConfigPlugin())
                 .plugin(new SpincastDictionaryPlugin())
                 .plugin(new SpincastUndertowPlugin())
-                .init();
+                .init(args);
         assertTrue(initCalled);
     }
 

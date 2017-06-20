@@ -3,7 +3,7 @@ package org.spincast.plugins.jacksonjson;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
-import org.spincast.core.json.JsonPathPathUtilsDefault;
+import org.spincast.core.json.JsonPathUtilsDefault;
 import org.spincast.core.json.JsonPathUtils;
 import org.spincast.core.websocket.WebsocketContext;
 
@@ -42,7 +42,7 @@ public class SpincastJacksonJsonPluginModule extends SpincastGuiceModuleBase {
     }
 
     protected Class<? extends JsonPathUtils> getJsonPathUtilsImplClass() {
-        return JsonPathPathUtilsDefault.class;
+        return JsonPathUtilsDefault.class;
     }
 
     protected void bindJsonMixinsMultiBinder() {

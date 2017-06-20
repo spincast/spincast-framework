@@ -23,7 +23,7 @@ import com.google.inject.Scopes;
 public class RequestScopeTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

@@ -8,7 +8,6 @@ import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.plugins.configpropsfile.SpincastConfigPropsFilePlugin;
 import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
@@ -41,10 +40,8 @@ public class App {
 
         Spincast.configure()
                 .module(new AppModule())
-                .plugin(new SpincastConfigPropsFilePlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
-                .mainArgs(args)
-                .init();
+                .init(args);
     }
 
     //==========================================
@@ -183,12 +180,12 @@ public class App {
         try {
 
             String logbackFilePath = "conf/logback.prod.xml";
-            if(getConfig().isDebugEnabled()) {
+            if (getConfig().isDebugEnabled()) {
                 logbackFilePath = "conf/logback.debug.xml";
             }
 
             InputStream logbackFileIn = this.getClass().getClassLoader().getResourceAsStream(logbackFilePath);
-            if(logbackFileIn == null) {
+            if (logbackFileIn == null) {
                 throw new RuntimeException("Logback file not found on the classpath : " + logbackFilePath);
             }
 
@@ -198,7 +195,7 @@ public class App {
             configurator.setContext(context);
             context.reset();
             configurator.doConfigure(logbackFileIn);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -208,10 +205,10 @@ public class App {
         System.out.println();
         System.out.println("====================================================");
 
-        if(getConfig().getHttpServerPort() > 0) {
+        if (getConfig().getHttpServerPort() > 0) {
             System.out.println("Spincast HTTP website started on port " + getConfig().getHttpServerPort());
         }
-        if(getConfig().getHttpsServerPort() > 0) {
+        if (getConfig().getHttpsServerPort() > 0) {
             System.out.println("Spincast HTTPS website started on port " + getConfig().getHttpsServerPort());
         }
 

@@ -17,7 +17,7 @@ import com.google.inject.Module;
 public class XmlPrettyPrintConfigTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

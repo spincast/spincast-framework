@@ -18,7 +18,7 @@ import com.google.inject.Module;
 public class WebsocketServerPingsDisabled extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

@@ -24,7 +24,7 @@ public class CustomRouterNotParameterizedTest extends IntegrationTestNoAppDefaul
 
         return Spincast.configure()
                        .plugin(new SpincastRoutingPlugin(CustomRouter2.class))
-                       .init();
+                       .init(new String[]{});
     }
 
     @Override

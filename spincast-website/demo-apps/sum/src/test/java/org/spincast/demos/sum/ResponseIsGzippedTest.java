@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
-import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.GuiceTweaker;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.core.AppTestingConfigInfo;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Scopes;
 
@@ -19,6 +22,27 @@ public class ResponseIsGzippedTest extends IntegrationTestAppDefaultContextsBase
     @Override
     protected void initApp() {
         App.main(null);
+    }
+
+    @Override
+    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+        return new AppTestingConfigInfo() {
+
+            @Override
+            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
+                return SpincastConfigTestingDefault.class;
+            }
+
+            @Override
+            public Class<?> getAppConfigTestingImplementationClass() {
+                return null;
+            }
+
+            @Override
+            public Class<?> getAppConfigInterface() {
+                return null;
+            }
+        };
     }
 
     /**
@@ -43,7 +67,7 @@ public class ResponseIsGzippedTest extends IntegrationTestAppDefaultContextsBase
 
         GuiceTweaker guiceTweaker = super.createGuiceTweaker();
 
-        guiceTweaker.module(new SpincastGuiceModuleBase() {
+        guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {

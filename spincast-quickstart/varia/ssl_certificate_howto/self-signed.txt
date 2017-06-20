@@ -6,6 +6,8 @@ HTTPS in developement.
 (In production, make sure you use a real certificate!)
 ==========================================
 
+IMPORTANT : Make sure you are using the "keytool" tool of the JDK version you target!
+
 1. Run this Java utility on a command line :
 
     keytool -genkey -alias mycert -keyalg RSA -keysize 2048 -keystore devKeyStore.jks -storepass myStorePass -keypass myKeyPass -validity 9999

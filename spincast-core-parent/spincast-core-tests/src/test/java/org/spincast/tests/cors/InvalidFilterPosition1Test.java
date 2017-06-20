@@ -15,7 +15,7 @@ import com.google.inject.Scopes;
 public class InvalidFilterPosition1Test extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

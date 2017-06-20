@@ -43,6 +43,6 @@ public class UnitTestCustomGuiceInjectorTest extends UnitTestDefaultContextsBase
                                bind(String.class).annotatedWith(Names.named("testing")).toInstance("42");
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 }

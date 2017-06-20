@@ -35,7 +35,7 @@ public class SpincastFunctionsAndFiltersTest extends IntegrationTestNoAppDefault
                                                                                .in(Scopes.SINGLETON);
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
     /**
@@ -77,7 +77,7 @@ public class SpincastFunctionsAndFiltersTest extends IntegrationTestNoAppDefault
             getTemplatingEngine().evaluate("{{nope('user.validation')}}",
                                            model);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -90,7 +90,7 @@ public class SpincastFunctionsAndFiltersTest extends IntegrationTestNoAppDefault
             getTemplatingEngine().evaluate("{{name | nope()}}",
                                            model);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 

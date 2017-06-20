@@ -4,8 +4,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
 import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.utils.ExpectingBeforeClassException;
 import org.spincast.testing.utils.SpincastJUnitRunner;
 
 @RunWith(SpincastJUnitRunner.class)
@@ -20,6 +20,11 @@ public class ExpectingBeforeClassExceptionWithTestsTest implements BeforeAfterCl
     @Override
     public void afterClass() {
         fail();
+    }
+
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
     }
 
     @Test

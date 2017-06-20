@@ -18,8 +18,7 @@ public class App {
                 .module(new AppModule())
                 .plugin(new SpincastHttpClientPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
-                .mainArgs(args)
-                .init();
+                .init(args);
     }
 
     @Inject

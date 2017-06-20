@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.spincast</groupId>
             <artifactId>spincast-shaded-dependencies</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
@@ -45,10 +45,6 @@
                 </exclusion>
                 <exclusion>
                     <groupId>commons-io</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.commonjava.mimeparse</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

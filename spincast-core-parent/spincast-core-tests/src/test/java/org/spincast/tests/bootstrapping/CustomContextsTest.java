@@ -87,7 +87,7 @@ public class CustomContextsTest {
         Injector guice = Spincast.configure()
                                  .requestContextImplementationClass(RequestContextTestingDefault.class)
                                  .websocketContextImplementationClass(WebsocketContextTestingDefault.class)
-                                 .init();
+                                 .init(args);
         assertTrue(initCalled);
 
         instance = guice.getInstance(CustomContextsTest.class);

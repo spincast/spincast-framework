@@ -4,7 +4,6 @@ import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.websocket.WebsocketContext;
-import org.spincast.plugins.routing.DefaultRouter;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -43,25 +42,6 @@ public class Spincast {
     }
 
     /**
-     * Quickly bootstrap a Spincast application using 
-     * the default plugins.
-     * <p>
-     * The caller class is going to be bound in the Guice context.
-     * You may want to add a <code>"@Inject init(...)"</code>
-     * method to it and start your application there.
-     * <p>
-     * The default <code>Request Context</code> type and the
-     * default <code>Websocket Context</code> type will be used.
-     * You can inject and use the {@link DefaultRouter} to add
-     * Routes.
-     * 
-     * @return The create Guice Injector (context).
-     */
-    public static Injector init() {
-        return init(null);
-    }
-
-    /**
      * Initialize a default Spincast application.
      * <p>
      * The caller class is going to be bound in the Guice context.
@@ -79,7 +59,7 @@ public class Spincast {
      * @return The create Guice Injector (context).
      */
     public static Injector init(String[] args) {
-        return configure().mainArgs(args).init();
+        return configure().init(args);
     }
 
     /**

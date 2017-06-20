@@ -58,7 +58,7 @@ public class CustomRequestContextAddonsTest extends IntegrationTestNoAppBase<Tes
                                bind(TestNotSingletonNorRequestScoped.class);
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
     public static class Singleton {

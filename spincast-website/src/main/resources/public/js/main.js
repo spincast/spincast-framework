@@ -144,6 +144,22 @@ app.aceEditor = function(acePre) {
             }
         }
     }
+    
+    // Default error highlighting?
+    rangeStr = $(acePre).attr("data-ace-error");
+    if(rangeStr) {
+
+        var pipeTokens = rangeStr.split("|");
+        for(var i = 0; i < pipeTokens.length; i++) {
+            var pipeToken = pipeTokens[i];
+            var tokens = pipeToken.split(","); 
+            if(tokens && tokens.length == 4) {
+            	var marker = editor.session.addMarker(new app.ace.Range(tokens[0], tokens[1], tokens[2], tokens[3]),'ace_active-line ace-error', 'text'); 
+            	editor.session.addGutterDecoration(tokens[0], 'ace-error-gutter');
+            }
+        }
+    }
+    
 }
 
 app.aceInit = function() {

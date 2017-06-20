@@ -206,7 +206,7 @@ JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
     Spincast.configure()
             .plugin(new SpincastHttpClientPlugin())
             //...
-            .init();
+            .init(args);
 }</pre> 
                         </p>
                     </div>

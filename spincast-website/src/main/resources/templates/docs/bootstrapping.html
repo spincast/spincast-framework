@@ -38,15 +38,15 @@ Docs : "bootstrapping"
         </h4>
 
         <p> 
-             The quickest way to initialize a Spincast application is to call <code>Spincast.init()</code> :
+             The quickest way to initialize a Spincast application is to call <code>Spincast.init(args)</code> :
             
             <div>
                 <p>
-                    <pre class="ace ace-java" data-ace-hi="3,8,3,23"
+                    <pre class="ace ace-java" data-ace-hi="3,8,3,27"
 >public class App {
 
     public static void main(String[] args) {
-        Spincast.init();
+        Spincast.init(args);
     }
     
     // ...
@@ -67,7 +67,7 @@ Docs : "bootstrapping"
 >public class App {
 
     public static void main(String[] args) {
-        Spincast.init();
+        Spincast.init(args);
     }
     
     @Inject
@@ -86,7 +86,7 @@ Docs : "bootstrapping"
             On that page, you can download the sources and run the application by yourself.
         </p> 
         <p> 
-            Finally, note that <code>Spincast.init()</code> in fact creates a default <a href="#boot_bootstrapper">Bootstrapper</a>
+            Finally, note that <code>Spincast.init(args)</code> in fact creates a default <a href="#boot_bootstrapper">Bootstrapper</a>
             under the hood. We will now see how you can configure this bootstrapper <em>explicitly</em> to have more control 
             over your application initialization...
         </p> 
@@ -99,12 +99,12 @@ Docs : "bootstrapping"
             The Bootstrapper
         </h4>
         <p> 
-            In most cases, you need more control than simply calling <code>Spincast.init()</code>. 
+            In most cases, you need more control than simply calling <code>Spincast.init(args)</code>. 
             You want to be able to add custom modules to the Guice context, to add extra plugins, etc.
         </p> 
         <p>
             You do so by using <code>Spincast.configure()</code> instead of 
-            <code>Spincast.init()</code>. This starts a bootstrapper to help
+            <code>Spincast.init(args)</code>. This starts a bootstrapper to help
             configure your application before it is started. Let's see an example :
             
             <div>
@@ -116,8 +116,7 @@ Docs : "bootstrapping"
             .module(new AppModule())
             .plugin(new SpincastHttpClientPlugin())
             .requestContextImplementationClass(AppRequestContextDefault.class)
-            .mainArgs(args)
-            .init();
+            .init(args);
     //....
 }</pre> 
                 </p>
@@ -126,7 +125,7 @@ Docs : "bootstrapping"
                     <ul>
                         <li>
                             <span class="code-line-nbr">3</span> : We start the bootstrapper by calling 
-                            <code>.configure()</code> instead of <code>.init()</code>!
+                            <code>.configure()</code> instead of <code>.init(args)</code>!
                         </li>
                         <li>
                             <span class="code-line-nbr">4</span> : We add a custom Guice module so
@@ -140,12 +139,9 @@ Docs : "bootstrapping"
                             <a href="/documentation#extending_request_context">custom Request Context</a> type.
                         </li>
                         <li>
-                            <span class="code-line-nbr">7</span> : We bind the arguments received in the
-                            <code>main(...)</code> method to the Guice context.
-                        </li>
-                        <li>
-                            <span class="code-line-nbr">8</span> : We finally call <code>.init()</code> so the Guice
-                            context is created, the current class is bound and then loaded.
+                            <span class="code-line-nbr">7</span> : We finally call <code>.init(args)</code> so the Guice
+                            context is created, the current class is bound and then loaded. We also use this method to bind 
+                            the arguments received in the <code>main(...)</code> method to the Guice context.
                         </li>
                     </ul>
                 </p> 
@@ -198,11 +194,6 @@ Docs : "bootstrapping"
                     You need to pass as a parameter the <em>implementation</em> class of your 
                     custom WebSocket Context type. Calling this method is mandatory if you are using
                     a custom WebSocket Context type!
-                </li>
-                <li>
-                    <code><strong>mainArgs(...)</strong></code> : To bind the arguments received in the
-                    <code>main(...)</code> method. They will then be available for injection
-                    using the <code>@MainArgs String[]</code> key.
                 </li>
                 <li>
                     <code><strong>bindCurrentClass(...)</strong></code> : By default,

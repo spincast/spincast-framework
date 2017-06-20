@@ -16,7 +16,7 @@ import com.google.inject.Scopes;
 public class CustomFrontControllerTest extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

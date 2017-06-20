@@ -47,4 +47,9 @@ public class BeforeAfterClassMethodsProviderTest implements BeforeAfterClassMeth
         assertEquals(0, nbrInAfterClass);
     }
 
+    @Override
+    public void beforeClassException(Throwable ex) {
+        // ok
+    }
+
 }

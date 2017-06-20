@@ -23,4 +23,14 @@ public interface BeforeAfterClassMethodsProvider {
      */
     public void afterClass();
 
+    /**
+     * This method will be called if an exception occures during
+     * the {@link #beforeClass} execution.
+     * 
+     * Be careful!! Here, you are pretty much certain that
+     * the instanciation of the class was not succesful, so you
+     * can't use any of its methods! 
+     */
+    public void beforeClassException(Throwable ex);
+
 }

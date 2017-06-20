@@ -13,6 +13,9 @@
 
   `mvn clean package`
 
+- If you want to be able to modify the configurations on a specific environment, copy the
+*src/main/resources/app-config.yaml* file to the "target" directory and tweak it.
+Otherwise, the version of this file on the classpath will be used! 
 
 - Launch the application :  
 

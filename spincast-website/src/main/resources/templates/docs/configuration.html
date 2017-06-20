@@ -1,0 +1,684 @@
+{#==========================================
+Docs : "configuration"
+==========================================#}
+
+<section id="configuration">
+
+    <h3>
+        <a class="anchor" href="#configuration" title="permanent link"></a>
+        Configuration
+    </h3>
+    <p>
+    	Spincast doesn't force you to configure your application in a specific way, but does  
+    	<a href="#config_strategy">suggest a strategy</a>. The only requirement is that
+    	in order to modify the configurations <em>used by the internals of Spincast itself</em> 
+    	(for example the <code>port</code> the server is going to be started with), you need to bind 
+    	a custom implementation for the 
+    	<a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> 
+    	interface. Spincast retrieves the values to use for its configurations through this interface. 
+	</p>
+	<p>
+    	If you don't bind a custom implementation for that <code>SpincastConfig</code> interface, a 
+    	<a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigDefault.java">default one</a>
+    	will be used and will provide default values.
+	</p>
+
+    <h4>
+        <a class="anchor_small" href="#config_strategy" id="config_strategy" title="permanent link"></a>
+        Configuration strategy - introduction
+    </h4>
+	<p>
+		The strategy we suggest to configure your application allows you to both modify the default configurations and add
+		specific configurations to your application <em>in a single location</em>. This strategy involves creating a 
+		standard Java class with getter methods for each configuration that is needed. 
+	</p>
+	
+	<p>
+		Compared to a simple <code>.properties</code> based configuration strategy, a class based one
+		requires more work (since you do have to define a getter method for each configuration), 
+		but comes with three big advantages :
+		
+		<ul>
+			<li>
+				The configurations are <em>typed</em>, preventing many errors :
+				
+		        <div>
+		            <p>
+		                <pre class="ace ace-java" data-ace-error="1,12,1,33"
+>// Doesn't compile! The "getServerHost()" getter returns a String.
+int port = configs.getServerHost();</pre> 
+		            </p>
+		        </div>
+		        Compare this nice compile time error to a simple <code>.properties</code> based configuration
+				that will fail <em>at runtime</em> :
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>// Compiles... But boom at runtime!
+int port = (int)properties.get("server.host");</pre> 
+		             </p>
+		         </div>
+			</li>
+			<li>
+				The creation of a configuration value can involve complex logic 
+				(caching the generated value is easy to implement too).
+				
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>// Some configuration getter...
+public int getHttpServerPort() {
+
+	// We use another configuration to create the value
+	// of this one! You can use any logic you need...
+	if("local".equals(getEnvironmentName())) {
+		return 12345;
+	} else {
+		return 80;
+	}
+}</pre> 
+		             </p>
+		         </div>
+			</li>
+			<li>
+				A configuration can be of any type, not only String, Booleans and Numbers.
+				
+		        <div>
+		            <p>
+		                <pre class="ace ace-java"
+>// A configuration getter that returns a File object
+public File getSpincastWritableDir() {
+	// ...
+}</pre> 
+		             </p>
+		         </div>
+				
+			</li>
+		</ul>
+	</p>
+	
+    <h4>
+        <a class="anchor_small" href="#config_strategy_components" id="config_strategy_components" title="permanent link"></a>
+        Configuration strategy - components
+    </h4>
+	<p>
+	
+	</p>
+	
+	<p>
+		The first step is to create a custom <code>AppConfig</code> interface that extends
+		<a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> :
+		
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="1,27,1,49"
+>
+
+public interface AppConfig extends SpincastConfig {
+
+    /**
+     * An app specific configuration
+     */
+    public String getSomeAppConfiguration();
+
+    /**
+     * Another app specific configuration
+     */
+    public int getAnotherAppConfiguration();
+}</pre> 
+             </p>
+         </div>
+
+		And then create an implementation that implements your custom interface and extends
+		the Spincast provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a> implementation :
+	
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="1,30,1,80"
+>
+
+public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
+
+    /**
+     * An app specific configuration
+     */
+    public String getSomeAppConfiguration() { ... }
+
+    /**
+     * Another app specific configuration
+     */
+    public int getAnotherAppConfiguration() { ... }
+    
+    /**
+     * Overrides a default Spincast configuration too!
+     */
+    @Override
+    public int getHttpServerPort() {
+        return 12345;
+    }
+}</pre> 
+             </p>
+         </div>
+	</p>
+	<p>
+         Finally, you add the associated bindings to your Guice module :
+         
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,8,5,78"
+>public class AppModule extends SpincastGuiceModuleBase {
+
+    @Override
+    protected void configure() {
+
+        bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
+        
+        //...
+    }
+}</pre> 
+             </p>
+         </div>
+         
+         Note that Spincast will detect that a custom implementation of the <code>SpincastConfig</code>
+         interface has been bound, and will automatically adjust the binding for this interface. You can bind <code>SpincastConfig</code>
+         to <code>AppConfigDefault</code> by yourself if you want, but it is not required.
+	</p>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+		Have a look at the <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/java/org/spincast/website/AppConfigDefault.java">configuration</a> 
+		of this very website for an example of how this strategy looks like!
+	</p>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+		Be careful with the dependencies you inject in your implementation class : the configurations are
+		used by a lot of other components and it is therefore easy to create circular dependencies. One dependency
+		that you <em>can</em> inject without any problem, and that is often useful in a configuration
+		class, is the <a href="#main_args">application arguments</a>.
+	</p>
+	
+    <h4>
+        <a class="anchor_small" href="#config_strategy_implementation" id="config_strategy_implementation" title="permanent link"></a>
+        Configuration strategy - implementation
+    </h4>
+	<p>
+		By using the strategy above, so by extending the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a>
+		base class, you also extend the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/ConfigFinder.html">ConfigFinder</a> base class
+		and get access to a lot of useful features to help you build your configuration. In particular, you gain
+		access to an easy way to <em>externalize</em> the values of your configurations (ie : have different configurations depending on the
+		environment the application runs on).
+	</p>
+	<p>
+		We'll see in the next section, <a href="#config_strategy_plugin_config">Configuring the config plugin</a>, that the way
+		Spincast searches for external configurations is fully configurable.
+	</p>
+	
+    <h5>
+        <a class="anchor_small" href="#config_strategy_externalize" id="config_strategy_externalize" title="permanent link"></a>
+        Making configurations externalizable
+    </h5>
+	
+	<p>
+		To make configurations externalizable, the first thing to do in your implementation class is
+		to remove any hardcoded values and, instead, use the provided <em>getters</em>.
+		Those special getters are provided by the
+		<a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/ConfigFinder.html">ConfigFinder</a>
+		class, from which <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigDefault.html">SpincastConfigDefault</a>
+		extends. There are multiple getters, depending on the type of the configuration.
+	</p>
+	<p>
+		For example, in your implementation class, instead of this hardcoded value :
+		
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="14,15,14,20"
+>public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
+
+    @Inject
+    public AppConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+        super(spincastConfigPluginConfig);
+    }
+
+	/**
+	 * The HTTP server port to use
+	 */
+    @Override
+    public int getHttpServerPort() {
+    	
+    	// Hardcoded value!
+        return 12345;
+    }
+    
+    // ...
+}</pre> 
+             </p>
+         </div>
+         
+         You would instead use the provided <code>getInteger(...)</code> method, so the "port" configuration is
+         externalized :
+         
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="16,15,16,47"
+>public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
+
+    @Inject
+    public AppConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+        super(spincastConfigPluginConfig);
+    }
+
+	/**
+	 * The HTTP server port to use
+	 */
+    @Override
+    public int getHttpServerPort() {
+    
+    	// Makes this configuration externalizable
+    	// and provides a default value in case no
+    	// external value is found.
+        return getInteger("server.port", 12345);
+    }
+    
+    // ...
+}</pre> 
+             </p>
+         </div>
+	</p>
+	<p>
+		By using the special getters provided by the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/ConfigFinder.html">ConfigFinder</a>
+		base class, your configuration is now externalized. A getter
+		is provided for all common types : <code>String</code>, <code>Boolean</code>, <code>Integer</code>,
+		<code>Long</code>, <code>BigDecimal</code> and <code>Date</code>. 
+	</p>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+		Note that <code>date</code> configuration values must be using a valid <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a> format.
+	</p>
+	
+    <h5>
+        <a class="anchor_small" href="#config_strategy_sources" id="config_strategy_sources" title="permanent link"></a>
+        The sources of configuration values
+    </h5>
+	
+	<p>
+		Spincast will load externalized configurations from various sources, each source overriding the previous one, if
+		a same configuration is found in both :
+
+		<ol>
+			<li>
+				<div>
+					If you don't override a Spincast configuration defined in <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a>,
+					the <em>default value</em> hardcoded in <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigDefault.java">SpincastConfigDefault</a>
+					will be used.
+				</div>
+			</li>
+			<li>
+				<div>
+					If you override a Spincast configuration, but you hardcode it in your implementation class, the configuration is
+					not externalizable and the hardcoded value will be used.
+				</div>
+			</li>
+			<li>
+				<div>
+					An <code>app-config.yaml</code> file is looked for <em>on the classpath</em>. This is where you generally will place
+					the default values of your externalizable configurations.
+				</div>
+			</li>
+			<li>
+				<div>
+					If your application is running from an executable <code>.jar</code>, Spincast will check if a <code>app-config.yaml</code>
+					file exists <em>next to it</em>. If your application is not running from an executable <code>.jar</code> (for example
+					it is launched in an IDE), Spincast will check if a <code>app-config.yaml</code>
+					file exists at the root of the project.	
+				</div>
+			</li>
+			<li>
+				<div>
+					<code>Environnement variables</code> will be checked to see if some configurations are defined there.
+					An environment variable must start with	"<code>app.</code>" to be considered as a configuration
+					for a Spincast application. This prefix is configurable.
+				</div>
+			</li>
+			<li>
+				<div>
+					<code>System properties</code> will be checked to see if some configurations have been passed to the application
+					when launched. 
+					An system property must start with	"<code>app.</code>" to be considered as a configuration
+					for a Spincast application. This prefix is configurable.
+					System properties have the highest priority and overrides any existing configurations (except
+					of course for hardcoded/non-externalized configurations).
+				</div>
+			</li>
+		</ol>
+	</p>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+		Both <code>environment variables</code> and <code>system properties</code> can have multiple <em>prefixes</em>.
+		In association with the feature that can strip those prefixes when getting the configurations (see next section), 
+		this allows you to define variables for more than one application <em>on the same server</em>. For example, you could
+		have those environment variables :
+		<ul>
+			<li>
+				<code>app1.admin.email.address = user1@example.com</code>
+			</li>
+			<li>
+				<code>app2.admin.email.address = user2@example.com</code>
+			</li>
+			<li>
+				<code>common.admin.email.format = html</code>
+			</li>
+		</ul>
+		By configuring the environment variable prefixes of a first application as being "<em>app1</em>" and
+		"<em>common</em>", and the prefixes of a second application as being "<em>app2</em>" and
+		"<em>common</em>", you can have both application specific variables <em>and</em> common
+		variables.
+	</p>
+	
+    <h5>
+        <a class="anchor_small" href="#config_strategy_file_example" id="config_strategy_file_example" title="permanent link"></a>
+        Configuration file example
+    </h5>
+	<p>
+		Here's an example of a <code>app-config.yaml</code> file that could be used as a source of externalized configurations :
+		
+        <div>
+            <p>
+                <pre class="ace ace-yaml"
+>
+app:
+	name: My Super app
+	  
+	api:
+	  base: https://www.myApp.com
+	  
+	databases:
+	  bd1:
+	    host: dbHost.com
+	    port: 12345
+	    username: myDbUser
+	    password: # Empty! Must be provided at runtime...
+</pre> 
+            </p>
+        </div>
+	</p>
+	<p>
+		Then in your <code>AppConfigDefault</code> class, you could access the port for the
+		"db1" database using :
+		
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>@Override
+public int getDb1Port() {
+    return getInteger("app.databases.bd1.port");
+}</pre> 
+            </p>
+        </div>
+	</p>
+	<p>
+		<img class="inlineIcon" src="/public/images/icons/tipy.png" />
+		In this example, the <em>password</em> for the "db1" database will have to be defined as an
+		environment variable, or using any other mechanism that doesn't require the password to be defined as
+		plain text and be committed to your version control system (which would be a really bad idea)! Since the configuration
+		values are retrieved using standard Java methods, you can implement any mechanism you want in order to
+		retrieve such "secret" configurations.
+	</p>
+	
+    <h4>
+        <a class="anchor_small" href="#config_strategy_plugin_config" id="config_strategy_plugin_config" title="permanent link"></a>
+        Configuring the config plugin
+    </h4>
+	<p>
+		The steps described in the <a href="#config_strategy_sources">sources of configuration values</a> section are configurable.
+		You configure the way the <a href="/plugins/spincast-config">Spincast Config plugin</a> works by binding a custom implementation of
+		the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/config/SpincastConfigPluginConfig.html">SpincastConfigPluginConfig</a>
+		interface.
+		If you don't bind a custom implementation for this interface, a default implementation, 
+		<a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-config-parent/spincast-plugins-config/src/main/java/org/spincast/plugins/config/SpincastConfigPluginConfigDefault.java">SpincastConfigPluginConfigDefault</a>,
+		will be used.
+	</p>
+	<p>
+		Those are the methods you can tweak :
+		
+        <ul class="apiList">
+			<li>
+			    <code class="apiItem">String <span>getClasspathFilePath</span>()</code>
+			    <div class="well">
+			        The path to a configuration file to load from the classpath.
+					 <p>
+					 Defaults to "<code>app-config.yaml</code>". This means you can simply create that file
+					 in your project's <code>/src/main/resources/</code> folder and it
+					 will be used.
+			
+					 <div class="apiItemFooter">
+						 @return the classpath path or <code>null</code> to
+						 disable this configuration source.
+			        </div>
+			
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">String <span>getExternalFilePath</span>()</code>
+			    <div class="well">
+			        The path to a configuration file to load from the file system.
+					 <p>
+					 The path can be relative or absolute. Spincast will check this using :
+					 
+			        <div>
+			            <p>
+			                <pre class="ace ace-java"
+>File configFile = new File(thePath);
+if(configFile.isAbsolute()) {
+    // ...
+}</pre> 
+			             </p>
+			         </div>
+					 
+					 <p>
+					 If the path is relative, it is from the executable .jar or, if not run
+					 from a .jar, from the root of the project.
+					 <p>
+					 Defaults to "<code>app-config.yaml</code>".
+					 
+					 <div class="apiItemFooter">
+						 @return the path or <code>null</code> to
+						 disable this configuration source.
+			        </div>
+					 
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">List&lt;String&gt; <span>getEnvironmentVariablesPrefixes</span>()</code>
+			    <div class="well">
+			         The allowed prefixes an environment variable can have
+					 to be used as a configuration.
+					 <p>
+					 Defaults to <code>"app."</code> only.
+					
+					        <div class="apiItemFooter">
+					            @return the allowed prefixes or <code>null</code> to
+					 disable environment variables as a source for configurations.
+			
+			        </div>
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">boolean <span>isEnvironmentVariablesStripPrefix</span>()</code>
+			    <div class="well">
+					Should the prefix of an environment variable be stripped?
+					For example, if <code>environmentVariablesPrefixes()</code> indicates
+					that <code>"app."</code> is an environment variable prefix, then "app.admin.email"
+					will result in a "admin.email" key.
+					<p>
+					Note that each environment variable key must be unique once the prefixes are stripped,
+					otherwise an exception will be thrown when the application starts!
+					<p>
+					Defaults to <code>false</code>.
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">List&lt;String&gt; <span>getSystemPropertiesPrefixes</span>()</code>
+			    <div class="well">
+			         The allowed prefixes a system property can have
+					 to be used as a configuration.
+					 <p>
+					 Defaults to <code>"app."</code> only.
+					
+					 <div class="apiItemFooter">
+						 @return the allowed prefixes or <code>null</code> to
+						 disable system properties as a source for configurations.
+			        </div>
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">boolean <span>isSystemPropertiesStripPrefix</span>()</code>
+			    <div class="well">
+					Should the prefix of an system property be stripped?
+					For example, if <code>systemPropertiesPrefixes()</code> indicates
+					that <code>"app."</code> is an system property prefix, then "app.admin.email"
+					will result in a "admin.email" key.
+					<p>
+					Note that each system properties key must be unique once the prefixes are stripped,
+					otherwise an exception will be thrown when the application starts!
+					<p>
+					Defaults to <code>false</code>.
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">boolean <span>isExternalFileConfigsOverrideEnvironmentVariables</span>()</code>
+			    <div class="well">
+			         If an external configuration file is used and
+					 environment variables too, should configurations
+					 from the file override those from environment variables?
+					 <p>
+					 The default is <code>false</code> : environment
+					 variables have priority.
+			
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">boolean <span>isThrowExceptionIfSpecifiedClasspathConfigFileIsNotFound</span>()</code>
+			    <div class="well">
+			         Should an exception be thrown if a classpath config file is specified
+					 (is not <code>null</code>) but is not found.
+					 <p>
+					 If set to <code>false</code>, a message will be logged but no
+					 exception will be thrown.
+					 <p>
+					 Defaults to <code>false</code>.
+			
+			    </div>
+			</li>
+			
+			<li>
+			    <code class="apiItem">boolean <span>isThrowExceptionIfSpecifiedExternalConfigFileIsNotFound</span>()</code>
+			    <div class="well">
+			         Should an exception be thrown if an external config file is specified
+					 (is not <code>null</code>) but is not found.
+					 <p>
+					 If set to <code>false</code>, a message will be logged but no
+					 exception will be thrown.
+					 <p>
+					 Defaults to <code>false</code>.
+			    </div>
+			</li>
+        </ul>
+	</p>
+	
+   
+    <h4>
+        <a class="anchor_small" href="#config_core" id="config_core" title="permanent link"></a>
+        Core Configurations
+    </h4>
+    
+    <p>
+        To know all the core configurations required by Spincast,
+        have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a> javadoc. 
+        Here, we're simply going to introduce the most important ones, and their default value :
+    </p>
+    <p>
+        <ul>
+            <li>
+                <code>getPublicUrlBase()</code> : This configuration is
+                very important and <strong class="underline">you should override it in your application</strong> and adjust
+                it from environment to environment! It tells Spincast what is the 
+                <em>base public URL</em> used to reach your application. 
+                For example, your application may be accessed using a URL such as
+                <code>http://www.example.com</code> but can in fact be behind a reverse-router 
+                and actually started on the <code>"localhost"</code> host and on 
+                port <code>"12345"</code>.
+                The problem is that the public base URL (<code>"http://www.example.com"</code>) <em>can't</em> be 
+                automatically found, but Spincast still requires it to :
+                <ul>
+                    <li>
+                        Generate an absolute URL for a link to provide to the user.
+                    </li>
+                    <li>
+                        Set a cookie using the appropriated domain.
+                    </li>
+                </ul>
+                <p>
+                <img class="inlineIcon" src="/public/images/icons/para.png" />
+                By default, the <code>getPublicUrlBase()</code> configuration
+                will be <code>"http://localhost:44419"</code>. This default can be used for development 
+                purposes, but <em>very should</em> be changed when releasing to another environment.
+                <p>
+                It is so important to override this configuration that Spincast has a validation
+                in place : when an application starts, an exception will be thrown if those
+                conditions are all meet :
+                <ul>
+                    <li>
+                        The <code>environment name</code> is not "local".
+                    </li>
+                    <li>
+                        <code>isDebugEnabled()</code> configuration returns <code>false</code>.
+                    </li>
+                    <li>
+                        The <code>public host</code> is still <code>"localhost"</code>.
+                    </li>
+                </ul>
+                In other words, Spincast tries to catch the case where an application
+                is running anywhere else than locally, without the default public base URL
+                ajusted.
+                <p>
+                Note that you can disable this startup validation using the 
+                <code>isValidateLocalhostHost()</code> configuration.
+            </li>
+            <li>
+                <code>getServerHost()</code> : The host/IP the HTTP Server
+                will listen on. The default is <code>0.0.0.0</code>, which
+                means the Server will listen on any IP.
+            </li>
+            <li>
+                <code>getHttpServerPort()</code> : The port the Server
+                will listen to for <code>HTTP</code> <em>(unsecure)</em> requests.
+                If <code>&lt;= 0</code>, the Server won't listen on <code>HTTP</code> requests.
+            </li>
+            <li>
+                <code>getHttpsServerPort()</code> : The port the Server
+                will listen to for <code>HTTPS</code> <em>(secure)</em> requests.
+                If <code>&lt;= 0</code>, the Server won't listen on <code>HTTPS</code> requests.
+                If you use <code>HTTPS</code>, you also have to provide some extra
+                configurations related to the <code class="block">SSL</code>
+                certificate to use.
+            </li>
+            <li>
+                <code>isDebugEnabled()</code> : If <code>true</code>,
+                a <em>development</em> environment is taken for granted, and
+                internal error messages may be displayed publicly, no cache will be
+                used for the templates, etc. The default is <code>true</code>, so make
+                sure you change this to <code>false</code> before deploying to
+                production!
+            </li>
+        </ul>
+    </p>
+
+
+
+</section>  

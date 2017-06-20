@@ -36,7 +36,7 @@ public class CustomServerTest extends IntegrationTestNoAppDefaultContextsBase {
                                bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
     //==========================================

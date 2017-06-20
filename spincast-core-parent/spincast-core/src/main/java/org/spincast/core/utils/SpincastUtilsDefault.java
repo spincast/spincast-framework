@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -27,6 +30,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 
 import com.google.inject.Inject;
 
@@ -43,8 +47,14 @@ public class SpincastUtilsDefault implements SpincastUtils {
     private final SpincastConfig spincastConfig;
 
     private Map<String, String> extensionToMimeTypeMap;
-    private File appJarDir = null;
-    private boolean appJarDirComputed = false;
+
+    private File appJarDirectory;
+    private boolean appJarDirectoryChecked;
+    private final Object appJarDirectoryLock = new Object();
+
+    private File appRootDirectoryNoJar;
+    private boolean appRootDirectoryNoJarChecked;
+    private final Object appRootDirectoryNoJarLock = new Object();
 
     @Inject
     public SpincastUtilsDefault(SpincastConfig spincastConfig) {
@@ -58,22 +68,22 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public boolean isContentTypeToSkipGziping(String contentType) {
 
-        if(StringUtils.isBlank(contentType)) {
+        if (StringUtils.isBlank(contentType)) {
             return false;
         }
         contentType = contentType.toLowerCase();
 
         List<String> contentTypesToSkip = getSpincastConfig().getContentTypesToSkipGziping();
-        if(contentTypesToSkip != null && contentTypesToSkip.size() > 0) {
-            for(String contentTypeToSkip : contentTypesToSkip) {
-                if(contentTypeToSkip.endsWith("*")) {
+        if (contentTypesToSkip != null && contentTypesToSkip.size() > 0) {
+            for (String contentTypeToSkip : contentTypesToSkip) {
+                if (contentTypeToSkip.endsWith("*")) {
                     contentTypeToSkip = contentTypeToSkip.substring(0, contentTypeToSkip.length() - 1);
-                    if(contentType.startsWith(contentTypeToSkip)) {
+                    if (contentType.startsWith(contentTypeToSkip)) {
                         return true;
                     }
-                } else if(contentType.equals(contentTypeToSkip) ||
-                          contentType.startsWith(contentTypeToSkip + " ") ||
-                          contentType.startsWith(contentTypeToSkip + ";")) {
+                } else if (contentType.equals(contentTypeToSkip) ||
+                           contentType.startsWith(contentTypeToSkip + " ") ||
+                           contentType.startsWith(contentTypeToSkip + ";")) {
                     return true;
                 }
             }
@@ -89,16 +99,16 @@ public class SpincastUtilsDefault implements SpincastUtils {
         //==========================================
         // Content-Type header defined, we use this.
         //==========================================
-        if(responseContentTypeHeader != null) {
+        if (responseContentTypeHeader != null) {
             return responseContentTypeHeader;
         }
 
         //==========================================
         // Check the target file extension.
         //==========================================
-        if(resourcePath != null) {
+        if (resourcePath != null) {
             String mimeType = getMimeTypeFromPath(resourcePath);
-            if(mimeType != null) {
+            if (mimeType != null) {
                 return mimeType;
             }
         }
@@ -108,7 +118,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
         // "/image" for example can point to an ".png".
         //==========================================
         String contentTypeFound = getMimeTypeFromPath(requestPath);
-        if(contentTypeFound != null) {
+        if (contentTypeFound != null) {
             return contentTypeFound;
         }
 
@@ -118,11 +128,11 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String getMimeTypeFromPath(String path) {
 
-        if(StringUtils.isBlank(path)) {
+        if (StringUtils.isBlank(path)) {
             return null;
         }
         int index = path.lastIndexOf('.');
-        if(index != -1 && index != path.length() - 1) {
+        if (index != -1 && index != path.length() - 1) {
 
             String extension = path.substring(index + 1);
 
@@ -135,16 +145,16 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String getMimeTypeFromExtension(String extension) {
 
-        if(StringUtils.isBlank(extension)) {
+        if (StringUtils.isBlank(extension)) {
             return null;
         }
         extension = extension.trim();
-        if(extension.startsWith(".")) {
+        if (extension.startsWith(".")) {
             extension = extension.substring(1);
         }
         extension = extension.toLowerCase();
 
-        if(this.extensionToMimeTypeMap == null) {
+        if (this.extensionToMimeTypeMap == null) {
 
             this.extensionToMimeTypeMap = new HashMap<String, String>();
 
@@ -296,7 +306,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public Locale getLocaleBestMatchFromAcceptLanguageHeader(String header) {
 
-        if(StringUtils.isBlank(header)) {
+        if (StringUtils.isBlank(header)) {
             return null;
         }
 
@@ -305,13 +315,13 @@ public class SpincastUtilsDefault implements SpincastUtils {
             Double bestQ = Double.MIN_VALUE;
 
             // Based on http://stackoverflow.com/a/12141151/843699
-            for(String str : header.split(",")) {
+            for (String str : header.split(",")) {
                 String[] arr = str.trim().replace("-", "_").split(";");
 
                 //Parse the locale
                 Locale locale = null;
                 String[] l = arr[0].split("_");
-                switch(l.length) {
+                switch (l.length) {
                     case 2 :
                         locale = new Locale(l[0], l[1]);
                         break;
@@ -325,22 +335,22 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
                 //Parse the q-value
                 Double q = 1.0D;
-                for(String s : arr) {
+                for (String s : arr) {
                     s = s.trim();
-                    if(s.startsWith("q=")) {
+                    if (s.startsWith("q=")) {
                         q = Double.parseDouble(s.substring(2).trim());
                         break;
                     }
                 }
 
-                if(q > bestQ) {
+                if (q > bestQ) {
                     bestQ = q;
                     bestLocale = locale;
                 }
             }
 
             return bestLocale;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             this.logger.warn("Unable to parse the \"Accept-Language\" HTTP header : " + header);
             return null;
         }
@@ -349,33 +359,95 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public File getAppJarDirectory() {
 
-        if(!this.appJarDirComputed) {
-            this.appJarDirComputed = true;
+        if (!this.appJarDirectoryChecked) {
+            synchronized (this.appJarDirectoryLock) {
+                if (!this.appJarDirectoryChecked) {
+                    this.appJarDirectoryChecked = true;
 
-            try {
+                    try {
 
-                String jarPath = SpincastUtilsDefault.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-                if(jarPath == null) {
-                    throw new RuntimeException("Unable to get the .jar path!");
-                }
+                        String jarPath = SpincastUtilsDefault.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+                        if (jarPath == null) {
+                            throw new RuntimeException("Unable to get the path of " + SpincastUtilsDefault.class.getName() + "!");
+                        }
 
-                jarPath = URLDecoder.decode(jarPath, "UTF-8");
-                if(jarPath.toLowerCase().endsWith(".jar")) {
-                    File jarFile = new File(jarPath);
-                    if(!jarFile.isFile()) {
-                        throw new RuntimeException("This is supposed to be a file : " + jarFile.getAbsolutePath());
+                        jarPath = URLDecoder.decode(jarPath, "UTF-8");
+                        if (jarPath.toLowerCase().endsWith(".jar")) {
+                            File jarFile = new File(jarPath);
+                            if (!jarFile.isFile()) {
+                                throw new RuntimeException("This is supposed to be a file : " + jarFile.getAbsolutePath());
+                            }
+
+                            //==========================================
+                            // We also use a class which is not from the
+                            // same "core" artifact to make sure everything
+                            // is running from a single executable jar!
+                            // "MIMEParse" is from "spincast-shaded-dependencies".
+                            //==========================================
+                            String jar2Path = MIMEParse.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+                            if (jar2Path == null) {
+                                throw new RuntimeException("Unable to get the path of " + MIMEParse.class.getName() + "!");
+                            }
+                            jar2Path = URLDecoder.decode(jar2Path, "UTF-8");
+
+                            if (!jarPath.equals(jar2Path)) {
+                                this.logger.warn("Not inside a single executable jar.");
+                            } else {
+
+                                String manifestPath = "jar:file:" + jarPath + "!/META-INF/MANIFEST.MF";
+                                Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+                                Attributes attr = manifest.getMainAttributes();
+                                String mainClass = attr.getValue("Main-Class");
+                                if (mainClass == null) {
+                                    this.logger.warn("Not inside an executable jar : " + jarFile.getAbsolutePath());
+                                } else {
+                                    File appJarDir = jarFile.getParentFile();
+                                    if (!appJarDir.isDirectory()) {
+                                        throw new RuntimeException("This is supposed to be a directory : " +
+                                                                   appJarDir.getAbsolutePath());
+                                    }
+                                    this.appJarDirectory = appJarDir;
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        throw SpincastStatics.runtimize(ex);
                     }
-                    this.appJarDir = jarFile.getParentFile();
-                    if(!this.appJarDir.isDirectory()) {
-                        throw new RuntimeException("This is supposed to be a directory : " +
-                                                   this.appJarDir.getAbsolutePath());
-                    }
                 }
-            } catch(Exception ex) {
-                throw SpincastStatics.runtimize(ex);
             }
         }
-        return this.appJarDir;
+
+        return this.appJarDirectory;
+    }
+
+    @Override
+    public File getAppRootDirectoryNoJar() {
+
+        if (!this.appRootDirectoryNoJarChecked) {
+            synchronized (this.appRootDirectoryNoJarLock) {
+                if (!this.appRootDirectoryNoJarChecked) {
+                    this.appRootDirectoryNoJarChecked = true;
+
+                    try {
+                        //==========================================
+                        // Running in a .jar
+                        //==========================================
+                        if (getAppJarDirectory() != null) {
+                            this.appRootDirectoryNoJar = null;
+                        } else {
+                            String path = new File(".").getAbsolutePath();
+                            path = path.substring(0, path.length() - 1);
+                            this.appRootDirectoryNoJar = new File(path);
+                        }
+
+                    } catch (Exception ex) {
+                        throw SpincastStatics.runtimize(ex);
+                    }
+                }
+            }
+        }
+
+        return this.appRootDirectoryNoJar;
     }
 
     @Override
@@ -386,7 +458,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
         //==========================================
         // We're in an IDE...
         //==========================================
-        if(currentVersion == null) {
+        if (currentVersion == null) {
             currentVersion = getCurrentVersionFromPom();
         }
 
@@ -402,20 +474,20 @@ public class SpincastUtilsDefault implements SpincastUtils {
             file = new File(filePath);
             File parent = file.getParentFile();
             File pomFile = new File(parent.getAbsolutePath() + "/pom.xml");
-            if(pomFile.isFile()) {
+            if (pomFile.isFile()) {
                 String content = FileUtils.readFileToString(pomFile, "UTF-8");
                 int pos = content.indexOf("<version>");
-                if(pos > 0) {
+                if (pos > 0) {
                     int pos2 = content.indexOf("</version>", pos);
-                    if(pos2 > 0) {
+                    if (pos2 > 0) {
                         artifactVersion = content.substring(pos + "<version>".length(), pos2);
                     }
                 }
             }
-            if(artifactVersion == null) {
+            if (artifactVersion == null) {
                 throw new RuntimeException("Version in pom.xml not found");
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Unable to get the pom.xml : " + SpincastStatics.getStackTrace(ex));
         }
 
@@ -426,20 +498,20 @@ public class SpincastUtilsDefault implements SpincastUtils {
     public void zipDirectory(File directoryToZip, File targetZipFile, boolean includeDirItself) {
 
         File targetParentDir = targetZipFile.getParentFile();
-        if(!targetParentDir.isDirectory()) {
+        if (!targetParentDir.isDirectory()) {
             boolean result = targetParentDir.mkdirs();
-            if(!result) {
+            if (!result) {
                 throw new RuntimeException("Unable to create the target parent directory: " + targetParentDir.getAbsolutePath());
             }
         }
 
-        try(FileOutputStream fos = new FileOutputStream(targetZipFile);
-            ZipOutputStream zos = new ZipOutputStream(fos)) {
+        try (FileOutputStream fos = new FileOutputStream(targetZipFile);
+             ZipOutputStream zos = new ZipOutputStream(fos)) {
 
             final Path directoryToZipPath = directoryToZip.toPath();
 
             String prefix = "";
-            if(includeDirItself) {
+            if (includeDirItself) {
                 prefix = directoryToZip.getName() + "/";
                 zos.putNextEntry(new ZipEntry(prefix));
             }
@@ -458,14 +530,14 @@ public class SpincastUtilsDefault implements SpincastUtils {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 
-                    if(!"".equals(directoryToZipPath.relativize(dir).toString())) {
+                    if (!"".equals(directoryToZipPath.relativize(dir).toString())) {
                         zos.putNextEntry(new ZipEntry(prefixFinal + directoryToZipPath.relativize(dir).toString() + "/"));
                         zos.closeEntry();
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -478,13 +550,13 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
         try {
 
-            if(!zipFile.isFile()) {
+            if (!zipFile.isFile()) {
                 throw new RuntimeException("The file to extract doesn't exist: " + zipFile.getCanonicalPath());
             }
 
-            if(!targetDir.isDirectory()) {
+            if (!targetDir.isDirectory()) {
                 boolean result = targetDir.mkdirs();
-                if(!result) {
+                if (!result) {
                     throw new RuntimeException("Unable to create the target directory: " + targetDir.getCanonicalPath());
                 }
             }
@@ -494,23 +566,23 @@ public class SpincastUtilsDefault implements SpincastUtils {
             ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
             try {
                 ZipEntry ze = zis.getNextEntry();
-                while(ze != null) {
+                while (ze != null) {
 
                     String fileName = ze.getName();
                     File newFile = new File(targetDir.getAbsolutePath() + "/" + fileName);
 
                     File newFileParent = newFile.getParentFile();
-                    if(!newFileParent.isDirectory()) {
+                    if (!newFileParent.isDirectory()) {
                         boolean result = targetDir.mkdirs();
-                        if(!result) {
+                        if (!result) {
                             throw new RuntimeException("Unable to create an unzipped directory: " +
                                                        newFileParent.getCanonicalPath());
                         }
                     }
 
-                    if(ze.isDirectory()) {
+                    if (ze.isDirectory()) {
                         boolean result = newFile.mkdirs();
-                        if(!result) {
+                        if (!result) {
                             throw new RuntimeException("Unable to create an unzipped directory: " +
                                                        newFile.getCanonicalPath());
                         }
@@ -521,7 +593,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                             fos = new FileOutputStream(newFile);
 
                             int len;
-                            while((len = zis.read(buffer)) > 0) {
+                            while ((len = zis.read(buffer)) > 0) {
                                 fos.write(buffer, 0, len);
                             }
                         } finally {
@@ -536,7 +608,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
             } finally {
                 IOUtils.closeQuietly(zis);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -544,9 +616,9 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String getCacheBusterCode() {
 
-        if(this.cacheBusterCode == null) {
-            synchronized(this.cacheBusterCodeLock) {
-                if(this.cacheBusterCode == null) {
+        if (this.cacheBusterCode == null) {
+            synchronized (this.cacheBusterCodeLock) {
+                if (this.cacheBusterCode == null) {
                     //==========================================
                     // By default, the cache buster code change
                     // everytime the application is restarted.
@@ -561,7 +633,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String removeCacheBusterCodes(String text) {
 
-        if(StringUtils.isBlank(text)) {
+        if (StringUtils.isBlank(text)) {
             return text;
         }
 
@@ -577,25 +649,25 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String readClasspathFile(String path, String encoding) {
 
-        if(path == null) {
+        if (path == null) {
             return null;
         }
-        if(!path.startsWith("/")) {
+        if (!path.startsWith("/")) {
             path = "/" + path;
         }
 
-        if(encoding == null) {
+        if (encoding == null) {
             encoding = "UTF-8";
         }
 
         InputStream in = this.getClass().getResourceAsStream(path);
-        if(in == null) {
+        if (in == null) {
             return null;
         }
 
         try {
             return IOUtils.toString(in, encoding);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         } finally {
             IOUtils.closeQuietly(in);

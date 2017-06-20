@@ -35,7 +35,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends IntegrationTestNoApp
                                bind(MyController.class);
                            }
                        })
-                       .init();
+                       .init(new String[]{});
     }
 
     @Inject

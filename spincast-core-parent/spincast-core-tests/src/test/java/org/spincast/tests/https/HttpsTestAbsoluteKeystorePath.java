@@ -8,22 +8,25 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.SpincastConfigTesting;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
+
+import com.google.inject.Inject;
 
 public class HttpsTestAbsoluteKeystorePath extends IntegrationTestNoAppDefaultContextsBase {
 
     @Override
-    protected Class<? extends SpincastConfigTesting> getSpincastConfigTestingImplementation() {
+    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
         return HttpsTestConfig.class;
     }
 
@@ -52,7 +55,7 @@ public class HttpsTestAbsoluteKeystorePath extends IntegrationTestNoAppDefaultCo
             keyStoreFile = Files.createTempFile(HttpsTestAbsoluteKeystorePath.class.getName(), this.KEYSTORE_CLASSPATH).toFile();
 
             FileUtils.copyInputStreamToFile(keyStoreStream, keyStoreFile);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -61,6 +64,14 @@ public class HttpsTestAbsoluteKeystorePath extends IntegrationTestNoAppDefaultCo
 
         private int httpsServerPort = -1;
 
+        /**
+         * Constructor
+         */
+        @Inject
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+            super(spincastConfigPluginConfig);
+        }
+
         @Override
         public int getHttpServerPort() {
             return -1;
@@ -68,7 +79,7 @@ public class HttpsTestAbsoluteKeystorePath extends IntegrationTestNoAppDefaultCo
 
         @Override
         public int getHttpsServerPort() {
-            if(this.httpsServerPort < 0) {
+            if (this.httpsServerPort < 0) {
                 this.httpsServerPort = SpincastTestUtils.findFreePort();
             }
             return this.httpsServerPort;
@@ -90,7 +101,7 @@ public class HttpsTestAbsoluteKeystorePath extends IntegrationTestNoAppDefaultCo
         }
 
         @Override
-        public String getHttpsKeyStoreKeypass() {
+        public String getHttpsKeyStoreKeyPass() {
             return "myKeyPass";
         }
     }

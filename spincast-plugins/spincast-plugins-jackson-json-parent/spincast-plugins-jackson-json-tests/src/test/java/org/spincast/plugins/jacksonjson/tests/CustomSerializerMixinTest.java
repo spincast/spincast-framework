@@ -24,7 +24,7 @@ import com.google.inject.multibindings.Multibinder;
 public class CustomSerializerMixinTest extends UnitTestDefaultContextsBase {
 
     @Override
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 
