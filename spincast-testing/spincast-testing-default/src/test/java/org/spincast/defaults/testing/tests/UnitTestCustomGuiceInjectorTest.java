@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.routing.DefaultRouter;
 
 import com.google.inject.Inject;
@@ -14,7 +14,7 @@ import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
-public class UnitTestCustomGuiceInjectorTest extends UnitTestDefaultContextsBase {
+public class UnitTestCustomGuiceInjectorTest extends NoAppTestingBase {
 
     @Inject
     protected DefaultRouter defaultRouter;

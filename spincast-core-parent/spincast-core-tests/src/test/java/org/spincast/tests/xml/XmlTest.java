@@ -17,12 +17,12 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;
 
-public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
+public class XmlTest extends NoAppTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -305,7 +305,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -329,7 +329,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -353,7 +353,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -380,7 +380,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -404,7 +404,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -425,7 +425,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -446,7 +446,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -822,7 +822,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -848,7 +848,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -860,7 +860,7 @@ public class XmlTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             this.xmlManager.fromXml(xml);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println();
         }
     }

@@ -15,14 +15,14 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class ExceptionHandlerTest extends IntegrationTestNoAppDefaultContextsBase {
+public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected SpincastDictionary spincastDictionary;

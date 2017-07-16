@@ -10,13 +10,13 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
-import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
 
-public class MultipleEndpointsTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
 
     @Test
     public void onlyOneControllerCanManageAGivenEndpoint() throws Exception {
@@ -88,7 +88,7 @@ public class MultipleEndpointsTest extends WebsocketIntegrationTestNoAppDefaultC
             @SuppressWarnings("unused")
             WebsocketClientWriter writer2 = websocket("/ws2").connect(client2);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         //==========================================
@@ -175,7 +175,7 @@ public class MultipleEndpointsTest extends WebsocketIntegrationTestNoAppDefaultC
             @SuppressWarnings("unused")
             WebsocketClientWriter writer2 = websocket("/ws2").ping(0).connect(client2);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         controller.getEndpointManager("endpoint1").sendMessage("test123");

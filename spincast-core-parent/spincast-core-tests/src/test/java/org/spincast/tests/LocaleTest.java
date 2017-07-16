@@ -13,12 +13,12 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class LocaleTest extends IntegrationTestNoAppDefaultContextsBase {
+public class LocaleTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void defaultLocale() throws Exception {

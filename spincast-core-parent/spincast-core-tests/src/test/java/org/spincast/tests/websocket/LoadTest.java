@@ -15,13 +15,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.server.Server;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.RandomUtils;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
@@ -29,7 +28,7 @@ import org.spincast.tests.varia.WebsocketClientTest;
 
 import com.google.common.collect.Sets;
 
-public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class LoadTest extends NoAppWebsocketTestingBase {
 
     protected final int nbrWebsocketControllers = 3;
     protected final int nbrEndpointByController = 3;
@@ -76,7 +75,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
     protected Set<Peer> getPeersByEndpointId(String endpointId) {
 
         Set<Peer> peers = getPeersByEndpointId().get(endpointId);
-        if(peers == null) {
+        if (peers == null) {
             peers = new HashSet<LoadTest.Peer>();
             getPeersByEndpointId().put(endpointId, peers);
         }
@@ -168,7 +167,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
     protected void createControllers() {
 
-        for(int i = 0; i < getNbrWebsocketControllers(); i++) {
+        for (int i = 0; i < getNbrWebsocketControllers(); i++) {
 
             final int controllerPos = i + 1;
             Controller controller = new Controller(getServer()) {
@@ -180,22 +179,22 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
                     // We specify the endpointId and peerId to use by coookie,
                     // so the calling code can control them.
                     //==========================================
-                    final Cookie endpointIdCookie = context.cookies().getCookie("endpointId");
+                    final String endpointIdCookie = context.request().getCookie("endpointId");
                     assertNotNull(endpointIdCookie);
 
-                    final Cookie peerIdCookie = context.cookies().getCookie("peerId");
+                    final String peerIdCookie = context.request().getCookie("peerId");
                     assertNotNull(peerIdCookie);
 
                     return new WebsocketConnectionConfig() {
 
                         @Override
                         public String getEndpointId() {
-                            return endpointIdCookie.getValue();
+                            return endpointIdCookie;
                         }
 
                         @Override
                         public String getPeerId() {
-                            return peerIdCookie.getValue();
+                            return peerIdCookie;
                         }
                     };
                 }
@@ -204,11 +203,11 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
                 public void onPeerMessage(DefaultWebsocketContext context, String message) {
                     super.onPeerMessage(context, message);
 
-                    if(message.startsWith("echoall_")) {
+                    if (message.startsWith("echoall_")) {
                         getEndpointManager(context.getEndpointId()).sendMessage("echo all " + message);
-                    } else if(message.startsWith("echo_")) {
+                    } else if (message.startsWith("echo_")) {
                         context.sendMessageToCurrentPeer("echo " + message);
-                    } else if(message.startsWith("echoexcept_")) {
+                    } else if (message.startsWith("echoexcept_")) {
                         getEndpointManager(context.getEndpointId()).sendMessageExcept(context.getPeerId(),
                                                                                       "echo except " + message);
                     }
@@ -225,7 +224,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
         //==========================================
         // For each controller
         //==========================================
-        for(int controllerPos = 1; controllerPos <= getNbrWebsocketControllers(); controllerPos++) {
+        for (int controllerPos = 1; controllerPos <= getNbrWebsocketControllers(); controllerPos++) {
 
             String controllerId = createControllerId(controllerPos);
             Controller controller = getController(controllerId);
@@ -234,14 +233,14 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             //==========================================
             // The endpoints to create by controller
             //==========================================
-            for(int endpointPos = 1; endpointPos <= getNbrEndpointByController(); endpointPos++) {
+            for (int endpointPos = 1; endpointPos <= getNbrEndpointByController(); endpointPos++) {
 
                 String endpointId = createEndpointId(controllerPos, endpointPos);
 
                 //==========================================
                 // The peers to create for each endpoint
                 //==========================================
-                for(int peerPos = 1; peerPos <= getNbrPeerByEndpoint(); peerPos++) {
+                for (int peerPos = 1; peerPos <= getNbrPeerByEndpoint(); peerPos++) {
 
                     String peerId = createPeerId(controllerPos, endpointPos, peerPos);
 
@@ -284,10 +283,10 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
     protected void validateMessageNotReceivedByEndpointsAndPeersExcept(String endpointIdExcept, HashSet<String> messages) {
 
         Map<String, Controller> controllers = getControllersByEndpointId();
-        for(Entry<String, Controller> entry : controllers.entrySet()) {
+        for (Entry<String, Controller> entry : controllers.entrySet()) {
 
             String endpointId = entry.getKey();
-            if(endpointIdExcept.equals(endpointId)) {
+            if (endpointIdExcept.equals(endpointId)) {
                 continue;
             }
 
@@ -295,7 +294,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             assertTrue(Collections.disjoint(messages, controller.getStringMessageReceived(endpointId)));
 
             Set<Peer> peers = getPeersByEndpointId(endpointId);
-            for(Peer peer : peers) {
+            for (Peer peer : peers) {
                 assertTrue(Collections.disjoint(messages, peer.getStringMessageReceived()));
             }
         }
@@ -317,9 +316,9 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
         //==========================================
         // Validate all peers are connected
         //==========================================
-        for(int controllerPos = 1; controllerPos <= getNbrWebsocketControllers(); controllerPos++) {
+        for (int controllerPos = 1; controllerPos <= getNbrWebsocketControllers(); controllerPos++) {
             Controller controller = getController(createControllerId(controllerPos));
-            for(int endpointPos = 1; endpointPos <= getNbrEndpointByController(); endpointPos++) {
+            for (int endpointPos = 1; endpointPos <= getNbrEndpointByController(); endpointPos++) {
                 assertTrue(controller.getEndpointManager(createEndpointId(controllerPos, endpointPos)).getPeersIds().size() +
                            " / " + getNbrPeerByEndpoint(),
                            controller.waitNrbPeerConnected(createEndpointId(controllerPos, endpointPos),
@@ -331,7 +330,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
         //==========================================
         // Controller sends messages
         //==========================================
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
 
             String endpointId = getRandomEndpointId();
             Controller controller = getControllerByEndpointId(endpointId);
@@ -344,14 +343,14 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             String message = UUID.randomUUID().toString();
             endpointManager.sendMessage(message);
 
-            for(Peer peer : peers) {
+            for (Peer peer : peers) {
                 assertTrue(peer.waitForStringMessageReceived(message));
             }
 
             Set<String> peerIdsTry = new HashSet<String>();
             int nbrPeersTry = RandomUtils.nextInt(1, peers.size() + 1);
 
-            for(int j = 0; j < nbrPeersTry; j++) {
+            for (int j = 0; j < nbrPeersTry; j++) {
                 peerIdsTry.add(peers.get(j).getPeerId());
             }
 
@@ -361,13 +360,13 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             String message2 = UUID.randomUUID().toString();
             endpointManager.sendMessageExcept(peerIdsTry, message2);
 
-            for(Peer peer : peers) {
-                if(!peerIdsTry.contains(peer.getPeerId())) {
+            for (Peer peer : peers) {
+                if (!peerIdsTry.contains(peer.getPeerId())) {
                     assertTrue(peer.waitForStringMessageReceived(message2));
                 }
             }
-            for(Peer peer : peers) {
-                if(peerIdsTry.contains(peer.getPeerId())) {
+            for (Peer peer : peers) {
+                if (peerIdsTry.contains(peer.getPeerId())) {
                     assertFalse(peer.hasReceivedStringMessage(message2));
                 }
             }
@@ -378,13 +377,13 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             String message3 = UUID.randomUUID().toString();
             endpointManager.sendMessage(peerIdsTry, message3);
 
-            for(Peer peer : peers) {
-                if(peerIdsTry.contains(peer.getPeerId())) {
+            for (Peer peer : peers) {
+                if (peerIdsTry.contains(peer.getPeerId())) {
                     assertTrue(peer.waitForStringMessageReceived(message3));
                 }
             }
-            for(Peer peer : peers) {
-                if(!peerIdsTry.contains(peer.getPeerId())) {
+            for (Peer peer : peers) {
+                if (!peerIdsTry.contains(peer.getPeerId())) {
                     assertFalse(peer.hasReceivedStringMessage(message3));
                 }
             }
@@ -395,7 +394,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
         //==========================================
         // Peers send messages
         //==========================================
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
 
             Peer peer = getRandomPeer();
 
@@ -420,7 +419,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
             assertTrue(controller.waitForStringMessageReceived(peer.getEndpointId(), peer.getPeerId(), message2));
 
             Set<Peer> peers = getPeersByEndpointId(peer.getEndpointId());
-            for(Peer peer2 : peers) {
+            for (Peer peer2 : peers) {
                 assertTrue(peer2.waitForStringMessageReceived("echo all " + message2));
             }
 
@@ -434,14 +433,14 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
 
             peers = getPeersByEndpointId(peer.getEndpointId());
 
-            for(Peer peer2 : peers) {
-                if(!peer2.getPeerId().equals(peer.getPeerId())) {
+            for (Peer peer2 : peers) {
+                if (!peer2.getPeerId().equals(peer.getPeerId())) {
                     assertTrue(peer2.waitForStringMessageReceived("echo except " + message3));
                 }
             }
 
-            for(Peer peer2 : peers) {
-                if(peer2.getPeerId().equals(peer.getPeerId())) {
+            for (Peer peer2 : peers) {
+                if (peer2.getPeerId().equals(peer.getPeerId())) {
                     assertFalse(peer2.hasReceivedStringMessage("echo except " + message3));
                 }
             }
@@ -453,7 +452,7 @@ public class LoadTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
         //==========================================
         // Simultaneous messages sending
         //==========================================
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
 
             String endpointId = getRandomEndpointId();
             Controller controller = getControllerByEndpointId(endpointId);

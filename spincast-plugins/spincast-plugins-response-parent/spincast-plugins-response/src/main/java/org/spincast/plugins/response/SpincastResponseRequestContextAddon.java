@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.config.SpincastConstants.ResponseModelVariables;
 import org.spincast.core.cookies.Cookie;
+import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.ResponseRequestContextAddon;
 import org.spincast.core.json.JsonArray;
@@ -41,6 +44,7 @@ import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.xml.XmlManager;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.client.utils.URIBuilder;
 
@@ -63,6 +67,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     private final ETagFactory etagFactory;
     private final FlashMessagesHolder flashMessagesHolder;
     private final FlashMessageFactory flashMessageFactory;
+    private final CookieFactory cookieFactory;
 
     private String responseContentType = null;
     private int responseStatusCode = HttpStatus.SC_OK;
@@ -76,6 +81,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     private boolean requestSizeValidated = false;
     private Map<String, List<String>> headers;
     private GzipOption gzipOption = GzipOption.DEFAULT;
+    private Map<String, Cookie> cookies;
 
     private JsonObject responseModel;
 
@@ -88,7 +94,8 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                                                SpincastUtils spincastUtils,
                                                ETagFactory etagFactory,
                                                FlashMessagesHolder flashMessagesHolder,
-                                               FlashMessageFactory flashMessageFactory) {
+                                               FlashMessageFactory flashMessageFactory,
+                                               CookieFactory cookieFactory) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
@@ -98,6 +105,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         this.etagFactory = etagFactory;
         this.flashMessagesHolder = flashMessagesHolder;
         this.flashMessageFactory = flashMessageFactory;
+        this.cookieFactory = cookieFactory;
     }
 
     protected R getRequestContext() {
@@ -140,6 +148,10 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         return this.flashMessageFactory;
     }
 
+    protected CookieFactory getCookieFactory() {
+        return this.cookieFactory;
+    }
+
     protected ByteArrayOutputStream getBuffer() {
         return this.byteArrayOutputStreamIn;
     }
@@ -150,7 +162,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public JsonObject getModel() {
-        if(this.responseModel == null) {
+        if (this.responseModel == null) {
             this.responseModel = getJsonManager().create();
         }
         return this.responseModel;
@@ -158,11 +170,11 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     public GZIPOutputStream getGzipBuffer() {
         try {
-            if(this.gzipOutputStream == null) {
+            if (this.gzipOutputStream == null) {
                 this.gzipOutputStream = new GZIPOutputStream(getOut(), true);
             }
             return this.gzipOutputStream;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -178,11 +190,11 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> setGzipOption(GzipOption gzipOption) {
 
-        if(gzipOption == null) {
+        if (gzipOption == null) {
             gzipOption = GzipOption.DEFAULT;
         }
 
-        if(isHeadersSent() && gzipOption != getGzipOption()) {
+        if (isHeadersSent() && gzipOption != getGzipOption()) {
             this.logger.warn("The headers are sent, you can't change the gzip options.");
             return this;
         }
@@ -205,8 +217,8 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> setStatusCode(int responseStatusCode) {
 
-        if(isHeadersSent()) {
-            if(responseStatusCode != getStatusCode()) {
+        if (isHeadersSent()) {
+            if (responseStatusCode != getStatusCode()) {
                 this.logger.warn("Response headers already sent, the http status code can't be changed...");
             }
         } else {
@@ -224,21 +236,21 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> setContentType(String responseContentType) {
 
-        if(isHeadersSent()) {
-            if(responseContentType != null && !responseContentType.equals(getContentType())) {
+        if (isHeadersSent()) {
+            if (responseContentType != null && !responseContentType.equals(getContentType())) {
                 this.logger.warn("Response headers already sent, the content-type can't be changed...");
             }
         } else {
 
-            if((responseContentType != null && !responseContentType.equals(getContentType())) ||
-               (responseContentType == null && getContentType() != null)) {
+            if ((responseContentType != null && !responseContentType.equals(getContentType())) ||
+                (responseContentType == null && getContentType() != null)) {
 
                 //==========================================
                 // isShouldGzip will be revalidated since it can
                 // change depending of the content-type.
                 //==========================================
                 GzipOption gzipOption = getGzipOption();
-                if(gzipOption == GzipOption.DEFAULT) {
+                if (gzipOption == GzipOption.DEFAULT) {
                     this.isShouldGzip = null;
                 }
             }
@@ -310,7 +322,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public void redirect(String newUrl, boolean permanently, FlashMessage flashMessage) {
-        if(permanently) {
+        if (permanently) {
             redirect(newUrl, HttpStatus.SC_MOVED_PERMANENTLY, flashMessage);
         } else {
             redirect(newUrl, HttpStatus.SC_MOVED_TEMPORARILY, flashMessage);
@@ -350,7 +362,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public void redirect(String newUrl, int specific3xxCode, FlashMessage flashMessage) {
 
         try {
-            if(isHeadersSent()) {
+            if (isHeadersSent()) {
                 throw new RuntimeException("Can't set redirect, the headers are already sent.");
             }
 
@@ -360,51 +372,51 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             // If the URL to redirect to is empty, we
             // redirect to the current page.
             //==========================================
-            if(StringUtils.isBlank(newUrl)) {
+            if (StringUtils.isBlank(newUrl)) {
                 newUrl = getRequestContext().request().getFullUrlOriginal();
             } else {
                 newUrl = newUrl.trim();
 
                 // @see http://stackoverflow.com/a/12840255/843699
-                if(newUrl.startsWith("//")) {
+                if (newUrl.startsWith("//")) {
                     newUrl = getServer().getRequestScheme(getExchange()) + ":" + newUrl;
                 }
             }
 
             URI uri = new URI(newUrl);
-            if(!uri.isAbsolute()) {
+            if (!uri.isAbsolute()) {
 
                 URI currentUri = new URI(getRequestContext().request().getFullUrl());
 
-                String path = newUrl;
-
                 String anchor = currentUri.getFragment();
+                if (uri.getFragment() != null) {
+                    anchor = uri.getFragment();
+                }
+
                 String queryString = currentUri.getQuery();
+                if (uri.getQuery() != null) {
+                    queryString = uri.getQuery();
+                }
 
                 //==========================================
-                // Simple #anchor
+                // Simple anchor or queryString?
+                // We use the current path.
                 //==========================================
-                if(path.startsWith("#")) {
-                    anchor = path.substring(1);
+                String path = uri.getPath();
+                if (newUrl.startsWith("#") || newUrl.startsWith("?")) {
                     path = currentUri.getPath();
                 }
                 //==========================================
-                // Simple queryString
+                // Relative path? 
+                // We happen it to the current path.
                 //==========================================
-                else if(path.startsWith("?")) {
-                    queryString = path.substring(1);
-                    path = currentUri.getPath();
-                }
-                //==========================================
-                // Relative path?
-                //==========================================
-                else if(!path.startsWith("/")) {
+                else if (!newUrl.startsWith("/")) {
 
                     String currentPath = currentUri.getPath();
                     currentPath = StringUtils.strip(currentPath, "/");
 
                     int lastSlashPos = currentPath.lastIndexOf("/");
-                    if(lastSlashPos < 0) {
+                    if (lastSlashPos < 0) {
                         path = "/" + path;
                     } else {
                         path = "/" + currentPath.substring(0, lastSlashPos) + "/" + path;
@@ -425,13 +437,13 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             // Flash message to use?
             //==========================================
-            if(flashMessage != null) {
+            if (flashMessage != null) {
                 newUrl = saveFlashMessage(newUrl, flashMessage);
             }
 
             setHeader(HttpHeaders.LOCATION, newUrl);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -444,7 +456,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
      */
     protected String saveFlashMessage(String url, FlashMessage flashMessage) {
 
-        if(flashMessage == null) {
+        if (flashMessage == null) {
             return url;
         }
 
@@ -453,8 +465,8 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         //==========================================
         // TODO Maybe we should use a user session.
         //==========================================
-        if(getRequestContext().cookies().isCookiesEnabledValidated()) {
-            getRequestContext().cookies().addCookie(getSpincastConfig().getCookieNameFlashMessage(), flashMessageId);
+        if (getRequestContext().request().isCookiesEnabledValidated()) {
+            getRequestContext().response().addCookie(getSpincastConfig().getCookieNameFlashMessage(), flashMessageId);
             return url;
 
         //==========================================@formatter:off 
@@ -470,7 +482,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                 builder.setParameter(getSpincastConfig().getQueryParamFlashMessageId(), flashMessageId);
                 return builder.build().toString();
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
         }
@@ -496,33 +508,33 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     protected void send(byte[] bytes, String contentType, boolean flush) {
 
-        if(isClosed()) {
+        if (isClosed()) {
             this.logger.debug("The response is closed, nothing more can be sent!");
             return;
         }
 
-        if(isHeadersSent()) {
-            if(contentType != null && !contentType.equals(getContentType())) {
+        if (isHeadersSent()) {
+            if (contentType != null && !contentType.equals(getContentType())) {
                 this.logger.warn("Response headers are already sent, the content-type won't be changed...");
             }
         } else {
-            if(contentType != null) {
-                if(getContentType() != null && !contentType.equals(getContentType())) {
+            if (contentType != null) {
+                if (getContentType() != null && !contentType.equals(getContentType())) {
                     this.logger.warn("The content-type is changed from " + getContentType() + " to " + contentType);
                 }
                 setContentType(contentType);
             }
         }
 
-        if(bytes != null) {
+        if (bytes != null) {
             try {
                 getBuffer().write(bytes);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
         }
 
-        if(flush) {
+        if (flush) {
             flush();
         }
     }
@@ -545,11 +557,11 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             this.isResponseCharactersBased = true;
 
             byte[] bytes = null;
-            if(content != null) {
+            if (content != null) {
                 bytes = content.getBytes(getCharactersCharsetName());
             }
             send(bytes, contentType, flush);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -564,7 +576,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
         Objects.requireNonNull(charactersCharsetName, "charactersCharsetName can't be NULL");
 
-        if(isHeadersSent() && !charactersCharsetName.equalsIgnoreCase(getCharactersCharsetName())) {
+        if (isHeadersSent() && !charactersCharsetName.equalsIgnoreCase(getCharactersCharsetName())) {
             this.logger.warn("Some data have already been send, it may not be a good idea to change the Charset now.");
         }
         this.charactersCharsetName = charactersCharsetName;
@@ -610,12 +622,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public void sendParse(String content, String contentType, boolean flush) {
 
-        if(StringUtils.isBlank(contentType)) {
+        if (StringUtils.isBlank(contentType)) {
             this.logger.warn("The Content-Type was not specified : 'text/html' will be used");
             contentType = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
         }
 
-        if(content == null) {
+        if (content == null) {
             content = "";
         }
 
@@ -656,10 +668,10 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public void sendTemplate(String templatePath, boolean isClasspathPath, String contentType, boolean flush) {
 
-        if(StringUtils.isBlank(contentType)) {
+        if (StringUtils.isBlank(contentType)) {
 
             contentType = getSpincastUtils().getMimeTypeFromPath(templatePath);
-            if(contentType == null) {
+            if (contentType == null) {
                 this.logger.warn("The Content-Type was not specified and can't be determined from the template path '" +
                                  templatePath +
                                  "': 'text/html' will be used");
@@ -703,7 +715,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public void sendJson(Object obj, boolean flush) {
 
-        if(obj instanceof String) {
+        if (obj instanceof String) {
             sendJson((String)obj);
             return;
         }
@@ -744,7 +756,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public void sendXml(Object obj, boolean flush) {
 
-        if(obj instanceof String) {
+        if (obj instanceof String) {
             sendXml((String)obj);
             return;
         }
@@ -755,14 +767,14 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     protected void addAlertsToModel() {
 
-        if(isAddAlertsToModel()) {
+        if (isAddAlertsToModel()) {
 
             Map<String, Object> map = getRequestContext().templating().getSpincastReservedMap();
 
             @SuppressWarnings("unchecked")
             List<Alert> alerts =
                     (List<Alert>)map.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS);
-            if(alerts != null && alerts.size() > 0) {
+            if (alerts != null && alerts.size() > 0) {
 
                 JsonObject model = getModel();
 
@@ -774,7 +786,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                         spincastModelObj.getJsonArrayOrEmpty(ResponseModelVariables.DEFAULT_RESPONSE_MODEL_VAR_ALERTS);
                 spincastModelObj.put(ResponseModelVariables.DEFAULT_RESPONSE_MODEL_VAR_ALERTS, alertsArray);
 
-                for(Alert alert : alerts) {
+                for (Alert alert : alerts) {
                     alertsArray.add(alert);
                 }
             }
@@ -795,10 +807,10 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         try {
             getBuffer().reset();
 
-            if(!isHeadersSent()) {
+            if (!isHeadersSent()) {
                 this.isResponseCharactersBased = IS_RESPONSE_CHARACTERS_BASED_BY_DEFAULT;
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
 
@@ -815,11 +827,11 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
         resetBuffer();
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.warn("Response headers are already sent, the cookies, headers and status code won't be reset...");
         } else {
-            if(resetCookies) {
-                getRequestContext().cookies().resetCookies();
+            if (resetCookies) {
+                deleteAllCookies();
             }
 
             getHeaders().clear();
@@ -845,7 +857,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         try {
             byte[] unsentBytes = getUnsentBytes();
             return new String(unsentBytes, encoding);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -853,7 +865,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> removeHeader(String name) {
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
@@ -866,12 +878,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> setHeader(String name, String value) {
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
-        if(value == null) {
+        if (value == null) {
             removeHeader(name);
             return this;
         }
@@ -883,12 +895,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> setHeader(String name, List<String> values) {
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
-        if(values == null) {
+        if (values == null) {
             removeHeader(name);
             return this;
         }
@@ -900,12 +912,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> addHeaderValue(String name, String value) {
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
-        if(value == null) {
+        if (value == null) {
             return this;
         }
         addHeaderValues(name, Arrays.asList(value));
@@ -916,16 +928,16 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> addHeaderValues(String name, List<String> values) {
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
         List<String> currentValues = getHeaders().get(name);
-        if(currentValues == null) {
+        if (currentValues == null) {
             currentValues = new ArrayList<String>();
             getHeaders().put(name, currentValues);
         }
@@ -936,13 +948,13 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        if(this.headers == null) {
+        if (this.headers == null) {
             Map<String, List<String>> headersFromServer = getServer().getResponseHeaders(getExchange());
 
             // We use a TreeMap with String.CASE_INSENSITIVE_ORDER so the
             // "get" is case insensitive!
             TreeMap<String, List<String>> treeMap = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
-            if(headersFromServer != null) {
+            if (headersFromServer != null) {
                 treeMap.putAll(headersFromServer);
             }
 
@@ -953,12 +965,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public List<String> getHeader(String name) {
-        if(StringUtils.isBlank(name)) {
+        if (StringUtils.isBlank(name)) {
             return new LinkedList<String>();
         }
         // This get is case insensitive.
         List<String> values = getHeaders().get(name);
-        if(values == null) {
+        if (values == null) {
             values = new LinkedList<String>();
         }
         return values;
@@ -967,7 +979,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public String getHeaderFirst(String name) {
         List<String> values = getHeader(name);
-        if(values != null && values.size() > 0) {
+        if (values != null && values.size() > 0) {
             return values.get(0);
         }
         return null;
@@ -981,14 +993,14 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     protected void setIsShouldGzip(boolean isShouldGzip) {
 
         GzipOption gzipOption = getGzipOption();
-        if(gzipOption != GzipOption.DEFAULT) {
+        if (gzipOption != GzipOption.DEFAULT) {
             this.logger.warn("Can't turn on/off the gzip feature since the GzipOption is " + gzipOption);
             return;
         }
 
         try {
-            if(isHeadersSent()) {
-                if(this.isShouldGzip != null && this.isShouldGzip.getBoolean() != isShouldGzip) {
+            if (isHeadersSent()) {
+                if (this.isShouldGzip != null && this.isShouldGzip.getBoolean() != isShouldGzip) {
                     this.logger.warn("Can't turn on/off the gzip feature since headers are already sent.");
                 }
                 return;
@@ -998,13 +1010,13 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             // If we turn off the gziping, we have to
             // change the buffer.
             //==========================================
-            if(this.isShouldGzip != null && this.isShouldGzip.getBoolean() && !isShouldGzip) {
+            if (this.isShouldGzip != null && this.isShouldGzip.getBoolean() && !isShouldGzip) {
 
                 this.byteArrayOutputStreamIn.reset();
 
                 getGzipBuffer().close();
                 ByteArrayOutputStream buffer = getBuffer();
-                if(buffer.size() > 0) {
+                if (buffer.size() > 0) {
                     GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(buffer.toByteArray()));
                     byte[] ungzipedBytes = IOUtils.toByteArray(gzipInputStream);
                     this.byteArrayOutputStreamIn.write(ungzipedBytes);
@@ -1013,7 +1025,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             }
 
             this.isShouldGzip = Bool.from(isShouldGzip);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -1024,27 +1036,27 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         // The GzipOption has priority.
         //==========================================
         GzipOption gzipOption = getGzipOption();
-        if(gzipOption == GzipOption.FORCE) {
+        if (gzipOption == GzipOption.FORCE) {
             return true;
-        } else if(gzipOption == GzipOption.DISABLE) {
+        } else if (gzipOption == GzipOption.DISABLE) {
             return false;
-        } else if(gzipOption != GzipOption.DEFAULT) {
+        } else if (gzipOption != GzipOption.DEFAULT) {
             throw new RuntimeException("Unimplemented : " + gzipOption);
         }
 
-        if(this.isShouldGzip == null) {
+        if (this.isShouldGzip == null) {
 
             //==========================================
             // Check if there is a gzip 'Accept-Encoding' header 
             //==========================================
             boolean hasGzipAcceptHeader = false;
             List<String> acceptEncodings = getRequestContext().request().getHeader(HttpHeaders.ACCEPT_ENCODING);
-            if(acceptEncodings != null) {
-                for(String acceptEncoding : acceptEncodings) {
-                    if(acceptEncoding == null) {
+            if (acceptEncodings != null) {
+                for (String acceptEncoding : acceptEncodings) {
+                    if (acceptEncoding == null) {
                         continue;
                     }
-                    if(acceptEncoding.contains("gzip")) {
+                    if (acceptEncoding.contains("gzip")) {
                         hasGzipAcceptHeader = true;
                         break;
                     }
@@ -1056,7 +1068,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             // Try to guess the content-type
             //==========================================
-            if(responseContentType == null) {
+            if (responseContentType == null) {
                 String path = getRequestContext().request().getRequestPath();
                 responseContentType = getSpincastUtils().getMimeTypeFromPath(path);
             }
@@ -1065,9 +1077,9 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             // Check if its a content-type for which we
             // shouldn't use gzip.
             //==========================================
-            if(responseContentType != null) {
-                if(!getSpincastUtils().isContentTypeToSkipGziping(responseContentType)) {
-                    if(!hasGzipAcceptHeader) {
+            if (responseContentType != null) {
+                if (!getSpincastUtils().isContentTypeToSkipGziping(responseContentType)) {
+                    if (!hasGzipAcceptHeader) {
                         this.logger.debug("No gzip 'Accept-Encoding' header, we won't gzip the response.");
                         setIsShouldGzip(false);
                     } else {
@@ -1079,7 +1091,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             }
         }
 
-        if(this.isShouldGzip == null) {
+        if (this.isShouldGzip == null) {
             return false;
         }
         return this.isShouldGzip.getBoolean();
@@ -1099,7 +1111,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public void flush(boolean close) {
 
         try {
-            if(isClosed()) {
+            if (isClosed()) {
                 return;
             }
 
@@ -1110,10 +1122,10 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             // "413 - Request entity too large" status if
             // required.
             //==========================================
-            if(!isRequestSizeValidated() && !isHeadersSent()) {
+            if (!isRequestSizeValidated() && !isHeadersSent()) {
                 setRequestSizeValidated(true);
                 boolean requestSizeOk = getServer().forceRequestSizeValidation(getExchange());
-                if(!requestSizeOk) {
+                if (!requestSizeOk) {
                     resetEverything();
                     setStatusCode(HttpStatus.SC_REQUEST_TOO_LONG);
                 }
@@ -1124,19 +1136,19 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             // Send the Headers!
             //==========================================
-            if(!isHeadersSent()) {
+            if (!isHeadersSent()) {
 
                 getServer().setResponseStatusCode(getExchange(), getStatusCode());
 
                 String responseContentType = getContentType();
-                if(responseContentType == null) {
+                if (responseContentType == null) {
 
                     String mimeType = getSpincastUtils().getMimeTypeFromPath(getRequestContext().request()
                                                                                                 .getRequestPath());
-                    if(mimeType != null) {
+                    if (mimeType != null) {
                         responseContentType = mimeType;
                     } else {
-                        if(isResponseCharactersBased() || buffer.size() == 0) {
+                        if (isResponseCharactersBased() || buffer.size() == 0) {
                             responseContentType = ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset();
                         } else {
                             responseContentType = ContentTypeDefaults.BINARY.getMainVariation();
@@ -1156,7 +1168,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                 // Nothing sent yet and we end the response, we can
                 // send a Content-Length header!
                 //==========================================
-                if(close && !isShouldGzip()) {
+                if (close && !isShouldGzip()) {
                     setHeader(HttpHeaders.CONTENT_LENGTH, "" + buffer.size());
                 }
 
@@ -1167,15 +1179,15 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                 //==========================================
                 // Do we add the cookies validator?
                 //==========================================
-                if(getSpincastConfig().isEnableCookiesValidator()) {
-                    getRequestContext().cookies().addCookie(createCookiesValidatorCookie());
+                if (getSpincastConfig().isEnableCookiesValidator()) {
+                    addCookie(createCookiesValidatorCookie());
                 }
-                getServer().addCookies(getExchange(), getRequestContext().cookies().getCookies());
+                getServer().addCookies(getExchange(), getCookiesAdded());
 
                 //==========================================
                 // Gzip headers
                 //==========================================
-                if(isShouldGzip()) {
+                if (isShouldGzip()) {
                     setHeader(HttpHeaders.CONTENT_ENCODING, "gzip");
                     setHeader(HttpHeaders.TRANSFER_ENCODING, "chunked");
                 }
@@ -1187,7 +1199,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             }
 
             byte[] bytesToFlush;
-            if(isShouldGzip()) {
+            if (isShouldGzip()) {
 
                 getGzipBuffer().write(buffer.toByteArray());
 
@@ -1201,7 +1213,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                 // We must close the GZIPOutputStream at the end
                 // so the correct gzip "footer" is sent...
                 //==========================================
-                if(close) {
+                if (close) {
                     getGzipBuffer().close();
                 }
 
@@ -1215,14 +1227,14 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
             getServer().flushBytes(getExchange(), bytesToFlush, close);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
 
     private Cookie createCookiesValidatorCookie() {
 
-        Cookie cookie = getRequestContext().cookies().createCookie(getSpincastConfig().getCookiesValidatorCookieName());
+        Cookie cookie = createCookie(getSpincastConfig().getCookiesValidatorCookieName());
         cookie.setValue("1");
         cookie.setExpiresUsingMaxAge(60 * 60 * 24 * 365);
 
@@ -1237,18 +1249,18 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     @Override
     public ResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache) {
 
-        if(cacheSeconds <= 0) {
+        if (cacheSeconds <= 0) {
             this.logger.warn("A number of seconds below 1 doesn't send any cache headers: " + cacheSeconds);
             return this;
         }
 
-        if(isHeadersSent()) {
+        if (isHeadersSent()) {
             this.logger.error("The headers are sent, you can't add cache headers.");
             return this;
         }
 
         String cacheControl = "max-age=" + cacheSeconds;
-        if(isPrivateCache) {
+        if (isPrivateCache) {
             cacheControl = "private, " + cacheControl;
         } else {
             cacheControl = "public, " + cacheControl;
@@ -1272,7 +1284,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         @SuppressWarnings("unchecked")
         List<Alert> alerts =
                 (List<Alert>)spincastMap.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS);
-        if(alerts == null) {
+        if (alerts == null) {
             alerts = new ArrayList<Alert>();
             spincastMap.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS,
                             alerts);
@@ -1283,6 +1295,86 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     protected Alert createAlert(AlertLevel alertType, String alertText) {
         return new AlertDefault(alertType, alertText);
+    }
+
+    @Override
+    public Map<String, Cookie> getCookiesAdded() {
+        if (this.cookies == null) {
+            this.cookies = new HashMap<String, Cookie>();
+        }
+        return this.cookies;
+    }
+
+    @Override
+    public Cookie getCookieAdded(String name) {
+        return getCookiesAdded().get(name);
+    }
+
+    @Override
+    public void addCookie(Cookie cookie) {
+
+        boolean valid = validateCookie(cookie);
+        if (!valid) {
+            return;
+        }
+
+        getCookiesAdded().put(cookie.getName(), cookie);
+    }
+
+    @Override
+    public void addCookie(String name, String value) {
+        Cookie cookie = getCookieFactory().createCookie(name, value);
+        addCookie(cookie);
+    }
+
+    @Override
+    public void addCookie(String name, String value, int nbrSecondsToLive) {
+        Cookie cookie = getCookieFactory().createCookie(name, value);
+        cookie.setExpiresUsingMaxAge(nbrSecondsToLive);
+        addCookie(cookie);
+    }
+
+    @Override
+    public void addCookie(String name, String value, String path, String domain, Date expires, boolean secure,
+                          boolean httpOnly, boolean discard, int version) {
+        Cookie cookie = getCookieFactory().createCookie(name, value, path, domain, expires, secure, httpOnly, discard, version);
+        addCookie(cookie);
+    }
+
+    protected boolean validateCookie(Cookie cookie) {
+        Objects.requireNonNull(cookie, "Can't add a NULL cookie");
+
+        String name = cookie.getName();
+        if (StringUtils.isBlank(name)) {
+            throw new RuntimeException("A cookie can't have an empty name");
+        }
+        return true;
+    }
+
+    @Override
+    public void deleteCookie(String name) {
+        if (name == null) {
+            return;
+        }
+
+        Cookie cookie = createCookie(name);
+        cookie.setExpires(DateUtils.addYears(new Date(), -1));
+        addCookie(cookie);
+    }
+
+    @Override
+    public void deleteAllCookies() {
+
+        getCookiesAdded().clear();
+
+        for (String cookieName : getRequestContext().request().getCookies().keySet()) {
+            deleteCookie(cookieName);
+        }
+    }
+
+    @Override
+    public Cookie createCookie(String name) {
+        return getCookieFactory().createCookie(name);
     }
 
 }

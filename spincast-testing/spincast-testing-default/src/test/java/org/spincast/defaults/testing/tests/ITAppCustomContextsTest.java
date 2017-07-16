@@ -10,13 +10,13 @@ import org.spincast.defaults.testing.tests.utils.RequestContextTesting;
 import org.spincast.defaults.testing.tests.utils.RequestContextTestingDefault;
 import org.spincast.defaults.testing.tests.utils.WebsocketContextTesting;
 import org.spincast.defaults.testing.tests.utils.WebsocketContextTestingDefault;
-import org.spincast.testing.core.AppTestingConfigInfo;
-import org.spincast.testing.core.IntegrationTestAppBase;
+import org.spincast.testing.core.AppBasedTestingBase;
+import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
-public class ITAppCustomContextsTest extends IntegrationTestAppBase<RequestContextTesting, WebsocketContextTesting> {
+public class ITAppCustomContextsTest extends AppBasedTestingBase<RequestContextTesting, WebsocketContextTesting> {
 
     @Inject
     protected App app;
@@ -29,9 +29,14 @@ public class ITAppCustomContextsTest extends IntegrationTestAppBase<RequestConte
      * We specify our testing configurations informations.
      */
     @Override
-    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+    protected AppTestingConfigs getAppTestingConfigs() {
 
-        return new AppTestingConfigInfo() {
+        return new AppTestingConfigs() {
+
+            @Override
+            public boolean isBindAppClass() {
+                return true;
+            }
 
             @Override
             public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
@@ -75,7 +80,7 @@ public class ITAppCustomContextsTest extends IntegrationTestAppBase<RequestConte
     }
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 

@@ -20,7 +20,7 @@ public class SpincastHttpClientPlugin extends SpincastPluginBase {
         Module pluginModule = getPluginModule();
         setContextTypes(pluginModule);
 
-        module = Modules.override(pluginModule).with(module);
+        module = Modules.override(module).with(pluginModule);
         return module;
     }
 

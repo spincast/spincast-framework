@@ -38,8 +38,9 @@ public class GuiceTweaker implements SpincastPlugin {
     private Set<Key<?>> exactBindingsToRemove;
     private Set<Class<?>> bindingsHierarchiesToRemove;
     private Set<String> pluginsToDisable;
-    private boolean bindCurrentClassByDefault = true;
-
+    private boolean disableBindCurrentClass = false;
+    private Class<? extends RequestContext<?>> requestContextImplementationClass;
+    private Class<? extends WebsocketContext<?>> websocketContextImplementationClass;
     private Injector injector;
 
     @Override
@@ -75,8 +76,8 @@ public class GuiceTweaker implements SpincastPlugin {
         return this.bindingsHierarchiesToRemove;
     }
 
-    public boolean isBindCurrentClassByDefault() {
-        return this.bindCurrentClassByDefault;
+    public boolean isDisableBindCurrentClass() {
+        return this.disableBindCurrentClass;
     }
 
     @Override
@@ -122,13 +123,6 @@ public class GuiceTweaker implements SpincastPlugin {
             newModule = GuiceModuleUtils.removeBindings(newModule, getExactBindingsToRemove());
         }
 
-        //==========================================
-        // Overrides some bindings
-        //==========================================
-        if (getOverridingModules() != null && getOverridingModules().size() > 0) {
-            newModule = Modules.override(newModule).with(getOverridingModules());
-        }
-
         return newModule;
     }
 
@@ -142,6 +136,8 @@ public class GuiceTweaker implements SpincastPlugin {
         // Applies the extra plugins
         //==========================================
         for (SpincastPlugin plugin : getExtraPlugins()) {
+            plugin.setRequestContextImplementationClass(getRequestContextImplementationClass());
+            plugin.setWebsocketContextImplementationClass(getWebsocketContextImplementationClass());
             currentModule = plugin.apply(currentModule);
         }
 
@@ -158,9 +154,23 @@ public class GuiceTweaker implements SpincastPlugin {
     public Module afterPlugins(Module combinedModule) {
 
         //==========================================
-        // Nothing required for now
+        // Apply overriding modules
         //==========================================
+        Set<Module> overridingModules = getOverridingModules();
+        if (overridingModules != null && overridingModules.size() > 0) {
+
+            for (Module module : overridingModules) {
+                if (module instanceof SpincastContextTypesInterested) {
+                    ((SpincastContextTypesInterested)module).setRequestContextImplementationClass(getRequestContextImplementationClass());
+                    ((SpincastContextTypesInterested)module).setWebsocketContextImplementationClass(getWebsocketContextImplementationClass());
+                }
+            }
+
+            combinedModule = Modules.override(combinedModule).with(overridingModules);
+        }
+
         return combinedModule;
+
     }
 
     @Override
@@ -173,10 +183,20 @@ public class GuiceTweaker implements SpincastPlugin {
 
     @Override
     public void setRequestContextImplementationClass(Class<? extends RequestContext<?>> requestContextImplementationClass) {
+        this.requestContextImplementationClass = requestContextImplementationClass;
     }
 
     @Override
     public void setWebsocketContextImplementationClass(Class<? extends WebsocketContext<?>> websocketContextImplementationClass) {
+        this.websocketContextImplementationClass = websocketContextImplementationClass;
+    }
+
+    protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
+        return this.requestContextImplementationClass;
+    }
+
+    protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return this.websocketContextImplementationClass;
     }
 
     /**
@@ -220,8 +240,8 @@ public class GuiceTweaker implements SpincastPlugin {
         getExtraPlugins().add(plugin);
     }
 
-    public void bindCurrentClassByDefault(boolean bindCurrentClassByDefault) {
-        this.bindCurrentClassByDefault = bindCurrentClassByDefault;
+    public void disableBindCurrentClass() {
+        this.disableBindCurrentClass = true;
     }
 
     public void pluginToDisable(String pluginId) {

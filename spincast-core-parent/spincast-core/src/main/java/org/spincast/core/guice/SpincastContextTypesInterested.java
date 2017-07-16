@@ -9,7 +9,13 @@ import org.spincast.core.websocket.WebsocketContext;
  */
 public interface SpincastContextTypesInterested {
 
+    /**
+     * The implementation class to use for RequestContext.
+     */
     public void setRequestContextImplementationClass(Class<? extends RequestContext<?>> requestContextImplementationClass);
 
+    /**
+     * The implementation class to use for WebsocletContext.
+     */
     public void setWebsocketContextImplementationClass(Class<? extends WebsocketContext<?>> websocketContextImplementationClass);
 }

@@ -8,13 +8,13 @@ import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.net.HttpHeaders;
 
-public class ReverseProxyTest extends IntegrationTestNoAppDefaultContextsBase {
+public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void none() throws Exception {

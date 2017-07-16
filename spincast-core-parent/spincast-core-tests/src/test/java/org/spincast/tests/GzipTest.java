@@ -10,12 +10,12 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.GzipOption;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class GzipTest extends IntegrationTestNoAppDefaultContextsBase {
+public class GzipTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void gzipped() throws Exception {
@@ -42,7 +42,7 @@ public class GzipTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -62,7 +62,7 @@ public class GzipTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -83,7 +83,7 @@ public class GzipTest extends IntegrationTestNoAppDefaultContextsBase {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
                     context.response().sendPlainText("text");
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -103,7 +103,7 @@ public class GzipTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes("As bytes".getBytes("UTF-8"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

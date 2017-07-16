@@ -17,7 +17,7 @@ import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
-public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBase {
+public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected SpincastFilters<DefaultRequestContext> spincastFilters;
@@ -636,7 +636,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodsHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -683,7 +683,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodsHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -741,7 +741,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodsHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -798,7 +798,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -907,7 +907,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -973,7 +973,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -1136,7 +1136,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -1554,7 +1554,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodsHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 
@@ -1657,7 +1657,7 @@ public class CorsBeforeFilterTest extends IntegrationTestNoAppDefaultContextsBas
         String allowMethodsHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS);
         assertNotNull(allowMethodsHeader);
         Set<String> methods = new HashSet<>(Arrays.asList(StringUtils.split(allowMethodsHeader, ",")));
-        for(HttpMethod availableMethod : HttpMethod.values()) {
+        for (HttpMethod availableMethod : HttpMethod.values()) {
             assertTrue(methods.contains(availableMethod.name()));
         }
 

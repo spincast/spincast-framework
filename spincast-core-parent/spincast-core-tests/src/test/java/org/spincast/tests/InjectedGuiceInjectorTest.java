@@ -7,11 +7,11 @@ import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class InjectedGuiceInjectorTest extends IntegrationTestNoAppDefaultContextsBase {
+public class InjectedGuiceInjectorTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void test() throws Exception {

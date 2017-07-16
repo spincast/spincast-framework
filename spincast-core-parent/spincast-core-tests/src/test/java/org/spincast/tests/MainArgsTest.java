@@ -9,26 +9,20 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.MainArgs;
 import org.spincast.core.routing.Handler;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
-public class MainArgsTest extends IntegrationTestNoAppDefaultContextsBase {
+public class MainArgsTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Injector createInjector() {
-
-        return Spincast.configure()
-                       .init(this.args);
+    protected String[] getMainArgs() {
+        return new String[]{"one", "two"};
     }
-
-    protected String[] args = new String[]{"one", "two"};
 
     @Inject
     @MainArgs

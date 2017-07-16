@@ -390,7 +390,6 @@ public class SpincastStatics {
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
-
     }
 
 }

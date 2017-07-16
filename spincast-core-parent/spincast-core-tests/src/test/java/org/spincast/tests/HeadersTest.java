@@ -16,13 +16,13 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
+public class HeadersTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void requestHeaders() throws Exception {
@@ -62,13 +62,13 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     try {
                         requestHeaders.remove("HEADer1");
                         fail();
-                    } catch(UnsupportedOperationException ex) {
+                    } catch (UnsupportedOperationException ex) {
                     }
 
                     try {
                         requestHeaders.put("HEADer3", Arrays.asList("val3"));
                         fail();
-                    } catch(UnsupportedOperationException ex) {
+                    } catch (UnsupportedOperationException ex) {
                     }
 
                     headerFirstValue = context.request().getHeaderFirst("HEADer1");
@@ -77,7 +77,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     headerFirstValue = context.request().getHeaderFirst("HEADer3");
                     assertNull(headerFirstValue);
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -107,7 +107,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                     // mutable
                     responseHeaders.put("header1", Arrays.asList("val1", "val2"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -147,7 +147,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(vals);
                     assertEquals(0, vals.size());
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -182,7 +182,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     vals = context.response().getHeader("header1");
                     assertNotNull(vals);
                     assertEquals(2, vals.size());
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -217,7 +217,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     vals = context.response().getHeader("header1");
                     assertNotNull(vals);
                     assertEquals(2, vals.size());
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -251,7 +251,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(vals);
                     assertEquals(1, vals.size());
                     assertEquals("val3", vals.get(0));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -283,7 +283,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     List<String> vals = context.response().getHeader("header1");
                     assertNotNull(vals);
                     assertEquals(0, vals.size());
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -314,7 +314,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     List<String> vals = context.response().getHeader("header1");
                     assertNotNull(vals);
                     assertEquals(0, vals.size());
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -343,7 +343,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     String headerFirstValue = context.response().getHeaderFirst("HEAder1");
                     assertNotNull(headerFirstValue);
                     assertEquals("val1", headerFirstValue);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -386,7 +386,7 @@ public class HeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(vals);
                     assertEquals(0, vals.size());
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

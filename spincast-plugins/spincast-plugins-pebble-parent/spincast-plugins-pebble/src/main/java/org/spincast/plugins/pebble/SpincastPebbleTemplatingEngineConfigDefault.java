@@ -26,7 +26,7 @@ public class SpincastPebbleTemplatingEngineConfigDefault implements SpincastPebb
     public Extension getExtension() {
 
         //==========================================
-        // No extensions by default.
+        // No extra extensions by default.
         //==========================================
         return null;
     }

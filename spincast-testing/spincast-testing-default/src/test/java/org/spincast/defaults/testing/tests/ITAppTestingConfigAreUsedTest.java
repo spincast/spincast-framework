@@ -10,7 +10,7 @@ import org.spincast.defaults.bootstrapping.Spincast;
 
 import com.google.inject.Inject;
 
-public class ITAppTestingConfigAreUsedTest extends NoAppConfigTestClassBase {
+public class ITAppTestingConfigAreUsedTest extends IntegrationConfigTestClassBase {
 
     @Inject
     protected App app;
@@ -41,7 +41,7 @@ public class ITAppTestingConfigAreUsedTest extends NoAppConfigTestClassBase {
     }
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 

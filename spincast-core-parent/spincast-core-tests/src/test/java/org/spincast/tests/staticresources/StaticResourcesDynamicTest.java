@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -19,7 +19,7 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultContextsBase {
+public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected SpincastRouterConfig spincastRouterConfig;
@@ -34,7 +34,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
 
         try {
             FileUtils.cleanDirectory(getTestingWritableDir());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -66,7 +66,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                     context.response()
                            .sendCharacters(content1,
                                            "text/css");
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -112,7 +112,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                     nbrTimeCalled[0]++;
 
                     context.response().sendCharacters(content1, "text/css");
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -159,7 +159,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
 
                     // flush!
                     context.response().sendCharacters(content1, "text/css", true);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -212,7 +212,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                                assertTrue(newFile.isFile());
 
                                context.response().sendCharacters("path : " + resourcePath, "text/css");
-                           } catch(Exception ex) {
+                           } catch (Exception ex) {
                                throw SpincastStatics.runtimize(ex);
                            }
                        }
@@ -273,7 +273,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                                assertTrue(newFile.isFile());
 
                                context.response().sendCharacters("path : " + resourcePath, "text/css");
-                           } catch(Exception ex) {
+                           } catch (Exception ex) {
                                throw SpincastStatics.runtimize(ex);
                            }
                        }
@@ -304,7 +304,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
 
                                String resourcePath = context.request().getPathParam("resourcePath");
                                context.response().sendCharacters("path : " + resourcePath, "text/css");
-                           } catch(Exception ex) {
+                           } catch (Exception ex) {
                                throw SpincastStatics.runtimize(ex);
                            }
                        }
@@ -350,7 +350,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                            }
                        });
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -367,7 +367,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                            }
                        });
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -579,7 +579,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                            }
                        });
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -602,7 +602,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                     nbrTimeCalled[0]++;
 
                     context.response().sendPlainText(context.request().getQueryString(false));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -646,7 +646,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                     nbrTimeCalled[0]++;
 
                     context.response().sendPlainText(context.request().getQueryString(false));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -690,7 +690,7 @@ public class StaticResourcesDynamicTest extends IntegrationTestNoAppDefaultConte
                     nbrTimeCalled[0]++;
 
                     context.response().sendPlainText(context.request().getQueryString(false));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

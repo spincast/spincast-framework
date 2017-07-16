@@ -14,7 +14,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -23,7 +23,7 @@ import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
-public class RedirectRulesTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
 
     @Override
     public void beforeTest() {
@@ -33,7 +33,7 @@ public class RedirectRulesTest extends IntegrationTestNoAppDefaultContextsBase {
         // For the WebSocket tests
         //==========================================
         List<WebsocketEndpointManager> websocketEndpointManagers = getServer().getWebsocketEndpointManagers();
-        for(WebsocketEndpointManager manager : websocketEndpointManagers) {
+        for (WebsocketEndpointManager manager : websocketEndpointManagers) {
             manager.closeEndpoint();
         }
         assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
@@ -511,7 +511,7 @@ public class RedirectRulesTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             websocket("/one").connect(client);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println();
         }
     }

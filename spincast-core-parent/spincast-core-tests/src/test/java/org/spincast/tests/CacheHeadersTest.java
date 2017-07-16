@@ -18,7 +18,7 @@ import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
@@ -27,7 +27,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
+public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected ETagFactory eTagFactory;
@@ -46,7 +46,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
                     return;
                 }
 
@@ -93,7 +93,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
                     return;
                 }
 
@@ -140,7 +140,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
                     return;
                 }
 
@@ -177,7 +177,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                 this.nbr++;
 
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
                     return;
                 }
 
@@ -224,7 +224,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified).validate(true)) {
                     return;
                 }
 
@@ -257,8 +257,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag, false, true).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag, false, true).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -291,8 +291,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag, true).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag, true).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -325,8 +325,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag, true, true).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag, true, true).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -359,8 +359,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag, true).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag, true).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -393,8 +393,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag, true, true).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag, true, true).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -427,8 +427,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -461,8 +461,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -486,8 +486,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -518,7 +518,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().validate(false)) {
+                if (context.cacheHeaders().validate(false)) {
                     return;
                 }
 
@@ -543,7 +543,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().validate(false)) {
+                if (context.cacheHeaders().validate(false)) {
                     return;
                 }
 
@@ -570,8 +570,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -603,8 +603,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = null;
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(false)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(false)) {
                     return;
                 }
 
@@ -632,8 +632,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -666,8 +666,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -690,8 +690,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 String eTag = "123";
                 Date lastModified = null;
-                if(context.cacheHeaders().eTag(eTag).lastModified(lastModified)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).lastModified(lastModified)
+                           .validate(true)) {
                     return;
                 }
 
@@ -726,7 +726,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
 
                 String eTag = "123";
-                if(context.cacheHeaders().eTag(eTag).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).validate(true)) {
                     return;
                 }
 
@@ -752,7 +752,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
 
                 String eTag = "123";
-                if(context.cacheHeaders().eTag(eTag).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).validate(true)) {
                     return;
                 }
 
@@ -784,7 +784,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
 
                 String eTag = "123";
-                if(context.cacheHeaders().eTag(eTag).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).validate(true)) {
                     return;
                 }
 
@@ -816,7 +816,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
 
                 String eTag = "123";
-                if(context.cacheHeaders().eTag(eTag).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).validate(true)) {
                     return;
                 }
 
@@ -851,7 +851,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
 
                 String eTag = "123";
-                if(context.cacheHeaders().eTag(eTag).validate(true)) {
+                if (context.cacheHeaders().eTag(eTag).validate(true)) {
                     return;
                 }
 
@@ -890,7 +890,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
                 assertEquals(5, eTags.size());
 
                 Map<String, ETag> etagsByTag = new HashMap<>();
-                for(ETag eTag : eTags) {
+                for (ETag eTag : eTags) {
                     etagsByTag.put(eTag.getTag(), eTag);
                 }
 
@@ -944,8 +944,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -972,8 +972,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().lastModified(newDate)
-                          .validate(true)) {
+                if (context.cacheHeaders().lastModified(newDate)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1001,8 +1001,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123")
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123")
+                           .validate(true)) {
                     return;
                 }
 
@@ -1029,8 +1029,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1058,8 +1058,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1087,7 +1087,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().validate(false)) {
+                if (context.cacheHeaders().validate(false)) {
                     return;
                 }
 
@@ -1114,8 +1114,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1144,8 +1144,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1172,8 +1172,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1211,8 +1211,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1251,8 +1251,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1290,8 +1290,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1328,8 +1328,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1367,8 +1367,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1406,8 +1406,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1445,8 +1445,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1483,8 +1483,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1520,8 +1520,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1560,8 +1560,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1600,8 +1600,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1639,8 +1639,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1678,8 +1678,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1717,8 +1717,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1757,8 +1757,8 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().eTag("123").lastModified(date2)
-                          .validate(true)) {
+                if (context.cacheHeaders().eTag("123").lastModified(date2)
+                           .validate(true)) {
                     return;
                 }
 
@@ -1904,7 +1904,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().cache(123).validate(true)) {
+                if (context.cacheHeaders().cache(123).validate(true)) {
                     return;
                 }
                 context.response().sendPlainText("test");
@@ -1935,7 +1935,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().cache(123, true).validate(true)) {
+                if (context.cacheHeaders().cache(123, true).validate(true)) {
                     return;
                 }
                 context.response().sendPlainText("test");
@@ -1966,7 +1966,7 @@ public class CacheHeadersTest extends IntegrationTestNoAppDefaultContextsBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(context.cacheHeaders().cache(123, true, 456).validate(true)) {
+                if (context.cacheHeaders().cache(123, true, 456).validate(true)) {
                     return;
                 }
                 context.response().sendPlainText("test");

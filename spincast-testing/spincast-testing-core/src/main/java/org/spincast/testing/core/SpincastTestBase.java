@@ -13,10 +13,8 @@ import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
@@ -51,19 +49,13 @@ import com.google.inject.Scopes;
  * (created using the {@link #createInjector() createInjector} method) and 
  * the required dependencies will be injected into it.
  * <p>
- * The NAME_ASCENDING option is used to sort the tests. This means you
- * can force the order in which tests are run by prefixeing them 
- * with something like : "t01_firstTest", "t02_secondTest", etc.
- * <p>
  * A {@link GuiceTweaker} instance is used to
- * be able to tweak a Guice context automagaically. This for example
- * allows you to start your actual application, using its main() method,
- * but still be able to mock some components for testing purposes.
+ * be able to tweak a Guice context automagically. This for example
+ * allows you to start your actual application, using its main() method.
  * Note that the Guice tweaker only works when the Guice context is created
- * using the standard <code>Spincast</code> bootstrapper.
+ * using the standard <code>Spincast Bootstrapper</code> .
  */
 @RunWith(SpincastJUnitRunner.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvider,
                                        TestFailureListener,
                                        RepeatedClassAfterMethodProvider {
@@ -72,11 +64,12 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
 
     private Injector guice;
     private File testingWritableDir;
-    private SpincastConfig spincastConfig;
     private GuiceTweaker previousGuiceTweaker;
     private Map<String, String> extraSystemProperties;
     private Map<String, String> extraSystemPropertiesOriginal;
 
+    @Inject
+    protected SpincastConfig spincastConfig;
 
     @Override
     public void beforeClass() {
@@ -175,7 +168,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         //==========================================
         // Extra plugins to add?
         //==========================================
-        List<SpincastPlugin> plugins = getGuiceTweakerPlugins();
+        List<SpincastPlugin> plugins = getExtraPlugins();
         if (plugins != null) {
             for (SpincastPlugin plugin : plugins) {
                 guiceTweaker.plugin(plugin);
@@ -183,41 +176,47 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         }
 
         //==========================================
-        // Tweak testing configurations?
+        // Tweaks configurations
         //==========================================
-        if (isGuiceTweakerAutoTestingConfigBindings()) {
-
-            final Class<? extends SpincastConfig> configImplClass = getGuiceTweakerConfigImplementationClass();
-            if (configImplClass == null) {
-                throw new RuntimeException("When auto testing configuration are enabled (ie " +
-                                           "'isGuiceTweakerAutoTestingConfigBindings()' returns true) then the implementation class " +
-                                           "returned by 'getSpincastConfigTestingImplementationClass()' can't be null...");
-            }
-
-            //==========================================
-            // Tells GuiceTweaker to remove the current
-            // configuration bindings.
-            //==========================================
-            guiceTweaker.bindingHierarchyToRemove(SpincastConfig.class);
-
-            guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
-
-                @Override
-                protected void configure() {
-                    bind(configImplClass).in(Scopes.SINGLETON);
-                    bind(SpincastConfig.class).to(configImplClass).in(Scopes.SINGLETON);
-                }
-            });
+        final Class<? extends SpincastConfig> configImplClass = getTestingConfigImplementationClass();
+        if (configImplClass == null) {
+            throw new RuntimeException("The 'getSpincastConfigTestingImplementationClass()' can't return null.");
         }
+
+        //==========================================
+        // Tells GuiceTweaker to remove the current
+        // configuration bindings.
+        //==========================================
+        guiceTweaker.bindingHierarchyToRemove(SpincastConfig.class);
+
+        guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(configImplClass).in(Scopes.SINGLETON);
+                bind(SpincastConfig.class).to(configImplClass).in(Scopes.SINGLETON);
+            }
+        });
 
         //==========================================
         // Extra Module to add?
         //==========================================
-        if (getGuiceTweakerOverridingModule() != null) {
-            guiceTweaker.overridingModule(getGuiceTweakerOverridingModule());
+        if (getExtraOverridingModule() != null) {
+            guiceTweaker.overridingModule(getExtraOverridingModule());
+        }
+
+        //==========================================
+        // Disable bind current class?
+        //==========================================
+        if (isDisableBindCurrentClass()) {
+            guiceTweaker.disableBindCurrentClass();
         }
 
         return guiceTweaker;
+    }
+
+    protected boolean isDisableBindCurrentClass() {
+        return false;
     }
 
     /**
@@ -235,7 +234,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
      * return plugins;
      * </code>
      */
-    protected List<SpincastPlugin> getGuiceTweakerPlugins() {
+    protected List<SpincastPlugin> getExtraPlugins() {
         // None by default.
         return new ArrayList<SpincastPlugin>();
     }
@@ -243,22 +242,8 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     /**
      * If an overriding Module is to be added using the
      * Guice tweaker.
-     * <p>
-     * In general, you want to keep the Module from the parent by
-     * combining/overriding it with your custom Module. For example : 
-     * <p>
-     * <code>
-     * return Modules.combine(super.getGuiceTweakerOverridingModule(), 
-     *     new SpincastGuiceModuleBase() {
-     *         @Override
-     *         protected void configure() {
-     *             // your bindings...
-     *         }
-     *     }
-     * );
-     * </code>
      */
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule() {
 
         //==========================================
         // Empty Module, so Modules.combine() and
@@ -275,33 +260,10 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     }
 
     /**
-    * Should the SpincastConfig bindings be automatically
-    * configured? If <code>true</code> (the default),
-    * any bindings for components in the hierarchy of {@link SpincastConfig}
-    * will be removed and new bindings will be added using the
-    * testing implementation returned by {@link #getGuiceTweakerConfigImplementationClass()}.
-    * <p>
-    * In a typical Spincast application, those bindings will be removed :
-    * <ul>
-    * <li>SpincastConfig</li>
-    * <li>SpincastConfigDefault</li>
-    * <li>AppConfig</li>
-    * <li>AppConfigDefault</li>
-    * </ul>
-    * <p>
-    * If <code>false</code>, it is your responsibility to make
-    * sure valid testing configurations bindings are used to create the
-    * Guuice context.
-    */
-    protected boolean isGuiceTweakerAutoTestingConfigBindings() {
-        return true;
-    }
-
-    /**
-     * The implementation to use for the <code>SpincastConfig</code> binding
-     * when {@link #isGuiceTweakerAutoTestingConfigBindings()} is enabled.
+     * The implementation to use for the <code>SpincastConfig</code> binding,
+     * when running tests.
      */
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass() {
         return SpincastConfigTestingDefault.class;
     }
 
@@ -353,15 +315,6 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         // nothing
     }
 
-    @Inject
-    protected void setSpincastConfig(SpincastConfig spincastConfig) {
-        this.spincastConfig = spincastConfig;
-    }
-
-    protected SpincastConfig getSpincastConfig() {
-        return this.spincastConfig;
-    }
-
     protected Injector getInjector() {
         return this.guice;
     }
@@ -400,6 +353,10 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
             assertTrue(this.testingWritableDir.canWrite());
         }
         return this.testingWritableDir;
+    }
+
+    protected SpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
     }
 
     /**

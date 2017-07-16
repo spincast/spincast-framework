@@ -14,17 +14,17 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
-public class JsonPathsMergeTest extends UnitTestDefaultContextsBase {
+public class JsonPathsMergeTest extends NoAppTestingBase {
 
     @Override
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass() {
         return SpincastTestConfigTest.class;
     }
 

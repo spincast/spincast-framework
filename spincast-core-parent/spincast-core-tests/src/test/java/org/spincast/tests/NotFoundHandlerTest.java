@@ -13,14 +13,14 @@ import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class NotFoundHandlerTest extends IntegrationTestNoAppDefaultContextsBase {
+public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected SpincastDictionary spincastDictionary;
@@ -461,7 +461,7 @@ public class NotFoundHandlerTest extends IntegrationTestNoAppDefaultContextsBase
             public void handle(DefaultRequestContext context) {
 
                 // Not applied when the current route is a Not Found one!
-                if(context.routing().isNotFoundRoute()) {
+                if (context.routing().isNotFoundRoute()) {
                     return;
                 }
 

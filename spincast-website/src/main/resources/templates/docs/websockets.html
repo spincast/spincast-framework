@@ -481,8 +481,8 @@ WebSocket Controllers
                 <pre class="ace ace-java"
 >public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-    Cookie sessionIdCookie = context.cookies().getCookie("sessionId");
-    if(sessionIdCookie == null || !canUserAccessWebsocketEndpoint(sessionIdCookie.getValue())) {
+    String sessionId = context.request().getCookie("sessionId");
+    if(sessionId == null || !canUserAccessWebsocketEndpoint(sessionId)) {
         context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
         return null;
     }

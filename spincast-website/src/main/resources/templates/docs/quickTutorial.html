@@ -171,7 +171,7 @@ router.ALL("/hello").save(context -> context.response().sendPlainText("Hello!"))
     String authorizationHeader = context.request().getHeaderFirst("Authorization");
 
     // Cookie
-    Cookie localeCookie = context.cookies().getCookie("locale");
+    String localeCookieValue = context.request().getCookie("locale");
 
     //...
 }</pre>
@@ -477,7 +477,7 @@ router.POST("/books/${bookId}").save(bookController::booksPost);
     String authorizationHeader = context.request().getHeaderFirst("Authorization");
 
     // Cookie
-    Cookie localeCookie = context.cookies().getCookie("locale");
+    String localeCookieValue = context.request().getCookie("locale");
 
     //...
 }</pre>

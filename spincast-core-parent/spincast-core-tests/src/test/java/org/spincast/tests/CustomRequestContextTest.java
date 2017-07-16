@@ -9,25 +9,29 @@ import org.spincast.core.exchange.RequestContextBaseDeps;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.core.websocket.DefaultWebsocketContextDefault;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.defaults.testing.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.IntegrationTestNoAppBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.CustomRequestContextTest.CustomRequestContext;
 
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class CustomRequestContextTest extends
-                                      IntegrationTestNoAppBase<CustomRequestContext, DefaultWebsocketContext> {
+                                      NoAppStartHttpServerCustomContextTypesTestingBase<CustomRequestContext, DefaultWebsocketContext> {
+
 
     @Override
-    protected Injector createInjector() {
-        return Spincast.configure()
-                       .requestContextImplementationClass(CustomRequestContextDefault.class)
-                       .init(new String[]{});
+    protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
+        return CustomRequestContextDefault.class;
+    }
+
+    @Override
+    protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return DefaultWebsocketContextDefault.class;
     }
 
     public static interface CustomRequestContext extends RequestContext<CustomRequestContext> {

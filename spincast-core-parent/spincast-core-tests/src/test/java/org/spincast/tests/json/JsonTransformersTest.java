@@ -8,11 +8,11 @@ import org.spincast.core.json.ElementTransformer;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class JsonTransformersTest extends UnitTestDefaultContextsBase {
+public class JsonTransformersTest extends NoAppTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -24,17 +24,17 @@ public class JsonTransformersTest extends UnitTestDefaultContextsBase {
     private ElementTransformer spaceToStarTransformer;
 
     protected ElementTransformer getSpaceToStarTransformer() {
-        if(this.spaceToStarTransformer == null) {
+        if (this.spaceToStarTransformer == null) {
             this.spaceToStarTransformer = new ElementTransformer() {
 
                 @Override
                 public Object transform(Object obj) {
 
-                    if(obj == null) {
+                    if (obj == null) {
                         return null;
                     }
 
-                    if(!(obj instanceof String)) {
+                    if (!(obj instanceof String)) {
                         return obj;
                     }
 
@@ -48,17 +48,17 @@ public class JsonTransformersTest extends UnitTestDefaultContextsBase {
     private ElementTransformer aToDollarTransformer;
 
     protected ElementTransformer getAToDollarTransformer() {
-        if(this.aToDollarTransformer == null) {
+        if (this.aToDollarTransformer == null) {
             this.aToDollarTransformer = new ElementTransformer() {
 
                 @Override
                 public Object transform(Object obj) {
 
-                    if(obj == null) {
+                    if (obj == null) {
                         return null;
                     }
 
-                    if(!(obj instanceof String)) {
+                    if (!(obj instanceof String)) {
                         return obj;
                     }
 

@@ -10,7 +10,7 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
@@ -22,10 +22,10 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class ValidCustomFilterPositionTest extends IntegrationTestNoAppDefaultContextsBase {
+public class ValidCustomFilterPositionTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule2() {
         return new SpincastGuiceModuleBase() {
 
             @Override

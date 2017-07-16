@@ -10,7 +10,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
@@ -19,10 +19,10 @@ import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
-public class StaticResourcesDynamicDebugEnvironmentTest extends IntegrationTestNoAppDefaultContextsBase {
+public class StaticResourcesDynamicDebugEnvironmentTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass2() {
         return TestConfig.class;
     }
 

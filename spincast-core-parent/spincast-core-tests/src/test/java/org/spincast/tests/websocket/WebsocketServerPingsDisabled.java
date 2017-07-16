@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
@@ -15,10 +15,10 @@ import org.spincast.tests.varia.WebsocketClientTest;
 
 import com.google.inject.Module;
 
-public class WebsocketServerPingsDisabled extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class WebsocketServerPingsDisabled extends NoAppWebsocketTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule3() {
         return new SpincastGuiceModuleBase() {
 
             @Override

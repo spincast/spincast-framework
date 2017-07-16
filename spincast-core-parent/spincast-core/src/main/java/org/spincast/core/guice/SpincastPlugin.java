@@ -2,9 +2,6 @@ package org.spincast.core.guice;
 
 import java.util.Set;
 
-import org.spincast.core.exchange.RequestContext;
-import org.spincast.core.websocket.WebsocketContext;
-
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
@@ -25,18 +22,6 @@ public interface SpincastPlugin extends SpincastContextTypesInterested {
      * @return an ajusted Guice module.
      */
     public Module apply(Module currentModule);
-
-    /**
-     * The implementation class to use for RequestContext.
-     */
-    @Override
-    public void setRequestContextImplementationClass(Class<? extends RequestContext<?>> requestContextImplementationClass);
-
-    /**
-     * The implementation class to use for WebsocletContext.
-     */
-    @Override
-    public void setWebsocketContextImplementationClass(Class<? extends WebsocketContext<?>> websocketContextImplementationClass);
 
     /**
      * If required, the ids of plugins that shouldn't

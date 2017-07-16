@@ -16,10 +16,10 @@ import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.Router;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 
-public class RoutingFiltersTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
     //==========================================
     // Remove all routes, even Spincast ones
@@ -143,7 +143,7 @@ public class RoutingFiltersTest extends IntegrationTestNoAppDefaultContextsBase 
         try {
             getRouter().GET("/").save(null);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -152,7 +152,7 @@ public class RoutingFiltersTest extends IntegrationTestNoAppDefaultContextsBase 
         try {
             getRouter().GET("/").before(null).save(this.mainHandler);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -162,7 +162,7 @@ public class RoutingFiltersTest extends IntegrationTestNoAppDefaultContextsBase 
         try {
             getRouter().GET("/").before(this.beforeFilter).after(null).save(this.mainHandler);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -890,9 +890,9 @@ public class RoutingFiltersTest extends IntegrationTestNoAppDefaultContextsBase 
 
                 assertEquals("one", context.request().getPathParam("beforeAfter"));
 
-                if(context.routing().getPosition() < 0) {
+                if (context.routing().getPosition() < 0) {
                     context.response().sendPlainText("BF2");
-                } else if(context.routing().getPosition() > 0) {
+                } else if (context.routing().getPosition() > 0) {
                     context.response().sendPlainText("AF2");
                 }
             }

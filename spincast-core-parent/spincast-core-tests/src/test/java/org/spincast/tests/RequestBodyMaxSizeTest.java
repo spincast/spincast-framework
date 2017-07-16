@@ -7,7 +7,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -15,10 +15,10 @@ import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
-public class RequestBodyMaxSizeTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass2() {
         return TestingSpincastConfig2.class;
     }
 

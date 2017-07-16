@@ -44,23 +44,23 @@ public class SpincastRoutingPlugin extends SpincastPluginBase {
         // Check if a custom SpincastRouter implementation
         // class must be used...
         //==========================================
-        if(specificRouterImplementationClass == null) {
+        if (specificRouterImplementationClass == null) {
 
             GuiceModuleUtils guiceModuleUtils = new GuiceModuleUtils(module);
 
             @SuppressWarnings("rawtypes")
             Set<Class<? extends Router>> classes =
                     guiceModuleUtils.getBoundClassesExtending(Router.class);
-            if(classes.size() > 0) {
+            if (classes.size() > 0) {
 
-                if(classes.size() > 1) {
+                if (classes.size() > 1) {
                     String msg = "More than one custom implementations of " +
                                  Router.class.getName() + " " +
                                  "has been found. You'll have to pass the implementation " +
                                  "to use the constructor of this plugin to remove the " +
                                  "ambiguity about which one to use. Bindings found :\n";
 
-                    for(@SuppressWarnings("rawtypes")
+                    for (@SuppressWarnings("rawtypes")
                     Class<? extends Router> clazz : classes) {
                         msg += "- " + clazz.getName() + "\n";
                     }
@@ -76,7 +76,7 @@ public class SpincastRoutingPlugin extends SpincastPluginBase {
         Module pluginModule = getPluginModule(specificRouterImplementationClass);
         setContextTypes(pluginModule);
 
-        module = Modules.override(pluginModule).with(module);
+        module = Modules.override(module).with(pluginModule);
         return module;
     }
 

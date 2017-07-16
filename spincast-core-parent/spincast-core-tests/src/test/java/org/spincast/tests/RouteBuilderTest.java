@@ -7,7 +7,7 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.Route;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -15,7 +15,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.common.collect.Lists;
 import com.google.common.net.HttpHeaders;
 
-public class RouteBuilderTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
 
     //==========================================
     // Remove all routes, even Spincast ones

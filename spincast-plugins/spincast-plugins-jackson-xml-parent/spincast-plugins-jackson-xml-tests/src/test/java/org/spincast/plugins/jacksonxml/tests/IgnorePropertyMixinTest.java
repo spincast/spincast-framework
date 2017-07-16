@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jacksonxml.XmlMixinInfo;
 import org.spincast.plugins.jacksonxml.XmlMixinInfoDefault;
 
@@ -15,10 +15,10 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-public class IgnorePropertyMixinTest extends UnitTestDefaultContextsBase {
+public class IgnorePropertyMixinTest extends NoAppTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 

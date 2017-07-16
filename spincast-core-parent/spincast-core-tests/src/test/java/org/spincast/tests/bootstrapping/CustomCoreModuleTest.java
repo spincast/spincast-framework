@@ -63,6 +63,7 @@ public class CustomCoreModuleTest {
         assertFalse(initCalled);
 
         Spincast.configure()
+                .disableCorePlugin()
                 .module(new CoreModuleTesting())
                 .init(args);
         assertTrue(initCalled);

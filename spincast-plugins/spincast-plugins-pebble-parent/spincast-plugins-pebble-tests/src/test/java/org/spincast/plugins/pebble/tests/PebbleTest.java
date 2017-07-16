@@ -17,32 +17,28 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class PebbleTest extends IntegrationTestNoAppDefaultContextsBase {
+public class PebbleTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Injector createInjector() {
+    protected Module getExtraOverridingModule2() {
+        return new SpincastGuiceModuleBase() {
 
-        return Spincast.configure()
-                       .module(new SpincastGuiceModuleBase() {
-
-                           @Override
-                           protected void configure() {
-                               bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigTesting.class)
-                                                                               .in(Scopes.SINGLETON);
-                           }
-                       })
-                       .init(new String[]{});
+            @Override
+            protected void configure() {
+                bind(SpincastPebbleTemplatingEngineConfig.class).to(SpincastPebbleTemplatingEngineConfigTesting.class)
+                                                                .in(Scopes.SINGLETON);
+            }
+        };
     }
 
     /**

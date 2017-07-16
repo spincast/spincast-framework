@@ -9,24 +9,29 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
+import org.spincast.defaults.testing.AppBasedDefaultContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.AppTestingConfigInfo;
+import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
-public class SumTest extends IntegrationTestAppDefaultContextsBase {
+public class SumTest extends AppBasedDefaultContextTypesTestingBase {
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 
     @Override
-    protected AppTestingConfigInfo getAppTestingConfigInfo() {
-        return new AppTestingConfigInfo() {
+    protected AppTestingConfigs getAppTestingConfigs() {
+        return new AppTestingConfigs() {
+
+            @Override
+            public boolean isBindAppClass() {
+                return true;
+            }
 
             @Override
             public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {

@@ -78,16 +78,16 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
         super(mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
 
         List<Object> elements;
-        if(initialElements != null) {
+        if (initialElements != null) {
 
             //==========================================
             // If the JsonArray is immutable, all JsonObject
             // and JsonArray from the initial list must be
             // immutable too.
             //==========================================
-            if(!mutable) {
-                for(Object element : initialElements) {
-                    if(element instanceof JsonObjectOrArray && ((JsonObjectOrArray)element).isMutable()) {
+            if (!mutable) {
+                for (Object element : initialElements) {
+                    if (element instanceof JsonObjectOrArray && ((JsonObjectOrArray)element).isMutable()) {
                         throw new RuntimeException("To create an immutable JsonArray from initial elements, " +
                                                    "all the JsonObject and JsonArray elements must already be " +
                                                    "immutable too. Here, at least one element is not immutable : " + element);
@@ -103,7 +103,7 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
         // If the JsonArray is immutable, we make the underlying
         // list immutable.
         //==========================================
-        if(!mutable) {
+        if (!mutable) {
             elements = Collections.unmodifiableList(elements);
         }
 
@@ -116,11 +116,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
 
     protected Object getElement(int index) {
 
-        if(index < 0) {
+        if (index < 0) {
             index = 0;
         }
 
-        if(index > getElements().size() - 1) {
+        if (index > getElements().size() - 1) {
             return null;
         }
 
@@ -151,11 +151,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray addAll(Collection<?> values) {
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
 
-        for(Object value : values) {
+        for (Object value : values) {
             setOrAdd(null, value, false, true);
         }
         return this;
@@ -164,11 +164,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray addAll(Collection<?> values, boolean clone) {
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
 
-        for(Object value : values) {
+        for (Object value : values) {
             setOrAdd(null, value, clone, true);
         }
         return this;
@@ -177,11 +177,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray addAll(Object[] values) {
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
 
-        for(Object value : values) {
+        for (Object value : values) {
             setOrAdd(null, value, false, true);
         }
         return this;
@@ -190,11 +190,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray addAll(Object[] values, boolean clone) {
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
 
-        for(Object value : values) {
+        for (Object value : values) {
             setOrAdd(null, value, clone, true);
         }
         return this;
@@ -203,11 +203,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray addAll(JsonArray values) {
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
 
-        for(Object value : values) {
+        for (Object value : values) {
             setOrAdd(null, value, false, true);
         }
         return this;
@@ -216,11 +216,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray addAll(JsonArray values, boolean clone) {
 
-        if(values == null) {
+        if (values == null) {
             return this;
         }
 
-        for(Object value : values) {
+        for (Object value : values) {
             setOrAdd(null, value, clone, true);
         }
         return this;
@@ -238,21 +238,21 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
 
     public JsonArray setOrAdd(Integer index, Object value, boolean clone, boolean insert) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
-        if(value != null) {
+        if (value != null) {
 
             //==========================================
             // Can the object convert itself to a 
             // JsonObject or JsonArray?
             //==========================================
             boolean newObject = false;
-            if(value instanceof ToJsonObjectConvertible) {
+            if (value instanceof ToJsonObjectConvertible) {
                 newObject = true;
                 value = ((ToJsonObjectConvertible)value).convertToJsonObject();
-            } else if(value instanceof ToJsonArrayConvertible) {
+            } else if (value instanceof ToJsonArrayConvertible) {
                 newObject = true;
                 value = ((ToJsonArrayConvertible)value).convertToJsonArray();
             }
@@ -262,8 +262,8 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
             // We always do if the value is a JsonObject or a JsonArray and
             // its mutability is not the same as the current object.
             //==========================================
-            if(value instanceof JsonObjectOrArray) {
-                if(!newObject && (clone || ((JsonObjectOrArray)value).isMutable() != isMutable())) {
+            if (value instanceof JsonObjectOrArray) {
+                if (!newObject && (clone || ((JsonObjectOrArray)value).isMutable() != isMutable())) {
                     value = ((JsonObjectOrArray)value).clone(isMutable());
                 }
             } else {
@@ -278,7 +278,7 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
 
     protected JsonArray addAsIs(Object value) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -292,15 +292,15 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
 
     protected JsonArray setOrAddAsIs(Integer index, Object value, boolean insert) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
-        if(index == null) {
+        if (index == null) {
             return addAsIs(value);
         }
 
-        if(index < 0) {
+        if (index < 0) {
             throw new RuntimeException("Invalid index, must be >= 0 : " + index);
         }
 
@@ -310,17 +310,17 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
         // we insert NULL elements at intermediate indexes.
         //==========================================
         List<Object> elements = getElements();
-        if(index >= elements.size()) {
+        if (index >= elements.size()) {
             int limit = index;
-            if(!insert) {
+            if (!insert) {
                 limit = index + 1;
             }
-            for(int i = elements.size(); i < limit; i++) {
+            for (int i = elements.size(); i < limit; i++) {
                 elements.add(i, null);
             }
         }
 
-        if(insert) {
+        if (insert) {
             elements.add(index, value);
         } else {
             elements.set(index, value);
@@ -332,7 +332,7 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray remove(String jsonPath) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -343,11 +343,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray remove(int index) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
-        if(index < 0 || index > (getElements().size() - 1)) {
+        if (index < 0 || index > (getElements().size() - 1)) {
             return this;
         }
 
@@ -359,7 +359,7 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public JsonArray clear() {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
@@ -388,8 +388,8 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
         List<Object> elements = getElements();
 
         List<String> stringList = new ArrayList<String>(elements.size());
-        for(Object element : elements) {
-            if(element == null) {
+        for (Object element : elements) {
+            if (element == null) {
                 stringList.add(null);
             } else {
                 stringList.add(element.toString());
@@ -532,9 +532,9 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     protected Object getElementNoKeyParsing(String jsonPath, boolean hasDefaultValue, Object defaultValue) {
         int pos = Integer.parseInt(jsonPath);
-        if(pos < 0 || pos > (getElements().size() - 1)) {
+        if (pos < 0 || pos > (getElements().size() - 1)) {
 
-            if(hasDefaultValue) {
+            if (hasDefaultValue) {
                 return defaultValue;
             }
             return null;
@@ -550,8 +550,8 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
 
         JsonArray array = getJsonArray(index, null);
 
-        if(array == null) {
-            if(hasDefaultValue) {
+        if (array == null) {
+            if (hasDefaultValue) {
                 return defaultValue;
             }
             return null;
@@ -674,11 +674,11 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     public List<Object> convertToPlainList() {
 
         List<Object> list = new ArrayList<Object>();
-        for(Object element : this) {
+        for (Object element : this) {
 
-            if(element instanceof JsonObject) {
+            if (element instanceof JsonObject) {
                 element = ((JsonObject)element).convertToPlainMap();
-            } else if(element instanceof JsonArray) {
+            } else if (element instanceof JsonArray) {
                 element = ((JsonArray)element).convertToPlainList();
             }
             list.add(element);
@@ -805,19 +805,19 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public boolean isEquivalentTo(JsonArray other) {
 
-        if(other == null) {
+        if (other == null) {
             return false;
         }
-        if(other == this) {
+        if (other == this) {
             return true;
         }
 
-        if(other.size() != this.size()) {
+        if (other.size() != this.size()) {
             return false;
         }
 
         int nbr = this.size();
-        for(int i = 0; i < nbr; i++) {
+        for (int i = 0; i < nbr; i++) {
 
             Object thisElement = getElement(i);
             Object otherElement = other.getObject(i);
@@ -825,28 +825,28 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
             Object otherElementConverted =
                     getObjectConverter().convertTo(otherElement, (thisElement != null ? thisElement.getClass() : null));
 
-            if(thisElement != null && thisElement instanceof JsonObject) {
-                if(otherElementConverted != null && !(otherElementConverted instanceof JsonObject)) {
+            if (thisElement != null && thisElement instanceof JsonObject) {
+                if (otherElementConverted != null && !(otherElementConverted instanceof JsonObject)) {
                     return false;
                 }
-                if(!((JsonObject)thisElement).isEquivalentTo((JsonObject)otherElementConverted)) {
+                if (!((JsonObject)thisElement).isEquivalentTo((JsonObject)otherElementConverted)) {
                     return false;
                 }
-            } else if(thisElement != null && thisElement instanceof JsonArray) {
-                if(otherElementConverted != null && !(otherElementConverted instanceof JsonArray)) {
+            } else if (thisElement != null && thisElement instanceof JsonArray) {
+                if (otherElementConverted != null && !(otherElementConverted instanceof JsonArray)) {
                     return false;
                 }
-                if(!((JsonArray)thisElement).isEquivalentTo((JsonArray)otherElementConverted)) {
+                if (!((JsonArray)thisElement).isEquivalentTo((JsonArray)otherElementConverted)) {
                     return false;
                 }
-            } else if(thisElement != null && thisElement instanceof byte[]) {
-                if(otherElementConverted != null && !(otherElementConverted instanceof byte[])) {
+            } else if (thisElement != null && thisElement instanceof byte[]) {
+                if (otherElementConverted != null && !(otherElementConverted instanceof byte[])) {
                     return false;
                 }
-                if(!Arrays.equals((byte[])thisElement, (byte[])otherElementConverted)) {
+                if (!Arrays.equals((byte[])thisElement, (byte[])otherElementConverted)) {
                     return false;
                 }
-            } else if(!Objects.equals(thisElement, otherElementConverted)) {
+            } else if (!Objects.equals(thisElement, otherElementConverted)) {
                 return false;
             }
         }
@@ -863,13 +863,13 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     public void transformAll(ElementTransformer transformer, boolean recursive) {
 
         int size = size();
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             transform(i, transformer);
-            if(recursive) {
+            if (recursive) {
                 Object obj = getObject(i);
-                if(obj instanceof JsonArray) {
+                if (obj instanceof JsonArray) {
                     ((JsonArray)obj).transformAll(transformer, recursive);
-                } else if(obj instanceof JsonObject) {
+                } else if (obj instanceof JsonObject) {
                     ((JsonObject)obj).transformAll(transformer, recursive);
                 }
             }
@@ -889,13 +889,13 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     protected JsonArray putAsIs(String key, Object value) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
         Objects.requireNonNull(key, "The key can't be NULL");
 
-        if(key.startsWith("[") && key.endsWith("]")) {
+        if (key.startsWith("[") && key.endsWith("]")) {
             key = key.substring(1, key.length() - 1);
         }
         int pos = Integer.parseInt(key);

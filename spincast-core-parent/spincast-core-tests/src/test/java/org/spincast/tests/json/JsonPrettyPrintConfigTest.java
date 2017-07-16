@@ -7,19 +7,19 @@ import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jacksonjson.SpincastJsonManagerConfig;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class JsonPrettyPrintConfigTest extends UnitTestDefaultContextsBase {
+public class JsonPrettyPrintConfigTest extends NoAppTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

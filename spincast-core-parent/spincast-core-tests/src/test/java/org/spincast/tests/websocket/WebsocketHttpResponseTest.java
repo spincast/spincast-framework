@@ -7,12 +7,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.DefaultHandler;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -22,7 +21,7 @@ import org.spincast.tests.varia.DefaultWebsocketControllerTest;
  * Test HTTP responses from the server for Websocket upgrade
  * requests but without the upgrade to actually be made.
  */
-public class WebsocketHttpResponseTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
 
     int[] nbr = new int[]{0};
 
@@ -63,10 +62,10 @@ public class WebsocketHttpResponseTest extends WebsocketIntegrationTestNoAppDefa
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                Cookie cookie = context.cookies().getCookie("username");
+                String cookie = context.request().getCookie("username");
                 assertNotNull(cookie);
 
-                if(!("Stromgol".equals(cookie.getValue()))) {
+                if (!("Stromgol".equals(cookie))) {
                     context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
                     context.response().sendPlainText("Websocket upgrade not allowed.");
                     return null;
@@ -107,10 +106,10 @@ public class WebsocketHttpResponseTest extends WebsocketIntegrationTestNoAppDefa
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Cookie cookie = context.cookies().getCookie("username");
+                String cookie = context.request().getCookie("username");
                 assertNotNull(cookie);
 
-                if(!("Stromgol".equals(cookie.getValue()))) {
+                if (!("Stromgol".equals(cookie))) {
                     throw new PublicExceptionDefault("Websocket upgrade not allowed.", HttpStatus.SC_FORBIDDEN);
                 }
             }
@@ -155,10 +154,10 @@ public class WebsocketHttpResponseTest extends WebsocketIntegrationTestNoAppDefa
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Cookie cookie = context.cookies().getCookie("username");
+                String cookie = context.request().getCookie("username");
                 assertNotNull(cookie);
 
-                if(!("Stromgol".equals(cookie.getValue()))) {
+                if (!("Stromgol".equals(cookie))) {
                     throw new PublicExceptionDefault("Websocket upgrade not allowed.", HttpStatus.SC_FORBIDDEN);
                 }
             }
@@ -205,10 +204,10 @@ public class WebsocketHttpResponseTest extends WebsocketIntegrationTestNoAppDefa
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                Cookie cookie = context.cookies().getCookie("username");
+                String cookie = context.request().getCookie("username");
                 assertNotNull(cookie);
 
-                if(!("Stromgol".equals(cookie.getValue()))) {
+                if (!("Stromgol".equals(cookie))) {
                     context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
                     context.response().sendPlainText("Websocket upgrade not allowed.");
                     return null;

@@ -12,12 +12,12 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class FileUploadTest extends IntegrationTestNoAppDefaultContextsBase {
+public class FileUploadTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void oneFile() throws Exception {
@@ -33,7 +33,7 @@ public class FileUploadTest extends IntegrationTestNoAppDefaultContextsBase {
 
                     String content = FileUtils.readFileToString(uploadedFile, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -60,7 +60,7 @@ public class FileUploadTest extends IntegrationTestNoAppDefaultContextsBase {
 
                     String content2 = FileUtils.readFileToString(uploadedFiles.get(1), "UTF-8");
                     assertEquals("Le bœuf et l'éléphant! 2", content2);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -116,7 +116,7 @@ public class FileUploadTest extends IntegrationTestNoAppDefaultContextsBase {
                     content = FileUtils.readFileToString(fileSystemBased, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

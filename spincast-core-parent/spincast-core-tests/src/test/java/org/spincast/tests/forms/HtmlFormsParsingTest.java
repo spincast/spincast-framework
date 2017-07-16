@@ -15,13 +15,13 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class HtmlFormsParsingTest extends IntegrationTestNoAppDefaultContextsBase {
+public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -94,7 +94,7 @@ public class HtmlFormsParsingTest extends IntegrationTestNoAppDefaultContextsBas
                 try {
                     context.request().getFormData().getJsonArray("name");
                     fail();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                 }
 
                 context.response().sendPlainText("ok");
@@ -260,7 +260,7 @@ public class HtmlFormsParsingTest extends IntegrationTestNoAppDefaultContextsBas
                 try {
                     formDatas.put("nope", "immutable");
                     fail();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                 }
                 JsonObject mutableClone = formDatas.clone(true);
                 assertNotNull(mutableClone);

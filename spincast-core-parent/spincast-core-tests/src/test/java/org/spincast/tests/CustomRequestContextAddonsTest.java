@@ -16,49 +16,59 @@ import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.core.websocket.DefaultWebsocketContextDefault;
+import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.defaults.testing.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.IntegrationTestNoAppBase;
 import org.spincast.tests.CustomRequestContextAddonsTest.TestRequestContext;
 import org.spincast.tests.varia.RequestContextAddon;
 import org.spincast.tests.varia.RequestContextAddonDefault;
 
-import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class CustomRequestContextAddonsTest extends IntegrationTestNoAppBase<TestRequestContext, DefaultWebsocketContext> {
+public class CustomRequestContextAddonsTest extends
+                                            NoAppStartHttpServerCustomContextTypesTestingBase<TestRequestContext, DefaultWebsocketContext> {
 
     @Override
-    protected Injector createInjector() {
-        return Spincast.configure()
-                       .requestContextImplementationClass(TestRequestContextDefault.class)
-                       .module(new SpincastGuiceModuleBase() {
+    protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
+        return TestRequestContextDefault.class;
+    }
 
-                           @Override
-                           protected void configure() {
+    @Override
+    protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return DefaultWebsocketContextDefault.class;
+    }
 
-                               //==========================================
-                               // Bind the request context add-on in Request scope!
-                               //==========================================
-                               bind(RequestContextAddon.class).to(RequestContextAddonDefault.class)
-                                                              .in(SpincastGuiceScopes.REQUEST);
+    @Override
+    protected Module getExtraOverridingModule2() {
 
-                               //==========================================
-                               // Bind an object as singleton
-                               //==========================================
-                               bind(Singleton.class).in(Scopes.SINGLETON);
+        return new SpincastGuiceModuleBase() {
 
-                               //==========================================
-                               // Bind an object not as singleton or request scoped
-                               //==========================================
-                               bind(TestNotSingletonNorRequestScoped.class);
-                           }
-                       })
-                       .init(new String[]{});
+            @Override
+            protected void configure() {
+
+                //==========================================
+                // Bind the request context add-on in Request scope!
+                //==========================================
+                bind(RequestContextAddon.class).to(RequestContextAddonDefault.class)
+                                               .in(SpincastGuiceScopes.REQUEST);
+
+                //==========================================
+                // Bind an object as singleton
+                //==========================================
+                bind(Singleton.class).in(Scopes.SINGLETON);
+
+                //==========================================
+                // Bind an object not as singleton or request scoped
+                //==========================================
+                bind(TestNotSingletonNorRequestScoped.class);
+            }
+        };
     }
 
     public static class Singleton {

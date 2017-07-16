@@ -11,7 +11,7 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -20,15 +20,15 @@ import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
-public class RequestScopeTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RequestScopeTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule2() {
+
         return new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
-
                 bind(ServiceClass.class).in(Scopes.SINGLETON);
                 bind(ControllerClass.class).in(Scopes.SINGLETON);
 
@@ -68,7 +68,7 @@ public class RequestScopeTest extends IntegrationTestNoAppDefaultContextsBase {
             assertNotNull(requestContext2);
             assertTrue(requestContext1 == requestContext2);
 
-            requestContext1.cookies().addCookie("testCookie", "testValue");
+            requestContext1.response().addCookie("testCookie", "testValue");
 
             requestContext1.response().sendPlainText(requestContext1.getLocaleToUse().toString());
         }
@@ -134,7 +134,7 @@ public class RequestScopeTest extends IntegrationTestNoAppDefaultContextsBase {
             public void handle(DefaultRequestContext context) {
                 RequestScopeTest.this.controller.testHandlerMethod();
 
-                Cookie cookie = context.cookies().getCookie("testCookie");
+                Cookie cookie = context.response().getCookieAdded("testCookie");
                 assertNotNull(cookie);
                 assertEquals("testValue", cookie.getValue());
             }

@@ -9,13 +9,13 @@ import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class RoutingPatternsTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected DefaultRouteParamAliasesBinder<DefaultRequestContext, DefaultWebsocketContext> defaultPredefinedRouteParamPatternsBinder;
@@ -151,7 +151,7 @@ public class RoutingPatternsTest extends IntegrationTestNoAppDefaultContextsBase
                 }
             });
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("");
         }
     }
@@ -167,7 +167,7 @@ public class RoutingPatternsTest extends IntegrationTestNoAppDefaultContextsBase
                 }
             });
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -184,7 +184,7 @@ public class RoutingPatternsTest extends IntegrationTestNoAppDefaultContextsBase
                 }
             });
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 

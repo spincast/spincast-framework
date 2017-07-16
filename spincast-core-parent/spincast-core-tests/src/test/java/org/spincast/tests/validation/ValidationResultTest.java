@@ -8,11 +8,11 @@ import org.junit.Test;
 import org.spincast.core.validation.ValidationFactory;
 import org.spincast.core.validation.ValidationLevel;
 import org.spincast.core.validation.ValidationSet;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class ValidationResultTest extends UnitTestDefaultContextsBase {
+public class ValidationResultTest extends NoAppTestingBase {
 
     @Inject
     protected ValidationFactory validationFactory;

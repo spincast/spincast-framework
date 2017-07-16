@@ -10,13 +10,13 @@ import java.io.File;
 
 import org.junit.Test;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class SpincastUtilsTest extends UnitTestDefaultContextsBase {
+public class SpincastUtilsTest extends NoAppTestingBase {
 
     @Inject
     private SpincastUtils spincastUtils;

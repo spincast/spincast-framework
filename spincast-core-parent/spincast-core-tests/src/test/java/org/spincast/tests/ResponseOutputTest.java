@@ -15,14 +15,14 @@ import org.spincast.core.response.AlertLevel;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class ResponseOutputTest extends IntegrationTestNoAppDefaultContextsBase {
+public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -81,7 +81,7 @@ public class ResponseOutputTest extends IntegrationTestNoAppDefaultContextsBase 
                 try {
                     context.response().end();
                     fail();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                 }
             }
         });
@@ -110,7 +110,7 @@ public class ResponseOutputTest extends IntegrationTestNoAppDefaultContextsBase 
             public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -139,7 +139,7 @@ public class ResponseOutputTest extends IntegrationTestNoAppDefaultContextsBase 
             public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -168,7 +168,7 @@ public class ResponseOutputTest extends IntegrationTestNoAppDefaultContextsBase 
             public void handle(DefaultRequestContext context) {
                 try {
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -270,7 +270,7 @@ public class ResponseOutputTest extends IntegrationTestNoAppDefaultContextsBase 
                     URL resource = getClass().getClassLoader().getResource("someFile.txt");
                     byte[] bytes = Files.readAllBytes(Paths.get(resource.toURI()));
                     context.response().sendBytes(bytes);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

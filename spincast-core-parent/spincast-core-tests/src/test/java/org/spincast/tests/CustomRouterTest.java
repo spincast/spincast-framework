@@ -7,28 +7,23 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.bootstrapping.SpincastBootstrapper;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRoutingPlugin;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.CustomRouter;
 
-import com.google.inject.Injector;
+public class CustomRouterTest extends NoAppStartHttpServerTestingBase {
 
-public class CustomRouterTest extends IntegrationTestNoAppDefaultContextsBase {
-
-    /**
-     * Disabled and replaces the default routing plugin.
-     */
     @Override
-    protected Injector createInjector() {
+    protected SpincastBootstrapper createBootstrapper() {
 
-        return Spincast.configure()
-                       .disableDefaultRoutingPlugin()
-                       .plugin(new SpincastRoutingPlugin(CustomRouter.class))
-                       .init(new String[]{});
+        SpincastBootstrapper bootstrapper = super.createBootstrapper();
+
+        return bootstrapper.disableDefaultRoutingPlugin()
+                           .plugin(new SpincastRoutingPlugin(CustomRouter.class));
     }
 
     @Test

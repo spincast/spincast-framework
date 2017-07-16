@@ -3,7 +3,6 @@ package org.spincast.plugins.localeresolver;
 import java.util.Locale;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.shaded.org.apache.commons.lang3.LocaleUtils;
@@ -20,7 +19,7 @@ public class LocaleResolverDefault implements LocaleResolver {
 
     @Inject
     public LocaleResolverDefault(SpincastConfig spincastConfig,
-                                  Provider<RequestContext<?>> requestContextProvider) {
+                                 Provider<RequestContext<?>> requestContextProvider) {
         this.spincastConfig = spincastConfig;
         this.requestContextProvider = requestContextProvider;
     }
@@ -48,23 +47,23 @@ public class LocaleResolverDefault implements LocaleResolver {
         try {
             RequestContext<?> context = getRequestContextProvider().get();
 
-            Cookie cookie = context.cookies().getCookie(getSpincastConfig().getCookieNameLocale());
-            if(cookie != null && !cookie.isExpired()) {
+            String cookieValue = context.request().getCookie(getSpincastConfig().getCookieNameLocale());
+            if (cookieValue != null) {
 
                 try {
-                    Locale locale = LocaleUtils.toLocale(cookie.getValue());
+                    Locale locale = LocaleUtils.toLocale(cookieValue);
                     return locale;
-                } catch(Exception ex) {
-                    context.cookies().deleteCookie(getSpincastConfig().getCookieNameLocale());
+                } catch (Exception ex) {
+                    context.response().deleteCookie(getSpincastConfig().getCookieNameLocale());
                     // ...
                 }
             }
 
             Locale requestLocaleBestMatch = context.request().getLocaleBestMatch();
-            if(requestLocaleBestMatch != null) {
+            if (requestLocaleBestMatch != null) {
                 return requestLocaleBestMatch;
             }
-        } catch(OutOfScopeException | ProvisionException ex) {
+        } catch (OutOfScopeException | ProvisionException ex) {
             // ok, use the default Locale
         }
 

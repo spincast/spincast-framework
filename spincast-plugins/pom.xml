@@ -17,7 +17,6 @@
     <url>https://www.spincast.org</url>
 
     <modules>
-        <module>spincast-plugins-cookies-parent</module>
         <module>spincast-plugins-request-parent</module>
         <module>spincast-plugins-response-parent</module>
         <module>spincast-plugins-routing-parent</module>

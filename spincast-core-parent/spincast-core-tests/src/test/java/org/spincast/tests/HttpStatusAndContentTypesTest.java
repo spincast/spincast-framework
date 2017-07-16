@@ -18,7 +18,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.inject.Inject;
 
-public class HttpStatusAndContentTypesTest extends IntegrationTestNoAppDefaultContextsBase {
+public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     private JsonManager jsonManager;
@@ -669,7 +669,7 @@ public class HttpStatusAndContentTypesTest extends IntegrationTestNoAppDefaultCo
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
                     context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

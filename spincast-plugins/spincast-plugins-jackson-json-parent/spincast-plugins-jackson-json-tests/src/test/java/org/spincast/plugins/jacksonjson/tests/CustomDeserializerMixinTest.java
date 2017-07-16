@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jacksonjson.JsonMixinInfo;
 import org.spincast.plugins.jacksonjson.JsonMixinInfoDefault;
 
@@ -21,10 +21,10 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;
 
-public class CustomDeserializerMixinTest extends UnitTestDefaultContextsBase {
+public class CustomDeserializerMixinTest extends NoAppTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 

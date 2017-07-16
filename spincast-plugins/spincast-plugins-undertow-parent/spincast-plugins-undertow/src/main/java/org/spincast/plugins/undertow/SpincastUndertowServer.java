@@ -238,7 +238,7 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected FormParserFactory getFormParserFactory() {
-        if(this.formParserFactory == null) {
+        if (this.formParserFactory == null) {
             this.formParserFactory = FormParserFactory.builder().build();
         }
         return this.formParserFactory;
@@ -252,7 +252,7 @@ public class SpincastUndertowServer implements Server {
     @Override
     public synchronized void start() {
 
-        if(this.undertowServer != null) {
+        if (this.undertowServer != null) {
             this.logger.warn("Server already started.");
             return;
         }
@@ -260,21 +260,21 @@ public class SpincastUndertowServer implements Server {
         this.undertowServer = getServerBuilder().build();
 
         int serverStartTryNbr = getServerStartTryNbr();
-        for(int i = 0; i < serverStartTryNbr; i++) {
+        for (int i = 0; i < serverStartTryNbr; i++) {
 
             try {
                 this.undertowServer.start();
                 break;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
 
-                if((ex instanceof BindException) || (ex.getCause() != null && ex.getCause() instanceof BindException)) {
+                if ((ex instanceof BindException) || (ex.getCause() != null && ex.getCause() instanceof BindException)) {
                     this.logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
                                      "...");
 
-                    if(i < serverStartTryNbr) {
+                    if (i < serverStartTryNbr) {
                         try {
                             Thread.sleep(getStartServerSleepMilliseconds());
-                        } catch(InterruptedException e) {
+                        } catch (InterruptedException e) {
                         }
                         continue;
                     }
@@ -284,11 +284,11 @@ public class SpincastUndertowServer implements Server {
             }
         }
 
-        if(getConfig().getHttpServerPort() > 0) {
+        if (getConfig().getHttpServerPort() > 0) {
             this.logger.info("HTTP server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
                              getConfig().getHttpServerPort());
         }
-        if(getConfig().getHttpsServerPort() > 0) {
+        if (getConfig().getHttpsServerPort() > 0) {
             this.logger.info("HTTPS server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
                              getConfig().getHttpsServerPort());
         }
@@ -309,24 +309,24 @@ public class SpincastUndertowServer implements Server {
             int httpServerPort = getConfig().getHttpServerPort();
             int httpsServerPort = getConfig().getHttpsServerPort();
 
-            if(httpServerPort <= 0 && httpsServerPort <= 0) {
+            if (httpServerPort <= 0 && httpsServerPort <= 0) {
                 throw new RuntimeException("At least one of the HTTP or HTTPS port must " +
                                            "be greater than 0 to start the server....");
             }
 
             Builder builder = Undertow.builder().setHandler(getFinalHandler());
 
-            if(httpServerPort > 0) {
+            if (httpServerPort > 0) {
                 addHttpListener(builder, serverHost, httpServerPort);
             }
-            if(httpsServerPort > 0) {
+            if (httpsServerPort > 0) {
                 addHttpsListener(builder, serverHost, httpsServerPort);
             }
 
             builder = addBuilderOptions(builder);
 
             return builder;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -346,7 +346,7 @@ public class SpincastUndertowServer implements Server {
 
             builder = builder.addHttpsListener(httpsServerPort, serverHost, sslContext);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -367,7 +367,7 @@ public class SpincastUndertowServer implements Server {
      * Handler to remove cache busters from the request's URL.
      */
     protected CacheBusterRemovalHandler getCacheBusterRemovalHandler() {
-        if(this.cacheBusterRemovalHandler == null) {
+        if (this.cacheBusterRemovalHandler == null) {
             this.cacheBusterRemovalHandler = getCacheBusterRemovalHandlerFactory().create(getHttpAuthenticationHandler());
         }
         return this.cacheBusterRemovalHandler;
@@ -377,7 +377,7 @@ public class SpincastUndertowServer implements Server {
      * Handler to check for HTTP authentication requirement.
      */
     protected PathHandler getHttpAuthenticationHandler() {
-        if(this.httpAuthenticationHandler == null) {
+        if (this.httpAuthenticationHandler == null) {
             this.httpAuthenticationHandler = new FullPathMatchingPathHandler(getHttpAuthHandlerNextHandler());
         }
         return this.httpAuthenticationHandler;
@@ -390,7 +390,7 @@ public class SpincastUndertowServer implements Server {
     @Override
     public void createHttpAuthenticationRealm(String pathPrefix, String realmName) {
 
-        if(getHttpAuthActiveRealms().containsKey(realmName)) {
+        if (getHttpAuthActiveRealms().containsKey(realmName)) {
             throw new RuntimeException("A HTTP authentication realm named '" + realmName + "' " +
                                        "already exists for path: " + pathPrefix);
         }
@@ -423,7 +423,7 @@ public class SpincastUndertowServer implements Server {
 
     protected SpincastHttpAuthIdentityManager getOrCreateHttpAuthIdentityManagersByRealmName(String realmName) {
         SpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
-        if(identityManager == null) {
+        if (identityManager == null) {
             identityManager = getSpincastHttpAuthIdentityManagerFactory().create();
             getHttpAuthIdentityManagersByRealmName().put(realmName, identityManager);
         }
@@ -446,20 +446,20 @@ public class SpincastUndertowServer implements Server {
     @Override
     public void removeHttpAuthentication(String username, String realmName) {
         SpincastHttpAuthIdentityManager identityManager = getHttpAuthIdentityManagersByRealmName().get(realmName);
-        if(identityManager != null) {
+        if (identityManager != null) {
             identityManager.removeUser(username);
         }
     }
 
     @Override
     public void removeHttpAuthentication(String username) {
-        for(SpincastHttpAuthIdentityManager identityManager : getHttpAuthIdentityManagersByRealmName().values()) {
+        for (SpincastHttpAuthIdentityManager identityManager : getHttpAuthIdentityManagersByRealmName().values()) {
             identityManager.removeUser(username);
         }
     }
 
     protected HttpHandler getSpincastFrontControllerHandler() {
-        if(this.spincastFrontControllerHandler == null) {
+        if (this.spincastFrontControllerHandler == null) {
             this.spincastFrontControllerHandler = new HttpHandler() {
 
                 /**
@@ -470,7 +470,7 @@ public class SpincastUndertowServer implements Server {
                 public void handleRequest(HttpServerExchange exchange) throws Exception {
 
                     // @see http://undertow.io/undertow-docs/undertow-docs-1.3.0/index.html#dispatch-code
-                    if(exchange.isInIoThread()) {
+                    if (exchange.isInIoThread()) {
                         exchange.dispatch(this);
                         return;
                     }
@@ -489,7 +489,7 @@ public class SpincastUndertowServer implements Server {
 
     @Override
     public synchronized void stop(boolean sendClosingMessageToPeers) {
-        if(this.undertowServer != null) {
+        if (this.undertowServer != null) {
 
             //==========================================
             // If there are some active Websocket endpoints,
@@ -497,14 +497,14 @@ public class SpincastUndertowServer implements Server {
             // actually closing the server.
             //==========================================
             try {
-                if(sendClosingMessageToPeers) {
+                if (sendClosingMessageToPeers) {
                     sendWebsocketEnpointsClosedWhenServerStops();
                 }
             } finally {
                 try {
                     this.undertowServer.stop();
                     this.undertowServer = null;
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     this.logger.error("Error stopping the Undertow server :\n" + SpincastStatics.getStackTrace(ex));
                 }
             }
@@ -529,10 +529,10 @@ public class SpincastUndertowServer implements Server {
         this.logger.debug("We wait for those endpoints to be finished closing : " +
                           Arrays.toString(unclosedEndpoints.toArray()));
 
-        for(WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
+        for (WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
             try {
                 websocketEndpoint.closeEndpoint(true);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
                                  ex.getMessage());
             }
@@ -547,28 +547,28 @@ public class SpincastUndertowServer implements Server {
         int incrementsMilliseconds =
                 getMilliSecondsIncrementWhenWaitingForWebSocketEndpointsToBeProperlyClosedBeforeKillingTheServer();
 
-        outer : while(millisecondsWaited < millisecondsToWait) {
+        outer : while (millisecondsWaited < millisecondsToWait) {
 
             try {
-                for(WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
+                for (WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
 
                     try {
-                        if(unclosedEndpoints.contains(websocketEndpoint.getEndpointId()) &&
-                           websocketEndpoint.isClosed()) {
+                        if (unclosedEndpoints.contains(websocketEndpoint.getEndpointId()) &&
+                            websocketEndpoint.isClosed()) {
                             this.logger.debug("Endpoint '" + websocketEndpoint.getEndpointId() +
                                               "' finished closing!");
                             unclosedEndpoints.remove(websocketEndpoint.getEndpointId());
-                            if(unclosedEndpoints.size() == 0) {
+                            if (unclosedEndpoints.size() == 0) {
                                 this.logger.debug("All endpoints finished closing!");
                                 break outer;
                             }
                         }
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
                                          ex.getMessage());
                     }
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 this.logger.warn("Error while checking if all endpoints are closed : " + ex.getMessage());
             }
 
@@ -577,11 +577,11 @@ public class SpincastUndertowServer implements Server {
 
             try {
                 Thread.sleep(incrementsMilliseconds);
-            } catch(InterruptedException e) {
+            } catch (InterruptedException e) {
             }
             millisecondsWaited += incrementsMilliseconds;
 
-            if(millisecondsWaited >= millisecondsToWait) {
+            if (millisecondsWaited >= millisecondsToWait) {
                 this.logger.debug("Some endpoints are still not finished closing, even after waiting for " +
                                   millisecondsWaited + " milliseconds. We'll stop the server as is. Remaining : " +
                                   Arrays.toString(unclosedEndpoints.toArray()));
@@ -590,7 +590,7 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected PathHandler getStaticResourcesPathHandler() {
-        if(this.staticResourcesPathHandler == null) {
+        if (this.staticResourcesPathHandler == null) {
 
             //==========================================
             // If no static resource path match, we
@@ -611,15 +611,15 @@ public class SpincastUndertowServer implements Server {
         //==========================================
         // We remove the existing entry, if any.
         //==========================================
-        if(staticResourcesServedByUrlPath.containsKey(staticResource.getUrlPath())) {
+        if (staticResourcesServedByUrlPath.containsKey(staticResource.getUrlPath())) {
             getStaticResourcesPathHandler().removeExactPath(staticResource.getUrlPath());
             getStaticResourcesPathHandler().removePrefixPath(staticResource.getUrlPath());
         }
         staticResourcesServedByUrlPath.put(staticResource.getUrlPath(), staticResource);
 
-        if(staticResourceType == StaticResourceType.FILE) {
+        if (staticResourceType == StaticResourceType.FILE) {
             File file = new File(staticResource.getResourcePath());
-            if(!file.isFile() && !staticResource.isCanBeGenerated()) {
+            if (!file.isFile() && !staticResource.isCanBeGenerated()) {
                 throw new RuntimeException("The file doesn't exist and can't be generated so it can't be served : " +
                                            staticResource.getResourcePath());
             }
@@ -646,22 +646,22 @@ public class SpincastUndertowServer implements Server {
             // if "isIgnoreQueryString" is true).
             //==========================================
             HttpHandler firstHandler = corsHandler;
-            if(staticResource.isCanBeGenerated() && !staticResource.isIgnoreQueryString()) {
+            if (staticResource.isCanBeGenerated() && !staticResource.isIgnoreQueryString()) {
                 firstHandler = getSkipResourceOnQueryStringHandlerFactory().create(corsHandler, next);
             }
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), firstHandler);
 
-        } else if(staticResourceType == StaticResourceType.FILE_FROM_CLASSPATH) {
+        } else if (staticResourceType == StaticResourceType.FILE_FROM_CLASSPATH) {
             String classpathPath = staticResource.getResourcePath();
-            if(classpathPath == null) {
+            if (classpathPath == null) {
                 classpathPath = "";
-            } else if(classpathPath.startsWith("/")) {
+            } else if (classpathPath.startsWith("/")) {
                 classpathPath = classpathPath.substring(1);
             }
 
             URL resource = getClass().getClassLoader().getResource(classpathPath);
-            if(resource == null) {
+            if (resource == null) {
                 throw new RuntimeException("The classpath file doesn't exist so it can't be served : " + classpathPath);
             }
 
@@ -677,9 +677,9 @@ public class SpincastUndertowServer implements Server {
 
             getStaticResourcesPathHandler().addExactPath(staticResource.getUrlPath(), corsHandler);
 
-        } else if(staticResourceType == StaticResourceType.DIRECTORY) {
+        } else if (staticResourceType == StaticResourceType.DIRECTORY) {
             File dir = new File(staticResource.getResourcePath());
-            if(!dir.isDirectory() && !staticResource.isCanBeGenerated()) {
+            if (!dir.isDirectory() && !staticResource.isCanBeGenerated()) {
                 throw new RuntimeException("The directory doesn't exist and can't be generated so it can't be served : " +
                                            staticResource.getResourcePath());
             }
@@ -705,23 +705,23 @@ public class SpincastUndertowServer implements Server {
             // if "isIgnoreQueryString" is true).
             //==========================================
             HttpHandler firstHandler = corsHandler;
-            if(staticResource.isCanBeGenerated() && !staticResource.isIgnoreQueryString()) {
+            if (staticResource.isCanBeGenerated() && !staticResource.isIgnoreQueryString()) {
                 firstHandler = getSkipResourceOnQueryStringHandlerFactory().create(corsHandler, next);
             }
 
             getStaticResourcesPathHandler().addPrefixPath(staticResource.getUrlPath(), firstHandler);
 
-        } else if(staticResourceType == StaticResourceType.DIRECTORY_FROM_CLASSPATH) {
+        } else if (staticResourceType == StaticResourceType.DIRECTORY_FROM_CLASSPATH) {
 
             String classpathPath = staticResource.getResourcePath();
-            if(classpathPath == null) {
+            if (classpathPath == null) {
                 classpathPath = "";
-            } else if(classpathPath.startsWith("/")) {
+            } else if (classpathPath.startsWith("/")) {
                 classpathPath = classpathPath.substring(1);
             }
 
             URL resource = getClass().getClassLoader().getResource(classpathPath);
-            if(resource == null) {
+            if (resource == null) {
                 throw new RuntimeException("The classpath directory doesn't exist so it can't be used to serve static resources : " +
                                            classpathPath);
             }
@@ -746,7 +746,7 @@ public class SpincastUndertowServer implements Server {
     @Override
     public void removeStaticResourcesServed(StaticResourceType staticResourceType, String urlPath) {
 
-        if(this.staticResourcesServedByUrlPath.containsKey(urlPath)) {
+        if (this.staticResourcesServedByUrlPath.containsKey(urlPath)) {
             removeStaticResource(staticResourceType, urlPath);
         }
     }
@@ -754,7 +754,7 @@ public class SpincastUndertowServer implements Server {
     @Override
     public void removeAllStaticResourcesServed() {
 
-        for(Entry<String, StaticResource<?>> entry : getStaticResourcesServedByUrlPath().entrySet()) {
+        for (Entry<String, StaticResource<?>> entry : getStaticResourcesServedByUrlPath().entrySet()) {
 
             String urlPath = entry.getKey();
             StaticResource<?> staticResource = entry.getValue();
@@ -764,11 +764,11 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected void removeStaticResource(StaticResourceType staticResourceType, String urlPath) {
-        if(staticResourceType == StaticResourceType.FILE ||
-           staticResourceType == StaticResourceType.FILE_FROM_CLASSPATH) {
+        if (staticResourceType == StaticResourceType.FILE ||
+            staticResourceType == StaticResourceType.FILE_FROM_CLASSPATH) {
             getStaticResourcesPathHandler().removeExactPath(urlPath);
-        } else if(staticResourceType == StaticResourceType.DIRECTORY ||
-                  staticResourceType == StaticResourceType.DIRECTORY_FROM_CLASSPATH) {
+        } else if (staticResourceType == StaticResourceType.DIRECTORY ||
+                   staticResourceType == StaticResourceType.DIRECTORY_FROM_CLASSPATH) {
             getStaticResourcesPathHandler().removePrefixPath(urlPath);
         } else {
             throw new RuntimeException("Unamanaged static resource stype : " + staticResourceType);
@@ -801,18 +801,18 @@ public class SpincastUndertowServer implements Server {
 
         ContentTypeDefaults type = ContentTypeDefaults.TEXT;
         HeaderMap requestHeaders = exchange.getRequestHeaders();
-        if(requestHeaders != null) {
+        if (requestHeaders != null) {
 
             String requestedWith = requestHeaders.getFirst("X-Requested-With");
-            if("XMLHttpRequest".equalsIgnoreCase(requestedWith)) {
+            if ("XMLHttpRequest".equalsIgnoreCase(requestedWith)) {
                 return ContentTypeDefaults.JSON;
             }
             String accept = requestHeaders.getFirst("Accept");
-            if(accept != null) {
+            if (accept != null) {
                 String bestMatch = MIMEParse.bestMatch(ContentTypeDefaults.getAllContentTypesVariations(), accept);
-                if(!StringUtils.isBlank(bestMatch)) {
+                if (!StringUtils.isBlank(bestMatch)) {
                     type = ContentTypeDefaults.fromString(bestMatch);
-                    if(type == null) {
+                    if (type == null) {
                         this.logger.error("Not supposed : " + bestMatch);
                         type = ContentTypeDefaults.TEXT;
                     }
@@ -832,7 +832,7 @@ public class SpincastUndertowServer implements Server {
         try {
             HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
             String queryString = exchange.getQueryString();
-            if(StringUtils.isBlank(queryString)) {
+            if (StringUtils.isBlank(queryString)) {
                 queryString = "";
             } else {
                 queryString = "?" + queryString;
@@ -844,12 +844,12 @@ public class SpincastUndertowServer implements Server {
             // busters, we should call 
             // CacheBusterRemovalHandler#getOrigninalRequestUrlWithPotentialCacheBusters(...)
             //==========================================
-            if(keepCacheBusters) {
+            if (keepCacheBusters) {
                 return getCacheBusterRemovalHandler().getOrigninalRequestUrlWithPotentialCacheBusters(exchange) + queryString;
             } else {
                 return exchange.getRequestURL() + queryString;
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -875,25 +875,25 @@ public class SpincastUndertowServer implements Server {
             HeaderValues hostHeader = exchange.getRequestHeaders().get(HttpHeadersExtra.X_FORWARDED_HOST);
             HeaderValues portHeader = exchange.getRequestHeaders().get(HttpHeadersExtra.X_FORWARDED_PORT);
 
-            if(protoHeader != null || hostHeader != null || portHeader != null) {
+            if (protoHeader != null || hostHeader != null || portHeader != null) {
 
                 URL proxiedUrl = new URL(fullUrl);
                 StringBuilder builder = new StringBuilder();
 
-                if(protoHeader != null) {
+                if (protoHeader != null) {
                     builder.append(protoHeader.getFirst());
                 } else {
                     builder.append(proxiedUrl.getProtocol());
                 }
                 builder.append("://");
 
-                if(hostHeader != null) {
+                if (hostHeader != null) {
                     builder.append(hostHeader.getFirst());
                 } else {
                     builder.append(proxiedUrl.getHost());
                 }
 
-                if(portHeader != null) {
+                if (portHeader != null) {
                     builder.append(":").append(portHeader.getFirst());
                 } else {
                     builder.append(proxiedUrl.getPort() > -1 ? ":" + proxiedUrl.getPort() : "");
@@ -901,7 +901,7 @@ public class SpincastUndertowServer implements Server {
 
                 builder.append(proxiedUrl.getPath());
                 String queryString = proxiedUrl.getQuery();
-                if(!StringUtils.isBlank(queryString)) {
+                if (!StringUtils.isBlank(queryString)) {
                     builder.append("?").append(queryString);
                 }
                 fullUrl = builder.toString();
@@ -909,7 +909,7 @@ public class SpincastUndertowServer implements Server {
 
             return fullUrl;
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -927,11 +927,11 @@ public class SpincastUndertowServer implements Server {
         HeaderMap responseHeaderMap = ((HttpServerExchange)exchange).getResponseHeaders();
         responseHeaderMap.clear();
 
-        if(headers == null || headers.size() == 0) {
+        if (headers == null || headers.size() == 0) {
             return;
         }
 
-        for(Entry<String, List<String>> entry : headers.entrySet()) {
+        for (Entry<String, List<String>> entry : headers.entrySet()) {
             responseHeaderMap.putAll(new HttpString(entry.getKey()), entry.getValue());
         }
     }
@@ -943,15 +943,15 @@ public class SpincastUndertowServer implements Server {
         Map<String, List<String>> headers = new HashMap<String, List<String>>();
 
         HeaderMap responseHeaders = exchange.getResponseHeaders();
-        if(responseHeaders != null) {
-            for(HeaderValues responseHeader : responseHeaders) {
+        if (responseHeaders != null) {
+            for (HeaderValues responseHeader : responseHeaders) {
                 HttpString headerNameObj = responseHeader.getHeaderName();
-                if(headerNameObj == null) {
+                if (headerNameObj == null) {
                     continue;
                 }
 
                 List<String> values = new ArrayList<String>();
-                for(String value : responseHeader) {
+                for (String value : responseHeader) {
                     values.add(value);
                 }
                 headers.put(headerNameObj.toString(), values);
@@ -973,7 +973,7 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected IoCallback getDoNothingCallback() {
-        if(this.doNothingCallback == null) {
+        if (this.doNothingCallback == null) {
             this.doNothingCallback = new IoCallback() {
 
                 @Override
@@ -994,7 +994,7 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected IoCallback getCloseExchangeCallback() {
-        if(this.closeExchangeCallback == null) {
+        if (this.closeExchangeCallback == null) {
             this.closeExchangeCallback = new IoCallback() {
 
                 @Override
@@ -1034,7 +1034,7 @@ public class SpincastUndertowServer implements Server {
 
         try {
             ((HttpServerExchange)exchange).endExchange();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -1057,27 +1057,27 @@ public class SpincastUndertowServer implements Server {
     @Override
     public void addCookies(Object exchange, Map<String, Cookie> cookies) {
 
-        if(cookies == null) {
+        if (cookies == null) {
             return;
         }
 
         Map<String, io.undertow.server.handlers.Cookie> undertowResponseCookiesMap =
                 ((HttpServerExchange)exchange).getResponseCookies();
 
-        for(Cookie cookie : cookies.values()) {
+        for (Cookie cookie : cookies.values()) {
 
             String name = cookie.getName();
             String value = cookie.getValue();
             try {
                 // Try to set "bœuf" as the cookie name or value without
                 // url encoding them!
-                if(name != null) {
+                if (name != null) {
                     name = URLEncoder.encode(name, getCookieEncoding());
                 }
-                if(value != null) {
+                if (value != null) {
                     value = URLEncoder.encode(value, getCookieEncoding());
                 }
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
 
@@ -1096,41 +1096,32 @@ public class SpincastUndertowServer implements Server {
     }
 
     @Override
-    public Map<String, Cookie> getCookies(Object exchange) {
+    public Map<String, String> getCookies(Object exchange) {
 
-        Map<String, Cookie> cookies = new HashMap<String, Cookie>();
+        Map<String, String> cookies = new HashMap<String, String>();
 
         //==========================================
         // Get current cookies from the request
         //==========================================
         Map<String, io.undertow.server.handlers.Cookie> undertowRequestCookies =
                 ((HttpServerExchange)exchange).getRequestCookies();
-        if(undertowRequestCookies != null) {
-            for(io.undertow.server.handlers.Cookie undertowCookie : undertowRequestCookies.values()) {
+        if (undertowRequestCookies != null) {
+            for (io.undertow.server.handlers.Cookie undertowCookie : undertowRequestCookies.values()) {
 
                 String name = undertowCookie.getName();
                 String value = undertowCookie.getValue();
                 try {
-                    if(name != null) {
+                    if (name != null) {
                         name = URLDecoder.decode(name, getCookieEncoding());
                     }
-                    if(value != null) {
+                    if (value != null) {
                         value = URLDecoder.decode(value, getCookieEncoding());
                     }
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
 
-                Cookie spincastCookie = getCookieFactory().createCookie(name,
-                                                                        value,
-                                                                        undertowCookie.getPath(),
-                                                                        undertowCookie.getDomain(),
-                                                                        undertowCookie.getExpires(),
-                                                                        undertowCookie.isSecure(),
-                                                                        undertowCookie.isHttpOnly(),
-                                                                        undertowCookie.isDiscard(),
-                                                                        undertowCookie.getVersion());
-                cookies.put(spincastCookie.getName(), spincastCookie);
+                cookies.put(name, value);
             }
         }
 
@@ -1147,8 +1138,8 @@ public class SpincastUndertowServer implements Server {
         Map<String, List<String>> queryStringParams = new HashMap<String, List<String>>();
 
         Map<String, Deque<String>> queryParameters = ((HttpServerExchange)exchange).getQueryParameters();
-        if(queryParameters != null) {
-            for(Entry<String, Deque<String>> entry : queryParameters.entrySet()) {
+        if (queryParameters != null) {
+            for (Entry<String, Deque<String>> entry : queryParameters.entrySet()) {
                 List<String> list = new LinkedList<String>(entry.getValue());
                 queryStringParams.put(entry.getKey(), list);
             }
@@ -1172,18 +1163,18 @@ public class SpincastUndertowServer implements Server {
     protected FormData getFormData(HttpServerExchange exchange) {
         try {
             FormDataParser formDataParser = getFormParserFactory().createParser(exchange);
-            if(formDataParser == null) {
+            if (formDataParser == null) {
                 return null;
             }
             formDataParser.setCharacterEncoding(getSpincastUndertowConfig().getHtmlFormEncoding());
 
-            if(!exchange.isBlocking()) {
+            if (!exchange.isBlocking()) {
                 exchange.startBlocking();
             }
 
             FormData formData = formDataParser.parseBlocking();
             return formData;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -1196,20 +1187,20 @@ public class SpincastUndertowServer implements Server {
         Map<String, List<String>> postParams = new HashMap<String, List<String>>();
 
         FormData formData = getFormData(exchange);
-        if(formData != null) {
+        if (formData != null) {
 
-            for(String key : formData) {
+            for (String key : formData) {
 
                 Deque<FormValue> values = formData.get(key);
-                if(values != null) {
+                if (values != null) {
 
                     List<String> finalValues = new ArrayList<String>();
-                    for(FormValue formValue : values) {
-                        if(formValue.isFile()) {
+                    for (FormValue formValue : values) {
+                        if (formValue.isFile()) {
                             continue;
                         }
                         String value = formValue.getValue();
-                        if(value != null) {
+                        if (value != null) {
                             finalValues.add(value);
                         }
                     }
@@ -1229,20 +1220,20 @@ public class SpincastUndertowServer implements Server {
         Map<String, List<File>> uploadedFiles = new HashMap<String, List<File>>();
 
         FormData formData = getFormData(exchange);
-        if(formData != null) {
+        if (formData != null) {
 
-            for(String key : formData) {
+            for (String key : formData) {
 
                 Deque<FormValue> values = formData.get(key);
-                if(values != null) {
+                if (values != null) {
 
                     List<File> finalFiles = new ArrayList<File>();
-                    for(FormValue formValue : values) {
-                        if(!formValue.isFile()) {
+                    for (FormValue formValue : values) {
+                        if (!formValue.isFile()) {
                             continue;
                         }
                         File file = formValue.getPath().toFile();
-                        if(file != null) {
+                        if (file != null) {
                             finalFiles.add(file);
                         }
                     }
@@ -1260,17 +1251,17 @@ public class SpincastUndertowServer implements Server {
 
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
 
-        if(exchange.isRequestComplete()) {
+        if (exchange.isRequestComplete()) {
             return true;
         }
 
         try {
             ByteBuffer b = ByteBuffer.allocate(200);
             exchange.getRequestChannel().read(b);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             String message = ex.getMessage();
-            if(message != null && message.contains(UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE)) {
+            if (message != null && message.contains(UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE)) {
                 return false;
             }
         }
@@ -1284,10 +1275,10 @@ public class SpincastUndertowServer implements Server {
         Map<String, List<String>> headers = new HashMap<String, List<String>>();
 
         HeaderMap requestHeaders = exchange.getRequestHeaders();
-        if(requestHeaders != null) {
-            for(HeaderValues requestHeader : requestHeaders) {
+        if (requestHeaders != null) {
+            for (HeaderValues requestHeader : requestHeaders) {
                 HttpString headerNameObj = requestHeader.getHeaderName();
-                if(headerNameObj == null) {
+                if (headerNameObj == null) {
                     continue;
                 }
 
@@ -1298,7 +1289,7 @@ public class SpincastUndertowServer implements Server {
                 String headerNameLowercased = headerNameObj.toString().toLowerCase();
 
                 List<String> values = new ArrayList<String>();
-                for(String value : requestHeader) {
+                for (String value : requestHeader) {
                     values.add(value);
                 }
                 headers.put(headerNameLowercased, values);
@@ -1313,10 +1304,10 @@ public class SpincastUndertowServer implements Server {
      */
     protected Object getWebsocketEndpointCreationLock(String endpointId) {
         Object lock = this.websocketEndpointCreationLocks.get(endpointId);
-        if(lock == null) {
-            synchronized(this.websocketEndpointLockCreationLock) {
+        if (lock == null) {
+            synchronized (this.websocketEndpointLockCreationLock) {
                 lock = this.websocketEndpointCreationLocks.get(endpointId);
-                if(lock == null) {
+                if (lock == null) {
                     lock = new Object();
                     this.websocketEndpointCreationLocks.put(endpointId, lock);
                 }
@@ -1330,9 +1321,9 @@ public class SpincastUndertowServer implements Server {
                                                             final WebsocketEndpointHandler appEndpointHandler) {
 
         Object lock = getWebsocketEndpointCreationLock(endpointId);
-        synchronized(lock) {
+        synchronized (lock) {
             WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
-            if(websocketEndpoint != null) {
+            if (websocketEndpoint != null) {
                 throw new RuntimeException("The endpoint '" + endpointId + "' already exists.");
             }
 
@@ -1398,9 +1389,9 @@ public class SpincastUndertowServer implements Server {
     public void websocketCloseEndpoint(String endpointId, int closingCode, String closingReason) {
 
         Object lock = getWebsocketEndpointCreationLock(endpointId);
-        synchronized(lock) {
+        synchronized (lock) {
             WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
-            if(websocketEndpoint == null) {
+            if (websocketEndpoint == null) {
                 this.logger.warn("No Websocket endpoint with id '" + endpointId + "' exists...");
                 return;
             }
@@ -1420,22 +1411,22 @@ public class SpincastUndertowServer implements Server {
                                     final String endpointId,
                                     final String peerId) {
 
-        if(StringUtils.isBlank(endpointId)) {
+        if (StringUtils.isBlank(endpointId)) {
             throw new RuntimeException("The endpoint id can't be empty.");
         }
 
-        if(StringUtils.isBlank(peerId)) {
+        if (StringUtils.isBlank(peerId)) {
             throw new RuntimeException("The peer id can't be empty.");
         }
 
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
 
         WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
-        if(websocketEndpoint == null) {
+        if (websocketEndpoint == null) {
             throw new RuntimeException("The Websocket endpoint '" + endpointId + "' doesn't exist.");
         }
 
-        if(websocketEndpoint.getPeersIds().contains(peerId)) {
+        if (websocketEndpoint.getPeersIds().contains(peerId)) {
             throw new RuntimeException("The Websocket endpoint '" + endpointId + "' is already used by a peer with " +
                                        "id '" + peerId + "'! Close the existing peer if you want to reuse this id.");
         }

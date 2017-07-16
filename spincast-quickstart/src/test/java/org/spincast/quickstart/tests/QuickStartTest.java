@@ -41,4 +41,5 @@ public class QuickStartTest extends AppTestBase {
         assertTrue(response.getContentAsString().contains("exception_page"));
     }
 
+
 }

@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exceptions.SkipRemainingHandlersException;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.response.Alert;
@@ -80,17 +79,17 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             // Check if the main handler has saved the 
             // generated resource by itself...
             //==========================================
-            if(resourceFile.exists()) {
+            if (resourceFile.exists()) {
                 this.logger.info("The resource already exists. We don't save it here.");
                 return true;
             }
 
-            if(HttpStatus.SC_OK != context.response().getStatusCode()) {
+            if (HttpStatus.SC_OK != context.response().getStatusCode()) {
                 this.logger.info("Nothing will be saved since the response code is not " + HttpStatus.SC_OK);
                 return false;
             }
 
-            if(context.response().isHeadersSent()) {
+            if (context.response().isHeadersSent()) {
                 this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
                                  "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
                                  "request!");
@@ -103,7 +102,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
 
             return true;
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             this.logger.error("Unable to save the generated resource '" + pathForGeneratedResource + "' :\n" +
                               SpincastStatics.getStackTrace(ex));
 
@@ -226,7 +225,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
 
         CorsFilterResponse corsResult = getCorsFilter().apply(corsFilterClient);
 
-        if(corsResult == CorsFilterResponse.NOT_CORS) {
+        if (corsResult == CorsFilterResponse.NOT_CORS) {
 
             //==========================================
             // Not a cors request, or same origin...
@@ -234,14 +233,14 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             //==========================================
             return;
 
-        } else if(corsResult == CorsFilterResponse.HEADERS_ALREADY_SENT) {
+        } else if (corsResult == CorsFilterResponse.HEADERS_ALREADY_SENT) {
 
             //==========================================
             // Headers already sent? There is nothing we can do...
             //==========================================
             return;
 
-        } else if(corsResult == CorsFilterResponse.INVALID_CORS_REQUEST) {
+        } else if (corsResult == CorsFilterResponse.INVALID_CORS_REQUEST) {
 
             //==========================================
             // Invalid request, we return OK without the
@@ -249,7 +248,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             //==========================================
             throw new SkipRemainingHandlersException();
 
-        } else if(corsResult == CorsFilterResponse.SIMPLE) {
+        } else if (corsResult == CorsFilterResponse.SIMPLE) {
 
             //==========================================
             // Simple cors request (not a Preflight).
@@ -258,7 +257,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             //==========================================
             return;
 
-        } else if(corsResult == CorsFilterResponse.PREFLIGHT) {
+        } else if (corsResult == CorsFilterResponse.PREFLIGHT) {
 
             //==========================================
             // We always skip all remaining handlers 
@@ -299,7 +298,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             @Override
             public boolean requestContainsCookies() {
 
-                Map<String, Cookie> cookies = context.cookies().getCookies();
+                Map<String, String> cookies = context.request().getCookies();
                 return (cookies != null) && (cookies.size() > 0);
             }
 
@@ -466,6 +465,15 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
         Map<String, Object> map = context.templating().getSpincastReservedMap();
 
         //==========================================
+        // If the route has been forwarded, we delete
+        // the current variables... Otherwise, things like
+        // alerts for flash messages may be duplicated.
+        //==========================================
+        if (context.routing().isForwarded()) {
+            map.clear();
+        }
+
+        //==========================================
         // The Language abreviation
         //==========================================
         map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_LANG_ABREV,
@@ -507,17 +515,17 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
                 context.request().getQueryStringParams());
 
         map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES,
-                context.cookies().getCookies());
+                context.request().getCookies());
 
         //==========================================
         // Flash message : we add it to the
         // "alerts" templating variable.
         //==========================================
-        if(context.request().isFlashMessageExists()) {
+        if (context.request().isFlashMessageExists()) {
             @SuppressWarnings("unchecked")
             List<Alert> alerts =
                     (List<Alert>)map.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS);
-            if(alerts == null) {
+            if (alerts == null) {
                 alerts = new ArrayList<Alert>();
                 map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ALERTS, alerts);
             }
@@ -536,7 +544,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
                 private boolean flashMessageGot;
 
                 protected FlashMessage getFlashMessage() {
-                    if(!this.flashMessageGot) {
+                    if (!this.flashMessageGot) {
                         this.flashMessageGot = true;
                         this.flashMessage = context.request().getFlashMessage();
                     }
@@ -551,16 +559,16 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
                 @Override
                 public AlertLevel getAlertType() {
 
-                    if(getFlashMessage() == null) {
+                    if (getFlashMessage() == null) {
                         return null;
                     }
 
                     FlashMessageLevel flashType = getFlashMessage().getFlashType();
-                    if(flashType == FlashMessageLevel.SUCCESS) {
+                    if (flashType == FlashMessageLevel.SUCCESS) {
                         return AlertLevel.SUCCESS;
-                    } else if(flashType == FlashMessageLevel.WARNING) {
+                    } else if (flashType == FlashMessageLevel.WARNING) {
                         return AlertLevel.WARNING;
-                    } else if(flashType == FlashMessageLevel.ERROR) {
+                    } else if (flashType == FlashMessageLevel.ERROR) {
                         return AlertLevel.ERROR;
                     } else {
                         throw new RuntimeException("Flash type not managed here : " + flashType);

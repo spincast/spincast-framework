@@ -6,16 +6,15 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.Module;
 
-public class MethodReferenceAsHandlersOrLambdasTest extends IntegrationTestNoAppDefaultContextsBase {
+public class MethodReferenceAsHandlersOrLambdasTest extends NoAppStartHttpServerTestingBase {
 
     public static class MyController {
 
@@ -25,17 +24,15 @@ public class MethodReferenceAsHandlersOrLambdasTest extends IntegrationTestNoApp
     }
 
     @Override
-    protected Injector createInjector() {
+    protected Module getExtraOverridingModule2() {
 
-        return Spincast.configure()
-                       .module(new SpincastGuiceModuleBase() {
+        return new SpincastGuiceModuleBase() {
 
-                           @Override
-                           protected void configure() {
-                               bind(MyController.class);
-                           }
-                       })
-                       .init(new String[]{});
+            @Override
+            protected void configure() {
+                bind(MyController.class);
+            }
+        };
     }
 
     @Inject

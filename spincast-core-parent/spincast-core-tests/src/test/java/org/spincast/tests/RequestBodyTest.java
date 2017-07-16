@@ -15,13 +15,13 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
-public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void bodyAsInputStream() throws Exception {
@@ -41,7 +41,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertTrue(content.contains("Le bœuf et l'éléphant!"));
                     assertTrue(content.contains("Content-Type:"));
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -68,7 +68,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     String content = new String(bodyBytes, "UTF-8");
                     assertNotNull(content);
                     assertEquals("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", content);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -92,7 +92,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     String utf8String = context.request().getBodyAsString();
                     assertNotNull(utf8String);
                     assertEquals("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", utf8String);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -117,7 +117,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(content);
                     assertTrue(content.contains("Le bœuf et l'éléphant!"));
                     assertTrue(content.contains("Content-Type:"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -141,7 +141,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     String content = context.request().getBodyAsString();
                     assertNotNull(content);
                     assertFalse(content.contains("Le bœuf et l'éléphant!"));
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -171,7 +171,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     try {
                         json = context.request().getJsonBody();
                         fail();
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         System.out.println(ex);
                     }
 
@@ -179,7 +179,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(name);
                     assertEquals(SpincastTestUtils.TEST_STRING, name);
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -208,7 +208,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertTrue(name instanceof String);
                     assertEquals(SpincastTestUtils.TEST_STRING, name);
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -238,7 +238,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(user);
                     assertNotNull(user.name);
                     assertEquals(SpincastTestUtils.TEST_STRING, user.name);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -266,7 +266,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(name);
                     assertEquals(SpincastTestUtils.TEST_STRING, name);
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -296,7 +296,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertTrue(name instanceof String);
                     assertEquals(SpincastTestUtils.TEST_STRING, name);
 
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -322,7 +322,7 @@ public class RequestBodyTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertNotNull(user);
                     assertNotNull(user.name);
                     assertEquals(SpincastTestUtils.TEST_STRING, user.name);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

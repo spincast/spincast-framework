@@ -148,15 +148,15 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             // This direct Not Found route will have all the "before"
             // and "after" filters run, like a regular route.
             //==========================================
-            if(routingResult == null) {
+            if (routingResult == null) {
                 routingResult = prepareNotFoundRouting(exchange, requestContext);
             }
 
             try {
                 callRouteHandlers(requestContext, routingResult);
-            } catch(NotFoundException notFoundException) {
+            } catch (NotFoundException notFoundException) {
 
-                if(notFoundException.isResetResponse()) {
+                if (notFoundException.isResetResponse()) {
                     resetResponse(requestContext);
                 }
 
@@ -169,7 +169,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 callRouteHandlers(requestContext, routingResult);
             }
 
-        } catch(Throwable ex) {
+        } catch (Throwable ex) {
 
             //==========================================
             // Custom exception handling, if any.
@@ -177,7 +177,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             try {
                 // No requestContext? We can't run the custom
                 // handler.
-                if(requestContext == null) {
+                if (requestContext == null) {
                     throw ex;
                 }
 
@@ -193,14 +193,14 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 //==========================================
                 // If the headers are not sent yet, we reset everything.
                 //==========================================
-                if(!(ex instanceof ResponseResetableException) || ((ResponseResetableException)ex).isResetResponse()) {
+                if (!(ex instanceof ResponseResetableException) || ((ResponseResetableException)ex).isResetResponse()) {
                     resetResponse(requestContext);
                 }
 
                 //==========================================
                 // Default exception HTTP status.
                 //==========================================
-                if(ex instanceof CustomStatusCodeException) {
+                if (ex instanceof CustomStatusCodeException) {
                     requestContext.response().setStatusCode(((CustomStatusCodeException)ex).getStatusCode());
                 } else {
                     requestContext.response().setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
@@ -208,14 +208,14 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
                 customExceptionHandling(ex, requestContext, routingResult);
 
-            } catch(Throwable ex2) {
+            } catch (Throwable ex2) {
 
                 //==========================================
                 // Default exception handling.
                 //==========================================
                 try {
                     defaultExceptionHandling(exchange, ex2);
-                } catch(Throwable ex3) {
+                } catch (Throwable ex3) {
 
                     //==========================================
                     // Last resort exception handling!
@@ -226,10 +226,10 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         } finally {
             try {
                 getSpincastRequestScope().exit();
-            } catch(Throwable ex) {
+            } catch (Throwable ex) {
                 try {
                     this.logger.error("Error while exiting custom Guice scope : " + SpincastStatics.getStackTrace(ex));
-                } catch(Throwable ex2) {
+                } catch (Throwable ex2) {
                     // too bad
                 }
             }
@@ -257,9 +257,9 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         // If no route matches for Not Found, we
         // create a default one!
         //==========================================
-        if(routingResult == null) {
+        if (routingResult == null) {
 
-            if(alreadyTried) {
+            if (alreadyTried) {
                 throw new RuntimeException("The method prepareNotFoundRouting was already tried, we called addDefaultNotFoundRoute() " +
                                            "but there's still no Not Found route!! Full url: " +
                                            getServer().getFullUrlOriginal(exchange));
@@ -309,24 +309,24 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 //==========================================
                 String customMessage = context.variables()
                                               .getAsString(SpincastConstants.RequestScopedVariables.NOT_FOUND_PUBLIC_MESSAGE);
-                if(!StringUtils.isBlank(customMessage)) {
+                if (!StringUtils.isBlank(customMessage)) {
                     message = customMessage;
                 }
 
                 context.response().setStatusCode(HttpStatus.SC_NOT_FOUND);
 
-                if(context.request().isJsonShouldBeReturn()) {
+                if (context.request().isJsonShouldBeReturn()) {
                     context.response().sendJson(getNotFoundJsonContent(message));
 
-                } else if(context.request().isXMLShouldBeReturn()) {
+                } else if (context.request().isXMLShouldBeReturn()) {
                     context.response().sendXml(getNotFoundXmlContent(message));
 
-                } else if(context.request().isHTMLShouldBeReturn()) {
+                } else if (context.request().isHTMLShouldBeReturn()) {
                     String html = getNotFoundHtmlContent(message);
                     context.response().sendHtml(html);
 
                 } else {
-                    if(!context.request().isPlainTextShouldBeReturn()) {
+                    if (!context.request().isPlainTextShouldBeReturn()) {
                         SpincastFrontController.this.logger.error("Format not managed here!: " +
                                                                   context.request().getContentTypeBestMatch());
                     }
@@ -365,7 +365,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     }
 
     protected void resetResponse(R requestContext) {
-        if(requestContext != null && !requestContext.response().isHeadersSent()) {
+        if (requestContext != null && !requestContext.response().isHeadersSent()) {
             requestContext.response().resetEverything();
         }
     }
@@ -381,7 +381,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             // Do we have a custom exception handler?
             //==========================================
             RoutingResult<R> exceptionRoutingResult = getRouter().route(requestContext, RoutingType.EXCEPTION);
-            if(exceptionRoutingResult != null) {
+            if (exceptionRoutingResult != null) {
 
                 requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
                                                exceptionRoutingResult);
@@ -402,14 +402,14 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 //==========================================
                 return;
             }
-        } catch(Throwable ex2) {
+        } catch (Throwable ex2) {
 
             try {
                 this.logger.error("An exception occured while using the custom exception handler. The original " +
                                   "exception will be thrown again so it can be managed by the default exception " +
                                   "handler. The exception which occured is : " +
                                   SpincastStatics.getStackTrace(ex2));
-            } catch(Throwable ex3) {
+            } catch (Throwable ex3) {
                 // too bad
             }
         }
@@ -459,7 +459,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // Calls the "handle()" method on each handlers.
         //==========================================
-        for(RouteHandlerMatch<R> routeHandlerMatch : routingResult.getRouteHandlerMatches()) {
+        for (RouteHandlerMatch<R> routeHandlerMatch : routingResult.getRouteHandlerMatches()) {
 
             requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH,
                                            routeHandlerMatch);
@@ -472,13 +472,13 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             //==========================================
             try {
                 handlerMethod.handle(requestContext);
-            } catch(ForwardRouteException ex) {
+            } catch (ForwardRouteException ex) {
                 manageForwardRouteException(ex, requestContext, routingResult);
                 return;
-            } catch(RedirectException ex) {
+            } catch (RedirectException ex) {
                 manageRedirectException(ex, requestContext, routingResult);
                 break;
-            } catch(SkipRemainingHandlersException ex) {
+            } catch (SkipRemainingHandlersException ex) {
                 // We run nothing more!
                 break;
             }
@@ -487,7 +487,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // Ends the response if required.
         //==========================================
-        if(!requestContext.response().isClosed()) {
+        if (!requestContext.response().isClosed()) {
             requestContext.response().end();
         }
     }
@@ -499,7 +499,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                                            R context,
                                            RoutingResult<R> routingResult) {
 
-        if(context.response().isHeadersSent()) {
+        if (context.response().isHeadersSent()) {
             this.logger.error("Headers already sent, we can't sent redirection headers!");
         } else {
 
@@ -508,11 +508,11 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             //==========================================
             context.response().resetEverything(false);
 
-            if(ex.getFlashMessage() != null) {
+            if (ex.getFlashMessage() != null) {
                 context.response().redirect(ex.getNewUrl(),
                                             ex.isRedirectPermanently(),
                                             ex.getFlashMessage());
-            } else if(ex.getFlashMessageType() != null && ex.getFlashMessageText() != null) {
+            } else if (ex.getFlashMessageType() != null && ex.getFlashMessageText() != null) {
                 context.response().redirect(ex.getNewUrl(),
                                             ex.isRedirectPermanently(),
                                             ex.getFlashMessageType(),
@@ -540,13 +540,13 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         Integer nbrTimeForwarded =
                 context.variables().get(SpincastConstants.RequestScopedVariables.ROUTE_FORWARDED_NBR, Integer.class);
-        if(nbrTimeForwarded == null) {
+        if (nbrTimeForwarded == null) {
             nbrTimeForwarded = 1;
         } else {
             nbrTimeForwarded++;
         }
 
-        if(nbrTimeForwarded > getSpincastConfig().getRouteForwardingMaxNumber()) {
+        if (nbrTimeForwarded > getSpincastConfig().getRouteForwardingMaxNumber()) {
             throw new RuntimeException("The maximum number of request forwarding has been reached : " +
                                        getSpincastConfig().getRouteForwardingMaxNumber() + "." +
                                        "This route won't be called : " + ex.getNewRoute());
@@ -556,8 +556,8 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // Should we reset the response?
         //==========================================
-        if(ex.isResetResponse()) {
-            if(!context.response().isHeadersSent()) {
+        if (ex.isResetResponse()) {
+            if (!context.response().isHeadersSent()) {
                 context.response().resetEverything();
             } else {
                 this.logger.warn("The response headers have already been sent, we can't reset the response...");
@@ -571,7 +571,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         context = createForwardedRequestContext(context, ex.getNewRoute());
 
         RoutingResult<R> routingResult = getRouter().route(context);
-        if(routingResult == null) {
+        if (routingResult == null) {
             this.logger.warn("A route forwarding was asked but the requested route doesn't have any match : " + ex.getNewRoute());
             throw new NotFoundException(false);
         }
@@ -588,19 +588,19 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     protected R createForwardedRequestContext(R context,
                                               String fullUrlOrRelativePathAndQueryString) {
         try {
-            if(fullUrlOrRelativePathAndQueryString == null) {
+            if (fullUrlOrRelativePathAndQueryString == null) {
                 fullUrlOrRelativePathAndQueryString = "/";
             } else {
                 fullUrlOrRelativePathAndQueryString = fullUrlOrRelativePathAndQueryString.trim();
-                if(fullUrlOrRelativePathAndQueryString.startsWith("//")) {
+                if (fullUrlOrRelativePathAndQueryString.startsWith("//")) {
                     fullUrlOrRelativePathAndQueryString = fullUrlOrRelativePathAndQueryString.substring(1);
                 }
             }
 
             String newFullUrl = fullUrlOrRelativePathAndQueryString;
             URI uri = new URI(fullUrlOrRelativePathAndQueryString);
-            if(!uri.isAbsolute()) {
-                if(!fullUrlOrRelativePathAndQueryString.startsWith("/")) {
+            if (!uri.isAbsolute()) {
+                if (!fullUrlOrRelativePathAndQueryString.startsWith("/")) {
                     fullUrlOrRelativePathAndQueryString = "/" + fullUrlOrRelativePathAndQueryString;
                 }
 
@@ -616,7 +616,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
             return context;
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -641,7 +641,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
      * Default exception handling.
      */
     protected void defaultExceptionHandling(Object exchange, Throwable ex) throws Throwable {
-        if(ex instanceof PublicException) {
+        if (ex instanceof PublicException) {
             defaultPublicExceptionHandling(exchange, (PublicException)ex);
         } else {
             defaultPrivateExceptionHandling(exchange, ex);
@@ -654,7 +654,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
      */
     protected void defaultPublicExceptionHandling(Object exchange, PublicException publicException) throws Throwable {
 
-        if(getServer().isResponseHeadersSent(exchange)) {
+        if (getServer().isResponseHeadersSent(exchange)) {
             this.logger.info("Can't sent proper public error response, headers are already sent :\n" +
                              SpincastStatics.getStackTrace((Throwable)publicException));
             return;
@@ -665,7 +665,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // More info when debug is enabled.
         //==========================================
-        if(getSpincastConfig().isDebugEnabled()) {
+        if (getSpincastConfig().isDebugEnabled()) {
             errorMessage += "\n\nDebug info :\n\n" + SpincastStatics.getStackTrace(((Throwable)publicException));
         }
 
@@ -682,7 +682,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         this.logger.error(SpincastStatics.getStackTrace(exception));
 
-        if(getServer().isResponseHeadersSent(exchange)) {
+        if (getServer().isResponseHeadersSent(exchange)) {
             this.logger.info("Can't sent proper error response, headers are already sent :\n" +
                              SpincastStatics.getStackTrace(exception));
             return;
@@ -693,12 +693,12 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // More info when debug mode is enabled.
         //==========================================
-        if(getSpincastConfig().isDebugEnabled()) {
+        if (getSpincastConfig().isDebugEnabled()) {
             errorMessage += "\n\nDebug info :\n\n" + SpincastStatics.getStackTrace(exception);
         }
 
         int statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
-        if(exception instanceof CustomStatusCodeException) {
+        if (exception instanceof CustomStatusCodeException) {
             statusCode = ((CustomStatusCodeException)exception).getStatusCode();
         }
 
@@ -712,31 +712,31 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                                                       String errorMessage,
                                                       Integer statusCode) throws Throwable {
 
-        if(statusCode == null) {
+        if (statusCode == null) {
             statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
         }
 
         ContentTypeDefaults type = getResponseContentTypeToUse(exchange);
 
-        if(type == ContentTypeDefaults.JSON) {
+        if (type == ContentTypeDefaults.JSON) {
             errorMessage = getInternalErrorJsonContent(errorMessage);
             getServer().setResponseHeader(exchange,
                                           HttpHeaders.CONTENT_TYPE,
                                           Arrays.asList(ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset()));
 
-        } else if(type == ContentTypeDefaults.XML) {
+        } else if (type == ContentTypeDefaults.XML) {
             errorMessage = getInternalErrorXmlContent(errorMessage);
             getServer().setResponseHeader(exchange,
                                           HttpHeaders.CONTENT_TYPE,
                                           Arrays.asList(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset()));
 
-        } else if(type == ContentTypeDefaults.HTML) {
+        } else if (type == ContentTypeDefaults.HTML) {
             errorMessage = getInternalErrorHtmlContent(errorMessage);
             getServer().setResponseHeader(exchange,
                                           HttpHeaders.CONTENT_TYPE,
                                           Arrays.asList(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset()));
 
-        } else if(type == ContentTypeDefaults.TEXT) {
+        } else if (type == ContentTypeDefaults.TEXT) {
             errorMessage = getInternalErrorTextContent(errorMessage);
             getServer().setResponseHeader(exchange,
                                           HttpHeaders.CONTENT_TYPE,
@@ -789,7 +789,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     protected ContentTypeDefaults getResponseContentTypeToUse(Object exchange) {
         try {
             return getServer().getContentTypeBestMatch(exchange);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             return ContentTypeDefaults.TEXT;
         }
     }
@@ -806,7 +806,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                               defaultHandlingException.getMessage() +
                               ".\n" + "The original exception was : " +
                               SpincastStatics.getStackTrace(originalException));
-        } catch(Throwable ex3) {
+        } catch (Throwable ex3) {
             // too bad
         }
 

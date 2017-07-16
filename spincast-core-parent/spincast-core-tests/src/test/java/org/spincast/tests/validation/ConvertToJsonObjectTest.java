@@ -13,11 +13,11 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.validation.JsonObjectValidationSet;
 import org.spincast.core.validation.ValidationLevel;
 import org.spincast.core.validation.ValidationSet;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class ConvertToJsonObjectTest extends UnitTestDefaultContextsBase {
+public class ConvertToJsonObjectTest extends NoAppTestingBase {
 
     @Inject
     private JsonManager jsonManager;

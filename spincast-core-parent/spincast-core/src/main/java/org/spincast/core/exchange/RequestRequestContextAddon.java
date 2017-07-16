@@ -441,4 +441,25 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      */
     public boolean isFlashMessageExists();
 
+
+    /**
+     * Gets the the request cookies values as a Map, 
+     * using the names of the cookies as the keys.
+     */
+    public Map<String, String> getCookies();
+
+    /**
+     * Gets the value of a request cookie by name.
+     * 
+     * @return the value or <code>null</code> if not found.
+     */
+    public String getCookie(String name);
+
+
+    /**
+     * Did we validate that the current user has 
+     * cookies enabled?
+     */
+    public boolean isCookiesEnabledValidated();
+
 }

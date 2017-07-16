@@ -1,30 +1,29 @@
 package org.spincast.tests;
 
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.bootstrapping.SpincastBootstrapper;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.routing.SpincastRoutingPluginModule;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
-import com.google.inject.Injector;
 import com.google.inject.Key;
 
 @ExpectingBeforeClassException // Expect an exception!
-public class InvalidCustomRouterConfigKeyTest extends IntegrationTestNoAppDefaultContextsBase {
+public class InvalidCustomRouterConfigKeyTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Injector createInjector() {
+    protected SpincastBootstrapper createBootstrapper() {
 
-        return Spincast.configure()
-                       .disableDefaultRoutingPlugin()
-                       .module(new SpincastRoutingPluginModule() {
+        SpincastBootstrapper bootstrapper = super.createBootstrapper();
 
-                           @Override
-                           protected Key<?> getRouterImplementationKey() {
-                               return Key.get(SpincastUtils.class);
-                           }
-                       })
-                       .init(new String[]{});
+        return bootstrapper.disableDefaultRoutingPlugin()
+                           .module(new SpincastRoutingPluginModule() {
+
+                               @Override
+                               protected Key<?> getRouterImplementationKey() {
+                                   return Key.get(SpincastUtils.class);
+                               }
+                           });
     }
 
 }

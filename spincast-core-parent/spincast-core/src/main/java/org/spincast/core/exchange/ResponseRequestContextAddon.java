@@ -1,13 +1,18 @@
 package org.spincast.core.exchange;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.cookies.Cookie;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.response.AlertLevel;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.GzipOption;
+
+import com.google.inject.assistedinject.Assisted;
 
 /**
  * Methods to manipulate the response.
@@ -744,5 +749,88 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * added to this variable.
      */
     public void addAlert(AlertLevel success, String string);
+
+    /**
+     * Gets the cookies already added to the response as a Map, 
+     * using their names as the keys.
+     * <p>
+     * NOTE : use the {@link RequestRequestContextAddon#getCookies()} 
+     * from the <code>request()</code> add-on instead
+     * to get the cookies sent by the user!
+     */
+    public Map<String, Cookie> getCookiesAdded();
+
+    /**
+     * Gets a cookie already added to the response, by its name.
+     * <p>
+     * NOTE : use the {@link RequestRequestContextAddon#getCookie(String)} 
+     * from the <code>request()</code> add-on instead
+     * to get a cookie sent by the user!
+     * 
+     * @return the cookie or <code>null</code> if not found.
+     */
+    public Cookie getCookieAdded(String name);
+
+    /**
+     * Creates a cookie using the given name (<code>null</code> value).
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>
+     * and the cookie is valid for the time
+     * of the session only.
+     * <p>
+     * You have to add the cookie using the
+     * {@link #addCookie(Cookie)} method after it is
+     * properly created.
+     */
+    public Cookie createCookie(@Assisted("name") String name);
+
+    /**
+     * Adds a cookie.
+     */
+    public void addCookie(Cookie cookie);
+
+    /**
+     * Adds a cookie using the specified name and value.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>
+     * and the cookie is valid for the time
+     * of the session only.
+     */
+    public void addCookie(String name, String value);
+
+    /**
+     * Adds a cookie using the specified name, value
+     * and number opf minutes to live.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
+     */
+    public void addCookie(String name, String value, int nbrMinutesToLive);
+
+    /**
+     * Adds a cookie, using all available configurations.
+     */
+    public void addCookie(String name, String value, String path, String domain, Date expires, boolean secure,
+                          boolean httpOnly, boolean discard, int version);
+
+    /**
+     * Deletes a cookie. In fact, this sets the cookie's <code>expires date</code> in the
+     * past so the user's browser will remove it.
+     * <code>isExpired()</code> will return <code>true</code> after you called
+     * this method.
+     */
+    public void deleteCookie(String name);
+
+    /**
+     * Deletes <strong>all</strong> cookies! Not only
+     * the new cookies that have been added to the response, but
+     * also the cookies that have been received in the request! 
+     * <p>
+     * In fact, this method sets the <code>expires date</code> of the
+     * cookies in the past so the user's browser will remove them.
+     */
+    public void deleteAllCookies();
 
 }

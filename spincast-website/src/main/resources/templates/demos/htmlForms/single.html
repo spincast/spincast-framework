@@ -404,13 +404,13 @@ ValidationSet lastResult = validationSet.validationNotBlank()
         <p>
             <pre class="ace ace-java"
 >// Are there some errors?
-if(!validationResult.isValid() {
+if(!validationSet.isValid()) {
 
     // Adds the form to the response model
     context.response().getModel().put("demoForm", form);
     
     // Adds the Validation Set to the response model.
-    context.response().getModel().put("validation", validationResult);
+    context.response().getModel().put("validation", validationSet);
     
     // Sends the template
     sendTemplate(context);
@@ -430,7 +430,7 @@ if(!validationResult.isValid() {
     <div>
         <p>
             <pre class="ace ace-java"
->if(!validationResult.isValid() {
+>if(!validationSet.isValid()) {
     //...
 } else {
 
@@ -546,7 +546,7 @@ if(!validationResult.isValid() {
         <p>
             <pre class="ace ace-java" data-ace-hi="1,51,1,85"
 >JsonObject form = context.request().getFormData().getJsonObject("demoForm");
-ValidationSet validationResult = validateForm(form).prefixValidationKeys("demoForm.");
+ValidationSet validationSet = validateForm(form).prefixValidationKeys("demoForm.");
 
 // ... uses the Validation Set</pre>       
         </p>

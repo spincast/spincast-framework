@@ -7,7 +7,7 @@ import org.spincast.defaults.bootstrapping.Spincast;
 
 import com.google.inject.Inject;
 
-public class ITAppInitDefaultTest extends NoAppConfigTestClassBase {
+public class ITAppInitDefaultTest extends IntegrationConfigTestClassBase {
 
     protected static boolean initCalled = false;
 
@@ -27,7 +27,7 @@ public class ITAppInitDefaultTest extends NoAppConfigTestClassBase {
     }
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 

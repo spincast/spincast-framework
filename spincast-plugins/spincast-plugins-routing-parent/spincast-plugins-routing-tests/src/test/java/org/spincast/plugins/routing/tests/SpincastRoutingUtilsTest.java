@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.routing.utils.ReplaceDynamicParamsResult;
 import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
 
 import com.google.inject.Inject;
 
-public class SpincastRoutingUtilsTest extends UnitTestDefaultContextsBase {
+public class SpincastRoutingUtilsTest extends NoAppTestingBase {
 
     @Inject
     protected SpincastRoutingUtils spincastRoutingUtils;

@@ -8,17 +8,18 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.ProvisionException;
 import com.google.inject.Scopes;
 
-public class RequestScopeOutOfScopeTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RequestScopeOutOfScopeTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule2() {
+
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -52,7 +53,7 @@ public class RequestScopeOutOfScopeTest extends IntegrationTestNoAppDefaultConte
         try {
             super.beforeClass();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             this.exception = ex;
         }
     }

@@ -8,8 +8,8 @@ import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
-import org.spincast.testing.core.AppTestingConfigInfo;
-import org.spincast.testing.core.IntegrationTestAppBase;
+import org.spincast.testing.core.AppBasedTestingBase;
+import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.website.App;
 import org.spincast.website.AppConfig;
@@ -22,15 +22,25 @@ import com.google.inject.Inject;
  * Integration test base class specifically made for 
  * our application.
  */
-public abstract class WebsiteIntegrationTestBase extends IntegrationTestAppBase<AppRequestContext, DefaultWebsocketContext> {
+public abstract class WebsiteIntegrationTestBase extends AppBasedTestingBase<AppRequestContext, DefaultWebsocketContext> {
+
+    @Override
+    protected void startApp() {
+        App.main(new String[]{});
+    }
 
     /**
      * We specify our testing configurations informations.
      */
     @Override
-    protected AppTestingConfigInfo getAppTestingConfigInfo() {
+    protected AppTestingConfigs getAppTestingConfigs() {
 
-        return new AppTestingConfigInfo() {
+        return new AppTestingConfigs() {
+
+            @Override
+            public boolean isBindAppClass() {
+                return true;
+            }
 
             @Override
             public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
@@ -106,8 +116,4 @@ public abstract class WebsiteIntegrationTestBase extends IntegrationTestAppBase<
         }
     }
 
-    @Override
-    protected void initApp() {
-        App.main(new String[]{});
-    }
 }

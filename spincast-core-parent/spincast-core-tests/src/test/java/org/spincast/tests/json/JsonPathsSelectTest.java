@@ -15,12 +15,12 @@ import org.junit.Test;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 
 import com.google.inject.Inject;
 
-public class JsonPathsSelectTest extends UnitTestDefaultContextsBase {
+public class JsonPathsSelectTest extends NoAppTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -622,7 +622,7 @@ public class JsonPathsSelectTest extends UnitTestDefaultContextsBase {
         try {
             obj.getString("inner[2", "defaultVal");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -638,7 +638,7 @@ public class JsonPathsSelectTest extends UnitTestDefaultContextsBase {
         try {
             obj.getString("inner..inner", "defaultVal");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
     }

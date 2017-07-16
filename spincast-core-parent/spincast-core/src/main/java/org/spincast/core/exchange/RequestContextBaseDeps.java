@@ -1,6 +1,5 @@
 package org.spincast.core.exchange;
 
-import org.spincast.core.cookies.CookiesRequestContextAddon;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.routing.RoutingRequestContextAddon;
@@ -36,7 +35,6 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
     private final LocaleResolver localeResolver;
     private final JsonManager jsonManager;
     private final XmlManager xmlManager;
-    private final Provider<CookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider;
     private final Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider;
     private final Provider<RoutingRequestContextAddon<R>> routingRequestContextAddonProvider;
     private final Provider<ResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
@@ -50,7 +48,6 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
      */
     @Inject
     public RequestContextBaseDeps(LocaleResolver localeResolver, JsonManager jsonManager, XmlManager xmlManager,
-                                  Provider<CookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider,
                                   Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider,
                                   Provider<RoutingRequestContextAddon<R>> routingRequestContextAddonProvider,
                                   Provider<ResponseRequestContextAddon<R>> responseRequestContextAddonProvider,
@@ -62,7 +59,6 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
         this.localeResolver = localeResolver;
         this.jsonManager = jsonManager;
         this.xmlManager = xmlManager;
-        this.cookiesRequestContextAddonProvider = cookiesRequestContextAddonProvider;
         this.requestRequestContextAddonProvider = requestRequestContextAddonProvider;
         this.routingRequestContextAddonProvider = routingRequestContextAddonProvider;
         this.responseRequestContextAddonProvider = responseRequestContextAddonProvider;
@@ -82,10 +78,6 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
 
     public XmlManager getXmlManager() {
         return this.xmlManager;
-    }
-
-    public Provider<CookiesRequestContextAddon<R>> getCookiesRequestContextAddonProvider() {
-        return this.cookiesRequestContextAddonProvider;
     }
 
     public Provider<RequestRequestContextAddon<R>> getRequestRequestContextAddonProvider() {

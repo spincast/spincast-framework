@@ -14,7 +14,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -24,7 +24,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
-public class RedirectAndCallOtherRouteHandlersTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -443,7 +443,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends IntegrationTestNoAppD
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(!redirected[0]) {
+                if (!redirected[0]) {
                     redirected[0] = true;
                     context.response().redirect();
                     return;
@@ -473,7 +473,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends IntegrationTestNoAppD
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(!redirected[0]) {
+                if (!redirected[0]) {
                     assertNull(context.request().getQueryStringParamFirst("titi"));
                     redirected[0] = true;
                     context.response().redirect("?titi=toto");
@@ -505,7 +505,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends IntegrationTestNoAppD
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(!redirected[0]) {
+                if (!redirected[0]) {
                     redirected[0] = true;
                     context.response().redirect("#anchor");
                     return;
@@ -535,7 +535,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends IntegrationTestNoAppD
             @Override
             public void handle(DefaultRequestContext context) {
 
-                if(!redirected[0]) {
+                if (!redirected[0]) {
                     redirected[0] = true;
                     throw new RedirectException("", false);
                 }

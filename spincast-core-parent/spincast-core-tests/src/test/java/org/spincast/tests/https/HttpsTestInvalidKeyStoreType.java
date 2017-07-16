@@ -1,7 +1,7 @@
 package org.spincast.tests.https;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -10,10 +10,10 @@ import org.spincast.testing.utils.ExpectingBeforeClassException;
 import com.google.inject.Inject;
 
 @ExpectingBeforeClassException
-public class HttpsTestInvalidKeyStoreType extends IntegrationTestNoAppDefaultContextsBase {
+public class HttpsTestInvalidKeyStoreType extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass2() {
         return HttpsTestConfig.class;
     }
 

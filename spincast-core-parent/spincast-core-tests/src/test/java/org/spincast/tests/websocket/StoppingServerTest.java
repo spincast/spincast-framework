@@ -11,7 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
@@ -29,11 +29,8 @@ import org.spincast.tests.varia.WebsocketClientTest;
  * issue doesn't occure.
  */
 @Ignore
-public class StoppingServerTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class StoppingServerTest extends NoAppWebsocketTestingBase {
 
-    //==========================================
-    // We start the serv by ourself
-    //==========================================
     @Override
     protected void startServer() {
         // nothing
@@ -85,12 +82,12 @@ public class StoppingServerTest extends WebsocketIntegrationTestNoAppDefaultCont
         Set<WebsocketClientTest> clients = new HashSet<WebsocketClientTest>();
 
         int endpointNbr = 5;
-        for(int endpointPos = 1; endpointPos <= endpointNbr; endpointPos++) {
+        for (int endpointPos = 1; endpointPos <= endpointNbr; endpointPos++) {
 
             String endpointName = "endpoint" + endpointPos;
             endpointIdToUse[0] = endpointName;
             int peerNbr = 20;
-            for(int i = 1; i <= peerNbr; i++) {
+            for (int i = 1; i <= peerNbr; i++) {
                 peerIdToUse[0] = "peer" + i;
 
                 WebsocketClientTest client = new WebsocketClientTest();
@@ -107,7 +104,7 @@ public class StoppingServerTest extends WebsocketIntegrationTestNoAppDefaultCont
         //==========================================
         getServer().stop(true);
 
-        for(WebsocketClientTest client : clients) {
+        for (WebsocketClientTest client : clients) {
             assertTrue(client.waitForConnectionClosed());
             assertEquals(1, client.getConnectionClosedEvents().size());
         }
@@ -151,12 +148,12 @@ public class StoppingServerTest extends WebsocketIntegrationTestNoAppDefaultCont
         Set<WebsocketClientTest> clients = new HashSet<WebsocketClientTest>();
 
         int endpointNbr = 5;
-        for(int endpointPos = 1; endpointPos <= endpointNbr; endpointPos++) {
+        for (int endpointPos = 1; endpointPos <= endpointNbr; endpointPos++) {
 
             String endpointName = "endpoint" + endpointPos;
             endpointIdToUse[0] = endpointName;
             int peerNbr = 20;
-            for(int i = 1; i <= peerNbr; i++) {
+            for (int i = 1; i <= peerNbr; i++) {
                 peerIdToUse[0] = "peer" + i;
 
                 WebsocketClientTest client = new WebsocketClientTest();
@@ -181,7 +178,7 @@ public class StoppingServerTest extends WebsocketIntegrationTestNoAppDefaultCont
             }
         }));
 
-        for(WebsocketClientTest client : clients) {
+        for (WebsocketClientTest client : clients) {
             assertEquals(0, client.getConnectionClosedEvents().size());
         }
     }

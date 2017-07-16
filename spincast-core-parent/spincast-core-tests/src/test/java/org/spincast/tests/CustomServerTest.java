@@ -11,32 +11,32 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.bootstrapping.SpincastBootstrapper;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.tests.varia.CustomExchange;
 import org.spincast.tests.varia.CustomServer;
 
-import com.google.inject.Injector;
 import com.google.inject.Scopes;
 
 /**
  * Creation of a custom server.
  */
-public class CustomServerTest extends IntegrationTestNoAppDefaultContextsBase {
+public class CustomServerTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Injector createInjector() {
+    protected SpincastBootstrapper createBootstrapper() {
 
-        return Spincast.configure()
-                       .disableDefaultServerPlugin()
-                       .module(new SpincastGuiceModuleBase() {
+        SpincastBootstrapper bootstrapper = super.createBootstrapper();
 
-                           @Override
-                           protected void configure() {
-                               bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
-                           }
-                       })
-                       .init(new String[]{});
+        return bootstrapper.disableDefaultServerPlugin()
+                           .module(new SpincastGuiceModuleBase() {
+
+                               @Override
+                               protected void configure() {
+                                   bind(Server.class).to(CustomServer.class).in(Scopes.SINGLETON);
+                               }
+                           });
+
     }
 
     //==========================================

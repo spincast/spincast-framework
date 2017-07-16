@@ -9,11 +9,11 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.ETagFactory;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
+public class EtagTest extends NoAppTestingBase {
 
     @Inject
     protected ETagFactory eTagFactory;
@@ -302,7 +302,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().deserializeHeaderValue(null);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -312,7 +312,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().deserializeHeaderValue("");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -322,7 +322,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().deserializeHeaderValue("test");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -332,7 +332,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().deserializeHeaderValue("X/\"test\"");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -372,7 +372,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().create(null);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -382,7 +382,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().create("");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -392,7 +392,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().create("aaa\"bbb");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -432,7 +432,7 @@ public class EtagTest extends IntegrationTestNoAppDefaultContextsBase {
         try {
             getETagFactory().create("*", true, true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 

@@ -225,6 +225,9 @@ JsonObject body = context.request().getJsonBody();
 // Gets a HTTP header
 String authorization = context.request().getHeaderFirst(HttpHeaders.AUTHORIZATION);
 
+// Gets a cookie value
+String sesionId = context.request().getCookie("sess");
+
 // Gets a queryString parameter
 String page = context.request().getQueryStringParamFirst("page");
 
@@ -262,6 +265,9 @@ context.response().addHeaderValue(HttpHeaders.CONTENT_LANGUAGE, "en");
 // Sets the content-type
 context.response().setContentType(ContentTypeDefaults.JSON.getMainVariation());
 
+// Sets a cookie
+context.response().addCookie("locale", "en-US");
+
 // Permanently redirects to a new url (the new url
 // can be absolute or relative). A Flash message
 // can be provided.
@@ -284,33 +290,6 @@ context.response().sendJson(user);
 context.response().sendHtmlTemplate("/templates/user.html");</pre>     
                         </p> 
                     </div>
-                </p>
-            </li>
-        </ul>
-    </p>
-    <p>
-        <ul class="apiList">
-            <li>
-                <code class="apiItem">CookiesRequestContextAddon&lt;R&gt; <span>cookies</span>()</code>
-                <p class="well">
-                    
-                    The <code>cookies()</code> add-on allows you to read
-                    and write <code>cookies</code>.
-                    
-                    <h5 class="examples">Examples :</h5>
-                    <div>
-                        <p>
-                            <pre class="ace ace-java"
->// Gets a cookie
-Cookie cookie = context.cookies().getCookie("someCookie");
-
-// Adds a cookie (multiple options are provided)
-context.cookies().addCookie("someCookie", "someValue");
-
-// Deletes a cookie
-context.cookies().deleteCookie("someCookie");</pre>     
-                        </p> 
-                    </div>     
                 </p>
             </li>
         </ul>

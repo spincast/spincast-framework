@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class RoutingHttpMethods2Test extends IntegrationTestNoAppDefaultContextsBase {
+public class RoutingHttpMethods2Test extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void get() throws Exception {

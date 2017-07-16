@@ -5,31 +5,33 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.DefaultRequestContextDefault;
+import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketContextBase;
 import org.spincast.core.websocket.WebsocketContextBaseDeps;
 import org.spincast.core.websocket.WebsocketPeerManager;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.WebsocketControllerTestBase;
 import org.spincast.tests.websocket.CustomWebsocketContextTest.AppWebsocketContext;
 
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class CustomWebsocketContextTest extends
-                                        WebsocketIntegrationTestNoAppBase<DefaultRequestContext, AppWebsocketContext> {
+                                        NoAppStartHttpServerCustomContextTypesTestingBase<DefaultRequestContext, AppWebsocketContext> {
 
     @Override
-    protected Injector createInjector() {
+    protected Class<? extends RequestContext<?>> getRequestContextImplementationClass() {
+        return DefaultRequestContextDefault.class;
+    }
 
-        return Spincast.configure()
-                       .websocketContextImplementationClass(AppWebsocketContextDefault.class)
-                       .init(new String[]{});
+    @Override
+    protected Class<? extends WebsocketContext<?>> getWebsocketContextImplementationClass() {
+        return AppWebsocketContextDefault.class;
     }
 
     public static interface AppWebsocketContext extends WebsocketContext<AppWebsocketContext> {
@@ -94,5 +96,7 @@ public class CustomWebsocketContextTest extends
         assertTrue(client.waitForStringMessageReceived("customMethod: " + SpincastTestUtils.TEST_STRING));
 
     }
+
+
 
 }

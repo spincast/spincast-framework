@@ -18,14 +18,14 @@ import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 
-public class FormatsTest extends IntegrationTestNoAppDefaultContextsBase {
+public class FormatsTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected XmlManager xmlManager;
@@ -159,7 +159,7 @@ public class FormatsTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertEquals(true, jsonObject.getBoolean("anotherBoolean"));
                     assertNotNull(jsonObject.getJsonObject("innerObj"));
                     assertTrue(jsonObject.getJsonObject("innerObj") instanceof JsonObject);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -189,7 +189,7 @@ public class FormatsTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertEquals(true, (boolean)map.get("anotherBoolean"));
                     assertNotNull(map.get("innerObj"));
                     assertTrue(map.get("innerObj") instanceof Map);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -220,7 +220,7 @@ public class FormatsTest extends IntegrationTestNoAppDefaultContextsBase {
                     assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
                     assertNotNull(jsonObj.getJsonObject("innerObj"));
                     assertTrue(jsonObj.getJsonObject("innerObj") instanceof JsonObjectDefault);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

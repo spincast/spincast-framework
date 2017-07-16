@@ -18,7 +18,7 @@ import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpException;
@@ -33,7 +33,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.common.collect.Lists;
 
-public class HttpClientTest extends IntegrationTestNoAppDefaultContextsBase {
+public class HttpClientTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void get() throws Exception {
@@ -290,20 +290,20 @@ public class HttpClientTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 assertEquals("", context.request().getBodyAsString());
 
-                Cookie cookie = context.cookies().getCookie("sendCookie1");
+                String cookie = context.request().getCookie("sendCookie1");
                 assertNotNull(cookie);
-                assertEquals("sendCookieVal1", cookie.getValue());
+                assertEquals("sendCookieVal1", cookie);
 
-                cookie = context.cookies().getCookie("sendCookie2");
+                cookie = context.request().getCookie("sendCookie2");
                 assertNotNull(cookie);
-                assertEquals("sendCookieVal2", cookie.getValue());
+                assertEquals("sendCookieVal2", cookie);
 
-                cookie = context.cookies().getCookie("sendCookie13");
+                cookie = context.request().getCookie("sendCookie13");
                 assertNotNull(cookie);
-                assertEquals("sendCookieVal3", cookie.getValue());
+                assertEquals("sendCookieVal3", cookie);
 
-                context.cookies().addCookie("cookie1", "cookieVal1");
-                context.cookies().addCookie("cookie2", "cookieVal2");
+                context.response().addCookie("cookie1", "cookieVal1");
+                context.response().addCookie("cookie2", "cookieVal2");
 
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
@@ -371,11 +371,11 @@ public class HttpClientTest extends IntegrationTestNoAppDefaultContextsBase {
 
                 assertEquals("", context.request().getBodyAsString());
 
-                Cookie cookie = context.cookies().getCookie("sentCookie1");
+                String cookie = context.request().getCookie("sentCookie1");
                 assertNotNull(cookie);
-                assertEquals("sent1", cookie.getValue());
+                assertEquals("sent1", cookie);
 
-                context.cookies().addCookie("testCookie", "testValue");
+                context.response().addCookie("testCookie", "testValue");
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });

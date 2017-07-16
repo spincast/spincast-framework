@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestRequestContextAddon;
 import org.spincast.core.json.JsonArray;
@@ -97,6 +96,8 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     private FlashMessage flashMessage;
 
     private Pattern formDataArrayPattern;
+
+    private Map<String, String> cookies;
 
     @Inject
     public SpincastRequestRequestContextAddon(R requestContext,
@@ -185,15 +186,33 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     protected Pattern getFormDataArrayPattern() {
 
-        if(this.formDataArrayPattern == null) {
+        if (this.formDataArrayPattern == null) {
             this.formDataArrayPattern = Pattern.compile(".*(\\[(0|[1-9]+[0-9]?)\\])$");
         }
         return this.formDataArrayPattern;
     }
 
     @Override
+    public String getCookie(String name) {
+        return getCookies().get(name);
+    }
+
+    @Override
+    public Map<String, String> getCookies() {
+        if (this.cookies == null) {
+            this.cookies = getServer().getCookies(getRequestContext().exchange());
+        }
+        return this.cookies;
+    }
+
+    @Override
+    public boolean isCookiesEnabledValidated() {
+        return getCookies().size() > 0;
+    }
+
+    @Override
     public Map<String, List<String>> getHeaders() {
-        if(this.headers == null) {
+        if (this.headers == null) {
 
             //==========================================
             // We make sure everything is immutable
@@ -204,12 +223,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             // "get" is case insensitive!
             Map<String, List<String>> headersFinal = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 
-            if(headersServer == null) {
+            if (headersServer == null) {
                 headersServer = Collections.emptyMap();
             } else {
-                for(Entry<String, List<String>> entry : headersServer.entrySet()) {
+                for (Entry<String, List<String>> entry : headersServer.entrySet()) {
 
-                    if(entry.getValue() == null) {
+                    if (entry.getValue() == null) {
                         headersFinal.put(entry.getKey(), Collections.<String>emptyList());
                     } else {
                         headersFinal.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
@@ -224,12 +243,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public List<String> getHeader(String name) {
-        if(StringUtils.isBlank(name)) {
+        if (StringUtils.isBlank(name)) {
             return new LinkedList<String>();
         }
         // This get is case insensitive.
         List<String> values = getHeaders().get(name);
-        if(values == null) {
+        if (values == null) {
             values = new LinkedList<String>();
         }
         return values;
@@ -238,35 +257,35 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public String getHeaderFirst(String name) {
         List<String> values = getHeader(name);
-        if(values != null && values.size() > 0) {
+        if (values != null && values.size() > 0) {
             return values.get(0);
         }
         return null;
     }
 
     protected String getFullUrlOriginalNoCacheBustersNonDecoded() {
-        if(this.fullUrlOriginalNoCacheBustersNonDecoded == null) {
+        if (this.fullUrlOriginalNoCacheBustersNonDecoded == null) {
             this.fullUrlOriginalNoCacheBustersNonDecoded = getServer().getFullUrlOriginal(getExchange(), false);
         }
         return this.fullUrlOriginalNoCacheBustersNonDecoded;
     }
 
     protected String getFullUrlOriginalWithCacheBustersNonDecoded() {
-        if(this.fullUrlOriginalWithCacheBustersNonDecoded == null) {
+        if (this.fullUrlOriginalWithCacheBustersNonDecoded == null) {
             this.fullUrlOriginalWithCacheBustersNonDecoded = getServer().getFullUrlOriginal(getExchange(), true);
         }
         return this.fullUrlOriginalWithCacheBustersNonDecoded;
     }
 
     protected String getFullUrlProxiedNoCacheBustersNonDecoded() {
-        if(this.fullUrlProxiedNoCacheBustersNonDecoded == null) {
+        if (this.fullUrlProxiedNoCacheBustersNonDecoded == null) {
             this.fullUrlProxiedNoCacheBustersNonDecoded = getServer().getFullUrlProxied(getExchange(), false);
         }
         return this.fullUrlProxiedNoCacheBustersNonDecoded;
     }
 
     protected String getFullUrlProxiedWithCacheBustersNonDecoded() {
-        if(this.fullUrlProxiedWithCacheBustersNonDecoded == null) {
+        if (this.fullUrlProxiedWithCacheBustersNonDecoded == null) {
             this.fullUrlProxiedWithCacheBustersNonDecoded = getServer().getFullUrlProxied(getExchange(), true);
         }
         return this.fullUrlProxiedWithCacheBustersNonDecoded;
@@ -280,7 +299,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public String getFullUrlOriginal(boolean keepCacheBusters) {
 
-        if(keepCacheBusters) {
+        if (keepCacheBusters) {
             return getFullUrlOriginalWithCacheBustersNonDecoded();
         } else {
             return getFullUrlOriginalNoCacheBustersNonDecoded();
@@ -294,7 +313,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public String getFullUrlProxied(boolean keepCacheBusters) {
-        if(keepCacheBusters) {
+        if (keepCacheBusters) {
             return getFullUrlProxiedWithCacheBustersNonDecoded();
         } else {
             return getFullUrlProxiedNoCacheBustersNonDecoded();
@@ -310,7 +329,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public String getFullUrl(boolean keepCacheBusters) {
 
         validateFullUrlInfoCache();
-        if(keepCacheBusters) {
+        if (keepCacheBusters) {
             return this.fullUrlWithCacheBustersDecoded;
         } else {
             return this.fullUrlNoCacheBustersDecoded;
@@ -328,7 +347,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             String forwardUrl =
                     getRequestContext().variables().getAsString(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_URL);
-            if(forwardUrl != null) {
+            if (forwardUrl != null) {
                 urlToUse = forwardUrl;
             } else {
                 urlToUse = getFullUrlOriginalWithCacheBustersNonDecoded();
@@ -337,7 +356,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             // The regular "full URL" is already up-to-date.
             //==========================================
-            if(this.fullUrlWithCacheBustersNonDecoded != null && this.fullUrlWithCacheBustersNonDecoded.equals(urlToUse)) {
+            if (this.fullUrlWithCacheBustersNonDecoded != null && this.fullUrlWithCacheBustersNonDecoded.equals(urlToUse)) {
                 return;
             }
 
@@ -347,7 +366,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
             parseUrl();
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -366,7 +385,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             url = new URL(this.fullUrlNoCacheBustersDecoded);
             this.requestPathNoCacheBusters = url.getPath();
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -376,13 +395,13 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         try {
             URL url = new URL(this.fullUrlWithCacheBustersNonDecoded);
             String qs = url.getQuery();
-            if(qs == null) {
+            if (qs == null) {
                 qs = "";
             }
             this.queryStringNonDecoded = qs;
             this.queryStringDecoded = URLDecoder.decode(qs, "UTF-8");
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -393,17 +412,17 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             Map<String, List<String>> paramsFinal = new HashMap<String, List<String>>();
 
             String qs = this.queryStringNonDecoded;
-            if(qs == null) {
+            if (qs == null) {
                 parseQueryString();
                 qs = this.queryStringNonDecoded;
             }
 
             List<NameValuePair> params = URLEncodedUtils.parse(qs, Charset.forName("UTF-8"));
-            if(params != null) {
-                for(NameValuePair nameValuePair : params) {
+            if (params != null) {
+                for (NameValuePair nameValuePair : params) {
                     String name = nameValuePair.getName();
                     List<String> values = paramsFinal.get(name);
-                    if(values == null) {
+                    if (values == null) {
                         values = new ArrayList<String>();
                         paramsFinal.put(name, values);
                     }
@@ -415,13 +434,13 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             // Make sure everything is immutable.
             //==========================================
             Map<String, List<String>> mapWithInmutableLists = new HashMap<String, List<String>>();
-            for(Entry<String, List<String>> entry : paramsFinal.entrySet()) {
+            for (Entry<String, List<String>> entry : paramsFinal.entrySet()) {
                 mapWithInmutableLists.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
             }
 
             this.queryStringParams = Collections.unmodifiableMap(mapWithInmutableLists);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -436,7 +455,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
         validateFullUrlInfoCache();
 
-        if(keepCacheBusters) {
+        if (keepCacheBusters) {
             return this.requestPathWithCacheBusters;
         } else {
             return this.requestPathNoCacheBusters;
@@ -448,7 +467,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
         validateFullUrlInfoCache();
 
-        if(StringUtils.isBlank(this.queryStringDecoded)) {
+        if (StringUtils.isBlank(this.queryStringDecoded)) {
             return "";
         }
         return (withQuestionMark ? "?" : "") + this.queryStringDecoded;
@@ -465,7 +484,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public List<String> getQueryStringParam(String name) {
 
         List<String> values = getQueryStringParams().get(name);
-        if(values == null) {
+        if (values == null) {
             values = Collections.emptyList();
         }
         return values;
@@ -475,7 +494,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public String getQueryStringParamFirst(String name) {
 
         List<String> values = getQueryStringParam(name);
-        if(values != null && values.size() > 0) {
+        if (values != null && values.size() > 0) {
             return values.get(0);
         }
         return null;
@@ -488,7 +507,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         // We make sure everything is immutable
         //==========================================
         Map<String, String> pathParams = getRequestContext().routing().getCurrentRouteHandlerMatch().getPathParams();
-        if(pathParams == null) {
+        if (pathParams == null) {
             pathParams = Collections.emptyMap();
         } else {
             pathParams = Collections.unmodifiableMap(pathParams);
@@ -518,12 +537,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         try {
 
             InputStream inputStream = getBodyAsInputStream();
-            if(inputStream == null) {
+            if (inputStream == null) {
                 return "";
             }
             return IOUtils.toString(inputStream, encoding);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -533,12 +552,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
         try {
             InputStream inputStream = getBodyAsInputStream();
-            if(inputStream == null) {
+            if (inputStream == null) {
                 return new byte[0];
             }
             return IOUtils.toByteArray(inputStream);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -560,13 +579,13 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public <T> T getJsonBody(Class<T> clazz) {
         try {
             InputStream inputStream = getBodyAsInputStream();
-            if(inputStream == null) {
+            if (inputStream == null) {
                 return null;
             }
 
             return getJsonManager().fromInputStream(inputStream, clazz);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -588,30 +607,30 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public <T> T getXmlBody(Class<T> clazz) {
         try {
             InputStream inputStream = getBodyAsInputStream();
-            if(inputStream == null) {
+            if (inputStream == null) {
                 return null;
             }
 
             return getXmlManager().fromXmlInputStream(inputStream, clazz);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
 
     @Override
     public Map<String, List<String>> getFormDataRaw() {
-        if(this.formDatasAsImmutableMap == null) {
+        if (this.formDatasAsImmutableMap == null) {
 
             Map<String, List<String>> formDatasServer = getServer().getFormData(getExchange());
             Map<String, List<String>> formDatasFinal = new HashMap<String, List<String>>();
 
-            if(formDatasServer == null) {
+            if (formDatasServer == null) {
                 formDatasServer = Collections.emptyMap();
             } else {
-                for(Entry<String, List<String>> entry : formDatasServer.entrySet()) {
+                for (Entry<String, List<String>> entry : formDatasServer.entrySet()) {
 
-                    if(entry.getValue() == null) {
+                    if (entry.getValue() == null) {
                         formDatasFinal.put(entry.getKey(), Collections.<String>emptyList());
                     } else {
                         formDatasFinal.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
@@ -627,16 +646,16 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public JsonObject getFormData() {
 
-        if(this.formDatasAsImmutableJsonObject == null) {
+        if (this.formDatasAsImmutableJsonObject == null) {
 
             Map<String, List<String>> formDatasRaw = getFormDataRaw();
 
             Map<String, Map<Integer, String>> formDataArrays = new LinkedHashMap<String, Map<Integer, String>>();
             JsonObject obj = getJsonManager().create();
-            for(Entry<String, List<String>> entry : formDatasRaw.entrySet()) {
+            for (Entry<String, List<String>> entry : formDatasRaw.entrySet()) {
 
                 String key = entry.getKey();
-                if(key == null) {
+                if (key == null) {
                     continue;
                 }
 
@@ -648,9 +667,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                 // means the position of the elements are defined.
                 //==========================================
                 Matcher matcher = getFormDataArrayPattern().matcher(key);
-                if(matcher.matches()) {
+                if (matcher.matches()) {
 
-                    if(values.size() > 1) {
+                    if (values.size() > 1) {
                         this.logger.error("More than one Form Data received with the array " +
                                           "index name \"" + key + "\", " +
                                           "we'll only keep the last element.");
@@ -667,7 +686,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                     key = key.substring(0, key.length() - arrayPart.length());
 
                     Map<Integer, String> valuesMap = formDataArrays.get(key);
-                    if(valuesMap == null) {
+                    if (valuesMap == null) {
 
                         //==========================================
                         // TreeMap : we sort the values using there
@@ -688,9 +707,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                     // The elemens in this array are ordred as they
                     // are received.
                     //==========================================
-                    if(values.size() > 1 || key.endsWith("[]")) {
+                    if (values.size() > 1 || key.endsWith("[]")) {
 
-                        if(key.endsWith("[]")) {
+                        if (key.endsWith("[]")) {
                             key = key.substring(0, key.length() - "[]".length());
                         }
 
@@ -698,7 +717,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                         array.addAll(values);
                         obj.put(key, array);
                     } else {
-                        if(values.size() > 0) {
+                        if (values.size() > 0) {
                             obj.put(key, values.get(0));
                         } else {
                             obj.put(key, null);
@@ -710,7 +729,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             // We add the ordered arrays
             //==========================================
-            for(Entry<String, Map<Integer, String>> entry : formDataArrays.entrySet()) {
+            for (Entry<String, Map<Integer, String>> entry : formDataArrays.entrySet()) {
 
                 String key = entry.getKey();
                 Map<Integer, String> valuesMap = entry.getValue();
@@ -720,7 +739,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                 //==========================================
                 JsonArray array;
                 Object arrayObj = obj.getObject(key);
-                if(arrayObj != null && (arrayObj instanceof JsonArray)) {
+                if (arrayObj != null && (arrayObj instanceof JsonArray)) {
                     array = (JsonArray)arrayObj;
                 } else {
                     array = getJsonManager().createArray();
@@ -728,10 +747,10 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
                 LinkedList<Integer> indexes = new LinkedList<Integer>(valuesMap.keySet());
                 Integer lastIndex = indexes.getLast();
-                for(int i = 0; i <= lastIndex; i++) {
-                    if(valuesMap.containsKey(i)) {
+                for (int i = 0; i <= lastIndex; i++) {
+                    if (valuesMap.containsKey(i)) {
                         array.add(valuesMap.get(i));
-                    } else if(!array.isElementExists(i)) {
+                    } else if (!array.isElementExists(i)) {
                         array.add(null);
                     }
                 }
@@ -751,7 +770,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public Map<String, List<File>> getUploadedFiles() {
-        if(this.uploadedFiles == null) {
+        if (this.uploadedFiles == null) {
 
             //==========================================
             // We make sure everything is immutable
@@ -759,12 +778,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             Map<String, List<File>> uploadedFilesServer = getServer().getUploadedFiles(getExchange());
             Map<String, List<File>> uploadedFilesFinal = new HashMap<String, List<File>>();
 
-            if(uploadedFilesServer == null) {
+            if (uploadedFilesServer == null) {
                 uploadedFilesServer = Collections.emptyMap();
             } else {
-                for(Entry<String, List<File>> entry : uploadedFilesServer.entrySet()) {
+                for (Entry<String, List<File>> entry : uploadedFilesServer.entrySet()) {
 
-                    if(entry.getValue() == null) {
+                    if (entry.getValue() == null) {
                         uploadedFilesFinal.put(entry.getKey(), Collections.<File>emptyList());
                     } else {
                         uploadedFilesFinal.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
@@ -782,7 +801,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public List<File> getUploadedFiles(String name) {
 
         List<File> files = getUploadedFiles().get(name);
-        if(files == null) {
+        if (files == null) {
             files = Collections.emptyList();
         }
         return files;
@@ -792,7 +811,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public File getUploadedFileFirst(String name) {
 
         List<File> files = getUploadedFiles(name);
-        if(files.size() > 0) {
+        if (files.size() > 0) {
             return files.get(0);
         }
         return null;
@@ -803,7 +822,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
         String header = getHeaderFirst(HttpHeaders.ACCEPT_LANGUAGE);
         Locale locale = getSpincastUtils().getLocaleBestMatchFromAcceptLanguageHeader(header);
-        if(locale == null) {
+        if (locale == null) {
             locale = getSpincastConfig().getDefaultLocale();
         }
         return locale;
@@ -823,9 +842,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public List<ETag> getEtagsFromIfMatchHeader() {
 
-        if(this.ifMatchETags == null) {
-            synchronized(this.ifMatchETagsLock) {
-                if(this.ifMatchETags == null) {
+        if (this.ifMatchETags == null) {
+            synchronized (this.ifMatchETagsLock) {
+                if (this.ifMatchETags == null) {
                     this.ifMatchETags = parseETagHeader(HttpHeaders.IF_MATCH);
                 }
             }
@@ -837,9 +856,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public List<ETag> getEtagsFromIfNoneMatchHeader() {
 
-        if(this.ifNoneMatchETags == null) {
-            synchronized(this.ifNoneMatchETagsLock) {
-                if(this.ifNoneMatchETags == null) {
+        if (this.ifNoneMatchETags == null) {
+            synchronized (this.ifNoneMatchETagsLock) {
+                if (this.ifNoneMatchETags == null) {
                     this.ifNoneMatchETags = parseETagHeader(HttpHeaders.IF_NONE_MATCH);
                 }
             }
@@ -853,17 +872,17 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         List<ETag> etags = new ArrayList<ETag>();
 
         List<String> eTagHeaders = getHeader(headerName);
-        if(eTagHeaders != null) {
+        if (eTagHeaders != null) {
 
-            for(String eTagHeader : eTagHeaders) {
+            for (String eTagHeader : eTagHeaders) {
 
                 // Thanks to http://stackoverflow.com/a/1757107/843699
                 String[] tokens = eTagHeader.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-                for(String eTagStr : tokens) {
+                for (String eTagStr : tokens) {
                     try {
                         ETag eTag = getEtagFactory().deserializeHeaderValue(eTagStr);
                         etags.add(eTag);
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         this.logger.info("Invalid " + headerName + " ETag header value received: " + eTagStr);
                     }
                 }
@@ -875,9 +894,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public Date getDateFromIfModifiedSinceHeader() {
 
-        if(this.ifModifiedSinceDate == null) {
-            synchronized(this.ifModifiedSinceDateLock) {
-                if(this.ifModifiedSinceDate == null) {
+        if (this.ifModifiedSinceDate == null) {
+            synchronized (this.ifModifiedSinceDateLock) {
+                if (this.ifModifiedSinceDate == null) {
                     this.ifModifiedSinceDate = parseDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
                 }
             }
@@ -888,9 +907,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     @Override
     public Date getDateFromIfUnmodifiedSinceHeader() {
 
-        if(this.ifUnmodifiedSinceDate == null) {
-            synchronized(this.ifUnmodifiedSinceDateLock) {
-                if(this.ifUnmodifiedSinceDate == null) {
+        if (this.ifUnmodifiedSinceDate == null) {
+            synchronized (this.ifUnmodifiedSinceDateLock) {
+                if (this.ifUnmodifiedSinceDate == null) {
                     this.ifUnmodifiedSinceDate = parseDateHeader(HttpHeaders.IF_UNMODIFIED_SINCE);
                 }
             }
@@ -903,14 +922,14 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
      */
     protected Date parseDateHeader(String headerName) {
         String value = getHeaderFirst(headerName);
-        if(value == null) {
+        if (value == null) {
             return null;
         }
 
         try {
             Date date = DateUtils.parseDate(value);
             return date;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             this.logger.info("Invalid '" + headerName + "' date received: " + value);
         }
         return null;
@@ -923,7 +942,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public FlashMessage getFlashMessage() {
-        if(!this.flashMessageRetrieved) {
+        if (!this.flashMessageRetrieved) {
             this.flashMessageRetrieved = true;
             this.flashMessage = getFlashMessage(true);
         }
@@ -938,11 +957,10 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         //==========================================
         // TODO Maybe we should use a user session.
         //==========================================
-        Cookie cookie = getRequestContext().cookies().getCookie(getSpincastConfig().getCookieNameFlashMessage());
-        if(cookie != null) {
-            flashMessageId = cookie.getValue();
-            if(removeIt) {
-                getRequestContext().cookies().deleteCookie(getSpincastConfig().getCookieNameFlashMessage());
+        flashMessageId = getCookie(getSpincastConfig().getCookieNameFlashMessage());
+        if (flashMessageId != null) {
+            if (removeIt) {
+                getRequestContext().response().deleteCookie(getSpincastConfig().getCookieNameFlashMessage());
             }
         //==========================================@formatter:off 
         // In the queryString?
@@ -952,7 +970,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         }
 
         FlashMessage flashMessage = null;
-        if(flashMessageId != null) {
+        if (flashMessageId != null) {
             flashMessage = getFlashMessagesHolder().getFlashMessage(flashMessageId, removeIt);
         }
         return flashMessage;

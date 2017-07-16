@@ -17,7 +17,7 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
@@ -30,7 +30,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public class HttpClientWithEntityTest extends IntegrationTestNoAppDefaultContextsBase {
+public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -329,7 +329,7 @@ public class HttpClientWithEntityTest extends IntegrationTestNoAppDefaultContext
 
                     String content = FileUtils.readFileToString(uploadedFile, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
@@ -353,7 +353,7 @@ public class HttpClientWithEntityTest extends IntegrationTestNoAppDefaultContext
 
                     String content = FileUtils.readFileToString(uploadedFile, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }

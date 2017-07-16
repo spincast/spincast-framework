@@ -23,7 +23,6 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.DefaultWebsocketContextDefault;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.plugins.config.SpincastConfigPlugin;
-import org.spincast.plugins.cookies.SpincastCookiesPlugin;
 import org.spincast.plugins.dictionary.SpincastDictionaryPlugin;
 import org.spincast.plugins.httpcaching.SpincastHttpCachingPlugin;
 import org.spincast.plugins.jacksonjson.SpincastJacksonJsonPlugin;
@@ -462,6 +461,8 @@ public class SpincastBootstrapper {
             //==========================================
             GuiceTweaker guiceTweaker = GuiceTweaker.threadLocal.get();
             if (guiceTweaker != null) {
+                guiceTweaker.setRequestContextImplementationClass(getRequestContextImplementationClass());
+                guiceTweaker.setWebsocketContextImplementationClass(getWebsocketContextImplementationClass());
                 getPlugins().add(guiceTweaker);
             }
 
@@ -493,7 +494,10 @@ public class SpincastBootstrapper {
                     }
                 });
             } else if (isBindCallerClass()) {
-                appClass = addCallerClassModule();
+
+                if (guiceTweaker == null || !guiceTweaker.isDisableBindCurrentClass()) {
+                    appClass = addCallerClassModule();
+                }
             }
 
             //==========================================
@@ -706,10 +710,6 @@ public class SpincastBootstrapper {
             plugins.add(getSpincastHttpCachingPlugin());
         }
 
-        if (!isDisableDefaultCookiesPlugin() && !pluginBound(SpincastCookiesPlugin.class)) {
-            plugins.add(getSpincastCookiesPlugin());
-        }
-
         if (!isDisableDefaultConfigPlugin() && !pluginBound(SpincastConfigPlugin.class)) {
             plugins.add(getSpincastConfigPlugin());
         }
@@ -790,10 +790,6 @@ public class SpincastBootstrapper {
 
     protected SpincastHttpCachingPlugin getSpincastHttpCachingPlugin() {
         return new SpincastHttpCachingPlugin();
-    }
-
-    protected SpincastCookiesPlugin getSpincastCookiesPlugin() {
-        return new SpincastCookiesPlugin();
     }
 
     protected SpincastDictionaryPlugin getSpincastDictionaryPlugin() {

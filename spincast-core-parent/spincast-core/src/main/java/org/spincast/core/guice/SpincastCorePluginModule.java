@@ -8,8 +8,9 @@ import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.config.SpincastInitValidator;
 import org.spincast.core.controllers.FrontController;
 import org.spincast.core.controllers.SpincastFrontController;
+import org.spincast.core.cookies.Cookie;
+import org.spincast.core.cookies.CookieDefault;
 import org.spincast.core.cookies.CookieFactory;
-import org.spincast.core.cookies.CookiesRequestContextAddon;
 import org.spincast.core.exchange.CacheHeadersRequestContextAddon;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestContextBaseDeps;
@@ -206,6 +207,11 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         //==========================================
         bindObjectConverter();
 
+        //==========================================
+        // Binds the Cookie factory.
+        //==========================================
+        bindCookieFactory();
+
     }
 
     /**
@@ -227,12 +233,10 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         requireBinding(XmlManager.class);
         requireBinding(SpincastConfig.class);
         requireBinding(SpincastDictionary.class);
-        requireBinding(CookieFactory.class);
         requireBinding(LocaleResolver.class);
         requireBinding(parameterizeWithRequestContext(RequestRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(ResponseRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(RoutingRequestContextAddon.class));
-        requireBinding(parameterizeWithRequestContext(CookiesRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(TemplatingRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(VariablesRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(CacheHeadersRequestContextAddon.class));
@@ -500,6 +504,15 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
 
     protected Class<? extends ObjectConverter> getObjectConverterImplClass() {
         return ObjectConverterDefault.class;
+    }
+
+    protected void bindCookieFactory() {
+        install(new FactoryModuleBuilder().implement(Cookie.class, getCookieImplClass())
+                                          .build(CookieFactory.class));
+    }
+
+    protected Class<? extends Cookie> getCookieImplClass() {
+        return CookieDefault.class;
     }
 
 }

@@ -7,13 +7,13 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
-import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
+import org.spincast.tests.varia.WebsocketClientTest;
 import org.xnio.http.UpgradeFailedException;
 
-public class HttpProtectedTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class HttpProtectedTest extends NoAppWebsocketTestingBase {
 
     @Override
     public void beforeClass() {
@@ -42,7 +42,7 @@ public class HttpProtectedTest extends WebsocketIntegrationTestNoAppDefaultConte
             @SuppressWarnings("unused")
             WebsocketClientWriter writer = websocket("/ws").connect(client);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             Throwable cause = ex.getCause();
             assertNotNull(cause);
@@ -68,9 +68,9 @@ public class HttpProtectedTest extends WebsocketIntegrationTestNoAppDefaultConte
         try {
             @SuppressWarnings("unused")
             WebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "nope")
-                                                            .connect(client);
+                                                           .connect(client);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             Throwable cause = ex.getCause();
             assertNotNull(cause);
@@ -94,7 +94,7 @@ public class HttpProtectedTest extends WebsocketIntegrationTestNoAppDefaultConte
         WebsocketClientTest client = new WebsocketClientTest();
 
         WebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "Laroche")
-                                                        .connect(client);
+                                                       .connect(client);
         assertNotNull(writer);
 
         writer.sendMessage("test1");

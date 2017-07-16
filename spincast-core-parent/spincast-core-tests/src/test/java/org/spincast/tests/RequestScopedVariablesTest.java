@@ -15,14 +15,14 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.Router;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
-public class RequestScopedVariablesTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void variables() throws Exception {
@@ -155,7 +155,7 @@ public class RequestScopedVariablesTest extends IntegrationTestNoAppDefaultConte
                     @SuppressWarnings("unused")
                     TimeZone nope = context.variables().get("asClass", TimeZone.class);
                     fail();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                 }
 
                 context.variables().add("asKey", new ArrayList<Date>());
@@ -169,7 +169,7 @@ public class RequestScopedVariablesTest extends IntegrationTestNoAppDefaultConte
                     @SuppressWarnings("unused")
                     HashMap<String, Date> nope = context.variables().get("asKey", key2);
                     fail();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                 }
             }
         });

@@ -91,9 +91,6 @@
                 </p>
             </section>
 
-
-
-
             <section id="usage">
 	            <h3>
                     <a class="anchor" href="#usage" title="permanent link"></a>
@@ -186,8 +183,6 @@ JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
 	            </p>
             </section>
             
-            
-            
            
             <section id="installation">
                 <h3>
@@ -195,8 +190,20 @@ JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
                     Installation
                 </h3>
                 <p>
-                    If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
-                    simply register this plugin using :
+                    1. Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-http-client&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Register the plugin using :
                     
                     <div>
                         <p>
@@ -212,27 +219,6 @@ JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
                     </div>
                 </p>
                 
-                <p>
-                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
-                    plugin by :
-                </p>
-                <p>
-                    1. Adding this Maven artifact to your project:
-                    <div>
-                        <p>
-                            <pre class="ace ace-xml"
->&lt;dependency&gt;
-    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
-    &lt;artifactId&gt;spincast-plugins-http-client&lt;/artifactId&gt;
-    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
-&lt;/dependency&gt;</pre> 
-                        </p>
-                    </div>  
-                </p>
-                <p>
-                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/SpincastHttpClientPluginModule.html">SpincastHttpClientPluginModule</a> 
-                    module to your Guice context.
-                </p>
             </section>
             
             <section id="plugin_class">

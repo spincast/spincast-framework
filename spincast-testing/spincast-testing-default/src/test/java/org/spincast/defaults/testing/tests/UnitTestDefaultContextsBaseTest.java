@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.routing.DefaultRouter;
 
 import com.google.inject.Inject;
@@ -14,10 +14,10 @@ import com.google.inject.Module;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
-public class UnitTestDefaultContextsBaseTest extends UnitTestDefaultContextsBase {
+public class UnitTestDefaultContextsBaseTest extends NoAppTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

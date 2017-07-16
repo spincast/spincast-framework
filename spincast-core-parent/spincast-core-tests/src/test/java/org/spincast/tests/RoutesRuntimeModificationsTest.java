@@ -10,11 +10,11 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.Route;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class RoutesRuntimeModificationsTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void idsAreUnique() throws Exception {
@@ -53,7 +53,7 @@ public class RoutesRuntimeModificationsTest extends IntegrationTestNoAppDefaultC
             });
 
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
     }

@@ -52,21 +52,21 @@ public class SpincastDictionaryPlugin extends SpincastPluginBase {
         // Check if a custom SpincastDictionary implementation
         // class must be used...
         //==========================================
-        if(specificSpincastDictionaryImplClass == null) {
+        if (specificSpincastDictionaryImplClass == null) {
             GuiceModuleUtils guiceModuleUtils = new GuiceModuleUtils(module);
 
             Set<Class<? extends SpincastDictionary>> classes =
                     guiceModuleUtils.getBoundClassesExtending(SpincastDictionary.class);
-            if(classes.size() > 0) {
+            if (classes.size() > 0) {
 
-                if(classes.size() > 1) {
+                if (classes.size() > 1) {
                     String msg = "More than one custom implementations of " +
                                  SpincastDictionary.class.getName() + " " +
                                  "has been found. You'll have to pass the implementation " +
                                  "to use the constructor of this plugin to remove the " +
                                  "ambiguity about which one to use. Bindings found :\n";
 
-                    for(Class<? extends SpincastDictionary> clazz : classes) {
+                    for (Class<? extends SpincastDictionary> clazz : classes) {
                         msg += "- " + clazz.getName() + "\n";
                     }
                     throw new RuntimeException(msg);
@@ -80,7 +80,7 @@ public class SpincastDictionaryPlugin extends SpincastPluginBase {
         Module pluginModule = getPluginModule(specificSpincastDictionaryImplClass);
         setContextTypes(pluginModule);
 
-        module = Modules.override(pluginModule).with(module);
+        module = Modules.override(module).with(pluginModule);
         return module;
     }
 

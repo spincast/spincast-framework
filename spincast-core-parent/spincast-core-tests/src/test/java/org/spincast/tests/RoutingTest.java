@@ -21,12 +21,12 @@ import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.Router;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class RoutingTest extends UnitTestDefaultContextsBase {
+public class RoutingTest extends NoAppTestingBase {
 
     @Inject
     Router<DefaultRequestContext, DefaultWebsocketContext> router;
@@ -1102,7 +1102,7 @@ public class RoutingTest extends UnitTestDefaultContextsBase {
         try {
             router.GET("/${param1}/${param1}").save(SpincastTestUtils.dummyRouteHandler);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -1161,7 +1161,7 @@ public class RoutingTest extends UnitTestDefaultContextsBase {
         try {
             router.GET("/${param1}/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -1243,7 +1243,7 @@ public class RoutingTest extends UnitTestDefaultContextsBase {
         try {
             router.GET("/one/*{param1}/two/*{param1}").save(SpincastTestUtils.dummyRouteHandler);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 

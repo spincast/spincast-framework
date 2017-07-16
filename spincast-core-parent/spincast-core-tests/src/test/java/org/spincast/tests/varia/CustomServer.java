@@ -130,7 +130,7 @@ public class CustomServer implements Server {
     }
 
     @Override
-    public Map<String, Cookie> getCookies(Object exchange) {
+    public Map<String, String> getCookies(Object exchange) {
         return null;
     }
 

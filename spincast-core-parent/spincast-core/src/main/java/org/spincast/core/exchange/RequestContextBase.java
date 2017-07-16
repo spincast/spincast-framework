@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spincast.core.cookies.CookiesRequestContextAddon;
 import org.spincast.core.guice.SpincastGuiceScopes;
 import org.spincast.core.guice.SpincastRequestScoped;
 import org.spincast.core.json.JsonManager;
@@ -40,7 +39,6 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
     private final JsonManager jsonManager;
     private final XmlManager xmlManager;
 
-    private final Provider<CookiesRequestContextAddon<R>> cookiesRequestContextAddonProvider;
     private final Provider<VariablesRequestContextAddon<R>> variablesRequestContextAddonProvider;
     private final Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider;
     private final Provider<ResponseRequestContextAddon<R>> responseRequestContextAddonProvider;
@@ -48,7 +46,6 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
     private final Provider<TemplatingRequestContextAddon<R>> templatingRequestContextAddonProvider;
     private final Provider<CacheHeadersRequestContextAddon<R>> cacheHeadersRequestContextAddonProvider;
 
-    private CookiesRequestContextAddon<R> cookiesRequestContextAddon;
     private VariablesRequestContextAddon<R> variablesRequestContextAddon;
     private ResponseRequestContextAddon<R> responseRequestContextAddon;
     private RoutingRequestContextAddon<R> routingRequestContextAddon;
@@ -68,7 +65,6 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
         this.localeResolver = requestContextBaseDeps.getLocaleResolver();
         this.jsonManager = requestContextBaseDeps.getJsonManager();
         this.xmlManager = requestContextBaseDeps.getXmlManager();
-        this.cookiesRequestContextAddonProvider = requestContextBaseDeps.getCookiesRequestContextAddonProvider();
         this.variablesRequestContextAddonProvider = requestContextBaseDeps.getVariablesRequestContextAddonProvider();
         this.requestRequestContextAddonProvider = requestContextBaseDeps.getRequestRequestContextAddonProvider();
         this.responseRequestContextAddonProvider = requestContextBaseDeps.getResponseRequestContextAddonProvider();
@@ -101,10 +97,6 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
         return this.xmlManager;
     }
 
-    protected Provider<CookiesRequestContextAddon<R>> getCookiesRequestContextAddonProvider() {
-        return this.cookiesRequestContextAddonProvider;
-    }
-
     protected Provider<RequestRequestContextAddon<R>> getRequestRequestContextAddonProvider() {
         return this.requestRequestContextAddonProvider;
     }
@@ -134,13 +126,6 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
             this.instanceFromGuiceCache = new HashMap<Key<?>, Object>();
         }
         return this.instanceFromGuiceCache;
-    }
-
-    public CookiesRequestContextAddon<R> cookies() {
-        if (this.cookiesRequestContextAddon == null) {
-            this.cookiesRequestContextAddon = getCookiesRequestContextAddonProvider().get();
-        }
-        return this.cookiesRequestContextAddon;
     }
 
     public VariablesRequestContextAddon<R> variables() {
@@ -226,7 +211,13 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
 
     @Override
     public String toString() {
-        return "[" + request().getHttpMethod() + "] " + request().getFullUrl();
+
+        String msg = "[" + request().getHttpMethod() + "] " + request().getFullUrl();
+        if (routing().isForwarded()) {
+            msg += " ( forwarded from : " + request().getFullUrlOriginal() + " )";
+        }
+
+        return msg;
     }
 
 }

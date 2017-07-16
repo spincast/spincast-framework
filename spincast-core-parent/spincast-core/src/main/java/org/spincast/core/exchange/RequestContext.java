@@ -2,7 +2,6 @@ package org.spincast.core.exchange;
 
 import java.util.Locale;
 
-import org.spincast.core.cookies.CookiesRequestContextAddon;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.routing.RoutingRequestContextAddon;
 import org.spincast.core.templating.TemplatingRequestContextAddon;
@@ -28,11 +27,6 @@ public interface RequestContext<R extends RequestContext<?>> {
      * Response related methods.
      */
     public ResponseRequestContextAddon<R> response();
-
-    /**
-     * Cookies related methods.
-     */
-    public CookiesRequestContextAddon<R> cookies();
 
     /**
      * Routing related methods.

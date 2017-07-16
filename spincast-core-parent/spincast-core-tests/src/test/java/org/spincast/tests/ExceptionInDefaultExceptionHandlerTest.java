@@ -22,7 +22,7 @@ import org.spincast.core.routing.Router;
 import org.spincast.core.server.Server;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
@@ -30,10 +30,10 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class ExceptionInDefaultExceptionHandlerTest extends IntegrationTestNoAppDefaultContextsBase {
+public class ExceptionInDefaultExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule2() {
         return new SpincastGuiceModuleBase() {
 
             @Override

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.plugins.undertow.ClosedEventSentCallback;
 import org.spincast.plugins.undertow.SpincastUndertowWebsocketEndpointWriter;
@@ -27,10 +27,10 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 import io.undertow.websockets.core.WebSocketChannel;
 
-public class WebsockePingsTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class WebsockePingsTest extends NoAppWebsocketTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule3() {
 
         return new AbstractModule() {
 

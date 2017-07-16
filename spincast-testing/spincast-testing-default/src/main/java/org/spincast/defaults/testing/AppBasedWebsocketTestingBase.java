@@ -16,47 +16,60 @@ import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.utils.SpincastHttpClientUtils;
 import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilder;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
-import org.spincast.testing.core.IntegrationTestNoAppBase;
+import org.spincast.testing.core.AppBasedTestingBase;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
 
 /**
- * Base class for WebSocket tests without an existing
- * application.
+ * Base class for WebSocket testing.
  */
-public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
-                                                       extends
-                                                       IntegrationTestNoAppBase<DefaultRequestContext, W> {
+public abstract class AppBasedWebsocketTestingBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
+                                                  extends
+                                                  AppBasedTestingBase<DefaultRequestContext, W> {
+
+    protected final Logger logger = LoggerFactory.getLogger(AppBasedWebsocketTestingBase.class);
+
+    @Inject
+    protected SpincastHttpClientUtils spincastHttpClientUtils;
+
+    private String expectedWebsocketV13AcceptHeaderValue;
+    private String secSocketKey;
 
     @Override
-    protected Injector createInjector() {
-        return Spincast.configure()
-                       .bindCurrentClass(false)
-                       .init(new String[]{});
+    protected Module getExtraOverridingModule2() {
+
+        Module extraModuleUserSpecified = getExtraOverridingModule3();
+        if (extraModuleUserSpecified == null) {
+            extraModuleUserSpecified = new SpincastGuiceModuleBase() {
+
+                @Override
+                protected void configure() {
+                    // nothing
+                }
+            };
+        }
+
+        return Modules.override(new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(SpincastUndertowConfig.class).toInstance(getSpincastUndertowConfigImplementation());
+            }
+        }).with(extraModuleUserSpecified);
     }
 
-    @Override
-    protected Module getGuiceTweakerOverridingModule() {
-        return Modules.override(super.getGuiceTweakerOverridingModule())
-                      .with(new SpincastGuiceModuleBase() {
-
-                          @Override
-                          protected void configure() {
-                              bind(SpincastUndertowConfig.class).toInstance(getSpincastUndertowConfigImplementation());
-                          }
-                      });
+    protected Module getExtraOverridingModule3() {
+        return null;
     }
 
     protected SpincastUndertowConfig getSpincastUndertowConfigImplementation() {
@@ -71,14 +84,6 @@ public abstract class WebsocketIntegrationTestNoAppBase<R extends RequestContext
             }
         };
     }
-
-    protected final Logger logger = LoggerFactory.getLogger(WebsocketIntegrationTestNoAppBase.class);
-
-    private String expectedWebsocketV13AcceptHeaderValue;
-    private String secSocketKey;
-
-    @Inject
-    protected SpincastHttpClientUtils spincastHttpClientUtils;
 
     protected SpincastHttpClientUtils getSpincastHttpClientUtils() {
         return this.spincastHttpClientUtils;

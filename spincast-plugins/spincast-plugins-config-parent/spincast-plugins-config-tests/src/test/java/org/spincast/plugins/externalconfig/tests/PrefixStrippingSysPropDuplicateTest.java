@@ -7,7 +7,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.config.SpincastConfigPluginConfigDefault;
@@ -15,18 +14,28 @@ import org.spincast.testing.utils.ExpectingBeforeClassException;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Scopes;
 
 @ExpectingBeforeClassException
 public class PrefixStrippingSysPropDuplicateTest extends ConfigTestingBase {
 
-    /**
-     * We manage the configurations by ourself
-     */
     @Override
-    protected boolean isGuiceTweakerAutoTestingConfigBindings() {
-        return false;
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass2() {
+        return AppConfigDefault.class;
+    }
+
+    @Override
+    protected Module getExtraOverridingModule2() {
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                bind(SpincastConfigPluginConfig.class).to(AppSpincastConfigPluginConfig.class)
+                                                      .in(Scopes.SINGLETON);
+                bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
+            }
+        };
     }
 
     protected static class AppSpincastConfigPluginConfig extends SpincastConfigPluginConfigDefault {
@@ -53,23 +62,6 @@ public class PrefixStrippingSysPropDuplicateTest extends ConfigTestingBase {
         sysProps.put("common.test", "fromSysProp1");
 
         return sysProps;
-    }
-
-    @Override
-    protected Injector createInjector() {
-
-        return Spincast.configure()
-                       .bindCurrentClass(false)
-                       .module(new SpincastGuiceModuleBase() {
-
-                           @Override
-                           protected void configure() {
-                               bind(AppConfig.class).to(AppConfigDefault.class).in(Scopes.SINGLETON);
-                               bind(SpincastConfigPluginConfig.class).to(AppSpincastConfigPluginConfig.class)
-                                                                     .in(Scopes.SINGLETON);
-                           }
-                       })
-                       .init(new String[]{});
     }
 
     @Inject

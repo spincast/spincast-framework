@@ -185,9 +185,9 @@ public interface Server {
     public void addCookies(Object exchange, Map<String, Cookie> cookies);
 
     /**
-     * Gets the current cookies.
+     * Gets the request cookies values.
      */
-    public Map<String, Cookie> getCookies(Object exchange);
+    public Map<String, String> getCookies(Object exchange);
 
     /**
      * Gets the queryString parameters.

@@ -18,14 +18,14 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.HttpHeaders;
 
-public class ForwardRouteExceptionTest extends IntegrationTestNoAppDefaultContextsBase {
+public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void defaultReset() throws Exception {
@@ -245,9 +245,9 @@ public class ForwardRouteExceptionTest extends IntegrationTestNoAppDefaultContex
                 assertEquals(ContentTypeDefaults.JSON.getMainVariation(), header);
 
                 // Keep the cookies
-                Cookie cookie = context.cookies().getCookie("name1");
+                String cookie = context.request().getCookie("name1");
                 assertNotNull(cookie);
-                assertEquals("toto", cookie.getValue());
+                assertEquals("toto", cookie);
 
                 // The original url
                 String expected = createTestUrl("/one?q=one");

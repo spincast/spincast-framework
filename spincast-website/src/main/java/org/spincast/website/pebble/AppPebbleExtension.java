@@ -31,7 +31,7 @@ public class AppPebbleExtension extends AbstractExtension {
 
             @Override
             public Object apply(Object input, Map<String, Object> args) {
-                if(input == null) {
+                if (input == null) {
                     return null;
                 }
                 String str = (String)input;

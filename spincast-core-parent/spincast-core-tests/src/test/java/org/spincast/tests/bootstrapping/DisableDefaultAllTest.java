@@ -9,7 +9,6 @@ import org.spincast.core.guice.SpincastCorePlugin;
 import org.spincast.core.server.Server;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.config.SpincastConfigPlugin;
-import org.spincast.plugins.cookies.SpincastCookiesPlugin;
 import org.spincast.plugins.dictionary.SpincastDictionaryPlugin;
 import org.spincast.plugins.httpcaching.SpincastHttpCachingPlugin;
 import org.spincast.plugins.jacksonjson.SpincastJacksonJsonPlugin;
@@ -61,7 +60,6 @@ public class DisableDefaultAllTest {
                 .plugin(new SpincastVariablesPlugin())
                 .plugin(new SpincastLocaleResolverPlugin())
                 .plugin(new SpincastHttpCachingPlugin())
-                .plugin(new SpincastCookiesPlugin())
                 .plugin(new SpincastConfigPlugin())
                 .plugin(new SpincastDictionaryPlugin())
                 .plugin(new SpincastUndertowPlugin())

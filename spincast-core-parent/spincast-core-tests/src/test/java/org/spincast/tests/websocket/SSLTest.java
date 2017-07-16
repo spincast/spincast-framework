@@ -10,7 +10,7 @@ import javax.net.ssl.SSLHandshakeException;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
@@ -20,10 +20,10 @@ import org.spincast.tests.varia.WebsocketClientTest;
 
 import com.google.inject.Inject;
 
-public class SSLTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class SSLTest extends NoAppWebsocketTestingBase {
 
     @Override
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplClass() {
         return HttpsTestConfig.class;
     }
 

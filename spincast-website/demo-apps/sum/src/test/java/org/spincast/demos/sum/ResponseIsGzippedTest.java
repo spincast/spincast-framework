@@ -9,24 +9,30 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestAppDefaultContextsBase;
+import org.spincast.defaults.testing.AppBasedDefaultContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.AppTestingConfigInfo;
+import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
+import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-public class ResponseIsGzippedTest extends IntegrationTestAppDefaultContextsBase {
+public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBase {
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 
     @Override
-    protected AppTestingConfigInfo getAppTestingConfigInfo() {
-        return new AppTestingConfigInfo() {
+    protected AppTestingConfigs getAppTestingConfigs() {
+        return new AppTestingConfigs() {
+
+            @Override
+            public boolean isBindAppClass() {
+                return true;
+            }
 
             @Override
             public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
@@ -58,24 +64,20 @@ public class ResponseIsGzippedTest extends IntegrationTestAppDefaultContextsBase
     }
 
     /**
-     * We add an extra module to the Guice Tweaker to change the
+     * We add an extra overriding module to change the
      * "AppController" binding so our "AppControllerTesting" mock
-     * implementation is used...
+     * implementation is used... Under the hood, this is done
+     * by the {@link GuiceTweaker Guice Tweaker}.
      */
     @Override
-    protected GuiceTweaker createGuiceTweaker() {
-
-        GuiceTweaker guiceTweaker = super.createGuiceTweaker();
-
-        guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
+    protected Module getExtraOverridingModule2() {
+        return new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
                 bind(AppController.class).to(AppControllerTesting.class).in(Scopes.SINGLETON);
             }
-        });
-
-        return guiceTweaker;
+        };
     }
 
     @Test
@@ -92,4 +94,6 @@ public class ResponseIsGzippedTest extends IntegrationTestAppDefaultContextsBase
                      response.getContentType());
         assertEquals("42", response.getContentAsString());
     }
+
+
 }

@@ -2,7 +2,7 @@ package org.spincast.tests.cors;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
@@ -12,10 +12,10 @@ import com.google.inject.Module;
 import com.google.inject.Scopes;
 
 @ExpectingBeforeClassException
-public class InvalidFilterPosition0Test2 extends IntegrationTestNoAppDefaultContextsBase {
+public class InvalidFilterPosition0Test2 extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule2() {
         return new SpincastGuiceModuleBase() {
 
             @Override

@@ -1,11 +1,10 @@
-package org.spincast.plugins.cookies;
+package org.spincast.core.cookies;
 
 import java.util.Date;
 
 import javax.annotation.Nullable;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 
 import com.google.inject.assistedinject.Assisted;
@@ -133,7 +132,8 @@ public class CookieDefault implements Cookie {
             Date date = DateUtils.addYears(new Date(), -1);
             setExpires(date);
         } else {
-            Date date = DateUtils.addSeconds(new Date(), maxAge);
+            Date now = new Date();
+            Date date = DateUtils.addSeconds(now, maxAge);
             setExpires(date);
         }
     }

@@ -5,17 +5,17 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.inject.Inject;
 
-public class PebbleDebugModeTest extends IntegrationTestNoAppDefaultContextsBase {
+public class PebbleDebugModeTest extends NoAppTestingBase {
 
     @Override
-    protected Class<? extends SpincastConfig> getGuiceTweakerConfigImplementationClass() {
+    protected Class<? extends SpincastConfig> getTestingConfigImplementationClass() {
         return SpincastTestConfigTest.class;
     }
 

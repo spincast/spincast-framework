@@ -66,7 +66,7 @@ public class ValidationSetDefault implements ValidationSet {
         this.xmlManager = xmlManager;
         this.objectConverter = objectConverter;
 
-        if(messages == null) {
+        if (messages == null) {
             messages = new LinkedHashMap<String, List<ValidationMessage>>();
         }
         this.messages = messages;
@@ -149,7 +149,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected static LinkedHashMap<String, List<ValidationMessage>> toLinkedHashMap(String key,
                                                                                     List<ValidationMessage> messages) {
-        if(StringUtils.isBlank(key)) {
+        if (StringUtils.isBlank(key)) {
             throw new RuntimeException("The key can't be empty.");
         }
 
@@ -161,25 +161,25 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected static LinkedHashMap<String, List<ValidationMessage>> toMessages(List<ValidationSet> existingResults) {
 
-        if(existingResults == null) {
+        if (existingResults == null) {
             return null;
         }
 
         LinkedHashMap<String, List<ValidationMessage>> map = new LinkedHashMap<String, List<ValidationMessage>>();
 
-        if(existingResults != null) {
-            for(ValidationSet validationResult : existingResults) {
+        if (existingResults != null) {
+            for (ValidationSet validationResult : existingResults) {
 
                 Map<String, List<ValidationMessage>> messagesMap = validationResult.getMessages();
-                if(messagesMap != null) {
-                    for(Entry<String, List<ValidationMessage>> entry : messagesMap.entrySet()) {
+                if (messagesMap != null) {
+                    for (Entry<String, List<ValidationMessage>> entry : messagesMap.entrySet()) {
 
                         String key = entry.getKey();
                         List<ValidationMessage> messages = entry.getValue();
-                        if(messages != null) {
+                        if (messages != null) {
 
                             List<ValidationMessage> messagesList = map.get(key);
-                            if(messagesList == null) {
+                            if (messagesList == null) {
                                 messagesList = new ArrayList<ValidationMessage>();
                                 map.put(key, messagesList);
                             }
@@ -231,7 +231,7 @@ public class ValidationSetDefault implements ValidationSet {
         Objects.requireNonNull(message, "The message can't be NULL");
 
         List<ValidationMessage> fieldMessages = getMessages().get(validationKey);
-        if(fieldMessages == null) {
+        if (fieldMessages == null) {
             fieldMessages = new ArrayList<ValidationMessage>();
             getMessages().put(validationKey, fieldMessages);
         }
@@ -246,11 +246,11 @@ public class ValidationSetDefault implements ValidationSet {
         Objects.requireNonNull(level, "The level can't be NULL");
         Objects.requireNonNull(validationKey, "The validation key can't be NULL");
 
-        if(code == null) {
+        if (code == null) {
             code = "";
         }
 
-        if(StringUtils.isBlank(text)) {
+        if (StringUtils.isBlank(text)) {
             text = getDefaultErrorMessageText(validationKey);
         }
 
@@ -283,11 +283,11 @@ public class ValidationSetDefault implements ValidationSet {
         Objects.requireNonNull(set, "The validation set can't be NULL");
 
         Map<String, List<ValidationMessage>> messagesByKey = set.getMessages();
-        if(messagesByKey != null) {
-            for(Entry<String, List<ValidationMessage>> entry : messagesByKey.entrySet()) {
+        if (messagesByKey != null) {
+            for (Entry<String, List<ValidationMessage>> entry : messagesByKey.entrySet()) {
                 List<ValidationMessage> messages = entry.getValue();
-                if(messages != null) {
-                    for(ValidationMessage message : messages) {
+                if (messages != null) {
+                    for (ValidationMessage message : messages) {
                         String validationKey = (validationKeyPrefix != null ? validationKeyPrefix : "") + entry.getKey();
                         addMessage(validationKey, message);
                     }
@@ -314,13 +314,13 @@ public class ValidationSetDefault implements ValidationSet {
         boolean hasWarnings = false;
         boolean hasErrors = false;
 
-        for(List<ValidationMessage> messagesList : getMessages().values()) {
+        for (List<ValidationMessage> messagesList : getMessages().values()) {
 
-            if(messagesList != null) {
-                for(ValidationMessage message : messagesList) {
-                    if(message.getValidationLevel() == ValidationLevel.WARNING) {
+            if (messagesList != null) {
+                for (ValidationMessage message : messagesList) {
+                    if (message.getValidationLevel() == ValidationLevel.WARNING) {
                         hasWarnings = true;
-                    } else if(message.getValidationLevel() == ValidationLevel.ERROR) {
+                    } else if (message.getValidationLevel() == ValidationLevel.ERROR) {
                         hasErrors = true;
                     }
                 }
@@ -335,10 +335,10 @@ public class ValidationSetDefault implements ValidationSet {
         boolean hasWarnings = false;
         boolean hasErrors = false;
 
-        for(ValidationMessage message : getMessages(key)) {
-            if(message.getValidationLevel() == ValidationLevel.WARNING) {
+        for (ValidationMessage message : getMessages(key)) {
+            if (message.getValidationLevel() == ValidationLevel.WARNING) {
                 hasWarnings = true;
-            } else if(message.getValidationLevel() == ValidationLevel.ERROR) {
+            } else if (message.getValidationLevel() == ValidationLevel.ERROR) {
                 hasErrors = true;
             }
         }
@@ -349,11 +349,11 @@ public class ValidationSetDefault implements ValidationSet {
     @Override
     public boolean isSuccess() {
 
-        for(List<ValidationMessage> messagesList : getMessages().values()) {
+        for (List<ValidationMessage> messagesList : getMessages().values()) {
 
-            if(messagesList != null) {
-                for(ValidationMessage message : messagesList) {
-                    if(message.getValidationLevel() != ValidationLevel.SUCCESS) {
+            if (messagesList != null) {
+                for (ValidationMessage message : messagesList) {
+                    if (message.getValidationLevel() != ValidationLevel.SUCCESS) {
                         return false;
                     }
                 }
@@ -366,8 +366,8 @@ public class ValidationSetDefault implements ValidationSet {
     @Override
     public boolean isSuccess(String key) {
 
-        for(ValidationMessage message : getMessages(key)) {
-            if(message.getValidationLevel() != ValidationLevel.SUCCESS) {
+        for (ValidationMessage message : getMessages(key)) {
+            if (message.getValidationLevel() != ValidationLevel.SUCCESS) {
                 return false;
             }
         }
@@ -378,11 +378,11 @@ public class ValidationSetDefault implements ValidationSet {
     @Override
     public boolean isError() {
 
-        for(List<ValidationMessage> messagesList : getMessages().values()) {
+        for (List<ValidationMessage> messagesList : getMessages().values()) {
 
-            if(messagesList != null) {
-                for(ValidationMessage message : messagesList) {
-                    if(message.getValidationLevel() == ValidationLevel.ERROR) {
+            if (messagesList != null) {
+                for (ValidationMessage message : messagesList) {
+                    if (message.getValidationLevel() == ValidationLevel.ERROR) {
                         return true;
                     }
                 }
@@ -395,8 +395,8 @@ public class ValidationSetDefault implements ValidationSet {
     @Override
     public boolean isError(String key) {
 
-        for(ValidationMessage message : getMessages(key)) {
-            if(message.getValidationLevel() == ValidationLevel.ERROR) {
+        for (ValidationMessage message : getMessages(key)) {
+            if (message.getValidationLevel() == ValidationLevel.ERROR) {
                 return true;
             }
         }
@@ -423,7 +423,7 @@ public class ValidationSetDefault implements ValidationSet {
     public List<ValidationMessage> getMessages(String key) {
 
         List<ValidationMessage> messages = getMessages().get(key);
-        if(messages == null) {
+        if (messages == null) {
             messages = new ArrayList<ValidationMessage>();
         }
 
@@ -438,27 +438,27 @@ public class ValidationSetDefault implements ValidationSet {
     @Override
     public String getMessagesFormatted(String jsonPath, ValidationMessageFormatType formatType) {
 
-        if(getMessages().size() == 0) {
+        if (getMessages().size() == 0) {
             return null;
         }
 
-        if(formatType == null) {
+        if (formatType == null) {
             formatType = ValidationMessageFormatType.PLAIN_TEXT;
         }
 
         StringBuilder textBuilder = null;
-        if(formatType == ValidationMessageFormatType.PLAIN_TEXT || formatType == ValidationMessageFormatType.HTML) {
+        if (formatType == ValidationMessageFormatType.PLAIN_TEXT || formatType == ValidationMessageFormatType.HTML) {
             textBuilder = new StringBuilder();
         }
 
         JsonObject jsonObject = null;
-        if(formatType == ValidationMessageFormatType.JSON || formatType == ValidationMessageFormatType.XML) {
+        if (formatType == ValidationMessageFormatType.JSON || formatType == ValidationMessageFormatType.XML) {
             jsonObject = getJsonManager().create();
         }
 
-        if(jsonPath == null) {
+        if (jsonPath == null) {
             Map<String, List<ValidationMessage>> messagesMap = getMessages();
-            for(Entry<String, List<ValidationMessage>> entry : messagesMap.entrySet()) {
+            for (Entry<String, List<ValidationMessage>> entry : messagesMap.entrySet()) {
                 addMessageFormattedSpecifickey(entry.getKey(), entry.getValue(), formatType, textBuilder, jsonObject);
             }
         } else {
@@ -466,11 +466,11 @@ public class ValidationSetDefault implements ValidationSet {
             addMessageFormattedSpecifickey(jsonPath, messages, formatType, textBuilder, jsonObject);
         }
 
-        if(formatType == ValidationMessageFormatType.PLAIN_TEXT || formatType == ValidationMessageFormatType.HTML) {
+        if (formatType == ValidationMessageFormatType.PLAIN_TEXT || formatType == ValidationMessageFormatType.HTML) {
             return textBuilder.toString();
-        } else if(formatType == ValidationMessageFormatType.JSON) {
+        } else if (formatType == ValidationMessageFormatType.JSON) {
             return jsonObject.toJsonString(usePrettyJson());
-        } else if(formatType == ValidationMessageFormatType.XML) {
+        } else if (formatType == ValidationMessageFormatType.XML) {
             return getXmlManager().toXml(jsonObject, usePrettyXml());
         } else {
             throw new RuntimeException("Unamanaged type: " + formatType);
@@ -491,20 +491,20 @@ public class ValidationSetDefault implements ValidationSet {
                                                   StringBuilder textBuilder,
                                                   JsonObject jsonObject) {
 
-        if(StringUtils.isBlank(key) || messages == null || messages.size() == 0) {
+        if (StringUtils.isBlank(key) || messages == null || messages.size() == 0) {
             return;
         }
 
-        if(formatType == ValidationMessageFormatType.JSON || formatType == ValidationMessageFormatType.XML) {
+        if (formatType == ValidationMessageFormatType.JSON || formatType == ValidationMessageFormatType.XML) {
             jsonObject.put(key, messages);
             return;
         }
 
-        if(formatType == ValidationMessageFormatType.PLAIN_TEXT) {
+        if (formatType == ValidationMessageFormatType.PLAIN_TEXT) {
 
             addMessagesFormattedSpecifickeyTextPlain(key, textBuilder, messages);
 
-        } else if(formatType == ValidationMessageFormatType.HTML) {
+        } else if (formatType == ValidationMessageFormatType.HTML) {
 
             addMessagesFormattedSpecifickeyHtml(key, textBuilder, messages);
 
@@ -518,7 +518,7 @@ public class ValidationSetDefault implements ValidationSet {
                                                             List<ValidationMessage> messages) {
 
         textBuilder.append("key \"").append(key).append("\"").append("\n");
-        for(ValidationMessage message : messages) {
+        for (ValidationMessage message : messages) {
             textBuilder.append("    - ").append(message.getText()).append("\n");
         }
         textBuilder.append("\n");
@@ -531,12 +531,12 @@ public class ValidationSetDefault implements ValidationSet {
         textBuilder.append("<li class=\"" + getCssClassForErrorkey() + "\">").append(key).append("\n");
         textBuilder.append("    <ul>\n");
 
-        for(ValidationMessage message : messages) {
+        for (ValidationMessage message : messages) {
 
             String cssClass;
-            if(message.getValidationLevel() == ValidationLevel.SUCCESS) {
+            if (message.getValidationLevel() == ValidationLevel.SUCCESS) {
                 cssClass = getCssClassForSuccessMessage();
-            } else if(message.getValidationLevel() == ValidationLevel.WARNING) {
+            } else if (message.getValidationLevel() == ValidationLevel.WARNING) {
                 cssClass = getCssClassForWarningMessage();
             } else {
                 cssClass = getCssClassForErrorMessage();
@@ -578,7 +578,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected String getArrayItselfDefaultValidationKey(String baseKey) {
 
-        if(baseKey == null) {
+        if (baseKey == null) {
             baseKey = "";
         }
 
@@ -595,7 +595,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected SimpleValidator getNotBlankValidatorInfo() {
 
-        if(this.notBlankValidatorInfo == null) {
+        if (this.notBlankValidatorInfo == null) {
 
             this.notBlankValidatorInfo = new SimpleValidator() {
 
@@ -635,7 +635,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected SimpleValidator getBlankValidatorInfo() {
 
-        if(this.blankValidatorInfo == null) {
+        if (this.blankValidatorInfo == null) {
 
             this.blankValidatorInfo = new SimpleValidator() {
 
@@ -674,7 +674,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected SimpleValidator getEmailValidatorInfo() {
 
-        if(this.emailValidatorInfo == null) {
+        if (this.emailValidatorInfo == null) {
 
             this.emailValidatorInfo = new SimpleValidator() {
 
@@ -714,7 +714,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected SimpleValidator getNullValidatorInfo() {
 
-        if(this.nullValidatorInfo == null) {
+        if (this.nullValidatorInfo == null) {
 
             this.nullValidatorInfo = new SimpleValidator() {
 
@@ -752,7 +752,7 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected SimpleValidator getNotNullValidatorInfo() {
 
-        if(this.notNullValidatorInfo == null) {
+        if (this.notNullValidatorInfo == null) {
 
             this.notNullValidatorInfo = new SimpleValidator() {
 
@@ -858,74 +858,74 @@ public class ValidationSetDefault implements ValidationSet {
 
     protected Integer getSize(Object element, boolean ignoreNullValues) {
 
-        if(element == null) {
+        if (element == null) {
             return null;
-        } else if(element instanceof JsonObject) {
+        } else if (element instanceof JsonObject) {
 
-            if(!ignoreNullValues) {
+            if (!ignoreNullValues) {
                 return ((JsonObject)element).size();
             }
 
             int size = 0;
-            for(Entry<String, Object> entry : ((JsonObject)element)) {
-                if(entry != null && entry.getValue() != null) {
+            for (Entry<String, Object> entry : ((JsonObject)element)) {
+                if (entry != null && entry.getValue() != null) {
                     size++;
                 }
             }
 
             return size;
 
-        } else if(element instanceof JsonArray) {
+        } else if (element instanceof JsonArray) {
 
-            if(!ignoreNullValues) {
+            if (!ignoreNullValues) {
                 return ((JsonArray)element).size();
             }
 
             int size = 0;
-            for(Object oneElement : ((JsonArray)element)) {
-                if(oneElement != null) {
+            for (Object oneElement : ((JsonArray)element)) {
+                if (oneElement != null) {
                     size++;
                 }
             }
             return size;
 
-        } else if(element instanceof byte[]) {
+        } else if (element instanceof byte[]) {
 
-            if(!ignoreNullValues) {
+            if (!ignoreNullValues) {
                 return ((byte[])element).length;
             }
 
             int size = 0;
-            for(Object oneElement : ((byte[])element)) {
-                if(oneElement != null) {
+            for (Object oneElement : ((byte[])element)) {
+                if (oneElement != null) {
                     size++;
                 }
             }
             return size;
 
-        } else if(element instanceof Object[]) {
+        } else if (element instanceof Object[]) {
 
-            if(!ignoreNullValues) {
+            if (!ignoreNullValues) {
                 return ((Object[])element).length;
             }
 
             int size = 0;
-            for(Object oneElement : ((Object[])element)) {
-                if(oneElement != null) {
+            for (Object oneElement : ((Object[])element)) {
+                if (oneElement != null) {
                     size++;
                 }
             }
             return size;
 
-        } else if(element instanceof Collection<?>) {
+        } else if (element instanceof Collection<?>) {
 
-            if(!ignoreNullValues) {
+            if (!ignoreNullValues) {
                 return ((Collection<?>)element).size();
             }
 
             int size = 0;
-            for(Object oneElement : ((Collection<?>)element)) {
-                if(oneElement != null) {
+            for (Object oneElement : ((Collection<?>)element)) {
+                if (oneElement != null) {
                     size++;
                 }
             }
@@ -942,7 +942,7 @@ public class ValidationSetDefault implements ValidationSet {
             @Override
             public boolean validate(Object elementToValidate) {
 
-                if(elementToValidate == null) {
+                if (elementToValidate == null) {
                     return false;
                 }
 
@@ -981,7 +981,7 @@ public class ValidationSetDefault implements ValidationSet {
             @Override
             public boolean validate(Object element) {
 
-                if(element == null) {
+                if (element == null) {
                     return false;
                 }
 
@@ -1020,7 +1020,7 @@ public class ValidationSetDefault implements ValidationSet {
             @Override
             public boolean validate(Object element) {
 
-                if(element == null) {
+                if (element == null) {
                     return true;
                 }
 
@@ -1239,7 +1239,7 @@ public class ValidationSetDefault implements ValidationSet {
                 try {
                     int result = getObjectConverter().compareTo(elementToValidate, reference);
                     return result < 0;
-                } catch(CantCompareException ex) {
+                } catch (CantCompareException ex) {
                     return false;
                 }
             }
@@ -1276,7 +1276,7 @@ public class ValidationSetDefault implements ValidationSet {
                 try {
                     int result = getObjectConverter().compareTo(elementToValidate, reference);
                     return result > 0;
-                } catch(CantCompareException ex) {
+                } catch (CantCompareException ex) {
                     return false;
                 }
             }
@@ -1313,7 +1313,7 @@ public class ValidationSetDefault implements ValidationSet {
                 try {
                     int result = getObjectConverter().compareTo(elementToValidate, reference);
                     return result <= 0;
-                } catch(CantCompareException ex) {
+                } catch (CantCompareException ex) {
                     return false;
                 }
             }
@@ -1350,7 +1350,7 @@ public class ValidationSetDefault implements ValidationSet {
                 try {
                     int result = getObjectConverter().compareTo(elementToValidate, reference);
                     return result >= 0;
-                } catch(CantCompareException ex) {
+                } catch (CantCompareException ex) {
                     return false;
                 }
             }
@@ -1388,7 +1388,7 @@ public class ValidationSetDefault implements ValidationSet {
         boolean formHasWarnings = false;
         boolean formHasErrors = false;
 
-        for(Entry<String, List<ValidationMessage>> entry : getMessages().entrySet()) {
+        for (Entry<String, List<ValidationMessage>> entry : getMessages().entrySet()) {
 
             JsonObject field = getJsonManager().create();
 
@@ -1398,19 +1398,19 @@ public class ValidationSetDefault implements ValidationSet {
             boolean keyHasErrorMessages = false;
 
             JsonArray messages = getJsonManager().createArray();
-            for(ValidationMessage validationMessage : entry.getValue()) {
+            for (ValidationMessage validationMessage : entry.getValue()) {
 
                 JsonObject message = validationMessage.convertToJsonObject();
 
-                if(validationMessage.getValidationLevel() == ValidationLevel.ERROR) {
+                if (validationMessage.getValidationLevel() == ValidationLevel.ERROR) {
                     keyIsValid = false;
                     keyHasErrorMessages = true;
                     formIsValid = false;
                     formHasErrors = true;
-                } else if(validationMessage.getValidationLevel() == ValidationLevel.WARNING) {
+                } else if (validationMessage.getValidationLevel() == ValidationLevel.WARNING) {
                     keyHasWarningMessages = true;
                     formHasWarnings = true;
-                } else if(validationMessage.getValidationLevel() == ValidationLevel.SUCCESS) {
+                } else if (validationMessage.getValidationLevel() == ValidationLevel.SUCCESS) {
                     keyHasSuccessMessages = true;
                     formHasSuccesses = true;
                 } else {
@@ -1458,14 +1458,14 @@ public class ValidationSetDefault implements ValidationSet {
     @Override
     public ValidationSet prefixValidationKeys(String prefix) {
 
-        if(prefix == null || "".equals(prefix)) {
+        if (prefix == null || "".equals(prefix)) {
             return this;
         }
 
         Map<String, List<ValidationMessage>> messagesPrefixed = new HashMap<>(getMessages());
         this.messages.clear();
 
-        for(Entry<String, List<ValidationMessage>> entry : messagesPrefixed.entrySet()) {
+        for (Entry<String, List<ValidationMessage>> entry : messagesPrefixed.entrySet()) {
             this.messages.put(prefix + entry.getKey(), entry.getValue());
         }
 

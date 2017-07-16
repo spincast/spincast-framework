@@ -81,15 +81,6 @@
         </dependency>
         
         <!--=================================== 
-        Spincast Cookies plugin
-        ====================================-->
-        <dependency>
-            <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-cookies</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <!--=================================== 
         Spincast Request plugin
         ====================================-->
         <dependency>

@@ -77,7 +77,7 @@ public class SpincastConfigPlugin extends SpincastPluginBase {
         Module pluginModule = getPluginModule(specificConfigImplClass);
         setContextTypes(pluginModule);
 
-        module = Modules.override(pluginModule).with(module);
+        module = Modules.override(module).with(pluginModule);
         return module;
     }
 

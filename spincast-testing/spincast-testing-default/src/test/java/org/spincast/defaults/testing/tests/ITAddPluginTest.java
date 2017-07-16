@@ -11,7 +11,7 @@ import org.spincast.defaults.bootstrapping.Spincast;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class ITAddPluginTest extends NoAppConfigTestClassBase {
+public class ITAddPluginTest extends IntegrationConfigTestClassBase {
 
     public static boolean inited = false;
     public static boolean applied = false;
@@ -60,7 +60,7 @@ public class ITAddPluginTest extends NoAppConfigTestClassBase {
     }
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 

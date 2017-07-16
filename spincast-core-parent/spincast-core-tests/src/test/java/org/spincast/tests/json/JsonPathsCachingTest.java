@@ -23,19 +23,20 @@ import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.validation.ValidationFactory;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class JsonPathsCachingTest extends UnitTestDefaultContextsBase {
+public class JsonPathsCachingTest extends NoAppTestingBase {
 
     @Override
     protected Injector createInjector() {
 
         return Spincast.configure()
+                       .disableCorePlugin()
                        .module(new SpincastCorePluginModule() {
 
                            @Override

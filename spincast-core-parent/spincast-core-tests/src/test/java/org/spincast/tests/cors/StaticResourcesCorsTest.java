@@ -15,7 +15,7 @@ import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -23,7 +23,7 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 
-public class StaticResourcesCorsTest extends IntegrationTestNoAppDefaultContextsBase {
+public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void noCorsConfig() throws Exception {

@@ -16,7 +16,7 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -27,7 +27,7 @@ import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
 
-public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase {
+public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
     protected SpincastRouterConfig spincastRouterConfig;
@@ -41,7 +41,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         StaticResourceCacheConfig config = getSpincastConfig().getDefaultStaticResourceCacheConfig(isDynamicResource);
 
         StringBuilder builder = new StringBuilder();
-        if(config.isCachePrivate()) {
+        if (config.isCachePrivate()) {
             builder.append("private");
         } else {
             builder.append("public");
@@ -49,8 +49,8 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         builder.append(", max-age=").append(config.getCacheSeconds());
 
         Integer cdnSeconds = config.getCacheSecondsCdn();
-        if(cdnSeconds != null) {
-            if(cdnSeconds < 0) {
+        if (cdnSeconds != null) {
+            if (cdnSeconds < 0) {
                 cdnSeconds = 0;
             }
             builder.append(", s-maxage=").append(cdnSeconds);
@@ -107,7 +107,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().file("/${file}").classpath("/someFile.txt").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -117,7 +117,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().file("/*{file}").classpath("/someFile.txt").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -333,7 +333,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().file("/one").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -343,7 +343,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().file(null).classpath("/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -353,7 +353,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().file("/").classpath("/").save(SpincastTestUtils.dummyRouteHandler);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -521,49 +521,49 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().dir("/${param1}").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/${param1}/one").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/one/${param1}").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/${path:a+}").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/${path:<N>}").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/*{param1}/one").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/one/*{param1}/one").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             getRouter().dir("/*{splat}/${param1}").pathAbsolute(getTestingWritableDir() + "/").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -604,7 +604,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
     public void lastOneAddedWins4() throws Exception {
 
         String filPath = "/" + UUID.randomUUID().toString();
-        while(new File(filPath).exists()) {
+        while (new File(filPath).exists()) {
             filPath = "/" + UUID.randomUUID().toString();
         }
         getRouter().file("/oneDir").pathAbsolute(filPath).save(new Handler<DefaultRequestContext>() {
@@ -627,14 +627,14 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
     public void fileFromFileSystemDoesntExist() throws Exception {
 
         String filPath = "/" + UUID.randomUUID().toString();
-        while(new File(filPath).exists()) {
+        while (new File(filPath).exists()) {
             filPath = "/" + UUID.randomUUID().toString();
         }
 
         try {
             getRouter().file("/test").pathAbsolute(filPath).save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -642,14 +642,14 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
     public void dirFromFileSystemDoesntExist() throws Exception {
 
         String filPath = "/" + UUID.randomUUID().toString();
-        while(new File(filPath).exists()) {
+        while (new File(filPath).exists()) {
             filPath = "/" + UUID.randomUUID().toString();
         }
 
         try {
             getRouter().dir("/test").pathAbsolute(filPath).save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -659,7 +659,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().file("/test").classpath("/nope.txt").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -668,7 +668,7 @@ public class StaticResourcesTest extends IntegrationTestNoAppDefaultContextsBase
         try {
             getRouter().dir("/oneDir").classpath("/nope").save();
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println();
         }
     }

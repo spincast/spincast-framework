@@ -17,7 +17,7 @@ import org.spincast.plugins.localeresolver.SpincastLocaleResolverPlugin;
 import com.google.inject.Inject;
 import com.google.inject.Scopes;
 
-public class ITAppDisablePluginAddModuleTest extends NoAppConfigTestClassBase {
+public class ITAppDisablePluginAddModuleTest extends IntegrationConfigTestClassBase {
 
     @Override
     protected GuiceTweaker createGuiceTweaker() {
@@ -84,7 +84,7 @@ public class ITAppDisablePluginAddModuleTest extends NoAppConfigTestClassBase {
     }
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(null);
     }
 

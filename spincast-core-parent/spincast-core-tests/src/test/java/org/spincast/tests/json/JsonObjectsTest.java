@@ -33,7 +33,7 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.json.JsonObjectFactory;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastTestUtils;
@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
-public class JsonObjectsTest extends UnitTestDefaultContextsBase {
+public class JsonObjectsTest extends NoAppTestingBase {
 
     @Inject
     protected JsonManager jsonManager;
@@ -177,14 +177,14 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
 
         boolean boolFound = false;
         boolean intFound = false;
-        for(Entry<String, Object> entry : jsonObj2) {
+        for (Entry<String, Object> entry : jsonObj2) {
             assertNotNull(entry);
 
             String key = entry.getKey();
-            if("anotherBoolean".equals(key)) {
+            if ("anotherBoolean".equals(key)) {
                 boolFound = true;
                 assertEquals(true, entry.getValue());
-            } else if("anotherInt".equals(key)) {
+            } else if ("anotherInt".equals(key)) {
                 intFound = true;
                 assertEquals(44444, entry.getValue());
             } else {
@@ -277,31 +277,31 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getBigDecimal("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBigDecimal("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBigDecimal("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBigDecimal("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBigDecimal("key4", BigDecimal.ONE);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         BigDecimal result = jsonObj.getBigDecimal("key5");
@@ -347,7 +347,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getBoolean("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         Boolean result = jsonObj.getBoolean("key2");
@@ -369,31 +369,31 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getBoolean("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBoolean("key5");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBoolean("key6");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBoolean("key7");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBoolean("key7", true);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         result = jsonObj.getBoolean("nope", false);
@@ -421,31 +421,31 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getDouble("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDouble("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDouble("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDouble("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDouble("key4", 123.4);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         Double result = jsonObj.getDouble("key5");
@@ -487,31 +487,31 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getInteger("key1");
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         try {
             jsonObj.getInteger("key2");
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         try {
             jsonObj.getInteger("key3");
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         try {
             jsonObj.getInteger("key4");
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         try {
             jsonObj.getInteger("key4", 123);
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         Integer result = jsonObj.getInteger("key5");
@@ -525,7 +525,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getInteger("key7");
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         result = jsonObj.getInteger("nope");
@@ -556,31 +556,31 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getLong("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getLong("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getLong("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getLong("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getLong("key4", 123L);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         Long result = jsonObj.getLong("key5");
@@ -594,7 +594,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getLong("key7");
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
         }
 
         result = jsonObj.getLong("nope");
@@ -624,31 +624,31 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getFloat("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getFloat("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getFloat("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getFloat("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getFloat("key4", 123.4F);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         Float result = jsonObj.getFloat("key5");
@@ -702,49 +702,49 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getDate("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key5");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key6");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key7");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getDate("key7", new Date());
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         Date result = jsonObj.getDate("key8");
@@ -834,7 +834,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getBytesFromBase64String("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         result = jsonObj.getBytesFromBase64String("key3");
@@ -843,13 +843,13 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getBytesFromBase64String("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getBytesFromBase64String("key5");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         result = jsonObj.getBytesFromBase64String("key6");
@@ -861,7 +861,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         result = jsonObj.getBytesFromBase64String("key8");
         assertNotNull(result);
         byte[] bytes = SpincastTestUtils.TEST_STRING.getBytes("UTF-8");
-        for(int i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             assertEquals(bytes[i], result[i]);
         }
 
@@ -894,25 +894,25 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getJsonObject("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonObject("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonObject("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonObject("key3", null);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonObject result = jsonObj.getJsonObject("key4");
@@ -922,25 +922,25 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getJsonObject("key5");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonObject("key6");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonObject("key7");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonObject("key8");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonObject someObj = getJsonManager().create();
@@ -970,49 +970,49 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getJsonArray("key1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key3", null);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key5");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key6");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             jsonObj.getJsonArray("key7");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonArray result = jsonObj.getJsonArray("key8");
@@ -1100,13 +1100,13 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         jsonArray.add("abc");
 
         int nbr = 0;
-        for(Object element : jsonArray) {
+        for (Object element : jsonArray) {
             assertNotNull(element);
-            if(nbr == 0) {
+            if (nbr == 0) {
                 assertEquals(jsonObj, element);
-            } else if(nbr == 1) {
+            } else if (nbr == 1) {
                 assertEquals(123, element);
-            } else if(nbr == 2) {
+            } else if (nbr == 2) {
                 assertEquals("abc", element);
             }
             nbr++;
@@ -2024,7 +2024,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             jsonObj.getInteger("array", 123);
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
             return;
         }
         fail();
@@ -2060,7 +2060,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             array.getInteger(0);
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
             return;
         }
         fail();
@@ -2075,7 +2075,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             array.getInteger(0, 123);
             fail();
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
             return;
         }
         fail();
@@ -2283,13 +2283,13 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             cloneImmutable.add("ddd");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             cloneInnerArray.add("eee");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -2355,13 +2355,13 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             clone.put("key3", "val3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         try {
             innerClone.put("key4", "val4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -2405,7 +2405,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableArray.add("nope");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonObject obj = getJsonManager().create();
@@ -2414,7 +2414,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableArray.add("nope");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonArray innerArray = obj.getJsonArray("array");
@@ -2434,7 +2434,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableArray.add("nope");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonArray parent = getJsonManager().createArray();
@@ -2443,7 +2443,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableArray.add("nope");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonArray innerArray = parent.getJsonArray(0);
@@ -2463,7 +2463,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableObj.put("nope", "I don't think so");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonObject obj = getJsonManager().create();
@@ -2472,7 +2472,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableObj.put("nope", "I don't think so");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonObject innerObj = obj.getJsonObject("inner");
@@ -2490,7 +2490,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableObj.put("nope", "I don't think so");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonArray array = getJsonManager().createArray();
@@ -2499,7 +2499,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             immutableObj.put("nope", "I don't think so");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         JsonObject innerObj = array.getJsonObject(0);
@@ -2558,7 +2558,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             array.add(-10, "value1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -2569,7 +2569,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             array.set(-10, "value1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -3045,7 +3045,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             array.put("name", "Stromgol");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -3083,7 +3083,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             obj.put("key3", "val3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertEquals(2, obj.size());
     }
@@ -3122,7 +3122,7 @@ public class JsonObjectsTest extends UnitTestDefaultContextsBase {
         try {
             obj.put("key3", "val3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
         assertEquals(2, obj.size());
     }

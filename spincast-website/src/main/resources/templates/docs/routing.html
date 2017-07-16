@@ -758,7 +758,7 @@ router.GET("/users/${userId}")
     // Or, using any other information from the request...
     
     // Some Cookie is set, we don't run the Filter.
-    if(context.cookies().getCookie("someCookie") != null) {
+    if(context.request().getCookie("someCookie") != null) {
         return;
     }
 

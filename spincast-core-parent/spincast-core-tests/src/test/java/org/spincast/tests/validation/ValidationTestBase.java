@@ -4,11 +4,11 @@ import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.validation.ValidationFactory;
-import org.spincast.defaults.testing.UnitTestDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public abstract class ValidationTestBase extends UnitTestDefaultContextsBase {
+public abstract class ValidationTestBase extends NoAppTestingBase {
 
     @Inject
     private JsonManager jsonManager;

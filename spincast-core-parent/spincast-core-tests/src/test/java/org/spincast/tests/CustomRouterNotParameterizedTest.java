@@ -2,29 +2,30 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
+import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRoutingPlugin;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.tests.varia.CustomRouter2;
 
-import com.google.inject.Injector;
+public class CustomRouterNotParameterizedTest extends NoAppStartHttpServerTestingBase {
 
-public class CustomRouterNotParameterizedTest extends IntegrationTestNoAppDefaultContextsBase {
-
-    /**
-     * Replace the default routing plugin
-     */
     @Override
-    protected Injector createInjector() {
+    protected List<SpincastPlugin> getExtraPlugins2() {
 
-        return Spincast.configure()
-                       .plugin(new SpincastRoutingPlugin(CustomRouter2.class))
-                       .init(new String[]{});
+        //==========================================
+        // Replaces the default routing plugin
+        //==========================================
+        List<SpincastPlugin> extraPlugins = new ArrayList<SpincastPlugin>();
+        extraPlugins.add(new SpincastRoutingPlugin(CustomRouter2.class));
+        return extraPlugins;
     }
 
     @Override

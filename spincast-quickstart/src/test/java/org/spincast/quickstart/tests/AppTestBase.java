@@ -7,8 +7,8 @@ import org.spincast.quickstart.config.AppConfig;
 import org.spincast.quickstart.config.AppConfigDefault;
 import org.spincast.quickstart.exchange.AppRequestContext;
 import org.spincast.quickstart.exchange.AppWebsocketContext;
-import org.spincast.testing.core.AppTestingConfigInfo;
-import org.spincast.testing.core.IntegrationTestAppBase;
+import org.spincast.testing.core.AppBasedTestingBase;
+import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.google.inject.Inject;
@@ -17,11 +17,45 @@ import com.google.inject.Inject;
  * Integration test base class specifically made for 
  * our application.
  */
-public abstract class AppTestBase extends IntegrationTestAppBase<AppRequestContext, AppWebsocketContext> {
+public abstract class AppTestBase extends AppBasedTestingBase<AppRequestContext, AppWebsocketContext> {
 
     @Override
-    protected void initApp() {
+    protected void startApp() {
         App.main(getMainArgs());
+    }
+
+    protected String[] getMainArgs() {
+        return null;
+    }
+
+    /**
+     * We specify our testing configurations informations.
+     */
+    @Override
+    protected AppTestingConfigs getAppTestingConfigs() {
+
+        return new AppTestingConfigs() {
+
+            @Override
+            public boolean isBindAppClass() {
+                return true;
+            }
+
+            @Override
+            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
+                return AppTestingConfig.class;
+            }
+
+            @Override
+            public Class<?> getAppConfigInterface() {
+                return AppConfig.class;
+            }
+
+            @Override
+            public Class<?> getAppConfigTestingImplementationClass() {
+                return AppTestingConfig.class;
+            }
+        };
     }
 
     /**
@@ -81,34 +115,5 @@ public abstract class AppTestBase extends IntegrationTestAppBase<AppRequestConte
         public boolean isEnableCookiesValidator() {
             return false;
         }
-    }
-
-    /**
-     * We specify our testing configurations informations.
-     */
-    @Override
-    protected AppTestingConfigInfo getAppTestingConfigInfo() {
-
-        return new AppTestingConfigInfo() {
-
-            @Override
-            public Class<? extends SpincastConfig> getSpincastConfigTestingImplementationClass() {
-                return AppTestingConfig.class;
-            }
-
-            @Override
-            public Class<?> getAppConfigInterface() {
-                return AppConfig.class;
-            }
-
-            @Override
-            public Class<?> getAppConfigTestingImplementationClass() {
-                return AppTestingConfig.class;
-            }
-        };
-    }
-
-    protected String[] getMainArgs() {
-        return null;
     }
 }

@@ -10,11 +10,11 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-public class RequestPathParamsAndQueryStringParamsTest extends IntegrationTestNoAppDefaultContextsBase {
+public class RequestPathParamsAndQueryStringParamsTest extends NoAppStartHttpServerTestingBase {
 
     @Test
     public void paramsAndQueryStringParams() throws Exception {

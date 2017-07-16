@@ -1,11 +1,15 @@
 package org.spincast.testing.core;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.routing.Router;
 import org.spincast.core.server.Server;
@@ -27,27 +31,11 @@ import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Scopes;
+import com.google.inject.util.Modules;
 
-/**
- * Base class for integration test classes that need 
- * the HTTP/WebSocket server to be started.
- * 
- * <p>
- * This requires a "Server" to be bound in the Guice 
- * context : it will automatically be stopped after the
- * test class is ran.
- * <p>
- * Note that this class doesn't start the server by itself because 
- * this lets the opportunity to test an application by using its true
- * bootstraping process, which usually starts a server itself!
- * <p>
- * All client data (such as cookies) are cleared before each test.
- * <p>
- * If you extend this class directly, don't forget to add the
- * extra plugins required! You can get those by calling
- * <code>getExtraRequiredPlugins()</code>
- */
-public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
+public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                          extends SpincastTestBase {
 
     @Inject
@@ -62,18 +50,132 @@ public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends
     @Inject
     private CookieFactory cookieFactory;
 
+    @Override
+    protected final Injector createInjector() {
+
+        //==========================================
+        // Starts the app!
+        //==========================================
+        startApp();
+
+        //==========================================
+        // The Guice injector should now have been added
+        // to the SpincastPluginThreadLocal...
+        //==========================================
+        Injector injector = getGuiceTweakerFromThreadLocal().getInjector();
+        assertNotNull(injector);
+
+        return injector;
+    }
+
+    @Override
+    protected final Class<? extends SpincastConfig> getTestingConfigImplementationClass() {
+        Class<? extends SpincastConfig> impl = getAppTestingConfigs().getSpincastConfigTestingImplementationClass();
+        return (impl != null ? impl : super.getTestingConfigImplementationClass());
+    }
+
+    @Override
+    protected final boolean isDisableBindCurrentClass() {
+        return !getAppTestingConfigs().isBindAppClass();
+    }
+
+    @Override
+    protected final Module getExtraOverridingModule() {
+
+        Module extraModuleUserSpecified = getExtraOverridingModule2();
+        if (extraModuleUserSpecified == null) {
+            extraModuleUserSpecified = new SpincastGuiceModuleBase() {
+
+                @Override
+                protected void configure() {
+                    // nothing
+                }
+            };
+        }
+
+        Module localModule = super.getExtraOverridingModule();
+
+        //==========================================
+        // The SpincastConfig testing binding is done by
+        // the parent class, using the implementation returned by
+        // {@link #getTestingConfigImplementationClass}. Here,
+        // we tweak the *app* testing configuration bindings, 
+        // if required...
+        //==========================================
+
+        final AppTestingConfigs testingConfigs = getAppTestingConfigs();
+        if (getAppTestingConfigs().getAppConfigInterface() != null ||
+            getAppTestingConfigs().getAppConfigTestingImplementationClass() != null) {
+
+            if (testingConfigs.getAppConfigTestingImplementationClass() == null) {
+                throw new RuntimeException("The testing app configuration implementation " +
+                                           "can't be null for the the specified interface " +
+                                           testingConfigs.getAppConfigInterface().getName());
+            }
+
+            //==========================================
+            // Validation
+            //==========================================
+            if (testingConfigs.getAppConfigInterface() != null &&
+                !testingConfigs.getAppConfigInterface()
+                               .isAssignableFrom(testingConfigs.getAppConfigTestingImplementationClass())) {
+
+                throw new RuntimeException("The testing app configuration implementation \"" +
+                                           testingConfigs.getAppConfigTestingImplementationClass() +
+                                           "\" doesn't implement the specified interface " +
+                                           testingConfigs.getAppConfigInterface().getName());
+            }
+
+            localModule = Modules.override(localModule).with(new SpincastGuiceModuleBase() {
+
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                @Override
+                protected void configure() {
+
+                    bind(testingConfigs.getAppConfigTestingImplementationClass()).in(Scopes.SINGLETON);
+
+                    if (testingConfigs.getAppConfigInterface() != null) {
+                        bind(testingConfigs.getAppConfigInterface()).to((Class)testingConfigs.getAppConfigTestingImplementationClass())
+                                                                    .in(Scopes.SINGLETON);
+                    }
+
+                }
+            });
+        }
+
+        return Modules.override(localModule).with(extraModuleUserSpecified);
+    }
+
+    protected Module getExtraOverridingModule2() {
+        return null;
+    }
+
     /**
-     * The extra required plugins. For integration testing, we need 
-     * the Spincast HTTP Client plugin!
+     * The extra required plugins.
      */
     @Override
-    protected List<SpincastPlugin> getGuiceTweakerPlugins() {
+    protected final List<SpincastPlugin> getExtraPlugins() {
 
-        List<SpincastPlugin> plugins = super.getGuiceTweakerPlugins();
+        List<SpincastPlugin> plugins = super.getExtraPlugins();
 
+        List<SpincastPlugin> pluginsUserDefined = getExtraPlugins2();
+        if (pluginsUserDefined != null) {
+            plugins.addAll(pluginsUserDefined);
+        }
+
+        //==========================================
+        // We need the Spincast HTTP Client plugin
+        //==========================================
         plugins.add(new SpincastHttpClientWithWebsocketPlugin());
 
         return plugins;
+    }
+
+    /**
+     * The extra required plugins.
+     */
+    protected List<SpincastPlugin> getExtraPlugins2() {
+        return null;
     }
 
     @Override
@@ -88,11 +190,9 @@ public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends
             guice.getBinding(HttpClient.class);
         } catch (Exception ex) {
 
-            String msg = "By extending the " + IntegrationTestBase.class.getName() + " base class, your " +
-                         "test class *must* bind those extra plugins in the Guice context :\n";
-            for (SpincastPlugin plugin : getGuiceTweakerPlugins()) {
-                msg += "- " + plugin.getClass().getName() + "\n";
-            }
+            String msg = "By extending the " + this.getClass().getName() + " base class, " +
+                         "the " + HttpClient.class.getName() + " extra plugin must be bound " +
+                         "in the Guice context.";
 
             throw new RuntimeException(msg, ex);
         }
@@ -660,5 +760,41 @@ public abstract class IntegrationTestBase<R extends RequestContext<?>, W extends
         Objects.requireNonNull(dateHeaderValue, "The dateHeaderValue can't be NULL");
         return DateUtils.parseDate(dateHeaderValue);
     }
+
+    /**
+     * We force test classes to provide information about
+     * the required testing configurations.
+     * <p>
+     * The bindings for those components will be automatically
+     * created.
+     * 
+     * @return the testing configs informations or <code>null</code>
+     * to disable this process (you will then have to add the
+     * required config bindings by yourself).
+     */
+    protected abstract AppTestingConfigs getAppTestingConfigs();
+
+    /**
+     * Starts the application.
+     * <p>
+     * In this method, you should call your
+     * application <code>main()</code> method.
+     * <p>
+     * Returns a boolean to tell if the 
+     * class calling the Spincast bootstrapper,
+     * commonly named "App", should be added to the
+     * Guice context or not.
+     * <p>
+     * Returning <code>true</code> is common if your
+     * test class runs <em>integration</em> tests, since
+     * it is probably the calling class that starts the
+     * HTTP server. Return <code>false</code> if you
+     * don't need any server to be started, but still
+     * want the full application Guice context to be 
+     * created (used in general for <em>unit</em> tests). 
+     */
+    protected abstract void startApp();
+
+
 
 }

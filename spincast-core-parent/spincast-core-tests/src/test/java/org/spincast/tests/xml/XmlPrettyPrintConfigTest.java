@@ -8,16 +8,16 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.IntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.jacksonxml.SpincastXmlManagerConfig;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
 
-public class XmlPrettyPrintConfigTest extends IntegrationTestNoAppDefaultContextsBase {
+public class XmlPrettyPrintConfigTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getGuiceTweakerOverridingModule() {
+    protected Module getExtraOverridingModule2() {
         return new SpincastGuiceModuleBase() {
 
             @Override

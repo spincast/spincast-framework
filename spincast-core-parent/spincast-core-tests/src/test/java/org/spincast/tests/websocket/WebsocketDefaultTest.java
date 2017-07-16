@@ -15,21 +15,20 @@ import java.util.UUID;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastDictionary;
-import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
-import org.spincast.defaults.testing.WebsocketIntegrationTestNoAppDefaultContextsBase;
+import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
-public class WebsocketDefaultTest extends WebsocketIntegrationTestNoAppDefaultContextsBase {
+public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
     @Test
     public void handshakeWithHeadersAndCookies() throws Exception {
@@ -42,13 +41,13 @@ public class WebsocketDefaultTest extends WebsocketIntegrationTestNoAppDefaultCo
                 //==========================================
                 // Validate cookies
                 //==========================================
-                Cookie cookie = context.cookies().getCookie("username");
+                String cookie = context.request().getCookie("username");
                 assertNotNull(cookie);
-                assertEquals("Stromgol", cookie.getValue());
+                assertEquals("Stromgol", cookie);
 
-                cookie = context.cookies().getCookie("cookie2");
+                cookie = context.request().getCookie("cookie2");
                 assertNotNull(cookie);
-                assertEquals("val2", cookie.getValue());
+                assertEquals("val2", cookie);
 
                 //==========================================
                 // Validate custom headers
@@ -91,10 +90,10 @@ public class WebsocketDefaultTest extends WebsocketIntegrationTestNoAppDefaultCo
 
         WebsocketClientTest client = new WebsocketClientTest();
         WebsocketClientWriter writer = websocket("/ws").addCookie("username", "Stromgol")
-                                                        .addCookie("cookie2", "val2")
-                                                        .addHeaderValue("customHeader", "test1")
-                                                        .addHeaderValue("customHeader2", "test2")
-                                                        .connect(client);
+                                                       .addCookie("cookie2", "val2")
+                                                       .addHeaderValue("customHeader", "test1")
+                                                       .addHeaderValue("customHeader2", "test2")
+                                                       .connect(client);
         assertNotNull(writer);
 
         //==========================================
@@ -238,7 +237,7 @@ public class WebsocketDefaultTest extends WebsocketIntegrationTestNoAppDefaultCo
             @SuppressWarnings("unused")
             WebsocketClientWriter writer2 = websocket("/ws").connect(client);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         //==========================================
@@ -296,7 +295,7 @@ public class WebsocketDefaultTest extends WebsocketIntegrationTestNoAppDefaultCo
         try {
             controller.getEndpointManager("endpoint1").closeEndpoint(123, "some reason");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -1022,7 +1021,7 @@ public class WebsocketDefaultTest extends WebsocketIntegrationTestNoAppDefaultCo
             @SuppressWarnings("unused")
             WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
 
         //==========================================
