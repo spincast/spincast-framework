@@ -307,7 +307,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
                        }
                    });
 
-        getRouter().before("/*{before}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{before}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -315,7 +315,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().after("/*{after}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{after}").pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

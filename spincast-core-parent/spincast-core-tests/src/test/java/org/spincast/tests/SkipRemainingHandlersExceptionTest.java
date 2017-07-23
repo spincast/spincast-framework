@@ -16,7 +16,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
     @Test
     public void skipRemainingHandlersExceptionInMainHandler() throws Exception {
 
-        getRouter().after().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -43,7 +43,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
     @Test
     public void skipRemainingHandlersExceptionInFilter() throws Exception {
 
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -52,7 +52,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
             }
         });
 
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -60,7 +60,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
             }
         });
 
-        getRouter().after().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

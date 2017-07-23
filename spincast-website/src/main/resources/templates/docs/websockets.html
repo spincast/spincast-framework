@@ -291,10 +291,10 @@ WebSocket Routing
         WebSocket connection is established, the <code>HTTP</code> request is over.
         But "before" <code>Filters</code> are perfectly fine since they applied to the 
         <code>HTTP</code> request <em>before</em> it is upgraded to a WebSocket connection. For the
-        same reason, <em>global</em> "before" <code>Filters</code> (defined using
-        <code>router.before(...)</code>) will be applied during a
+        same reason, <em>global</em> "before" <code>Filters</code> (defined using something like 
+        <code>router.ALL(...).pos(-10)</code>) will be applied during a
         WebSocket Route processing, but not the global "after" <code>Filters</code> (defined using 
-        <code>router.after(...)</code>).
+        a position greater than "0").
     </p>
     <p>
         Here's an example of inline "before" <code>Filters</code>, on a WebSocket Route:

@@ -52,13 +52,10 @@ public interface Route<R extends RequestContext<?>> {
     public List<Handler<R>> getAfterFilters();
 
     /**
-     * The positions at which this route should be run during a
-     * routing process. It is possible (but uncommon) to have
-     * a filter that is run at more than one position. For
-     * example, a filter may have to do some work before
-     * and after the main handler.
+     * The position at which this route should be run during a
+     * routing process.
      */
-    public List<Integer> getPositions();
+    public int getPosition();
 
     /**
      * The ids of the filters that should be skipped for this

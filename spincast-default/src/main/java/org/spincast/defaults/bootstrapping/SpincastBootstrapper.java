@@ -459,7 +459,7 @@ public class SpincastBootstrapper {
             //==========================================
             // Is there a GuiceTweaker?
             //==========================================
-            GuiceTweaker guiceTweaker = GuiceTweaker.threadLocal.get();
+            final GuiceTweaker guiceTweaker = GuiceTweaker.threadLocal.get();
             if (guiceTweaker != null) {
                 guiceTweaker.setRequestContextImplementationClass(getRequestContextImplementationClass());
                 guiceTweaker.setWebsocketContextImplementationClass(getWebsocketContextImplementationClass());

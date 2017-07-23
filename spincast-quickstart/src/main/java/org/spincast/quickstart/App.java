@@ -86,7 +86,7 @@ public class App {
         //==========================================
         // Add some security headers on every route
         //==========================================
-        router.before().save(spincastFilters::addSecurityHeaders);
+        router.ALL().pos(-10).save(spincastFilters::addSecurityHeaders);
 
         //==========================================
         // Index page, can be cached.

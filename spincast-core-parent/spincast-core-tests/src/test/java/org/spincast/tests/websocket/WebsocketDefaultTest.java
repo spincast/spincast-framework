@@ -1126,7 +1126,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         final Set<String> inFilters = new HashSet<>();
 
-        getRouter().before().id("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).id("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1134,7 +1134,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
         });
 
-        getRouter().before().id("myBeforeFilter2").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).id("myBeforeFilter2").save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1142,7 +1142,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
         });
 
-        getRouter().after().id("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).id("myAfterFilter").save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -685,7 +685,8 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * the headers, the <code>Content-Type</code> and 
      * sets the <code>status code</code> back to <code>200</code>.
      * 
-     * @param resetCookies if <code>true</code>, cookies will be reset too.
+     * @param resetCookies if <code>true</code>, cookies that have been
+     * added on the current response will be reset too.
      */
     public ResponseRequestContextAddon<R> resetEverything(boolean resetCookies);
 
@@ -748,7 +749,7 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * templating variable. If any, a <code>Flash Messages</code> is also 
      * added to this variable.
      */
-    public void addAlert(AlertLevel success, String string);
+    public void addAlert(AlertLevel level, String message);
 
     /**
      * Gets the cookies already added to the response as a Map, 
@@ -831,6 +832,6 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * In fact, this method sets the <code>expires date</code> of the
      * cookies in the past so the user's browser will remove them.
      */
-    public void deleteAllCookies();
+    public void deleteAllCookiesUserHas();
 
 }

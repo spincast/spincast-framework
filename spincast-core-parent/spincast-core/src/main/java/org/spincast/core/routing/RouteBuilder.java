@@ -2,6 +2,7 @@ package org.spincast.core.routing;
 
 import java.util.Set;
 
+import org.spincast.core.exceptions.RedirectException;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.utils.ContentTypeDefaults;
 
@@ -22,11 +23,13 @@ public interface RouteBuilder<R extends RequestContext<?>> {
     public RouteBuilder<R> path(String path);
 
     /**
-     * The position of the handler. If "0", the handler is considered
-     * as the *main* handler. Only one main handler per request
+     * The position of the handler. 
+     * <p>
+     * If "0", the handler is considered as the *main* handler. 
+     * Only one main handler per request
      * is run (the first one found)! The main handler is usually where
      * the body of the response is created.
-     * 
+     * <p>
      * A route with a position less than "0" is considered as a "before" filter and
      * will be run before the main handler. A route with a position greater than
      * "0" is considered as an "after" filter and will be run after the
@@ -34,9 +37,12 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * from the lower position to the higher. If two filters have the
      * same position, they will be run in order they have been added to
      * the router.
-     * 
-     * More than one position is allowed.
-     * 
+     * <p>
+     * Be especially careful with <em>after</em> filters since the response
+     * may have been flushed at that time. For example,
+     * after filters are run if a {@link RedirectException}
+     * is thrown, but the response will then be closed!
+     * <p>
      * If not specified, "0" is used.
      */
     public RouteBuilder<R> pos(int position);

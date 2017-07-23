@@ -1,6 +1,7 @@
 package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -554,7 +555,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void standardRedirectionDoesntSkipRemainingFilters() throws Exception {
 
-        getRouter().after().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -582,7 +583,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void standardRedirectCanBeCancelled() throws Exception {
 
-        getRouter().after().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -609,13 +610,87 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     }
 
     @Test
-    public void redirectExceptionDoesSkipRemainingFilters() throws Exception {
+    public void redirectExceptionSkipRemainingBeforeFiltersAndMainHandler() throws Exception {
 
-        getRouter().after().save(new Handler<DefaultRequestContext>() {
+        final boolean[] wasCalled1 = new boolean[]{false};
+        final boolean[] wasCalled2 = new boolean[]{false};
+        final boolean[] wasCalled3 = new boolean[]{false};
+        final boolean[] wasCalled4 = new boolean[]{false};
+        final boolean[] wasCalled5 = new boolean[]{false};
+        final boolean[] wasCalled6 = new boolean[]{false};
+
+        getRouter().ALL().pos(-100).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
-                spincast.response().sendPlainText("after");
+                wasCalled1[0] = true;
+            }
+        });
+
+        getRouter().ALL().pos(-90).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext spincast) {
+                wasCalled2[0] = true;
+                throw new RedirectException("/test", true);
+            }
+        });
+
+        getRouter().ALL().pos(-80).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext spincast) {
+                wasCalled3[0] = true;
+            }
+        });
+
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext spincast) {
+                wasCalled4[0] = true;
+            }
+        });
+
+        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext spincast) {
+                wasCalled5[0] = true;
+            }
+        });
+
+        getRouter().ALL().pos(20).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext spincast) {
+                wasCalled6[0] = true;
+            }
+        });
+
+        RequestConfig noRedirectConfig = RequestConfig.custom().setRedirectsEnabled(false).build();
+
+        HttpResponse response = GET("/").setRequestConfig(noRedirectConfig).send();
+        assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("", response.getContentAsString());
+        assertTrue(wasCalled1[0]);
+        assertTrue(wasCalled2[0]);
+        assertFalse(wasCalled3[0]);
+        assertFalse(wasCalled4[0]);
+        assertTrue(wasCalled5[0]);
+        assertTrue(wasCalled6[0]);
+    }
+
+    @Test
+    public void redirectExceptionDoesNotSkipRemainingAfterFilters() throws Exception {
+
+        final boolean[] wasCalled = new boolean[]{false};
+        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext spincast) {
+                wasCalled[0] = true;
             }
         });
 
@@ -634,6 +709,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("", response.getContentAsString());
+        assertTrue(wasCalled[0]);
     }
 
     @Test

@@ -67,17 +67,18 @@ public class RoutingTest extends NoAppTestingBase {
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(0, router.getGlobalAfterFiltersRoutes().size());
 
-        router.before("/").save(SpincastTestUtils.dummyRouteHandler);
+        router.ALL("/").pos(-10).save(SpincastTestUtils.dummyRouteHandler);
         assertEquals(1, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(0, router.getGlobalAfterFiltersRoutes().size());
 
-        router.after("/").save(SpincastTestUtils.dummyRouteHandler);
+        router.ALL("/").pos(10).save(SpincastTestUtils.dummyRouteHandler);
         assertEquals(1, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(1, router.getGlobalAfterFiltersRoutes().size());
 
-        router.beforeAndAfter("/").save(SpincastTestUtils.dummyRouteHandler);
+        router.ALL("/").pos(-10).save(SpincastTestUtils.dummyRouteHandler);
+        router.ALL("/").pos(10).save(SpincastTestUtils.dummyRouteHandler);
         assertEquals(2, router.getGlobalBeforeFiltersRoutes().size());
         assertEquals(1, router.getMainRoutes().size());
         assertEquals(2, router.getGlobalAfterFiltersRoutes().size());
@@ -1179,21 +1180,28 @@ public class RoutingTest extends NoAppTestingBase {
                 handlerCalled.put("handlerCalled", "route");
             }
         });
-        router.before("/").save(new Handler<DefaultRequestContext>() {
+        router.ALL("/").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "before");
             }
         });
-        router.after("/").save(new Handler<DefaultRequestContext>() {
+        router.ALL("/").pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext exchange) {
                 handlerCalled.put("handlerCalled", "after");
             }
         });
-        router.beforeAndAfter("/").save(new Handler<DefaultRequestContext>() {
+        router.ALL("/").pos(-10).save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext exchange) {
+                handlerCalled.put("handlerCalled", "beforeAndAfter");
+            }
+        });
+        router.ALL("/").pos(10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext exchange) {

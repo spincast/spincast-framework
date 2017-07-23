@@ -21,9 +21,21 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public static final String DEFAULT_ROUTE_PATH = "/*{path}";
 
     /**
+     * Starts the creation of a <code>GET</code> route,
+     * for all path. Same as <code>GET("/*{path}")</code>.
+     */
+    public RouteBuilder<R> GET();
+
+    /**
      * Starts the creation of a <code>GET</code> route.
      */
     public RouteBuilder<R> GET(String path);
+
+    /**
+     * Starts the creation of a <code>POST</code> route,
+     * for all path. Same as <code>POST("/*{path}")</code>.
+     */
+    public RouteBuilder<R> POST();
 
     /**
      * Starts the creation of a <code>POST</code> route.
@@ -31,9 +43,21 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public RouteBuilder<R> POST(String path);
 
     /**
+     * Starts the creation of a <code>PUT</code> route,
+     * for all path. Same as <code>PUT("/*{path}")</code>.
+     */
+    public RouteBuilder<R> PUT();
+
+    /**
      * Starts the creation of a <code>PUT</code> route.
      */
     public RouteBuilder<R> PUT(String path);
+
+    /**
+     * Starts the creation of a <code>DELETE</code> route,
+     * for all path. Same as <code>DELETE("/*{path}")</code>.
+     */
+    public RouteBuilder<R> DELETE();
 
     /**
      * Starts the creation of a <code>DELETE</code> route.
@@ -41,14 +65,33 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public RouteBuilder<R> DELETE(String path);
 
     /**
+     * Starts the creation of a <code>OPTIONS</code> route,
+     * for all path. Same as <code>OPTIONS("/*{path}")</code>.
+     */
+    public RouteBuilder<R> OPTIONS();
+
+    /**
      * Starts the creation of a <code>OPTIONS</code> route.
      */
     public RouteBuilder<R> OPTIONS(String path);
 
     /**
-     * Starts the creation of a <code>TRACE</code> route.
+     * Starts the creation of a <code>TRACE</code> route,
+     * for all path. Same as <code>TRACE("/*{path}")</code>.
+     */
+    public RouteBuilder<R> TRACE();
+
+    /**
+     * Starts the creation of a <code>TRACE</code> route,
+     * at the specified position.
      */
     public RouteBuilder<R> TRACE(String path);
+
+    /**
+     * Starts the creation of a <code>HEAD</code> route,
+     * for all path. Same as <code>HEAD("/*{path}")</code>.
+     */
+    public RouteBuilder<R> HEAD();
 
     /**
      * Starts the creation of a <code>HEAD</code> route.
@@ -56,14 +99,33 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public RouteBuilder<R> HEAD(String path);
 
     /**
+     * Starts the creation of a <code>PATCH</code> route,
+     * for all path. Same as <code>PATCH("/*{path}")</code>.
+     */
+    public RouteBuilder<R> PATCH();
+
+    /**
      * Starts the creation of a <code>PATCH</code> route.
      */
     public RouteBuilder<R> PATCH(String path);
 
     /**
+     * Starts the creation of a route matching any HTTP method,
+     * and on any path. Same as <code>ALL("/*{path}")</code>.
+     */
+    public RouteBuilder<R> ALL();
+
+    /**
      * Starts the creation of a route matching any HTTP method.
      */
     public RouteBuilder<R> ALL(String path);
+
+    /**
+     * Starts the creation of a route matching the specified
+     * HTTP methods and on any path. Same as 
+     * <code>SOME("/*{path}", httpMethods)</code>.
+     */
+    public RouteBuilder<R> SOME(Set<HttpMethod> httpMethods);
 
     /**
      * Starts the creation of a route matching the specified
@@ -73,112 +135,49 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
 
     /**
      * Starts the creation of a route matching the specified
+     * HTTP methods and on any path. Same as 
+     * <code>SOME("/*{path}", httpMethods)</code>.
+     */
+    public RouteBuilder<R> SOME(HttpMethod... httpMethods);
+
+    /**
+     * Starts the creation of a route matching the specified
      * HTTP methods.
      */
     public RouteBuilder<R> SOME(String path, HttpMethod... httpMethods);
 
     /**
-     * Creates a "before" filter.
-     * 
-     * Synonym of : 
-     * 
-     * <code>ALL("/*{path}").pos(-10)</code>
-     * and with the Routing types as returned by
-     * SpincastRouterConfig#getFilterDefaultRoutingTypes()
-     */
-    public RouteBuilder<R> before();
-
-    /**
-     * Creates a "before" filter.
-     * 
-     * Synonym of : 
-     * 
-     * <code>ALL(path).pos(-10)</code>
-     * and with the Routing types as returned by
-     * SpincastRouterConfig#getFilterDefaultRoutingTypes()
-     */
-    public RouteBuilder<R> before(String path);
-
-    /**
-     * Creates an "after" filter.
-     * 
-     * Synonym of : 
-     * 
-     * <code>ALL("/*{path}").pos(10)</code>
-     * and with the Routing types as returned by
-     * SpincastRouterConfig#getFilterDefaultRoutingTypes()
-     */
-    public RouteBuilder<R> after();
-
-    /**
-     * Creates an "after" filter.
-     * 
-     * Synonym of : 
-     * 
-     * <code>ALL(path).pos(10))</code>
-     * and with the Routing types as returned by
-     * SpincastRouterConfig#getFilterDefaultRoutingTypes()
-     */
-    public RouteBuilder<R> after(String path);
-
-    /**
-     * Creates a "before" and an "after" filters.
-     * 
-     * Synonym of : 
-     * 
-     * <code>ALL("/*{path}").pos(-10)</code>
-     * and
-     * <code>ALL("/*{path}").pos(10)</code>
-     * and with the Routing types as returned by
-     * SpincastRouterConfig#getFilterDefaultRoutingTypes()
-     */
-    public RouteBuilder<R> beforeAndAfter();
-
-    /**
-     * Creates a "before" and an "after" filters.
-     * 
-     * Synonym of : 
-     * 
-     * <code>ALL(path).pos(-10)</code>
-     * and
-     * <code>ALL(path).pos(10)</code>
-     * and with the Routing types as returned by
-     * SpincastRouterConfig#getFilterDefaultRoutingTypes()
-     */
-    public RouteBuilder<R> beforeAndAfter(String path);
-
-    /**
      * Creates a route considered during an "Exception" routing process.
-     * 
+     * <p>
      * Synonym of : 
-     * 
+     * <p>
      * <code>ALL("/*{path}").exception().save(handler)</code>
      */
     public void exception(Handler<R> handler);
 
     /**
      * Creates a route considered during an "Exception" routing process.
-     * 
+     * <p>
      * Synonym of : 
-     * 
+     * <p>
      * <code>ALL(path).exception().save(handler)</code>
      */
     public void exception(String path, Handler<R> handler);
 
     /**
      * Creates a route considered during an "Not Found" routing process.
-     * 
+     * <p>
      * Synonym of : 
-     * 
+     * <p>
      * <code>ALL("/*{path}").notFound().save(handler)</code>
      */
     public void notFound(Handler<R> handler);
 
     /**
      * Creates a route considered during an "Not Found" routing process.
-     * 
+     * <p>
      * Synonym of : 
-     * 
+     * <p>
      * <code>ALL(path).notFound().save(handler)</code>
      */
     public void notFound(String path, Handler<R> handler);

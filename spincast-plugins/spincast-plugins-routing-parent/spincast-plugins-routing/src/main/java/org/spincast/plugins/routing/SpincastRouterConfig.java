@@ -17,8 +17,8 @@ import com.google.inject.ImplementedBy;
 public interface SpincastRouterConfig {
 
     /**
-     * The routing types to apply a filter to when none is
-     * explicitly specified.
+     * The routing types to apply a filter (none "0" position) 
+     * when none is explicitly specified.
      */
     public Set<RoutingType> getFilterDefaultRoutingTypes();
 

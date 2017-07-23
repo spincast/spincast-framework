@@ -1,12 +1,14 @@
 package org.spincast.core.exceptions;
 
 import org.spincast.core.json.JsonObject;
-import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.session.FlashMessage;
+import org.spincast.core.session.FlashMessageLevel;
 
 /**
- * Exception that will immediately send redirection headers and will make
- * any remaining route handlers being skipped.
+ * Exception that will immediately send redirection headers.
+ * <p>
+ * Any remaining handlers will be skipped except for *after* 
+ * filters.
  */
 public class RedirectException extends RuntimeException {
 

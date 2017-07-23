@@ -2,6 +2,8 @@ package org.spincast.core.guice;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastDictionary;
@@ -211,6 +213,11 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         // Binds the Cookie factory.
         //==========================================
         bindCookieFactory();
+
+        //==========================================
+        // Binds TestingMode flag
+        //==========================================
+        bindTestingModeFlag();
 
     }
 
@@ -513,6 +520,31 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
 
     protected Class<? extends Cookie> getCookieImplClass() {
         return CookieDefault.class;
+    }
+
+    /**
+     * Currently, we set the @TestingMode flag to "true" if
+     * a GuiceTweaker exists or if JUnit/TestNG can be detected in
+     * the stacktrace.
+     */
+    protected void bindTestingModeFlag() {
+
+        boolean isTestingMode = false;
+        GuiceTweaker guiceTweaker = GuiceTweaker.threadLocal.get();
+        if (guiceTweaker != null) {
+            isTestingMode = true;
+        } else {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            List<StackTraceElement> list = Arrays.asList(stackTrace);
+            for (StackTraceElement element : list) {
+                if (element.getClassName().startsWith("org.junit.") ||
+                    element.getClassName().startsWith("org.testng.")) {
+                    isTestingMode = true;
+                }
+            }
+        }
+
+        bind(Boolean.class).annotatedWith(TestingMode.class).toInstance(isTestingMode);
     }
 
 }

@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.filters.SpincastFilters;
-import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Route;
 import org.spincast.core.routing.RouteBuilder;
 import org.spincast.core.routing.Router;
@@ -38,7 +38,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     private Set<HttpMethod> httpMethods;
     private String id = null;
     private String path = null;
-    private Set<Integer> positions;
+    private int position = 0;
     private Set<RoutingType> routingTypes;
     private List<Handler<R>> beforeFilters;
     private Handler<R> mainHandler;
@@ -48,18 +48,18 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
     @AssistedInject
     public RouteBuilderDefault(RouteFactory<R> routeFactory,
-                        SpincastRouterConfig spincastRouterConfig,
-                        SpincastFilters<R> spincastFilters,
-                        SpincastConfig spincastConfig) {
+                               SpincastRouterConfig spincastRouterConfig,
+                               SpincastFilters<R> spincastFilters,
+                               SpincastConfig spincastConfig) {
         this(null, routeFactory, spincastRouterConfig, spincastFilters, spincastConfig);
     }
 
     @AssistedInject
     public RouteBuilderDefault(@Assisted Router<R, W> router,
-                        RouteFactory<R> routeFactory,
-                        SpincastRouterConfig spincastRouterConfig,
-                        SpincastFilters<R> spincastFilters,
-                        SpincastConfig spincastConfig) {
+                               RouteFactory<R> routeFactory,
+                               SpincastRouterConfig spincastRouterConfig,
+                               SpincastFilters<R> spincastFilters,
+                               SpincastConfig spincastConfig) {
         this.router = router;
         this.routeFactory = routeFactory;
         this.spincastRouterConfig = spincastRouterConfig;
@@ -95,36 +95,33 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         return this.path;
     }
 
-    public Set<Integer> getPositions() {
-        if(this.positions == null) {
-            this.positions = new HashSet<Integer>();
-        }
-        return this.positions;
+    public int getPosition() {
+        return this.position;
     }
 
     public Set<RoutingType> getRoutingTypes() {
-        if(this.routingTypes == null) {
+        if (this.routingTypes == null) {
             this.routingTypes = new HashSet<>();
         }
         return this.routingTypes;
     }
 
     public Set<HttpMethod> getHttpMethods() {
-        if(this.httpMethods == null) {
+        if (this.httpMethods == null) {
             this.httpMethods = new HashSet<>();
         }
         return this.httpMethods;
     }
 
     public List<Handler<R>> getBeforeFilters() {
-        if(this.beforeFilters == null) {
+        if (this.beforeFilters == null) {
             this.beforeFilters = new ArrayList<Handler<R>>();
         }
         return this.beforeFilters;
     }
 
     public List<Handler<R>> getAfterFilters() {
-        if(this.afterFilters == null) {
+        if (this.afterFilters == null) {
             this.afterFilters = new ArrayList<Handler<R>>();
         }
         return this.afterFilters;
@@ -135,14 +132,14 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     }
 
     public Set<String> getAcceptedContentTypes() {
-        if(this.acceptedContentTypes == null) {
+        if (this.acceptedContentTypes == null) {
             this.acceptedContentTypes = new HashSet<>();
         }
         return this.acceptedContentTypes;
     }
 
     public Set<String> getFilterIdsToSkip() {
-        if(this.filterIdsToSkip == null) {
+        if (this.filterIdsToSkip == null) {
             this.filterIdsToSkip = new HashSet<>();
         }
         return this.filterIdsToSkip;
@@ -156,7 +153,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
     @Override
     public RouteBuilder<R> pos(int position) {
-        getPositions().add(position);
+        this.position = position;
         return this;
     }
 
@@ -221,8 +218,8 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     @Override
     public RouteBuilder<R> accept(ContentTypeDefaults... acceptedContentTypes) {
 
-        if(acceptedContentTypes != null) {
-            for(ContentTypeDefaults contentTypeDefault : acceptedContentTypes) {
+        if (acceptedContentTypes != null) {
+            for (ContentTypeDefaults contentTypeDefault : acceptedContentTypes) {
                 getAcceptedContentTypes().addAll(contentTypeDefault.getVariations());
             }
         }
@@ -234,7 +231,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
         Objects.requireNonNull(acceptedContentTypes, "acceptedContentTypes can't be NULL");
 
-        for(ContentTypeDefaults contentTypeDefault : acceptedContentTypes) {
+        for (ContentTypeDefaults contentTypeDefault : acceptedContentTypes) {
             accept(contentTypeDefault);
         }
         return this;
@@ -333,7 +330,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     @Override
     public void save(Handler<R> mainHandler) {
 
-        if(getRouter() == null) {
+        if (getRouter() == null) {
             throw new RuntimeException("No router specified, can't save the route!");
         }
 
@@ -347,29 +344,31 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         this.mainHandler = mainHandler;
 
         Set<RoutingType> routingTypes = getRoutingTypes();
-        if(routingTypes.size() == 0) {
+        if (routingTypes == null || routingTypes.size() == 0) {
             routingTypes = new HashSet<RoutingType>();
-            routingTypes.add(RoutingType.FOUND);
-        }
 
-        //==========================================
-        // If no position was specified, the route is
-        // considered as a main one, "0".
-        //==========================================
-        if(getPositions().size() == 0) {
-            getPositions().add(0);
+            //==========================================
+            // Default routing types for a filter
+            //==========================================
+            if (getPosition() != 0) {
+
+                Set<RoutingType> defaultRoutingTypes = getSpincastRouterConfig().getFilterDefaultRoutingTypes();
+                routingTypes.addAll(defaultRoutingTypes);
+            } else {
+                routingTypes.add(RoutingType.FOUND);
+            }
         }
 
         Route<R> route = getRouteFactory().createRoute(getId(),
-                                                        getHttpMethods(),
-                                                        getPath(),
-                                                        routingTypes,
-                                                        getBeforeFilters(),
-                                                        mainHandler,
-                                                        getAfterFilters(),
-                                                        getPositions(),
-                                                        getAcceptedContentTypes(),
-                                                        getFilterIdsToSkip());
+                                                       getHttpMethods(),
+                                                       getPath(),
+                                                       routingTypes,
+                                                       getBeforeFilters(),
+                                                       mainHandler,
+                                                       getAfterFilters(),
+                                                       getPosition(),
+                                                       getAcceptedContentTypes(),
+                                                       getFilterIdsToSkip());
         return route;
     }
 
@@ -404,8 +403,8 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
     @Override
     public RouteBuilder<R> cache(final int seconds,
-                                  final boolean isPrivate,
-                                  final Integer secondsCdn) {
+                                 final boolean isPrivate,
+                                 final Integer secondsCdn) {
 
         before(new Handler<R>() {
 
@@ -432,7 +431,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     @Override
     public RouteBuilder<R> skip(String filterId) {
 
-        if(StringUtils.isBlank(filterId)) {
+        if (StringUtils.isBlank(filterId)) {
             throw new RuntimeException("The filterId can't be empty.");
         }
 

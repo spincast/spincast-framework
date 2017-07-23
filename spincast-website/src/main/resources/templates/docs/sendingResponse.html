@@ -397,7 +397,8 @@ Docs : "Sending the response"
                     <p>
                         Unlike the <code>redirect(...)</code> method approach, throwing a <code>RedirectException</code> 
                         <em>will</em> end the current routing process and immediately send the redirection
-                        headers. Any remaining <code>Route Handlers</code>/<code>Filters</code> will be skipped!
+                        headers. Only the remaining <em>after</em> Filters</code> will be run, any other remaining handler
+                        will be skipped.
                     </p>
                 </li>
             </ul>
@@ -596,7 +597,8 @@ Docs : "Sending the response"
         <p>
             Unlike simply flushing and ending the response (using the <code>end()</code> method), 
             throwing a <code>SkipRemainingHandlersException</code> skips any remaining handlers : the
-            response will be sent as is, and the routing process will be over.
+            response will be sent as is, and the routing process will be over. This means that
+            even the <em>after</em> filters will be skipped!
          </p>
     </div>
 

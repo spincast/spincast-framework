@@ -388,12 +388,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
                 URI currentUri = new URI(getRequestContext().request().getFullUrl());
 
-                String anchor = currentUri.getFragment();
+                String anchor = null;
                 if (uri.getFragment() != null) {
                     anchor = uri.getFragment();
                 }
 
-                String queryString = currentUri.getQuery();
+                String queryString = null;
                 if (uri.getQuery() != null) {
                     queryString = uri.getQuery();
                 }
@@ -831,7 +831,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             this.logger.warn("Response headers are already sent, the cookies, headers and status code won't be reset...");
         } else {
             if (resetCookies) {
-                deleteAllCookies();
+                getCookiesAdded().clear();
             }
 
             getHeaders().clear();
@@ -1363,7 +1363,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public void deleteAllCookies() {
+    public void deleteAllCookiesUserHas() {
 
         getCookiesAdded().clear();
 

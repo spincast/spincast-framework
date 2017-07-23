@@ -1,7 +1,6 @@
 package org.spincast.plugins.routing;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,6 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Route;
 import org.spincast.core.routing.RoutingType;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -28,7 +26,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     private final List<Handler<R>> beforeFilters;
     private final Handler<R> mainHandler;
     private final List<Handler<R>> afterFilters;
-    private final List<Integer> positions;
+    private final int position;
     private final Set<String> filterIdsToSkip;
 
     /** 
@@ -42,41 +40,38 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
                         @Assisted("before") @Nullable List<Handler<R>> beforeFilters,
                         @Assisted("main") Handler<R> mainHandler,
                         @Assisted("after") @Nullable List<Handler<R>> afterFilters,
-                        @Assisted("positions") Set<Integer> positions,
+                        @Assisted("position") int position,
                         @Assisted("acceptedContentTypes") @Nullable Set<String> acceptedContentTypes,
                         @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip) {
         this.id = id;
-
-        this.positions = new ArrayList<Integer>(positions);
-        Collections.sort(this.positions);
-
+        this.position = position;
         this.httpMethods = httpMethods;
         this.path = path;
         this.routingTypes = routingTypes;
 
-        if(beforeFilters == null) {
+        if (beforeFilters == null) {
             beforeFilters = new ArrayList<Handler<R>>();
         }
         this.beforeFilters = beforeFilters;
         this.mainHandler = mainHandler;
 
-        if(afterFilters == null) {
+        if (afterFilters == null) {
             afterFilters = new ArrayList<Handler<R>>();
         }
         this.afterFilters = afterFilters;
 
-        if(acceptedContentTypes == null) {
+        if (acceptedContentTypes == null) {
             acceptedContentTypes = new HashSet<>();
         }
 
         this.acceptedContentTypes = new HashSet<String>();
-        for(String acceptedContentType : acceptedContentTypes) {
-            if(acceptedContentType != null) {
+        for (String acceptedContentType : acceptedContentTypes) {
+            if (acceptedContentType != null) {
                 this.acceptedContentTypes.add(acceptedContentType.toLowerCase());
             }
         }
 
-        if(filterIdsToSkip == null) {
+        if (filterIdsToSkip == null) {
             filterIdsToSkip = new HashSet<String>();
         }
         this.filterIdsToSkip = filterIdsToSkip;
@@ -123,8 +118,8 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     }
 
     @Override
-    public List<Integer> getPositions() {
-        return this.positions;
+    public int getPosition() {
+        return this.position;
     }
 
     @Override
@@ -134,7 +129,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
 
     @Override
     public String toString() {
-        return "[" + StringUtils.join(getPositions(), ",") + "] " + getPath();
+        return "[" + getPosition() + "] " + getPath();
     }
 
 }

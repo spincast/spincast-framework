@@ -50,7 +50,6 @@ import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
@@ -301,29 +300,27 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
         validatePath(route.getPath());
 
-        List<Integer> positions = route.getPositions();
-        for (int position : positions) {
-            if (position < 0) {
-                this.globalBeforeFilters = null; // reset cache
-                List<Route<R>> routes = getGlobalBeforeFiltersPerPosition().get(position);
-                if (routes == null) {
-                    routes = new ArrayList<Route<R>>();
-                    getGlobalBeforeFiltersPerPosition().put(position, routes);
-                }
-                routes.add(route);
-
-            } else if (position == 0) {
-                // Keep main routes in order they are added.
-                getMainRoutes().add(route);
-            } else {
-                this.globalAfterFilters = null; // reset cache
-                List<Route<R>> routes = getGlobalAfterFiltersPerPosition().get(position);
-                if (routes == null) {
-                    routes = new ArrayList<Route<R>>();
-                    getGlobalAfterFiltersPerPosition().put(position, routes);
-                }
-                routes.add(route);
+        int position = route.getPosition();
+        if (position < 0) {
+            this.globalBeforeFilters = null; // reset cache
+            List<Route<R>> routes = getGlobalBeforeFiltersPerPosition().get(position);
+            if (routes == null) {
+                routes = new ArrayList<Route<R>>();
+                getGlobalBeforeFiltersPerPosition().put(position, routes);
             }
+            routes.add(route);
+
+        } else if (position == 0) {
+            // Keep main routes in order they are added.
+            getMainRoutes().add(route);
+        } else {
+            this.globalAfterFilters = null; // reset cache
+            List<Route<R>> routes = getGlobalAfterFiltersPerPosition().get(position);
+            if (routes == null) {
+                routes = new ArrayList<Route<R>>();
+                getGlobalAfterFiltersPerPosition().put(position, routes);
+            }
+            routes.add(route);
         }
     }
 
@@ -1029,6 +1026,11 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
+    public RouteBuilder<R> GET() {
+        return GET(DEFAULT_ROUTE_PATH);
+    }
+
+    @Override
     public RouteBuilder<R> GET(String path) {
 
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
@@ -1036,6 +1038,11 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         builder = builder.path(path);
 
         return builder;
+    }
+
+    @Override
+    public RouteBuilder<R> POST() {
+        return POST(DEFAULT_ROUTE_PATH);
     }
 
     @Override
@@ -1048,12 +1055,22 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
+    public RouteBuilder<R> PUT() {
+        return PUT(DEFAULT_ROUTE_PATH);
+    }
+
+    @Override
     public RouteBuilder<R> PUT(String path) {
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.PUT();
         builder = builder.path(path);
 
         return builder;
+    }
+
+    @Override
+    public RouteBuilder<R> DELETE() {
+        return DELETE(DEFAULT_ROUTE_PATH);
     }
 
     @Override
@@ -1066,12 +1083,22 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
+    public RouteBuilder<R> OPTIONS() {
+        return OPTIONS(DEFAULT_ROUTE_PATH);
+    }
+
+    @Override
     public RouteBuilder<R> OPTIONS(String path) {
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.OPTIONS();
         builder = builder.path(path);
 
         return builder;
+    }
+
+    @Override
+    public RouteBuilder<R> TRACE() {
+        return TRACE(DEFAULT_ROUTE_PATH);
     }
 
     @Override
@@ -1084,12 +1111,22 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
+    public RouteBuilder<R> HEAD() {
+        return HEAD(DEFAULT_ROUTE_PATH);
+    }
+
+    @Override
     public RouteBuilder<R> HEAD(String path) {
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.HEAD();
         builder = builder.path(path);
 
         return builder;
+    }
+
+    @Override
+    public RouteBuilder<R> PATCH() {
+        return PATCH(DEFAULT_ROUTE_PATH);
     }
 
     @Override
@@ -1102,12 +1139,22 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
+    public RouteBuilder<R> ALL() {
+        return ALL(DEFAULT_ROUTE_PATH);
+    }
+
+    @Override
     public RouteBuilder<R> ALL(String path) {
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.ALL();
         builder = builder.path(path);
 
         return builder;
+    }
+
+    @Override
+    public RouteBuilder<R> SOME(HttpMethod... httpMethods) {
+        return SOME(DEFAULT_ROUTE_PATH, httpMethods);
     }
 
     @Override
@@ -1121,6 +1168,11 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
+    public RouteBuilder<R> SOME(Set<HttpMethod> httpMethods) {
+        return SOME(DEFAULT_ROUTE_PATH, httpMethods);
+    }
+
+    @Override
     public RouteBuilder<R> SOME(String path, Set<HttpMethod> httpMethods) {
 
         if (httpMethods == null || httpMethods.size() == 0) {
@@ -1130,80 +1182,6 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
         builder = builder.SOME(httpMethods);
         builder = builder.path(path);
-
-        return builder;
-    }
-
-    @Override
-    public RouteBuilder<R> before() {
-        return before(DEFAULT_ROUTE_PATH);
-    }
-
-    @Override
-    public RouteBuilder<R> before(String path) {
-
-        RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
-        builder = builder.ALL();
-        builder = builder.pos(getBeforeFilterDefaultPosition());
-        builder = builder.path(path);
-        builder = addFilterDefaultRoutingTypes(builder);
-
-        return builder;
-    }
-
-    protected int getBeforeFilterDefaultPosition() {
-        return -10;
-    }
-
-    protected int getAfterFilterDefaultPosition() {
-        return 10;
-    }
-
-    @Override
-    public RouteBuilder<R> after() {
-        return after(DEFAULT_ROUTE_PATH);
-    }
-
-    @Override
-    public RouteBuilder<R> after(String path) {
-        RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
-        return after(builder, path);
-    }
-
-    protected RouteBuilder<R> after(RouteBuilder<R> builder, String path) {
-        builder = builder.ALL();
-        builder = builder.pos(getAfterFilterDefaultPosition());
-        builder = builder.path(path);
-        builder = addFilterDefaultRoutingTypes(builder);
-
-        return builder;
-    }
-
-    @Override
-    public RouteBuilder<R> beforeAndAfter() {
-        return beforeAndAfter(DEFAULT_ROUTE_PATH);
-    }
-
-    @Override
-    public RouteBuilder<R> beforeAndAfter(String path) {
-        RouteBuilder<R> builder = before(path);
-        return after(builder, path);
-    }
-
-    protected RouteBuilder<R> addFilterDefaultRoutingTypes(RouteBuilder<R> builder) {
-
-        Set<RoutingType> defaultRoutingTypes = getSpincastRouterConfig().getFilterDefaultRoutingTypes();
-        for (RoutingType routingType : defaultRoutingTypes) {
-            if (routingType == RoutingType.FOUND) {
-                builder.found();
-            } else if (routingType == RoutingType.NOT_FOUND) {
-                builder.notFound();
-            } else if (routingType == RoutingType.EXCEPTION) {
-                builder.exception();
-            } else {
-                throw new RuntimeException("Not managed : " + routingType);
-            }
-        }
 
         return builder;
     }
@@ -1691,7 +1669,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                   null,
                                                   staticResource.getGenerator(),
                                                   saveResourceFilter != null ? Arrays.asList(saveResourceFilter) : null,
-                                                  Sets.newHashSet(0),
+                                                  0,
                                                   null,
                                                   null);
 
@@ -1819,12 +1797,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             }
 
             @Override
-            public List<Integer> getPositions() {
+            public int getPosition() {
 
                 //==========================================
                 // Websocket routes can't be used as filters.
                 //==========================================
-                return Lists.newArrayList(0);
+                return 0;
             }
 
             @Override
@@ -1841,5 +1819,6 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         RedirectRuleBuilder builder = getRedirectRuleBuilderFactory().create(this, oldPath);
         return builder;
     }
+
 
 }

@@ -167,7 +167,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
                 context.response().addCookie("name3", "val3");
 
-                context.response().deleteAllCookies();
+                context.response().deleteAllCookiesUserHas();
             }
         });
 

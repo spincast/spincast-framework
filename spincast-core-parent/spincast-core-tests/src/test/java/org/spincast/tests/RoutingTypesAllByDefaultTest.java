@@ -21,7 +21,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void notFoundWithOneInvalidOneValidFilter() throws Exception {
 
-        getRouter().GET("/*{param}").pos(-1).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).exception().save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -29,7 +29,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().before("/*{param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -47,7 +47,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesFoundSplat() throws Exception {
 
-        getRouter().before("/nope").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/nope").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -55,7 +55,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().before("/*{param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -81,7 +81,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesFoundNotRouteType() throws Exception {
 
-        getRouter().before("/*{param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -115,7 +115,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesNotFoundSplat() throws Exception {
 
-        getRouter().before("/nope").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/nope").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -123,7 +123,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().before("/*{param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -149,7 +149,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesNotFoundNotRouteType() throws Exception {
 
-        getRouter().before("/*{param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -191,7 +191,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void foundSpecifiedTypesBefore() throws Exception {
 
-        getRouter().before("/*{param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -334,80 +334,6 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("okABEF", response.getContentAsString());
-    }
-
-    @Test
-    public void specifiedTypesBeforeAndAfter() throws Exception {
-
-        getRouter().beforeAndAfter("/*{param}").save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("A");
-            }
-        });
-
-        getRouter().GET("/*{param}").pos(-10).pos(10).found().save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("B");
-            }
-        });
-
-        getRouter().GET("/*{param}").pos(-10).pos(10).notFound().save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("C");
-            }
-        });
-
-        getRouter().GET("/*{param}").pos(-10).pos(10).exception().save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("D");
-            }
-        });
-
-        getRouter().GET("/*{param}").pos(-10).pos(10).found().notFound().save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("E");
-            }
-        });
-
-        getRouter().GET("/*{param}").pos(-10).pos(10).found().exception().save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("F");
-            }
-        });
-
-        getRouter().GET("/*{param}").pos(-10).pos(10).notFound().exception().save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("G");
-            }
-        });
-
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText("ok");
-            }
-        });
-
-        HttpResponse response = GET("/").send();
-
-        assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("ABEFokABEF", response.getContentAsString());
     }
 
 }

@@ -620,7 +620,7 @@ router.GET("/users/${userId}").notFound().json().xml().save(usersController::use
         </p> 
         <p>
             You can declare a <code>Filter</code> exactly like you would declare a
-            standard Route, but using the extra "<code><em>position</em></code>" property! The
+            standard Route, but using the extra "<code><em>pos</em></code>" ("position") property! The
             <code>Filter</code>'s position indicate <em>when</em> the <code>Filter</code> should be run. The lower
             that position number is, the sooner the <code>Filter</code> will run. Note that the 
             <code>main Route Handlers</code> are considered as having a position of <code>"0"</code>, so <code>Filters</code>
@@ -641,45 +641,13 @@ router.GET("/").pos(-3).save(ctl::filter1);
 // will be run second.
 router.GET("/").pos(-1).save(ctl::filter2);
 
-// This is not aFilter, it's a main Route Handler 
+// This is not a Filter, it's a main Route Handler 
 // and the ".pos(0)" part is superfluous!
 router.GET("/").pos(0).save(ctl::mainHandler);
 
 // This Filter is an "after" Filter and will run
 // after the main Route Handler
 router.GET("/").pos(100).save(ctl::filter3);
-</pre> 
-                </p>
-            </div>
-        </p>  
-        <p>
-            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            There are some shortcuts that you can use if you don't need to
-            specify fine grain information and just want to add a quick "before"
-            or "after" Filter :
-        </p> 
-        <p>
-            <div>
-                <p>
-                    <pre class="ace ace-java"
->
-// Will be applied to any request, at position "-10".
-// Synonym of : router.ALL("/*{path}").pos(-10).save(ctl::filter)
-router.before().save(ctl::filter);
-
-// Will be applied to any request starting with "/users", 
-// at position "-10".
-// Synonym of : router.ALL("/users").pos(-10).save(ctl::filter)
-router.before("/users").save(ctl::filter);
-
-// Will be applied to any request, at position "10".
-// Synonym of : router.ALL("/*{path}").pos(10).save(ctl::filter)
-router.after().save(ctl::filter);
-
-// This actually generates *two* Filters.
-// They will be applied to any request, both at
-// position "-10" and at position "10".
-router.beforeAndAfter().save(ctl::filter);
 </pre> 
                 </p>
             </div>
@@ -695,10 +663,10 @@ router.beforeAndAfter().save(ctl::filter);
                 <p>
                     <pre class="ace ace-java"
 >
-// This "myFilter" Filter will be applied on all Route by default
-router.before().id("myFilter").save(ctl::filter);
+// This "myFilter" Filter will be applied on all Routes by default
+router.ALL().pos(-100).id("myFilter").save(ctl::filter);
 
-// ... but this one disables it!
+// ... but this Route disables it!
 router.GET("/test").skip("myFilter").save(ctl::testHandler);
 </pre> 
                 </p>
@@ -707,7 +675,8 @@ router.GET("/test").skip("myFilter").save(ctl::testHandler);
         <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             You can also add inline Filters that are run only on
-            <em>on a specific Route</em> :
+            <em>on a specific Route</em>, using the <code>before()</code> and
+            <code>after()</code> methods :
         </p>  
         <p>
             <div>
@@ -863,7 +832,7 @@ router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").save();
         <p>
         	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Be aware that since requests for Static Resources don't reach the framework, <em>Filters don't apply to them</em>! Even a
-            "catch all" Filter such as <code>router.ALL("/*{path}").pos(-1).save(handler)</code> 
+            "catch all" Filter such as <code>router.ALL().pos(-1).save(handler)</code> 
             won't be applied...
         </p> 
         <p>

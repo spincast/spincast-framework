@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.spincast.core.cookies.Cookie;
+import org.spincast.core.exceptions.RedirectException;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -177,6 +178,39 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+    }
+
+    @Test
+    public void getWithAddHeaderValueAndRedirectException() throws Exception {
+
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                assertEquals("", context.request().getBodyAsString());
+                assertEquals("test", context.request().getHeaderFirst("test-header"));
+                assertEquals("test2", context.request().getHeaderFirst("test-header2"));
+
+                throw new RedirectException("/test", true);
+            }
+        });
+
+        getRouter().GET("/test").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+                context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED).sendPlainText(SpincastTestUtils.TEST_STRING);
+            }
+        });
+
+        HttpResponse response = GET("/").addHeaderValue("test-header", "test")
+                                        .addHeaderValue("test-header2", "test2")
+                                        .send();
+
+        assertEquals(HttpStatus.SC_EXPECTATION_FAILED, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
     }

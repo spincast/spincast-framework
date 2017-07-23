@@ -163,7 +163,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
             }
         };
 
-        getRouter().before("/*{path}").save(beforeFilter);
+        getRouter().ALL("/*{path}").pos(-10).save(beforeFilter);
 
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 
@@ -243,7 +243,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
                 fail();
             }
         };
-        getRouter().after("/*{path}").save(afterFilter);
+        getRouter().ALL("/*{path}").pos(10).save(afterFilter);
 
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()));
 
@@ -267,7 +267,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
                 filterCalled[0] = true;
             }
         };
-        getRouter().after("/*{path}").save(afterFilter);
+        getRouter().ALL("/*{path}").pos(10).save(afterFilter);
 
         getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
 

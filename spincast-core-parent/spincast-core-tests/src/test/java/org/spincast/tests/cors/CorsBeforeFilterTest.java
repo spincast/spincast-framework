@@ -36,7 +36,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void corsFilterButNoCorsHeaders() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -78,7 +78,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void sameOriginWithCorsHeaders() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -122,7 +122,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void corsFilterDefault() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -172,7 +172,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void corsFilterSpecificOriginOnlyValid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -224,7 +224,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void corsFilterSpecificOriginOnlyInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -269,7 +269,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void corsFilterSpecificOriginOnlyInvalidProtocole() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -314,7 +314,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void extraHeadersAllowedToBeRead() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -368,7 +368,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void noCookies() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -423,7 +423,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void allowedMethodsNotIncludedInSimpleCorsRequests() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -480,7 +480,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void simpleRequestWithPost() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -539,7 +539,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
         final boolean[] inHandler = new boolean[]{false};
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -597,7 +597,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightDefault() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -652,7 +652,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightNoMainHandler() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -699,7 +699,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightDefaultAllExtraHeadersToBeSentAreAllowed() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -757,7 +757,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightSpecificOriginValid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -814,7 +814,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightSpecificOriginInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -860,7 +860,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightExtraHeadersToBeSentValid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -923,7 +923,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightExtraHeadersToBeSentWildcard() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -989,7 +989,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightExtraHeadersToSentInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1039,7 +1039,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightRequestForExtraHeadersToBeSentButNoneAllowed() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1091,7 +1091,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflighNoCookies() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1152,7 +1152,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightHttpMethodsValid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1215,7 +1215,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightHttpMethodsInvalid() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1266,7 +1266,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightMaxAge() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1330,7 +1330,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightMaxAgeZero() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1393,7 +1393,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightMaxAgeLessThanZero() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1456,7 +1456,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void wildcardNotValidWhenThereAreCookies() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1515,7 +1515,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void preflightNoOptionsMethod() throws Exception {
 
         // Cors filter
-        getRouter().before().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1567,7 +1567,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     }
 
     /**
-     * By default "before()" will work to define a Cors filter
+     * By default the position "-1" will work to define a Cors filter
      * because it applies to all route types.
      * 
      * But if we add the Cors filter only for the "Normal"
@@ -1577,7 +1577,7 @@ public class CorsBeforeFilterTest extends NoAppStartHttpServerTestingBase {
     public void corsOnlyOnFoundRoutingTypeFails() throws Exception {
 
         // Cors filter
-        getRouter().ALL("/*{path}").pos(-1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(-1).found().save(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

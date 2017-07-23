@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -459,7 +460,11 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // Calls the "handle()" method on each handlers.
         //==========================================
-        for (RouteHandlerMatch<R> routeHandlerMatch : routingResult.getRouteHandlerMatches()) {
+        List<RouteHandlerMatch<R>> routeHandlerMatches = routingResult.getRouteHandlerMatches();
+
+        for (int i = 0; i < routeHandlerMatches.size(); i++) {
+
+            RouteHandlerMatch<R> routeHandlerMatch = routeHandlerMatches.get(i);
 
             requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH,
                                            routeHandlerMatch);
@@ -476,10 +481,22 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 manageForwardRouteException(ex, requestContext, routingResult);
                 return;
             } catch (RedirectException ex) {
+
                 manageRedirectException(ex, requestContext, routingResult);
-                break;
+
+                //==========================================
+                // We skip the remaining handlers, 
+                // we only run the *after* filters.
+                //==========================================
+                for (; i < routeHandlerMatches.size(); i++) {
+                    routeHandlerMatch = routeHandlerMatches.get(i);
+                    if (routeHandlerMatch.getPosition() > 0) {
+                        i--;
+                        break;
+                    }
+                }
             } catch (SkipRemainingHandlersException ex) {
-                // We run nothing more!
+                // nothing more!
                 break;
             }
         }
