@@ -11,7 +11,7 @@ Docs : "Forms"
         This section is about <em>HTML Forms</em>, as used on <a href="#quick_tutorial_traditional">traditional websites</a>.
         If you use a <a href="#quick_tutorial_spa">SPA</a> client-side, you in general don't use such
         POSTed forms, you rather use javascript to send and receive <code>Json</code> objects. 
-        Both approach are supported out of the box by Spincast but this specific section is about
+        Both approaches are supported out of the box by Spincast but this specific section is about
         traditional <code>HTML</code> forms and their validation! 
     </p>
     <p>
@@ -19,253 +19,209 @@ Docs : "Forms"
 
         <ul>
             <li>
-                How to populate a form and bind its fields to an underlying <code>form model</code>.
+                How to populate a form and bind its fields to an underlying <code>Form</code> object.
             </li>
             <li>
                 How to validate a form that has been submitted.
             </li>
             <li>
-                How to redisplay a validated form with <a href="#validation_messages">Validation Messages</a>.
+                How to redisplay a validated form with resulting <code>validation messages</code>.
             </li>
         </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        A form always has a backing <code>model</code> to represent its data. This form
+        model is sometimes called <em>"form backing object"</em>, <em>"form backing bean"</em>
+        or <em>"command object"</em>. It's the object used to transfer the values
+        of a form from the server to the client (to populate the form's fields) and vice versa. 
+    </p>
+    <p>
+        On the server-side, this form model is represented using the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/request/Form.html">Form</a> class.
+        A <code>Form</code> object is simply a <a href="#jsonobject">JsonObject</a>
+        <em>with extra validation features</em>! You can manipulate a <code>Form</code> 
+        object exactly as a <code>JsonObject</code> and even cast it as one.
     </p>
     
     <h4>
-        <a class="anchor_small" href="#forms_model" id="forms_model" title="permanent link"></a>
-        The form model 
+        <a class="anchor_small" href="#forms_validation_pattern" id="forms_validation_pattern" title="permanent link"></a>
+        The validation pattern
     </h4>
     <p>
-        You need to prepare a <code>model</code> to back the form you are going to display. This 
-        model is sometimes called <em>"form backing object"</em>, <em>"form backing bean"</em>
-        or <em>"command object"</em>. It's the object used to transfert the values
-        of a form from the server to the client (to populate the form's fields) and vice versa.
+        The <em>validation pattern</em> shows how you create a form to 
+        be displayed, validate the form when it is submitted, and 
+        redisplay it again, with validation messages, if it is invalid...
     </p>
     <p>
-        You create that form model as a <a href="#jsonobject">JsonObject</a> and you add it to the 
-        <a href="#sending_response_model">response model</a>, the root object the 
-        <a href="#templating_engine">Templating Engine</a> has access to. For example :
-        <div>
-            <p>
-                <pre class="ace ace-java"
+        First, let's start with the <code>GET</code> handler, which is the one called to display a form
+        for the first time :
+        <p>      
+            <div>
+                <p>
+                    <pre class="ace ace-java"
 >
-public void displayUserForm(AppRequestContext context) {
 
-    // Creates a JsonObject as the the model for the form
-    JsonObject userForm = context.json().create();
-    
-    // ... populates it with inital values, 
-    // if required
-    userForm.put("email", "test@example.com");
+// GET handler
+public void myHandlerGet(AppRequestContext context) {
 
-    // Adds the form model to the response model
-    context.response().getModel().put("userForm", userForm);
+    JsonObject form = context.response().getModel().getJsonObject("userForm");
+    if (form == null) {
+        form = context.json().create();
+        context.response().getModel().put("userForm", form);
+        
+        User user = getUser(...);
+        form.put("name", user.getName());
+    }
     
-    // Displays the form using a HTML template
-    context.response().sendTemplateHtml("/templates/userCreationTemplate.html");
-}</pre> 
-            </p>
-        </div>
+    context.response().sendTemplateHtml("/templates/userEdit.html");
+}
+</pre> 
+                </p>
+                <p>
+                    <span class="explanation">Explanation :</span>
+                    <ul>
+                        <li>
+                            <span class="code-line-nbr">5</span> : We check if the form already exist
+                            in the response model.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">7</span> : If the form doesn't exist yet, we create
+                            it as a simple <code>JsonObject</code>.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">8</span> : We add the form to the response model, so it
+                            is available to the templating engine.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">10-11</span> : We populate the form with the initial values,
+                            if required.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">14</span> : We send the response by evaluating a template which will
+                            display the form.
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </p>
     </p>
     <p>
-        You can then use this form model to populate fields, in the template. For example :
-        
-        <div>
-            {% verbatim %}
-            <p>
-                <pre class="ace ace-pebble" data-ace-hi="3,20,3,34"
->&lt;form method="post"&gt;
-    &lt;input type="text" 
-           name="userForm.email"
-           value="{{userForm.email}}" /&gt;
-    //...
-&lt;/form&gt;</pre> 
-            </p>
-            {% endverbatim %}
-        </div>
-    </p>
-    
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        When the form is submitted, you get back its model
-        using the <code>context.request().getFormData()</code>
-        method, in your <code>Route Handler</code>. We will see this in details in the
-        <a href="#forms_validation_data">Getting the submitted form data</a> section,
-        but here's a quick example :
-        
-        <div>
-            <p>
-                <pre class="ace ace-java"
+        When the form is submitted, we retrieve its data inside a <code>POST</code> handler:
+       <p>      
+            <div>
+                <p>
+                    <pre class="ace ace-java"
 >
-public void manageUserForm(AppRequestContext context) {
 
-    // Gets the submitted form model
-    JsonObject userForm = context.request()
-                                 .getFormData()
-                                 .getJsonObject("userForm");
-                                 
-   // ...
-}</pre> 
-            </p>
-        </div>
+// POST handler
+public void myHandlerPost(AppRequestContext context) {
+
+    Form form = context.request().getForm("userForm");
+    context.response().addForm(form);
+    
+    validateForm(form);
+    
+    if (!form.isValid()) {
+        myHandlerGet(context);
+        return;
+    } else {
+
+        processForm(form);
+        
+        context.response().redirect("/success",
+                                    FlashMessageLevel.SUCCESS,
+                                    "The user has been processed!");
+    }
+}
+</pre> 
+                </p>
+                <p>
+                    <span class="explanation">Explanation :</span>
+                    <ul>
+                        <li>
+                            <span class="code-line-nbr">5</span> : We retrieve the posted form from the request.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">6</span> : We immediately add the form to the response model.
+                            This will make the form available to the templating engine but will also provide a
+                            "validation" element containing any validation messages to display.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">8</span> : We <a href="#forms_validation_intro">validate the form </a>and 
+                            add error, warning or success validation messages to it.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">10</span> : Once the validation is done, we check if the form is valid.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">11-12</span> : if the form contains errors, we simply call the <code>GET</code>
+                            handler so the form is displayed again, with the validation messages we added to it.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">15</span> : if the form is valid, we process it. This may involve calling
+                            services, editing entities, etc.
+                        </li>
+                        <li>
+                            <span class="code-line-nbr">17-19</span> : we redirect the page with a <a href="#flash_messages">Flash message</a>
+                            to indicate that the form was processed successfully!
+                        </li>
+                        
+                        
+                    </ul>
+                </p>
+            </div>
+        </p>
     </p>
-
     <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        You may have noticed that we are not using a <em>dedicated class</em> to represent the form 
-        model (a <code>"UserForm"</code> class, for example) : we use a dynamic <code>JsonObject</code>.
-        Spincast supports both approaches, but we think a dynamic <code>JsonObject</code>
-        is better for the model of a form. Here's why&nbsp;:
-
-        <ul>
-            <li>
-                <p>
-                    You may be thinking about reusing an existing <em>Entity</em> class for the model of your form. 
-                    For example, you may want to use an existing <code>"User"</code> Entity class for the model of a form
-                    dedicated to the creation of a new user. This seems logical at first since a lot
-                    of fields on the form would have a matching field on that <code>User</code> Entity class...
-                    But, in  practice, it's very rare that an existing <em>Entity</em> class contains <em>all</em> the fields
-                    required to model the form.
-                </p>
-                <p>
-                    Let's say our form has a <code>"name"</code> field and a <code>"email"</code> field and uses those to create
-                    a new user : those fields would probably indeed have matching fields on a <code>"User"</code> Entity. 
-                    But what about a <em>captcha</em>? Or an option to <em>"subscribe to our newsletter"</em>? Those two 
-                    fields on the form have nothing to do with a <code>"user"</code>
-                    and there won't be matching fields for them on a <code>"User"</code> Entity class...
-                    So, what you do then? You have to create a new class that contains <em>all</em> the required
-                    fields. For that, you may be tempted to <em>extend</em> the <code>"User"</code> Entity and simply add 
-                    the missing fields, but our opinion is that this is hackish at best and clearly not a good
-                    practice.
-                </p>
-            </li>
-            <li>
-                <p>
-                    You may also feel that using a dedicated class for such form model is more robust, since that model
-                    is then <em>typed</em>. We understand this feeling since we're huge fans of statically typed code! But, 
-                    <em>for this particular component</em>, for the model of a form, our opinion is that a 
-                    dedicated class is not very beneficial...
-                </p>
-                <p>
-                    As soon as your form model leaves your controller, it
-                    is pretty much converted to a simple and dumb <code>Map&lt;String, Object&gt;</code>, so the <code>Templating Engine</code>
-                    can use it easily. At that moment, your typed form model is no more!
-                    And, at the end of the day, the model becomes plain <code>HTML</code> fields : nothing
-                    is typed there either.
-                </p>
-                <p>
-                    In other words, if you use a dedicated class for your form model, this model is going to be
-                    typed for a very short period, and we feel this doesn't worth the effort. That said, when your form
-                    has been validated and everything is fine, <em>then</em> you may want to convert the
-                    <code>JsonObject</code> model to a dedicated <code>Entity</code> class and pass it to 
-                    services, repositories, etc.
-                </p>
-            </li>
-            <li>
-                Last but not least : using an existing <code>Entity</code> class as a form model can lead to
-                <a href="/public/varia/ounce_springframework_vulnerabilities.pdf" target="_blank">security vulnerabilities</a> (<code>PDF</code>)
-                if you are not careful.
-            </li>
-        </ul>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        The important part to understand is how the <code>GET</code> handler first checks in the response model
+        to see if the form already exists in it... Indeed, this handler may be called by the <code>POST</code> handler if
+        a posted form is invalid... When it's the case, you do not want to populate the form with some default/initial
+        values, you want to keep the submitted values!
     </p>
-    <p> 
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        In case you still want to use a dedicated class to back your form, you are free to do so,
-        and here's a quick example.... First, you would create a dedicated class for the model :
-        
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public class UserCreationForm {
-    
-    private String username;
-    private String email;
-    private String captcha;
-    
-    //... Getters
-    //... Setters
-}</pre> 
-            </p>
-        </div>
-        
-        You would then create a model instance like so :
-     
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public void displayUserForm(AppRequestContext context) {
-
-    // A typed form model
-    UserCreationForm userForm = new UserCreationForm();
-    
-    // ... that is quickly converted to a 
-    // JsonObject anyway when added to the response model!
-    context.response().getModel().put("userForm", userForm);
-    
-    sendMyTemplate();
-}</pre> 
-            </p>
-        </div>
-    </p>
-    <p> 
-        When the form is submitted, you would then convert <code>context.request().getFormData()</code>,
-        which is a <code>JsonObject</code>, to an instance of your 
-        <code>UserCreationForm</code> class :
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="6,39,6,71"
->public void manageUserForm(AppRequestContext context) {
-
-    // Back to a typed version of the form model!
-    UserCreationForm userForm = context.request()
-                                       .getFormData()
-                                       .getJsonObject("userForm")
-                                       .convert(UserCreationForm.class);
-                                       
-   // ...
-}</pre> 
-            </p>
-        </div>
-    </p>
-
     <h4>
         <a class="anchor_small" href="#forms_displaying" id="forms_displaying" title="permanent link"></a>
         Displaying the Form
     </h4>
     <p>
-        By using a dynamic <code>JsonObject</code> as the form model, a benefit is 
-        that we don't have to create <em>in advance</em> all the elements required 
-        to match the fields of our <code>HTML</code> form. Simply by using a valid
+        By using a dynamic <code>JsonObject</code>/<code>Form</code> object as the form model, a benefit is 
+        that you don't have to create <em>in advance</em> all the elements required 
+        to match the fields of the <code>HTML</code> form. Simply by using a valid
         <a href="#jsonobject_jsonpaths">JsonPath</a> as the <code>"name"</code> attribute of a
-        field, the element will automatically be created on the form model...
+        field, the element will automatically be created on the form model.
     </p>
     <p>
-        As an example, let's again use a form dedicated to create a user. This form will
-        display two fields : one for a <em>username</em> and one for an <em>email</em>. Our inital form
+        As an example, let's again use a form dedicated to editing a user. This form will
+        display two fields : one for a <em>username</em> and one for an <em>email</em>. Our initial form
         model <em>doesn't have to specify those two elements</em> when it is first created :
         
         <div>
             <p>
                 <pre class="ace ace-java"
 >
-public void myRouteHandler(AppRequestContext context) {
 
-    // Empty model! No username and no email 
-    // element specified...
-    JsonObject userForm = context.json().create();
+// GET handler
+public void myHandlerGet(AppRequestContext context) {
+
+    JsonObject userForm = context.response().getModel().getJsonObject("userForm");
+    if (userForm == null) {
     
-    // Adds the form model to the response model
-    context.response().getModel().put("userForm", userForm);
-
-    // Renders a template containing the user creation
-    // form
-    context.response().sendTemplateHtml("/templates/userCreationTemplate.html");
+        // Empty model! 
+        // No username and no email elements are specified.
+        userForm = context.json().create();
+        
+        context.response().getModel().put("userForm", userForm);
+    }
+    
+    context.response().sendTemplateHtml("/templates/userEdit.html");
 }</pre> 
             </p>
         </div>
     </p>
     <p>
-        Here's what that <code>HTML</code> form may looks like (we are using the syntax for
-        the default <code>Templating Engine</code>, <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>) :
+        Here's what the <code>HTML</code> for that form may look like (we are using the syntax for
+        the default <code>Templating Engine</code>, <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>):
         <div>
             {% verbatim %}
             <p>
@@ -289,61 +245,51 @@ public void myRouteHandler(AppRequestContext context) {
             {% endverbatim %}
             
             Notice that even if the form model doesn't contain any <code>"username"</code> or
-            <code>"email"</code> elements, we still bind them to the fields using their
+            <code>"email"</code> elements, we still bind them to the HTML elements using their
             <code>JsonPaths</code> [<span class="code-line-nbr">6</span>] and here [<span class="code-line-nbr">12</span>].   
-            This is possible in part because we use the <a href="http://www.mitchellbosecke.com/pebble/documentation/filter/default"><code>default("")</code></a> 
-            filter : this filter tells Pebble to use an empty string if the element doesn't exist yet (this is required if 
-            <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/basic-usage#user-content-type-safety"><code>strictVariables</code></a> is on).
+            This is possible in part because we use the <a href="http://www.mitchellbosecke.com/pebble/documentation/filter/default"><code>default('')</code></a> 
+            filter : this filter tells Pebble to use an empty string if the element doesn't exist.
         </div>
     </p>
     <p>
-        The <code>"name"</code> attributes of the fields are very important : they represent 
+        The <code>"name"</code> attributes of the HTML elements are very important : they represent 
         the <a href="#jsonobject_jsonpaths">JsonPaths</a> that Spincast is going to use to 
-        dynamically create the required elements on the model, when the form is submitted.
+        dynamically create the Form object, when the page is submitted.
     </p>
     <p>
-        Let's say this form is submitted. You would then access the values of the fields like so,
-        in your <code>Route Handler</code> :
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        So let's say this form is submitted. You would then access the values of the fields like so,
+        in your <code>POST</code> handler:
         
         <div>
             <p>
                 <pre class="ace ace-java"
 >
-public void myRouteHandler(AppRequestContext context) {
 
-    // Gets the form model
-    JsonObject userForm = context.request()
-                                 .getFormData()
-                                 .getJsonObject("userForm");
+// POST handler
+public void myHandlerPost(AppRequestContext context) {
+
+    Form userForm = context.request().getForm("userForm");
+    context.response().addForm(userForm);
     
     // The "username" and "email" elements have been
     // automatically created to represent the submitted
-    // fields!
+    // fields.
     String username = userForm.getString("username");
-    String email = userForm.getString("email");                                
+    String email = userForm.getString("email");  
+    
+    //...
 }</pre> 
-            </p>
-        </div>
-        
-        Without extracting the model of the form first, you could also reference those
-        elements <em>directly</em> using their full <code>JsonPaths</code> :
-        <div>
-            <p>
-                <pre class="ace ace-java"
->public void myRouteHandler(AppRequestContext context) {
-
-    String username = context.request().getFormData().getString("userForm.username");
-    String email = context.request().getFormData().getString("userForm.email");
-}</pre>
             </p>
         </div>
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
         As you can see, Spincast uses the <code>"name"</code> attribute
-        of a field as a <code>JsonPath</code> to dynamically create an element 
-        for the field. This gives you a lot of flexibility client-side
-        since you can dynamically generate new fields or even <em>entire new forms</em>, 
+        of an HTML element as a <code>JsonPath</code> to dynamically create an 
+        associated model element. 
+        This gives you a lot of flexibility client-side
+        since you can dynamically generate new fields or even <em>entire forms</em>, 
         using javascript.
     </p>
     
@@ -367,7 +313,7 @@ public void myRouteHandler(AppRequestContext context) {
                 and you output it in the <code>"value"</code> attribute.
             </li>
             <li>
-                You use the <code>default("")</code> filter to make sure not exception
+                You use the <code>default('')</code> filter to make sure not exception
                 is thrown if the model element doesn't exist yet.
             </li>
         </ul>
@@ -379,8 +325,8 @@ public void myRouteHandler(AppRequestContext context) {
             <p>
                 <pre class="ace ace-pebble"
 >&lt;input type="text" 
-       name="user.email"
-       value="{{user.email | default('')}}" /&gt;</pre> 
+       name="userForm.email"
+       value="{{userForm.email | default('')}}" /&gt;</pre> 
             </p>
             {% endverbatim %}
         </div>
@@ -392,7 +338,7 @@ public void myRouteHandler(AppRequestContext context) {
     </h4>
     <p>
         Sometimes we want multiple text fields <em>to be grouped together</em>. For example, let's say we
-        want various <code>"tags"</code> to be associated with an <code>"article"</code> object. Each of those
+        want various <code>"tags"</code> to be associated with an <code>"articleForm"</code> object. Each of those
         <code>"tags"</code> will have its own dedicated field on the form, but we want all the <code>"tags"</code> to 
         be available <em>as a single array</em> when they are submitted. To achieve that :
         
@@ -400,29 +346,29 @@ public void myRouteHandler(AppRequestContext context) {
             <li>
                 We use the same <code>"name"</code> attribute for every field, but we suffix this name with the 
                 position of the tag inside the final array.
-                For example : <code>"article.tags[0]"</code> or <code>"article.tags[1]"</code> 
+                For example : <code>"articleForm.tags[0]"</code> or <code>"articleForm.tags[1]"</code> 
             </li>
             <li>
                 We also use that same <code>"[X]"</code> suffixed name to get and display the <code>"value"</code> 
                 attributes.  
             </li>
         </ul>
-        What we are doing, in fact, is to use the <code><em>JsonPath</em></code> to target each element!
+        What we are doing, again, is to use the <code><em>JsonPath</em></code> to target each element!
         For example :
         
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="1,50,1,65|2,20,2,35|4,50,4,65|5,20,5,35|7,50,7,65|8,20,8,35"
+                <pre class="ace ace-pebble" data-ace-hi="1,50,1,69|2,20,2,39|4,50,4,69|5,20,5,39|7,50,7,69|8,20,8,39"
 >&lt;form method="post"&gt;
-    &lt;input type="text" class="form-control" name="article.tags[0]"
-           value="{{article.tags[0] | default('')}}" /&gt;
+    &lt;input type="text" class="form-control" name="articleForm.tags[0]"
+           value="{{articleForm.tags[0] | default('')}}" /&gt;
     
-    &lt;input type="text" class="form-control" name="article.tags[1]"
-           value="{{article.tags[1] | default('')}}"&gt;
+    &lt;input type="text" class="form-control" name="articleForm.tags[1]"
+           value="{{articleForm.tags[1] | default('')}}"&gt;
     
-    &lt;input type="text" class="form-control" name="article.tags[2]"
-           value="{{article.tags[2] | default('')}}"&gt;
+    &lt;input type="text" class="form-control" name="articleForm.tags[2]"
+           value="{{articleForm.tags[2] | default('')}}"&gt;
     &lt;input type="submit" /&gt;
 &lt;/form&gt;</pre> 
             </p>
@@ -439,14 +385,15 @@ public void myRouteHandler(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void manageArticle(AppRequestContext context) {
 
-    JsonObject model = context.request().getFormData();
-    
+    Form form = context.request().getForm("articleForm");
+    context.response().addForm(form);
+
     // Get all the tags of the article, as an array
-    JsonArray tags = model.getJsonArray("article.tags");
+    JsonArray tags = form.getJsonArray("tags");
     
     // You could also access one of the tag directly, using
     // its full JsonPath
-    String thirdTag = model.getString("article.tags[2]");
+    String thirdTag = form.getString("tags[2]");
     
     //...
 }</pre> 
@@ -465,7 +412,7 @@ public void myRouteHandler(AppRequestContext context) {
         <ul>
             <li>
                 You specify the <code>JsonPath</code> of the associated element in the
-                <code>"name"</code> attribute of the <code>select</code> field.
+                <code>"name"</code> attribute of the <code>select</code> HTML element.
             </li>
             <li>
                 For every <code>option</code> elements of the field you
@@ -479,13 +426,13 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="1,14,1,27|3,27,3,65"
+                <pre class="ace ace-pebble" data-ace-hi="1,14,1,31|3,27,3,69"
 >
 
-&lt;select name="user.favDrink" class="form-control"&gt;
-    &lt;option value="tea" {{user.favDrink | selected("tea")}}&gt;Tea&lt;/option&gt;
-    &lt;option value="coffee" {{user.favDrink | selected("coffee")}}&gt;Coffee&lt;/option&gt;
-    &lt;option value="beer" {{user.favDrink | selected("beer")}}&gt;WBeer&lt;/option&gt;
+&lt;select name="userForm.favDrink" class="form-control"&gt;
+    &lt;option value="tea" {{userForm.favDrink | selected("tea")}}&gt;Tea&lt;/option&gt;
+    &lt;option value="coffee" {{userForm.favDrink | selected("coffee")}}&gt;Coffee&lt;/option&gt;
+    &lt;option value="beer" {{userForm.favDrink | selected("beer")}}&gt;WBeer&lt;/option&gt;
 &lt;/select&gt;</pre> 
             </p>
             {% endverbatim %}
@@ -500,9 +447,9 @@ public void myRouteHandler(AppRequestContext context) {
             {% verbatim %}
             <p>
                 <pre class="ace ace-pebble"
->&lt;select name="user.favDrink" class="form-control"&gt;
+>&lt;select name="userForm.favDrink" class="form-control"&gt;
     {% for drink in allDrinks %}
-        &lt;option value="{{drink.id}}" {{user.favDrink | selected(drink.id)}}&gt;{{drink.name}}&lt;/option&gt;
+        &lt;option value="{{drink.id}}" {{userForm.favDrink | selected(drink.id)}}&gt;{{drink.name}}&lt;/option&gt;
     {% endfor %}
 &lt;/select&gt;</pre> 
             </p>
@@ -512,7 +459,7 @@ public void myRouteHandler(AppRequestContext context) {
     <p>
         In this example, the <a href="#templating_filters_selected"><code>selected(...)</code></a> filter 
         compares the current favorite <code>drink</code>
-        of the <code>user</code> (<code>"user.favDrink"</code>) to the value of every 
+        of the <code>user</code> (<code>"userForm.favDrink"</code>) to the value of every 
         <code>option</code> element and outputs the <code>"selected"</code>
         attribute if there is a match.
     </p>
@@ -539,13 +486,13 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="1,8,1,16|1,23,1,39"
+                <pre class="ace ace-pebble" data-ace-hi="1,8,1,16|1,23,1,43"
 >
 
-&lt;select multiple name="user.favDrinks[]" class="form-control"&gt;
-    &lt;option value="tea" {{user.favDrinks | selected("tea")}}&gt;Tea&lt;/option&gt;
-    &lt;option value="coffee" {{user.favDrinks | selected("coffee")}}&gt;Coffee&lt;/option&gt;
-    &lt;option value="beer" {{user.favDrinks | selected("beer")}}&gt;WBeer&lt;/option&gt;
+&lt;select multiple name="userForm.favDrinks[]" class="form-control"&gt;
+    &lt;option value="tea" {{userForm.favDrinks | selected("tea")}}&gt;Tea&lt;/option&gt;
+    &lt;option value="coffee" {{userForm.favDrinks | selected("coffee")}}&gt;Coffee&lt;/option&gt;
+    &lt;option value="beer" {{userForm.favDrinks | selected("beer")}}&gt;WBeer&lt;/option&gt;
 &lt;/select&gt;</pre> 
             </p>
             {% endverbatim %}
@@ -587,22 +534,22 @@ public void myRouteHandler(AppRequestContext context) {
     &lt;label for="drinkTea"&gt;
         &lt;input type="radio" 
                id="drinkTea" 
-               name="user.favDrink"
-               {{user.favDrink | checked("tea")}}
+               name="userForm.favDrink"
+               {{userForm.favDrink | checked("tea")}}
                value="tea"/&gt; Tea&lt;/label&gt;
     
     &lt;label for="drinkCoffee"&gt;
         &lt;input type="radio" 
                id="drinkCoffee" 
-               name="user.favDrink"
-               {{user.favDrink | checked("coffee")}}
+               name="userForm.favDrink"
+               {{userForm.favDrink | checked("coffee")}}
                value="coffee"&gt; Coffee&lt;/label&gt;
     
     &lt;label for="drinkBeer"&gt;
         &lt;input type="radio" 
                id="drinkBeer" 
-               name="user.favDrink"
-               {{user.favDrink | checked("beer")}}
+               name="userForm.favDrink"
+               {{userForm.favDrink | checked("beer")}}
                value="beer"&gt; Beer&lt;/label&gt;
 &lt;/div&gt;
 </pre> 
@@ -616,12 +563,12 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="3,17,3,30"
+                <pre class="ace ace-pebble" data-ace-hi="3,17,3,34"
 >&lt;label for="drinkTea"&gt;
     &lt;input type="radio" 
            id="drinkTea" 
-           name="user.favDrink"
-           {{user.favDrink | checked("tea")}}
+           name="userForm.favDrink"
+           {{userForm.favDrink | checked("tea")}}
            value="tea"/&gt; Tea&lt;/label&gt;</pre> 
             </p>
             {% endverbatim %}
@@ -630,8 +577,7 @@ public void myRouteHandler(AppRequestContext context) {
         As we already said, the <code>"name"</code> attribute of a field is very important. Spincast uses it
         to create the element on the form model, when the form is submitted. This <code>"name"</code>
         will become the <a href="#jsonobject_jsonpaths">JsonPath</a> of the element on the form model.
-        In our example, the model would contain a <code>"user"</code> root element with a <code>"favDrink"</code> element
-        under it.
+        In our example, the form model would contain a <code>"favDrink"</code> element.
     </p>   
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
@@ -639,21 +585,21 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="4,11,4,45"
+                <pre class="ace ace-pebble" data-ace-hi="4,11,4,49"
 >&lt;label for="drinkTea"&gt;
     &lt;input type="radio" 
            id="drinkTea" 
-           name="user.favDrink"
-           {{user.favDrink | checked("tea")}}
+           name="userForm.favDrink"
+           {{userForm.favDrink | checked("tea")}}
            value="tea"/&gt; Tea&lt;/label&gt;</pre> 
             </p>
             {% endverbatim %}
         </div>
         <p>
             We don't know in advance if a radio button should be checked or not, this depends
-            on the current value of the <code>"user.favDrink"</code> element. That's why we use
+            on the current value of the <code>"userForm.favDrink"</code> element. That's why we use
             <a href="#templating_filters_checked"><code>"checked(...)"</code></a>. This filter will compare the current
-            value of the <code>"user.favDrink"</code> model element to the value
+            value of the <code>"userForm.favDrink"</code> model element to the value
             of the radio button (<code>"tea"</code> in our example). If there is a match, a <code>"checked"</code>
             attribute is printed!
         </p>
@@ -668,12 +614,12 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="4,37,4,62"
+                <pre class="ace ace-pebble" data-ace-hi="4,41,4,66"
 >&lt;label for="drinkTea"&gt;
     &lt;input type="radio" 
            id="drinkTea" 
-           name="user.favDrink"
-           {{user.favDrink | checked(["tea", "ice tea", chai"])}}
+           name="userForm.favDrink"
+           {{userForm.favDrink | checked(["tea", "ice tea", chai"])}}
            value="tea"/&gt; Tea&lt;/label&gt;
 </pre> 
             </p>
@@ -693,11 +639,14 @@ public void myRouteHandler(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void myRouteHandler(AppRequestContext context) {
 
-    // Gets the response model
-    JsonObject model = context.response().getModel();
-
-    // Creates the available drink options
+    //==========================================
+    // Creates the available drink options and add them
+    // to the reponse model directly. 
+    // There is no need to add them to the form 
+    // itself (but you can!).
+    //==========================================
     JsonArray allDrinks = context.json().createArray();
+    context.response().getModel().put("allDrinks", allDrinks);
 
     JsonObject drink = context.json().create();
     drink.put("id", 1);
@@ -714,18 +663,20 @@ public void myRouteHandler(AppRequestContext context) {
     drink.put("name", "Beer");
     allDrinks.add(drink);
 
-    // Creates a "user" object and specifies 
-    // his favorite drink
-    JsonObject user = context.json().create();
-    user.put("favDrink", 2);
+    //==========================================
+    // Creates the form, if it doesn't already exist.
+    //==========================================
+    JsonObject form = context.response().getModel().getJsonObject("userForm");
+    if (userForm == null) {
+        form = context.json().create();
+        context.response().getModel().put("userForm", form);
+        
+        // Specifies the initial favorite drink of the user.
+        User user = getUser(...);
+        JsonObject user = context.json().create();
+        form.put("favDrink", user.getFavDrink());
+    }
 
-    // Adds the drinks options and the user object 
-    // to the response model
-    model.put("allDrinks", allDrinks);
-    model.put("user", user);
-
-    // Renders an HTML template containing the form
-    // to display
     context.response().sendTemplateHtml("/templates/userTemplate.html");
 }</pre> 
             </p>
@@ -738,30 +689,20 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="1,4,1,32|8,4,8,16|6,19,6,56"
+                <pre class="ace ace-pebble" data-ace-hi="1,4,1,32|6,19,6,60|8,4,8,16"
 >&lt;div class="form-group"&gt;
     {% for drink in allDrinks %}
         &lt;label for="drink_{{drink.id}}"&gt;
             &lt;input type="radio" 
                    id="drink_{{drink.id}}" 
-                   name="user.favDrink"
-                   {{user.favDrink | checked(drink.id)}}
+                   name="userForm.favDrink"
+                   {{userForm.favDrink | checked(drink.id)}}
                    value="{{drink.id}}"/&gt; {{drink.name}}&lt;/label&gt; 
     {% endfor %}
 &lt;/div&gt;</pre> 
             </p>
             {% endverbatim %}
         </div>
-    </p>
-    <p>
-        <img src="/public/images/icons/tipy.png" />
-        You may notice that, in this example, we haven't <em>scoped</em> the elements of the form
-        under a dedicated <code>"userForm"</code> parent element as we did in other examples. We added the
-        <code>"allDrinks"</code> and <code>"user"</code> objects as <em>root</em> elements 
-        (instead of naming them <code>"userForm.allDrinks"</code> and <code>"userForm.user"</code>).
-        You don't <em>have</em> to scope the elements of a form inside a parent element
-        when you are working with a simple template... But as soon as your template is somewhat complex, 
-        for example if it contains more than one form, then scoping elements is a good idea.
     </p>
     
     <h4>
@@ -840,9 +781,10 @@ public void myRouteHandler(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void myRouteHandler(AppRequestContext context) {
 
-    JsonObject model = context.request().getFormData();
-    
-    boolean tosAccepted = model.getBoolean("myForm.tosAccepted");
+    Form form = context.request().getForm("myForm");
+    context.response().addForm(form);
+
+    boolean tosAccepted = form.getBoolean("tosAccepted");
     
     //...
 }</pre> 
@@ -856,27 +798,27 @@ public void myRouteHandler(AppRequestContext context) {
         <div>
             {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="4,21,4,38|11,21,11,38|18,21,18,38"
+                <pre class="ace ace-pebble" data-ace-hi="4,21,4,42|11,21,11,42|18,21,18,42"
 >&lt;div class="form-group"&gt;
     &lt;label for="drinkTea"&gt;
         &lt;input type="checkbox" 
                id="drinkTea" 
-               name="user.favDrinks[0]"
-               {{user.favDrinks[0] | checked("tea")}}
+               name="userForm.favDrinks[0]"
+               {{userForm.favDrinks[0] | checked("tea")}}
                value="tea"/&gt; Tea&lt;/label&gt;
     
     &lt;label for="drinkCoffee"&gt;
         &lt;input type="checkbox" 
                id="drinkCoffee" 
-               name="user.favDrinks[1]"
-               {{user.favDrinks[1] | checked("coffee")}}
+               name="userForm.favDrinks[1]"
+               {{userForm.favDrinks[1] | checked("coffee")}}
                value="coffee"&gt; Coffee&lt;/label&gt;
     
     &lt;label for="drinkBeer"&gt;
         &lt;input type="checkbox" 
                id="drinkBeer" 
-               name="user.favDrinks[2]"
-               {{user.favDrinks[2] | checked("beer")}}
+               name="userForm.favDrinks[2]"
+               {{userForm.favDrinks[2] | checked("beer")}}
                value="beer"&gt; Beer&lt;/label&gt;
 &lt;/div&gt;</pre> 
             </p>
@@ -885,12 +827,19 @@ public void myRouteHandler(AppRequestContext context) {
 
         Here, the checkboxes are grouped together since they share the same <code>"name"</code>
         attribute, name that is suffixed with the position of the element in the group.
-        In fact, their <code>"name"</code> is the <a href="#jsonobject_jsonpaths">JsonPath</a>
+        Again, their <code>"name"</code> is the <a href="#jsonobject_jsonpaths">JsonPath</a>
         of their associated element on the form model.
     </p>
     <p>
         With this in place, we can access all the checked <code>"favorite drinks"</code> as a single array,
-        in our <code>Route Handler</code> :
+        in our handler. 
+    </p>
+    <p>
+        In the following example, we will retrieve such array without 
+        using a proper <code>Form</code> object, but by using <code>request.getFormData()</code> directly, 
+        to show this is also an option! But note that if you do it that way, you won't have access to the
+        built-in validation features a <code>Form</code> provide... You are manipulating the
+        form data as a raw <code>JsonObject</code>! :
         
         <div>
             <p>
@@ -900,7 +849,7 @@ public void myRouteHandler(AppRequestContext context) {
     JsonObject model = context.request().getFormData();
     
     // The checked favorite drinks, as an array!
-    JsonArray favDrinks = model.getJsonArray("user.favDrinks");
+    JsonArray favDrinks = model.getJsonArray("userForm.favDrinks");
     
     //...
 }</pre> 
@@ -909,12 +858,12 @@ public void myRouteHandler(AppRequestContext context) {
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-        Note that the <em>positions</em> used in the <code>"name"</code> attributes
+        Finally, note that the <em>positions</em> used in the <code>"name"</code> HTML attributes
         are kept when we receive the array! This means that if the
         user only checked <code>"beer"</code> for example (the last option), the array 
-        received in our <code>Route handler</code> would be <code>[null, null, "beer"]</code>, not <code>["beer"]</code>! 
+        received in our handler will be <code>[null, null, "beer"]</code>, not <code>["beer"]</code>! 
         This is a good thing because the
-        <code>JsonPath</code> we use for an element always stays valid (<code>"user.favDrinks[2]"</code>
+        <code>JsonPath</code> we use for an element always stays valid (<code>"userForm.favDrinks[2]"</code>
         here).
     </p>
     
@@ -923,10 +872,10 @@ public void myRouteHandler(AppRequestContext context) {
         File upload
     </h4>
     <p>
-        Uploading a file is very easy using Spincast. The main difference between a <code>"file"</code> field
-        and the other types of fields is that the uploaded file
-        will not be available on the model when the form is submitted. You'll have to use a dedicated method to 
-        retrieve it in your <code>Route handler</code>. 
+        Uploading a file is very easy using Spincast. The main difference between a <code>"file"</code> element
+        and the other types of elements is that the uploaded file
+        will not be available as a <em>form data</em> when submitted. You'll have to use a dedicated method to 
+        retrieve it. 
     </p>
     <p>
         The <code>HTML</code> part is very standard :
@@ -957,8 +906,8 @@ public void myRouteHandler(AppRequestContext context) {
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-        Note that even if the uploaded file is not part of the <code>form data</code>, you can still add 
-        <a href="#validation_messages">Validation Messages</a> for it, if the file is not valid.
+        Note that even if the uploaded file is not part of the <code>form data</code>, you can still 
+        perform validation</a>, as we'll see in the next section.
     </p>
 
     <h4>
@@ -970,450 +919,190 @@ public void myRouteHandler(AppRequestContext context) {
         
         <ul>
             <li>
-                Getting the submitted form data.
+                Retrieving the submitted form data.
             </li>
             <li>
-                Using everything explained in the <a href="#validation">Validation</a> section to
-                validate the form model.
+                Validating the form, and adding resulting <code>validation messages</code> to it.
             </li>
             <li>
-                Redisplaying the form with the <a href="#validation_messages">Validation Messages</a> resulting 
-                from the validation, if any. 
+                Redisplaying the form with the <code>validation messages</code> resulting 
+                from the validation. 
                 If the form is <em>valid</em>, you may instead want to redirect the user to 
-                a confirmation page where a <a href="#flash_messages">Flash Message</a> will be
+                a confirmation page where a success <a href="#flash_messages">Flash Message</a> will be
                 displayed.
             </li>
         </ul>
     </p>
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-        Make sure you read the dedicated <a href="#validation">Validation</a> section! Here,
-        we are going to take for granted that you already know how to create a <code>Validation Set</code> from
-        a <code>JsonObject</code> and how to <a href="#validation_jsonobject">validate that JsonObject</a>.
-    </p>
     
     <h4>
         <a class="anchor_small" href="#forms_validation_data" id="forms_validation_data" title="permanent link"></a>
-        Getting the submitted form data
+        Retrieving the submitted form
     </h4>
     <p>
-        When a <code>HTML</code> form is submitted, Spincast threats the
+        When an <code>HTML</code> form is submitted, Spincast treats the
         <code>"name"</code> attributes of the fields as <a href="#jsonobject_jsonpaths">JsonPaths</a> in order to create 
-        a <a href="#jsonobject">JsonObject</a> representing the <a href="#forms_model">form model</a>. In other words,
-        Spincast converts the submitted form to a <code>JsonObject</code> so you can easily validate and manipulate it.
+        a <a class="javadoc" href="/public/javadoc/org/spincast/core/request/Form.html">Form</a> (a plain <a href="#jsonobject">JsonObject</a>
+        with extra validation features)
+        representing the <code>form model</code>. In other words,
+        Spincast converts the submitted data to a <code>Form</code> instance so you can easily validate and manipulate it.
     </p>
     <p>
-        You access that <code>JsonObject</code> representing the submitted form using the
-        <code>getFormData()</code> method of the <code>request()</code> add-on. For example :
+        You access that <code>Form</code> representing the submitted data by using the
+        <code>getForm(...)</code> method of the <code>request()</code> add-on:
         
         <div>
             <p>
-                <pre class="ace ace-java"
->public void myRouteHandler(AppRequestContext context) {
+                <pre class="ace ace-java" data-ace-hi="4,38,4,57"
+>
 
-    JsonObject myForm = context.request().getFormData();
-    
-    //... validates the form
-}</pre> 
-            </p>
-        </div>
-    </p>
-    <p>
-        If you have more than one form on the same <code>HTML</code> page, you will probably want to
-        <em>scope</em> the names of every field. For example, a text
-        field of a form named <code>"myFirstForm"</code> could be :
-        
-        <div>
-            {% verbatim %}
-            <p>
-                <pre class="ace ace-pebble" data-ace-hi="2,13,2,30"
->&lt;input type="text" 
-       class="form-control" 
-       name="myFirstForm.email"
-       value="{{myFirstForm.email | default('')}}" /&gt;</pre> 
-            </p>
-            {% endverbatim %}
-        </div>
-        
-        And you can then retrieve the <code>JsonObject</code> representing this particular
-        <code>"myFirstForm"</code> form model using :
-        
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="5,52,5,63|9,42,9,47"
->public void myRouteHandler(AppRequestContext context) {
+// POST handler
+public void myHandlerPost(AppRequestContext context) {
 
-    // Gets the "myFirstForm" form model
-    JsonObject myFirstForm = context.request()
-                                    .getFormData()
-                                    .getJsonObject("myFirstForm");
-                               
-    // Gets the value of the "email" field from 
-    // the "myFirstForm" form model
-    String email = myFirstForm.getString("email");
-}</pre> 
-            </p>
-        </div>
-        
-      Instead of "extracting" the form model first, you can also select the
-      value of a field directly from the root of the form data : 
-        
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="2,62,2,79"
->public void myRouteHandler(AppRequestContext context) {
-
-    String email = context.request().getFormData().getString("myFirstForm.email");
-}</pre> 
-            </p>
-        </div>
-    </p>
-    
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        Spincast supports <em>arrays</em> to group a bunch of fields together.
-        When multiple fields have the same <code>"name"</code> attribute, they are
-        automatically grouped together when a form is submitted. For example :
-        
-        <div>
-            {% verbatim %}
-            <p>
-                <pre class="ace ace-pebble" data-ace-hi="4,21,4,35|11,21,11,35"
->&lt;div class="form-group"&gt;
-    &lt;label for="drinkTea"&gt;
-        &lt;input type="checkbox" 
-               id="drinkTea" 
-               name="user.favDrinks"
-               {{user.favDrinks[0] | checked("tea")}}
-               value="tea"/&gt; Tea&lt;/label&gt;
-    
-    &lt;label for="drinkCoffee"&gt;
-        &lt;input type="checkbox" 
-               id="drinkCoffee" 
-               name="user.favDrinks"
-               {{user.favDrinks[1] | checked("tea")}}
-               value="coffee"&gt; Coffee&lt;/label&gt;
-&lt;/div&gt;</pre> 
-            </p>
-            {% endverbatim %}
-        </div>
-        
-        When submitted, this form would result in the two <code>"user.favDrinks"</code> fields to be grouped
-        in a single array. We could access this array with :
-        
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="2,53,2,82"
->public void myRouteHandler(AppRequestContext context) {
-
-    JsonArray tags = context.request().getFormData().getJsonArray("user.favDrinks");
+    Form userForm = context.request().getForm("userForm");
+    context.response().addForm(userForm);
     
     //...
 }</pre> 
             </p>
-            
-            There are two problems with this approach though :
-            
-            <ul>
-                <li>
-                    If only <em>one</em> of those <code>"user.favDrinks"</code> field is submitted,
-                    Spincast has no way of knowing it should be part of an array, so
-                    it won't create one. In other words, your code must be prepare to
-                    receive those <code>"favDrinks"</code> in an array <em>or as a single element</em>.
-                    Not cool!
-                </li>
-                <li>
-                    When a form is submitted, the order in which fields are received is
-                    not garanteed by the HTTP specification. This means that you
-                    can potentially receive those <code>"favDrinks"</code> elements in 
-                    a different order, from requests to requests. Not cool either!
-                </li>   
-            </ul>
         </div>
     </p>
-    
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
-        The first improvement we can make, is to make sure
-        we always receive an array, never a single element alone! To achieve that, we can use 
-        a <code>"name"</code> attribute <em>ending with <code>"[]"</code></em>. For example&nbsp;:
-        
-            <div>
-                {% verbatim %}
-                <p>
-                    <pre class="ace ace-pebble" data-ace-hi="4,21,4,37|11,21,11,37"
->&lt;div class="form-group"&gt;
-    &lt;label for="drinkTea"&gt;
-        &lt;input type="checkbox" 
-               id="drinkTea" 
-               name="user.favDrinks[]"
-               {{user.favDrinks[0] | checked("tea")}}
-               value="tea"/&gt; Tea&lt;/label&gt;
-    
-    &lt;label for="drinkCoffee"&gt;
-        &lt;input type="checkbox" 
-               id="drinkCoffee" 
-               name="user.favDrinks[]"
-               {{user.favDrinks[1] | checked("tea")}}
-               value="coffee"&gt; Coffee&lt;/label&gt;
-&lt;/div&gt;</pre> 
-                </p>
-                {% endverbatim %}
-            </div>
-            
-            This guarantees that an array will <em>always</em> be created to group the <code>"user.favDrinks[]"</code>
-            fields, even if only <em>one</em> of those fields is actually submitted.
-            But this approach still doesn't guarantee the <em>order</em> of the elements in the 
-            resulting array, when multiple fields are submitted!
+        If you have more than one form on the same <code>HTML</code> page, you simply give them different names, and check
+        which one has been submitted, by looking for the presence of a field which should always be submitted:
     </p>
     <p>
-        The third and best method, is to suffix the <code>"names"</code> attribute not only with 
-        <code>"[]"</code>, but with <code>"[X]"</code>,
-        where <code>"X"</code> is the position of the element in the group! 
-        For example :
-        
         <div>
-            {% verbatim %}
             <p>
-                <pre class="ace ace-pebble" data-ace-hi="4,21,4,38|11,21,11,38"
->&lt;div class="form-group"&gt;
-    &lt;label for="drinkTea"&gt;
-        &lt;input type="checkbox" 
-               id="drinkTea" 
-               name="user.favDrinks[0]"
-               {{user.favDrinks[0] | checked("tea")}}
-               value="tea"/&gt; Tea&lt;/label&gt;
+                <pre class="ace ace-java"
+>
+
+// POST handler
+public void myHandlerPost(AppRequestContext context) {
+
+    Form userForm = context.request().getForm("userForm");
+    if(userForm.getString("userFormBtn") != null) {
+        context.response().addForm(userForm);
+        processUserForm(context, userForm);
+        return;
+    }
     
-    &lt;label for="drinkCoffee"&gt;
-        &lt;input type="checkbox" 
-               id="drinkCoffee" 
-               name="user.favDrinks[1]"
-               {{user.favDrinks[1] | checked("tea")}}
-               value="coffee"&gt; Coffee&lt;/label&gt;
-&lt;/div&gt;</pre> 
+    Form bookForm = context.request().getForm("bookForm");
+    if(bookForm.getString("bookFormBtn") != null) {
+        context.response().addForm(bookForm);
+        processBookForm(context, bookForm);
+        return;
+    }
+    
+    //...
+}</pre> 
             </p>
-            {% endverbatim %}
         </div>
-        
-        Now, the order is also guaranteed : the <code>"user.favDrinks[0]"</code> field will always be at
-        the first position of the resulting array and <code>"user.favDrinks[1]"</code> always be at the second
-        position. Note that since the positions are now guaranteed, Spincast will automatically adds <code>null</code> elements
-        if some indexes are not associated with a submitted field.
-    </p>
-    <p>
-        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-        In this third solution, notice that
-        the "name" attribute <em>is the actual <a href="#jsonobject_jsonpaths">JsonPath</a></em>
-        of the associated element. We like that!
     </p>
     
     <h4>
         <a class="anchor_small" href="#forms_validation_validating" id="forms_validation_validating" title="permanent link"></a>
-        Validating the form
+        Performing validations
     </h4>
     <p>
-        Once you we the <code>JsonObject</code> representing the model of the submitted form, we can start validating it.
-        To do so, we create a <a href="#validation_sets">Validation Set</a> from this object.
-        For example :
-        
-        <div>
-            <p>
-                <pre class="ace ace-java" data-ace-hi="6,54,6,70"
->public void myRouteHandler(AppRequestContext context) {
-
-    // Gets the form model
-    JsonObject myForm = context.request().getFormData().getJsonObject("myForm");
-    
-    // Gets a Validation Set for the form model
-    JsonObjectValidationSet formValidationSet = myForm.validationSet();
-    // ...
-}</pre> 
-            </p>
-        </div>
-        
-        We are going to use this <code>Validation Set</code> object to store the
-        <a href="#validation_messages">Validation Messages</a> resulting from the validation we're about
-        to perform.
+        Once you have the <code>Form</code> representing the submitted data, you can start validating it.
+        Forms implement the <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationSet.html">ValidationSet</a>
+        interface and allow you to store validation results directly in them.
     </p>
     <p>
-        <img class="inlineIcon" src="/public/images/icons/para.png" />
-        Here's a quick example where we make sure that an <code>"email"</code> 
-        field is valid and, if it is, that the <code>email</code> is not already 
-        used by another user in our system :
+        Here's an example where we validate that a submitted "<em>email</em>" is valid, and add an error to the form if
+        it's not: 
         
         <div>
             <p>
                 <pre class="ace ace-java"
->public void myRouteHandler(AppRequestContext context) {
+>
 
-    JsonObject myForm = context.request().getFormData().getJsonObject("myForm");
-    JsonObjectValidationSet formValidationSet = myForm.validationSet();
+// POST handler
+public void myHandlerPost(AppRequestContext context) {
 
-    ValidationSet lastResult = formValidationSet.validationEmail().jsonPath("email").validate();
-    if(lastResult.isValid()) {
-
-        boolean emailIsAvailable = isEmailAvailable(myForm.getString("email"));
-        if(!emailIsAvailable) {
-            formValidationSet.addError("email",
-                                       "EMAIL_ALREADY_EXISTS",
-                                       "This email is already used.");
-        }
+    Form form = context.request().getForm("userForm");
+    context.response().addForm(form);
+    
+    String email = form.getString("email");
+    
+    if (!form.validators().isEmailValid(email)) {
+        form.addError("email",
+                      "email_invalid",
+                      "The email is invalid");
     }
-    // ...
+    
+    //... 
 }</pre> 
             </p>
             <p>
                 <span class="explanation">Explanation :</span>
                 <ul>
                     <li>
-                        <span class="code-line-nbr">6</span> : Using the
-                        <code>validationEmail()</code> predefined validation, we validate the
-                        submitted email.
+                        <span class="code-line-nbr">5</span> : We retrieve the submitted
+                        form from the request.
                     </li>
                     <li>
-                        <span class="code-line-nbr">7</span> : Only if the last
-                        validation doesn't generate any error (so only if the email
-                        is valid) do we perform the next validation...
+                        <span class="code-line-nbr">6</span> : We immediately add the
+                        form back to the response model.
                     </li>
                     <li>
-                        <span class="code-line-nbr">9</span> : Here we use some custom
-                        code to validate in our system if the specified email is available or not.
+                        <span class="code-line-nbr">8</span> : We get the "email" from
+                        the form.
                     </li>
                     <li>
-                        <span class="code-line-nbr">10-14</span> : If the email is not
-                        available, we manually add an <code>Error Validation Message</code> 
-                        to our <code>Validation Set</code>, using the <code>addError(...)</code> method.
-                    </li>  
+                        <span class="code-line-nbr">10</span> : We validate the email using
+                        a validator provided on the Form object itself! 
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">11-13</span> : If the email is invalid,
+                        we add an <em>error</em> validation message to the form.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">11</span> : The first parameter, "email" is the
+                        <a href="#jsonobject_jsonpaths">JsonPath</a> of the validated element.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">12</span> : The second parameter, "email_invalid" is a
+                        code representing the error. This can be used client-side to know what 
+                        exact error occured.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">13</span> : The third parameter is the message
+                        to display to the user.
+                    </li>
+                    
                 </ul>
             </p>
         </div>
     </p> 
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
-        When we are done validating a form, we usually have two choices :
-        
-        <ul>
-            <li>
-                <p>
-                    If the form is valid, we can process it. This often involves
-                    creating <code>Entities</code> objects from the form data,
-                    calling business logic in <code>services</code> and 
-                    making modifications to <code>data sources</code>.
-                </p>
-                <p>
-                    When the submitted (and valid) form has been processed, it's a good practice
-                    to <a href="#sending_response_redirecting">redirect</a>
-                    the user to a confirmation page, with a <a href="#flash_messages">Flash message</a> 
-                    to be displayed. Doing do, you prevent the form to be submitted again, in case 
-                    the user tries to refresh the resulting page.
-                </p>
-            </li>
-            <li>
-                If the form is <em>not</em> valid (i.e. if some <code>Error Validation Messages</code>
-                have been generated by the validation), then we need to redisplay the form to the user with 
-                the <code>Validation Messages</code>. We're going to see how to display those messages 
-                in the following <a href="#forms_validation_messages">Displaying validation messages</a> section
-                but, for now, let's see what first needs to be done in the <code>Route Handler</code>...
-            </li>
-        </ul>
-        
-    </p>
-    <p>
-        In order to prepare a form to be redisplayed with the <code>Validation Messages</code> resulting from
-        its validation, we need to add the <code>form model</code> and the resulting <code>Validation Set</code> back to
-        the <a href="#sending_response_model">response model</a>! This is required so the 
-        <code>Templating Engine</code> can redisplay the fields with their submitted (but potentially invalid values) 
-        and the various <code>Validation Messages</code>. For example :
+        To validate an element of the form, you can use any method you need. Some validators,
+        such as <code>isEmailValid(...)</code> are provided by the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/request/Form.html#validators--">form.validators()</a>
+        method. But, most of the time, you're going to use custom code for your validations. For example:  
         
         <div>
             <p>
-                <pre class="ace ace-java"
->public void myRouteHandler(AppRequestContext context) {
+                <pre class="ace ace-java" data-ace-hi="4,0,4,29"
+>
 
-    JsonObject myForm = context.request().getFormData().getJsonObject("myForm");
-    JsonObjectValidationSet formValidationSet = myForm.validationSet();
-    
-    // ... Perfoms validation and saves Validation Messages
-    // on the Validation Set
-    
-    if(formValidationSet.isValid()) {
-        
-        // ... Calls services / business logic / data sources
-        // to process the submitted data
-        
-        // Redirects to a confirmation page
-        context.response().redirect(FlashMessageLevel.SUCCESS,
-                "The form has been processed successfully.");
-    } else {
-        
-        // Adds the form model back to the response model
-        context.response().getModel().put("myForm", myForm);
-        
-        // Adds the Validation Set to the response model
-        // using a key of our choice
-        context.response().getModel().put("validation", formValidationSet);
-        
-        // Redisplays the form using the Templating Engine
-        context.response().sendTemplateHtml("/templates/myTemplate.html");
-    }
+Form form = context.request().getForm("userForm");
+
+String name = form.getString("name");
+if(StringUtils.isBlank(name)) {
+    form.addError("name",
+                  "name_empty",
+                  "The name is required!");
 }</pre> 
-            </p>
-            <p>
-                <span class="explanation">Explanation :</span>
-                <ul>
-                    <li>
-                        <span class="code-line-nbr">6-7</span> : Performs the validations
-                        on the form.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">9</span> : We check if the form
-                        is valid.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">11-12</span> : Since the form is valid we
-                        can process it! This part is specific to each application.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">15-16</span> : We redirect the user
-                        to a confirmation page with a Flash message to be displayed.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">20</span> : The form is invalid so we need to
-                        redisplay it with the Validation Messages... So we add it back to the response model.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">24</span> : We add the <code>Validation Set</code> to the
-                        response model too.
-                    </li>
-                    <li>
-                        <span class="code-line-nbr">27</span> : We redisplay our form using an <code>HTML</code>
-                        template.
-                    </li>  
-                </ul>
             </p>
         </div>
     </p>
     <p>
-        In this example, we added the <code>Validation Set</code> to the response model using a
-        <code>"validation"</code> key. This would result in the <code>Validation Messages</code>
-        to be accessible in the template using <code>validation['<em>some.validation.key</em>']</code>. For example :
-        
-        {% verbatim %}
-        <div>
-            <p>
-                <pre class="ace ace-pebble" 
->
-
-&lt;div&gt;{{validation['myForm.email']}}&lt;/div&gt;
-</pre> 
-            </p>
-        </div> 
-        {% endverbatim %} 
-    </p>
-    <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
-        Now, everything required by our <code>Templating Engine</code> to be able to redisplay the form
-        with the <code>Validation Messages</code> has been made available.
+        Finally, note that there are <code>"success"</code> and <code>"warning"</code>
+        validation messages too, in addition to the <code>"error"</code> ones.
     </p>
     
     <h4>
@@ -1421,29 +1110,99 @@ public void myRouteHandler(AppRequestContext context) {
         Displaying Validation Messages
     </h4>
     <p>
-        At the end of the previous section, we showed that two main elements have to be added to 
-        the <code>response model</code> in order to redisplay an invalid form :
-
+    
+        When you add the form to the response model, using <code>context.response().addForm(form)</code>,
+        you are in fact adding <em>two</em> elements :
         <ul>
             <li>
-                The submitted form model itself
+                The form itself, using its name as the key in the response model.
             </li>
             <li>
-                The <code>Validation Set</code> resulting from the validation
+                A <code>Validation</code> element, containing the validation messages added on the form.
+            </li> 
+        </ul>
+    </p>
+    <p>   
+        
+        By default, the <code>Validation</code> element containing the messages of a validated form is called
+        "<code>validation</code>". You can choose a different name for this element when adding 
+        the form to the response model. For example:
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="8,41,8,61"
+>
+
+// POST handler
+public void myHandlerPost(AppRequestContext context) {
+
+    Form userForm = context.request().getForm("userForm");
+    
+    // Uses "userFormValidation" as the name for the
+    // validation element.
+    context.response().addForm(userForm, "userFormValidation");
+    
+    // validation...
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        When it reaches the templating engine, the <code>Validation</code> element associated 
+        with a form will contain:
+        <ul>
+            <li>
+                An object for every validation message added to the form, with the
+                <a href="#jsonobject_jsonpaths">JsonPath</a> of the validated element as the key and three fields, "<em>level</em>", 
+                "<em>code</em>" and "<em>text</em>":
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-json"
+>"userForm.name" : {
+    "level" : "ERROR",
+    "code" : "name_empty",
+    "text" : "The name is required!" 
+}</pre> 
+                    </p> 
+                </div> 
             </li>
+            <li>
+                A special "<code>_</code>" element that summarizes all the validations
+                performed on the form:
+                
+                <div>
+                    <p>
+                        <pre class="ace ace-json"
+>"userForm._" : {
+    "hasErrors" : true,
+    "hasWarnings" : false,
+    "isValid" : false,
+    "hasSuccesses" : false
+}</pre> 
+                    </p> 
+                </div> 
+                <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                This "<code>_</code>" element can be used in a template to display something if the
+                form contains errors, for example.
+            </li>
+            
         </ul>
         
-        If you followed the 
-        <code><em>"Use the JsonPath of a validated element as its validation key"</em></code> convention as suggested in
-        the <a href="#validation_keys">Validation Keys</a> section, the final model your templates will
-        have access to will look like this :
-        
+    
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Here's a bigger chunk of the model the templating engine will have access to
+        to redisplay an invalid form :
         <div>
             <p>
                 <pre class="ace ace-json"
 >{
-    "myForm" : {
-        "name" : "Stromgol"
+    // The form itself
+    "userForm" : {
+        "name" : ""
         "email" : "abc"
         "books": [
             {
@@ -1457,22 +1216,28 @@ public void myRouteHandler(AppRequestContext context) {
         ]
     },
     
+    // The "validation" element
     "validation" : {
-        "_" : {
+        "userForm._" : {
             "hasErrors" : true,
             "hasWarnings" : false,
             "isValid" : false,
             "hasSuccesses" : false
         },
-        "myForm.email" : {
+        "userForm.name" : {
             "level" : "ERROR",
-            "code" : "VALIDATION_TYPE_EMAIL",
-            "text" : "Invalid email address" 
+            "code" : "name_empty",
+            "text" : "The name is required!" 
         },
-        "myForm.books[1].author" : {
+        "userForm.email" : {
             "level" : "ERROR",
-            "code" : "VALIDATION_TYPE_NOT_BLANK",
-            "text" : "The author can't be empty" 
+            "code" : "email_invalid",
+            "text" : "The email is invalid" 
+        },
+        "userForm.books[1].author" : {
+            "level" : "ERROR",
+            "code" : "author_empty",
+            "text" : "The author is required!" 
         }
     }
     
@@ -1482,60 +1247,33 @@ public void myRouteHandler(AppRequestContext context) {
         </div> 
     </p> 
     <p> 
+        The important things to notice are :
         <ul>
             <li>
-                At the top is the serialized form model : notice that the <code>JsonPath</code> 
-                of every element is respected.
+                In the form object, each element is positioned at its <a href="#jsonobject_jsonpaths">JsonPath</a>. For example,
+                the author of the second book is located at <code>userForm.books[1].author</code>.
             </li>
             <li>
-                <p>
-                    Below is the serialized <a href="#validation_sets">Validation Set</a>
-                    resulting from the validation. Here, the validation keys have been scoped 
-                    in a <code>"validation"</code> object so they don't clash with any other element on the model. 
-                </p>
-                <p>
-                    Notice that each validation key is the string representation of the <code>JsonPath</code> of the element 
-                    it is associated with!
-                </p>
-                <p>
-                    You can also see the special <code>"_"</code> element that is automatically added when
-                    a <code>Validation Set</code> is <a href="#validation_to_jsonobject">converted to a JsonObject</a>.
-                    This element summarizes the validation.
-                </p>
-            </li>
-            <li>
-                In real life, there are always more elements than this in a template model, 
-                for example the <a href="#templating_default_vars">Default templating variables</a>... We
-                didn't list them here for the sake of simplicity.
-            </li>
+                In the "<em>validation</em>" element, each keys is the <em>string representation</em> of
+                the JsonPath of the validated element! For example : <code>validation[<em>'userForm.books[1].author'</em>]</code>.
+            </li>  
         </ul>
-    </p> 
-    <p> 
-        This structure of the templating model makes the <code>Validation Messages</code> very easy to be retrieved and displayed.
-        For example :
-
-        <div>
-            {% verbatim %}
-            <p>
-                <pre class="ace ace-pebble" data-ace-hi="5,4,5,57"
+        It is easy to find the validation messages associated with a specific element since the JsonPath
+        of that element will be the key to use to retrieve them. For example:
+        
+        {% verbatim %}
+        <p>
+            <pre class="ace ace-pebble" data-ace-hi="3,17,3,31|5,4,5,59"
 >&lt;div class="form-group"&gt;
     &lt;input type="text" 
            class="form-control" 
-           name="myForm.email"
-           value="{{myForm.email | default('')}}" /&gt;
-    {{validation['myForm.email'] | validationMessages()}}
+           name="userForm.email"
+           value="{{userForm.email | default('')}}" /&gt;
+    {{validation['userForm.email'] | validationMessages()}}
 &lt;/div&gt;</pre> 
-            </p>
-            {% endverbatim %}
-            
-            Here, <code><em>validationMessages()</em></code> is a 
-            <a href="http://www.mitchellbosecke.com/pebble/documentation/guide/extending-pebble#user-content-filters">Pebble filter</a> 
-            provided by Spincast that can be used to display the <code>Validation Messages</code> associated with a field. 
-            Since our validation keys are in fact the string representation of the <code>JsonPaths</code> of the
-            validated elements, it's very clear how to retrieve the <code>Validation Messages</code> for a particular
-            field : it is, in most cases, the same as the <code>"name"</code> attribute of that field [<span class="code-line-nbr">4</span>].  
-        </div>
-    </p>
+        </p>
+        {% endverbatim %}
+    </p> 
     
 
     <h5>
@@ -1543,11 +1281,10 @@ public void myRouteHandler(AppRequestContext context) {
         Validation Filters
     </h5>
     <p>
-        Spincast provides utilities to display the 
-        <a href="#validation_messages">Validation Messages</a> when the default <code>Templating Engine</code> is used,
-        <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. But, as we saw, the template model is pretty much a 
+        Spincast provides utilities to display the validation messages with the default <code>Templating Engine</code>,
+        <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. But, as we saw, the template model is a 
         simple <code>Map&lt;String, Object&gt;</code> so no magic is involved and any other <code>Templating Engine</code> 
-        could be used!
+        can be used.
     </p>
     <p>  
         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
@@ -1560,7 +1297,7 @@ public void myRouteHandler(AppRequestContext context) {
                 <code class="apiItem"><em>ValidationMessages</em> | <span>validationMessages</span>()</code>
                 <div class="well">
                      <p>
-                         This filter uses a <code>HTML</code> template fragment to output the <code>Validation Messages</code> associated with a field.
+                         This filter uses a <code>HTML</code> template fragment to output the <code>Validation Messages</code> associated with an element.
                      </p>
                      <p>
                          Here's an example :
@@ -1594,7 +1331,7 @@ public void myRouteHandler(AppRequestContext context) {
                 <div class="well">
                      <p>
                          This filter is similar to <code>validationMessages()</code> but uses a different template fragment.
-                         Its purpose is to output the <code>Validation Messages</code> of a <em>group of fields</em>.
+                         Its purpose is to output the <code>Validation Messages</code> of a <em>group of elements</em>.
                      </p>
                      <p>
                          Here's an example :
@@ -1634,9 +1371,7 @@ public void myRouteHandler(AppRequestContext context) {
                      <p>
                         This is exactly what the  <code>validationGroupMessages()</code> filter is for. 
                         As you may notice, <code>"demoForm.tags"</code> is, in fact, the <code>JsonPath</code> to the
-                        <em>tags array itself</em>. In the <a href="#validation_building_options">Validation</a> section,
-                        you can learn that Spincast can automatically add such <code>Validation Messages</code> for an array itself,
-                        when the validation of its elements is done.
+                        <em>tags array itself</em>.
                      </p>
                      <p>
                          The path to the template fragment used by this filter is
@@ -1721,8 +1456,7 @@ public void myRouteHandler(AppRequestContext context) {
                      </p>
                      <p>
                          Most of the time, you are going to use the special 
-                         <code>"_"</code> element, representing the validation as a whole 
-                         (<a href="#validation_to_jsonobject">more info</a>), as the element 
+                         <code>"_"</code> element, representing the validation as a whole, as the element 
                          passed to those filters.
                          For example :
                          
@@ -1858,7 +1592,128 @@ public void myRouteHandler(AppRequestContext context) {
             </li>
         </ul>
     </p>
+
+    <h4>
+        <a class="anchor_small" href="#forms_generic" id="forms_generic" title="permanent link"></a>
+        Forms are generic
+    </h4>
     
+    <p>
+        You may have noticed that we are not using a <em>dedicated class</em> to represent the form 
+        model (a <code>"UserForm"</code> class, for example) : we use plain <code>JsonObject</code> objects
+        (which <code>Form</code> object are based on).
+    </p>
+    <p>
+        Here's why:
+        <ul>
+            <li>
+                <p>
+                    You may be thinking about reusing an existing <em>Entity</em> class for the model of your form. 
+                    For example, you may want to use an existing <code>"User"</code> Entity class for the model of a form
+                    dedicated to the creation of a new user. This seems logical at first since a lot
+                    of fields on the form would have a matching field on that <code>User</code> Entity class...
+                    But, in  practice, it's very rare that an existing <em>Entity</em> class contains <em>all</em> the fields
+                    required to model the form.
+                </p>
+                <p>
+                    Let's say our form has a <code>"name"</code> field and a <code>"email"</code> field and uses those to create
+                    a new user : those fields would probably indeed have matching fields on a <code>"User"</code> Entity. 
+                    But what about a <em>captcha</em>? Or an option to <em>"subscribe to our newsletter"</em>? Those two 
+                    fields on the form have nothing to do with a <code>"user"</code>
+                    and there won't be matching fields for them on a <code>"User"</code> Entity class...
+                    So, what you do then? You have to create a new class that contains <em>all</em> the required
+                    fields. For that, you may be tempted to <em>extend</em> the <code>"User"</code> Entity and simply add 
+                    the missing fields, but our opinion is that this is hackish at best and clearly not a good
+                    practice.
+                </p>
+            </li>
+            <li>
+                <p>
+                    You may also feel that using a dedicated class for such form model is more robust, since that model
+                    is then <em>typed</em>. We understand this feeling since we're huge fans of statically typed code! But, 
+                    <em>for this particular component</em>, for the model of a form, our opinion is that a 
+                    dedicated class is not very beneficial...
+                </p>
+                <p>
+                    As soon as your form model leaves your controller, it
+                    is pretty much converted to a simple and dumb <code>Map&lt;String, Object&gt;</code>, so the <code>Templating Engine</code>
+                    can use it easily. At that moment, your typed form model is no more!
+                    And, at the end of the day, the model becomes plain <code>HTML</code> fields : nothing
+                    is typed there either.
+                </p>
+                <p>
+                    In other words, if you use a dedicated class for your form model, this model is going to be
+                    typed for a very short period, and we feel this doesn't worth the effort. That said, when your form
+                    has been validated and everything is fine, <em>then</em> you may want to convert the
+                    <code>JsonObject</code>/<code>Form</code> object to a dedicated <code>Entity</code> class and pass it to 
+                    services, repositories, etc.
+                </p>
+            </li>
+            <li>
+                Last but not least : using an existing <code>Entity</code> class as a form model can lead to
+                <a href="/public/varia/ounce_springframework_vulnerabilities.pdf" target="_blank">security vulnerabilities</a> (<code>PDF</code>)
+                if you are not careful.
+            </li>
+        </ul>
+    </p>
+    <p> 
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        In case you still want to use a dedicated class to back your forms, you are free to do so,
+        and here's a quick example.... First, you would create a dedicated class for the model :
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public class UserCreationForm {
+    
+    private String username;
+    private String email;
+    private String captcha;
+    
+    //... Getters
+    //... Setters
+}</pre> 
+            </p>
+        </div>
+        
+        You would then create a model instance like so :
+     
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public void displayUserForm(AppRequestContext context) {
+
+    // A typed form model
+    UserCreationForm userForm = new UserCreationForm();
+    
+    // ... that is quickly converted to a 
+    // JsonObject anyway when added to the response model!
+    context.response().getModel().put("userForm", userForm);
+    
+    sendMyTemplate();
+}</pre> 
+            </p>
+        </div>
+    </p>
+    <p> 
+        When the form is submitted, you would then convert the <code>form</code>,
+        which is a <code>JsonObject</code> under the hood, to an instance of your 
+        <code>UserCreationForm</code> class :
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="5,39,5,71"
+>public void manageUserForm(AppRequestContext context) {
+
+    // Back to a typed version of the form model!
+    UserCreationForm userForm = context.request()
+                                       .getForm("userForm")
+                                       .convert(UserCreationForm.class);
+                                       
+   // ...
+}</pre> 
+            </p>
+        </div>
+    </p>
     
 
 </section>

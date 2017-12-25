@@ -170,7 +170,19 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 callRouteHandlers(requestContext, routingResult);
             }
 
+        //==========================================@formatter:off 
+        // Oups...
+        //
+        // Hello debugging developer!
+        //
+        // You are here because an exception occured
+        // in your application. If you defined one, your
+        // custom exception handler is now going to be called.
+        // Otherwise, a default one will be used.
+        //==========================================@formatter:on
         } catch (Throwable ex) {
+
+            this.logger.debug("An exception occured! The exception routing process will be triggered : " + ex.getMessage());
 
             //==========================================
             // Custom exception handling, if any.

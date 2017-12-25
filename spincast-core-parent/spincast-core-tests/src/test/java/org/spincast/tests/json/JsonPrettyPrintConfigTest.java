@@ -39,6 +39,11 @@ public class JsonPrettyPrintConfigTest extends NoAppTestingBase {
                     public int getPrettyPrinterIndentationSpaceNumber() {
                         return 2;
                     }
+
+                    @Override
+                    public boolean isSerializeEnumsToNameAndLabelObjects() {
+                        return true;
+                    }
                 });
             }
         };

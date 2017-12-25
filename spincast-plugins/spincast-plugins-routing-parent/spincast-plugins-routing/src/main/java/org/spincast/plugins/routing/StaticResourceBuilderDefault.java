@@ -165,10 +165,10 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     public StaticResourceBuilder<R> pathRelative(String relativePath) {
 
         try {
-            this.path = new File(getSpincastConfig().getSpincastWritableDir(), relativePath).getCanonicalPath();
+            this.path = new File(getSpincastConfig().getTempDir(), relativePath).getCanonicalPath();
             this.isClasspath = false;
             return this;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -331,21 +331,21 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     @Override
     public void save(Handler<R> generator, boolean ignoreQueryString) {
 
-        if(getRouter() == null) {
+        if (getRouter() == null) {
             throw new RuntimeException("No router specified, can't save the static resource!");
         }
 
-        if(isClasspath() && generator != null) {
+        if (isClasspath() && generator != null) {
             throw new RuntimeException("A resource generator can only be specified when a file system " +
                                        "path is used, not a classpath path.");
         }
         this.generator = generator;
 
-        if(getUrl() == null) {
+        if (getUrl() == null) {
             throw new RuntimeException("The URL to the resource must be specified!");
         }
 
-        if(getPath() == null) {
+        if (getPath() == null) {
             throw new RuntimeException("A classpath or a file system path must be specified!");
         }
 
@@ -359,14 +359,14 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     public StaticResource<R> create() {
 
         StaticResourceType type;
-        if(isDir()) {
-            if(isClasspath()) {
+        if (isDir()) {
+            if (isClasspath()) {
                 type = StaticResourceType.DIRECTORY_FROM_CLASSPATH;
             } else {
                 type = StaticResourceType.DIRECTORY;
             }
         } else {
-            if(isClasspath()) {
+            if (isClasspath()) {
                 type = StaticResourceType.FILE_FROM_CLASSPATH;
             } else {
                 type = StaticResourceType.FILE;
@@ -374,7 +374,7 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
         }
 
         StaticResourceCacheConfig cacheConfig = getCacheConfig();
-        if(cacheConfig == null) {
+        if (cacheConfig == null) {
             cacheConfig = getDefaultCacheConfig();
         }
 

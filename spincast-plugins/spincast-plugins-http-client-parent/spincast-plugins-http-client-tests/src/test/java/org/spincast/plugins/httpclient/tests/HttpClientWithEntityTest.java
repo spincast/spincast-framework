@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.junit.Test;
@@ -14,13 +13,13 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.server.UploadedFile;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.http.HttpEntity;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.entity.ContentType;
@@ -176,7 +175,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
         } finally {
-            IOUtils.closeQuietly(stream);
+            SpincastStatics.closeQuietly(stream);
         }
     }
 
@@ -217,7 +216,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
 
         } finally {
-            IOUtils.closeQuietly(stream);
+            SpincastStatics.closeQuietly(stream);
         }
     }
 
@@ -324,10 +323,10 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    File uploadedFile = context.request().getUploadedFileFirst("someName");
+                    UploadedFile uploadedFile = context.request().getUploadedFileFirst("someName");
                     assertNotNull(uploadedFile);
 
-                    String content = FileUtils.readFileToString(uploadedFile, "UTF-8");
+                    String content = FileUtils.readFileToString(uploadedFile.getFile(), "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -348,10 +347,10 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    File uploadedFile = context.request().getUploadedFileFirst("someName");
+                    UploadedFile uploadedFile = context.request().getUploadedFileFirst("someName");
                     assertNotNull(uploadedFile);
 
-                    String content = FileUtils.readFileToString(uploadedFile, "UTF-8");
+                    String content = FileUtils.readFileToString(uploadedFile.getFile(), "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);

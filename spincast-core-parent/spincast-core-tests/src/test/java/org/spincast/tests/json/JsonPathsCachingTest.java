@@ -21,7 +21,6 @@ import org.spincast.core.json.JsonObjectArrayBase.JsonPathCachingItem;
 import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.core.validation.ValidationFactory;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.defaults.testing.NoAppTestingBase;
 
@@ -92,12 +91,10 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         @AssistedInject
         public JsonObjectTest(JsonManager jsonManager,
                               SpincastUtils spincastUtils,
-                              ObjectConverter objectConverter,
-                              ValidationFactory validationFactory) {
+                              ObjectConverter objectConverter) {
             super(jsonManager,
                   spincastUtils,
-                  objectConverter,
-                  validationFactory);
+                  objectConverter);
         }
 
         /**
@@ -107,13 +104,11 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         public JsonObjectTest(@Assisted @Nullable Map<String, Object> initialMap,
                               JsonManager jsonManager,
                               SpincastUtils spincastUtils,
-                              ObjectConverter objectConverter,
-                              ValidationFactory validationFactory) {
+                              ObjectConverter objectConverter) {
             super(initialMap,
                   jsonManager,
                   spincastUtils,
-                  objectConverter,
-                  validationFactory);
+                  objectConverter);
         }
 
         /**
@@ -124,9 +119,8 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
                               @Assisted boolean mutable,
                               JsonManager jsonManager,
                               SpincastUtils spincastUtils,
-                              ObjectConverter objectConverter,
-                              ValidationFactory validationFactory) {
-            super(initialMap, mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+                              ObjectConverter objectConverter) {
+            super(initialMap, mutable, jsonManager, spincastUtils, objectConverter);
         }
 
         /**
@@ -137,9 +131,8 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
                               @Assisted boolean mutable,
                               JsonManager jsonManager,
                               SpincastUtils spincastUtils,
-                              ObjectConverter objectConverter,
-                              ValidationFactory validationFactory) {
-            super(configToMerge, mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+                              ObjectConverter objectConverter) {
+            super(configToMerge, mutable, jsonManager, spincastUtils, objectConverter);
         }
 
         @Override
@@ -156,14 +149,12 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         @AssistedInject
         public JsonArrayTest(JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
+                             ObjectConverter objectConverter) {
             super(null,
                   true,
                   jsonManager,
                   spincastUtils,
-                  objectConverter,
-                  validationFactory);
+                  objectConverter);
         }
 
         /**
@@ -173,14 +164,12 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         public JsonArrayTest(@Assisted @Nullable List<Object> initialElements,
                              JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
+                             ObjectConverter objectConverter) {
             super(initialElements,
                   true,
                   jsonManager,
                   spincastUtils,
-                  objectConverter,
-                  validationFactory);
+                  objectConverter);
         }
 
         /**
@@ -191,14 +180,12 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
                              @Assisted boolean mutable,
                              JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
+                             ObjectConverter objectConverter) {
             super(initialElements,
                   mutable,
                   jsonManager,
                   spincastUtils,
-                  objectConverter,
-                  validationFactory);
+                  objectConverter);
         }
 
         @Override

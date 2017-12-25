@@ -73,7 +73,7 @@ public class FeedController {
 
             List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
-            for(NewsEntry newsEntry : getNewsService().getFeedNewsEntries()) {
+            for (NewsEntry newsEntry : getNewsService().getFeedNewsEntries()) {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setTitle(newsEntry.getTitle());
                 entry.setLink(getAppConfig().getPublicUrlBase() + "/news/" + newsEntry.getId());
@@ -94,7 +94,7 @@ public class FeedController {
 
             return stringWriter.toString();
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

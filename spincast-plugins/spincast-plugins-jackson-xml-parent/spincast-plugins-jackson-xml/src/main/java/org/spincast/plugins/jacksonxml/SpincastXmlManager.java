@@ -83,7 +83,7 @@ public class SpincastXmlManager implements XmlManager {
     }
 
     protected XmlMapper getXmlMapper() {
-        if(this.xmlMapper == null) {
+        if (this.xmlMapper == null) {
 
             XmlMapper xmlMapper = createXmlMapper();
             registerCustomModules(xmlMapper);
@@ -127,7 +127,7 @@ public class SpincastXmlManager implements XmlManager {
 
         addSpincastMixins(xmlMapper);
 
-        for(XmlMixinInfo xmlMixinInfo : getXmlMixinInfos()) {
+        for (XmlMixinInfo xmlMixinInfo : getXmlMixinInfos()) {
             xmlMapper.addMixIn(xmlMixinInfo.getTargetClass(), xmlMixinInfo.getMixinClass());
         }
     }
@@ -164,7 +164,7 @@ public class SpincastXmlManager implements XmlManager {
     }
 
     protected XmlMapper getXmlMapperPretty() {
-        if(this.xmlMapperPretty == null) {
+        if (this.xmlMapperPretty == null) {
             XmlMapper xmlMapper = getXmlMapper().copy();
 
             xmlMapper.setDefaultPrettyPrinter(getXmlPrettyPrinter());
@@ -189,7 +189,7 @@ public class SpincastXmlManager implements XmlManager {
 
     protected JsonSerializer<JsonObject> getJsonObjectSerializer() {
 
-        if(this.jsonObjectSerializer == null) {
+        if (this.jsonObjectSerializer == null) {
             this.jsonObjectSerializer = new JsonSerializer<JsonObject>() {
 
                 @Override
@@ -198,14 +198,14 @@ public class SpincastXmlManager implements XmlManager {
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(jsonObject == null) {
+                    if (jsonObject == null) {
                         return;
                     }
 
                     ToXmlGenerator xmlGen = (ToXmlGenerator)gen;
 
                     xmlGen.writeStartObject();
-                    for(Entry<String, Object> element : jsonObject) {
+                    for (Entry<String, Object> element : jsonObject) {
                         xmlGen.writeFieldName(element.getKey());
                         xmlGen.writeObject(element.getValue());
                     }
@@ -218,7 +218,7 @@ public class SpincastXmlManager implements XmlManager {
 
     protected JsonSerializer<JsonArray> getJsonArraySerializer() {
 
-        if(this.jsonArraySerializer == null) {
+        if (this.jsonArraySerializer == null) {
             this.jsonArraySerializer = new JsonSerializer<JsonArray>() {
 
                 @Override
@@ -227,7 +227,7 @@ public class SpincastXmlManager implements XmlManager {
                                       SerializerProvider serializers)
                                                                       throws IOException, JsonProcessingException {
 
-                    if(jsonArray == null) {
+                    if (jsonArray == null) {
                         return;
                     }
 
@@ -243,18 +243,18 @@ public class SpincastXmlManager implements XmlManager {
                     xmlGen.writeString("true");
                     xmlGen.setNextIsAttribute(false);
 
-                    for(Object element : jsonArray) {
+                    for (Object element : jsonArray) {
 
                         xmlGen.writeFieldName("element");
 
-                        if(element == null) {
+                        if (element == null) {
                             xmlGen.writeNull();
-                        } else if(element instanceof JsonObject) {
+                        } else if (element instanceof JsonObject) {
                             xmlGen.writeStartObject();
                             xmlGen.writeFieldName("obj");
                             xmlGen.writeObject(element);
                             xmlGen.writeEndObject();
-                        } else if(element instanceof JsonArray) {
+                        } else if (element instanceof JsonArray) {
                             xmlGen.writeStartObject();
                             xmlGen.writeFieldName("array");
                             xmlGen.writeObject(element);
@@ -273,7 +273,7 @@ public class SpincastXmlManager implements XmlManager {
 
     protected JsonDeserializer<JsonObject> getJsonObjectDeserializer() {
 
-        if(this.jsonObjectDeserializer == null) {
+        if (this.jsonObjectDeserializer == null) {
             this.jsonObjectDeserializer = new JsonDeserializer<JsonObject>() {
 
                 @Override
@@ -298,7 +298,7 @@ public class SpincastXmlManager implements XmlManager {
 
     protected JsonDeserializer<JsonArray> getJsonArrayDeserializer() {
 
-        if(this.jsonArrayDeserializer == null) {
+        if (this.jsonArrayDeserializer == null) {
             this.jsonArrayDeserializer = new JsonDeserializer<JsonArray>() {
 
                 @Override
@@ -315,7 +315,7 @@ public class SpincastXmlManager implements XmlManager {
                     //==========================================
                     boolean firstElementSkipped = false;
                     JsonToken token = xmlParser.nextToken();
-                    if(token == JsonToken.FIELD_NAME) {
+                    if (token == JsonToken.FIELD_NAME) {
 
                         String fieldName = xmlParser.getValueAsString();
                         token = xmlParser.nextToken();
@@ -324,9 +324,9 @@ public class SpincastXmlManager implements XmlManager {
                         //==========================================
                         // We skip the "isArray" attribute, if present
                         //==========================================
-                        if(fieldName != null && fieldName.equals(getArrayAttributeName())) {
-                            if(token == JsonToken.VALUE_STRING &&
-                               "true".equalsIgnoreCase(xmlParser.getValueAsString())) {
+                        if (fieldName != null && fieldName.equals(getArrayAttributeName())) {
+                            if (token == JsonToken.VALUE_STRING &&
+                                "true".equalsIgnoreCase(xmlParser.getValueAsString())) {
                                 token = xmlParser.nextToken();
                                 firstElementSkipped = false;
                             }
@@ -349,17 +349,17 @@ public class SpincastXmlManager implements XmlManager {
 
             JsonToken token = xmlParser.getCurrentToken();
 
-            if(token == JsonToken.VALUE_NULL) {
+            if (token == JsonToken.VALUE_NULL) {
                 token = xmlParser.nextToken();
                 return getJsonManager().create();
             }
 
-            if(token != JsonToken.START_OBJECT) {
+            if (token != JsonToken.START_OBJECT) {
                 throw new RuntimeException("Expecting a START_OBJECT token here, got : " + token);
             }
 
             token = xmlParser.nextToken();
-            if(token != JsonToken.FIELD_NAME) {
+            if (token != JsonToken.FIELD_NAME) {
                 throw new RuntimeException("Expecting a FIELD_NAME token here, got : " + token);
             }
             String fieldName = xmlParser.getValueAsString();
@@ -369,7 +369,7 @@ public class SpincastXmlManager implements XmlManager {
             //==========================================
             // Empty object
             //==========================================
-            if(token == JsonToken.END_OBJECT || token == JsonToken.VALUE_NULL) {
+            if (token == JsonToken.END_OBJECT || token == JsonToken.VALUE_NULL) {
                 return getJsonManager().create();
             }
 
@@ -377,9 +377,9 @@ public class SpincastXmlManager implements XmlManager {
             // We have to check if the attribute telling us
             // it's an array is present.
             //==========================================
-            if(fieldName != null && fieldName.equals(getArrayAttributeName())) {
-                if(token == JsonToken.VALUE_STRING &&
-                   "true".equalsIgnoreCase(xmlParser.getValueAsString())) {
+            if (fieldName != null && fieldName.equals(getArrayAttributeName())) {
+                if (token == JsonToken.VALUE_STRING &&
+                    "true".equalsIgnoreCase(xmlParser.getValueAsString())) {
                     token = xmlParser.nextToken();
                     return deserializeJsonArray(xmlParser, context);
                 }
@@ -391,7 +391,7 @@ public class SpincastXmlManager implements XmlManager {
             // first property to the next method.
             //==========================================
             Object firstValue = null;
-            if(token == JsonToken.START_OBJECT) {
+            if (token == JsonToken.START_OBJECT) {
                 firstValue = deserializeObjectOrArray(xmlParser, context);
             } else {
                 firstValue = xmlParser.readValueAs(Object.class);
@@ -402,7 +402,7 @@ public class SpincastXmlManager implements XmlManager {
                                          context,
                                          new SimpleEntry<String, Object>(fieldName, firstValue));
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -420,14 +420,14 @@ public class SpincastXmlManager implements XmlManager {
             JsonArray jsonArray = getJsonManager().createArray();
 
             JsonToken token = xmlParser.getCurrentToken();
-            while(token == JsonToken.FIELD_NAME || firstElementSkipped) {
+            while (token == JsonToken.FIELD_NAME || firstElementSkipped) {
 
                 //==========================================
                 // Skip the "<element>" part, except for a
                 // root array for which the element has already
                 // being skipped.
                 //==========================================
-                if(!firstElementSkipped) {
+                if (!firstElementSkipped) {
                     @SuppressWarnings("unused")
                     String tokenName = xmlParser.getValueAsString();
                     token = xmlParser.nextToken();
@@ -438,7 +438,7 @@ public class SpincastXmlManager implements XmlManager {
                 //==========================================
                 // The element is an Object or another array.
                 //==========================================
-                if(token == JsonToken.START_OBJECT) {
+                if (token == JsonToken.START_OBJECT) {
 
                     //==========================================
                     // The fieldName of the array element.
@@ -450,18 +450,18 @@ public class SpincastXmlManager implements XmlManager {
                     // then this "someKey" fieldName won't be used.
                     //==========================================
                     token = xmlParser.nextToken();
-                    if(token != JsonToken.FIELD_NAME) {
+                    if (token != JsonToken.FIELD_NAME) {
                         throw new RuntimeException("Expecting a FIELD_NAME token here, got : " + token);
                     }
                     String fieldName = xmlParser.getValueAsString();
 
                     token = xmlParser.nextToken();
-                    if(token == JsonToken.VALUE_NULL) {
+                    if (token == JsonToken.VALUE_NULL) {
                         //==========================================
                         // Empty object
                         //==========================================
                         jsonArray.add(getJsonManager().create());
-                    } else if(token == JsonToken.START_OBJECT) {
+                    } else if (token == JsonToken.START_OBJECT) {
                         //==========================================
                         // The array element is a complexe object such as
                         // <someKey><color>red</color><size>big</size></someKey>
@@ -488,7 +488,7 @@ public class SpincastXmlManager implements XmlManager {
                     // or a single object/array. It can't contain multiple
                     // children.
                     //==========================================
-                    if(token != JsonToken.END_OBJECT) {
+                    if (token != JsonToken.END_OBJECT) {
                         throw new RuntimeException("An array element can't contain more than one child! The current array already contains " +
                                                    "one : " + jsonArray.toJsonString());
                     }
@@ -505,7 +505,7 @@ public class SpincastXmlManager implements XmlManager {
             }
 
             return jsonArray;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -518,15 +518,15 @@ public class SpincastXmlManager implements XmlManager {
 
             JsonObject jsonObject = getJsonManager().create();
 
-            if(firstProperty != null) {
+            if (firstProperty != null) {
                 jsonObject.put(firstProperty.getKey(), firstProperty.getValue());
             }
 
             JsonToken token = xmlParser.getCurrentToken();
-            while(token == JsonToken.FIELD_NAME) {
+            while (token == JsonToken.FIELD_NAME) {
 
                 String fieldName = xmlParser.getValueAsString();
-                if(StringUtils.isBlank(fieldName)) {
+                if (StringUtils.isBlank(fieldName)) {
                     throw new RuntimeException("A Json object can't have a property with an empty name. " +
                                                "For example, this is invalid : <root>someValue</root>, a " +
                                                "name must be specified : <root><someKey>someValue</someKey></root>");
@@ -534,18 +534,27 @@ public class SpincastXmlManager implements XmlManager {
 
                 token = xmlParser.nextToken();
 
-                if(token == JsonToken.VALUE_NULL) {
+                if (token == JsonToken.VALUE_NULL) {
                     jsonObject.put(fieldName, getJsonManager().create());
-                } else if(token == JsonToken.START_OBJECT) {
+                } else if (token == JsonToken.START_OBJECT) {
                     jsonObject.put(fieldName, deserializeObjectOrArray(xmlParser, context));
                 } else {
                     Object value = xmlParser.readValueAs(Object.class);
-                    jsonObject.put(fieldName, value);
+
+                    //==========================================
+                    // When the element is empty (ie : "<innerObj></innerObj>")
+                    // we create en empty *object*, not an empty String.
+                    //==========================================
+                    if (value instanceof String && StringUtils.isBlank((String)value)) {
+                        jsonObject.put(fieldName, getJsonManager().create());
+                    } else {
+                        jsonObject.put(fieldName, value);
+                    }
                 }
                 token = xmlParser.nextToken();
             }
             return jsonObject;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -575,12 +584,12 @@ public class SpincastXmlManager implements XmlManager {
     @Override
     public String toXml(Object obj, boolean pretty) {
         try {
-            if(pretty) {
+            if (pretty) {
                 return getXmlMapperPretty().writeValueAsString(obj);
             } else {
                 return getXmlMapper().writeValueAsString(obj);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -605,7 +614,7 @@ public class SpincastXmlManager implements XmlManager {
      * we inject dependencies using Guice.
      */
     protected void injectDependencies(Object obj) {
-        if(obj != null) {
+        if (obj != null) {
             getGuice().injectMembers(obj);
         }
     }
@@ -613,10 +622,10 @@ public class SpincastXmlManager implements XmlManager {
     @Override
     public <T> T fromXmlToType(String xml, Type type) {
 
-        if(xml == null) {
+        if (xml == null) {
             return null;
         }
-        if(type == null) {
+        if (type == null) {
             return null;
         }
 
@@ -625,7 +634,7 @@ public class SpincastXmlManager implements XmlManager {
             T obj = getXmlMapper().readValue(xml, javaType);
             injectDependencies(obj);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -635,7 +644,7 @@ public class SpincastXmlManager implements XmlManager {
 
         Objects.requireNonNull(clazz, "clazz can't be NULL");
 
-        if(inputStream == null) {
+        if (inputStream == null) {
             return null;
         }
 
@@ -644,7 +653,7 @@ public class SpincastXmlManager implements XmlManager {
             T obj = getXmlMapper().readValue(inputStream, javaType);
             injectDependencies(obj);
             return obj;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtilsDefault;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
@@ -31,8 +30,8 @@ public class ConfigFinder {
 
     protected final Logger logger = LoggerFactory.getLogger(ConfigFinder.class);
 
-    private Map<String, Object> rawConfigs;
-    private Map<String, Object> configs;
+    protected Map<String, Object> rawConfigs;
+    protected Map<String, Object> configs;
     private final Object rawConfigsLock = new Object();
 
     private File appJarDirectory;
@@ -346,7 +345,7 @@ public class ConfigFinder {
                                                          getClasspathFilePath());
                                     }
                                 } finally {
-                                    IOUtils.closeQuietly(configFileStream);
+                                    SpincastStatics.closeQuietly(configFileStream);
                                 }
                             }
                         }
@@ -410,7 +409,7 @@ public class ConfigFinder {
                                                              externalFile.getAbsolutePath());
                                         }
                                     } finally {
-                                        IOUtils.closeQuietly(reader);
+                                        SpincastStatics.closeQuietly(reader);
                                     }
                                 }
 
@@ -523,7 +522,7 @@ public class ConfigFinder {
                 Map<String, Object> mapTemp = (Map<String, Object>)yaml.load(reader);
                 appConfigMap = mapTemp;
             } finally {
-                IOUtils.closeQuietly(reader);
+                SpincastStatics.closeQuietly(reader);
             }
 
             this.rawConfigs = mergeMaps(this.rawConfigs, appConfigMap);

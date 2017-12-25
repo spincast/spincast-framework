@@ -570,22 +570,6 @@ router.GET("/").save(context -> controller.indexHandler(context));
             </div>
         </p>  
         <p>
-            Using Java 7, you have to declare an <em>inline</em> <code>Route Handler</code> :
-        </p>
-        <p>
-            <div>
-                <p>
-                    <pre class="ace ace-java"
->router.GET("/").save(new AppHandler() {
-    @Override
-    public void handle(AppRequestContext context) {
-        controller.indexHandler(context)
-    } 
-});</pre> 
-                </p>
-            </div>
-        </p>  
-        <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Here's a complete example of a Route creation :
             

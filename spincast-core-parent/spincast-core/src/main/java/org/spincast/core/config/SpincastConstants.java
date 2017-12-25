@@ -142,6 +142,8 @@ public abstract class SpincastConstants {
                 "spincastCurrrentVersionIsSnapshot";
         public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_CACHE_BUSTER = "cacheBuster";
         public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID = "routeId";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_PATH = "routePath";
+        public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_URL_ROOT = "root";
         public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL = "fullUrl";
         public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS = "isHttps";
         public static final String DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS = "pathParams";

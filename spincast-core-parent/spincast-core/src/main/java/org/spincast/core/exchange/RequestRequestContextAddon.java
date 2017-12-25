@@ -1,6 +1,5 @@
 package org.spincast.core.exchange;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
@@ -8,10 +7,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
 import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.server.UploadedFile;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.utils.ContentTypeDefaults;
+import org.spincast.core.validation.ValidationSet;
 
 /**
  * Methods related to the current <code>request</code>.
@@ -370,26 +372,51 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public JsonObject getFormData();
 
     /**
-     * The uploaded files, with their names as the keys.
-     * More than one uploaded file with the same name is possible.
-     * The map is immutable.
-     * Returns an empty map if there are no uploadded file.
+     * The data submitted from a <code>FORM</code> via a <code>POST</code> method,
+     * as a {@link Form} object.
+     * <p>
+     * A {@link Form} object is a {@link JsonObject} containing the submitted
+     * data and a {@link ValidationSet} to store validations performed on it.
+     * <p>
+     * The same <code>Form</code> object is returned, everytime this method is called
+     * with the same <code>name</code>.
+     * <p>
+     * If not found in the POSTed data, an empty form will be created.
+     * <p>
+     * Never returns <code>null</code>.
+     * <p>
+     * The keys are <em>case sensitive</em>.
+     * 
      */
-    public Map<String, List<File>> getUploadedFiles();
+    public Form getForm(String name);
 
     /**
-     * The uploaded files of the specified name.
+     * The key of the map if the HTML's <code>name</code> attribute. 
+     * <p>
+     * More than one uploaded file with the same name is possible.
+     * The map is immutable.
+     * <p>
+     * Returns an empty map if there are no uploadded file.
+     */
+    public Map<String, List<UploadedFile>> getUploadedFiles();
+
+    /**
+     * The uploaded files of the specified HTML's <code>name</code> attribute.
+     * <p>
      * More than one uploaded file with the same <code>name</code> is possible.
      * The list is immutable.
      * Returns an empty list if no uploaded files of this name exists.
      */
-    public List<File> getUploadedFiles(String name);
+    public List<UploadedFile> getUploadedFiles(String htmlName);
 
     /**
+     * The uploaded files of the specified HTML's <code>name</code> attribute.
+     * <p>
      * The first (and often only) uploaded file of the specified name.
+     * <p>
      * Returns <code>null</code> if no uploaded file of this name exists.
      */
-    public File getUploadedFileFirst(String name);
+    public UploadedFile getUploadedFileFirst(String htmlName);
 
     /**
      * Is the request a secure HTTPS one?
@@ -461,5 +488,10 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * cookies enabled?
      */
     public boolean isCookiesEnabledValidated();
+
+    /**
+     * Gets the IP of the current request.
+     */
+    public String getIp();
 
 }

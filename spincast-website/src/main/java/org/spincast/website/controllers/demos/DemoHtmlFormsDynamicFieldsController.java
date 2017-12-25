@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
 import org.spincast.core.response.AlertLevel;
 import org.spincast.core.session.FlashMessageFactory;
-import org.spincast.core.validation.JsonObjectValidationSet;
 import org.spincast.core.validation.ValidationFactory;
 import org.spincast.core.validation.ValidationSet;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -27,32 +27,28 @@ public class DemoHtmlFormsDynamicFieldsController {
     protected final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsDynamicFieldsController.class);
 
     private final FlashMessageFactory flashMessageFactory;
-    private final ValidationFactory validationFactory;
     private final JsonManager jsonManager;
+    private final ValidationFactory validationFactory;
 
     @Inject
     public DemoHtmlFormsDynamicFieldsController(FlashMessageFactory flashMessageFactory,
-                                                ValidationFactory validationFactory,
-                                                JsonManager jsonManager) {
+                                                JsonManager jsonManager,
+                                                ValidationFactory validationFactory) {
         this.flashMessageFactory = flashMessageFactory;
-        this.validationFactory = validationFactory;
         this.jsonManager = jsonManager;
+        this.validationFactory = validationFactory;
     }
 
     protected FlashMessageFactory getFlashMessageFactory() {
         return this.flashMessageFactory;
     }
 
-    protected ValidationFactory getValidationFactory() {
-        return this.validationFactory;
-    }
-
     protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected void sendTemplate(AppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/demos/htmlForms/dynamic.html");
+    protected ValidationFactory getValidationFactory() {
+        return this.validationFactory;
     }
 
     /**
@@ -60,26 +56,33 @@ public class DemoHtmlFormsDynamicFieldsController {
      */
     public void dynamicFields(AppRequestContext context) {
 
-        JsonObject form = context.json().create();
+        //==========================================
+        // We check if the form already exists on
+        // the response model. This may be the case
+        // if the POST handler called this GET handler 
+        // to redisplay the form.
+        //
+        // If the form doesn't exist yet, we create it.
+        //==========================================
+        JsonObject form = context.response().getModel().getJsonObject("demoForm");
+        if (form == null) {
+            form = context.json().create();
+            context.response().getModel().put("demoForm", form);
+
+            //==========================================
+            // The initial users array
+            //==========================================
+            JsonArray users = context.json().createArray();
+            form.put("users", users);
+
+            JsonObject firstUser = createFirstUser();
+            users.add(firstUser);
+        }
 
         //==========================================
-        // The users array
+        // Sends HTML by rendering the specified template.
         //==========================================
-        JsonArray users = context.json().createArray();
-        form.put("users", users);
-
-        //==========================================
-        // A first user
-        //==========================================
-        JsonObject firstUser = createFirstUser();
-        users.add(firstUser);
-
-        //==========================================
-        // We adds the form model to the response model
-        //==========================================
-        context.response().getModel().put("demoForm", form);
-
-        sendTemplate(context);
+        context.response().sendTemplateHtml("/templates/demos/htmlForms/dynamic.html");
     }
 
     /**
@@ -106,25 +109,19 @@ public class DemoHtmlFormsDynamicFieldsController {
     public void dynamicFieldsSubmit(AppRequestContext context) {
 
         //==========================================
-        // Gets the form's data.
-        // We make it mutable to we can modify the values
-        // of its elements (we're going to trim them!)
+        // Gets the form data as a Form object,
+        // and adds it back to the response's model.
+        // The validation message will be added to the
+        // default "validation" element of the model.
         //==========================================
-        JsonObject form = context.request().getFormData()
-                                 .getJsonObjectOrEmpty("demoForm")
-                                 .clone(true);
-
-        //==========================================
-        // We add the form back to the response model
-        // so it can be redisplayed.
-        //==========================================
-        context.response().getModel().put("demoForm", form);
+        Form form = context.request().getForm("demoForm");
+        context.response().addForm(form);
 
         //==========================================
         // Adds a new user (when javascript is disabled)
         //==========================================
         boolean actionDone = false;
-        if(context.request().getFormData().isElementExists("addUserBtn")) {
+        if (context.request().getFormData().isElementExists("addUserBtn")) {
             actionDone = true;
 
             JsonArray users = form.getJsonArrayOrEmpty("users");
@@ -141,16 +138,16 @@ public class DemoHtmlFormsDynamicFieldsController {
         //==========================================
         // Adds a new tag (when javascript is disabled)
         //==========================================
-        if(!actionDone) {
+        if (!actionDone) {
             Integer addTagToUserPos = getUserToAddTagTo(context);
-            if(addTagToUserPos != null) {
+            if (addTagToUserPos != null) {
                 actionDone = true;
 
                 JsonObject user = form.getJsonObject("users[" + addTagToUserPos + "]");
-                if(user != null) {
+                if (user != null) {
 
                     JsonArray tags = user.getJsonArray("tags");
-                    if(tags == null) {
+                    if (tags == null) {
                         tags = context.json().createArray();
                         user.put("tags", tags);
                     }
@@ -162,48 +159,41 @@ public class DemoHtmlFormsDynamicFieldsController {
         //==========================================
         // Otherwise, we validate the form!
         //==========================================
-        if(!actionDone) {
+        if (!actionDone) {
 
             //==========================================
             // Quick check, in case one day we tweak the demo to be
             // able to *delete* users...
             //==========================================
-            if(form.getJsonArrayOrEmpty("users").size() > 0) {
-                ValidationSet validationResult = validateForm(form);
-
-                //==========================================
-                // Our dynamic form uses the exact JsonPath of an
-                // element as its validation key inside the following
-                // "validation" object : we need to prefix the keys
-                // of the current ValidationSet with "demoForm." for those
-                // keys to match the JsonPath of their associated element!
-                //==========================================
-                validationResult.prefixValidationKeys("demoForm.");
-
-                context.response().getModel().putNoKeyParsing("validation", validationResult);
+            if (form.getJsonArrayOrEmpty("users").size() > 0) {
+                validateForm(form);
             } else {
                 context.response().addAlert(AlertLevel.WARNING, "No users to validate!");
             }
         }
 
-        sendTemplate(context);
+        //==========================================
+        // Redisplays the form, by calling the
+        // GET handler.
+        //==========================================
+        dynamicFields(context);
     }
 
     /**
-     * Checks if there is a Us er to add, server-side.
+     * Checks if there is a User to add, server-side.
      */
     protected Integer getUserToAddTagTo(AppRequestContext context) {
 
         Integer userPositionToAddTagTo = null;
-        for(Entry<String, Object> formDatas : context.request().getFormData()) {
+        for (Entry<String, Object> formDatas : context.request().getFormData()) {
 
             String key = formDatas.getKey();
-            if(key != null && key.startsWith("addTag_")) {
+            if (key != null && key.startsWith("addTag_")) {
 
                 try {
                     userPositionToAddTagTo = Integer.parseInt(key.substring("addTag_".length()));
                     break;
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     // invalid, we do nothing
                 }
             }
@@ -213,41 +203,33 @@ public class DemoHtmlFormsDynamicFieldsController {
     }
 
     /**
-     * Validation of the form
+     * Validation of the form. There is no need to return
+     * anything : the validation results are saved in the
+     * form itself.
      */
-    protected ValidationSet validateForm(JsonObject form) {
-
-        //==========================================
-        // We create a Validation Set associated with
-        // the form object.
-        //==========================================
-        JsonObjectValidationSet demoFormValidation = form.validationSet();
+    protected void validateForm(Form form) {
 
         //==========================================
         // Trims all String fields.
-        // We can do this because we got a *mutable*
-        // version of the form data.
         //==========================================
         form.trimAll();
 
         //==========================================
-        // Gets all the user ans validates them, one
+        // Gets all the users and validates them, one
         // by one.
         //==========================================
         JsonArray users = form.getJsonArrayOrEmpty("users");
-        for(int i = 0; i < users.size(); i++) {
+        for (int i = 0; i < users.size(); i++) {
             JsonObject user = users.getJsonObject(i);
 
             //==========================================
             // The validation of a specific user returns 
-            // a Validation Set which we merge into our
-            // main Validation Set!
+            // a Validation set which we can merge into our
+            // form!
             //==========================================
             ValidationSet userValidation = validateUser(user);
-            demoFormValidation.mergeValidationSet("users[" + i + "].", userValidation);
+            form.mergeValidationSet("users[" + i + "].", userValidation);
         }
-
-        return demoFormValidation;
     }
 
     /**
@@ -255,85 +237,83 @@ public class DemoHtmlFormsDynamicFieldsController {
      */
     protected ValidationSet validateUser(JsonObject user) {
 
-        JsonObjectValidationSet userValidation = user.validationSet();
+        ValidationSet userValidation = getValidationFactory().createValidationSet();
 
         //==========================================
         // Validates the name
         //==========================================
-        ValidationSet lastResult = userValidation.validationNotBlank().jsonPath("name").validate();
-        if(lastResult.isValid()) {
-            userValidation.validationMinLength(3).jsonPath("name").validate();
+        String name = user.getString("name");
+
+        if (StringUtils.isBlank(name)) {
+            userValidation.addError("name", "name_empty", "The name can't be empty");
+        }
+
+        if (userValidation.isValid("name") && name.length() < 3) {
+            userValidation.addError("name", "name_minLength", "The name must be at least 3 characters.");
         }
 
         //==========================================
         // Validates the city
         //==========================================
-        lastResult = userValidation.validationNotBlank().jsonPath("city").validate();
-        if(lastResult.isValid()) {
-            userValidation.validationMinLength(4).jsonPath("city").validate();
+        String city = user.getString("city");
+
+        if (StringUtils.isBlank(city)) {
+            userValidation.addError("city", "city_empty", "The city can't be empty");
+        }
+
+        if (userValidation.isValid("city") && city.length() < 4) {
+            userValidation.addError("city", "city_minLength", "The city must be at least 3 characters.");
         }
 
         //==========================================
         // Validates the tags
         //==========================================
-        lastResult = userValidation.validationMinSize(1, false).jsonPath("tags").validate();
-        if(lastResult.isValid()) {
-
-            boolean atLeastOneTagError = false;
-
-            lastResult = userValidation.validationNotBlank().jsonPathAll("tags").validate();
-            atLeastOneTagError = atLeastOneTagError || lastResult.isError();
-
-            //==========================================
-            // Min 3 characters
-            //
-            // "validate(true)" => The validation is run only
-            // if there are no errors yet!
-            //==========================================
-            lastResult = userValidation.validationMinLength(3).jsonPathAll("tags").validate(true);
-            atLeastOneTagError = atLeastOneTagError || lastResult.isError();
+        JsonArray tags = user.getJsonArray("tags");
+        if (tags.size() < 1) {
+            userValidation.addError("tags",
+                                    "tags_minSize",
+                                    "At least one tag is required.");
+        }
+        if (userValidation.isValid("tags")) {
 
             //==========================================
-            // Max 10 characters
-            //
-            // "validate(true)" => The validation is run only
-            // if there are no errors yet!
-            //==========================================
-            lastResult = userValidation.validationMaxLength(10).jsonPathAll("tags").validate(true);
-            atLeastOneTagError = atLeastOneTagError || lastResult.isError();
-
-            //==========================================
-            // Not two identical tags
+            // We validate each tag and also meake
+            // sure there are two identical tags.
             //==========================================
             Set<String> tagsSet = new HashSet<String>();
-            JsonArray tagsArray = user.getJsonArrayOrEmpty("tags");
-            for(int i = 0; i < tagsArray.size(); i++) {
-                String tag = tagsArray.getString(i, "");
-                if(tag != null) {
-                    tag = tag.toLowerCase();
-                    if(!StringUtils.isBlank(tag) && tagsSet.contains(tag)) {
+            boolean atLeastOneTagError = false;
+            for (int i = 0; i < tags.size(); i++) {
 
-                        //==========================================
-                        // We add an Error Validation Message manually
-                        //==========================================
-                        lastResult = userValidation.addError("tags[" + i + "]",
-                                                             "DUPLICATE_TAG",
-                                                             "This tag already exists.");
-                        atLeastOneTagError = true;
-                        continue;
-                    }
-                    tagsSet.add(tag);
+                String tag = tags.getString(i);
+                String tagLowercase = tag.toLowerCase();
+                String tagValidationKey = "tags[" + i + "]";
+
+                if (StringUtils.isBlank(tag)) {
+                    userValidation.addError(tagValidationKey, "tag_empty", "A tag can't be empty");
                 }
+
+                if (userValidation.isValid(tagValidationKey) && tag.length() < 3) {
+                    userValidation.addError(tagValidationKey, "tag_minLength", "A tag must be at least 3 characters.");
+                }
+
+                if (userValidation.isValid(tagValidationKey) && tag.length() > 10) {
+                    userValidation.addError(tagValidationKey, "tag_maxLength", "A tag must be max 10 characters long.");
+                }
+
+                if (userValidation.isValid(tagValidationKey) && tagsSet.contains(tagLowercase)) {
+                    userValidation.addError(tagValidationKey, "tag_duplicate", "This tag already exists.");
+                }
+                tagsSet.add(tagLowercase);
+
+                atLeastOneTagError = atLeastOneTagError || userValidation.isError(tagValidationKey);
             }
 
             //==========================================
             // If there is at least one invalid tag, 
-            // we add an error *on the array itself*.
+            // we add an error *on the tags array itself*.
             //==========================================
-            if(atLeastOneTagError) {
-                lastResult = userValidation.addError("tags",
-                                                     "CONTAINS_INVALID_TAGS",
-                                                     "At least one tag is invalid.");
+            if (atLeastOneTagError) {
+                userValidation.addError("tags", "tags_someInvalid", "At least one tag is invalid.");
             }
         }
 

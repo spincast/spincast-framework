@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.core.validation.JsonObjectValidationSet;
-import org.spincast.core.validation.ValidationFactory;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -40,14 +38,12 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     @AssistedInject
     public JsonObjectDefault(JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
+                             ObjectConverter objectConverter) {
         this((Map<String, Object>)null,
              true,
              jsonManager,
              spincastUtils,
-             objectConverter,
-             validationFactory);
+             objectConverter);
     }
 
     /**
@@ -57,14 +53,12 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     public JsonObjectDefault(@Assisted @Nullable Map<String, Object> initialMap,
                              JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
+                             ObjectConverter objectConverter) {
         this(initialMap,
              true,
              jsonManager,
              spincastUtils,
-             objectConverter,
-             validationFactory);
+             objectConverter);
     }
 
     /**
@@ -75,9 +69,8 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
                              @Assisted boolean mutable,
                              JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
-        super(mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+                             ObjectConverter objectConverter) {
+        super(mutable, jsonManager, spincastUtils, objectConverter);
 
         Map<String, Object> map;
         if (initialMap != null) {
@@ -120,9 +113,8 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
                              @Assisted boolean mutable,
                              JsonManager jsonManager,
                              SpincastUtils spincastUtils,
-                             ObjectConverter objectConverter,
-                             ValidationFactory validationFactory) {
-        super(mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+                             ObjectConverter objectConverter) {
+        super(mutable, jsonManager, spincastUtils, objectConverter);
 
         Map<String, Object> map = new HashMap<String, Object>();
         if (configToMerge != null) {
@@ -174,12 +166,12 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     }
 
     @Override
-    public JsonObject merge(Map<String, Object> map) {
+    public JsonObject merge(Map<String, ?> map) {
         return merge(map, false);
     }
 
     @Override
-    public JsonObject merge(Map<String, Object> map, boolean clone) {
+    public JsonObject merge(Map<String, ?> map, boolean clone) {
 
         if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
@@ -189,7 +181,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
             return this;
         }
 
-        for (Entry<String, Object> entry : map.entrySet()) {
+        for (Entry<String, ?> entry : map.entrySet()) {
             put(entry.getKey(), entry.getValue(), clone);
         }
         return this;
@@ -390,11 +382,6 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
                 }
             }
         }
-    }
-
-    @Override
-    public JsonObjectValidationSet validationSet() {
-        return getValidationFactory().createJsonObjectValidationSet(this);
     }
 
 }

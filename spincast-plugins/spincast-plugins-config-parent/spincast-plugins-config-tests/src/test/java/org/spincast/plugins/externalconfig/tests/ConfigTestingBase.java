@@ -62,7 +62,7 @@ public abstract class ConfigTestingBase extends NoAppStartHttpServerTestingBase 
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         } finally {
-            IOUtils.closeQuietly(in);
+            SpincastStatics.closeQuietly(in);
         }
     }
 

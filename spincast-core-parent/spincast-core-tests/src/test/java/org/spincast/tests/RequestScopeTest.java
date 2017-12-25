@@ -68,7 +68,7 @@ public class RequestScopeTest extends NoAppStartHttpServerTestingBase {
             assertNotNull(requestContext2);
             assertTrue(requestContext1 == requestContext2);
 
-            requestContext1.response().addCookie("testCookie", "testValue");
+            requestContext1.response().addCookieSession("testCookie", "testValue");
 
             requestContext1.response().sendPlainText(requestContext1.getLocaleToUse().toString());
         }

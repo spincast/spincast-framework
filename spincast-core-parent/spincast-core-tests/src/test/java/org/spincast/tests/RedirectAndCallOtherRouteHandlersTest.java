@@ -678,6 +678,13 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         assertTrue(wasCalled2[0]);
         assertFalse(wasCalled3[0]);
         assertFalse(wasCalled4[0]);
+
+        //==========================================
+        // The response is sent before the after
+        // filters are called...
+        //==========================================
+        Thread.sleep(1000);
+
         assertTrue(wasCalled5[0]);
         assertTrue(wasCalled6[0]);
     }
@@ -709,6 +716,13 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         assertEquals(HttpStatus.SC_MOVED_PERMANENTLY, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("", response.getContentAsString());
+
+        //==========================================
+        // The response is sent before the after
+        // filters are called...
+        //==========================================
+        Thread.sleep(1000);
+
         assertTrue(wasCalled[0]);
     }
 
@@ -823,7 +837,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         JsonObject jsonObj = getJsonManager().fromString(json);
         assertEquals("val1", jsonObj.getString("key1"));
         assertEquals("my flash message", jsonObj.getString(spincastModelRootVariableName + ".alerts[0].text"));
-        assertEquals("SUCCESS", jsonObj.getString(spincastModelRootVariableName + ".alerts[0].alertType"));
+        assertEquals("SUCCESS", jsonObj.getString(spincastModelRootVariableName + ".alerts[0].alertType.name"));
     }
 
 }

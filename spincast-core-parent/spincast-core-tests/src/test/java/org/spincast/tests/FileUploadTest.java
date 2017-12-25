@@ -11,6 +11,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.server.UploadedFile;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
@@ -28,10 +29,10 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    File uploadedFile = context.request().getUploadedFileFirst("someName");
+                    UploadedFile uploadedFile = context.request().getUploadedFileFirst("someName");
                     assertNotNull(uploadedFile);
 
-                    String content = FileUtils.readFileToString(uploadedFile, "UTF-8");
+                    String content = FileUtils.readFileToString(uploadedFile.getFile(), "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -52,13 +53,13 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    List<File> uploadedFiles = context.request().getUploadedFiles("someName");
+                    List<UploadedFile> uploadedFiles = context.request().getUploadedFiles("someName");
                     assertEquals(2, uploadedFiles.size());
 
-                    String content1 = FileUtils.readFileToString(uploadedFiles.get(0), "UTF-8");
+                    String content1 = FileUtils.readFileToString(uploadedFiles.get(0).getFile(), "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content1);
 
-                    String content2 = FileUtils.readFileToString(uploadedFiles.get(1), "UTF-8");
+                    String content2 = FileUtils.readFileToString(uploadedFiles.get(1).getFile(), "UTF-8");
                     assertEquals("Le bœuf et l'éléphant! 2", content2);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -80,38 +81,38 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    Map<String, List<File>> uploadedFiles = context.request().getUploadedFiles();
+                    Map<String, List<UploadedFile>> uploadedFiles = context.request().getUploadedFiles();
                     assertNotNull(uploadedFiles);
                     assertEquals(3, uploadedFiles.size());
 
-                    List<File> uploadedFilesSomeName = context.request().getUploadedFiles("someName");
+                    List<UploadedFile> uploadedFilesSomeName = context.request().getUploadedFiles("someName");
                     assertNotNull(uploadedFilesSomeName);
                     assertEquals(2, uploadedFilesSomeName.size());
 
-                    File someName1 = uploadedFilesSomeName.get(0);
+                    File someName1 = uploadedFilesSomeName.get(0).getFile();
                     assertNotNull(someName1);
                     String content = FileUtils.readFileToString(someName1, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);
 
-                    File someName2 = uploadedFilesSomeName.get(1);
+                    File someName2 = uploadedFilesSomeName.get(1).getFile();
                     assertNotNull(someName2);
                     content = FileUtils.readFileToString(someName2, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant! 2", content);
 
-                    List<File> uploadedFilesOther = context.request().getUploadedFiles("other");
+                    List<UploadedFile> uploadedFilesOther = context.request().getUploadedFiles("other");
                     assertNotNull(uploadedFilesOther);
                     assertEquals(1, uploadedFilesOther.size());
 
-                    File uploadedFileOther = uploadedFilesOther.get(0);
+                    File uploadedFileOther = uploadedFilesOther.get(0).getFile();
                     assertNotNull(uploadedFileOther);
                     content = FileUtils.readFileToString(uploadedFileOther, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant! 3", content);
 
-                    List<File> fileSystemBaseds = context.request().getUploadedFiles("fileSystemBased");
+                    List<UploadedFile> fileSystemBaseds = context.request().getUploadedFiles("fileSystemBased");
                     assertNotNull(fileSystemBaseds);
                     assertEquals(1, fileSystemBaseds.size());
 
-                    File fileSystemBased = fileSystemBaseds.get(0);
+                    File fileSystemBased = fileSystemBaseds.get(0).getFile();
                     assertNotNull(fileSystemBased);
                     content = FileUtils.readFileToString(fileSystemBased, "UTF-8");
                     assertEquals("Le bœuf et l'éléphant!", content);

@@ -27,6 +27,7 @@ import org.spincast.core.exchange.ResponseRequestContextAddon;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
 import org.spincast.core.response.Alert;
 import org.spincast.core.response.AlertDefault;
 import org.spincast.core.response.AlertLevel;
@@ -466,7 +467,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         // TODO Maybe we should use a user session.
         //==========================================
         if (getRequestContext().request().isCookiesEnabledValidated()) {
-            getRequestContext().response().addCookie(getSpincastConfig().getCookieNameFlashMessage(), flashMessageId);
+            getRequestContext().response().addCookieSession(getSpincastConfig().getCookieNameFlashMessage(), flashMessageId);
             return url;
 
         //==========================================@formatter:off 
@@ -1322,15 +1323,35 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public void addCookie(String name, String value) {
+    public void addCookieSession(String name, String value) {
         Cookie cookie = getCookieFactory().createCookie(name, value);
         addCookie(cookie);
+    }
+
+    @Override
+    public void addCookieSession(String name, String value, boolean httpOnly) {
+        Cookie cookie = getCookieFactory().createCookie(name, value);
+        cookie.setHttpOnly(httpOnly);
+        addCookie(cookie);
+    }
+
+    @Override
+    public void addCookie10years(String name, String value) {
+        addCookie(name, value, 315360000);
     }
 
     @Override
     public void addCookie(String name, String value, int nbrSecondsToLive) {
         Cookie cookie = getCookieFactory().createCookie(name, value);
         cookie.setExpiresUsingMaxAge(nbrSecondsToLive);
+        addCookie(cookie);
+    }
+
+    @Override
+    public void addCookie(String name, String value, int nbrSecondsToLive, boolean httpOnly) {
+        Cookie cookie = getCookieFactory().createCookie(name, value);
+        cookie.setExpiresUsingMaxAge(nbrSecondsToLive);
+        cookie.setHttpOnly(httpOnly);
         addCookie(cookie);
     }
 
@@ -1376,5 +1397,34 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public Cookie createCookie(String name) {
         return getCookieFactory().createCookie(name);
     }
+
+    @Override
+    public void addForm(Form form) {
+        addForm(form, getSpincastConfig().getValidationElementDefaultName());
+    }
+
+    @Override
+    public void addForm(Form form, String validationElementName) {
+        getModel().put(form.getFormName(), form);
+
+        Object validationElementObj = getModel().getObject(validationElementName);
+        if (validationElementObj == null) {
+            validationElementObj = getJsonManager().create();
+            getModel().put(validationElementName, validationElementObj);
+        } else if (!(validationElementObj instanceof JsonObject)) {
+            throw new RuntimeException("The '" + validationElementName + "' element already exists on the response's model " +
+                                       "but is not a JsonObject! It can't be used as the validation element : " +
+                                       validationElementObj);
+        }
+        JsonObject validationElement = (JsonObject)validationElementObj;
+
+        //==========================================
+        // Tells the form to use that validation element
+        // to strore validation messages.
+        //==========================================
+        form.setValidationObject(validationElement);
+
+    }
+
 
 }

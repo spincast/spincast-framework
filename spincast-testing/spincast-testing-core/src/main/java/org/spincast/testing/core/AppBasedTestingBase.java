@@ -277,7 +277,12 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
             pathOrUrl = "/" + pathOrUrl;
         }
 
-        return "http" + (isHttps ? "s" : "") + "://" + getSpincastConfig().getServerHost() + ":" +
+        String host = getSpincastConfig().getServerHost();
+        if ("0.0.0.0".equals(host)) {
+            host = "127.0.0.1";
+        }
+
+        return "http" + (isHttps ? "s" : "") + "://" + host + ":" +
                (isHttps ? getSpincastConfig().getHttpsServerPort() : getSpincastConfig().getHttpServerPort()) + pathOrUrl;
     }
 

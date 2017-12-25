@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.spincast.core.exceptions.CantConvertException;
-import org.spincast.core.validation.JsonObjectValidationSet;
 
 /**
  * Base interface for <code>JsonObject</code> and
@@ -17,12 +16,6 @@ public interface JsonObjectOrArray {
      * the transformer.
      */
     public void transform(String jsonPath, ElementTransformer transformer);
-
-    /**
-     * Creates a new, empty validation set, for that 
-     * <code>JsonObject</code>.
-     */
-    public JsonObjectValidationSet validationSet();
 
     /**
      * Is this object/array mutable?
@@ -231,12 +224,30 @@ public interface JsonObjectOrArray {
      * specified <code>JsonPath</code>.
      * 
      * @return the element or an empty
-     * <code>JsonObject</code> if not found or if <code>null</code>.
+     * <code>JsonObject</code> if not found or if <code>null</code>. The empty
+     * <code>JsonObject</code> will <em>not</em> be added to the specified
+     * path.
      * 
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
     public JsonObject getJsonObjectOrEmpty(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonObject</code> using the
+     * specified <code>JsonPath</code>.
+     * 
+     * @param addIfDoesntExist if <code>true</code> and the element doesn't exist,
+     * the created empty <code>JsonObject</code> will be added to the specified
+     * <code>JsonPath</code>.
+     * 
+     * @return the element or an empty
+     * <code>JsonObject</code> if not found or if <code>null</code>.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonObject getJsonObjectOrEmpty(String jsonPath, boolean addIfDoesntExist) throws CantConvertException;
 
     /**
      * Gets an element as <code>JsonArray</code> using the
@@ -266,12 +277,30 @@ public interface JsonObjectOrArray {
      * specified <code>JsonPath</code>.
      * 
      * @return the element or an empty
-     * <code>JsonArray</code> if not found or if <code>null</code>.
+     * <code>JsonArray</code> if not found or if <code>null</code>. The empty
+     * <code>JsonArray</code> will <em>not</em> be added to the specified
+     * path.
      * 
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
     public JsonArray getJsonArrayOrEmpty(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an element as <code>JsonArray</code> using the
+     * specified <code>JsonPath</code>.
+     * 
+     * @param addIfDoesntExist if <code>true</code> and the element doesn't exist,
+     * the created empty <code>JsonArray</code> will be added to the specified
+     * <code>JsonPath</code>.
+     * 
+     * @return the element or an empty
+     * <code>JsonArray</code> if not found or if <code>null</code>.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public JsonArray getJsonArrayOrEmpty(String jsonPath, boolean addIfDoesntExist) throws CantConvertException;
 
     /**
      * Gets an element as <code>String</code> using the

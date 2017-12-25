@@ -14,7 +14,6 @@ import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.core.websocket.WebsocketController;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.website.exchange.AppRequestContext;
@@ -73,9 +72,9 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
             } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             } finally {
-                IOUtils.closeQuietly(bufReader);
-                IOUtils.closeQuietly(reader);
-                IOUtils.closeQuietly(stream);
+                SpincastStatics.closeQuietly(bufReader);
+                SpincastStatics.closeQuietly(reader);
+                SpincastStatics.closeQuietly(stream);
             }
         }
 

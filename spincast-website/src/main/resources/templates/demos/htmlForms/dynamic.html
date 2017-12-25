@@ -135,17 +135,17 @@ New tag template
         <form id="usersForm" action="#form" class="container" method="post" 
               novalidate="novalidate" accept-charset="UTF-8">
               
-            {% if validation._ | validationSubmitted()%}
+            {% if validation['demoForm._'] | validationSubmitted()%}
             
-                {% if validation._ | validationHasErrors() %}
+                {% if validation['demoForm._'] | validationHasErrors() %}
                     {% set alertClass = "alert-danger" %}
                     {% set status = "Some users are invalid" %}
                     
-                {% elseif validation._ | validationHasWarnings() %}
+                {% elseif validation['demoForm._'] | validationHasWarnings() %}
                     {% set alertClass = "alert-warning" %}
                     {% set status = "Some users contains warnings" %}
                     
-                {% elseif validation._ | validationIsValid() %}
+                {% elseif validation['demoForm._'] | validationIsValid() %}
                     {% set alertClass = "alert-success" %}
                     {% set status = "All users are valid!" %} 
                 {% endif %}
@@ -230,32 +230,22 @@ New tag template
     <div>
         <p>
             <pre class="ace ace-java"
->JsonObject form = context.request().getFormData() //...</pre>       
+>Form form = context.request().getForm("demoForm");
+context.response().addForm(form);</pre>       
         </p>
     </div>  
-    The structure of this <code>JsonObject</code> <em>depends on the <code>names</code> of 
-    the submitted fields</em>. If you add or remove some fields client-side, the <code>form</code>
+    The structure of this form (which is also a <code>JsonObject</code> under the hood!) 
+    <em>depends on the <code>names</code> of the submitted fields</em>. If you add or 
+    remove some fields client-side, the <code>form</code>
     object will reflect those modifications. This allows great flexibility when using
-     traditional <code>HTML</code> forms (vs. <code>SPA</code> or using data management javascript libraries) 
-     since the model can be dynamically changed, client-side.
+    traditional <code>HTML</code> forms (vs. <code>SPA</code> or using data management javascript libraries) 
+    since the model can be dynamically changed, client-side.
 </p>
 <p>
     Also, by adding back that dynamic <code>JsonObject</code> to the 
     <a href="/documentation#sending_response_model">response model</a>,
     you can re-render the form and all the fields are kept, as they
-    were submitted :
-    
-    <div>
-        <p>
-            <pre class="ace ace-java"
->context.response().getModel().put("demoForm", form);</pre>       
-        </p>
-    </div>  
-</p>
-<p>
-    You can learn more about the dynamic of a form model
-    in the <a href="/documentation#forms_validation_data">Getting the submitted form data</a> section
-    of the documentation.
+    were submitted.
 </p>
 
 <h4>
@@ -267,8 +257,8 @@ New tag template
     which introduces forms and validation using Spincast.
 </p>
 <p>
-    Otherwise, you can learn everything about those topics in the <a href="/documentation#validation">Validation</a> 
-    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+    Otherwise, you can learn everything about forms and validation in the dedicated 
+    <a href="/documentation#forms">Forms</a> section of the documentation.
 </p>
 
 {% endblock %}

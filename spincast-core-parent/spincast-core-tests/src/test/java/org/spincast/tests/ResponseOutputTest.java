@@ -435,7 +435,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         JsonObject jsonObj = getJsonManager().fromString(json);
         assertEquals("test1", jsonObj.getString("someKey"));
         assertEquals("my alert", jsonObj.getString(spincastModelRootVariableName + ".alerts[0].text"));
-        assertEquals("SUCCESS", jsonObj.getString(spincastModelRootVariableName + ".alerts[0].alertType"));
+        assertEquals("SUCCESS", jsonObj.getString(spincastModelRootVariableName + ".alerts[0].alertType.name"));
     }
 
 }

@@ -28,10 +28,10 @@ public class FileClassPathResourceManagerDefault implements FileClassPathResourc
     public Resource getResource(String path) throws IOException {
 
         final URL resource = getClass().getClassLoader().getResource(getFilePath());
-        if(resource == null) {
+        if (resource == null) {
             return null;
         } else {
-            return new URLResource(resource, resource.openConnection(), getFilePath());
+            return new URLResource(resource, getFilePath());
         }
     }
 

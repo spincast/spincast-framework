@@ -215,7 +215,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val").send();
+        HttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val", false).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());

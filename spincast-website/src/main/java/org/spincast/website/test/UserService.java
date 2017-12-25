@@ -11,10 +11,10 @@ public class UserService {
     public void saveUser(User user) {
 
         ValidationSet result = this.userValidator.validate(user);
-        if(result.isValid()) {
+        if (result.isValid()) {
 
             throw new PublicExceptionDefault("The user to save contains errors :\n" +
-                                      result.getMessagesFormatted(ValidationMessageFormatType.PLAIN_TEXT));
+                                             result.getMessagesFormatted(ValidationMessageFormatType.PLAIN_TEXT));
         }
 
         saveUserIdRepository(user);

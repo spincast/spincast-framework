@@ -150,7 +150,7 @@
                 </li>
                 <li>
                     <span class="code-line-nbr">10</span> : The potential
-                    <a href="/documentation#validation_messages">Validation Messages</a> resulting 
+                    <code>Validation Messages</code> resulting 
                     from the validation of the file.
                 </li>
             </ul>
@@ -174,7 +174,7 @@
     </div>  
 </p>
 <p>
-    We can then run validation on thie file and process it. Here's for example how we
+    We can then run validation on this file and process it. Here's for example how we
     validate that it is actually an image :
     
     <div>
@@ -183,9 +183,9 @@
 >try {
     ImageIO.read(uploadedFile).toString();
 } catch(Exception e) {
-    validation.addError("demoForm.fileToUpload",
-                        "FILE_NOT_KNOWN_IMAGE_TYPE",
-                        "The file must be a valid image of type PNG, JPEG, GIF or BMP.");
+    form.addError("fileToUpload",
+                  "fileToUpload_notValidImage",
+                  "The file must be a valid image of type PNG, JPEG, GIF or BMP.");
 }</pre>       
         </p>
         <p>
@@ -199,9 +199,8 @@
                 </li>
                 <li>
                     <span class="code-line-nbr">4-6</span> : We add a
-                    <a href="/documentation#validation_messages">Validation Message</a>
-                    to our <a href="/documentation#validation_sets">Validation Set</a>
-                    to record the fact that the validation failed.
+                    <code>Validation Message</code>
+                    to our form to record the fact that the validation failed.
                 </li>
             </ul>
         </p>
@@ -218,8 +217,8 @@
     which introduces forms and validation using Spincast.
 </p>
 <p>
-    Otherwise, you can learn everything about those topics in the <a href="/documentation#validation">Validation</a> 
-    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+    Otherwise, you can learn everything about forms and validation in the dedicated 
+    <a href="/documentation#forms">Forms</a> section of the documentation.
 </p>
 
 {% endblock %}

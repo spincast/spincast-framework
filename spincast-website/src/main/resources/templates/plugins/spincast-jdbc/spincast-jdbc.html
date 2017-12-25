@@ -1,0 +1,131 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-jdbc{% endblock %}
+{% block meta_title %}Plugins - Spincast JDBC{% endblock %}
+{% block meta_description %}Spincast JDBC plugin for easy SQL queries and transactions.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast JDBC plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast JDBC <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/jdbc/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast JDBC <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin allows easy <code>SQL</code> queries and transactions. 
+                </p>
+                <p>    
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />    
+                    A full <a href="/documentation#jdbc">JDBC / SQL</a> section
+                    is dedicated to this plugin in the documentation!
+	            </p>
+            </section>
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-jdbc&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Install the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastJdbcPluginModule.html">SpincastJdbcPluginModule</a> 
+                    module to your Guice context.
+                </p>
+            </section>
+            
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
+                </h3>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastJdbcPlugin.html">SpincastJdbcPlugin</a>.
+                </p>
+            </section>
+
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
+                </h3>
+                <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/jdbc/package-summary.html">JDBC Plugin</a> javadoc
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+           
+            
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

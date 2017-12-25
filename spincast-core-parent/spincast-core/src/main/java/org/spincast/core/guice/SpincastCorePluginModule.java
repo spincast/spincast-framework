@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.config.SpincastInit;
 import org.spincast.core.config.SpincastInitValidator;
 import org.spincast.core.controllers.FrontController;
 import org.spincast.core.controllers.SpincastFrontController;
@@ -33,6 +34,9 @@ import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.json.JsonObjectFactory;
 import org.spincast.core.json.JsonPathUtils;
 import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.request.Form;
+import org.spincast.core.request.FormDefault;
+import org.spincast.core.request.FormFactory;
 import org.spincast.core.routing.DefaultRouteParamAliasesBinder;
 import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.RedirectRuleBuilderFactory;
@@ -54,27 +58,13 @@ import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.utils.SpincastUtilsDefault;
 import org.spincast.core.utils.ssl.SSLContextFactory;
 import org.spincast.core.utils.ssl.SSLContextFactoryDefault;
-import org.spincast.core.validation.JsonArrayValidationBuilderKey;
-import org.spincast.core.validation.JsonArrayValidationBuilderKeyDefault;
-import org.spincast.core.validation.JsonArrayValidationSet;
-import org.spincast.core.validation.JsonArrayValidationSetDefault;
-import org.spincast.core.validation.JsonObjectValidationBuilderKey;
-import org.spincast.core.validation.JsonObjectValidationBuilderKeyDefault;
-import org.spincast.core.validation.JsonObjectValidationSet;
-import org.spincast.core.validation.JsonObjectValidationSetDefault;
-import org.spincast.core.validation.ValidationBuilderArray;
-import org.spincast.core.validation.ValidationBuilderArrayDefault;
-import org.spincast.core.validation.ValidationBuilderCore;
-import org.spincast.core.validation.ValidationBuilderCoreDefault;
-import org.spincast.core.validation.ValidationBuilderKey;
-import org.spincast.core.validation.ValidationBuilderKeyDefault;
-import org.spincast.core.validation.ValidationBuilderTarget;
-import org.spincast.core.validation.ValidationBuilderTargetDefault;
 import org.spincast.core.validation.ValidationFactory;
 import org.spincast.core.validation.ValidationMessage;
 import org.spincast.core.validation.ValidationMessageDefault;
 import org.spincast.core.validation.ValidationSet;
-import org.spincast.core.validation.ValidationSetDefault;
+import org.spincast.core.validation.ValidationSetSimple;
+import org.spincast.core.validation.Validators;
+import org.spincast.core.validation.ValidatorsDefault;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketContextFactory;
 import org.spincast.core.websocket.WebsocketContextType;
@@ -188,9 +178,11 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         bindSSLContextFactory();
 
         //==========================================
-        // Bind validation factory
+        // Bind validation components
         //==========================================
+        bindFormFactory();
         bindValidationFactory();
+        bindValidators();
 
         //==========================================
         // Bind Flash Messages components.
@@ -219,7 +211,13 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         //==========================================
         bindTestingModeFlag();
 
+        //==========================================
+        // Some basic initializations
+        //==========================================
+        spincastInit();
+
     }
+
 
     /**
      * Validates the bindings that have to be done by other modules.
@@ -432,60 +430,35 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         return SSLContextFactoryDefault.class;
     }
 
+    protected void bindValidators() {
+        bind(Validators.class).to(getValidatorsImplClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends Validators> getValidatorsImplClass() {
+        return ValidatorsDefault.class;
+    }
+
+    protected void bindFormFactory() {
+        install(new FactoryModuleBuilder().implement(Form.class, getFormImplClass())
+                                          .build(FormFactory.class));
+    }
+
+    protected Class<? extends Form> getFormImplClass() {
+        return FormDefault.class;
+    }
+
     protected void bindValidationFactory() {
-        install(new FactoryModuleBuilder().implement(ValidationSet.class, getValidationResultBuilderImplClass())
+        install(new FactoryModuleBuilder().implement(ValidationSet.class, getValidationSetImplClass())
                                           .implement(ValidationMessage.class, getValidationMessageImplClass())
-                                          .implement(ValidationBuilderKey.class, getValidationBuilderKeyImplClass())
-                                          .implement(JsonObjectValidationBuilderKey.class,
-                                                     getJsonObjectValidationBuilderKeyImplClass())
-                                          .implement(JsonArrayValidationBuilderKey.class,
-                                                     getJsonArrayValidationBuilderKeyImplClass())
-                                          .implement(ValidationBuilderTarget.class, getValidationBuilderTargetImplClass())
-                                          .implement(ValidationBuilderCore.class, getValidationBuilderCoreImplClass())
-                                          .implement(ValidationBuilderArray.class, getValidationBuilderArrayImplClass())
-                                          .implement(JsonObjectValidationSet.class, getJsonObjectValidationSetImplClass())
-                                          .implement(JsonArrayValidationSet.class, getJsonArrayValidationSetImplClass())
                                           .build(ValidationFactory.class));
     }
 
-    protected Class<? extends JsonObjectValidationSet> getJsonObjectValidationSetImplClass() {
-        return JsonObjectValidationSetDefault.class;
-    }
-
-    protected Class<? extends JsonArrayValidationSet> getJsonArrayValidationSetImplClass() {
-        return JsonArrayValidationSetDefault.class;
-    }
-
-    protected Class<? extends ValidationSet> getValidationResultBuilderImplClass() {
-        return ValidationSetDefault.class;
+    protected Class<? extends ValidationSet> getValidationSetImplClass() {
+        return ValidationSetSimple.class;
     }
 
     protected Class<? extends ValidationMessage> getValidationMessageImplClass() {
         return ValidationMessageDefault.class;
-    }
-
-    protected Class<? extends ValidationBuilderKey> getValidationBuilderKeyImplClass() {
-        return ValidationBuilderKeyDefault.class;
-    }
-
-    protected Class<? extends ValidationBuilderTarget> getValidationBuilderTargetImplClass() {
-        return ValidationBuilderTargetDefault.class;
-    }
-
-    protected Class<? extends JsonObjectValidationBuilderKey> getJsonObjectValidationBuilderKeyImplClass() {
-        return JsonObjectValidationBuilderKeyDefault.class;
-    }
-
-    protected Class<? extends JsonArrayValidationBuilderKey> getJsonArrayValidationBuilderKeyImplClass() {
-        return JsonArrayValidationBuilderKeyDefault.class;
-    }
-
-    protected Class<? extends ValidationBuilderCore> getValidationBuilderCoreImplClass() {
-        return ValidationBuilderCoreDefault.class;
-    }
-
-    protected Class<? extends ValidationBuilderArray> getValidationBuilderArrayImplClass() {
-        return ValidationBuilderArrayDefault.class;
     }
 
     protected void bindFlashMessageFactory() {
@@ -545,6 +518,10 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         }
 
         bind(Boolean.class).annotatedWith(TestingMode.class).toInstance(isTestingMode);
+    }
+
+    protected void spincastInit() {
+        bind(SpincastInit.class).asEagerSingleton();
     }
 
 }

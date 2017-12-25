@@ -33,13 +33,13 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.json.JsonObjectFactory;
+import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastTestUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -685,9 +685,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         cal.set(Calendar.HOUR_OF_DAY, 12);
 
         Date someDate = cal.getTime();
-
-        ISO8601DateFormat df = new ISO8601DateFormat();
-        String someDateISO8601 = df.format(someDate);
+        String someDateISO8601 = SpincastStatics.getIso8601DateParserDefault().format(someDate);
 
         JsonObject jsonObj = getJsonManager().create();
         jsonObj.put("key1", "val1");
@@ -759,7 +757,6 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         result = jsonObj.getDate("nope", null);
         assertEquals(null, result);
-
     }
 
     @Test
@@ -3126,5 +3123,39 @@ public class JsonObjectsTest extends NoAppTestingBase {
         }
         assertEquals(2, obj.size());
     }
+
+    @Test
+    public void addIfDoesntExistJsonObject() throws Exception {
+
+        JsonObject initialObj = getJsonManager().create();
+        initialObj.put("key1", "val1");
+
+        assertNull(initialObj.getJsonObject("toto"));
+        JsonObject toto = initialObj.getJsonObjectOrEmpty("toto");
+        assertNotNull(toto);
+        assertNull(initialObj.getJsonObject("toto"));
+
+        toto = initialObj.getJsonObjectOrEmpty("toto", true);
+        assertNotNull(toto);
+        assertNotNull(initialObj.getJsonObject("toto"));
+    }
+
+    @Test
+    public void addIfDoesntExistJsonArray() throws Exception {
+
+        JsonObject initialObj = getJsonManager().create();
+        initialObj.put("key1", "val1");
+
+        assertNull(initialObj.getJsonArray("toto"));
+        JsonArray toto = initialObj.getJsonArrayOrEmpty("toto");
+        assertNotNull(toto);
+        assertNull(initialObj.getJsonArray("toto"));
+
+        toto = initialObj.getJsonArrayOrEmpty("toto", true);
+        assertNotNull(toto);
+        assertNotNull(initialObj.getJsonArray("toto"));
+    }
+
+
 
 }

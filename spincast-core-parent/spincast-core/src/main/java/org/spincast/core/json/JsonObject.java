@@ -129,7 +129,7 @@ public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String
      * </li>
      * </ul>
      */
-    public JsonObject merge(Map<String, Object> map);
+    public JsonObject merge(Map<String, ?> map);
 
     /**
      * Merges all the specified Map elements in the JsonObject. The keys
@@ -173,7 +173,7 @@ public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String
      * <code>JsonObject</code> is always 
      * <em>fully</em> mutable or <em>fully</em> immutable.
      */
-    public JsonObject merge(Map<String, Object> map, boolean clone);
+    public JsonObject merge(Map<String, ?> map, boolean clone);
 
     /**
      * Merges the specified <code>JsonObject</code> properties in the current

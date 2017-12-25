@@ -336,17 +336,18 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
                 assertNotNull(cookie);
                 assertEquals("sendCookieVal3", cookie);
 
-                context.response().addCookie("cookie1", "cookieVal1");
-                context.response().addCookie("cookie2", "cookieVal2");
+                context.response().addCookieSession("cookie1", "cookieVal1");
+                context.response().addCookieSession("cookie2", "cookieVal2");
 
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
 
         Cookie cookie = getCookieFactory().createCookie("sendCookie13", "sendCookieVal3");
+        cookie.setSecure(false);
 
-        HttpResponse response = GET("/").addCookie("sendCookie1", "sendCookieVal1")
-                                        .addCookie("sendCookie2", "sendCookieVal2")
+        HttpResponse response = GET("/").addCookie("sendCookie1", "sendCookieVal1", false)
+                                        .addCookie("sendCookie2", "sendCookieVal2", false)
                                         .addCookie(cookie)
                                         .send();
         assertNotNull(response);
@@ -409,7 +410,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
                 assertNotNull(cookie);
                 assertEquals("sent1", cookie);
 
-                context.response().addCookie("testCookie", "testValue");
+                context.response().addCookieSession("testCookie", "testValue");
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
@@ -420,7 +421,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
         customHttpClientBuilder.setDefaultCookieStore(cookieStore);
 
         HttpResponse response = GET("/").setHttpClientBuilder(customHttpClientBuilder)
-                                        .addCookie("sentCookie1", "sent1")
+                                        .addCookie("sentCookie1", "sent1", false)
                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());

@@ -15,7 +15,6 @@ import javax.net.ssl.TrustManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
 
 public class SSLContextFactoryDefault implements SSLContextFactory {
 
@@ -37,7 +36,7 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             TrustManager[] trustManagers = getTrustManagers();
 
             return createSSLContext(keyManagers, trustManagers);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -49,7 +48,7 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             sslContext.init(keyManagers, trustManagers, null);
 
             return sslContext;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -63,11 +62,11 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             try {
                 keyStore.load(keyStoreInputStream, keyStoreStorePass.toCharArray());
             } finally {
-                IOUtils.closeQuietly(keyStoreInputStream);
+                SpincastStatics.closeQuietly(keyStoreInputStream);
             }
 
             return keyStore;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -81,11 +80,11 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             // Check classpath
             //==========================================
             String keyStoreClassPath = keyStorePath;
-            if(keyStoreClassPath.startsWith("/")) {
+            if (keyStoreClassPath.startsWith("/")) {
                 keyStoreClassPath = keyStoreClassPath.substring(1);
             }
             InputStream keyStoreStream = this.getClass().getClassLoader().getResourceAsStream(keyStoreClassPath);
-            if(keyStoreStream != null) {
+            if (keyStoreStream != null) {
                 this.logger.info("KeyStore found in classpath : " + keyStoreClassPath);
                 return keyStoreStream;
             }
@@ -94,14 +93,14 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             // Check filesystem
             //==========================================
             File keyStoreFile = new File(keyStorePath);
-            if(keyStoreFile.isFile()) {
+            if (keyStoreFile.isFile()) {
                 this.logger.info("KeyStore found in file system : " + keyStorePath);
                 return new FileInputStream(keyStoreFile);
             }
 
             throw new RuntimeException("The specified KeyStore can't be found : " + keyStorePath);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -117,7 +116,7 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
 
             return keyManagerFactory.getKeyManagers();
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -130,7 +129,7 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             trustManagerFactory.init((KeyStore)null);
             return trustManagerFactory.getTrustManagers();
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

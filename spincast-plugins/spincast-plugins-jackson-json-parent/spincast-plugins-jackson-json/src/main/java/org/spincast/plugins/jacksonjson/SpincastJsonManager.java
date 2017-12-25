@@ -25,6 +25,8 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectFactory;
 import org.spincast.core.json.JsonObjectOrArray;
 import org.spincast.core.json.JsonPathUtils;
+import org.spincast.core.request.Form;
+import org.spincast.core.request.FormFactory;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -55,6 +57,9 @@ public class SpincastJsonManager implements JsonManager {
 
     protected final Logger logger = LoggerFactory.getLogger(SpincastJsonManager.class);
 
+    public static final String ENUM_SERIALIZER_FIELD_NAME_NAME = "name";
+    public static final String ENUM_SERIALIZER_FIELD_NAME_LABEL = "label";
+
     private final JsonObjectFactory jsonObjectFactory;
     private final Provider<Injector> guiceProvider;
     private final Set<JsonMixinInfo> jsonMixinInfos;
@@ -62,6 +67,7 @@ public class SpincastJsonManager implements JsonManager {
     private final SpincastJsonManagerConfig spincastJsonManagerConfig;
     private final JsonPathUtils jsonPathUtils;
     private final SpincastUtils spincastUtils;
+    private final FormFactory formFactory;
 
     private ObjectMapper objectMapper;
     private JsonSerializer<JsonObject> jsonObjectSerializer;
@@ -71,6 +77,7 @@ public class SpincastJsonManager implements JsonManager {
     private JsonSerializer<Date> dateSerializer;
     private JsonSerializer<BigDecimal> bigDecimalSerializer;
     private DefaultPrettyPrinter jacksonPrettyPrinter;
+    private JsonSerializer<Enum<?>> enumSerializer;
 
     @Inject
     public SpincastJsonManager(Provider<Injector> guiceProvider,
@@ -79,7 +86,9 @@ public class SpincastJsonManager implements JsonManager {
                                SpincastJsonManagerConfig spincastJsonManagerConfig,
                                SpincastConfig spincastConfig,
                                JsonPathUtils jsonPathUtils,
-                               SpincastUtils spincastUtils) {
+                               SpincastUtils spincastUtils,
+                               FormFactory formFactory) {
+
         this.guiceProvider = guiceProvider;
         this.jsonObjectFactory = jsonObjectFactory;
 
@@ -91,6 +100,7 @@ public class SpincastJsonManager implements JsonManager {
         this.spincastConfig = spincastConfig;
         this.jsonPathUtils = jsonPathUtils;
         this.spincastUtils = spincastUtils;
+        this.formFactory = formFactory;
     }
 
     protected Injector getGuice() {
@@ -119,6 +129,10 @@ public class SpincastJsonManager implements JsonManager {
 
     protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
+    }
+
+    protected FormFactory getFormFactory() {
+        return this.formFactory;
     }
 
     protected DefaultPrettyPrinter getJacksonPrettyPrinter() {
@@ -224,6 +238,33 @@ public class SpincastJsonManager implements JsonManager {
         }
         return this.jsonObjectSerializer;
     }
+
+    protected JsonSerializer<Enum<?>> getEnumSerializer() {
+
+        if (this.enumSerializer == null) {
+            this.enumSerializer = new JsonSerializer<Enum<?>>() {
+
+                @Override
+                public void serialize(Enum<?> enumValue,
+                                      JsonGenerator gen,
+                                      SerializerProvider serializers)
+                                                                      throws IOException, JsonProcessingException {
+
+                    if (enumValue == null) {
+                        return;
+                    }
+
+                    Map<String, Object> enumObj = new HashMap<String, Object>();
+                    enumObj.put(ENUM_SERIALIZER_FIELD_NAME_NAME, enumValue.name());
+                    enumObj.put(ENUM_SERIALIZER_FIELD_NAME_LABEL, enumValue.toString());
+
+                    gen.writeObject(enumObj);
+                }
+            };
+        }
+        return this.enumSerializer;
+    }
+
 
     protected JsonSerializer<JsonArray> getJsonArraySerializer() {
 
@@ -434,6 +475,7 @@ public class SpincastJsonManager implements JsonManager {
     /**
      * Register our custom (de)serializers for JsonObject
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void registerJsonObjectModule(ObjectMapper objectMapper) {
 
         SimpleModule module = new SimpleModule();
@@ -441,6 +483,11 @@ public class SpincastJsonManager implements JsonManager {
         module.addDeserializer(JsonObject.class, getJsonObjectDeserializer());
         module.addSerializer(JsonArray.class, getJsonArraySerializer());
         module.addDeserializer(JsonArray.class, getJsonArrayDeserializer());
+
+        if (getSpincastJsonManagerConfig().isSerializeEnumsToNameAndLabelObjects()) {
+            module.addSerializer((Class)Enum.class, getEnumSerializer());
+        }
+
         objectMapper.registerModule(module);
     }
 
@@ -683,6 +730,11 @@ public class SpincastJsonManager implements JsonManager {
     }
 
     @Override
+    public Form createForm(String formName) {
+        return getFormFactory().createForm(formName, null);
+    }
+
+    @Override
     public String convertToJsonDate(Date date) {
         return SpincastStatics.getIso8601DateParserDefault().format(date);
     }
@@ -753,6 +805,9 @@ public class SpincastJsonManager implements JsonManager {
             }
 
             return obj;
+
+        } else if (originalObject instanceof Enum<?>) {
+            return ((Enum<?>)originalObject).name();
         }
 
         //==========================================

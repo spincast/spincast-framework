@@ -162,22 +162,9 @@
                     </ul>
                 </li>
                 <li class="openable">
-                    <a href="#validation">Validation</a>
-                    <ul class="nav nav-stacked">
-                        <li><a href="#validation_sets">The Validation Set</a></li>
-                        <li><a href="#validation_messages">Validation Messages</a></li> 
-                        <li><a href="#validation_keys">Validation Keys</a></li>
-                        <li><a href="#validation_predefined">Predefined Validations</a></li>
-                        <li><a href="#validation_predefined_options">Predefine Validation options</a></li>
-                        <li><a href="#validation_jsonobject">JsonObject validation</a></li>
-                        <li><a href="#validation_sharing_sets">Sharing / Merging Validation Sets</a></li>
-                        <li><a href="#validation_to_jsonobject">Converting to a JsonObject</a></li>
-                    </ul>
-                </li>
-                <li class="openable">
                     <a href="#forms">Forms</a>
                     <ul class="nav nav-stacked">
-                        <li><a href="#forms_model">The form model</a></li>
+                        <li><a href="#forms_validation_pattern">The validation pattern</a></li>
                         <li><a href="#forms_displaying">Displaying the Form</a></li>
                         <li><a href="#forms_display_field_text">Text based fields</a></li>
                         <li><a href="#forms_display_field_text_group">Text based fields group</a></li>
@@ -186,10 +173,10 @@
                         <li><a href="#forms_display_field_checkboxes">Checkboxes</a></li>
                         <li><a href="#forms_display_file_upload">File upload</a></li>
                         <li><a href="#forms_validation_intro">Form validation introduction</a></li>
-                        <li><a href="#forms_validation_data">Getting the submitted form data</a></li>
-                        <li><a href="#forms_validation_validating">Validating the form</a></li>
+                        <li><a href="#forms_validation_data">Retrieving the submitted form</a></li>
+                        <li><a href="#forms_validation_validating">Performing validations</a></li>
                         <li><a href="#forms_validation_messages">Displaying Validation Messages</a></li>
-                        
+                        <li><a href="#forms_generic">Forms are generic</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -230,6 +217,14 @@
                         <li><a href="#plugins_installing">Installing a plugin</a></li>
                         <li><a href="#plugins_add_on">Installing a Request Context add-on</a></li>
                         <li><a href="#plugins_default">Default plugins</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
+                    <a href="#jdbc">JDBC / SQL</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#jdbc_scopes">Scopes</a></li>
+                        <li><a href="#jdbc_statements">Statements</a></li>
+                        <li><a href="#jdbc_resulsets">Resultsets</a></li>
                     </ul>
                 </li>
                 <li class="openable">
@@ -303,11 +298,6 @@
             {% include "./docs/jsonObjects.html" %}
             
             {#==========================================
-            Section "Validation"
-            ==========================================#}
-            {% include "./docs/validation.html" %}
-            
-            {#==========================================
             Section "Forms"
             ==========================================#}
             {% include "./docs/forms.html" %}
@@ -331,6 +321,11 @@
             Section "Plugins"
             ==========================================#}
             {% include "./docs/plugins.html" %}
+
+            {#==========================================
+            Section "JDBC"
+            ==========================================#}
+            {% include "./docs/jdbc.html" %}
 
             {#==========================================
             Section "Miscellaneous"

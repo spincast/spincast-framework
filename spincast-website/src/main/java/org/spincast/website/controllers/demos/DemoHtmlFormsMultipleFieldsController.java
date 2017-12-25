@@ -1,14 +1,16 @@
 package org.spincast.website.controllers.demos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
-import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
+import org.spincast.core.request.FormFactory;
 import org.spincast.core.session.FlashMessageLevel;
-import org.spincast.core.validation.JsonObjectValidationSet;
-import org.spincast.core.validation.ValidationFactory;
-import org.spincast.core.validation.ValidationSet;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.exchange.AppRequestContext;
 
 import com.google.inject.Inject;
@@ -20,33 +22,33 @@ public class DemoHtmlFormsMultipleFieldsController {
 
     protected final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsMultipleFieldsController.class);
 
-    private final ValidationFactory validationFactory;
+    private final FormFactory formFactory;
     private final JsonManager jsonManager;
 
     @Inject
-    public DemoHtmlFormsMultipleFieldsController(ValidationFactory validationFactory,
+    public DemoHtmlFormsMultipleFieldsController(FormFactory formFactory,
                                                  JsonManager jsonManager) {
-        this.validationFactory = validationFactory;
+        this.formFactory = formFactory;
         this.jsonManager = jsonManager;
     }
 
-    protected ValidationFactory getValidationFactory() {
-        return this.validationFactory;
+    protected FormFactory getFormFactory() {
+        return this.formFactory;
     }
 
     protected JsonManager getJsonManager() {
         return this.jsonManager;
     }
 
-    protected void sendTemplate(AppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/demos/htmlForms/multiple.html");
-    }
-
     /**
      * Multiple Fields demo - GET
      */
     public void multipleFields(AppRequestContext context) {
-        sendTemplate(context);
+
+        //==========================================
+        // Sends HTML by rendering the specified template.
+        //==========================================
+        context.response().sendTemplateHtml("/templates/demos/htmlForms/multiple.html");
     }
 
     /**
@@ -55,44 +57,30 @@ public class DemoHtmlFormsMultipleFieldsController {
     public void multipleFieldsSubmit(AppRequestContext context) {
 
         //==========================================
-        // Gets the form's data.
-        // We make it mutable to we can modify the values
-        // of its elements (we're going to trim them!)
+        // Gets the form data as a Form object,
+        // and adds it to the response's model.
+        // The validation message will be added to the
+        // default "validation" model element.
         //==========================================
-        JsonObject form = context.request().getFormData().getJsonObject("demoForm").clone(true);
+        Form form = context.request().getForm("demoForm");
+        context.response().addForm(form);
 
         //==========================================
-        // We validate the form and we prefix the 
-        // generated validation keys with "demoForm." 
-        // so they match as much as possible the JsonPath 
-        // of their associated validated element!
+        // Validates the form
         //==========================================
-        ValidationSet validationResult = validateForm(form).prefixValidationKeys("demoForm.");
+        validateForm(form);
 
         //==========================================
-        // If there are validation errors, we add the
-        // validation results to the response's model and
-        // display the form again.
+        // If there are validation errors, we
+        // display the form again. We do so
+        // simply by calling the GET handler.
         //==========================================
-        if(!validationResult.isValid() || "stay".equals(form.getString("action"))) {
-
-            //==========================================
-            // We add the form object back to the response
-            // model.
-            //==========================================
-            context.response().getModel().put("demoForm", form);
-
-            //==========================================
-            // We add the Validation Set to the response model too, 
-            // using a "validation" key to scope it.
-            //==========================================
-            context.response().getModel().put("validation", validationResult);
-
-            sendTemplate(context);
+        if (!form.isValid() || "stay".equals(form.getString("action"))) {
+            multipleFields(context);
 
         //==========================================@formatter:off 
         // If the form is valid, we redirect to a new
-        // page with a "success" Flash Message.
+        // page with a success Flash Message.
         //==========================================@formatter:on
         } else {
             context.response().redirect(FlashMessageLevel.SUCCESS,
@@ -101,80 +89,108 @@ public class DemoHtmlFormsMultipleFieldsController {
     }
 
     /**
-     * Validation of the form
+     * Validates the form. 
+     * <p>
+     * The results of the validations
+     * are saved in the form itself, so there is no need to
+     * return anything.
      */
-    protected ValidationSet validateForm(JsonObject form) {
-
-        //==========================================
-        // We get a Validation Set associated with the
-        // form object.
-        //==========================================
-        JsonObjectValidationSet validationSet = form.validationSet();
+    protected void validateForm(Form form) {
 
         //==========================================
         // Trims all String fields.
-        // We can do this because we got a *mutable*
-        // version of the form data.
         //==========================================
         form.trimAll();
 
         //==========================================
-        // Validates the email field
+        // Email validation
         //==========================================
-        ValidationSet lastResult =
-                validationSet.validationNotBlank().jsonPath("email").failMessageText("Please enter the email").validate();
+        String email = form.getString("email");
 
-        if(lastResult.isValid()) {
-            validationSet.validationEmail().jsonPath("email").failMessageText("Please enter a valid email").validate();
+        if (StringUtils.isBlank(email)) {
+            form.addError("email",
+                          "email_empty",
+                          "The email is required");
         }
 
-        lastResult = validationSet.validationNotBlank().jsonPath("emailAgain")
-                                  .failMessageText("Please enter the email again").validate();
+        //==========================================
+        // We perform this second validation only
+        // if the previous one is valid.
+        //==========================================
+        if (form.isValid("email") && !form.validators().isEmailValid(email)) {
+            form.addError("email",
+                          "email_invalid",
+                          "The email is invalid");
+        }
 
-        if(lastResult.isValid()) {
-            lastResult = validationSet.validationEquivalent(form.getString("email"))
-                                      .jsonPath("emailAgain")
-                                      .failMessageText("Must match the first email field.")
-                                      .validate();
+        String emailAgain = form.getString("emailAgain");
+        if (StringUtils.isBlank(email)) {
+            form.addError("emailAgain",
+                          "emailAgain_empty",
+                          "Please enter the email again");
+        }
+
+        if (form.isValid("emailAgain") && !emailAgain.equals(email)) {
+            form.addError("emailAgain",
+                          "emailAgain_mustMatch",
+                          "Must match the first email field.");
         }
 
         //==========================================
         // Validates that tags are not blank
-        //
-        // Notice how this is going to validate *all*
-        // the tags, in a single validation.
-        //
-        // Also notice that we add an Error Validation Message
-        // *on the array itself*, if at least one of the tag is
-        // invalid!
         //==========================================
-        lastResult = validationSet.validationNotBlank()
-                                  .jsonPathAll("tags")
-                                  .failMessageText("Please specify the tag.")
-                                  .arrayItselfAddFailMessage("Some tags are invalid.")
-                                  .validate();
+        JsonArray tags = form.getJsonArray("tags");
+        if (tags.size() < 1) {
+            form.addError("tags",
+                          "tags_minSize",
+                          "Please specify the tags.");
+        }
+        if (form.isValid("tags")) {
+
+            boolean atLeastOneTagError = false;
+            for (int i = 0; i < tags.size(); i++) {
+
+                String tag = tags.getString(i);
+                String tagValidationKey = "tags[" + i + "]";
+                if (StringUtils.isBlank(tag)) {
+                    form.addError(tagValidationKey, "tag_empty", "Please specify the tag.");
+                }
+                atLeastOneTagError = atLeastOneTagError || form.isError(tagValidationKey);
+            }
+
+            //==========================================
+            // If there is at least one invalid tag, 
+            // we add an error *on the tags array itself*.
+            //==========================================
+            if (atLeastOneTagError) {
+                form.addError("tags", "tags_someInvalid", "Some tags are invalid.");
+            }
+        }
 
         //==========================================
         // Validates the "Action on submit"
         //==========================================
-        lastResult = validationSet.validationNotEquivalent("error")
-                                  .jsonPath("action")
-                                  .failMessageText("This option is not valid!")
-                                  .validate();
-
-        lastResult = validationSet.validationNotEquivalent("warning")
-                                  .jsonPath("action")
-                                  .treatErrorAsWarning()
-                                  .failMessageText("This option is a warning...")
-                                  .validate();
+        String action = form.getString("action");
+        if ("error".equals(action)) {
+            form.addError("action",
+                          "action_invalid",
+                          "This option is not valid!");
+        }
+        if ("warning".equals(action)) {
+            form.addWarning("action",
+                            "action_warning",
+                            "This option is a warning...");
+        }
 
         //==========================================
         // A drink must be checked
         //==========================================
-        lastResult = validationSet.validationNotBlank()
-                                  .jsonPath("drink")
-                                  .failMessageText("Please choose a drink!")
-                                  .validate();
+        String drink = form.getString("drink");
+        if (StringUtils.isBlank(drink)) {
+            form.addError("drink",
+                          "drink_empty",
+                          "Please choose a drink!");
+        }
 
         //==========================================
         // "beer" is invalid as a favorite drink if 
@@ -184,48 +200,37 @@ public class DemoHtmlFormsMultipleFieldsController {
         // where we add a Validation Message
         // by ourself on the Validation Set.
         //==========================================
-        if(lastResult.isSuccess()) {
-            if("beer".equals(form.getString("drink")) && validationSet.isWarning("action")) {
-                validationSet.addError("drink",
-                                       "BEER_AND_WARNING_ACTION",
-                                       "'Beer' is invalid if the 'Action on submit' field is a Warning!");
-            }
+        if (form.isValid("drink") && "beer".equals(drink) && form.isWarning("action")) {
+            form.addError("drink",
+                          "beer_and_warning_action",
+                          "'Beer' is invalid if the 'Action on submit' field is a Warning!");
         }
 
         //==========================================
         // Two numbers must be selected.
         //
-        // The "true" parameter means that the size validation
-        // will ignore null values when counting.
+        // We ignore null values
         //==========================================
-        lastResult = validationSet.validationSize(2, true)
-                                  .jsonPath("numbers")
-                                  .failMessageText("Please select exactly 2 numbers.")
-                                  .validate();
-
-        //==========================================
-        // Both numbers must be odd or both even.
-        //==========================================
-        if(lastResult.isSuccess()) {
-
-            JsonArray numbers = form.getJsonArray("numbers");
-
-            Boolean num1Even = null;
-            for(int i = 0; i < numbers.size(); i++) {
-                Integer num = numbers.getInteger(i);
-                if(num != null) {
-                    if(num1Even == null) {
-                        num1Even = num % 2 == 0;
-                    } else {
-                        boolean num2Even = num % 2 == 0;
-                        if(!num1Even.equals(num2Even)) {
-                            validationSet.addError("numbers",
-                                                   "ODD_OR_EVEN",
-                                                   "Both numbers must be odd or both even.");
-                            break;
-                        }
-                    }
-                }
+        List<Integer> validNumbers = new ArrayList<Integer>();
+        JsonArray numbers = form.getJsonArrayOrEmpty("numbers");
+        for (int i = 0; i < numbers.size(); i++) {
+            Integer num = numbers.getInteger(i);
+            if (num != null) {
+                validNumbers.add(num);
+            }
+        }
+        if (validNumbers.size() != 2) {
+            form.addError("numbers",
+                          "numbers_nbrRequired",
+                          "Please select exactly 2 numbers.");
+        } else {
+            //==========================================
+            // Both numbers must be odd or both even.
+            //==========================================
+            if ((validNumbers.get(0) + validNumbers.get(1)) % 2 != 0) {
+                form.addError("numbers",
+                              "ODD_OR_EVEN",
+                              "Both numbers must be odd or both even.");
             }
         }
 
@@ -239,11 +244,11 @@ public class DemoHtmlFormsMultipleFieldsController {
         // Validates the acceptation of the TOS,
         // which is a "boolean checkbox".
         //==========================================
-        lastResult = validationSet.validationEquivalent(true)
-                                  .jsonPath("acceptTos")
-                                  .failMessageText("You need to check this")
-                                  .validate();
-
-        return validationSet;
+        boolean acceptTos = form.getBoolean("acceptTos", false);
+        if (!acceptTos) {
+            form.addError("acceptTos",
+                          "acceptTos_false",
+                          "You need to check this");
+        }
     }
 }

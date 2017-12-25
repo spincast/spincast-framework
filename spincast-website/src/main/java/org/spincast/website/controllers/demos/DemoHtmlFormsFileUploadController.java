@@ -10,13 +10,14 @@ import javax.imageio.stream.ImageInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
+import org.spincast.core.server.UploadedFile;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.session.FlashMessageFactory;
 import org.spincast.core.session.FlashMessageLevel;
-import org.spincast.core.validation.JsonObjectValidationSet;
+import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.website.exchange.AppRequestContext;
 
 import com.google.inject.Inject;
@@ -52,10 +53,10 @@ public class DemoHtmlFormsFileUploadController {
         // response model so it can be displayed!
         //==========================================
         FlashMessage flashMessage = context.request().getFlashMessage();
-        if(flashMessage != null) {
+        if (flashMessage != null) {
 
             String uploadFileBase64ImageSrc = flashMessage.getVariables().getString("uploadFileBase64ImageSrc");
-            if(uploadFileBase64ImageSrc == null) {
+            if (uploadFileBase64ImageSrc == null) {
                 this.logger.error("The uploadFileBase64ImageSrc was expected...");
             } else {
                 context.response().getModel().put("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
@@ -75,50 +76,52 @@ public class DemoHtmlFormsFileUploadController {
     public void fileUploadSubmit(AppRequestContext context) {
 
         //==========================================
-        // Creates a Validation Set to record any
-        // errors with the uploadded file.
+        // Gets the form data as a Form object,
+        // and adds it back to the response's model.
+        // The validation message will be added to the
+        // default "validation" element of the model.
         //==========================================
-        JsonObjectValidationSet validation =
-                context.request().getFormData().getJsonObject("demoForm").validationSet();
+        Form form = context.request().getForm("demoForm");
+        context.response().addForm(form);
 
         //==========================================
         // Gets the uploaded file
         //==========================================
-        File uploadedFile = context.request().getUploadedFileFirst("demoForm.fileToUpload");
-        if(uploadedFile == null) {
-            validation.addError("demoForm.fileToUpload", "FILE_MISSING", "Please select a file to upload.");
+        UploadedFile uploadedFile = context.request().getUploadedFileFirst("demoForm.fileToUpload");
+        if (uploadedFile == null) {
+            form.addError("fileToUpload", "file_missing", "Please select a file to upload.");
         }
 
-        long length = uploadedFile.length();
-        if(length == 0) {
-            validation.addError("demoForm.fileToUpload", "FILE_EMPTY", "The file is empty.");
-        } else if((length / 1024) > 200) {
-            validation.addError("demoForm.fileToUpload", "FILE_TOO_BIG", "The file must be 200KB or less. " +
-                                                                         "It was " + (length / 1024) + "KB.");
+        File file = uploadedFile.getFile();
+
+        long length = file.length();
+        if (length == 0) {
+            form.addError("fileToUpload", "file_empty", "The file is empty.");
+        } else if ((length / 1024) > 200) {
+            form.addError("fileToUpload", "file_too_big", "The file must be 200KB or less. " +
+                                                          "It was " + (length / 1024) + "KB.");
         }
 
         //==========================================
         // We validate that the uploaded file is a
         // valide image.
         //==========================================
-        if(validation.isValid()) {
+        if (form.isValid("fileToUpload")) {
             try {
-                ImageIO.read(uploadedFile).toString();
-            } catch(Exception e) {
-                validation.addError("demoForm.fileToUpload",
-                                    "FILE_NOT_KNOWN_IMAGE_TYPE",
-                                    "The file must be a valid image of type PNG, JPEG, GIF or BMP.");
+                ImageIO.read(file).toString();
+            } catch (Exception e) {
+                form.addError("fileToUpload",
+                              "fileToUpload_notValidImage",
+                              "The file must be a valid image of type PNG, JPEG, GIF or BMP.");
             }
         }
 
         //==========================================
         // If the validation is not successful, we
-        // add the form model back to the response
-        // model and we redisplay the form.
+        // redisplay the form.
         //==========================================
-        if(!validation.isValid()) {
-            context.response().getModel().put("validation", validation);
-            sendTemplate(context);
+        if (!form.isValid()) {
+            fileUpload(context);
 
         //==========================================@formatter:off 
         // The uploaded file is valid!
@@ -135,19 +138,19 @@ public class DemoHtmlFormsFileUploadController {
             JsonObject variables = context.json().create();
             try {
 
-                iis = ImageIO.createImageInputStream(uploadedFile);
+                iis = ImageIO.createImageInputStream(file);
                 Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
-                if(iter.hasNext()) {
-                    String base64Str = Base64.encodeBase64String(FileUtils.readFileToByteArray(uploadedFile));
+                if (iter.hasNext()) {
+                    String base64Str = Base64.encodeBase64String(FileUtils.readFileToByteArray(file));
                     String formatName = iter.next().getFormatName();
                     String uploadFileBase64ImageSrc = "data:image/" + formatName + ";charset=utf-8;base64," + base64Str;
                     variables.put("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
                 }
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 this.logger.error("Error converting the image to base 64.", ex);
             } finally {
-                IOUtils.closeQuietly(iis);
+                SpincastStatics.closeQuietly(iis);
             }
 
             context.response().redirect(getFlashMessageFactory().create(FlashMessageLevel.SUCCESS,

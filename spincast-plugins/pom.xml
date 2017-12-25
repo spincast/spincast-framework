@@ -31,6 +31,7 @@
         <module>spincast-plugins-dictionary-parent</module>
         <module>spincast-plugins-http-client-parent</module> 
         <module>spincast-plugins-http-caching-parent</module>  
+        <module>spincast-plugins-jdbc-parent</module>  
     </modules>
 
 </project>

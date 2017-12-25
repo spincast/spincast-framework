@@ -12,7 +12,6 @@ import org.spincast.core.exceptions.CantConvertException;
 import org.spincast.core.json.JsonObjectDefault.IFirstElementGetter;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.core.validation.ValidationFactory;
 
 /**
  * Base class for both JsonObject and JsonArray.
@@ -34,7 +33,6 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
     protected final Object defaultElementValidator = new Object();
     private Map<String, JsonPathCachingItem> jsonPathCachingMap;
     private ElementTransformer trimTransformer;
-    private final ValidationFactory validationFactory;
 
     /**
      * Constructor
@@ -42,13 +40,11 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
     public JsonObjectArrayBase(boolean mutable,
                                JsonManager jsonManager,
                                SpincastUtils spincastUtils,
-                               ObjectConverter objectConverter,
-                               ValidationFactory validationFactory) {
+                               ObjectConverter objectConverter) {
         this.mutable = mutable;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
         this.objectConverter = objectConverter;
-        this.validationFactory = validationFactory;
     }
 
     @Override
@@ -68,16 +64,12 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         return this.objectConverter;
     }
 
-    protected ValidationFactory getValidationFactory() {
-        return this.validationFactory;
-    }
-
     protected Object getdefaultElementValidator() {
         return this.defaultElementValidator;
     }
 
     protected Map<String, JsonPathCachingItem> getJsonPathCachingMap() {
-        if(this.jsonPathCachingMap == null) {
+        if (this.jsonPathCachingMap == null) {
             this.jsonPathCachingMap = new HashMap<>();
         }
         return this.jsonPathCachingMap;
@@ -113,11 +105,18 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
     @Override
     public JsonObject getJsonObjectOrEmpty(String jsonPath) {
+        return getJsonObjectOrEmpty(jsonPath, false);
+    }
 
-        JsonObject defaultObj = getJsonManager().create();
-        JsonObject obj = getJsonObject(jsonPath, defaultObj);
-        if(obj == null) {
-            obj = defaultObj;
+    @Override
+    public JsonObject getJsonObjectOrEmpty(String jsonPath, boolean addIfDoesntExist) {
+
+        JsonObject obj = getJsonObject(jsonPath);
+        if (obj == null) {
+            obj = getJsonManager().create();
+            if (addIfDoesntExist) {
+                put(jsonPath, obj);
+            }
         }
 
         return obj;
@@ -146,7 +145,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
         JsonObject defaultObj = getJsonManager().create();
         JsonObject obj = getJsonObject(jsonPath, true, defaultObj, false);
-        if(obj == null) {
+        if (obj == null) {
             obj = defaultObj;
         }
 
@@ -172,11 +171,18 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
     @Override
     public JsonArray getJsonArrayOrEmpty(String jsonPath) {
+        return getJsonArrayOrEmpty(jsonPath, false);
+    }
 
-        JsonArray defaultArray = getJsonManager().createArray();
-        JsonArray array = getJsonArray(jsonPath, defaultArray);
-        if(array == null) {
-            array = defaultArray;
+    @Override
+    public JsonArray getJsonArrayOrEmpty(String jsonPath, boolean addIfDoesntExist) {
+
+        JsonArray array = getJsonArray(jsonPath);
+        if (array == null) {
+            array = getJsonManager().createArray();
+            if (addIfDoesntExist) {
+                put(jsonPath, array);
+            }
         }
 
         return array;
@@ -199,7 +205,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
         JsonArray defaultArray = getJsonManager().createArray();
         JsonArray array = getJsonArray(jsonPath, true, getJsonManager().createArray(), false);
-        if(array == null) {
+        if (array == null) {
             array = defaultArray;
         }
 
@@ -521,14 +527,14 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
                                   IFirstElementGetter<T> firstElementGetter) {
 
         JsonArray array;
-        if(parseJsonPath) {
+        if (parseJsonPath) {
             array = getJsonArray(jsonPath, null);
         } else {
             array = getJsonArrayNoKeyParsing(jsonPath, null);
         }
 
-        if(array == null) {
-            if(hasdefaultElement) {
+        if (array == null) {
+            if (hasdefaultElement) {
                 return defaultElement;
             }
             return null;
@@ -563,7 +569,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public String get(JsonArray array,
                               boolean hasdefaultElement,
                               String defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getString(0, defaultElement);
                 } else {
                     return array.getString(0);
@@ -614,7 +620,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public JsonObject get(JsonArray array,
                                   boolean hasdefaultElement,
                                   JsonObject defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getJsonObject(0, defaultElement);
                 } else {
                     return array.getJsonObject(0);
@@ -650,7 +656,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public JsonArray get(JsonArray array,
                                  boolean hasdefaultElement,
                                  JsonArray defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getJsonArray(0, defaultElement);
                 } else {
                     return array.getJsonArray(0);
@@ -685,7 +691,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public Integer get(JsonArray array,
                                boolean hasdefaultElement,
                                Integer defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getInteger(0, defaultElement);
                 } else {
                     return array.getInteger(0);
@@ -720,7 +726,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public Long get(JsonArray array,
                             boolean hasdefaultElement,
                             Long defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getLong(0, defaultElement);
                 } else {
                     return array.getLong(0);
@@ -755,7 +761,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public Double get(JsonArray array,
                               boolean hasdefaultElement,
                               Double defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getDouble(0, defaultElement);
                 } else {
                     return array.getDouble(0);
@@ -790,7 +796,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public Float get(JsonArray array,
                              boolean hasdefaultElement,
                              Float defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getFloat(0, defaultElement);
                 } else {
                     return array.getFloat(0);
@@ -825,7 +831,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public Boolean get(JsonArray array,
                                boolean hasdefaultElement,
                                Boolean defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getBoolean(0, defaultElement);
                 } else {
                     return array.getBoolean(0);
@@ -861,7 +867,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public BigDecimal get(JsonArray array,
                                   boolean hasdefaultElement,
                                   BigDecimal defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getBigDecimal(0, defaultElement);
                 } else {
                     return array.getBigDecimal(0);
@@ -897,7 +903,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public byte[] get(JsonArray array,
                               boolean hasdefaultElement,
                               byte[] defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getBytesFromBase64String(0, defaultElement);
                 } else {
                     return array.getBytesFromBase64String(0);
@@ -932,7 +938,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             public Date get(JsonArray array,
                             boolean hasdefaultElement,
                             Date defaultElement) {
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     return array.getDate(0, defaultElement);
                 } else {
                     return array.getDate(0);
@@ -1228,11 +1234,11 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
         Object val = getElement(jsonPath, false, null, parseKey);
 
-        if(val == null || val instanceof byte[]) {
+        if (val == null || val instanceof byte[]) {
             return true;
         }
 
-        if(!acceptBase64StringToo || !(val instanceof String)) {
+        if (!acceptBase64StringToo || !(val instanceof String)) {
             return false;
         }
 
@@ -1243,7 +1249,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         try {
             getBytesFromBase64StringValueFromObject(valStr);
             return true;
-        } catch(CantConvertException ex) {
+        } catch (CantConvertException ex) {
             return false;
         }
     }
@@ -1314,7 +1320,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         Object object = getElement(jsonPath, true, getdefaultElementValidator(), true);
 
         // reference equality ok here
-        if(object == getdefaultElementValidator()) {
+        if (object == getdefaultElementValidator()) {
             return false;
         } else {
             return true;
@@ -1331,7 +1337,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
                                 Object defaultElement,
                                 boolean parseJsonPath) {
 
-        if(!parseJsonPath) {
+        if (!parseJsonPath) {
             return getElementNoKeyParsing(key, hasdefaultElement, defaultElement);
         } else {
 
@@ -1339,11 +1345,11 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             // If the object is immutable, we may have the
             // element of the specified JsonPath in cache.
             //==========================================
-            if(!isMutable()) {
+            if (!isMutable()) {
 
                 JsonPathCachingItem jsonPathCachingItem = getJsonPathCachingMap().get(key);
-                if(jsonPathCachingItem != null) {
-                    if(jsonPathCachingItem.exists) {
+                if (jsonPathCachingItem != null) {
+                    if (jsonPathCachingItem.exists) {
                         return jsonPathCachingItem.element;
                     } else {
                         return defaultElement;
@@ -1352,9 +1358,9 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             }
 
             Object element;
-            if(this instanceof JsonObject) {
+            if (this instanceof JsonObject) {
                 element = getJsonManager().getElementAtJsonPath((JsonObject)this, key, getdefaultElementValidator());
-            } else if(this instanceof JsonArray) {
+            } else if (this instanceof JsonArray) {
                 element = getJsonManager().getElementAtJsonPath((JsonArray)this, key, getdefaultElementValidator());
             } else {
                 throw new RuntimeException("Type not managed here : " + this.getClass().getName());
@@ -1363,16 +1369,16 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             Object elementToReturn = element;
             boolean jsonPathElementExists = true;
             // reference equality ok here
-            if(element == getdefaultElementValidator()) {
+            if (element == getdefaultElementValidator()) {
                 jsonPathElementExists = false;
-                if(hasdefaultElement) {
+                if (hasdefaultElement) {
                     elementToReturn = defaultElement;
                 } else {
                     elementToReturn = null;
                 }
             }
 
-            if(!isMutable()) {
+            if (!isMutable()) {
                 JsonPathCachingItem jsonPathCachingItem = new JsonPathCachingItem();
                 jsonPathCachingItem.exists = jsonPathElementExists;
                 jsonPathCachingItem.element = element;
@@ -1385,7 +1391,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        if(!isMutable()) {
+        if (!isMutable()) {
             return clone(false);
         } else {
             return clone(true);
@@ -1394,16 +1400,16 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
     protected ElementTransformer getTrimTransformer() {
 
-        if(this.trimTransformer == null) {
+        if (this.trimTransformer == null) {
             this.trimTransformer = new ElementTransformer() {
 
                 @Override
                 public Object transform(Object obj) {
 
-                    if(obj == null) {
+                    if (obj == null) {
                         return null;
                     }
-                    if(!(obj instanceof String)) {
+                    if (!(obj instanceof String)) {
                         return obj;
                     }
 
@@ -1454,23 +1460,23 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
     protected JsonObjectOrArray put(String jsonPath, Object element, boolean clone, boolean parseJsonPath) {
 
-        if(!isMutable()) {
+        if (!isMutable()) {
             throw new RuntimeException("This object is immutable");
         }
 
         Objects.requireNonNull(jsonPath, "jsonPath key can't be NULL");
 
-        if(element != null) {
+        if (element != null) {
 
             //==========================================
             // Can the object convert itself to a 
             // JsonObject or JsonArray?
             //==========================================
             boolean newObject = false;
-            if(element instanceof ToJsonObjectConvertible) {
+            if (element instanceof ToJsonObjectConvertible) {
                 newObject = true;
                 element = ((ToJsonObjectConvertible)element).convertToJsonObject();
-            } else if(element instanceof ToJsonArrayConvertible) {
+            } else if (element instanceof ToJsonArrayConvertible) {
                 newObject = true;
                 element = ((ToJsonArrayConvertible)element).convertToJsonArray();
             }
@@ -1480,8 +1486,8 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             // We always do if the element is a JsonObject or a JsonArray and
             // its mutability is not the same as the current object.
             //==========================================
-            if(element instanceof JsonObjectOrArray) {
-                if(!newObject && (clone || ((JsonObjectOrArray)element).isMutable() != isMutable())) {
+            if (element instanceof JsonObjectOrArray) {
+                if (!newObject && (clone || ((JsonObjectOrArray)element).isMutable() != isMutable())) {
                     element = ((JsonObjectOrArray)element).clone(isMutable());
                 }
             } else {
@@ -1489,8 +1495,8 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
             }
         }
 
-        if(parseJsonPath) {
-            // Alredy cloned if required.
+        if (parseJsonPath) {
+            // Already cloned if required.
             getJsonManager().putElementAtJsonPath(this, jsonPath, element, false);
         } else {
             putAsIs(jsonPath, element);

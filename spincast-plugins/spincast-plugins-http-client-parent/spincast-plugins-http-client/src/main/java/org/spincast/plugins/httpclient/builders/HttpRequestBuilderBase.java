@@ -114,7 +114,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         // No specific HttpClientBuilder to use?
         // We create a default one.
         //==========================================
-        if(this.httpClientBuilder == null) {
+        if (this.httpClientBuilder == null) {
             this.httpClientBuilder = createHttpClientBuilder();
         }
 
@@ -128,13 +128,13 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         //==========================================
         // Disable SSL certificate errors?
         //==========================================
-        if(isDisableSslCertificateErrors()) {
+        if (isDisableSslCertificateErrors()) {
             try {
                 SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
                 SSLConnectionSocketFactory sslsf =
                         new SSLConnectionSocketFactory(sslcontext, new String[]{"TLSv1"}, null, new NoopHostnameVerifier());
                 this.httpClientBuilder.setSSLSocketFactory(sslsf);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
         }
@@ -142,7 +142,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         //==========================================
         // Http authentication credentials?
         //==========================================
-        if(!StringUtils.isBlank(getHttpAuthUsername())) {
+        if (!StringUtils.isBlank(getHttpAuthUsername())) {
 
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY,
@@ -185,18 +185,18 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         // At least, we have a test to make sure this reflection
         // works: HttpClientTest#customCookieStore()
         //==========================================
-        if(httpClientBuilder != null) {
+        if (httpClientBuilder != null) {
             try {
 
                 Field cookieStoreField = httpClientBuilder.getClass().getDeclaredField("cookieStore");
                 cookieStoreField.setAccessible(true);
 
                 CookieStore cookieStore = (CookieStore)cookieStoreField.get(httpClientBuilder);
-                if(cookieStore != null) {
+                if (cookieStore != null) {
                     setCookieStore(cookieStore);
                 }
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
         }
@@ -221,7 +221,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
     }
 
     protected HttpClient getHttpClient() {
-        if(this.httpClient == null) {
+        if (this.httpClient == null) {
             this.httpClient = createHttpClient();
         }
         return this.httpClient;
@@ -241,7 +241,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         // If no custom Cookie Store has been specified,
         // we use a default one.
         //==========================================
-        if(this.cookieStore == null) {
+        if (this.cookieStore == null) {
             this.cookieStore = new BasicCookieStore();
         }
         return this.cookieStore;
@@ -249,10 +249,15 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
 
     @Override
     public T addCookie(String name, String value) {
+        return addCookie(name, value, true);
+    }
 
+    @Override
+    public T addCookie(String name, String value, boolean secure) {
         Objects.requireNonNull(name, "The name can't be NULL");
 
         Cookie cookie = getCookieFactory().createCookie(name, value);
+        cookie.setSecure(secure);
         return addCookie(cookie);
     }
 
@@ -266,10 +271,10 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
     @Override
     public T addCookies(Collection<Cookie> cookies) {
 
-        if(cookies != null) {
+        if (cookies != null) {
 
-            for(Cookie cookie : cookies) {
-                if(cookie != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie != null) {
                     org.spincast.shaded.org.apache.http.cookie.Cookie apacheCookie = convertToApacheCookie(cookie);
                     getCookieStore().addCookie(apacheCookie);
                 }
@@ -286,7 +291,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
      */
     protected org.spincast.shaded.org.apache.http.cookie.Cookie convertToApacheCookie(Cookie cookie) {
 
-        if(cookie == null) {
+        if (cookie == null) {
             return null;
         }
 
@@ -321,7 +326,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         Objects.requireNonNull(key, "The key can't be NULL");
 
         List<String> currentValues = getHeaders().get(key);
-        if(currentValues == null) {
+        if (currentValues == null) {
             currentValues = new ArrayList<String>();
             getHeaders().put(key, currentValues);
         }
@@ -345,7 +350,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
     }
 
     protected Map<String, List<String>> getHeaders() {
-        if(this.headers == null) {
+        if (this.headers == null) {
             this.headers = new HashMap<String, List<String>>();
         }
         return this.headers;
@@ -414,7 +419,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         try {
 
             RequestConfig requestConfig = getRequestConfig();
-            if(requestConfig == null) {
+            if (requestConfig == null) {
                 requestConfig = RequestConfig.copy(RequestConfig.DEFAULT)
                                              .setCookieSpec(CookieSpecs.STANDARD)
                                              .build();
@@ -424,19 +429,19 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
 
             HttpRequestBase request = createMethodSpecificHttpRequest(url);
 
-            if(requestConfig != null) {
+            if (requestConfig != null) {
                 request.setConfig(requestConfig);
             }
 
-            for(Entry<String, List<String>> entry : getHeaders().entrySet()) {
+            for (Entry<String, List<String>> entry : getHeaders().entrySet()) {
                 String key = entry.getKey();
-                for(String value : entry.getValue()) {
+                for (String value : entry.getValue()) {
                     request.addHeader(key, value);
                 }
             }
 
             return getHttpClient().execute(request);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -463,12 +468,12 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
 
                 String contentType = null;
                 Header contentTypeHeader = response.getFirstHeader(HttpHeaders.CONTENT_TYPE);
-                if(contentTypeHeader != null) {
+                if (contentTypeHeader != null) {
                     contentType = contentTypeHeader.getValue();
                 }
 
                 HttpEntity entity = response.getEntity();
-                if(entity != null) {
+                if (entity != null) {
                     content = EntityUtils.toByteArray(entity);
                 }
 
@@ -476,10 +481,10 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
 
                 Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
                 Header[] allHeaders = response.getAllHeaders();
-                for(Header header : allHeaders) {
+                for (Header header : allHeaders) {
 
                     List<String> vals = responseHeaders.get(header.getName());
-                    if(vals == null) {
+                    if (vals == null) {
                         vals = new ArrayList<String>();
                         responseHeaders.put(header.getName(), vals);
                     }
@@ -488,20 +493,20 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
 
                 Map<String, Cookie> cookies = new HashMap<String, Cookie>();
                 CookieStore cookieStore = getCookieStore();
-                if(cookieStore != null) {
+                if (cookieStore != null) {
                     List<org.spincast.shaded.org.apache.http.cookie.Cookie> responseCookies = cookieStore.getCookies();
-                    for(org.spincast.shaded.org.apache.http.cookie.Cookie responseCookie : responseCookies) {
+                    for (org.spincast.shaded.org.apache.http.cookie.Cookie responseCookie : responseCookies) {
 
                         String name = responseCookie.getName();
                         String value = responseCookie.getValue();
-                        if(value != null) {
+                        if (value != null) {
                             try {
                                 // Try to set this as the cookie name or value without
                                 // this encoding : "bœuf".
                                 name = URLDecoder.decode(name, getCookieEncoding());
                                 value = URLDecoder.decode(value, getCookieEncoding());
 
-                            } catch(Exception ex) {
+                            } catch (Exception ex) {
                                 throw SpincastStatics.runtimize(ex);
                             }
                         }
@@ -524,7 +529,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
             } finally {
                 EntityUtils.consumeQuietly(response.getEntity());
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

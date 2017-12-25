@@ -282,7 +282,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     public void fileFileSystemRelative() throws Exception {
 
         String fileRelativePath = "/testing/" + UUID.randomUUID().toString() + ".html";
-        File file = new File(getSpincastConfig().getSpincastWritableDir(), fileRelativePath);
+        File file = new File(getSpincastConfig().getTempDir(), fileRelativePath);
         FileUtils.writeStringToFile(file, "<h1>hi</h1>", "UTF-8");
         try {
             getRouter().file("/file").pathRelative(fileRelativePath).save();
@@ -304,7 +304,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
         try {
 
             String dirRelativePath = "/testing/" + UUID.randomUUID().toString();
-            dir = new File(getSpincastConfig().getSpincastWritableDir(), dirRelativePath);
+            dir = new File(getSpincastConfig().getTempDir(), dirRelativePath);
             assertTrue(dir.mkdirs());
 
             String fileName = UUID.randomUUID().toString() + ".html";
@@ -475,7 +475,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dirSplatRelativePathValid() throws Exception {
 
-        File file = new File(getSpincastConfig().getSpincastWritableDir() + "/dirSplatRelativePathValid/test.html");
+        File file = new File(getSpincastConfig().getTempDir() + "/dirSplatRelativePathValid/test.html");
         FileUtils.writeStringToFile(file, "test", "UTF-8");
         try {
             getRouter().dir("/one/*{remaining}").pathRelative("/dirSplatRelativePathValid").save();
@@ -492,7 +492,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dirSplatRelativePathNotFound() throws Exception {
 
-        File file = new File(getSpincastConfig().getSpincastWritableDir() + "/dirSplatRelativePathValid/test.html");
+        File file = new File(getSpincastConfig().getTempDir() + "/dirSplatRelativePathValid/test.html");
         FileUtils.writeStringToFile(file, "test", "UTF-8");
         try {
             getRouter().dir("/one/*{remaining}").pathRelative("/dirSplatRelativePathValid").save();

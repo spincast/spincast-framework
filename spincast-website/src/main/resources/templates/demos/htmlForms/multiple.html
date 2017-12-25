@@ -58,7 +58,7 @@
                 There is <em>no</em> client-side validation in this demo. It's on
                 purpose since we want
                 to demonstrate how <em>server-side</em> validation works and how the
-                <a href="/documentation#validation_messages">Validation Messages</a> can be displayed. 
+                <code>Validation Messages</code> can be displayed. 
             </li>
             <li>
                 The demo is fully functional even when javascript is disabled.
@@ -68,13 +68,13 @@
 </div>
 
 <p>
-    Here, we're going to look at more complex validation, where many different types of fields are validated,
+    In this demo, we're going to look at more complex validation, where many different types of fields are validated,
     and where the validity of some fields
     depends on the value of <em>other</em> fields.
 </p>
 <p>
-    Enter any valid or invalid inputs in the following form and submit it to see
-    the validations in action!
+    Enter any valid or invalid values in the following form and submit it to see
+    the validation in action!
 </p>
 <p>
     You can also try the tests suggested on the right...
@@ -85,17 +85,17 @@
 
         <form class="form-horizontal" action="#form" method="post" novalidate="novalidate" accept-charset="UTF-8">
 
-            {% if validation._ | validationSubmitted()%}
+            {% if validation['demoForm._'] | validationSubmitted()%}
             
-                {% if validation._ | validationHasErrors() %}
+                {% if validation['demoForm._'] | validationHasErrors() %}
                     {% set alertClass = "alert-danger" %}
                     {% set status = "contains errors" %}
                     
-                {% elseif validation._ | validationHasWarnings() %}
+                {% elseif validation['demoForm._'] | validationHasWarnings() %}
                     {% set alertClass = "alert-warning" %}
                     {% set status = "contains warnings" %}
                     
-                {% elseif validation._ | validationIsValid() %}
+                {% elseif validation['demoForm._'] | validationIsValid() %}
                     {% set alertClass = "alert-success" %}
                     {% set status = "is valid" %} 
                 {% endif %}
@@ -469,7 +469,7 @@
 <p> 
     Let's first examine how we render the fields in the
     <code>HTML</code> template, and how we use <a href="/documentation#forms_validation_filters"">Validation Filters</a> 
-    for their <code>Validation Messages</code>...
+    for the <code>validation messages</code>...
 </p>
 <p> 
     <img class="inlineIcon" src="/public/images/icons/para.png" />
@@ -535,8 +535,7 @@
     Those fields form a <em>group</em>.  We can know this by looking at their
     <code>"name"</code> attributes : <code>"demoForm.tags[0]"</code>, 
     <code>"demoForm.tags[1]"</code> and <code>"demoForm.tags[2]"</code>. This syntax
-    indicates that those fields are part of the same group and have a specific position in it
-    (<a href="/documentation#forms_validation_data">learn more</a>).
+    indicates that those fields are part of the same group and have a specific position in it.
 </p>
 <p>  
     At the top of this code snippet, you can see that there is section which
@@ -558,8 +557,7 @@
     
     If at least one of the <code>"tag"</code> field is invalid, this filter will display an 
     error : <code>"Some tags are invalid."</code>. This error is not associated
-    with a particular field, but with the group itself. You can learn more about this
-    in the <a href="/documentation#validation_predefined_options">Predefine Validation options</a> section.
+    with a particular field, but with the group itself.
 </p>
 <p> 
     <img class="inlineIcon" src="/public/images/icons/para.png" />
@@ -616,7 +614,7 @@
                     have the exact same <code>"name"</code> attribute! Not only does this
                     make the fields being a group in the eyes of the browser (only one radio button
                     of this group can be checked at a given time), but it also tells <em>Spincast</em> that those 
-                    radio buttons  are part of the same group (<a href="/documentation#forms_validation_data">learn more</a>).
+                    radio buttons  are part of the same group.
                 </li>
                 <li>
                     <span class="code-line-nbr">6</span> : We use the <code>checked(...)</code>
@@ -667,8 +665,6 @@
     when the form is submitted. For that reason, 
     it's recommended to use brakets (<code>"[]"</code>) at the end of their <code>"name"</code>
     attributes and, when possible, to specify the position of the element inside those brackets.
-    Make sure you read the <a href="/documentation#forms_validation_data">Getting the submitted form data</a> 
-    sectiton to learn why.
 </p>
 <p> 
     As for the <code>"drink"</code> radio buttons fields,
@@ -723,17 +719,17 @@
             <pre class="ace ace-pebble"
 >
 
-{% if validation._ | validationSubmitted()%}
+{% if validation['demoForm._'] | validationSubmitted()%}
 
-    {% if validation._ | validationHasErrors() %}
+    {% if validation['demoForm._'] | validationHasErrors() %}
         {% set alertClass = "alert-danger" %}
         {% set status = "contains errors" %}
         
-    {% elseif validation._ | validationHasWarnings() %}
+    {% elseif validation['demoForm._'] | validationHasWarnings() %}
         {% set alertClass = "alert-warning" %}
         {% set status = "contains warnings" %}
         
-    {% elseif validation._ | validationIsValid() %}
+    {% elseif validation['demoForm._'] | validationIsValid() %}
         {% set alertClass = "alert-success" %}
         {% set status = "is valid" %} 
         
@@ -756,7 +752,7 @@
                     <span class="code-line-nbr">2</span> : This line validates that the form 
                     <em>has been submitted</em>. We don't want to display any message when the form is
                     displayed for the first time! The <code>"_"</code> element is a special element which
-                    represents a <code>Validation Set</code> itself (<a href="/documentation#validation_to_jsonobject">more info</a>)
+                    represents a <code>Validation Set</code> itself.
                 </li>
                 <li>
                     We use the <code>validationHasErrors()</code> filter [<span class="code-line-nbr">4</span>],
@@ -766,10 +762,10 @@
                     display.
                 </li>
                 <li>
-                    <span class="code-line-nbr">19</span> : We output the selected <code>CSS</code> class.
+                    <span class="code-line-nbr">20</span> : We output the selected <code>CSS</code> class.
                 </li>
                 <li>
-                    <span class="code-line-nbr">20</span> : We output the selected status.
+                    <span class="code-line-nbr">21</span> : We output the selected status.
                 </li>  
             </ul>
         </p>
@@ -783,25 +779,32 @@
     How to - Backend
 </h4>
 <p>
-    On the backend, this demo first shows how to run a validation or not <em>depending on the result of a previous
+    On the backend, this demo shows how to run a validation or not <em>depending on the result of a previous
     validation</em>. For example :
     
     <div>
         <p>
-            <pre class="ace ace-java" data-ace-hi="3,1,3,25"
-> ValidationSet lastResult =
-         validationSet.validationNotBlank().jsonPath("email").failMessageText("Please enter the email").validate();
+            <pre class="ace ace-java" data-ace-hi="8,4,8,25"
+>String email = form.getString("email");
 
- if(lastResult.isValid()) {
-     validationSet.validationEmail().jsonPath("email").failMessageText("Please enter a valid email").validate();
- }</pre> 
+if (StringUtils.isBlank(email)) {
+    form.addError("email",
+                  "email_empty",
+                  "The email is required");
+}
+
+if (form.isValid("email") && !form.validators().isEmailValid(email)) {
+    form.addError("email",
+                  "email_invalid",
+                  "The email is invalid");
+}</pre> 
                   
         </p>
     </div> 
 </p>
 <p>
-    As you can see, we only perform the second validation if the first one is valid! This is often
-    very useful since we do not want to display 5 different error messages for a single field when, in fact,
+    As you can see, we only perform the second validation if the first one is a success! This is often
+    very useful since we do not want to display multiple error messages for a single field when, in fact,
     the field was simply left empty.
 </p>
 
@@ -812,52 +815,24 @@
     
     <div>
         <p>
-            <pre class="ace ace-java" data-ace-hi="1,26,1,71"
->
-
-lastResult = validationSet.validationEquivalent(form.getString("email"))
-                          .jsonPath("emailAgain")
-                          .failMessageText("Must match the first email field.")
-                          .validate();</pre>       
-        </p>
-    </div>  
-</p>
-<p>
-    In this snippet, we retrieve the <code>"email"</code> element from the
-    <code>form</code> object using <code>form.getString("email")</code>. We
-    then compare this value to the <code>"emailAgain"</code> validated element using the
-    <code>validationEquivalent(...)</code> <a href="/documentation#validation_predefined">predefined validation</a>.
-    If they are not equivalent (which is a loose version of an <em>equality</em> check), an
-    <code>Error Validation Message</code> is recorded for the validated <code>"emailAgain"</code> field. 
-    You can test this by yourself by entering two valid
-    but different emails in the demo form!
-</p>
-<p>
-    <img class="inlineIcon" src="/public/images/icons/para.png" />
-    Another interesting validation in this demo is :
-    
-    <div>
-        <p>
-            <pre class="ace ace-java"
->if("beer".equals(form.getString("drink")) && validationSet.isWarning("action")) {
-    validationSet.addError("drink", 
-                           "BEER_AND_WARNING_ACTION", 
-                           "'Beer' is invalid if the 'Action on submit' field is a Warning!");
+            <pre class="ace ace-java" data-ace-hi="4,34,4,59"
+>String email = form.getString("email");
+// ...
+String emailAgain = form.getString("emailAgain");
+// ...
+if (form.isValid("emailAgain") && !emailAgain.equals(email)) {
+    form.addError("emailAgain",
+                  "emailAgain_mustMatch",
+                  "Must match the first email field.");
 }</pre>       
         </p>
     </div>  
 </p>
 <p>
-    This custom validation doesn't use any <code>Predefined Validation</code> and the resulting
-    <code>Error Validation Message</code>, when the validation fails, is added <em>manually</em> to the
-    <code>Validation Set</code>, using the <code>"drink"</code> 
-    <a href="/documentation#validation_keys">validation key</a>.
-</p>
-<p>
     <img class="inlineIcon" src="/public/images/icons/para.png" />
     There are more validations performed in this demo! We suggest you have a look
     at <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsMultipleFieldsController.java"><em>DemoHtmlFormsMultipleFieldsController</em></a>
-    code to see them all.
+    code to see all of them.
 </p>
 
 <h4>
@@ -869,8 +844,8 @@ lastResult = validationSet.validationEquivalent(form.getString("email"))
     which introduces forms and validation using Spincast.
 </p>
 <p>
-    Otherwise, you can learn everything about those topics in the <a href="/documentation#validation">Validation</a> 
-    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+    Otherwise, you can learn everything about forms and validation in the dedicated 
+    <a href="/documentation#forms">Forms</a> section of the documentation.
 </p>
         
 {% endblock %}

@@ -10,8 +10,9 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
+import org.spincast.core.request.FormFactory;
 import org.spincast.core.templating.TemplatingEngine;
-import org.spincast.core.validation.JsonObjectValidationSet;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
@@ -22,6 +23,12 @@ import com.google.inject.Scopes;
 
 public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTestingBase {
 
+    @Inject
+    private FormFactory formFactory;
+
+    protected FormFactory getFormFactory() {
+        return this.formFactory;
+    }
 
     @Override
     protected Module getExtraOverridingModule2() {
@@ -550,18 +557,13 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterValidationMessagesValid() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate("{{user.validation.name | validationMessages()}}",
+        String html = getTemplatingEngine().evaluate("{{validation['myFormName.name'] | validationMessages()}}",
                                                      model);
         assertEquals("", html);
 
@@ -573,24 +575,21 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterValidationMessagesInvalid() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
+
+        form.addError("name", "name", "message");
 
         String html =
-                getTemplatingEngine().evaluate("{{user.validation.name | validationMessages()}}",
+                getTemplatingEngine().evaluate("{{validation['myFormName.name'] | validationMessages()}}",
                                                model);
         assertTrue(html.contains("msgError"));
         assertTrue(html.contains("validationMessages"));
 
-        html = getTemplatingEngine().evaluate("{{user.validation.age | validationMessages()}}",
+        html = getTemplatingEngine().evaluate("{{validation['myFormName.age'] | validationMessages()}}",
                                               model);
         assertEquals("", html);
     }
@@ -598,22 +597,17 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterValidationGroupMessagesValid() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate("{{user.validation.name | validationGroupMessages()}}",
+        String html = getTemplatingEngine().evaluate("{{validation['myFormName.myGroup'] | validationGroupMessages()}}",
                                                      model);
         assertEquals("", html);
 
-        html = getTemplatingEngine().evaluate("{{user.validation.age | validationGroupMessages()}}",
+        html = getTemplatingEngine().evaluate("{{validation['myFormName.age'] | validationGroupMessages()}}",
                                               model);
         assertEquals("", html);
     }
@@ -621,24 +615,21 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterValidationGroupMessagesInvalid() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
+
+        form.addError("myGroup", "myGroup", "message");
 
         String html =
-                getTemplatingEngine().evaluate("{{user.validation.name | validationGroupMessages()}}",
+                getTemplatingEngine().evaluate("{{validation['myFormName.myGroup'] | validationGroupMessages()}}",
                                                model);
         assertTrue(html.contains("msgError"));
         assertTrue(html.contains("validationGroupMessages"));
 
-        html = getTemplatingEngine().evaluate("{{user.validation.age | validationGroupMessages()}}",
+        html = getTemplatingEngine().evaluate("{{validation['myFormName.age'] | validationGroupMessages()}}",
                                               model);
         assertEquals("", html);
     }
@@ -646,22 +637,17 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterValidationClassValid() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate("{{user.validation.name | validationClass()}}",
+        String html = getTemplatingEngine().evaluate("{{validation['myFormName.name'] | validationClass()}}",
                                                      model);
         assertEquals("has-no-message", html);
 
-        html = getTemplatingEngine().evaluate("{{user.validation.age | validationClass()}}",
+        html = getTemplatingEngine().evaluate("{{validation['myFormName.age'] | validationClass()}}",
                                               model);
         assertEquals("has-no-message", html);
     }
@@ -669,37 +655,38 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterValidationClassInvalid() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").addMessageOnSuccess().validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
+
+        form.addError("name", "name", "message");
+        form.addSuccess("age", "age", "message");
+        form.addWarning("kiki", "kiki", "message");
 
         String html =
-                getTemplatingEngine().evaluate("{{user.validation.name | validationClass()}}",
+                getTemplatingEngine().evaluate("{{validation['myFormName.name'] | validationClass()}}",
                                                model);
         assertEquals("has-error", html);
 
-        html = getTemplatingEngine().evaluate("{{user.validation.age | validationClass()}}",
+        html = getTemplatingEngine().evaluate("{{validation['myFormName.age'] | validationClass()}}",
                                               model);
         assertEquals("has-success", html);
+
+        html = getTemplatingEngine().evaluate("{{validation['myFormName.kiki'] | validationClass()}}",
+                                              model);
+        assertEquals("has-warning", html);
     }
 
     @Test
     public void filterFreshYes() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
         JsonObject model = getJsonManager().create();
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationFresh() %}fresh{% endif %}",
+        String html = getTemplatingEngine().evaluate(" {% if validation['_'] | validationFresh() %}fresh{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("fresh", html);
@@ -708,18 +695,30 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterFreshNot() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationFresh() %}fresh{% endif %}",
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationFresh() %}fresh{% endif %}",
+                                                     model)
+                                           .trim();
+        assertEquals("", html);
+    }
+
+    @Test
+    public void filterFreshNot2() throws Exception {
+
+        Form form = getFormFactory().createForm("myFormName", null);
+        JsonObject model = getJsonManager().create();
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
+
+        form.addError("myGroup", "myGroup", "message");
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationFresh() %}fresh{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("", html);
@@ -728,173 +727,160 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterSubmittedYes() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationSubmitted() %}submitted{% endif %}",
-                                                     model)
-                                           .trim();
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationSubmitted() %}submitted{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("submitted", html);
     }
 
     @Test
     public void filterSubmittedNot() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
         JsonObject model = getJsonManager().create();
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationSubmitted() %}fresh{% endif %}",
-                                                     model)
-                                           .trim();
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationSubmitted() %}fresh{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("", html);
     }
 
     @Test
     public void filterHasSuccessesFieldFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").addMessageOnSuccess().validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasSuccesses() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addError("name", "name", "message");
+        form.addSuccess("age", "age", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName.name'] | validationHasSuccesses() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("", html);
     }
 
     @Test
     public void filterHasSuccessesFieldTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").addMessageOnSuccess().validate();
-        validationSet.validationGreater(100).jsonPath("age").addMessageOnSuccess().validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasSuccesses() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addSuccess("name", "name", "message");
+        form.addError("age", "age", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName.name'] | validationHasSuccesses() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("yes", html);
     }
 
     @Test
     public void filterHasSuccessesFormFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasSuccesses() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addError("name", "name", "message");
+        form.addError("age", "age", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationHasSuccesses() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("", html);
     }
 
     @Test
     public void filterHasSuccessesFormTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").addMessageOnSuccess().validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasSuccesses() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addError("name", "name", "message");
+        form.addSuccess("age", "age", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationHasSuccesses() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("yes", html);
     }
 
     @Test
     public void filterHasErrorsFieldFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasErrors() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addSuccess("name", "name", "message");
+        form.addWarning("age", "age", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName.age'] | validationHasErrors() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("", html);
     }
 
     @Test
     public void filterHasErrorsFieldTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 12);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasErrors() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addSuccess("name", "name", "message");
+        form.addError("age", "age", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName.age'] | validationHasErrors() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("yes", html);
     }
 
     @Test
     public void filterHasErrorsFormFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasErrors() %}yes{% endif %}",
+        form.addSuccess("name", "name", "message");
+        form.addSuccess("age", "age", "message");
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationHasErrors() %}yes{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("", html);
@@ -903,18 +889,16 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterHasErrorsFormTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasErrors() %}yes{% endif %}",
+        form.addError("name", "name", "message");
+        form.addSuccess("age", "age", "message");
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationHasErrors() %}yes{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("yes", html);
@@ -923,178 +907,112 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterHasWarningsFieldFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasWarnings() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
-        assertEquals("", html);
-    }
+        form.addSuccess("age", "age1", "message");
+        form.addError("age", "age2", "message");
 
-    @Test
-    public void filterHasWarningsFieldFalse2() throws Exception {
-
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 12);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
-        JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
-
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasWarnings() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName.age'] | validationHasWarnings() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("", html);
     }
 
     @Test
     public void filterHasWarningsFieldTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 12);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").treatErrorAsWarning().validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.age | validationHasWarnings() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addWarning("age", "age1", "message");
+        form.addError("age", "age2", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName.age'] | validationHasWarnings() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("yes", html);
     }
 
     @Test
     public void filterHasWarningsFormFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasWarnings() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addSuccess("age", "age1", "message");
+        form.addError("age", "age2", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationHasWarnings() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("", html);
     }
 
-    @Test
-    public void filterHasWarningsFormFalse2() throws Exception {
-
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
-        JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
-
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasWarnings() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
-        assertEquals("", html);
-    }
 
     @Test
     public void filterHasWarningsFormTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").treatErrorAsWarning().validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationHasWarnings() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
+        form.addSuccess("age", "age1", "message");
+        form.addWarning("age", "age2", "message");
+
+        String html =
+                getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationHasWarnings() %}yes{% endif %}",
+                                               model)
+                                     .trim();
         assertEquals("yes", html);
     }
 
     @Test
     public void filterIsValidFieldTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.name | validationIsValid() %}yes{% endif %}",
+        form.addSuccess("age", "age1", "message");
+        form.addWarning("age", "age2", "message");
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName.age'] | validationIsValid() %}yes{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("yes", html);
     }
 
-    @Test
-    public void filterIsValidFieldTrue2() throws Exception {
-
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 12);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").treatErrorAsWarning().validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
-        JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
-
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.name | validationIsValid() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
-        assertEquals("yes", html);
-    }
 
     @Test
     public void filterIsValidFieldFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 12);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation.name | validationIsValid() %}yes{% endif %}",
+        form.addSuccess("age", "age1", "message");
+        form.addError("age", "age2", "message");
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName.age'] | validationIsValid() %}yes{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("", html);
@@ -1103,38 +1021,16 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterIsValidFormTrue() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationIsValid() %}yes{% endif %}",
-                                                     model)
-                                           .trim();
-        assertEquals("yes", html);
-    }
+        form.addSuccess("age", "age1", "message");
+        form.addWarning("age", "age2", "message");
 
-    @Test
-    public void filterIsValidFormTrue2() throws Exception {
-
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").treatErrorAsWarning().validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
-        JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
-
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationIsValid() %}yes{% endif %}",
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationIsValid() %}yes{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("yes", html);
@@ -1143,18 +1039,16 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void filterIsValidFormFalse() throws Exception {
 
-        JsonObject obj = getJsonManager().create();
-        obj.put("name", "");
-        obj.put("age", 123);
-
-        JsonObjectValidationSet validationSet = obj.validationSet();
-        validationSet.validationNotBlank().jsonPath("name").validate();
-        validationSet.validationGreater(100).jsonPath("age").validate();
-
+        Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
-        model.put("user.validation", validationSet);
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        form.setValidationObject(validationElement);
 
-        String html = getTemplatingEngine().evaluate(" {% if user.validation._ | validationIsValid() %}yes{% endif %}",
+        form.addSuccess("age", "age1", "message");
+        form.addError("name", "name", "message");
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationIsValid() %}yes{% endif %}",
                                                      model)
                                            .trim();
         assertEquals("", html);
@@ -1197,6 +1091,104 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         String html = getTemplatingEngine().evaluate("{% set myKey = 'toto.ti' + 'ti.na' + 'me' %} {{get(myKey)}}", model).trim();
         assertEquals("Stromgol", html);
+    }
+
+    @Test
+    public void jsOneLineDefault() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.put("code", "let a=1;\n" +
+                          "let b=2;\r" +
+                          "let c='3';\r\n" +
+                          "let d=\"4\";\n");
+
+        String html = getTemplatingEngine().evaluate("let js=\"{{jsOneLine(code)}}\"", model);
+        assertEquals("let js=\"let a=1;let b=2;let c='3';let d=\\\"4\\\";\"", html);
+    }
+
+    @Test
+    public void jsOneLineForceDoubleQuotesEscape() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.put("code", "let a=1;\n" +
+                          "let b=2;\r" +
+                          "let c='3';\r\n" +
+                          "let d=\"4\";\n");
+
+        String html = getTemplatingEngine().evaluate("let js=\"{{jsOneLine(code, false)}}\"", model);
+        assertEquals("let js=\"let a=1;let b=2;let c='3';let d=\\\"4\\\";\"", html);
+    }
+
+    @Test
+    public void jsOneLineSingleQuotesEscape() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.put("code", "let a=1;\n" +
+                          "let b=2;\r" +
+                          "let c='3';\r\n" +
+                          "let d=\"4\";\n");
+
+        String html = getTemplatingEngine().evaluate("let js='{{jsOneLine(code, true)}}';", model);
+        assertEquals("let js='let a=1;let b=2;let c=\\'3\\';let d=\"4\";';", html);
+    }
+
+    @Test
+    public void twoFormsDefaultValidationElement() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        JsonObject validationElement = getJsonManager().create();
+        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+
+        Form myForm = getFormFactory().createForm("myForm", null);
+        model.put("myForm", myForm);
+        myForm.setValidationObject(validationElement);
+        myForm.put("name1", "toto");
+        myForm.addError("name1", "name1", "message1");
+
+        Form myForm2 = getFormFactory().createForm("myForm2", null);
+        model.put("myForm2", myForm2);
+        myForm2.addSuccess("name2", "name2", "message2");
+        myForm2.put("name2", "titi");
+        myForm2.setValidationObject(validationElement);
+
+        String html = getTemplatingEngine().evaluate(" {% if validation['myForm._'] | validationHasSuccesses() %}yes{% endif %}",
+                                                     model)
+                                           .trim();
+        assertEquals("", html);
+
+        html = getTemplatingEngine().evaluate(" {% if validation['myForm._'] | validationHasErrors() %}yes{% endif %}",
+                                              model)
+                                    .trim();
+        assertEquals("yes", html);
+
+        html = getTemplatingEngine().evaluate("{{validation['myForm.name1'] | validationClass()}}",
+                                              model);
+        assertEquals("has-error", html);
+
+        html = getTemplatingEngine().evaluate("{{myForm.name1}}", model);
+        assertEquals("toto", html);
+
+        //---------
+
+        html = getTemplatingEngine().evaluate(" {% if validation['myForm2._'] | validationHasSuccesses() %}yes{% endif %}",
+                                              model)
+                                    .trim();
+        assertEquals("yes", html);
+
+        html = getTemplatingEngine().evaluate(" {% if validation['myForm2._'] | validationHasErrors() %}yes{% endif %}",
+                                              model)
+                                    .trim();
+        assertEquals("", html);
+
+        html = getTemplatingEngine().evaluate("{{validation['myForm2.name2'] | validationClass()}}",
+                                              model);
+        assertEquals("has-success", html);
+
+        html = getTemplatingEngine().evaluate("{{myForm2.name2}}", model);
+        assertEquals("titi", html);
     }
 
 }

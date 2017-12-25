@@ -157,5 +157,16 @@ public interface SpincastUtils {
      */
     public String readClasspathFile(String path, String encoding);
 
+    /**
+     * Valid of a String only contains characters over 31 (or
+     * DEL (127).
+     * 
+     * @return <code>true</code> if the String only contains 
+     * characters over 31 (or DEL (127). If the String is
+     * <code>null</code>, <code>true</code> is returned.
+     */
+    public boolean isContainsSpecialCharacters(String str);
+
+
 
 }

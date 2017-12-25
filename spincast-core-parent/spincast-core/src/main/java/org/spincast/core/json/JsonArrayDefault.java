@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.json.JsonObjectDefault.IFirstElementGetter;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.core.validation.JsonArrayValidationSet;
-import org.spincast.core.validation.ValidationFactory;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -38,14 +36,12 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @AssistedInject
     public JsonArrayDefault(JsonManager jsonManager,
                             SpincastUtils spincastUtils,
-                            ObjectConverter objectConverter,
-                            ValidationFactory validationFactory) {
+                            ObjectConverter objectConverter) {
         this(null,
              true,
              jsonManager,
              spincastUtils,
-             objectConverter,
-             validationFactory);
+             objectConverter);
     }
 
     /**
@@ -55,14 +51,12 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     public JsonArrayDefault(@Assisted @Nullable List<Object> initialElements,
                             JsonManager jsonManager,
                             SpincastUtils spincastUtils,
-                            ObjectConverter objectConverter,
-                            ValidationFactory validationFactory) {
+                            ObjectConverter objectConverter) {
         this(initialElements,
              true,
              jsonManager,
              spincastUtils,
-             objectConverter,
-             validationFactory);
+             objectConverter);
     }
 
     /**
@@ -73,9 +67,8 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
                             @Assisted boolean mutable,
                             JsonManager jsonManager,
                             SpincastUtils spincastUtils,
-                            ObjectConverter objectConverter,
-                            ValidationFactory validationFactory) {
-        super(mutable, jsonManager, spincastUtils, objectConverter, validationFactory);
+                            ObjectConverter objectConverter) {
+        super(mutable, jsonManager, spincastUtils, objectConverter);
 
         List<Object> elements;
         if (initialElements != null) {
@@ -903,11 +896,6 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
         add(pos, value);
 
         return this;
-    }
-
-    @Override
-    public JsonArrayValidationSet validationSet() {
-        return getValidationFactory().createJsonArrayValidationSet(this);
     }
 
 }

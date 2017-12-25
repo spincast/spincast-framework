@@ -77,7 +77,13 @@
 			"date" : "2017-06-20T23:00:00Z",
 			"title" : "Configuring a Spincast application",
 			"path" : "/news/2017-06-20.html"
-		}
+		},
+        {
+            "id" : "14",
+            "date" : "2017-12-25T20:00:00Z",
+            "title" : "JDBC / SQL utilities",
+            "path" : "/news/2017-12-25.html"
+        }
 		
 	]
 }

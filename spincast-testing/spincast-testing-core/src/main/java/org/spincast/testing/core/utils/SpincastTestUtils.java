@@ -15,7 +15,6 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Spincast tests utilities.
@@ -39,7 +38,7 @@ public class SpincastTestUtils {
     protected static InputStream getThisClassFileInputStream() {
         String s = SpincastTestUtils.class.getName();
         int i = s.lastIndexOf(".");
-        if(i > -1) {
+        if (i > -1) {
             s = s.substring(i + 1);
         }
         s = s + ".class";
@@ -57,8 +56,8 @@ public class SpincastTestUtils {
             FileUtils.copyInputStreamToFile(fileOriInputStream, fileTarget);
 
             return fileTarget;
-        } catch(Exception ex) {
-            IOUtils.closeQuietly(fileOriInputStream);
+        } catch (Exception ex) {
+            SpincastStatics.closeQuietly(fileOriInputStream);
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -78,7 +77,7 @@ public class SpincastTestUtils {
                 s.close();
             }
             return port;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -93,7 +92,7 @@ public class SpincastTestUtils {
         try {
             (new Socket(host, port)).close();
             return true;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
     }
@@ -122,30 +121,30 @@ public class SpincastTestUtils {
      */
     public static boolean waitForTrue(TrueChecker trueChecker, int maxMillisecToWait) {
 
-        if(trueChecker == null) {
+        if (trueChecker == null) {
             throw new RuntimeException("The true checker can't be null");
         }
 
-        if(maxMillisecToWait < 0) {
+        if (maxMillisecToWait < 0) {
             maxMillisecToWait = 0;
         }
 
         try {
             int waitTimeTotal = 0;
-            while(true) {
+            while (true) {
 
-                if(trueChecker.check()) {
+                if (trueChecker.check()) {
                     return true;
                 }
 
-                if(waitTimeTotal >= maxMillisecToWait) {
+                if (waitTimeTotal >= maxMillisecToWait) {
                     return false;
                 }
 
                 Thread.sleep(waitForTrueLoopInterval());
                 waitTimeTotal += waitForTrueLoopInterval();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -173,7 +172,7 @@ public class SpincastTestUtils {
 
         Objects.requireNonNull(collection, "The collection can't be NULL");
 
-        if(expected <= 0) {
+        if (expected <= 0) {
             throw new RuntimeException("The expected size must be at least 1.");
         }
 
@@ -233,7 +232,7 @@ public class SpincastTestUtils {
                                         final int expected,
                                         int maxMillisecToWait) {
 
-        if(oneIntArray == null || oneIntArray.length == 0) {
+        if (oneIntArray == null || oneIntArray.length == 0) {
             throw new RuntimeException("The array can't be null and must have at least (and probably only) one element.");
         }
 
@@ -252,7 +251,7 @@ public class SpincastTestUtils {
      */
     public static Date getTestDateNoTime() {
 
-        if(testDate == null) {
+        if (testDate == null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
             cal.set(Calendar.HOUR_OF_DAY, 0);

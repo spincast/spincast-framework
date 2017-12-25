@@ -7,6 +7,7 @@ import java.util.Map;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
 import org.spincast.core.response.AlertLevel;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.session.FlashMessageLevel;
@@ -796,19 +797,45 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
      * is uses as the cookie's <code>domain</code>
-     * and the cookie is valid for the time
-     * of the session only.
+     * and the cookie is valid for the time of the session only.
      */
-    public void addCookie(String name, String value);
+    public void addCookieSession(String name, String value);
 
     /**
      * Adds a cookie using the specified name, value
-     * and number opf minutes to live.
+     * and if it's http only.
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
      * is uses as the cookie's <code>domain</code>.
      */
-    public void addCookie(String name, String value, int nbrMinutesToLive);
+    public void addCookieSession(String name, String value, boolean httpOnly);
+
+    /**
+     * Adds a cookie using the specified name, value
+     * and number of seconds to live.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
+     */
+    public void addCookie(String name, String value, int nbrSecondsToLive);
+
+    /**
+     * Adds a cookie using the specified name, value,
+     * number of seconds to live and if it's http only.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
+     */
+    public void addCookie(String name, String value, int nbrSecondsToLive, boolean httpOnly);
+
+    /**
+     * Adds a permanent cookie (10 years) using the specified 
+     * name and value.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
+     */
+    public void addCookie10years(String name, String value);
 
     /**
      * Adds a cookie, using all available configurations.
@@ -833,5 +860,45 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * cookies in the past so the user's browser will remove them.
      */
     public void deleteAllCookiesUserHas();
+
+    /**
+     * Adds a {@link Form} object to the response's
+     * model and links its validation messages to the
+     * default "validation" root element.
+     * <p>
+     * In other words, adding a form will result in those
+     * elements to the response's model :
+     * <ul>
+     * <li>
+     * [formName] => the form itself
+     * </li>
+     * <li>
+     * [validation] => validation messages for the form
+     * with keys such as "[formName].something" and
+     * "[formName].somethingElse".
+     * </li>
+     * </ul>
+     */
+    public void addForm(Form form);
+
+    /**
+     * Adds a {@link Form} object to the response's
+     * model and links its validation messages to the
+     * specified validation element.
+     * <p>
+     * In other words, adding a form will result in those
+     * elements to the response's model :
+     * <ul>
+     * <li>
+     * [formName] => the form itself
+     * </li>
+     * <li>
+     * [validationElementName] => validation messages for the form
+     * with keys such as "[formName].something" and
+     * "[formName].somethingElse".
+     * </li>
+     * </ul>
+     */
+    public void addForm(Form form, String validationElementName);
 
 }

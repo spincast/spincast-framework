@@ -29,7 +29,7 @@ public class CookieDefault implements Cookie {
     @AssistedInject
     public CookieDefault(@Assisted("name") String name,
                          SpincastConfig spincastConfig) {
-        this(name, null, null, null, null, false, false, false, 0, spincastConfig);
+        this(name, null, null, null, null, true, false, false, 0, spincastConfig);
     }
 
     /**
@@ -39,7 +39,7 @@ public class CookieDefault implements Cookie {
     public CookieDefault(@Assisted("name") String name,
                          @Assisted("value") String value,
                          SpincastConfig spincastConfig) {
-        this(name, value, null, null, null, false, false, false, 0, spincastConfig);
+        this(name, value, null, null, null, true, false, false, 0, spincastConfig);
     }
 
     /**

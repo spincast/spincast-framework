@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.spincast.core.request.Form;
+
 /**
  * Provides methods to play with <code>Json</code> strings and objects.
  */
@@ -15,6 +17,8 @@ public interface JsonManager {
      * Creates an empty <code>JsonObject</code>
      */
     public JsonObject create();
+
+
 
     /**
      * Creates a <code>JsonObject</code> from a <code>Json</code>
@@ -96,6 +100,7 @@ public interface JsonManager {
      */
     public JsonArray createArray();
 
+
     /**
      * Creates a <code>JsonArray</code> from a <code>Json</code>
      * String.
@@ -112,6 +117,12 @@ public interface JsonManager {
      * Creates a <code>JsonArray</code> from an inputStream.
      */
     public JsonArray fromInputStreamArray(InputStream inputStream);
+
+    /**
+     * Creates an empty {@link Form}, which is a JsonObject +
+     * a validations container.
+     */
+    public Form createForm(String formName);
 
     /**
      * Gets the <code>Json</code> String representation of 
@@ -307,5 +318,6 @@ public interface JsonManager {
      * <code>null</code>)?
      */
     public boolean isElementExists(JsonArray array, String jsonPath);
+
 
 }

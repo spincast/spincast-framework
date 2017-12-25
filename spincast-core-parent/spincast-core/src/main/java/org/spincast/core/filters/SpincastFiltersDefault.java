@@ -501,6 +501,13 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
                 context.routing().getRoutingResult().getMainRouteHandlerMatch()
                        .getSourceRoute().getId());
 
+        map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_PATH,
+                context.routing().getRoutingResult().getMainRouteHandlerMatch()
+                       .getSourceRoute().getPath());
+
+        map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_URL_ROOT,
+                getSpincastConfig().getPublicUrlBase());
+
         map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL,
                 context.request().getFullUrl());
 

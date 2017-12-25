@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.SSLContext;
@@ -35,6 +37,8 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.Server;
+import org.spincast.core.server.UploadedFile;
+import org.spincast.core.server.UploadedFileDefault;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
@@ -68,7 +72,9 @@ import io.undertow.server.handlers.ResponseCodeHandler;
 import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormData.FormValue;
 import io.undertow.server.handlers.form.FormDataParser;
+import io.undertow.server.handlers.form.FormEncodedDataDefinition;
 import io.undertow.server.handlers.form.FormParserFactory;
+import io.undertow.server.handlers.form.MultiPartParserDefinition;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.util.HeaderMap;
@@ -239,7 +245,22 @@ public class SpincastUndertowServer implements Server {
 
     protected FormParserFactory getFormParserFactory() {
         if (this.formParserFactory == null) {
-            this.formParserFactory = FormParserFactory.builder().build();
+
+            io.undertow.server.handlers.form.FormParserFactory.Builder builder = FormParserFactory.builder(false);
+
+            File undertowWritableDir = new File(getConfig().getTempDir().getAbsolutePath() + "/undertow");
+            if (!undertowWritableDir.isDirectory()) {
+                boolean result = undertowWritableDir.mkdirs();
+                if (!result) {
+                    throw new RuntimeException("Unable to create the Undertow temp dir : " +
+                                               undertowWritableDir.getAbsolutePath());
+                }
+            }
+
+            builder.addParsers(new FormEncodedDataDefinition(),
+                               new MultiPartParserDefinition(undertowWritableDir.toPath()));
+
+            this.formParserFactory = builder.build();
         }
         return this.formParserFactory;
     }
@@ -1214,10 +1235,10 @@ public class SpincastUndertowServer implements Server {
     }
 
     @Override
-    public Map<String, List<File>> getUploadedFiles(Object exchangeObj) {
+    public Map<String, List<UploadedFile>> getUploadedFiles(Object exchangeObj) {
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
 
-        Map<String, List<File>> uploadedFiles = new HashMap<String, List<File>>();
+        Map<String, List<UploadedFile>> uploadedFiles = new HashMap<String, List<UploadedFile>>();
 
         FormData formData = getFormData(exchange);
         if (formData != null) {
@@ -1227,14 +1248,20 @@ public class SpincastUndertowServer implements Server {
                 Deque<FormValue> values = formData.get(key);
                 if (values != null) {
 
-                    List<File> finalFiles = new ArrayList<File>();
+                    List<UploadedFile> finalFiles = new ArrayList<UploadedFile>();
                     for (FormValue formValue : values) {
                         if (!formValue.isFile()) {
                             continue;
                         }
                         File file = formValue.getPath().toFile();
                         if (file != null) {
-                            finalFiles.add(file);
+                            String fileName = formValue.getFileName();
+                            if (StringUtils.isBlank(fileName)) {
+                                fileName = UUID.randomUUID().toString();
+                            }
+
+                            UploadedFile uploadedFile = new UploadedFileDefault(file, fileName);
+                            finalFiles.add(uploadedFile);
                         }
                     }
 
@@ -1442,6 +1469,24 @@ public class SpincastUndertowServer implements Server {
     @Override
     public WebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
         return getWebsocketEndpointsMap().get(endpointId);
+    }
+
+    @Override
+    public String getIp(Object exchangeObj) {
+        HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
+
+        List<String> xForwardedForHeaders = getRequestHeaders(exchangeObj).get(HttpHeaders.X_FORWARDED_FOR);
+        if (xForwardedForHeaders != null && xForwardedForHeaders.size() > 0) {
+            String xForwardedForHeader = xForwardedForHeaders.get(0);
+
+            try {
+                return new StringTokenizer(xForwardedForHeader, ",").nextToken().trim();
+            } catch (Exception ex) {
+                // ok
+            }
+        }
+
+        return new StringTokenizer(exchange.getSourceAddress().getAddress().toString(), "/").nextToken().trim();
     }
 
 }

@@ -55,7 +55,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     public TemplatingEngine getTemplatingEngine() {
-        if(this.templatingEngine == null) {
+        if (this.templatingEngine == null) {
             this.templatingEngine = this.templatingEngineProvider.get();
         }
         return this.templatingEngine;
@@ -105,62 +105,62 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
         Map<String, Filter> filters = new HashMap<String, Filter>();
 
         Filter filter = getCheckedFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getCheckedFilterName(), filter);
         }
 
         filter = getSelectedFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getSelectedFilterName(), filter);
         }
 
         filter = getValidationMessagesFilter(getValidationMessagesTemplatePath());
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationMessagesFilterName(), filter);
         }
 
         filter = getValidationMessagesFilter(getValidationGroupMessagesTemplatePath());
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationGroupMessagesFilterName(), filter);
         }
 
         filter = getValidationClassFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationClassFilterName(), filter);
         }
 
         filter = getValidationFreshFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationFreshFilterName(), filter);
         }
 
         filter = getValidationSubmittedFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationSubmittedFilterName(), filter);
         }
 
         filter = getValidationIsValidFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationIsValidFilterName(), filter);
         }
 
         filter = getValidationHasSuccessesFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationHasSuccessesFilterName(), filter);
         }
 
         filter = getValidationHasWarningsFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationHasWarningsFilterName(), filter);
         }
 
         filter = getValidationHasErrorsFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getValidationHasErrorsFilterName(), filter);
         }
 
         filter = getGetFilter();
-        if(filter != null) {
+        if (filter != null) {
             filters.put(getGetFilterName(), filter);
         }
 
@@ -172,10 +172,9 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
         Map<String, Function> functions = new HashMap<String, Function>();
 
-        Function function = getGetFunction();
-        if(function != null) {
-            functions.put(getGetFunctionName(), function);
-        }
+        functions.put(getGetFunctionName(), getGetFunction());
+        functions.put(getJsOneLinerOutputFunctionName(), getJsOneLinerOutputFunction());
+
         return functions;
     }
 
@@ -206,11 +205,11 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
     protected Set<Object> convertToSet(Object obj) {
         Set<Object> values = new HashSet<Object>();
-        if(obj instanceof Collection) {
+        if (obj instanceof Collection) {
             values.addAll((Collection<?>)obj);
-        } else if(obj instanceof Object[]) {
+        } else if (obj instanceof Object[]) {
             Object[] arr = (Object[])obj;
-            for(int i = 0; i < arr.length; i++) {
+            for (int i = 0; i < arr.length; i++) {
                 values.add(arr[i]);
             }
         } else {
@@ -263,7 +262,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                 Set<Object> values = convertToSet(value);
                 Set<Object> acceptableValues = convertToSet(args.get("acceptableValues"));
 
-                if(getObjectConverter().isAtLeastOneEquivalentElementInCommon(values, acceptableValues)) {
+                if (getObjectConverter().isAtLeastOneEquivalentElementInCommon(values, acceptableValues)) {
                     return "checked";
                 }
 
@@ -293,7 +292,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                 Set<Object> values = convertToSet(value);
                 Set<Object> acceptableValues = convertToSet(args.get("acceptableValues"));
 
-                if(getObjectConverter().isAtLeastOneEquivalentElementInCommon(values, acceptableValues)) {
+                if (getObjectConverter().isAtLeastOneEquivalentElementInCommon(values, acceptableValues)) {
                     return "selected";
                 }
 
@@ -324,7 +323,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof Map)) {
+                if (value == null || !(value instanceof Map)) {
                     return "";
                 }
 
@@ -357,7 +356,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof Map)) {
+                if (value == null || !(value instanceof Map)) {
                     return getValidationClassNoMessage();
                 }
 
@@ -365,17 +364,17 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                 Map<String, Object> validationResultMap = (Map<String, Object>)value;
 
                 Boolean hasErrors = (Boolean)validationResultMap.get("hasErrors");
-                if(hasErrors == null || hasErrors) {
+                if (hasErrors == null || hasErrors) {
                     return getValidationClassError();
                 }
 
                 Boolean hasWarnings = (Boolean)validationResultMap.get("hasWarnings");
-                if(hasWarnings != null && hasWarnings) {
+                if (hasWarnings != null && hasWarnings) {
                     return getValidationClassWarning();
                 }
 
                 Boolean hasSuccesses = (Boolean)validationResultMap.get("hasSuccesses");
-                if(hasSuccesses != null && hasSuccesses) {
+                if (hasSuccesses != null && hasSuccesses) {
                     return getValidationClassSuccess();
                 }
 
@@ -402,7 +401,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null) {
+                if (value == null) {
                     return true;
                 }
                 return false;
@@ -428,7 +427,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null) {
+                if (value == null) {
                     return false;
                 }
                 return true;
@@ -454,7 +453,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof Map)) {
+                if (value == null || !(value instanceof Map)) {
                     return true;
                 }
 
@@ -485,7 +484,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof Map)) {
+                if (value == null || !(value instanceof Map)) {
                     return false;
                 }
 
@@ -516,7 +515,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof Map)) {
+                if (value == null || !(value instanceof Map)) {
                     return false;
                 }
 
@@ -547,7 +546,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof Map)) {
+                if (value == null || !(value instanceof Map)) {
                     return false;
                 }
 
@@ -578,7 +577,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             @Override
             public Object apply(Object value, Map<String, Object> args) {
 
-                if(value == null || !(value instanceof String)) {
+                if (value == null || !(value instanceof String)) {
                     return null;
                 }
 
@@ -588,21 +587,21 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                 Map<String, Object> spincastMap =
                         (Map<String, Object>)getModelElement(args,
                                                              SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
-                if(spincastMap == null) {
+                if (spincastMap == null) {
                     return null;
                 }
 
                 JsonObject paramsAsJsonObject =
                         (JsonObject)spincastMap.get(SpincastPebbleTemplatingEngine.PEBBLE_PARAMS_AS_JSONOBJECT);
-                if(paramsAsJsonObject == null) {
+                if (paramsAsJsonObject == null) {
                     return null;
                 }
 
                 Object result = paramsAsJsonObject.getObject(key, "");
 
-                if(result instanceof JsonObject) {
+                if (result instanceof JsonObject) {
                     return ((JsonObject)result).convertToPlainMap();
-                } else if(result instanceof JsonArray) {
+                } else if (result instanceof JsonArray) {
                     return ((JsonArray)result).convertToPlainList();
                 }
 
@@ -615,6 +614,10 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
     protected String getGetFunctionName() {
         return "get";
+    }
+
+    protected String getJsOneLinerOutputFunctionName() {
+        return "jsOneLine";
     }
 
     protected Function getGetFunction() {
@@ -633,7 +636,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             public Object execute(Map<String, Object> args) {
 
                 String key = (String)args.get("jsonPath");
-                if(StringUtils.isBlank(key)) {
+                if (StringUtils.isBlank(key)) {
                     return null;
                 }
 
@@ -641,25 +644,67 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                 Map<String, Object> spincastMap =
                         (Map<String, Object>)getModelElement(args,
                                                              SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
-                if(spincastMap == null) {
+                if (spincastMap == null) {
                     return null;
                 }
 
                 JsonObject paramsAsJsonObject =
                         (JsonObject)spincastMap.get(SpincastPebbleTemplatingEngine.PEBBLE_PARAMS_AS_JSONOBJECT);
-                if(paramsAsJsonObject == null) {
+                if (paramsAsJsonObject == null) {
                     return null;
                 }
 
                 Object result = paramsAsJsonObject.getObject(key, "");
 
-                if(result instanceof JsonObject) {
+                if (result instanceof JsonObject) {
                     return ((JsonObject)result).convertToPlainMap();
-                } else if(result instanceof JsonArray) {
+                } else if (result instanceof JsonArray) {
                     return ((JsonArray)result).convertToPlainList();
                 }
 
                 return result;
+            }
+        };
+    }
+
+    protected Function getJsOneLinerOutputFunction() {
+
+        return new Function() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object execute(Map<String, Object> args) {
+
+                Object codeObj = args.get("0");
+                if (codeObj == null) {
+                    return "";
+                }
+
+                String code = codeObj.toString();
+                if (StringUtils.isBlank(code)) {
+                    return "";
+                }
+
+                Boolean singleQuotesDelimiter = (Boolean)args.get("1");
+                if (singleQuotesDelimiter == null) {
+                    singleQuotesDelimiter = false;
+                }
+
+                code = code.replace("\r", "");
+                code = code.replace("\n", "");
+
+                if (singleQuotesDelimiter) {
+                    code = code.replace("'", "\\\'");
+                } else {
+                    code = code.replace("\"", "\\\"");
+                }
+
+                return new SafeString(code);
+
             }
         };
     }

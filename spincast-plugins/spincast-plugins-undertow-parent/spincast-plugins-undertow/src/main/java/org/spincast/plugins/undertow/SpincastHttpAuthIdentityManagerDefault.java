@@ -43,10 +43,10 @@ public class SpincastHttpAuthIdentityManagerDefault implements SpincastHttpAuthI
     @Override
     public void addUser(String username, String password) {
 
-        if(StringUtils.isBlank(username)) {
+        if (StringUtils.isBlank(username)) {
             throw new RuntimeException("The username can't be empty");
         }
-        if(StringUtils.isBlank(password)) {
+        if (StringUtils.isBlank(password)) {
             throw new RuntimeException("The password can't be empty");
         }
 
@@ -60,6 +60,8 @@ public class SpincastHttpAuthIdentityManagerDefault implements SpincastHttpAuthI
 
     protected Account createAccount(final String username) {
         return new Account() {
+
+            private static final long serialVersionUID = 1L;
 
             @Override
             public Set<String> getRoles() {
@@ -80,7 +82,7 @@ public class SpincastHttpAuthIdentityManagerDefault implements SpincastHttpAuthI
     public void removeUser(String username) {
 
         PasswordCredential credential = getCredentials().get(username);
-        if(credential == null) {
+        if (credential == null) {
             return;
         }
 
@@ -106,7 +108,7 @@ public class SpincastHttpAuthIdentityManagerDefault implements SpincastHttpAuthI
     @Override
     public Account verify(Credential credential) {
 
-        if(!(credential instanceof PasswordCredential)) {
+        if (!(credential instanceof PasswordCredential)) {
             return null;
         }
 
@@ -117,17 +119,17 @@ public class SpincastHttpAuthIdentityManagerDefault implements SpincastHttpAuthI
     @Override
     public Account verify(String username, Credential credential) {
 
-        if(!getCredentials().containsKey(username)) {
+        if (!getCredentials().containsKey(username)) {
             return null;
         }
 
-        if(!(credential instanceof PasswordCredential)) {
+        if (!(credential instanceof PasswordCredential)) {
             return null;
         }
 
         PasswordCredential savedCredential = getCredentials().get(username);
 
-        if(!Arrays.equals(savedCredential.getPassword(), ((PasswordCredential)credential).getPassword())) {
+        if (!Arrays.equals(savedCredential.getPassword(), ((PasswordCredential)credential).getPassword())) {
             return null;
         }
 

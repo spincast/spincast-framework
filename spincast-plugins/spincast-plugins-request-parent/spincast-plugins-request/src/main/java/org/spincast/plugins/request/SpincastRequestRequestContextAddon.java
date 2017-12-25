@@ -1,6 +1,5 @@
 package org.spincast.plugins.request;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -28,10 +27,13 @@ import org.spincast.core.exchange.RequestRequestContextAddon;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.request.Form;
+import org.spincast.core.request.FormFactory;
 import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
+import org.spincast.core.server.UploadedFile;
 import org.spincast.core.session.FlashMessage;
 import org.spincast.core.session.FlashMessagesHolder;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -80,8 +82,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     private Map<String, List<String>> queryStringParams;
     private Map<String, List<String>> formDatasAsImmutableMap;
     private JsonObject formDatasAsImmutableJsonObject;
-    private Map<String, List<File>> uploadedFiles;
+    private Map<String, List<UploadedFile>> uploadedFiles;
     private Map<String, List<String>> headers;
+    private Map<String, Form> forms;
 
     private final R requestContext;
     private final Server server;
@@ -91,6 +94,8 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     private final SpincastConfig spincastConfig;
     private final ETagFactory etagFactory;
     private final FlashMessagesHolder flashMessagesHolder;
+
+    private final FormFactory formFactory;
 
     private boolean flashMessageRetrieved = false;
     private FlashMessage flashMessage;
@@ -107,7 +112,8 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                                               SpincastUtils spincastUtils,
                                               SpincastConfig spincastConfig,
                                               ETagFactory etagFactory,
-                                              FlashMessagesHolder flashMessagesHolder) {
+                                              FlashMessagesHolder flashMessagesHolder,
+                                              FormFactory formFactory) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
@@ -116,6 +122,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         this.spincastConfig = spincastConfig;
         this.etagFactory = etagFactory;
         this.flashMessagesHolder = flashMessagesHolder;
+        this.formFactory = formFactory;
     }
 
     protected R getRequestContext() {
@@ -148,6 +155,10 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     protected FlashMessagesHolder getFlashMessagesHolder() {
         return this.flashMessagesHolder;
+    }
+
+    protected FormFactory getFormFactory() {
+        return this.formFactory;
     }
 
     protected Object getExchange() {
@@ -769,22 +780,43 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public Map<String, List<File>> getUploadedFiles() {
+    public Form getForm(String name) {
+
+        if (StringUtils.isBlank(name)) {
+            throw new RuntimeException("The name can't be empty.");
+        }
+
+        if (this.forms == null) {
+            this.forms = new HashMap<String, Form>();
+        }
+
+        if (!this.forms.containsKey(name)) {
+            JsonObject formData = getFormData().getJsonObjectOrEmpty(name);
+            Form form = getFormFactory().createForm(name, formData);
+            this.forms.put(name, form);
+        }
+
+        Form form = this.forms.get(name);
+        return form;
+    }
+
+    @Override
+    public Map<String, List<UploadedFile>> getUploadedFiles() {
         if (this.uploadedFiles == null) {
 
             //==========================================
             // We make sure everything is immutable
             //==========================================
-            Map<String, List<File>> uploadedFilesServer = getServer().getUploadedFiles(getExchange());
-            Map<String, List<File>> uploadedFilesFinal = new HashMap<String, List<File>>();
+            Map<String, List<UploadedFile>> uploadedFilesServer = getServer().getUploadedFiles(getExchange());
+            Map<String, List<UploadedFile>> uploadedFilesFinal = new HashMap<String, List<UploadedFile>>();
 
             if (uploadedFilesServer == null) {
                 uploadedFilesServer = Collections.emptyMap();
             } else {
-                for (Entry<String, List<File>> entry : uploadedFilesServer.entrySet()) {
+                for (Entry<String, List<UploadedFile>> entry : uploadedFilesServer.entrySet()) {
 
                     if (entry.getValue() == null) {
-                        uploadedFilesFinal.put(entry.getKey(), Collections.<File>emptyList());
+                        uploadedFilesFinal.put(entry.getKey(), Collections.<UploadedFile>emptyList());
                     } else {
                         uploadedFilesFinal.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
                     }
@@ -798,9 +830,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public List<File> getUploadedFiles(String name) {
+    public List<UploadedFile> getUploadedFiles(String name) {
 
-        List<File> files = getUploadedFiles().get(name);
+        List<UploadedFile> files = getUploadedFiles().get(name);
         if (files == null) {
             files = Collections.emptyList();
         }
@@ -808,9 +840,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public File getUploadedFileFirst(String name) {
+    public UploadedFile getUploadedFileFirst(String name) {
 
-        List<File> files = getUploadedFiles(name);
+        List<UploadedFile> files = getUploadedFiles(name);
         if (files.size() > 0) {
             return files.get(0);
         }
@@ -975,5 +1007,11 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         }
         return flashMessage;
     }
+
+    @Override
+    public String getIp() {
+        return getServer().getIp(getExchange());
+    }
+
 
 }

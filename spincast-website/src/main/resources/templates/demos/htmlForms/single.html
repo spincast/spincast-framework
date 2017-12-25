@@ -74,7 +74,7 @@
                 There is <em>no</em> client-side validation in this demo. It's on
                 purpose since we want
                 to demonstrate how <em>server-side</em> validation works and how the
-                <a href="/documentation#validation_messages">Validation Messages</a> can be displayed. 
+                <code>Validation Messages</code> can be displayed. 
             </li>
             <li>
                 The demo is fully functional even when javascript is disabled.
@@ -125,18 +125,18 @@
                             For example :
                         </div>
 
-                        {% if validation._ | validationFresh() %}
+                        {% if validation['demoForm._'] | validationFresh() %}
                             <div class="well niceWell">
                                 <div class="niceWellTitle">Fresh</div>
                                 This <code>&lt;div&gt;</code> is only displayed when the form has not been submitted 
                                 yet (we say the form is <em>"fresh"</em>). This can be validated  using the "<strong>_</strong>" element, 
-                                which represents the form itself (<a href="http://spincast.loc:44420/documentation#validation_to_jsonobject">more info</a>) :
-                                {% verbatim %}<code class="snippet">{% if validation._ | validationFresh() %}</code>{% endverbatim %}
+                                which represents the form itself (<a href="/documentation#forms_validation_messages">more info</a>) :
+                                {% verbatim %}<code class="snippet">{% if validation['demoForm._'] | validationFresh() %}</code>{% endverbatim %}
                                 
                             </div>
                         {% endif %}
                         
-                        {% if validation._ | validationSubmitted() and validation['demoForm.email'] | validationIsValid() %}
+                        {% if validation['demoForm._'] | validationSubmitted() and validation['demoForm.email'] | validationIsValid() %}
                             <div class="well niceWell valid">
                                 <div class="niceWellTitle">Valid</div>
                                 This <code>&lt;div&gt;</code> is displayed because the form has been submitted and 
@@ -144,8 +144,8 @@
                                 in addition to validate if a field is valid because, when a field  is displayed for the
                                 first time, it doesn't contain any errors so it is considered as being "valid".
                                 You can validate that the form has been submitted using the "<strong>_</strong>" element, 
-                                which represents the form itself (<a href="http://spincast.loc:44420/documentation#validation_to_jsonobject">more info</a>) :
-                                {% verbatim %}<code class="snippet">{% if validation._ | validationSubmitted() and validation['demoForm.email'] | validationIsValid() %}</code>{% endverbatim %}
+                                which represents the form itself (<a href="/documentation#forms_validation_messages">more info</a>) :
+                                {% verbatim %}<code class="snippet">{% if validation['demoForm._'] | validationSubmitted() and validation['demoForm.email'] | validationIsValid() %}</code>{% endverbatim %}
                             </div>
                         {% endif %}
                         
@@ -153,7 +153,7 @@
                             <div class="well niceWell success">
                                 <div class="niceWellTitle">Success</div>
                                 This <code>&lt;div&gt;</code> is displayed because the following condition is true :
-                                {% verbatim %}<code class="snippet">{% if validation.demoForm['demoForm.email'] | validationHasSuccesses() %}</code>{% endverbatim %}
+                                {% verbatim %}<code class="snippet">{% if validation['demoForm.email'] | validationHasSuccesses() %}</code>{% endverbatim %}
                              </div>
                         {% endif %}
                         
@@ -275,7 +275,7 @@
     the various
     <a href="/documentation#forms_validation_filters">Validation Filters</a>.
     Depending on the value of the "email" field, the controller may add 
-    <a href="/documentation#validation_messages">Validation Messages</a> to the
+    <a href="/documentation#forms_validation_validating">Validation Messages</a> to the
     response and then redisplay the form, or may redirect you to a confirmation
     page.  
 </p>
@@ -298,16 +298,16 @@
     {% endverbatim %}
     
      You can learn in the
-    <a href="/documentation#forms_validation_data">Getting the submitted form data</a> section of the document
+    <a href="/documentation#forms_validation_data">Retrieving the submitted form</a> section of the document
     that Spincast uses the names of the fields to build a <a href="/documentation#jsonobject">JsonObject</a> 
-    representing the submitted form. This is why we are able to access a parent element named <code>"demoForm"</code> on the
-    submitted form data :
+    representing the submitted form :
     <div>
         <p>
-            <pre class="ace ace-java" data-ace-hi="2,25,2,75"
+            <pre class="ace ace-java" data-ace-hi="2,34,2,75"
 >public void singleFieldSubmit(AppRequestContext context) {
 
-JsonObject form = context.request().getFormData().getJsonObject("demoForm");
+    Form form = context.request().getForm("demoForm");
+    context.response().addForm(form);
 
 //...</pre>       
         </p>
@@ -327,93 +327,50 @@ String email = context.request().getFormData().getString("demoForm.email");
     </div>  
 </p>
 <p>
-    But, in general, a form contains more than one field and using such "parent element" allows
-    you to validate them together.
+    But, in general, it's way easier to get the form data as a <a class="javadoc" href="/public/javadoc/org/spincast/core/request/Form.html">Form</a>
+    object and then deal with it!
 </p>
 <p>
     <img class="inlineIcon" src="/public/images/icons/para.png" />
-    Now that we have the <code>form</code> parent element, we are going to validate it. To do so
-    we first have to create a <a href="/documentation#validation_sets">Validation Set</a>. Since
-    the <code>form</code> object is a <code>JsonObject</code>, we simply have to use its
-    <code>validationSet()</code> method :
-    
-    <div>
-        <p>
-            <pre class="ace ace-java" data-ace-hi="2,44,2,60"
->// We get a Validation Set instance to start the validation of
-// our form
-JsonObjectValidationSet validationSet = form.validationSet();
-</pre>       
-        </p>
-    </div>  
-</p>
-<p>
-    We use this <code>Validation Set</code> to perform any validation we need on the object. Let's see the
-    first validation used in this demo, where we verify that the submitted email is <em>not blank</em> :
-    
-    <div>
-        <p>
-            <pre class="ace ace-java" data-ace-hi="1,40,1,61"
->
-
-ValidationSet lastResult = validationSet.validationNotBlank()
-                                        .jsonPath("email")
-                                        .failMessageText("The email is required")
-                                        .validate();</pre>       
-        </p>
-        <p>
-            Notice that we use <code><em>"email"</em></code> as the <code>JsonPath</code> to target the
-            element we want to validate [<span class="code-line-nbr">3</span>]. Since the <code>form</code> object 
-            is the root element we started the validation on,
-            we have to use a <a href="/documentation#jsonobject_jsonpaths">JsonPath</a> relative to it.
-        </p>
-    </div>  
-</p>
-<p>
-    The <code>validationNotBlank()</code> method is a <a href="/documentation#validation_predefined">predefined validation</a>. There
-    are many of them available on a <code>Validation Set</code> object. 
-</p>
-<p>
-    When run, a predefine validation results in two things :
-    
-    <ul>
-        <li>
-            Some <a href="/documentation#validation_messages">Validation Messages</a> are potentially added to our initial
-            <code>Validation Set</code> (a <em>"The email is required"</em> error message, for example).
-        </li>
-        <li>
-            A <em>new</em> <code>Validation Set</code> is returned (This set is named <code>"lastResult"</code> in our example). 
-            The set returned by a predefined validation contains the results of <em>this particular validation</em>.
-            By using those standalone sets returned by validations, you are able to perform a validation or not
-            <em>depending on the result of a previous validation</em>!
-        </li>
-    </ul>
-</p>
-<p>
-    <img class="inlineIcon" src="/public/images/icons/para.png" />
-    When our validation is done, we check if our initial <code>Validation Set</code> contains any
-    error and, if so, we redisplay the form with its associated <code>Validation Messages</code>.
-</p>
-<p> 
-    To do so, we add the <code>form</code> object to the <a href="/documentation#sending_response_model">response model</a>
-    using the same <code>"demoForm"</code> key we used to retrieve it. We also add our 
-    <code>Validation Set</code> to the response model, so the <code>Validation Messages</code> are
-    available and can be displayed in our HTML template :
+    Now that we have the form, we are going to validate it. A
+    <code>Form</code> object is a simple <code>JsonObject</code> but with extra
+    validation features. We can retrieve elements from it, validate those elements, and add
+    validation messages. For example :
     
     <div>
         <p>
             <pre class="ace ace-java"
->// Are there some errors?
-if(!validationSet.isValid()) {
+>
 
-    // Adds the form to the response model
-    context.response().getModel().put("demoForm", form);
+String email = form.getString("email");
+
+if (StringUtils.isBlank(email)) {
+    form.addError("email",
+                  "email_empty",
+                  "The email is required");
+}</pre>       
+        </p>
+        <p>
+            Notice that we use <code><em>"email"</em></code> as the <code>JsonPath</code> to target the
+            element we want to validate [<span class="code-line-nbr">2</span>]. Since the <code>form</code> object 
+            is the root element we started the validation on,
+            we have to use a <a href="/documentation#jsonobject_jsonpaths">JsonPath</a> <em>relative to it</em>.
+        </p>
+    </div>  
+</p>
+<p>
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    When the validation is done, we check if the form contains any
+    errors and, if so, we redisplay it with its associated <code>Validation Messages</code>. To do so,
+    we single call the <code>GET</code> handler (named "<em>singleField(...)</em>" in this demo) 
+    from the <code>POST</code> handler :
     
-    // Adds the Validation Set to the response model.
-    context.response().getModel().put("validation", validationSet);
-    
-    // Sends the template
-    sendTemplate(context);
+    <div>
+        <p>
+            <pre class="ace ace-java"
+>if(!form.isValid()) {
+    singleField(context);
+    return;  
 } else {
     //...
 }</pre>       
@@ -421,26 +378,29 @@ if(!validationSet.isValid()) {
     </div>  
 </p> 
 <p> 
-    Note that the actual code of this demo is slightly different, simply because we wanted to show that
-    a form can be redisplayed even if it is valid. But, most of the time, you're not
-    going to do this... In fact, if the form is valid, you want to 
+    (Note that the actual code of this demo is slightly different, simply because we wanted to show that
+    a form can be redisplayed even if it is valid.)
+</p> 
+<p> 
+    <img class="inlineIcon" src="/public/images/icons/para.png" />
+    If the form is <em>valid</em>, you want to 
     <a href="/documentation#sending_response_redirecting">redirect</a> the user
     to a confirmation page, using a <a href="/documentation#flash_messages">Flash message</a> :
     
     <div>
         <p>
             <pre class="ace ace-java"
->if(!validationSet.isValid()) {
+>if(!form.isValid()) {
     //...
 } else {
 
     // No errors! We process the form data, using
-    // services, data sources, etc.
-    // ...
+    // services, respositories, etc.
+    // processForm(form)...
     
     // And then we redirect to a confirmation page
     context.response().redirect(FlashMessageLevel.SUCCESS,
-                                "the form has been processed successfully.");
+                                "The form has been processed successfully.");
 }</pre>       
         </p>
     </div>  
@@ -448,7 +408,8 @@ if(!validationSet.isValid()) {
 <p>
     <img class="inlineIcon" src="/public/images/icons/para.png" />
     The last step of the validation process is to
-    redisplay the form with the resulting <code>Validation Messages</code>, in your template. 
+    redisplay the form with the resulting <code>Validation Messages</code>, in your template, when 
+    it contains errors. 
 </p> 
 <p>
     To help you, <a href="/documentation#forms_validation_filters">Validation Filters</a>
@@ -482,9 +443,9 @@ if(!validationSet.isValid()) {
 </p> 
 
 <p> 
-    Since we added the <code>Validation Set</code> to the response model, our template has access
-    to its messages through the <code>"validation"</code> element. From this element, we get the <code>Validation Messages</code> associated
-    with our field using the <code>"demoForm.email"</code> <a href="/documentation#validation_keys">validation key</a>
+    Since we added the form to the response model using <code>context.response().addForm(form)</code>, our template has access
+    to the validation messages through a <code>"validation"</code> element. From this element, we get the <code>Validation Messages</code> associated
+    with our field using the <code>"demoForm.email"</code> key
     and we pass the result to the <code>validationClass()</code> and <code>validationMessages()</code>
     filters.
     
@@ -495,8 +456,8 @@ if(!validationSet.isValid()) {
         </li>
         <li>
             The <code>validationMessages()</code> filter format and output the
-            <code>Validation Messages</code> themselves. The template fragment used is
-            of course configurable.
+            <code>Validation Messages</code> themselves. The HTML template fragment to use is
+            configurable.
         </li>
     </ul>
 </p> 
@@ -535,109 +496,14 @@ if(!validationSet.isValid()) {
     Make sure you read the <a href="/documentation#forms_validation_filters">Validation Filters</a> section
     of the documentation to see what are the filters related to validation, and how to use them! 
 </p>
-<p>
-    <img class="inlineIcon" src="/public/images/icons/para.png" />
-    One last thing! Let's go back server-side for a minute... You may have noticed in the 
-    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/java/org/spincast/website/controllers/demos/DemoHtmlFormsSingleFieldController.java">code</a> 
-    that, when the <code>Validation Set</code> is ready, <em>we prefix its validation keys with the string <code>"demoForm."</code></em>
-    before we actually use it :
-    
-    <div>
-        <p>
-            <pre class="ace ace-java" data-ace-hi="1,51,1,85"
->JsonObject form = context.request().getFormData().getJsonObject("demoForm");
-ValidationSet validationSet = validateForm(form).prefixValidationKeys("demoForm.");
-
-// ... uses the Validation Set</pre>       
-        </p>
-    </div>  
-</p>
-<p>
-    Why are we doing this? 
-</p>
-<p>
-    Since we call the <code>validateForm(...)</code> method with <code>"form"</code> as the object to validate, the validations
-    are performed <em>relatively to this object</em>, so <code>"email"</code> is used as the validation keys to store the
-    <code>Validation Messages</code> for this element. But, in our final <code>Validation Set</code>, we would like
-    the validation keys to <em>reflect the <a href="/documentation#jsonobject_jsonpaths">JsonPaths</a>
-    of their associated element</em>. If we were not to prefix the validation keys with <code>"demoForm."</code>, 
-    the template of the <code>"email"</code> field would look like this&nbsp;:
-    
-    {% verbatim %}
-    <div>
-        <p>
-            <pre class="ace ace-pebble" data-ace-hi="1,37,1,42|10,22,10,27"
->
-
-&lt;div class="form-group {{validation['email'] | validationClass()}}"&gt;
-    &lt;label for="email" class="col-sm-4 control-label"&gt;Email *&lt;/label&gt;
-    &lt;div class="col-sm-8"&gt;
-        &lt;input type="text" 
-               class="form-control" 
-               id="email" 
-               name="demoForm.email" 
-               placeholder="Email"
-               value="{{demoForm.email | default('')}}"&gt;
-        {{validation['email'] | validationMessages()}}
-        
-        &lt;div class="validationsDirectBtnDiv"&gt;
-            &lt;button id="subBtn" type="submit" class="btn btn-primary"&gt;Submit&lt;/button&gt;
-        &lt;/div&gt;    
-    &lt;/div&gt;
-&lt;/div&gt;</pre>       
-        </p>
-    </div>  
-    {% endverbatim %}
-
-</p>
-<p>
-    This would have work (and you can do it if you want), but we think it's way clearer when the validation keys are actually 
-    <em>the
-    string representation of the <a href="/documentation#jsonobject_jsonpaths">JsonPaths</a> of
-    the elements they are associated with</em>. We think that :
-    
-    {% verbatim %}
-    <div>
-        <p>
-            <pre class="ace ace-pebble"
->
-
-{{validation['demoForm.email'] | validationMessages()}}
-</pre>       
-        </p>
-    </div>  
-    {% endverbatim %}
-</p>
-<p>
-    is much better than :
-    {% verbatim %}
-    <div>
-        <p>
-            <pre class="ace ace-pebble"
->
-
-{{validation['email'] | validationMessages()}}
-</pre>       
-        </p>
-    </div>  
-    {% endverbatim %}
-    since the name of the <code>input</code> field is <code>"demoForm.email"</code>...
-</p>
-<p>
-    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-    You can learn more about this topic in the 
-    <a href="/documentation#validation_keys">Validation Keys</a> section!
-</p>  
-
-
 
 <h4>
     <a class="anchor_small" href="#more" id="more" title="permanent link"></a>
     More info
 </h4>
 <p>
-    Learn everything about validation and forms in their dedicated <a href="/documentation#validation">Validation</a> 
-    and <a href="/documentation#forms">Forms</a> sections of the documentation.
+    Learn everything about forms and validation in the dedicated 
+    <a href="/documentation#forms">Forms</a> section of the documentation.
 </p>
      
 {% endblock %}

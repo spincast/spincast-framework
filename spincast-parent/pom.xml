@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent-pom</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -19,17 +19,17 @@
 
     <properties>
         <guice.version>4.1.0</guice.version>
-        <slf4j.version>1.7.21</slf4j.version>
-        <jsr305.version>3.0.1</jsr305.version> 
-        <undertow.version>1.4.0.CR4</undertow.version> 
+        <slf4j.version>1.7.25</slf4j.version>
+        <jsr305.version>3.0.2</jsr305.version> 
+        <undertow.version>1.4.21.Final</undertow.version> 
     </properties>
     
     <scm>
         <connection>scm:git:git@github.com:spincast</connection>
         <developerConnection>scm:git:git@github.com:spincast</developerConnection>
         <url>git@github.com:spincast</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     
     <dependencyManagement>
         <dependencies>

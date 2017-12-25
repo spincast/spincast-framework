@@ -2,7 +2,6 @@ package org.spincast.tests.varia;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.Server;
+import org.spincast.core.server.UploadedFile;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.WebsocketEndpointHandler;
 import org.spincast.core.websocket.WebsocketEndpointManager;
@@ -172,7 +172,7 @@ public class CustomServer implements Server {
     }
 
     @Override
-    public Map<String, List<File>> getUploadedFiles(Object exchange) {
+    public Map<String, List<UploadedFile>> getUploadedFiles(Object exchange) {
         return null;
     }
 
@@ -258,6 +258,11 @@ public class CustomServer implements Server {
     @Override
     public WebsocketEndpointManager getWebsocketEndpointManager(String endpointId) {
         return null;
+    }
+
+    @Override
+    public String getIp(Object exchange) {
+        return "127.0.0.1";
     }
 
 }

@@ -1,7 +1,6 @@
 package org.spincast.plugins.config;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Locale;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -209,7 +207,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
      * created under the <code>java.io.tmpdir</code> directory.
      */
     @Override
-    public File getSpincastWritableDir() {
+    public File getWritableRootDir() {
 
         if (this.spincastBaseWritableDir == null) {
 
@@ -258,13 +256,16 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
                     throw new RuntimeException("Unable to create the Spincast writable directory : " +
                                                spincastDir.getAbsolutePath());
                 }
-            } else {
-                cleanWritableSpincastDir(spincastDir);
             }
 
             this.spincastBaseWritableDir = spincastDir;
         }
         return this.spincastBaseWritableDir;
+    }
+
+    @Override
+    public File getTempDir() {
+        return new File(getWritableRootDir(), "temp");
     }
 
     /**
@@ -277,15 +278,6 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
      */
     protected String getSpincastWritableDirPath() {
         return null;
-    }
-
-    protected void cleanWritableSpincastDir(File spincastTempDir) {
-        try {
-            FileUtils.cleanDirectory(spincastTempDir);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to clean the Spincast writable directory: " +
-                                       spincastTempDir.getAbsolutePath());
-        }
     }
 
     @Override
@@ -430,6 +422,11 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     @Override
     public String getSpincastModelRootVariableName() {
         return "spincast";
+    }
+
+    @Override
+    public String getValidationElementDefaultName() {
+        return "validation";
     }
 
 }

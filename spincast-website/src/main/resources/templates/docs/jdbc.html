@@ -1,0 +1,405 @@
+{#==========================================
+Docs : "JDBC / SQL"
+==========================================#}
+
+{#==========================================
+Routing
+==========================================#}     
+<section id="jdbc">
+    <h3>
+        <a class="anchor" href="#jdbc" title="permanent link"></a>
+        JDBC / SQL
+    </h3>
+    <p>
+        Spincast provides utilities to perform SQL queries:
+        <ul>
+            <li>
+                <a href="#jdbc_scopes"><strong>Scopes</strong></a> - automatic connections management and
+                support for transactions.
+            </li>
+            <li>
+                <a href="#jdbc_statements"><strong>Statements</strong></a> - allow the creation of 
+                SQL queries in a safe and easy manner, with <code>named parameters</code> support.
+            </li>
+            <li>
+                <a href="#jdbc_resulsets"><strong>Result Sets</strong></a> - with goodies and better <code>null</code> 
+                support compared to plain JDBC.
+            </li>  
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        To access those JDBC features, you first have to install the
+        <a href="/plugins/spincast-jdbc">Spincast JDBC plugin</a>. This plugin is not part of the
+        <code>spincast-default</code> artifact.
+    </p>
+    
+    {#==========================================
+    Scopes
+    ==========================================#}
+    <div id="jdbc_scopes">
+
+        <h4>
+            <a class="anchor_small" href="#jdbc_scopes" title="permanent link"></a>
+            Scopes
+        </h4>
+        
+        <p>
+            A <code>JDBC scope</code> is a block of code that provides a connection to a <code>data source</code> and automatically returns it to the connection
+            pool when it is not needed anymore.
+        </p> 
+        <p>
+            There is two kinds of scopes: <code><strong>autoCommit</strong></code> and <code><strong>transactional</strong></code>.
+            You start a JDBC scope by calling the 
+            <code>JdbcUtils</code>'s <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcUtils.html#scopes--">scopes()</a> method.
+        </p> 
+        <p> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            Here's how to start an <code>autoCommit</code> scope :
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="1,23,1,34"
+>
+
+getJdbcUtils().scopes().autoCommit(getMainDataSource(), new JdbcQueries&lt;Void&gt;() {
+    @Override
+    public Void run(Connection connection) {
+
+        // SQL query #1...
+
+        // SQL query #2...
+        
+        return null;
+    }
+});
+</pre>
+                </p> 
+            </div>
+            
+            <div>
+                You call <code>getJdbcUtils().scopes().autoCommit(...)</code> by passing the
+                <code>DataSource</code> to use, and a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcQueries.html">JdbcQueries</a>
+                instance. In the <code>run(...)</code> method you receive a <code>connection</code> that is ready to be used 
+                to run your SQL queries.
+            </div> 
+        </p> 
+        <p>
+            When the <code>run(...)</code> method exits, the connection is automatically returned to the connection pool.
+        </p> 
+        <p> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            
+            A <code>transactional</code> scope adds an extra functionality: all the SQL queries performed inside that scope,
+            directly or indirectly, will be part of a single transaction. In other words, all the queries will be committed
+            only when the scope exits, or will all be rollbacked if an exception occurres.
+        <p>
+            There are two ways to create a <code>transactional</code> scope. It can be created the same way an <code>autoCommit</code>
+            one is, by passing a <code>DataSource</code> and a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcQueries.html">JdbcQueries</a>
+            instance:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="1,23,1,37"
+>
+
+getJdbcUtils().scopes().transactional(getMainDataSource(), new JdbcQueries&lt;Void&gt;() {
+
+    @Override
+    public Void run(Connection connection) throws Exception {
+
+        // SQL query #1...
+
+        // SQL query #2...
+        
+        return null;
+    };
+});
+</pre>
+                </p> 
+            </div>
+        </p> 
+        
+        <p>
+            Or it can be created only to start a transaction, without the immediate need for a connection :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="1,23,1,37"
+>
+
+getJdbcUtils().scopes().transactional(new TransactionalScope&lt;Void&gt;() {
+
+    @Override
+    public Void run() throws Exception {
+
+        // Use component #1...
+
+        // Use component #2...
+        
+        return null;
+    };
+});
+</pre>
+                </p> 
+            </div>
+        </p> 
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            In both situations, a scope is created and any SQL queries performed in it,
+            directly or indirectly, will be part of the same transaction.
+        </p> 
+  
+    </div>
+    
+    {#==========================================
+    Statements
+    ==========================================#}
+    <div id="jdbc_statements">
+
+        <h4>
+            <a class="anchor_small" href="#jdbc_statements" title="permanent link"></a>
+            Statements
+        </h4>
+        
+        <p>
+            By using the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcStatementFactory.html">JdbcStatementFactory</a>, by injecting it or
+            from the <code>JdbcUtils</code>'s <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcUtils.html#statements--">statements()</a> 
+            utility method,
+            you start the creation of <code>SQL statements</code> :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+getJdbcUtils().scopes().transactional(getMainDataSource(), new JdbcQueries&lt;Void&gt;() {
+
+    @Override
+    public Void run(Connection connection) throws Exception {
+
+        SelectStatement stm1 = getJdbcUtils().statements().createSelectStatement(connection);
+        
+        InsertStatement stm2 = getJdbcUtils().statements().createInsertStatement(connection);
+        
+        BatchInsertStatement stm3 = getJdbcUtils().statements().createBatchInsertStatement(connection);
+        
+        UpdateStatement stm4 = getJdbcUtils().statements().createUpdateStatement(connection);
+        
+        DeleteStatement stm5 = getJdbcUtils().statements().createDeleteStatement(connection);
+        
+        // ...
+        
+        return null;
+    };
+});
+</pre>
+                </p> 
+            </div>
+        </p> 
+        <p>
+            From such statements, you can build your SQL query and bind <code>named parameters</code>. 
+        </p> 
+        <p> 
+            For example :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
+
+stm.sql("SELECT name, level " +
+        "FROM users " +
+        "WHERE name = :name ");
+
+stm.setString("name", "Stromgol");
+
+if (minLevel != null) {
+    stm.sql("AND level >= :minLevel ");
+    stm.setInteger("minLevel", minLevel);
+}
+</pre>
+                </p> 
+            </div>
+        </p> 
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            There are utility methods for <code>IN</code> conditions:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
+
+stm.sql("SELECT name, level " +
+        "FROM users " +
+        "WHERE name IN(:names) ");
+
+stm.setInString("names", Sets.newHashSet("Stromgol", "Patof", "Bozo"));   
+</pre>
+                </p> 
+            </div>
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            A <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/statements/Statement.html#setInstant-java.lang.String-java.time.Instant-">setInstant(...)</a>
+            method is provided : it converts the Instant object to a <code>Timestamp</code> at the <em>UTC timezone</em>.
+            In association with the result set's <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastResultSet.html#getInstant-java.lang.String-">getInstant()</a>, 
+            and a "<code>timestamp with time zone</code>" or "<code>timestamptz</code>" column type, it is
+            an easy and efficient way of dealing with dates and timezones.
+        </p> 
+        
+        <p> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            You can retrieve the current SQL and clears it if you need to :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+stm.sql("SELECT * FROM users ");
+
+// "true" =&gt; human friendly formatted
+String currentSql = stm.getSql(true);
+
+// clears the current query
+stm.clearSql();
+</pre>
+                </p> 
+            </div>
+        </p> 
+        <p> 
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            Finally, when your SQL query is ready, you execute it. The method to call to execute the
+            query depends on the type of statement you are using:
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+// SelectStatement
+SelectStatement stm1 = getJdbcUtils().statements().createSelectStatement(connection);
+stm.selectOne(...);
+// or
+stm.selectList(...);
+ // or
+stm.selectListAndTotal(...);
+
+// InsertStatement
+InsertStatement stm2 = getJdbcUtils().statements().createInsertStatement(connection);
+stm2.insert();
+// or
+stm2.insertGetGeneratedKeys();
+
+// BatchInsertStatement
+BatchInsertStatement stm3 = getJdbcUtils().statements().createBatchInsertStatement(connection);  
+stm3.batchInsert();
+// or
+stm3.batchInsertGetGeneratedKeys();
+
+// UpdateStatement
+UpdateStatement stm4 = getJdbcUtils().statements().createUpdateStatement(connection);
+stm4.update();
+
+// DeleteStatement
+DeleteStatement stm5 = getJdbcUtils().statements().createDeleteStatement(connection);
+stm5.delete(); 
+</pre>
+                </p> 
+            </div>
+        </p> 
+        
+    </div>
+    
+    {#==========================================
+    Result Sets
+    ==========================================#}
+    <div id="jdbc_resulsets">
+
+        <h4>
+            <a class="anchor_small" href="#jdbc_resulsets" title="permanent link"></a>
+            Result Sets
+        </h4>
+        
+        <p>
+            When you execute a <code>SelectStatement</code>, you have to pass a 
+            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/statements/ResultSetHandler.html">ResultSetHandler</a>
+            in order to use the values returned by the database.
+        </p> 
+        <p> 
+            For example :
+        </p> 
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
+
+stm.sql("SELECT name, level " +
+        "FROM users " +
+        "WHERE name = :name ");
+
+stm.setString("name", "Stromgol");
+
+User user = stm.selectOne(new ResultSetHandler&lt;User&gt;() {
+
+    @Override
+    public User handle(SpincastResultSet rs) throws Exception {
+        User user = new User(rs.getString("name"),
+                             rs.getIntOrNull("level"));
+        return user;
+    }
+});     
+</pre>
+                </p> 
+            </div>
+        </p> 
+        <p>
+            In this example, you can see that you receive a
+            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastResultSet.html">SpincastResultSet</a>
+            to deal with the data returned from the database.
+            This <code>SpincastResultSet</code> object implements the default Java's <code>java.sql.ResultSet</code>,
+            but also provide additional features.
+        </p> 
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            In <code>SpincastResultSet</code>, those methods are deprecated: <code>getBoolean(...)</code>, <code>getByte(...)</code>,
+            <code>getShort(...)</code>, <code>getInt(...)</code>, <code>getLong(...)</code>, <code>getFloat(...)</code>,
+            <code>getDouble(...)</code>.
+        </p>
+        <p>
+            They are replaced by : <code>getBooleanOrNull(...)</code>, <code>getByteOrNull(...)</code>,
+            <code>getShortOrNull(...)</code>, <code>getIntOrNull(...)</code>, <code>getLongOrNull(...)</code>, <code>getFloatOrNull(...)</code>,
+            <code>getDoubleOrNull(...)</code>.
+        </p>
+        <p>
+            We do this to deal with the bad decision JDBC's creators did by using <em>primitive types</em> as return types for
+            those getters and therefore preventing <code>null</code> from being returned properly. Using plain JDBC, when a <code>null</code> value is returned
+            by the database, is it transformed to the default value of the primitive type : <code>false</code> for booleans and <code>0</code> for number
+            types. Using <code>SpincastResultSet</code>, you receive a proper <code>null</code> value when this is what the database returns.
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" />
+            Finally, a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastResultSet.html#getInstant-java.lang.String-">getInstant()</a>
+            method is provided to easily convert a column of type "<code>timestamp with time zone</code>" or "<code>timestamptz</code>" to an Instant object.
+        </p> 
+    </div>
+
+</section>
+
+            

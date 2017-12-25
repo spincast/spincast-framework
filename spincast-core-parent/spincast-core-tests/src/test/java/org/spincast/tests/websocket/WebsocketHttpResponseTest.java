@@ -88,7 +88,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -136,7 +136,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -186,7 +186,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).addCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -229,7 +229,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "Stromgol").send();
+        HttpResponse response = websocket(path).addCookie("username", "Stromgol", false).send();
         validateIsWebsocketUpgradeHttpResponse(path, response);
     }
 

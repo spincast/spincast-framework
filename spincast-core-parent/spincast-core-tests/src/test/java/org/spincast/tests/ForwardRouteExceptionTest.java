@@ -268,6 +268,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
         Cookie cookie = getCookieFactory().createCookie("name1", "toto");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
+        cookie.setSecure(false);
 
         HttpResponse response = GET("/one?q=one").addCookie(cookie).setHeaders(headers).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());

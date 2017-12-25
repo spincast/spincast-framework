@@ -15,4 +15,9 @@ public class SpincastJsonManagerConfigDefault implements SpincastJsonManagerConf
         return "\n";
     }
 
+    @Override
+    public boolean isSerializeEnumsToNameAndLabelObjects() {
+        return true;
+    }
+
 }

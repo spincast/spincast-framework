@@ -37,6 +37,11 @@ public class HttpsTest extends NoAppStartHttpServerTestingBase {
         }
 
         @Override
+        public String getPublicUrlBase() {
+            return "https://" + getServerHost() + ":" + getHttpsServerPort();
+        }
+
+        @Override
         public int getHttpServerPort() {
             return -1;
         }

@@ -1,6 +1,10 @@
 package org.spincast.core.utils;
 
+import java.io.Closeable;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +19,7 @@ import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
 /**
@@ -391,5 +396,43 @@ public class SpincastStatics {
             throw SpincastStatics.runtimize(ex);
         }
     }
+
+
+    public static void closeQuietly(InputStream stream) {
+        getInstance().closeQuietlyInstance(stream);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void closeQuietlyInstance(InputStream stream) {
+        IOUtils.closeQuietly(stream);
+    }
+
+    public static void closeQuietly(OutputStream stream) {
+        getInstance().closeQuietlyInstance(stream);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void closeQuietlyInstance(OutputStream stream) {
+        IOUtils.closeQuietly(stream);
+    }
+
+    public static void closeQuietly(Reader reader) {
+        getInstance().closeQuietlyInstance(reader);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void closeQuietlyInstance(Reader reader) {
+        IOUtils.closeQuietly(reader);
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        getInstance().closeQuietlyInstance(closeable);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void closeQuietlyInstance(Closeable closeable) {
+        IOUtils.closeQuietly(closeable);
+    }
+
 
 }

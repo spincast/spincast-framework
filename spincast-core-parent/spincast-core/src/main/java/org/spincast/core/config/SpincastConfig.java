@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+import org.spincast.core.request.Form;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 
 /**
@@ -188,10 +189,11 @@ public interface SpincastConfig {
     public List<String> getContentTypesToSkipGziping();
 
     /**
-     * A directory where temporary generated files 
+     * A directory where generated files 
      * can be written by Spincast.
      * <p>
-     * This directory will be emptied each time the application starts.
+     * This directory won't be emptied each time the application starts, but its
+     * sub solder "temp" will be!
      * </p>
      * <p>
      * The default value uses <code>System.getProperty("java.io.tmpdir")</code>
@@ -200,7 +202,15 @@ public interface SpincastConfig {
      * 
      * @return a directory with write permissions for Spincast.
      */
-    public File getSpincastWritableDir();
+    public File getWritableRootDir();
+
+    /**
+     * A directory where temp files can be written by Spincast.
+     * <p>
+     * This directory <em>will</em> be emptied each time the application starts!
+     * </p>
+     */
+    public File getTempDir();
 
     /**
      * The default Locale to use if no other Locale can be found
@@ -372,5 +382,12 @@ public interface SpincastConfig {
      * Spincast in the response's <em>model</em>.
      */
     public String getSpincastModelRootVariableName();
+
+    /**
+     * The default name to use for the validation element
+     * that will be available on the response's model when
+     * {@link Form} elements are added.
+     */
+    public String getValidationElementDefaultName();
 
 }

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.spincast.core.exceptions.CantConvertException;
-import org.spincast.core.validation.JsonArrayValidationSet;
 
 /**
  * Represents a <code>Json</code> array, "[]".
@@ -1195,9 +1194,6 @@ public interface JsonArray extends JsonObjectOrArray, Iterable<Object> {
      * Trims the element, if it's of type <code>String</code>.
      */
     public void trim(int index);
-
-    @Override
-    public JsonArrayValidationSet validationSet();
 
     /**
      * Converts the JsonArray to a <code>List&lt;String&gt;</code>.

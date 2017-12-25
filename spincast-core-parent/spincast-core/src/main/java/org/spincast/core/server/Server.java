@@ -1,6 +1,5 @@
 package org.spincast.core.server;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -239,8 +238,9 @@ public interface Server {
 
     /**
      * The uploaded files, if any.
+     * The key of the map if the HTML's <code>name</code> attribute. 
      */
-    public Map<String, List<File>> getUploadedFiles(Object exchange);
+    public Map<String, List<UploadedFile>> getUploadedFiles(Object exchange);
 
     /**
      * Is the request size valid?
@@ -330,5 +330,10 @@ public interface Server {
      * @return the manager or <code>null</code> if not found.
      */
     public WebsocketEndpointManager getWebsocketEndpointManager(String endpointId);
+
+    /**
+     * Gets the IP of the current request.
+     */
+    public String getIp(Object exchange);
 
 }

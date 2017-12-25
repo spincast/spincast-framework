@@ -23,4 +23,18 @@ public interface SpincastJsonManagerConfig {
      */
     public String getPrettyPrinterNewlineChars();
 
+    /**
+     * Should enums be serialized to :
+     * <code>
+     * {
+     *     "name" : "ENUM_ELEMENT_NAME",
+     *     "label" : "result of ENUM_ELEMENT_NAME.toString()"
+     * }
+     * </code>
+     * 
+     * If false, an enum is serialized to its <code>name</code>
+     * only.
+     */
+    public boolean isSerializeEnumsToNameAndLabelObjects();
+
 }

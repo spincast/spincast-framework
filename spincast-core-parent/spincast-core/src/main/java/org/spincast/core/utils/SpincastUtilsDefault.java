@@ -597,7 +597,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                                 fos.write(buffer, 0, len);
                             }
                         } finally {
-                            IOUtils.closeQuietly(fos);
+                            SpincastStatics.closeQuietly(fos);
                         }
                     }
 
@@ -606,7 +606,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
                 zis.closeEntry();
             } finally {
-                IOUtils.closeQuietly(zis);
+                SpincastStatics.closeQuietly(zis);
             }
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -670,8 +670,24 @@ public class SpincastUtilsDefault implements SpincastUtils {
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         } finally {
-            IOUtils.closeQuietly(in);
+            SpincastStatics.closeQuietly(in);
         }
+    }
+
+    @Override
+    public boolean isContainsSpecialCharacters(String str) {
+
+        if (str == null) {
+            return false;
+        }
+
+        for (char c : str.toCharArray()) {
+            if (c < 32 || c == 127) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

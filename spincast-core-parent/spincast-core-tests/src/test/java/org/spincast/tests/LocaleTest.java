@@ -81,6 +81,7 @@ public class LocaleTest extends NoAppStartHttpServerTestingBase {
         Cookie cookie = getCookieFactory().createCookie(getSpincastConfig().getCookieNameLocale(), "jp");
         cookie.setDomain(getSpincastConfig().getServerHost());
         cookie.setPath("/");
+        cookie.setSecure(false);
 
         HttpResponse response =
                 GET("/one").addCookie(cookie).addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
