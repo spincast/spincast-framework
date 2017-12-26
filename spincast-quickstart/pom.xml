@@ -101,6 +101,18 @@
         <plugins>
         
             <!--=================================== 
+            Java 8 is required
+            ====================================-->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version><!--$NO-MVN-MAN-VER$-->
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        
+            <!--=================================== 
             Fat jar creation
             ====================================-->
             <plugin>
