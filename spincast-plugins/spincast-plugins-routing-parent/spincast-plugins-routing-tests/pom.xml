@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-routing-parent</artifactId>
-        <version>0.9.37</version>
+        <version>0.9.38-SNAPSHOT</version>
     </parent>
 	
 	<artifactId>spincast-plugins-routing-tests</artifactId>
