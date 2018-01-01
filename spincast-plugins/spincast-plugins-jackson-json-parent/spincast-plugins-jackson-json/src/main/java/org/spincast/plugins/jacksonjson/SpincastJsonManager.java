@@ -806,7 +806,27 @@ public class SpincastJsonManager implements JsonManager {
 
             return obj;
 
-        } else if (originalObject instanceof Enum<?>) {
+        }
+        //==========================================
+        // Why this? Don't we want ".name" and ".label" to be generated?
+        // We would have that using the "Converts to a JsonObject"
+        // code below because of our custom Json serializer.
+        //
+        // But only using the *names* of the enum values
+        // is very useful since it is then possible to use
+        // the serialized data as is in some filters. For
+        // example :
+        //
+        // {{something | checked(menuItemForm.availabilityTypes)}}
+        //
+        // Here, if "menuItemForm.availabilityTypes" was an object with
+        // ".name" and ".label" porperties, the filter wouldn't work.
+        //
+        // To convert an enum to a "friendly" JsonObject, one can
+        // use the "enumToFriendlyJsonObject(...)" and
+        // "enumsToFriendlyJsonArray(...)" methods.
+        //==========================================
+        else if (originalObject instanceof Enum<?>) {
             return ((Enum<?>)originalObject).name();
         }
 
@@ -911,6 +931,34 @@ public class SpincastJsonManager implements JsonManager {
     @Override
     public boolean isElementExists(JsonArray array, String jsonPath) {
         return getJsonPathUtils().isElementExists(array, jsonPath);
+    }
+
+    @Override
+    public JsonObject enumToFriendlyJsonObject(Enum<?> enumValue) {
+
+        if (enumValue == null) {
+            return null;
+        }
+        JsonObject obj = create();
+        obj.put("name", enumValue.name());
+        obj.put("label", enumValue.toString());
+
+        return obj;
+    }
+
+    @Override
+    public JsonArray enumsToFriendlyJsonArray(Enum<?>[] enumValues) {
+
+        JsonArray arr = createArray();
+        if (enumValues == null || enumValues.length == 0) {
+            return arr;
+        }
+
+        for (Enum<?> enumValue : enumValues) {
+            arr.add(enumToFriendlyJsonObject(enumValue));
+        }
+
+        return arr;
     }
 
 }

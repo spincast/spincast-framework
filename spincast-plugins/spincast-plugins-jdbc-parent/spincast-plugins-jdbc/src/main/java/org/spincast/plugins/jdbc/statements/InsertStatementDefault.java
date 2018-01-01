@@ -24,7 +24,7 @@ public class InsertStatementDefault extends StatementBase implements InsertState
     }
 
     @Override
-    public InsertResultWithGeneratedKey insertGetGeneratedKeys(String primaryKeyName) {
+    public InsertResultWithGeneratedKey insertGetGeneratedKey(String primaryKeyName) {
         return insertPrivate(primaryKeyName);
     }
 

@@ -10,6 +10,6 @@ public interface InsertStatement extends Statement {
     /**
      * Runs the insert query and return the generated id
      */
-    public InsertResultWithGeneratedKey insertGetGeneratedKeys(String primaryKeyName);
+    public InsertResultWithGeneratedKey insertGetGeneratedKey(String primaryKeyName);
 
 }
