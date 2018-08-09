@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -434,5 +435,14 @@ public class SpincastStatics {
         IOUtils.closeQuietly(closeable);
     }
 
+    public static <T> T[] toArray(Set<T> set, Class<T> clazz) {
+        return getInstance().toArrayInstance(set, clazz);
+    }
+
+    public <T> T[] toArrayInstance(Set<T> set, Class<T> clazz) {
+        @SuppressWarnings("unchecked")
+        T[] array = (T[])Array.newInstance(clazz, set.size());
+        return set.toArray(array);
+    }
 
 }

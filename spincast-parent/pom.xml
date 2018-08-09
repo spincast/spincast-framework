@@ -18,10 +18,10 @@
     <url>https://www.spincast.org</url>
 
     <properties>
-        <guice.version>4.1.0</guice.version>
+        <guice.version>4.2.0</guice.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jsr305.version>3.0.2</jsr305.version> 
-        <undertow.version>1.4.21.Final</undertow.version> 
+        <undertow.version>2.0.12.Final</undertow.version> 
     </properties>
     
     <scm>

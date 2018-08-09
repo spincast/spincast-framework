@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -75,6 +76,7 @@ public class SpincastJsonManager implements JsonManager {
     private JsonSerializer<JsonArray> jsonArraySerializer;
     private JsonDeserializer<JsonArray> jsonArrayDeserializer;
     private JsonSerializer<Date> dateSerializer;
+    private JsonSerializer<Instant> instantSerializer;
     private JsonSerializer<BigDecimal> bigDecimalSerializer;
     private DefaultPrettyPrinter jacksonPrettyPrinter;
     private JsonSerializer<Enum<?>> enumSerializer;
@@ -312,6 +314,28 @@ public class SpincastJsonManager implements JsonManager {
         return this.dateSerializer;
     }
 
+    protected JsonSerializer<Instant> getInstantSerializer() {
+
+        if (this.instantSerializer == null) {
+            this.instantSerializer = new JsonSerializer<Instant>() {
+
+                @Override
+                public void serialize(Instant instant,
+                                      JsonGenerator gen,
+                                      SerializerProvider serializers)
+                                                                      throws IOException, JsonProcessingException {
+
+                    if (instant == null) {
+                        return;
+                    }
+                    getDateSerializer().serialize(Date.from(instant), gen, serializers);
+                }
+            };
+        }
+        return this.instantSerializer;
+    }
+
+
     protected JsonSerializer<BigDecimal> getBigDecimalSerializer() {
 
         if (this.bigDecimalSerializer == null) {
@@ -498,6 +522,7 @@ public class SpincastJsonManager implements JsonManager {
 
         SimpleModule module = new SimpleModule();
         module.addSerializer(Date.class, getDateSerializer());
+        module.addSerializer(Instant.class, getInstantSerializer());
         module.addSerializer(BigDecimal.class, getBigDecimalSerializer());
         objectMapper.registerModule(module);
     }

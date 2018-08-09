@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -248,21 +250,25 @@ public class SpincastUndertowServer implements Server {
 
             io.undertow.server.handlers.form.FormParserFactory.Builder builder = FormParserFactory.builder(false);
 
-            File undertowWritableDir = new File(getConfig().getTempDir().getAbsolutePath() + "/undertow");
-            if (!undertowWritableDir.isDirectory()) {
-                boolean result = undertowWritableDir.mkdirs();
-                if (!result) {
-                    throw new RuntimeException("Unable to create the Undertow temp dir : " +
-                                               undertowWritableDir.getAbsolutePath());
-                }
-            }
-
             builder.addParsers(new FormEncodedDataDefinition(),
-                               new MultiPartParserDefinition(undertowWritableDir.toPath()));
+                               new MultiPartParserDefinition(createUndertowTempDir()));
 
             this.formParserFactory = builder.build();
         }
         return this.formParserFactory;
+    }
+
+    protected Path createUndertowTempDir() {
+        File undertowWritableDir = new File(getConfig().getTempDir().getAbsolutePath() + "/undertow");
+        if (!undertowWritableDir.isDirectory()) {
+            boolean result = undertowWritableDir.mkdirs();
+            if (!result) {
+                throw new RuntimeException("Unable to create the Undertow temp dir : " +
+                                           undertowWritableDir.getAbsolutePath());
+            }
+        }
+
+        return undertowWritableDir.toPath();
     }
 
     @Override
@@ -1196,6 +1202,11 @@ public class SpincastUndertowServer implements Server {
             FormData formData = formDataParser.parseBlocking();
             return formData;
         } catch (Exception ex) {
+
+            if (ex.getCause() instanceof NoSuchFileException) {
+                createUndertowTempDir();
+            }
+
             throw SpincastStatics.runtimize(ex);
         }
     }

@@ -14,7 +14,7 @@ public interface SelectStatement extends Statement {
      * 
      * For the generated "total" query to work there are a couple of rules :
      * 
-     * - The original query MUST start with SELECT and contains a FROM. All test between this SELECT keyword and
+     * - The original query MUST start with SELECT and contains a FROM. All conditions between this SELECT keyword and
      * the FROM keyword will be removed and replaced by a COUNT(*).
      * 
      * - If the query contains a LIMIT clause, the last occurence will be remove and everything after it too.

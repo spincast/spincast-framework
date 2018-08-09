@@ -22,6 +22,7 @@ import org.spincast.plugins.jdbc.statements.SelectStatementDefault;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
 import org.spincast.plugins.jdbc.statements.UpdateStatementDefault;
 
+import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 
@@ -57,6 +58,7 @@ public class SpincastJdbcPluginModule extends SpincastGuiceModuleBase {
         install(new FactoryModuleBuilder().implement(SpincastConnection.class, getSpincastConnectionImpl())
                                           .build(SpincastConnectionFactory.class));
 
+        bind(JdbcUtils.class).to(getJdbcUtilsImpl()).in(Scopes.SINGLETON);
 
         bindInterceptor(Matchers.subclassesOf(DataSource.class),
                         Matchers.any(),
@@ -103,6 +105,11 @@ public class SpincastJdbcPluginModule extends SpincastGuiceModuleBase {
     protected MethodInterceptor getDataSourceInterceptor() {
         return new DataSourceInterceptor(getProvider(JdbcScope.class));
     }
+
+    private Class<? extends JdbcUtils> getJdbcUtilsImpl() {
+        return JdbcUtilsDefault.class;
+    }
+
 
 
 }

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.jdbc.JdbcUtils;
@@ -34,6 +35,7 @@ public abstract class StatementBase implements Statement {
     private String parsedQuery;
     private final Connection connection;
     private final QueryResultFactory queryResultFactory;
+
     private static final BasicFormatterImpl sqlFormmatter = new BasicFormatterImpl();
 
     private final Map<String, Set<Integer>> indexMap = new HashMap<>();
@@ -103,8 +105,31 @@ public abstract class StatementBase implements Statement {
         return this.params;
     }
 
-    public Map<String, String> getStaticTokens() {
+    protected void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
+    protected Map<String, String> getStaticTokens() {
         return this.staticTokens;
+    }
+
+    protected void setStaticTokens(Map<String, String> tokens) {
+        this.staticTokens = tokens;
+    }
+
+    protected void copyParamsAndStaticTokensTo(Statement newStm) {
+
+        if (newStm == null) {
+            return;
+        }
+
+        if (!(newStm instanceof StatementBase)) {
+            throw new RuntimeException("Expected a " + StatementBase.class.getSimpleName() + " object here : " +
+                                       newStm.getClass().getSimpleName());
+        }
+        StatementBase statementBase = (StatementBase)newStm;
+        statementBase.setParams(getParams());
+        statementBase.setStaticTokens(getStaticTokens());
     }
 
     protected String parse() {
@@ -121,7 +146,8 @@ public abstract class StatementBase implements Statement {
         Map<String, String> staticTokens = getStaticTokens();
         if (staticTokens != null) {
             for (Entry<String, String> entry : staticTokens.entrySet()) {
-                query = query.replace(":" + entry.getKey(), entry.getValue());
+                String pattern = ":" + Pattern.quote(entry.getKey()) + "(?=($|[^A-Za-z0-9_]))";
+                query = query.replaceAll(pattern, entry.getValue());
             }
         }
 
@@ -358,6 +384,19 @@ public abstract class StatementBase implements Statement {
         }
         getStaticTokens().put(paramName, in.toString());
     }
+
+    @Override
+    public void setInStringFromEnumNames(String paramName, Set<? extends Enum<?>> enumItems) {
+
+        Set<String> names = new HashSet<String>();
+        if (enumItems != null) {
+            for (Enum<?> enumItem : enumItems) {
+                names.add(enumItem.name());
+            }
+        }
+        setInString(paramName, names);
+    }
+
 
     @Override
     public String toString() {

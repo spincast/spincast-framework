@@ -690,4 +690,19 @@ public class SpincastUtilsDefault implements SpincastUtils {
         return false;
     }
 
+    @Override
+    public String inQuotesStringFormat(String str, boolean singleQuotes) {
+
+        str = str.replace("\r", "");
+        str = str.replace("\n", "\\n");
+
+        if (singleQuotes) {
+            str = str.replace("'", "\\\'");
+        } else {
+            str = str.replace("\"", "\\\"");
+        }
+
+        return str;
+    }
+
 }

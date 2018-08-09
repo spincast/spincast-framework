@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.json.JsonManager;
@@ -11,6 +13,7 @@ import org.spincast.core.request.Form;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.validation.ValidationFactory;
+import org.spincast.core.validation.ValidationMessage;
 import org.spincast.core.validation.ValidationSet;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
@@ -313,6 +316,29 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
 
         assertNotNull(set1.getMessages("name"));
         assertNotNull(set1.getMessages("name2"));
+    }
+
+    @Test
+    public void mergeValidationSetMergedUsingEmptyValidationKeys() throws Exception {
+
+        ValidationSet set1 = getValidationFactory().createValidationSet();
+        set1.addError("name", "name", "invalid name");
+        assertEquals(1, set1.size());
+
+        ValidationSet set2 = getValidationFactory().createValidationSet();
+        set2.addError("", "name2", "invalid name2");
+        assertEquals(1, set1.size());
+        assertEquals(1, set2.size());
+
+        set1.mergeValidationSet("name", set2);
+        assertEquals(1, set1.size());
+        assertEquals(1, set2.size());
+
+        List<ValidationMessage> messages = set1.getMessages("name");
+        assertNotNull(messages);
+        assertEquals(2, messages.size());
+
+
     }
 
 }

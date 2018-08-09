@@ -59,6 +59,22 @@ public class JsonObjectsTest extends NoAppTestingBase {
         return this.jsonObjectFactory;
     }
 
+    public static enum TestEnum {
+        ONE("first value"),
+        SECOND("second value");
+
+        private final String label;
+
+        private TestEnum(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return this.label;
+        }
+    }
+
     @Test
     public void toJsonString() throws Exception {
 
@@ -3156,6 +3172,28 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertNotNull(initialObj.getJsonArray("toto"));
     }
 
+    @Test
+    public void enumToFriendlyJsonObject() throws Exception {
 
+        JsonObject jsonObj = getJsonManager().enumToFriendlyJsonObject(TestEnum.ONE);
+        assertEquals(jsonObj.getString("name"), "ONE");
+        assertEquals(jsonObj.getString("label"), "first value");
+
+        jsonObj = getJsonManager().enumToFriendlyJsonObject(TestEnum.SECOND);
+        assertEquals(jsonObj.getString("name"), "SECOND");
+        assertEquals(jsonObj.getString("label"), "second value");
+    }
+
+    @Test
+    public void enumsToFriendlyJsonArray() throws Exception {
+
+        JsonArray jsonArr = getJsonManager().enumsToFriendlyJsonArray(TestEnum.values());
+
+        assertEquals(jsonArr.getString("[0].name"), "ONE");
+        assertEquals(jsonArr.getString("[0].label"), "first value");
+
+        assertEquals(jsonArr.getString("[1].name"), "SECOND");
+        assertEquals(jsonArr.getString("[1].label"), "second value");
+    }
 
 }

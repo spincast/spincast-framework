@@ -3,6 +3,8 @@ package org.spincast.core.validation;
 import java.util.List;
 import java.util.Map;
 
+import org.spincast.core.json.JsonObject;
+
 public interface ValidationSet {
 
     /**
@@ -178,6 +180,15 @@ public interface ValidationSet {
      * The number of validation messages in this set.
      */
     public int size();
+
+    /**
+     * The {@link JsonObject} in which the validation messages
+     * are actually stored.
+     * <p>
+     * You can use this object to return the validation result
+     * as json, in a response.
+     */
+    public JsonObject getValidationResultAsJsonObject();
 
 
 }

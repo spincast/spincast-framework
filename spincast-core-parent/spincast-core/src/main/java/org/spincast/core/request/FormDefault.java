@@ -163,10 +163,15 @@ public class FormDefault extends JsonObjectDefault implements Form {
     }
 
     protected String getWholeValidationKey() {
+
+        if (StringUtils.isBlank(getFormName())) {
+            return "_";
+        }
         return getFormName() + "._";
     }
 
-    protected JsonObject getValidationObject() {
+    @Override
+    public JsonObject getValidationResultAsJsonObject() {
         if (this.validationJsonObject == null) {
             this.validationJsonObject = getJsonManager().create();
 
@@ -187,7 +192,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
             validationObject = getJsonManager().create();
         }
 
-        JsonObject currentValidationObject = getValidationObject();
+        JsonObject currentValidationObject = getValidationResultAsJsonObject();
         validationObject.merge(currentValidationObject);
         this.validationJsonObject = validationObject;
     }
@@ -214,10 +219,10 @@ public class FormDefault extends JsonObjectDefault implements Form {
             validationKeyPrefixed = getFormName() + "." + validationKeyPrefixed;
         }
 
-        JsonObject validationForKey = getValidationObject().getJsonObjectNoKeyParsing(validationKeyPrefixed);
+        JsonObject validationForKey = getValidationResultAsJsonObject().getJsonObjectNoKeyParsing(validationKeyPrefixed);
         if (validationForKey == null) {
             validationForKey = getJsonManager().create();
-            getValidationObject().putNoKeyParsing(validationKeyPrefixed, validationForKey);
+            getValidationResultAsJsonObject().putNoKeyParsing(validationKeyPrefixed, validationForKey);
         }
 
         JsonArray messagesForKey = validationForKey.getJsonArrayOrEmpty("messages", true);
@@ -234,7 +239,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
         //==========================================
         // Results for the whole validation.
         //==========================================
-        JsonObject wholeValidation = getValidationObject().getJsonObjectNoKeyParsing(getWholeValidationKey());
+        JsonObject wholeValidation = getValidationResultAsJsonObject().getJsonObjectNoKeyParsing(getWholeValidationKey());
         wholeValidation.put(ELEMENT_KEYS_IS_VALID, wholeValidation.getBoolean(ELEMENT_KEYS_IS_VALID, true) && !message.isError());
         wholeValidation.put(ELEMENT_KEYS_HAS_SUCCESSES,
                             wholeValidation.getBoolean(ELEMENT_KEYS_HAS_SUCCESSES, false) || message.isSuccess());
@@ -582,19 +587,32 @@ public class FormDefault extends JsonObjectDefault implements Form {
 
         if (StringUtils.isBlank(validationKeyPrefix)) {
             validationKeyPrefix = "";
-        } else {
-            if (!validationKeyPrefix.endsWith(".")) {
-                validationKeyPrefix = validationKeyPrefix + ".";
-            }
         }
 
         for (Entry<String, List<ValidationMessage>> entry : validationSet.getMessages().entrySet()) {
 
             String validationKey = entry.getKey();
+
+            //==========================================
+            // A Validation message may declare its validation
+            // key as been empty, in case it want itself to be merge
+            // at the parent's level.
+            //==========================================
+            if (StringUtils.isBlank(validationKey)) {
+                validationKey = validationKeyPrefix + validationKey;
+            } else {
+                if (validationKeyPrefix.endsWith(".")) {
+                    validationKey = validationKeyPrefix + validationKey;
+
+                } else {
+                    validationKey = validationKeyPrefix + "." + validationKey;
+                }
+            }
+
             List<ValidationMessage> messages = entry.getValue();
             if (messages != null) {
                 for (ValidationMessage message : messages) {
-                    addMessage(validationKeyPrefix + validationKey, message);
+                    addMessage(validationKey, message);
                 }
             }
         }

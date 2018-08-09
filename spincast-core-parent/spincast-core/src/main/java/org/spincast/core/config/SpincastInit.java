@@ -8,7 +8,7 @@ import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import com.google.inject.Inject;
 
 /**
- * Some basci initialization
+ * Some basic initialization
  */
 public class SpincastInit {
 
@@ -21,9 +21,7 @@ public class SpincastInit {
 
     @Inject
     public void init() {
-
         writableDirsCheck();
-
     }
 
     protected SpincastConfig getSpincastConfig() {

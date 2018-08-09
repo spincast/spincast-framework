@@ -167,6 +167,15 @@ public interface SpincastUtils {
      */
     public boolean isContainsSpecialCharacters(String str);
 
+    /**
+     * Format a String so it can be outputed in a HTML
+     * page, as a one line javascript string or the
+     * attribute of an HTML element.
+     * 
+     * @param singleQuotes if <code>false</code>, double quotes are
+     * expected as the string delimiter.
+     */
+    public String inQuotesStringFormat(String str, boolean singleQuotes);
 
 
 }

@@ -7,7 +7,7 @@ public interface UpdateStatement extends Statement {
     public QueryResult update();
 
     /**
-     * Adds a <code>CASE</code> statement, ugin the key and values
+     * Adds a <code>CASE</code> statement, using the key and values
      * of the given map.
      * For example :
      * <code>

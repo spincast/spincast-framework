@@ -14,6 +14,7 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
@@ -41,6 +42,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     private final SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
     private TemplatingEngine templatingEngine;
     private final ObjectConverter objectConverter;
+    private final SpincastUtils spincastUtils;
 
     /**
      * Constructor
@@ -48,10 +50,12 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     @Inject
     public SpincastPebbleExtensionDefault(Provider<TemplatingEngine> templatingEngineProvider,
                                           SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig,
-                                          ObjectConverter objectConverter) {
+                                          ObjectConverter objectConverter,
+                                          SpincastUtils spincastUtils) {
         this.templatingEngineProvider = templatingEngineProvider;
         this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
         this.objectConverter = objectConverter;
+        this.spincastUtils = spincastUtils;
     }
 
     public TemplatingEngine getTemplatingEngine() {
@@ -63,6 +67,10 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
     protected ObjectConverter getObjectConverter() {
         return this.objectConverter;
+    }
+
+    protected SpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
     }
 
     protected SpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
@@ -694,16 +702,8 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                     singleQuotesDelimiter = false;
                 }
 
-                code = code.replace("\r", "");
-                code = code.replace("\n", "");
-
-                if (singleQuotesDelimiter) {
-                    code = code.replace("'", "\\\'");
-                } else {
-                    code = code.replace("\"", "\\\"");
-                }
-
-                return new SafeString(code);
+                String codeFormatted = getSpincastUtils().inQuotesStringFormat(code, singleQuotesDelimiter);
+                return new SafeString(codeFormatted);
 
             }
         };

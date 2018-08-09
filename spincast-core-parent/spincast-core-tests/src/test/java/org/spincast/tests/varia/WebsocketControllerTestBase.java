@@ -61,7 +61,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
 
             @Override
             public String getEndpointId() {
-                if(isRandomEndpointId()) {
+                if (isRandomEndpointId()) {
                     return "Endpoint-" + UUID.randomUUID().toString();
                 }
                 return "endpoint1";
@@ -69,7 +69,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
 
             @Override
             public String getPeerId() {
-                if(isRandomPeerId()) {
+                if (isRandomPeerId()) {
                     return "Peer-" + UUID.randomUUID().toString();
                 }
                 return "peer1";
@@ -79,7 +79,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
 
     protected Map<String, List<String>> getStringMessagesPerPeerId(String endpointId) {
         Map<String, List<String>> messagesByPeers = this.stringMessageReceived.get(endpointId);
-        if(messagesByPeers == null) {
+        if (messagesByPeers == null) {
             messagesByPeers = new HashMap<String, List<String>>();
             this.stringMessageReceived.put(endpointId, messagesByPeers);
         }
@@ -92,7 +92,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
         Map<String, List<String>> messagesByPeers = getStringMessagesPerPeerId(endpointId);
 
         List<String> allEndpointMessages = new ArrayList<String>();
-        for(List<String> peerMessages : messagesByPeers.values()) {
+        for (List<String> peerMessages : messagesByPeers.values()) {
             allEndpointMessages.addAll(peerMessages);
         }
 
@@ -104,7 +104,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
         Map<String, List<String>> messagesByPeers = getStringMessagesPerPeerId(endpointId);
 
         List<String> messages = messagesByPeers.get(peerId);
-        if(messages == null) {
+        if (messages == null) {
             messages = new ArrayList<String>();
             messagesByPeers.put(peerId, messages);
         }
@@ -112,17 +112,30 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
     }
 
     public boolean hasReceivedStringMessage(String messageExpected) {
-        for(int i = this.stringMessageReceived.size() - 1; i >= 0; i--) {
-            if(messageExpected.equals(this.stringMessageReceived.get(i))) {
-                return true;
+        if (messageExpected == null) {
+            return false;
+        }
+
+        for (Map<String, List<String>> messagesByPeers : this.stringMessageReceived.values()) {
+            if (messagesByPeers != null) {
+                for (List<String> messages : messagesByPeers.values()) {
+                    if (messages != null) {
+                        for (String message : messages) {
+                            if (messageExpected.equals(message)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
         }
+
         return false;
     }
 
     protected Map<String, List<byte[]>> getBytesMessagesPerPeerId(String endpointId) {
         Map<String, List<byte[]>> messagesByPeers = this.bytesMessageReceived.get(endpointId);
-        if(messagesByPeers == null) {
+        if (messagesByPeers == null) {
             messagesByPeers = new HashMap<String, List<byte[]>>();
             this.bytesMessageReceived.put(endpointId, messagesByPeers);
         }
@@ -135,7 +148,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
         Map<String, List<byte[]>> messagesByPeers = getBytesMessagesPerPeerId(endpointId);
 
         List<byte[]> allEndpointMessages = new ArrayList<byte[]>();
-        for(List<byte[]> peerMessages : messagesByPeers.values()) {
+        for (List<byte[]> peerMessages : messagesByPeers.values()) {
             allEndpointMessages.addAll(peerMessages);
         }
 
@@ -147,7 +160,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
         Map<String, List<byte[]>> messagesByPeers = getBytesMessagesPerPeerId(endpointId);
 
         List<byte[]> messages = messagesByPeers.get(peerId);
-        if(messages == null) {
+        if (messages == null) {
             messages = new ArrayList<byte[]>();
             messagesByPeers.put(peerId, messages);
         }
@@ -156,7 +169,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
 
     protected List<String> getPeerIdsConnectedFromEventsReceived(String endpointId) {
         List<String> peerIds = this.onPeerConnectedReceived.get(endpointId);
-        if(peerIds == null) {
+        if (peerIds == null) {
             peerIds = new ArrayList<String>();
             this.onPeerConnectedReceived.put(endpointId, peerIds);
         }
@@ -171,7 +184,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
     @Override
     public void onPeerConnected(W context) {
         List<String> peerIds = this.onPeerConnectedReceived.get(context.getEndpointId());
-        if(peerIds == null) {
+        if (peerIds == null) {
             peerIds = new ArrayList<String>();
             this.onPeerConnectedReceived.put(context.getEndpointId(), peerIds);
         }
@@ -336,11 +349,11 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
 
                 List<String> stringMessageReceived = getStringMessageReceived(endpointId, peerId);
 
-                if(stringMessageReceived.size() == 0) {
+                if (stringMessageReceived.size() == 0) {
                     return false;
                 }
-                for(int i = stringMessageReceived.size() - 1; i >= 0; i--) {
-                    if(messageExpected.equals(stringMessageReceived.get(i))) {
+                for (int i = stringMessageReceived.size() - 1; i >= 0; i--) {
+                    if (messageExpected.equals(stringMessageReceived.get(i))) {
                         return true;
                     }
                 }

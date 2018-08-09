@@ -1104,7 +1104,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
                           "let d=\"4\";\n");
 
         String html = getTemplatingEngine().evaluate("let js=\"{{jsOneLine(code)}}\"", model);
-        assertEquals("let js=\"let a=1;let b=2;let c='3';let d=\\\"4\\\";\"", html);
+        assertEquals("let js=\"let a=1;\\nlet b=2;let c='3';\\nlet d=\\\"4\\\";\\n\"", html);
     }
 
     @Test
@@ -1118,7 +1118,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
                           "let d=\"4\";\n");
 
         String html = getTemplatingEngine().evaluate("let js=\"{{jsOneLine(code, false)}}\"", model);
-        assertEquals("let js=\"let a=1;let b=2;let c='3';let d=\\\"4\\\";\"", html);
+        assertEquals("let js=\"let a=1;\\nlet b=2;let c='3';\\nlet d=\\\"4\\\";\\n\"", html);
     }
 
     @Test
@@ -1132,7 +1132,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
                           "let d=\"4\";\n");
 
         String html = getTemplatingEngine().evaluate("let js='{{jsOneLine(code, true)}}';", model);
-        assertEquals("let js='let a=1;let b=2;let c=\\'3\\';let d=\"4\";';", html);
+        assertEquals("let js='let a=1;\\nlet b=2;let c=\\'3\\';\\nlet d=\"4\";\\n';", html);
     }
 
     @Test

@@ -77,9 +77,14 @@ public interface Statement {
 
     /**
      * Explodes a collection of String and replaces the specified param with them, 
-     * so it can be used inside a
-     * IN(:ids) section
+     * so it can be used inside a IN(:ids) section.
      */
     public void setInString(String paramName, Set<String> items);
+
+    /**
+     * Explodes a collection of enum names and replaces the specified param with them, 
+     * so it can be used inside a IN(:ids) section.
+     */
+    public void setInStringFromEnumNames(String paramName, Set<? extends Enum<?>> enumItems);
 
 }

@@ -320,7 +320,7 @@ public interface JsonManager {
     public boolean isElementExists(JsonArray array, String jsonPath);
 
     /**
-     * Convert the enum to a <code>JsonObject</code> that
+     * Convert the enum value to a <code>JsonObject</code> that
      * has a ".name" property (the <code>name()</code> of the enum)
      * and a ".label" property (the <code>toString()</code> of the
      * enum)

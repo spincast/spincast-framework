@@ -3,13 +3,14 @@ package org.spincast.plugins.jdbc.statements;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.plugins.jdbc.JdbcUtils;
+import org.spincast.plugins.jdbc.SpincastResultSet;
 import org.spincast.plugins.jdbc.SpincastResultSetDefault;
 import org.spincast.plugins.jdbc.utils.ItemsAndTotalCount;
 import org.spincast.plugins.jdbc.utils.ItemsAndTotalCountDefault;
@@ -22,12 +23,19 @@ public class SelectStatementDefault extends StatementBase implements SelectState
 
     protected final static Logger logger = LoggerFactory.getLogger(SelectStatementDefault.class);
 
+    private final JdbcUtils jdbcUtils;
 
     @AssistedInject
     public SelectStatementDefault(@Assisted Connection connection,
-                                  QueryResultFactory queryResultFactory) {
+                                  QueryResultFactory queryResultFactory,
+                                  JdbcUtils jdbcUtils) {
         super(connection,
               queryResultFactory);
+        this.jdbcUtils = jdbcUtils;
+    }
+
+    protected JdbcUtils getJdbcUtils() {
+        return this.jdbcUtils;
     }
 
     protected PreparedStatement getStatementWithParamsAdded(Connection connection) {
@@ -78,7 +86,7 @@ public class SelectStatementDefault extends StatementBase implements SelectState
 
     @Override
     public <T> List<T> selectList(ResultSetHandler<T> resultSetHandler) {
-        ItemsAndTotalCount<T> listAndTotal = selectList(resultSetHandler, true);
+        ItemsAndTotalCount<T> listAndTotal = selectList(resultSetHandler, false);
         return listAndTotal.getItems();
     }
 
@@ -164,12 +172,22 @@ public class SelectStatementDefault extends StatementBase implements SelectState
 
             logger.debug("Generated 'Total' query : " + totalQuery);
 
-            Statement statement = connection.createStatement();
+            SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
+            stm.sql(totalQuery);
+            copyParamsAndStaticTokensTo(stm);
 
-            ResultSet resultSet = statement.executeQuery(totalQuery);
-            resultSet.next();
-            long total = resultSet.getLong("total");
+            long total = stm.selectOne(new ResultSetHandler<Long>() {
 
+                @Override
+                public Long handle(SpincastResultSet rs) throws Exception {
+
+                    Long total = rs.getLongOrNull("total");
+                    if (total == null) {
+                        total = 0L;
+                    }
+                    return total;
+                }
+            });
             return total;
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
