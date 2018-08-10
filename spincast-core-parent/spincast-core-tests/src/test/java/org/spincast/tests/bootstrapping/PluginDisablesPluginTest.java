@@ -5,11 +5,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.junit.Test;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.DictionaryEntries;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPluginBase;
 import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
 
@@ -31,26 +37,38 @@ public class PluginDisablesPluginTest {
     public static class SpincastDictionaryTest1 extends SpincastDictionaryDefault {
 
         @Inject
-        public SpincastDictionaryTest1(LocaleResolver localeResolver) {
-            super(localeResolver);
+        public SpincastDictionaryTest1(LocaleResolver localeResolver,
+                                       TemplatingEngine templatingEngine,
+                                       SpincastConfig spincastConfig,
+                                       @Nullable Set<DictionaryEntries> dictionaryEntries) {
+            super(localeResolver, templatingEngine, spincastConfig, dictionaryEntries);
         }
 
         @Override
-        public String exception_default_message() {
-            return "111";
+        protected void addMessages() {
+            super.addMessages();
+
+            key(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE,
+                msg("en", "111"));
         }
     }
 
     public static class SpincastDictionaryTest2 extends SpincastDictionaryDefault {
 
         @Inject
-        public SpincastDictionaryTest2(LocaleResolver localeResolver) {
-            super(localeResolver);
+        public SpincastDictionaryTest2(LocaleResolver localeResolver,
+                                       TemplatingEngine templatingEngine,
+                                       SpincastConfig spincastConfig,
+                                       @Nullable Set<DictionaryEntries> dictionaryEntries) {
+            super(localeResolver, templatingEngine, spincastConfig, dictionaryEntries);
         }
 
         @Override
-        public String exception_default_message() {
-            return "222";
+        protected void addMessages() {
+            super.addMessages();
+
+            key(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE,
+                msg("en", "222"));
         }
     }
 
@@ -70,7 +88,7 @@ public class PluginDisablesPluginTest {
 
                 @Override
                 protected void configure() {
-                    bind(SpincastDictionary.class).to(SpincastDictionaryTest1.class).in(Scopes.SINGLETON);
+                    bind(Dictionary.class).to(SpincastDictionaryTest1.class).in(Scopes.SINGLETON);
                 }
             });
         }
@@ -100,7 +118,7 @@ public class PluginDisablesPluginTest {
 
                 @Override
                 protected void configure() {
-                    bind(SpincastDictionary.class).to(SpincastDictionaryTest2.class).in(Scopes.SINGLETON);
+                    bind(Dictionary.class).to(SpincastDictionaryTest2.class).in(Scopes.SINGLETON);
                 }
             });
         }
@@ -116,8 +134,8 @@ public class PluginDisablesPluginTest {
     }
 
     @Inject
-    protected void init(SpincastDictionary spincastDictionary) {
-        assertEquals("222", spincastDictionary.exception_default_message());
+    protected void init(Dictionary dictionary) {
+        assertEquals("222", dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE));
         initCalled = true;
     }
 }

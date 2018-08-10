@@ -3,10 +3,18 @@ package org.spincast.tests.bootstrapping;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
+import javax.annotation.Nullable;
+
 import org.junit.Test;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.DictionaryEntries;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
 
@@ -26,27 +34,27 @@ public class CustomDictionaryTest {
         CustomDictionaryTest.main(null);
     }
 
-    public static interface SpincastDictionaryTest extends SpincastDictionary {
-
-        public String testing_custom_msg();
-    }
-
-    public static class SpincastDictionaryTestDefault extends SpincastDictionaryDefault implements SpincastDictionaryTest {
+    public static class SpincastDictionaryTestDefault extends SpincastDictionaryDefault {
 
         @Inject
-        public SpincastDictionaryTestDefault(LocaleResolver localeResolver) {
-            super(localeResolver);
+        public SpincastDictionaryTestDefault(LocaleResolver localeResolver,
+                                             TemplatingEngine templatingEngine,
+                                             SpincastConfig spincastConfig,
+                                             @Nullable Set<DictionaryEntries> dictionaryEntries) {
+            super(localeResolver, templatingEngine, spincastConfig, dictionaryEntries);
         }
 
         @Override
-        public String exception_default_message() {
-            return "42";
-        }
+        protected void addMessages() {
+            super.addMessages();
 
-        @Override
-        public String testing_custom_msg() {
-            return "my app message";
-        }
+            // Overrides a Spincast message
+            key(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE,
+                msg("en", "42"));
+
+            key("testing.customMsg",
+                msg("en", "my app message"));
+        };
     }
 
     public static void main(String[] args) {
@@ -56,7 +64,7 @@ public class CustomDictionaryTest {
 
                     @Override
                     protected void configure() {
-                        bind(SpincastDictionaryTest.class).to(SpincastDictionaryTestDefault.class).in(Scopes.SINGLETON);
+                        bind(Dictionary.class).to(SpincastDictionaryTestDefault.class).in(Scopes.SINGLETON);
                     }
                 })
                 .init(args);
@@ -65,10 +73,9 @@ public class CustomDictionaryTest {
     }
 
     @Inject
-    protected void init(SpincastDictionaryTest spincastDictionaryTest, SpincastDictionary spincastDictionary) {
-        assertEquals("my app message", spincastDictionaryTest.testing_custom_msg());
-        assertEquals("42", spincastDictionaryTest.exception_default_message());
-        assertEquals("42", spincastDictionary.exception_default_message());
+    protected void init(Dictionary dictionary) {
+        assertEquals("my app message", dictionary.get("testing.customMsg"));
+        assertEquals("42", dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE));
         initCalled = true;
     }
 }

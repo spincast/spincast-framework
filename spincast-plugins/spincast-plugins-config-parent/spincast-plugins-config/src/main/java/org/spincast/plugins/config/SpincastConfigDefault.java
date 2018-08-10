@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -427,6 +428,16 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     @Override
     public String getValidationElementDefaultName() {
         return "validation";
+    }
+
+    @Override
+    public DictionaryEntryNotFoundBehavior getDictionaryEntryNotFoundBehavior() {
+
+        if (isDebugEnabled()) {
+            return DictionaryEntryNotFoundBehavior.EXCEPTION;
+        }
+
+        return DictionaryEntryNotFoundBehavior.RETURN_EMPTY_STRING;
     }
 
 }

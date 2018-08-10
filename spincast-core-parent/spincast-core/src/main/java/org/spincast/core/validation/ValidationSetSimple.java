@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.request.FormDefault;
 import org.spincast.core.request.FormFactory;
@@ -22,7 +22,7 @@ public class ValidationSetSimple extends FormDefault {
     public ValidationSetSimple(JsonManager jsonManager,
                                SpincastUtils spincastUtils,
                                ObjectConverter objectConverter,
-                               SpincastDictionary spincastDictionary,
+                               Dictionary dictionary,
                                XmlManager xmlManager,
                                SpincastConfig spincastConfig,
                                Validators validators,
@@ -33,7 +33,7 @@ public class ValidationSetSimple extends FormDefault {
               jsonManager,
               spincastUtils,
               objectConverter,
-              spincastDictionary,
+              dictionary,
               xmlManager,
               spincastConfig,
               validators,

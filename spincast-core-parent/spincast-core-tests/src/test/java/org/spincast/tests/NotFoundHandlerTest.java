@@ -8,7 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
@@ -23,7 +24,7 @@ import com.google.inject.Inject;
 public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
-    protected SpincastDictionary spincastDictionary;
+    protected Dictionary dictionary;
 
     @Test
     public void notFoundDefault() throws Exception {
@@ -32,7 +33,8 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(this.spincastDictionary.route_notFound_default_message(), response.getContentAsString());
+        assertEquals(this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE),
+                     response.getContentAsString());
     }
 
     @Test

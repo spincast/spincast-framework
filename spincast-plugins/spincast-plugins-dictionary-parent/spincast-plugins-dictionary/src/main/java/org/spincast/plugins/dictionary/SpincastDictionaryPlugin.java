@@ -2,7 +2,7 @@ package org.spincast.plugins.dictionary;
 
 import java.util.Set;
 
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.guice.GuiceModuleUtils;
 import org.spincast.core.guice.SpincastPluginBase;
 
@@ -16,7 +16,7 @@ public class SpincastDictionaryPlugin extends SpincastPluginBase {
 
     public static final String PLUGIN_ID = SpincastDictionaryPlugin.class.getName();
 
-    private Class<? extends SpincastDictionary> specificSpincastDictionaryImplClass;
+    private Class<? extends Dictionary> dictionaryImplClass;
 
     /**
      * Constructor
@@ -27,11 +27,11 @@ public class SpincastDictionaryPlugin extends SpincastPluginBase {
     /**
      * Constructor
      * 
-     * @param specificSpincastDictionaryImplClass the specific
+     * @param dictionaryImplClass the specific
      * dictionary implementation class to use.
      */
-    public SpincastDictionaryPlugin(Class<? extends SpincastDictionary> specificSpincastDictionaryImplClass) {
-        this.specificSpincastDictionaryImplClass = specificSpincastDictionaryImplClass;
+    public SpincastDictionaryPlugin(Class<? extends Dictionary> dictionaryImplClass) {
+        this.dictionaryImplClass = dictionaryImplClass;
     }
 
     @Override
@@ -39,53 +39,53 @@ public class SpincastDictionaryPlugin extends SpincastPluginBase {
         return PLUGIN_ID;
     }
 
-    protected Class<? extends SpincastDictionary> getSpecificSpincastDictionaryImplClass() {
-        return this.specificSpincastDictionaryImplClass;
+    protected Class<? extends Dictionary> getDictionaryImplClass() {
+        return this.dictionaryImplClass;
     }
 
     @Override
     public Module apply(Module module) {
 
-        Class<? extends SpincastDictionary> specificSpincastDictionaryImplClass = getSpecificSpincastDictionaryImplClass();
+        Class<? extends Dictionary> dictionaryImplClass = getDictionaryImplClass();
 
         //==========================================
         // Check if a custom SpincastDictionary implementation
         // class must be used...
         //==========================================
-        if (specificSpincastDictionaryImplClass == null) {
+        if (dictionaryImplClass == null) {
             GuiceModuleUtils guiceModuleUtils = new GuiceModuleUtils(module);
 
-            Set<Class<? extends SpincastDictionary>> classes =
-                    guiceModuleUtils.getBoundClassesExtending(SpincastDictionary.class);
+            Set<Class<? extends Dictionary>> classes =
+                    guiceModuleUtils.getBoundClassesExtending(Dictionary.class);
             if (classes.size() > 0) {
 
                 if (classes.size() > 1) {
                     String msg = "More than one custom implementations of " +
-                                 SpincastDictionary.class.getName() + " " +
+                                 Dictionary.class.getName() + " " +
                                  "has been found. You'll have to pass the implementation " +
                                  "to use the constructor of this plugin to remove the " +
                                  "ambiguity about which one to use. Bindings found :\n";
 
-                    for (Class<? extends SpincastDictionary> clazz : classes) {
+                    for (Class<? extends Dictionary> clazz : classes) {
                         msg += "- " + clazz.getName() + "\n";
                     }
                     throw new RuntimeException(msg);
                 }
 
-                Class<? extends SpincastDictionary> temp = (Class<? extends SpincastDictionary>)classes.iterator().next();
-                specificSpincastDictionaryImplClass = temp;
+                Class<? extends Dictionary> temp = (Class<? extends Dictionary>)classes.iterator().next();
+                dictionaryImplClass = temp;
             }
         }
 
-        Module pluginModule = getPluginModule(specificSpincastDictionaryImplClass);
+        Module pluginModule = getPluginModule(dictionaryImplClass);
         setContextTypes(pluginModule);
 
         module = Modules.override(module).with(pluginModule);
         return module;
     }
 
-    protected Module getPluginModule(Class<? extends SpincastDictionary> specificSpincastDictionaryImplClass) {
-        return new SpincastDictionaryPluginModule(specificSpincastDictionaryImplClass);
+    protected Module getPluginModule(Class<? extends Dictionary> dictionaryImplClass) {
+        return new SpincastDictionaryPluginModule(dictionaryImplClass);
     }
 
 }

@@ -1,173 +1,254 @@
 package org.spincast.plugins.dictionary;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.spincast.core.config.SpincastDictionary;
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.DictionaryBase;
+import org.spincast.core.dictionary.DictionaryEntries;
+import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
+import org.spincast.core.dictionary.DictionaryKeyNotFoundException;
 import org.spincast.core.locale.LocaleResolver;
+import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.utils.Pair;
 
 import com.google.inject.Inject;
 
-public class SpincastDictionaryDefault implements SpincastDictionary {
+/**
+ * Default implementation of the {@link Dictionary}.
+ * <p>
+ * Provides a value for the core Spincast messages 
+ * required by any application.
+ * <p>
+ * You have to override the {@link #addMessages()} method to
+ * add your own messages.
+ */
+public class SpincastDictionaryDefault extends DictionaryBase implements Dictionary {
+
+    protected final Logger logger = LoggerFactory.getLogger(SpincastDictionaryDefault.class);
 
     private final LocaleResolver localeResolver;
+    private final TemplatingEngine templatingEngine;
+    private final SpincastConfig spincastConfig;
+    private final Set<DictionaryEntries> dictionaryEntries;
+
+    private boolean messagesLoaded = false;
 
     @Inject
-    public SpincastDictionaryDefault(LocaleResolver localeResolver) {
+    public SpincastDictionaryDefault(LocaleResolver localeResolver,
+                                     TemplatingEngine templatingEngine,
+                                     SpincastConfig spincastConfig,
+                                     @Nullable Set<DictionaryEntries> dictionaryEntries) {
         this.localeResolver = localeResolver;
+        this.templatingEngine = templatingEngine;
+        this.spincastConfig = spincastConfig;
+        this.dictionaryEntries = dictionaryEntries;
     }
 
-    protected Locale getLocale() {
+    protected Locale getDefaultLocale() {
         return this.localeResolver.getLocaleToUse();
     }
 
+    protected TemplatingEngine getTemplatingEngine() {
+        return this.templatingEngine;
+    }
+
+    protected SpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
+    }
+
+    protected Set<DictionaryEntries> getDictionaryEntries() {
+        return this.dictionaryEntries;
+    }
+
+    /**
+     * Gets a message.
+     * 
+     * Will use the proper Locale as provided by the 
+     * {@link LocaleResolver}.
+     */
     @Override
-    public String route_notFound_default_message() {
-
-        @SuppressWarnings("unused")
-        Locale locale = getLocale();
-
-        // No i18n for now...
-        return "Not found";
+    public String get(String key) {
+        return get(key, false);
     }
 
     @Override
-    public String exception_default_message() {
-        return "Internal Error";
+    public String get(String key, Locale locale) {
+        return get(key, locale, false);
+    }
+
+    /**
+     * Gets a message.
+     * 
+     * Will use the proper Locale as provided by the 
+     * {@link LocaleResolver}.
+     */
+    @Override
+    public String get(String key, boolean forceTemplatingEngine) {
+        return get(key, forceTemplatingEngine ? new HashMap<>() : null);
     }
 
     @Override
-    public String validation_not_null_default_text() {
-        return "Can't be null";
+    public String get(String key, Locale locale, boolean forceEvaluation) {
+        return get(key, locale, forceEvaluation ? new HashMap<>() : null);
+    }
+
+    /**
+     * Gets a message.
+     * 
+     * Will use the proper Locale as provided by the 
+     * {@link LocaleResolver}.
+     */
+    @Override
+    public final String get(String key, Pair... params) {
+        return get(key, null, params);
     }
 
     @Override
-    public String validation_null_default_text() {
-        return "Must be null";
+    public String get(String key, Locale locale, Pair... params) {
+
+        Map<String, Object> paramsMap = new HashMap<String, Object>();
+        if (params != null) {
+            for (Pair param : params) {
+                paramsMap.put(param.getKey(), param.getValue());
+            }
+        }
+
+        return get(key, locale, paramsMap);
+    }
+
+    /**
+     * Gets a message.
+     * 
+     * Will use the proper Locale as provided by the 
+     * {@link LocaleResolver}.
+     */
+    @Override
+    public String get(String key, Map<String, Object> params) {
+        return get(key, null, params);
     }
 
     @Override
-    public String validation_not_blank_default_text() {
-        return "Can't be empty";
+    public String get(String key, Locale locale, Map<String, Object> params) {
+        return get(key, locale, params, locale);
     }
 
-    @Override
-    public String validation_array_itself_error_message_default_text() {
-        return "At least one element is invalid";
+    public String get(String key, Locale locale, Map<String, Object> params, Locale originalLocale) {
+
+        if (!this.messagesLoaded || getSpincastConfig().isDebugEnabled()) {
+            addCoreAndPluginsMessages();
+            addMessages();
+            this.messagesLoaded = true;
+        }
+
+        Locale localeToUse = locale != null ? locale : getDefaultLocale();
+
+        Map<String, String> msgs = getMessages().get(key);
+        if (msgs == null) {
+            return keyNotFound(key, localeToUse, params);
+        }
+
+        String lang = localeToUse.getLanguage();
+
+        String msg = null;
+        if (msgs.containsKey(lang)) {
+            msg = msgs.get(lang);
+        } else {
+            //==========================================
+            // Tries the fallback Locale
+            //==========================================
+            if (msgs.containsKey("")) {
+                msg = msgs.get("");
+            } else {
+                return keyNotFound(key, localeToUse, params);
+            }
+        }
+
+        //==========================================
+        // If the parameters are NULL we
+        // skip the evaluation using the templating engine.
+        //==========================================
+        if (params == null) {
+            return msg;
+        }
+
+        return getTemplatingEngine().evaluate(msg, params, localeToUse);
     }
 
-    @Override
-    public String validation_array_itself_success_message_default_text() {
-        return "All elements are valid";
+    protected String keyNotFound(String key, Locale originalLocale, Map<String, Object> params) {
+
+        DictionaryEntryNotFoundBehavior notFoundResult = getSpincastConfig().getDictionaryEntryNotFoundBehavior();
+
+        if (!getSpincastConfig().isDebugEnabled() && notFoundResult != DictionaryEntryNotFoundBehavior.EXCEPTION) {
+            this.logger.error("A dictionary key is missing! Key \"" + key + "\" for Locale \"" + originalLocale + "\".");
+        }
+
+        if (notFoundResult == DictionaryEntryNotFoundBehavior.EXCEPTION) {
+            throw new DictionaryKeyNotFoundException(key, originalLocale);
+        } else if (notFoundResult == DictionaryEntryNotFoundBehavior.RETURN_KEY) {
+            return key;
+        } else if (notFoundResult == DictionaryEntryNotFoundBehavior.RETURN_EMPTY_STRING) {
+            return "";
+        } else {
+            throw new RuntimeException("Not managed : " + notFoundResult);
+        }
     }
 
-    @Override
-    public String validation_array_itself_warning_message_default_text() {
-        return "Contains at least one warning";
+    protected void addCoreAndPluginsMessages() {
+
+        Set<DictionaryEntries> dictionaryEntries = getDictionaryEntries();
+        if (dictionaryEntries == null) {
+            return;
+        }
+
+        for (DictionaryEntries dictionaryEntriesOne : dictionaryEntries) {
+            if (dictionaryEntriesOne == null || dictionaryEntriesOne.getDictionaryEntries() == null) {
+                continue;
+            }
+
+            for (Entry<String, Map<String, String>> entry : dictionaryEntriesOne.getDictionaryEntries().entrySet()) {
+
+                String messageKey = entry.getKey();
+                Map<String, String> messagesPerLang = entry.getValue();
+                if (messageKey == null || messagesPerLang == null) {
+                    continue;
+                }
+
+                for (Entry<String, String> messagePerLangEntry : messagesPerLang.entrySet()) {
+                    key(messageKey,
+                        msg(messagePerLangEntry.getKey(), messagePerLangEntry.getValue()));
+                }
+            }
+        }
     }
 
-    @Override
-    public String validation_blank_default_text() {
-        return "Must be empty";
+    /**
+     * To override to add messages to the dictionary.
+     * <p>
+     * 
+     * Example :
+     * 
+     * <code>
+     * protected void addMessages() {
+     *     super.addMessages();
+     *     
+     *     key("my.message.key",
+     *         msg("en", "The message in english"),
+     *         msg("fr", "Le message en français"));
+     * }
+     * </code>
+     */
+    protected void addMessages() {
+        // To override to add messages....
     }
 
-    @Override
-    public String validation_equivalent_default_text(Object elementToValidate, Object reference) {
-        return "The value \"" + elementToValidate + "\" is not equivalent to \"" + reference + "\"";
-    }
-
-    @Override
-    public String validation_not_equivalent_default_text(Object valueToValidate, Object compareTo) {
-        return "The value \"" + valueToValidate + "\" must not be equivalent to \"" + compareTo + "\"";
-    }
-
-    @Override
-    public String validation_equivalent_or_greater_default_text(Object valueToValidate, Object compareTo) {
-        return "The value \"" + valueToValidate + "\" must be equivalent or greater than \"" + compareTo + "\"";
-    }
-
-    @Override
-    public String validation_greater_default_text(Object valueToValidate, Object compareTo) {
-        return "The value \"" + valueToValidate + "\" must be greater than \"" + compareTo + "\"";
-    }
-
-    @Override
-    public String validation_equivalent_or_less_default_text(Object valueToValidate, Object compareTo) {
-        return "The value \"" + valueToValidate + "\" must be equivalent or less than \"" + compareTo + "\"";
-    }
-
-    @Override
-    public String validation_less_default_text(Object valueToValidate, Object compareTo) {
-        return "The value \"" + valueToValidate + "\" must be less than \"" + compareTo + "\"";
-    }
-
-    @Override
-    public String validation_min_length_default_text(long minLength, long currentLength) {
-        return "Minimum length of " + minLength + " characters (currently " + currentLength + ")";
-    }
-
-    @Override
-    public String validation_length_default_text(long length, long currentLength) {
-        return "The llength must be " + length + " characters (currently " + currentLength + ")";
-    }
-
-    @Override
-    public String validation_max_length_default_text(long maxLength, long currentLength) {
-        return "Maximum length of " + maxLength + " characters (currently " + currentLength + ")";
-    }
-
-    @Override
-    public String validation_generic_error_default_text() {
-        return "Invalid value";
-    }
-
-    @Override
-    public String validation_pattern_default_text(String pattern) {
-        return "Doesn't match the pattern : \"" + pattern + "\"";
-    }
-
-    @Override
-    public String validation_not_pattern_default_text(String pattern) {
-        return "Must not match the pattern : \"" + pattern + "\"";
-    }
-
-    @Override
-    public String validation_email_default_text() {
-        return "Invalid email address";
-    }
-
-    @Override
-    public String validation_size_default_text(long size, long currentSize) {
-        return "The size must be " + size + " (currently " + currentSize + ")";
-    }
-
-    @Override
-    public String validation_min_size_default_text(long minSize, long currentSize) {
-        return "The minimum size is " + minSize + " (currently " + currentSize + ")";
-    }
-
-    @Override
-    public String validation_max_size_default_text(long maxSize, long currentSize) {
-        return "The maximum size is " + maxSize + " (currently " + currentSize + ")";
-    }
-
-    @Override
-    public String validation_can_be_converted_to_default_text(String type) {
-        return "Can't be converted to a \"" + type + "\"";
-    }
-
-    @Override
-    public String validation_is_of_type_default_text(String type) {
-        return "Is not of type \"" + type + "\"";
-    }
-
-    @Override
-    public String validation_success_message_default_text() {
-        return "Valid";
-    }
-
-    @Override
-    public String validation_not_an_array_error_message_default_text() {
-        return "Expecting an array";
-    }
 
 }

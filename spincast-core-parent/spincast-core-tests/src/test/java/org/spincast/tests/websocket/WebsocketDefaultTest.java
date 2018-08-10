@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
@@ -174,7 +174,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 assertEquals("endpoint1", context.getEndpointId());
                 assertEquals("peer1", context.getPeerId());
 
-                SpincastDictionary dictionary = context.guice().getInstance(SpincastDictionary.class);
+                Dictionary dictionary = context.guice().getInstance(Dictionary.class);
                 assertNotNull(dictionary);
 
                 SpincastConfig config = context.get(SpincastConfig.class);

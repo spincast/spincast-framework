@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestRequestContextAddon;
 import org.spincast.core.json.JsonArray;
@@ -94,6 +95,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     private final SpincastConfig spincastConfig;
     private final ETagFactory etagFactory;
     private final FlashMessagesHolder flashMessagesHolder;
+    private final Dictionary dictionary;
 
     private final FormFactory formFactory;
 
@@ -113,7 +115,8 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                                               SpincastConfig spincastConfig,
                                               ETagFactory etagFactory,
                                               FlashMessagesHolder flashMessagesHolder,
-                                              FormFactory formFactory) {
+                                              FormFactory formFactory,
+                                              Dictionary dictionary) {
         this.requestContext = requestContext;
         this.server = server;
         this.jsonManager = jsonManager;
@@ -123,6 +126,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         this.etagFactory = etagFactory;
         this.flashMessagesHolder = flashMessagesHolder;
         this.formFactory = formFactory;
+        this.dictionary = dictionary;
     }
 
     protected R getRequestContext() {
@@ -159,6 +163,10 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     protected FormFactory getFormFactory() {
         return this.formFactory;
+    }
+
+    protected Dictionary getDictionary() {
+        return this.dictionary;
     }
 
     protected Object getExchange() {
@@ -783,7 +791,15 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public Form getForm(String name) {
 
         if (StringUtils.isBlank(name)) {
-            throw new RuntimeException("The name can't be empty.");
+
+            //==========================================
+            // This message doesn't have to be localized, but
+            // we do it anyway simply as an example on how
+            // plugins can add messages to the
+            // Dictionary...
+            //==========================================
+            String msg = getDictionary().get(SpincastRequestPluginDictionaryEntries.MESSAGE_KEY_FORM_GET_EMPTYNAME);
+            throw new RuntimeException(msg);
         }
 
         if (this.forms == null) {

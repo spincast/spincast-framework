@@ -11,7 +11,8 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
@@ -40,7 +41,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
 
     private final String formName;
     private final JsonObject initialFormData;
-    private final SpincastDictionary spincastDictionary;
+    private final Dictionary dictionary;
     private LinkedHashMap<String, List<ValidationMessage>> messages;
     private final XmlManager xmlManager;
     private final SpincastConfig spincastConfig;
@@ -55,7 +56,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
                        JsonManager jsonManager,
                        SpincastUtils spincastUtils,
                        ObjectConverter objectConverter,
-                       SpincastDictionary spincastDictionary,
+                       Dictionary dictionary,
                        XmlManager xmlManager,
                        SpincastConfig spincastConfig,
                        Validators validators,
@@ -67,7 +68,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
 
         this.formName = formName;
         this.initialFormData = initialFormData;
-        this.spincastDictionary = spincastDictionary;
+        this.dictionary = dictionary;
         this.xmlManager = xmlManager;
         this.spincastConfig = spincastConfig;
         this.validators = validators;
@@ -87,8 +88,8 @@ public class FormDefault extends JsonObjectDefault implements Form {
         return this.formName;
     }
 
-    protected SpincastDictionary getSpincastDictionary() {
-        return this.spincastDictionary;
+    protected Dictionary getDictionary() {
+        return this.dictionary;
     }
 
     protected XmlManager getXmlManager() {
@@ -113,7 +114,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
     }
 
     protected String getDefaultErrorMessageText(String key) {
-        return getSpincastDictionary().validation_generic_error_default_text();
+        return getDictionary().get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_VALIDATION_GENERICERROR_DEFAULTTEXT);
     }
 
     protected static LinkedHashMap<String, List<ValidationMessage>> toLinkedHashMap(String key,

@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.routing.Handler;
@@ -69,7 +69,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     private final SpincastRouterConfig spincastRouterConfig;
     private final RouteFactory<R> routeFactory;
     private final SpincastConfig spincastConfig;
-    private final SpincastDictionary spincastDictionary;
+    private final Dictionary dictionary;
     private final SpincastFilters<R> spincastFilters;
     private final WebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
     private final WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
@@ -93,7 +93,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         this.spincastRouterConfig = spincastRouterDeps.getSpincastRouterConfig();
         this.routeFactory = spincastRouterDeps.getRouteFactory();
         this.spincastConfig = spincastRouterDeps.getSpincastConfig();
-        this.spincastDictionary = spincastRouterDeps.getSpincastDictionary();
+        this.dictionary = spincastRouterDeps.getDictionary();
         this.server = spincastRouterDeps.getServer();
         this.spincastFilters = spincastRouterDeps.getSpincastFilters();
         this.routeBuilderFactory = spincastRouterDeps.getRouteBuilderFactory();
@@ -151,8 +151,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         return this.spincastConfig;
     }
 
-    protected SpincastDictionary getSpincastDictionary() {
-        return this.spincastDictionary;
+    protected Dictionary getDictionary() {
+        return this.dictionary;
     }
 
     protected Server getServer() {

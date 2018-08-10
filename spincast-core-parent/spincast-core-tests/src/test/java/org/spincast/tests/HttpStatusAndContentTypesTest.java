@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.exceptions.NotFoundException;
 import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.exchange.DefaultRequestContext;
@@ -36,7 +37,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     private XmlManager xmlManager;
 
     @Inject
-    private SpincastDictionary spincastDictionary;
+    private Dictionary dictionary;
 
     protected JsonManager getJsonManager() {
         return this.jsonManager;
@@ -47,11 +48,11 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     }
 
     protected String getDefaultExceptionMessage() {
-        return this.spincastDictionary.exception_default_message();
+        return this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE);
     }
 
     protected String getDefaultNotFoundMessage() {
-        return this.spincastDictionary.route_notFound_default_message();
+        return this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE);
     }
 
     @Test

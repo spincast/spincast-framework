@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
 import org.spincast.core.request.Form;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 
@@ -389,5 +390,17 @@ public interface SpincastConfig {
      * {@link Form} elements are added.
      */
     public String getValidationElementDefaultName();
+
+    /**
+     * If a dictionary key is not found, how must Spincast react?
+     * <p>
+     * Note that if the key is not found for the current Locale, 
+     * Spincast will first check if it exists for the <em>fallback</em>
+     * Locale (the empty Locale).
+     * <p>
+     * By default, in debug mode an exception is thrown. Otherwise,
+     * an empty string is returned but an error is logged.
+     */
+    public DictionaryEntryNotFoundBehavior getDictionaryEntryNotFoundBehavior();
 
 }

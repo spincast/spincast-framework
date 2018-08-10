@@ -3,7 +3,8 @@ package org.spincast.tests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -16,7 +17,7 @@ import com.google.inject.Inject;
 public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
-    protected SpincastDictionary spincastDictionary;
+    protected Dictionary dictionary;
 
     @Test
     public void notFoundWithOneInvalidOneValidFilter() throws Exception {
@@ -41,7 +42,9 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("B" + this.spincastDictionary.route_notFound_default_message(), response.getContentAsString());
+        assertEquals("B" +
+                     this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE),
+                     response.getContentAsString());
     }
 
     @Test
@@ -143,7 +146,9 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A" + this.spincastDictionary.route_notFound_default_message(), response.getContentAsString());
+        assertEquals("A" +
+                     this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE),
+                     response.getContentAsString());
     }
 
     @Test
@@ -185,7 +190,9 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("AB" + this.spincastDictionary.route_notFound_default_message(), response.getContentAsString());
+        assertEquals("AB" +
+                     this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE),
+                     response.getContentAsString());
     }
 
     @Test

@@ -7,7 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.exceptions.CustomStatusCodeExceptionDefault;
 import org.spincast.core.exceptions.PublicExceptionDefault;
 import org.spincast.core.exchange.DefaultRequestContext;
@@ -25,7 +26,7 @@ import com.google.inject.Inject;
 public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
     @Inject
-    protected SpincastDictionary spincastDictionary;
+    protected Dictionary dictionary;
 
     @Test
     public void defaultExceptionHandler() throws Exception {
@@ -42,7 +43,8 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(this.spincastDictionary.exception_default_message(), response.getContentAsString());
+        assertEquals(this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE),
+                     response.getContentAsString());
     }
 
     @Test
@@ -354,7 +356,8 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
         // Should have fallback to the default expcetion handler...
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(this.spincastDictionary.exception_default_message(), response.getContentAsString());
+        assertEquals(this.dictionary.get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE),
+                     response.getContentAsString());
     }
 
     @Test

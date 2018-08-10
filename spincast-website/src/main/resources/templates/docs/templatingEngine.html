@@ -345,6 +345,76 @@ Docs : "Templating Engine"
                     </p>   
                 </div>
             </li>
+            <li>
+                <a class="anchor_small" id="templating_functions_msg" href="#templating_functions_msg" title="permanent link"></a>
+                <code class="apiItem"><span>msg</span>(String messageKey, ...params)</code>
+                <div class="well">
+                    <p>
+                        This function displays a localized message taken from the 
+                        <a href="#dictionary">Dictionary</a>.
+                        Only the <code>message key</code> is required, but you can also pass some <em>parameters</em> to be
+                        evaluated.
+                    </p> 
+                    <p>
+                        Example, without any parameters :
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,7,1,28"
+>
+
+&lt;h1&gt;{{ msg('app.home.title') }}&lt;/h1&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>   
+                    
+                    <p>
+                        With parameters :
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,8,1,83"
+>
+
+&lt;div&gt;{{ msg('welcome.user', 'firstName', user.firstName, 'lastName', user.lastName) }}&lt;/div&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                        <div>
+                            <img class="inlineIcon" src="/public/images/icons/tipy.png" /> Note that each parameter's key must have an
+                            associated value or an exeption will be thrown (the number of parameters must be even).
+                        </div>
+                    </p> 
+                    
+                    <p>
+                        Finally, if the first parameters is <code>true</code>, the evaluation of the message
+                        will be forced, even if no parameters are provided. Indeed, to improve performance, by default a message 
+                        from the dictionary is only evaluated using the <a href="#templating_engine">Templating Engine</a> 
+                        <em>if at least one parameter is provided</em>.
+                        
+                        Example of forcing the evaluation:
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,7,1,36"
+>
+
+&lt;h1&gt;{{ msg('app.display.date', true) }}&lt;/h1&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>   
+    
+                </div>
+ 
+            </li>
         </ul>
     </p>
     

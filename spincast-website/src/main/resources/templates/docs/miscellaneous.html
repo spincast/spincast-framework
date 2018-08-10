@@ -9,6 +9,313 @@ Docs : "Miscellaneous"
     </h3>
 </section>
 
+
+{#==========================================
+Dictionary
+==========================================#}     
+<section id="dictionary">
+    <h4>
+        <a class="anchor_small" href="#dictionary" title="permanent link"></a>
+        Dictionary (<em>i18n / internationalization</em>)
+    </h4>
+    
+    <h5>
+        <a class="anchor_small" id="dictionary_usage" href="#dictionary_usage" title="permanent link"></a>
+        Usage
+    </h5>
+    
+    <p>
+        The <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/Dictionary.html">Dictionary</a> interface
+        represents the object in which you store and from which you get <em>localized messages</em> for a multilingual application.
+    </p>
+    <p>
+        You get a localized message by injecting the Dictionary in a class
+        and by specifying the <code>key</code> of the message to get :
+        
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="14,34,14,73"
+>public class MyClass { 
+
+    private final Dictionary dictionary;
+    
+    @Inject
+    public MyClass(Dictionary dictionary) {
+        this.dictionary = dictionary;
+    }
+    
+    protected Dictionary getDictionary() {
+        return this.dictionary;
+    }
+    
+    public void someMethod() {
+        String localizedMessage = getDictionary().get("some.message.key");
+        System.out.println(localizedMessage);
+    }
+}</pre> 
+            </p> 
+        </div>
+        In this example, the message key is "<code>some.message.key</code>"
+    </p>
+
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        By default, the <code>Locale</code> used to pick the right version of the message is the one returned 
+        by the <a href="/plugins/spincast-locale-resolver">Locale Resolver</a>. But you can also specify the Locale as a parameter:
+        
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="1,66,1,81"
+>
+
+String localizedMessage = getDictionary().get("some.message.key", Locale.JAPANESE);
+System.out.println(localizedMessage);
+</pre> 
+            </p> 
+        </div>
+    </p>
+    
+    <p>
+        The default Dictionary implementation, 
+        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a>,
+        uses the <a href="#templating_engine">Templating Engine</a> to evaluate messages. This means that you can pass <em>parameters</em>
+        when getting a message. For example :
+        
+            <div>
+                <p>
+                    {% verbatim %}
+                    <pre class="ace ace-java" data-ace-hi="5,46,5,76|6,46,6,79"
+>
+
+// Let's say the "some.message.key" message in the dictionary is :
+// "Hi {{userName}}! My name is {{authorName}}."
+
+String localizedMessage = getDictionary().get("some.message.key",
+                                              Pair.of("userName", user.name),
+                                              Pair.of("authorName", admin.name));
+</pre> 
+{% endverbatim %}
+            </p> 
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Note that, to improve performance, a message from the dictionary is only evaluated using the
+        Templating Engine <em>if at least one parameter is passed when getting it!</em> Otherwise, the
+        message is going to be returned <em>as is</em>, without any evaluation. If you have
+        a message that doesn't require any parameter but still needs to be evaluated, you can force the
+        evaluation using the "<code>forceEvaluation</code>" parameter :
+        
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="1,66,1,70"
+>
+
+String localizedMessage = getDictionary().get("some.message.key", true);
+</pre> 
+            </p> 
+        </div> 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Finally, note that Spincast also provides a <code><a href="#templating_functions_msg">msg(...)</a></code>
+        function to get a localized message <em>from a template</em> (a <code>HTML</code> template, for example).
+    </p>
+    
+    <h5>
+        <a class="anchor_small" id="dictionary_adding" href="#dictionary_adding" title="permanent link"></a>
+        Adding messages to the dictionary
+    </h5>
+    
+    <p>
+        By default, only some Spincast core messages and some plugins messages will be added to the Dictionary.
+        To add your own messages, the ones required in your application, you extend the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a>
+        base class and you override the <code>addMessages()</code> method. By using the <code>key()</code> and
+        <code>msg()</code> helpers, you then specify the localized messages of your application. 
+        For example :
+        
+            <div>
+                <p>
+                    {% verbatim %}
+                    <pre class="ace ace-java"
+>
+
+public class AppDictionary extends SpincastDictionaryDefault {
+
+    @Inject
+    public AppDictionary(LocaleResolver localeResolver, 
+                         TemplatingEngine templatingEngine, 
+                         AppConfigs appConfig,
+                         Set&lt;DictionaryEntries&gt; dictionaryEntries) {
+        super(localeResolver, templatingEngine, appConfig, dictionaryEntries);
+    }
+
+    @Override
+    protected void addMessages() {
+
+        key("users.home.welcome",
+            msg("", "Hi {{name}}!"),
+            msg("fr", "Salut {{name}}!"));
+
+        key("users.profile.title",
+            msg("", "Your profile"),
+            msg("fr", "Votre profil"),
+            msg("ja", "あなたのプロフィール"));
+            
+        // ...      
+    }
+}</pre> 
+{% endverbatim %}
+            </p> 
+        </div> 
+    </p>
+    
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        The first parameter of the <code>msg()</code> helper 
+        is the language of the message. The empty language (<code>""</code>) is called the <em>fallback language</em> or 
+        <em>default language</em>. It is english in our example. If a message is requested using a specific Locale but is not found,
+        Spincast will return the message using the fallback language, if it exists.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        The default Dictionary implementation, 
+        <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a>,
+        uses the <a href="#templating_engine">Templating Engine</a> to evaluate messages. This means that you can perform logic inside
+        your messages ("<code>if</code>", "<code>for loops</code>"...  
+        anything supported by <a href="http://www.mitchellbosecke.com/pebble/documentation">Pebble</a>) and you can use parameters, as we
+        can see with the {% verbatim %}"<code><em>{{name}}</em></code>"{% endverbatim %} part in the previous example. 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Finally, don't forget to register your custom implementation of the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/Dictionary.html">Dictionary</a> interface (in our example:
+        "<code>AppDictionary</code>") in your Guice context! For example :
+        
+            <div>
+                <p>
+                    {% verbatim %}
+                    <pre class="ace ace-java" data-ace-hi="5,8,5,76"
+>public class AppModule extends SpincastGuiceModuleBase {
+
+    @Override
+    protected void configure() {
+
+        bind(Dictionary.class).to(AppDictionary.class).in(Scopes.SINGLETON);
+        
+        //...
+    }
+}
+</pre> 
+{% endverbatim %}
+            </p> 
+        </div> 
+    </p>
+    
+    <h5>
+        <a class="anchor_small" id="dictionary_overriding" href="#dictionary_overriding" title="permanent link"></a>
+        Overriding core messages and plugins messages
+    </h5>
+    
+    <p>
+        Spincast core messages and plugins's messages are added to the Dictionary <em>before</em> you add 
+        your own messages using the <code>addMessage()</code> method. This means that you can <em>override</em> them 
+        and even translate them in a new language, if required.
+    </p>
+    <p>
+        The plugins should provide public constants representing the keys of the messages they use. This way,
+        you can easily know how to override them. For example, the keys of Spincast's core messages are provided as constants
+        in the 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/SpincastCoreDictionaryEntriesDefault.html">SpincastCoreDictionaryEntriesDefault</a> class. 
+        Each plugins should similarly list the keys of their messages in their respective documentation.
+    </p>
+    <p>
+        Here's an example of overriding a core Spincast message:
+        
+            <div>
+                <p>
+                    {% verbatim %}
+                    <pre class="ace ace-java" data-ace-hi="15,12,15,91"
+>
+
+public class AppDictionary extends SpincastDictionaryDefault {
+
+    @Inject
+    public AppDictionary(LocaleResolver localeResolver, 
+                         TemplatingEngine templatingEngine, 
+                         AppConfigs appConfig,
+                         Set&lt;DictionaryEntries&gt; dictionaryEntries) {
+        super(localeResolver, templatingEngine, appConfig, dictionaryEntries);
+    }
+
+    @Override
+    protected void addMessages() {
+
+        // Override a core message!
+        key(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE,
+            msg("", "my custom message!"));
+
+        // Then, add your custom messages...
+    }
+}</pre> 
+{% endverbatim %}
+            </p> 
+        </div> 
+    </p>
+
+    <h5>
+        <a class="anchor_small" id="dictionary_config" href="#dictionary_config" title="permanent link"></a>
+        Configuration
+    </h5>
+    
+    <p>
+        A configuration for the dictionary is available through <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html">SpincastConfig</a>:
+        
+        <ul class="apiList">
+
+            <li>
+                <code class="apiItem">DictionaryEntryNotFoundBehavior <span>getDictionaryEntryNotFoundFallbackTo</span>()</code>
+                <div class="well">
+                    <p>
+                        When a requested message key is not found in the dictionary, this configuration specifies what
+                        happens.  
+                    </p>
+                    <p>
+                        <ul>
+                            <li>
+                                <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/DictionaryEntryNotFoundBehavior.html#EXCEPTION">EXCEPTION</a> : 
+                                a <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/DictionaryKeyNotFoundException.html">DictionaryKeyNotFoundException</a>
+                                exception is thrown.
+                            </li>
+                            <li>
+                                <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/DictionaryEntryNotFoundBehavior.html#RETURN_EMPTY_STRING">RETURN_EMPTY_STRING</a> : 
+                                an empty string is returned.
+                            </li>
+                            <li>
+                                <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/DictionaryEntryNotFoundBehavior.html#RETURN_KEY">RETURN_KEY</a> : 
+                                the requested message key itself is returned.
+                            </li>
+                        </ul> 
+                    </p>
+                    <p>
+                        By default, when  <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDebugEnabled--">debug mode is enabled</a>, an exception is thrown. Otherwise, an empty string
+                        is returned.
+                    </p>    
+                </div>
+            </li>
+        </ul>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            Note that if a version of the message exists with the fallback language (<code>""</code>),
+            it will <em>always</em> be found.
+        </p>
+    </p>
+    
+   
+</section>
+
+
 {#==========================================
 Flash Messages
 ==========================================#}     

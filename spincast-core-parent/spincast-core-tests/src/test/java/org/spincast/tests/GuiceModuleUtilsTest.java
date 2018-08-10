@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.guice.GuiceModuleUtils;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.SpincastUtils;
@@ -43,8 +43,8 @@ public class GuiceModuleUtilsTest {
         assertEquals(1, classes.size());
         assertEquals(SpincastUtilsDefault.class, classes.iterator().next());
 
-        Set<Class<? extends SpincastDictionary>> classes2 =
-                guiceModuleUtils.getBoundClassesExtending(SpincastDictionary.class);
+        Set<Class<? extends Dictionary>> classes2 =
+                guiceModuleUtils.getBoundClassesExtending(Dictionary.class);
         assertNotNull(classes2);
         assertEquals(0, classes2.size());
     }
@@ -124,7 +124,7 @@ public class GuiceModuleUtilsTest {
 
             @Override
             protected void configure() {
-                bind(SpincastDictionary.class).to(SpincastDictionaryDefault.class).in(Scopes.SINGLETON);
+                bind(Dictionary.class).to(SpincastDictionaryDefault.class).in(Scopes.SINGLETON);
             }
         };
 
@@ -135,8 +135,8 @@ public class GuiceModuleUtilsTest {
         assertEquals(1, classes.size());
         assertEquals(SpincastUtilsDefault.class, classes.iterator().next());
 
-        Set<Class<? extends SpincastDictionary>> classes2 =
-                guiceModuleUtils.getBoundClassesExtending(SpincastDictionary.class);
+        Set<Class<? extends Dictionary>> classes2 =
+                guiceModuleUtils.getBoundClassesExtending(Dictionary.class);
         assertNotNull(classes2);
         assertEquals(1, classes2.size());
         assertEquals(SpincastDictionaryDefault.class, classes2.iterator().next());
@@ -157,7 +157,7 @@ public class GuiceModuleUtilsTest {
 
             @Override
             protected void configure() {
-                bind(SpincastDictionary.class).to(SpincastDictionaryDefault.class).in(Scopes.SINGLETON);
+                bind(Dictionary.class).to(SpincastDictionaryDefault.class).in(Scopes.SINGLETON);
             }
         };
 
@@ -168,8 +168,8 @@ public class GuiceModuleUtilsTest {
         assertEquals(1, classes.size());
         assertEquals(SpincastUtilsDefault.class, classes.iterator().next());
 
-        Set<Class<? extends SpincastDictionary>> classes2 =
-                guiceModuleUtils.getBoundClassesExtending(SpincastDictionary.class);
+        Set<Class<? extends Dictionary>> classes2 =
+                guiceModuleUtils.getBoundClassesExtending(Dictionary.class);
         assertNotNull(classes2);
         assertEquals(1, classes2.size());
         assertEquals(SpincastDictionaryDefault.class, classes2.iterator().next());
@@ -243,7 +243,7 @@ public class GuiceModuleUtilsTest {
         boolean keyBound = guiceModuleUtils.isKeyBound(SpincastUtils.class);
         assertTrue(keyBound);
 
-        keyBound = guiceModuleUtils.isKeyBound(SpincastDictionary.class);
+        keyBound = guiceModuleUtils.isKeyBound(Dictionary.class);
         assertFalse(keyBound);
     }
 

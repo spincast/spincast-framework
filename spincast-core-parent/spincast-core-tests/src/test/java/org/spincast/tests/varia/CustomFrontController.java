@@ -3,9 +3,9 @@ package org.spincast.tests.varia;
 import java.lang.reflect.Type;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.controllers.FrontController;
 import org.spincast.core.controllers.SpincastFrontController;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.exchange.RequestContextFactory;
 import org.spincast.core.exchange.RequestContextType;
@@ -24,7 +24,7 @@ public class CustomFrontController extends SpincastFrontController<DefaultReques
     @Inject
     public CustomFrontController(Router<DefaultRequestContext, DefaultWebsocketContext> router,
                                  SpincastConfig spincastConfig,
-                                 SpincastDictionary spincastDictionary,
+                                 Dictionary dictionary,
                                  Server server,
                                  RequestContextFactory<DefaultRequestContext> requestCreationFactory,
                                  SpincastRequestScope spincastRequestScope,
@@ -33,7 +33,7 @@ public class CustomFrontController extends SpincastFrontController<DefaultReques
                                  XmlManager xmlManager) {
         super(router,
               spincastConfig,
-              spincastDictionary,
+              dictionary,
               server,
               requestCreationFactory,
               spincastRequestScope,

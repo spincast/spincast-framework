@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
 import org.spincast.core.config.SpincastInit;
 import org.spincast.core.config.SpincastInitValidator;
 import org.spincast.core.controllers.FrontController;
@@ -14,6 +13,10 @@ import org.spincast.core.controllers.SpincastFrontController;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.cookies.CookieDefault;
 import org.spincast.core.cookies.CookieFactory;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.DictionaryEntries;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntries;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.exchange.CacheHeadersRequestContextAddon;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestContextBaseDeps;
@@ -80,6 +83,7 @@ import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.multibindings.Multibinder;
 
 public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
 
@@ -212,12 +216,16 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         bindTestingModeFlag();
 
         //==========================================
+        // Bins core Dicctionary messages
+        //==========================================
+        bindCoreDictionaryMessages();
+
+        //==========================================
         // Some basic initializations
         //==========================================
         spincastInit();
 
     }
-
 
     /**
      * Validates the bindings that have to be done by other modules.
@@ -237,7 +245,7 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         requireBinding(JsonPathUtils.class);
         requireBinding(XmlManager.class);
         requireBinding(SpincastConfig.class);
-        requireBinding(SpincastDictionary.class);
+        requireBinding(Dictionary.class);
         requireBinding(LocaleResolver.class);
         requireBinding(parameterizeWithRequestContext(RequestRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(ResponseRequestContextAddon.class));
@@ -417,6 +425,19 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
     protected void bindWebsocketEndpointToControllerManager() {
         bind(WebsocketEndpointToControllerManager.class).to(getWebsocketEndpointToControllerKeysMapClass()).in(Scopes.SINGLETON);
     }
+
+    protected void bindCoreDictionaryMessages() {
+
+        bind(SpincastCoreDictionaryEntries.class).to(getSpincastCoreDictionaryEntriesImplClass()).in(Scopes.SINGLETON);
+
+        Multibinder<DictionaryEntries> dictionaryMultibinder = Multibinder.newSetBinder(binder(), DictionaryEntries.class);
+        dictionaryMultibinder.addBinding().to(getSpincastCoreDictionaryEntriesImplClass()).asEagerSingleton();
+    }
+
+    protected Class<? extends SpincastCoreDictionaryEntries> getSpincastCoreDictionaryEntriesImplClass() {
+        return SpincastCoreDictionaryEntriesDefault.class;
+    }
+
 
     protected Class<? extends WebsocketEndpointToControllerManager> getWebsocketEndpointToControllerKeysMapClass() {
         return WebsocketEndpointToControllerManagerDefault.class;

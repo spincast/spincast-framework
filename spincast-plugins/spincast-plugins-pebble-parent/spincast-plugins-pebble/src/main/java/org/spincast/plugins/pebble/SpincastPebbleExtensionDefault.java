@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.spincast.core.config.SpincastConstants;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
@@ -38,11 +40,35 @@ import com.mitchellbosecke.pebble.tokenParser.TokenParser;
  */
 public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
+    //==========================================
+    // Filters names
+    //==========================================
+    public static final String FILTER_NAME_CHECKED = "checked";
+    public static final String FILTER_NAME_SELECTED = "selected";
+    public static final String FILTER_NAME_VALIDATION_MESSAGES = "validationMessages";
+    public static final String FILTER_NAME_VALIDATION_GROUP_MESSAGES = "validationGroupMessages";
+    public static final String FILTER_NAME_VALIDATION_CLASS = "validationClass";
+    public static final String FILTER_NAME_VALIDATION_FRESH = "validationFresh";
+    public static final String FILTER_NAME_VALIDATION_SUBMITTED = "validationSubmitted";
+    public static final String FILTER_NAME_VALIDATION_IS_VALID = "validationIsValid";
+    public static final String FILTER_NAME_VALIDATION_HAS_SUCCESSES = "validationHasSuccesses";
+    public static final String FILTER_NAME_VALIDATION_HAS_WARNINGS = "validationHasWarnings";
+    public static final String FILTER_NAME_VALIDATION_HAS_ERRORS = "validationHasErrors";
+    public static final String FILTER_NAME_VALIDATION_GET = "get";
+
+    //==========================================
+    // Fonctions names
+    //==========================================
+    public static final String FUNCTION_NAME_VALIDATION_GET = "get";
+    public static final String FUNCTION_NAME_VALIDATION_JS_ONE_LINE = "jsOneLine";
+    public static final String FUNCTION_NAME_MESSAGE = "msg";
+
     private final Provider<TemplatingEngine> templatingEngineProvider;
     private final SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
     private TemplatingEngine templatingEngine;
     private final ObjectConverter objectConverter;
     private final SpincastUtils spincastUtils;
+    private final Dictionary dictionary;
 
     /**
      * Constructor
@@ -51,11 +77,13 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     public SpincastPebbleExtensionDefault(Provider<TemplatingEngine> templatingEngineProvider,
                                           SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig,
                                           ObjectConverter objectConverter,
-                                          SpincastUtils spincastUtils) {
+                                          SpincastUtils spincastUtils,
+                                          Dictionary dictionary) {
         this.templatingEngineProvider = templatingEngineProvider;
         this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
         this.objectConverter = objectConverter;
         this.spincastUtils = spincastUtils;
+        this.dictionary = dictionary;
     }
 
     public TemplatingEngine getTemplatingEngine() {
@@ -71,6 +99,10 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
     protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
+    }
+
+    protected Dictionary getDictionary() {
+        return this.dictionary;
     }
 
     protected SpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
@@ -182,6 +214,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
 
         functions.put(getGetFunctionName(), getGetFunction());
         functions.put(getJsOneLinerOutputFunctionName(), getJsOneLinerOutputFunction());
+        functions.put(getMessageFunctionName(), getMessageFunction());
 
         return functions;
     }
@@ -252,7 +285,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getCheckedFilterName() {
-        return "checked";
+        return FILTER_NAME_CHECKED;
     }
 
     protected Filter getCheckedFilter() {
@@ -282,7 +315,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getSelectedFilterName() {
-        return "selected";
+        return FILTER_NAME_SELECTED;
     }
 
     protected Filter getSelectedFilter() {
@@ -312,11 +345,11 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationMessagesFilterName() {
-        return "validationMessages";
+        return FILTER_NAME_VALIDATION_MESSAGES;
     }
 
     protected String getValidationGroupMessagesFilterName() {
-        return "validationGroupMessages";
+        return FILTER_NAME_VALIDATION_GROUP_MESSAGES;
     }
 
     protected Filter getValidationMessagesFilter(final String templatePath) {
@@ -349,7 +382,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationClassFilterName() {
-        return "validationClass";
+        return FILTER_NAME_VALIDATION_CLASS;
     }
 
     protected Filter getValidationClassFilter() {
@@ -394,7 +427,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationFreshFilterName() {
-        return "validationFresh";
+        return FILTER_NAME_VALIDATION_FRESH;
     }
 
     protected Filter getValidationFreshFilter() {
@@ -420,7 +453,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationSubmittedFilterName() {
-        return "validationSubmitted";
+        return FILTER_NAME_VALIDATION_SUBMITTED;
     }
 
     protected Filter getValidationSubmittedFilter() {
@@ -446,7 +479,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationIsValidFilterName() {
-        return "validationIsValid";
+        return FILTER_NAME_VALIDATION_IS_VALID;
     }
 
     protected Filter getValidationIsValidFilter() {
@@ -477,7 +510,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationHasSuccessesFilterName() {
-        return "validationHasSuccesses";
+        return FILTER_NAME_VALIDATION_HAS_SUCCESSES;
     }
 
     protected Filter getValidationHasSuccessesFilter() {
@@ -508,7 +541,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationHasWarningsFilterName() {
-        return "validationHasWarnings";
+        return FILTER_NAME_VALIDATION_HAS_WARNINGS;
     }
 
     protected Filter getValidationHasWarningsFilter() {
@@ -539,7 +572,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getValidationHasErrorsFilterName() {
-        return "validationHasErrors";
+        return FILTER_NAME_VALIDATION_HAS_ERRORS;
     }
 
     protected Filter getValidationHasErrorsFilter() {
@@ -570,7 +603,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getGetFilterName() {
-        return "get";
+        return FILTER_NAME_VALIDATION_GET;
     }
 
     protected Filter getGetFilter() {
@@ -621,11 +654,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     }
 
     protected String getGetFunctionName() {
-        return "get";
-    }
-
-    protected String getJsOneLinerOutputFunctionName() {
-        return "jsOneLine";
+        return FUNCTION_NAME_VALIDATION_GET;
     }
 
     protected Function getGetFunction() {
@@ -675,6 +704,10 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
         };
     }
 
+    protected String getJsOneLinerOutputFunctionName() {
+        return FUNCTION_NAME_VALIDATION_JS_ONE_LINE;
+    }
+
     protected Function getJsOneLinerOutputFunction() {
 
         return new Function() {
@@ -705,6 +738,77 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                 String codeFormatted = getSpincastUtils().inQuotesStringFormat(code, singleQuotesDelimiter);
                 return new SafeString(codeFormatted);
 
+            }
+        };
+    }
+
+    protected String getMessageFunctionName() {
+        return FUNCTION_NAME_MESSAGE;
+    }
+
+    protected Function getMessageFunction() {
+
+        return new Function() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object execute(Map<String, Object> args) {
+                if (args == null || args.size() == 0) {
+                    return "";
+                }
+
+                //==========================================
+                // If the arg after the message key is a boolean,
+                // it represent the "forceEvaluation".
+                //==========================================
+                Object firstArg = args.get("1");
+
+                boolean forceEvaluation = false;
+                if (firstArg != null && firstArg instanceof Boolean) {
+                    forceEvaluation = (Boolean)firstArg;
+                    args.remove("1");
+                }
+
+                Map<String, Object> params = new HashMap<String, Object>();
+
+                String msgKey = null;
+                String paramKey = null;
+                for (Entry<String, Object> entry : args.entrySet()) {
+
+                    String key = entry.getKey();
+                    String val = String.valueOf(entry.getValue());
+
+                    if (!key.matches("^\\d+$")) {
+                        continue;
+                    }
+
+                    if (msgKey == null) {
+                        msgKey = val;
+                        continue;
+                    }
+
+                    if (paramKey == null) {
+                        paramKey = val;
+                        continue;
+                    }
+
+                    params.put(paramKey, val);
+                    paramKey = null;
+                }
+                if (paramKey != null) {
+                    throw new RuntimeException("A value is missing for one of the key of the custom '" + FUNCTION_NAME_MESSAGE +
+                                               "' Pebble function... The key without value is : \"" + paramKey + "\"");
+                }
+
+                if (params.size() == 0 && !forceEvaluation) {
+                    params = null;
+                }
+
+                return getDictionary().get(msgKey, params);
             }
         };
     }

@@ -11,7 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.exceptions.CustomStatusCodeException;
 import org.spincast.core.exceptions.ForwardRouteException;
 import org.spincast.core.exceptions.NotFoundException;
@@ -49,7 +50,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
     private final Router<R, W> router;
     private final SpincastConfig spincastConfig;
-    private final SpincastDictionary spincastDictionary;
+    private final Dictionary dictionary;
     private final Server server;
     private final RequestContextFactory<R> requestCreationFactory;
     private final SpincastRequestScope spincastRequestScope;
@@ -63,7 +64,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     @Inject
     public SpincastFrontController(Router<R, W> router,
                                    SpincastConfig spincastConfig,
-                                   SpincastDictionary spincastDictionary,
+                                   Dictionary dictionary,
                                    Server server,
                                    RequestContextFactory<R> requestCreationFactory,
                                    SpincastRequestScope spincastRequestScope,
@@ -72,7 +73,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                                    XmlManager xmlManager) {
         this.router = router;
         this.spincastConfig = spincastConfig;
-        this.spincastDictionary = spincastDictionary;
+        this.dictionary = dictionary;
         this.server = server;
         this.requestCreationFactory = requestCreationFactory;
         this.spincastRequestScope = spincastRequestScope;
@@ -89,8 +90,8 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         return this.spincastConfig;
     }
 
-    protected SpincastDictionary getSpincastDictionary() {
-        return this.spincastDictionary;
+    protected Dictionary getDictionary() {
+        return this.dictionary;
     }
 
     protected Server getServer() {
@@ -374,7 +375,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
      * The message to send for the default Not Found handler.
      */
     protected String getDefaultNotFoundHandlerNotFoundMessage() {
-        return getSpincastDictionary().route_notFound_default_message();
+        return getDictionary().get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_ROUTE_NOT_FOUND_DEFAULTMESSAGE);
     }
 
     protected void resetResponse(R requestContext) {
@@ -717,7 +718,8 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             return;
         }
 
-        String errorMessage = getSpincastDictionary().exception_default_message();
+        String errorMessage =
+                getDictionary().get(SpincastCoreDictionaryEntriesDefault.MESSAGE_KEY_EXCEPTION_DEFAULTMESSAGE);
 
         //==========================================
         // More info when debug mode is enabled.

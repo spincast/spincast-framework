@@ -1,7 +1,7 @@
 package org.spincast.plugins.routing;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.config.SpincastDictionary;
+import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.routing.RedirectRuleBuilderFactory;
@@ -46,7 +46,7 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
     private final SpincastRouterConfig spincastRouterConfig;
     private final RouteFactory<R> routeFactory;
     private final SpincastConfig spincastConfig;
-    private final SpincastDictionary spincastDictionary;
+    private final Dictionary dictionary;
     private final SpincastFilters<R> spincastFilters;
     private final WebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
     private final WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
@@ -60,7 +60,7 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
     public SpincastRouterDeps(SpincastRouterConfig spincastRouterConfig,
                               RouteFactory<R> routeFactory,
                               SpincastConfig spincastConfig,
-                              SpincastDictionary spincastDictionary,
+                              Dictionary dictionary,
                               Server server,
                               SpincastFilters<R> spincastFilters,
                               RouteBuilderFactory<R, W> routeBuilderFactory,
@@ -75,7 +75,7 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
         this.spincastRouterConfig = spincastRouterConfig;
         this.routeFactory = routeFactory;
         this.spincastConfig = spincastConfig;
-        this.spincastDictionary = spincastDictionary;
+        this.dictionary = dictionary;
         this.server = server;
         this.spincastFilters = spincastFilters;
         this.routeBuilderFactory = routeBuilderFactory;
@@ -120,8 +120,8 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
         return this.spincastConfig;
     }
 
-    public SpincastDictionary getSpincastDictionary() {
-        return this.spincastDictionary;
+    public Dictionary getDictionary() {
+        return this.dictionary;
     }
 
     public SpincastFilters<R> getSpincastFilters() {

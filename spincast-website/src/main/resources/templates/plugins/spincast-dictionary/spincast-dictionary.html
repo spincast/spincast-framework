@@ -23,12 +23,12 @@
 
     <ol class="breadcrumb">
         <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
-        <li class="active">Spincast Dictionary Addon plugin</li>
+        <li class="active">Spincast Dictionary plugin</li>
     </ol>
     
     <div id="sectionTitle" class="row"> 
         <div class="col-xs-12"> 
-            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Dictionary Addon <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Dictionary <span>plugin</span></h2></a>
             <div class="pluginBadges">
                 <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
                      data-hint="Plugin's Javadoc">
@@ -43,7 +43,7 @@
     
     <div id="sectionTitleFixed" class="row"> 
         <div class="col-xs-12">
-            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Dictionary Addon <span>plugin</span></h2></a>
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Dictionary <span>plugin</span></h2></a>
         </div>
     </div>
 
@@ -65,16 +65,13 @@
                     Overview
                 </h3>
 	            <p>
-	                The plugin provides an implementation
-                    of the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastDictionary.html">SpincastDictionary</a> 
-                    interface to provide labels required by Spincast : 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a>
-	                The provided implementation is very simple : the labels are simply hardcoded, in english.
+	                This plugin provides an implementation of the <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/Dictionary.html">Dictionary</a> 
+                    interface, allowing internationalization ("i18n"). It is used to specify labels in a multilingual application.
                 </p>
                 <p>
-                    Have a look at the 
-                    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-dictionary-parent/spincast-plugins-dictionary/src/main/java/org/spincast/plugins/dictionary/SpincastDictionaryDefault.java">source code of SpincastDictionaryDefault</a> 
-                    to see what the default labels are.
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Have a look at the <a href="/documentation#dictionary">Dictionary</a> section of the
+                    documentation for all the details.
                 </p>
             </section>
             
@@ -135,7 +132,10 @@
                 <p>
                     <ul>
                         <li>
-                            <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastDictionary.html">SpincastDictionary</a> 
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/dictionary/Dictionary.html">Dictionary</a> 
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dictionary/SpincastDictionaryDefault.html">SpincastDictionaryDefault</a> 
                         </li>
                     </ul>
                 </p> 

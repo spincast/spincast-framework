@@ -1,5 +1,6 @@
 package org.spincast.testing.core.utils;
 
+import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 
@@ -65,5 +66,10 @@ public class SpincastConfigTestingDefault extends SpincastConfigDefault {
     @Override
     public boolean isEnableCookiesValidator() {
         return false;
+    }
+
+    @Override
+    public DictionaryEntryNotFoundBehavior getDictionaryEntryNotFoundBehavior() {
+        return DictionaryEntryNotFoundBehavior.EXCEPTION;
     }
 };
