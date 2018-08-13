@@ -1,6 +1,7 @@
 package org.spincast.core.websocket;
 
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.templating.TemplatingEngine;
@@ -96,5 +97,11 @@ public interface WebsocketContext<W extends WebsocketContext<?>> {
      * initial HTTP request.
      */
     public Locale getLocaleToUse();
+
+    /**
+     * The best TimeZone to use, as resolved by 
+     * the <code>TimeZoneResolver</code>.
+     */
+    public TimeZone getTimeZoneToUse();
 
 }

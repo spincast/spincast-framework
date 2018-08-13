@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
@@ -287,6 +288,11 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     }
 
     @Override
+    public TimeZone getDefaultTimeZone() {
+        return TimeZone.getTimeZone("UTC");
+    }
+
+    @Override
     public int getRouteForwardingMaxNumber() {
         return 2;
     }
@@ -413,6 +419,11 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     @Override
     public String getCookieNameLocale() {
         return "spincast_locale";
+    }
+
+    @Override
+    public String getCookieNameTimeZoneId() {
+        return "spincast_timezone";
     }
 
     @Override

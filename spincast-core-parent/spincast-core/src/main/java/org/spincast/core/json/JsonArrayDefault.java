@@ -1,6 +1,7 @@
 package org.spincast.core.json;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -513,6 +514,16 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     }
 
     @Override
+    public Instant getInstant(int index) {
+        return getInstantNoKeyParsing(String.valueOf(index));
+    }
+
+    @Override
+    public Instant getInstant(int index, Instant defaultValue) {
+        return getInstantNoKeyParsing(String.valueOf(index), defaultValue);
+    }
+
+    @Override
     public Object getObject(int index) {
         return getObjectNoKeyParsing(String.valueOf(index));
     }
@@ -661,6 +672,16 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
     @Override
     public Date getArrayFirstDate(int index, Date defaultValue) {
         return getArrayFirstDateNoKeyParsing(String.valueOf(index), defaultValue);
+    }
+
+    @Override
+    public Instant getArrayFirstInstant(int index) {
+        return getArrayFirstInstantNoKeyParsing(String.valueOf(index));
+    }
+
+    @Override
+    public Instant getArrayFirstInstant(int index, Instant defaultValue) {
+        return getArrayFirstInstantNoKeyParsing(String.valueOf(index), defaultValue);
     }
 
     @Override

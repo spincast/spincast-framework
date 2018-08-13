@@ -57,7 +57,7 @@ public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public Map<String, Object> getTemplatingGlobalVariables() {
-        if(this.templatingGlobalVariables == null) {
+        if (this.templatingGlobalVariables == null) {
             this.templatingGlobalVariables = new HashMap<String, Object>();
         }
         return this.templatingGlobalVariables;
@@ -71,13 +71,18 @@ public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
     @Override
     public String evaluate(String content, Map<String, Object> params, Locale locale) {
 
-        if(params == null) {
+        if (params == null) {
             params = new HashMap<String, Object>();
         }
 
         JsonObject model = getJsonManager().fromMap(params);
 
         return evaluate(content, model, locale);
+    }
+
+    @Override
+    public String evaluate(String content) {
+        return evaluate(content, (JsonObject)null);
     }
 
     @Override
@@ -88,7 +93,7 @@ public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
     @Override
     public String evaluate(String content, JsonObject model, Locale locale) {
 
-        if(model == null) {
+        if (model == null) {
             model = getJsonManager().create();
         }
 
@@ -140,7 +145,7 @@ public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
     @Override
     public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale) {
 
-        if(params == null) {
+        if (params == null) {
             params = new HashMap<String, Object>();
         }
 
@@ -161,10 +166,10 @@ public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
      * Converts JsonObject and JsonArray to plain Maps and Lists.
      */
     protected Object convertTemplatingGlobalVariableValue(Object value) {
-        if(value != null) {
-            if(value instanceof JsonObject) {
+        if (value != null) {
+            if (value instanceof JsonObject) {
                 value = ((JsonObject)value).convertToPlainMap();
-            } else if(value instanceof JsonArray) {
+            } else if (value instanceof JsonArray) {
                 value = ((JsonArray)value).convertToPlainList();
             }
         }
@@ -202,11 +207,11 @@ public class SpincastTemplatingRequestContextAddon<R extends RequestContext<?>>
         @SuppressWarnings("unchecked")
         Map<String, Object> map =
                 (Map<String, Object>)getTemplatingGlobalVariable(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
-        if(map == null) {
+        if (map == null) {
             map = new HashMap<String, Object>();
             addTemplatingGlobalVariable(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP,
                                         map);
-        } else if(!(map instanceof Map)) {
+        } else if (!(map instanceof Map)) {
             throw new RuntimeException("The '" +
                                        SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP +
                                        "' root variable is reserved for Spincast and must be an instance of Map<String, Object>.");

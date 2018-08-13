@@ -1,6 +1,7 @@
 package org.spincast.core.exchange;
 
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.routing.RoutingRequestContextAddon;
@@ -84,6 +85,12 @@ public interface RequestContext<R extends RequestContext<?>> {
      * the <code>LocaleResolver</code>.
      */
     public Locale getLocaleToUse();
+
+    /**
+     * The best TimeZone to use, as resolved by 
+     * the <code>TimeZoneResolver</code>.
+     */
+    public TimeZone getTimeZoneToUse();
 
     /**
      * The underlying exchange object, as given by the

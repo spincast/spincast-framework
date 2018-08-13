@@ -19,6 +19,7 @@ import org.spincast.plugins.request.SpincastRequestPlugin;
 import org.spincast.plugins.response.SpincastResponsePlugin;
 import org.spincast.plugins.routing.SpincastRoutingPlugin;
 import org.spincast.plugins.templatingaddon.SpincastTemplatingAddonPlugin;
+import org.spincast.plugins.timezoneresolver.SpincastTimeZoneResolverPlugin;
 import org.spincast.plugins.undertow.SpincastUndertowPlugin;
 import org.spincast.plugins.variables.SpincastVariablesPlugin;
 
@@ -59,6 +60,7 @@ public class DisableDefaultAllTest {
                 .plugin(new SpincastTemplatingAddonPlugin())
                 .plugin(new SpincastVariablesPlugin())
                 .plugin(new SpincastLocaleResolverPlugin())
+                .plugin(new SpincastTimeZoneResolverPlugin())
                 .plugin(new SpincastHttpCachingPlugin())
                 .plugin(new SpincastConfigPlugin())
                 .plugin(new SpincastDictionaryPlugin())

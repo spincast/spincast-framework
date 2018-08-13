@@ -55,6 +55,7 @@ import org.spincast.core.session.FlashMessagesHolder;
 import org.spincast.core.session.FlashMessagesHolderDefault;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.templating.TemplatingRequestContextAddon;
+import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.ObjectConverterDefault;
 import org.spincast.core.utils.SpincastUtils;
@@ -84,6 +85,7 @@ import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
+
 
 public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
 
@@ -216,7 +218,7 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         bindTestingModeFlag();
 
         //==========================================
-        // Bins core Dicctionary messages
+        // Binds core Dictionary messages
         //==========================================
         bindCoreDictionaryMessages();
 
@@ -224,7 +226,6 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         // Some basic initializations
         //==========================================
         spincastInit();
-
     }
 
     /**
@@ -247,6 +248,7 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         requireBinding(SpincastConfig.class);
         requireBinding(Dictionary.class);
         requireBinding(LocaleResolver.class);
+        requireBinding(TimeZoneResolver.class);
         requireBinding(parameterizeWithRequestContext(RequestRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(ResponseRequestContextAddon.class));
         requireBinding(parameterizeWithRequestContext(RoutingRequestContextAddon.class));

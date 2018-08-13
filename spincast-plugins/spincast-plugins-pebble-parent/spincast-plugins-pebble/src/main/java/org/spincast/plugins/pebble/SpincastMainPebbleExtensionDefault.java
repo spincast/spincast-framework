@@ -1,9 +1,11 @@
 package org.spincast.plugins.pebble;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.dictionary.Dictionary;
+import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
@@ -18,27 +21,26 @@ import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.apache.commons.text.StringEscapeUtils;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.google.inject.OutOfScopeException;
 import com.google.inject.Provider;
+import com.google.inject.ProvisionException;
+import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
-import com.mitchellbosecke.pebble.extension.NodeVisitorFactory;
-import com.mitchellbosecke.pebble.extension.Test;
 import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
-import com.mitchellbosecke.pebble.operator.BinaryOperator;
-import com.mitchellbosecke.pebble.operator.UnaryOperator;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.ScopeChain;
-import com.mitchellbosecke.pebble.tokenParser.TokenParser;
 
 /**
- * Spincast default Pebble extension implementation.
+ * Spincast Main Pebble extension implementation.
  */
-public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
+public class SpincastMainPebbleExtensionDefault extends AbstractExtension implements SpincastMainPebbleExtension {
 
     //==========================================
     // Filters names
@@ -55,6 +57,8 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     public static final String FILTER_NAME_VALIDATION_HAS_WARNINGS = "validationHasWarnings";
     public static final String FILTER_NAME_VALIDATION_HAS_ERRORS = "validationHasErrors";
     public static final String FILTER_NAME_VALIDATION_GET = "get";
+    public static final String FILTER_NAME_ESCAPE_BUT_REPLACE_NEWLINE_BY_BR = "newline2br";
+    public static final String FILTER_NAME_BOOLEAN = "boolean";
 
     //==========================================
     // Fonctions names
@@ -62,6 +66,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     public static final String FUNCTION_NAME_VALIDATION_GET = "get";
     public static final String FUNCTION_NAME_VALIDATION_JS_ONE_LINE = "jsOneLine";
     public static final String FUNCTION_NAME_MESSAGE = "msg";
+    public static final String FUNCTION_NAME_QUERYSTRING_APPEND = "querystring";
 
     private final Provider<TemplatingEngine> templatingEngineProvider;
     private final SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
@@ -69,21 +74,24 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
     private final ObjectConverter objectConverter;
     private final SpincastUtils spincastUtils;
     private final Dictionary dictionary;
+    private final Provider<RequestContext<?>> requestContextProvider;
 
     /**
      * Constructor
      */
     @Inject
-    public SpincastPebbleExtensionDefault(Provider<TemplatingEngine> templatingEngineProvider,
-                                          SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig,
-                                          ObjectConverter objectConverter,
-                                          SpincastUtils spincastUtils,
-                                          Dictionary dictionary) {
+    public SpincastMainPebbleExtensionDefault(Provider<TemplatingEngine> templatingEngineProvider,
+                                              SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig,
+                                              ObjectConverter objectConverter,
+                                              SpincastUtils spincastUtils,
+                                              Dictionary dictionary,
+                                              Provider<RequestContext<?>> requestContextProvider) {
         this.templatingEngineProvider = templatingEngineProvider;
         this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
         this.objectConverter = objectConverter;
         this.spincastUtils = spincastUtils;
         this.dictionary = dictionary;
+        this.requestContextProvider = requestContextProvider;
     }
 
     public TemplatingEngine getTemplatingEngine() {
@@ -105,38 +113,12 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
         return this.dictionary;
     }
 
+    protected Provider<RequestContext<?>> getRequestContextProvider() {
+        return this.requestContextProvider;
+    }
+
     protected SpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
         return this.spincastPebbleTemplatingEngineConfig;
-    }
-
-    @Override
-    public Map<String, Test> getTests() {
-        return null;
-    }
-
-    @Override
-    public List<TokenParser> getTokenParsers() {
-        return null;
-    }
-
-    @Override
-    public List<BinaryOperator> getBinaryOperators() {
-        return null;
-    }
-
-    @Override
-    public List<UnaryOperator> getUnaryOperators() {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> getGlobalVariables() {
-        return null;
-    }
-
-    @Override
-    public List<NodeVisitorFactory> getNodeVisitors() {
-        return null;
     }
 
     @Override
@@ -204,6 +186,16 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             filters.put(getGetFilterName(), filter);
         }
 
+        filter = getNewlineToBrFilter();
+        if (filter != null) {
+            filters.put(getNewlineToBrFilterName(), filter);
+        }
+
+        filter = getBooleanFilter();
+        if (filter != null) {
+            filters.put(getBooleanFilterName(), filter);
+        }
+
         return filters;
     }
 
@@ -215,6 +207,7 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
         functions.put(getGetFunctionName(), getGetFunction());
         functions.put(getJsOneLinerOutputFunctionName(), getJsOneLinerOutputFunction());
         functions.put(getMessageFunctionName(), getMessageFunction());
+        functions.put(getQuerystringAppendFunctionName(), getQuerystringAppendFunction());
 
         return functions;
     }
@@ -653,6 +646,74 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
         return filter;
     }
 
+    protected String getNewlineToBrFilterName() {
+        return FILTER_NAME_ESCAPE_BUT_REPLACE_NEWLINE_BY_BR;
+    }
+
+    protected Filter getNewlineToBrFilter() {
+
+        Filter filter = new DefaultFilter() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return Lists.newArrayList("escape");
+            }
+
+            @Override
+            public Object apply(Object textObj, Map<String, Object> args) {
+
+                boolean escape = true;
+                Object escapeObj = args.get("escape");
+                if (escapeObj != null && escapeObj instanceof Boolean) {
+                    escape = (Boolean)escapeObj;
+                }
+
+                String text = "";
+                if (textObj != null) {
+                    text = textObj.toString();
+
+                    if (escape) {
+                        text = StringEscapeUtils.escapeHtml4(text);
+                    }
+
+                    text = text.replaceAll("(\r\n|\n)", "<br />\n");
+                }
+
+                return new SafeString(text);
+            }
+        };
+
+        return filter;
+    }
+
+    protected String getBooleanFilterName() {
+        return FILTER_NAME_BOOLEAN;
+    }
+
+    protected Filter getBooleanFilter() {
+
+        Filter filter = new DefaultFilter() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object apply(Object obj, Map<String, Object> args) {
+
+                if (obj == null) {
+                    return false;
+                }
+
+                String str = obj.toString();
+                return Boolean.valueOf(str);
+            }
+        };
+
+        return filter;
+    }
+
     protected String getGetFunctionName() {
         return FUNCTION_NAME_VALIDATION_GET;
     }
@@ -730,9 +791,10 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
                     return "";
                 }
 
-                Boolean singleQuotesDelimiter = (Boolean)args.get("1");
-                if (singleQuotesDelimiter == null) {
-                    singleQuotesDelimiter = false;
+                Boolean singleQuotesDelimiter = false;
+                Object arg1 = args.get("1");
+                if (arg1 != null && arg1 instanceof Boolean) {
+                    singleQuotesDelimiter = (Boolean)args.get("1");
                 }
 
                 String codeFormatted = getSpincastUtils().inQuotesStringFormat(code, singleQuotesDelimiter);
@@ -812,4 +874,127 @@ public class SpincastPebbleExtensionDefault implements SpincastPebbleExtension {
             }
         };
     }
+
+    protected String getQuerystringAppendFunctionName() {
+        return FUNCTION_NAME_QUERYSTRING_APPEND;
+    }
+
+    protected Function getQuerystringAppendFunction() {
+
+        return new Function() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return Lists.newArrayList("querystringToAppend");
+            }
+
+            @Override
+            public Object execute(Map<String, Object> args) {
+
+                Object querystringToAppendObj = args.get("querystringToAppend");
+
+                if (querystringToAppendObj == null) {
+                    return "";
+                }
+                String querystring = querystringToAppendObj.toString();
+
+                querystring = StringUtils.stripStart(querystring, "?&");
+
+                if (StringUtils.isBlank(querystring)) {
+                    return "";
+                }
+
+                //==========================================
+                // This can be called outside of a Request scope, for
+                // example by a cron job.
+                //==========================================
+                Map<String, List<String>> currentQueryStringParams = new HashMap<String, List<String>>();
+                try {
+                    RequestContext<?> context = getRequestContextProvider().get();
+
+                    Map<String, List<String>> temp = new HashMap<String, List<String>>(context.request().getQueryStringParams());
+                    if (temp != null) {
+                        currentQueryStringParams = temp;
+                    }
+                } catch (OutOfScopeException | ProvisionException ex) {
+                    // ok, not in the scope a a request
+                }
+
+                LinkedHashMap<String, List<String>> newQueryStringParams = new LinkedHashMap<String, List<String>>();
+                String[] querystringTokens = querystring.split("&");
+                for (String qsToken : querystringTokens) {
+                    if (StringUtils.isBlank(qsToken)) {
+                        continue;
+                    }
+
+                    String[] keyVal = qsToken.split("=");
+                    if (keyVal == null || keyVal.length != 2) {
+                        continue;
+                    }
+                    String key = keyVal[0];
+                    String val = keyVal[1];
+                    if (StringUtils.isBlank(key)) {
+                        continue;
+                    }
+
+                    currentQueryStringParams.remove(key);
+                    List<String> vals = newQueryStringParams.get(key);
+                    if (vals == null) {
+                        vals = new ArrayList<String>();
+                        newQueryStringParams.put(key, vals);
+                    }
+
+                    val = encodeQuerystringValue(val);
+                    vals.add(val);
+                }
+
+                LinkedHashMap<String, List<String>> finalQueryStringParams = new LinkedHashMap<String, List<String>>();
+
+                for (Entry<String, List<String>> entry : currentQueryStringParams.entrySet()) {
+                    String key = entry.getKey();
+
+                    List<String> values = entry.getValue();
+                    if (values == null || values.size() == 0) {
+                        continue;
+                    }
+
+                    List<String> valuesEncoded = new ArrayList<String>();
+                    for (String value : values) {
+                        value = encodeQuerystringValue(value);
+                        valuesEncoded.add(value);
+                    }
+                    finalQueryStringParams.put(key, valuesEncoded);
+                }
+                finalQueryStringParams.putAll(newQueryStringParams);
+
+                StringBuilder builder = new StringBuilder("?");
+                for (Entry<String, List<String>> entry : finalQueryStringParams.entrySet()) {
+                    String key = entry.getKey();
+                    List<String> vals = entry.getValue();
+
+                    for (String val : vals) {
+                        builder.append(key).append("=").append(val).append("&");
+                    }
+                }
+                builder = builder.deleteCharAt(builder.length() - 1);
+
+                return new SafeString(builder.toString());
+            }
+        };
+    }
+
+    protected String encodeQuerystringValue(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        try {
+            value = URLEncoder.encode(value, "UTF-8");
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+
+        return value;
+    }
+
 }

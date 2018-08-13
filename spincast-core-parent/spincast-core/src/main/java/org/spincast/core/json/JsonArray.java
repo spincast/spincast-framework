@@ -1,6 +1,7 @@
 package org.spincast.core.json;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -742,6 +743,25 @@ public interface JsonArray extends JsonObjectOrArray, Iterable<Object> {
     public Date getDate(int index, Date defaultValue) throws CantConvertException;
 
     /**
+     * Gets an Instant from a <code>ISO 8601</code> date element.
+     * 
+     * @return the element or <code>null</code> if not found.
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getInstant(int index) throws CantConvertException;
+
+    /**
+     * Gets an Instant from a <code>ISO 8601</code> date element.
+     * 
+     * @return the element or the specified 
+     * <code>defaultValue</code> if not found.
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getInstant(int index, Instant defaultValue) throws CantConvertException;
+
+    /**
      * Gets an element, untyped.
      * 
      * @return the object or <code>null</code> if not found. This object
@@ -990,6 +1010,28 @@ public interface JsonArray extends JsonObjectOrArray, Iterable<Object> {
      * required type.
      */
     public Date getArrayFirstDate(int index, Date defaultValue) throws CantConvertException;
+
+    /**
+     * Gets the first element (as Instant) of a <code>JsonArray</code> element.
+     * 
+     * @return the element or <code>null</code> if the array or
+     * the first element are not found.
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getArrayFirstInstant(int index) throws CantConvertException;
+
+    /**
+     * Gets the first element (as Instant) of a <code>JsonArray</code> element.
+     * 
+     * @return the element or the specified 
+     * <code>defaultValue</code> if the array or
+     * the first element are not found.
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getArrayFirstInstant(int index, Instant defaultValue) throws CantConvertException;
+
 
     /**
      * Validates that the element at the specified <code>index</code> exists and

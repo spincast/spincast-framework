@@ -139,7 +139,8 @@ public interface JsonManager {
     public String toJsonString(Object obj, boolean pretty);
 
     /**
-     * Converts a <code>Json</code> date to a Java <code>UTC</code> date. 
+     * Converts a <code>Json</code> date (ISO-8601) to a 
+     * Java <code>UTC</code> date. 
      */
     public Date parseDateFromJson(String str);
 

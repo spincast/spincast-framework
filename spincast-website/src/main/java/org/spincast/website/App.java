@@ -8,6 +8,7 @@ import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.plugins.dateformatter.SpincastDateFormatterPlugin;
 import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
@@ -39,6 +40,7 @@ public class App {
     public static void main(String[] args) {
 
         Spincast.configure()
+                .plugin(new SpincastDateFormatterPlugin())
                 .module(new AppModule())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
                 .init(args);

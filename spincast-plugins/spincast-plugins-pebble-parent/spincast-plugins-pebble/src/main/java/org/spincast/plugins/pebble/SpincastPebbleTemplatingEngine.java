@@ -5,8 +5,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.annotation.Nullable;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
 
     private final SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
     private final SpincastConfig spincastConfig;
-    private final SpincastPebbleExtension spincastPebbleExtension;
+    private final Set<Extension> extensions;
     private PebbleEngine pebbleEngineString;
     private PebbleEngine pebbleEngineTemplateClasspath;
     private PebbleEngine pebbleEngineTemplateFileSystem;
@@ -51,11 +50,11 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
     @Inject
     public SpincastPebbleTemplatingEngine(SpincastConfig spincastConfig,
                                           SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig,
-                                          @Nullable SpincastPebbleExtension spincastPebbleExtension,
+                                          Set<Extension> extensions,
                                           JsonManager jsonManager) {
         this.spincastConfig = spincastConfig;
         this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
-        this.spincastPebbleExtension = spincastPebbleExtension;
+        this.extensions = extensions;
         this.jsonManager = jsonManager;
     }
 
@@ -67,8 +66,8 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
         return this.spincastPebbleTemplatingEngineConfig;
     }
 
-    protected SpincastPebbleExtension getSpincastPebbleExtension() {
-        return this.spincastPebbleExtension;
+    protected Set<Extension> getExtensions() {
+        return this.extensions;
     }
 
     protected JsonManager getJsonManager() {
@@ -76,7 +75,7 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
     }
 
     protected PebbleEngine getPebbleEngineString() {
-        if(this.pebbleEngineString == null) {
+        if (this.pebbleEngineString == null) {
 
             Builder builder = new PebbleEngine.Builder().loader(new StringLoader());
             addCommonLoaderFeatures(builder);
@@ -86,7 +85,7 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
     }
 
     protected PebbleEngine getPebbleEngineTemplateClasspath() {
-        if(this.pebbleEngineTemplateClasspath == null) {
+        if (this.pebbleEngineTemplateClasspath == null) {
 
             Builder builder = new PebbleEngine.Builder().loader(getClasspathTemplateLoader());
             addCommonLoaderFeatures(builder);
@@ -96,7 +95,7 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
     }
 
     protected PebbleEngine getPebbleEngineTemplateFileSystem() {
-        if(this.pebbleEngineTemplateFileSystem == null) {
+        if (this.pebbleEngineTemplateFileSystem == null) {
 
             Builder builder = new PebbleEngine.Builder().loader(getFileSystemTemplateLoader());
             addCommonLoaderFeatures(builder);
@@ -111,31 +110,34 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
         builder.newLineTrimming(false);
 
         int templateCacheItemNbr = getSpincastPebbleTemplatingEngineConfig().getTemplateCacheItemNbr();
-        if(templateCacheItemNbr < 0) {
+        if (templateCacheItemNbr < 0) {
             templateCacheItemNbr = 0;
         }
         Cache<Object, PebbleTemplate> cache = CacheBuilder.newBuilder().maximumSize(templateCacheItemNbr).build();
         builder.templateCache(cache);
 
         int tagCacheItemNbr = getSpincastPebbleTemplatingEngineConfig().getTagCacheTypeItemNbr();
-        if(tagCacheItemNbr < 0) {
+        if (tagCacheItemNbr < 0) {
             tagCacheItemNbr = 0;
         }
         Cache<BaseTagCacheKey, Object> tagCache = CacheBuilder.newBuilder().maximumSize(templateCacheItemNbr).build();
         builder.tagCache(tagCache);
 
         //==========================================
-        // Spincast Pebble extension
+        // Pebble extensions, from Spincast and from
+        // the plugins.
         //==========================================
-        if(getSpincastPebbleExtension() != null) {
-            builder.extension(getSpincastPebbleExtension());
+        for (Extension extension : getExtensions()) {
+            if (extension != null) {
+                builder.extension(extension);
+            }
         }
 
         //==========================================
         // Some custom extension to add?
         //==========================================
         Extension extension = getSpincastPebbleTemplatingEngineConfig().getExtension();
-        if(extension != null) {
+        if (extension != null) {
             builder.extension(extension);
         }
     }
@@ -151,13 +153,18 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
     }
 
     @Override
+    public String evaluate(String content) {
+        return evaluate(content, (JsonObject)null);
+    }
+
+    @Override
     public String evaluate(String content, JsonObject jsonObject) {
-        return parse(content, jsonObject, jsonObject.convertToPlainMap(), false, false, null);
+        return evaluate(content, jsonObject, null);
     }
 
     @Override
     public String evaluate(String content, JsonObject jsonObject, Locale locale) {
-        return parse(content, jsonObject, jsonObject.convertToPlainMap(), false, false, locale);
+        return parse(content, jsonObject, (jsonObject != null ? jsonObject.convertToPlainMap() : null), false, false, locale);
     }
 
     @Override
@@ -172,22 +179,27 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
 
     @Override
     public String fromTemplate(String templatePath, JsonObject jsonObject) {
-        return parse(templatePath, jsonObject, jsonObject.convertToPlainMap(), true, true, null);
+        return fromTemplate(templatePath, jsonObject, null);
     }
 
     @Override
     public String fromTemplate(String templatePath, JsonObject jsonObject, Locale locale) {
-        return parse(templatePath, jsonObject, jsonObject.convertToPlainMap(), true, true, locale);
+        return parse(templatePath, jsonObject, (jsonObject != null ? jsonObject.convertToPlainMap() : null), true, true, locale);
     }
 
     @Override
     public String fromTemplate(String templatePath, boolean isClasspathPath, JsonObject jsonObject) {
-        return parse(templatePath, jsonObject, jsonObject.convertToPlainMap(), true, isClasspathPath, null);
+        return fromTemplate(templatePath, isClasspathPath, jsonObject, null);
     }
 
     @Override
     public String fromTemplate(String templatePath, boolean isClasspathPath, JsonObject jsonObject, Locale locale) {
-        return parse(templatePath, jsonObject, jsonObject.convertToPlainMap(), true, isClasspathPath, locale);
+        return parse(templatePath,
+                     jsonObject,
+                     (jsonObject != null ? jsonObject.convertToPlainMap() : null),
+                     true,
+                     isClasspathPath,
+                     locale);
     }
 
     @Override
@@ -218,20 +230,20 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
                            Locale locale) {
         try {
 
-            if(params == null) {
+            if (params == null) {
                 params = new HashMap<String, Object>();
             }
 
-            if(locale == null) {
+            if (locale == null) {
                 locale = getSpincastConfig().getDefaultLocale();
             }
 
             PebbleEngine pebbleEngine;
-            if(isTemplate) {
-                if(isClasspathPath) {
+            if (isTemplate) {
+                if (isClasspathPath) {
                     pebbleEngine = getPebbleEngineTemplateClasspath();
 
-                    if(htmlOrPath != null && htmlOrPath.startsWith("/")) {
+                    if (htmlOrPath != null && htmlOrPath.startsWith("/")) {
                         htmlOrPath = htmlOrPath.substring(1);
                     }
                 } else {
@@ -253,7 +265,7 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
             @SuppressWarnings("unchecked")
             Map<String, Object> map =
                     (Map<String, Object>)params.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
-            if(map == null) {
+            if (map == null) {
                 map = new HashMap<String, Object>();
                 params.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP, map);
             }
@@ -263,7 +275,7 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
             String result = writer.toString();
 
             return result;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }

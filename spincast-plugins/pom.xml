@@ -27,11 +27,13 @@
         <module>spincast-plugins-jackson-xml-parent</module>
         <module>spincast-plugins-pebble-parent</module>
         <module>spincast-plugins-locale-resolver-parent</module>
+        <module>spincast-plugins-timezone-resolver-parent</module>
         <module>spincast-plugins-config-parent</module>
         <module>spincast-plugins-dictionary-parent</module>
         <module>spincast-plugins-http-client-parent</module> 
         <module>spincast-plugins-http-caching-parent</module>  
         <module>spincast-plugins-jdbc-parent</module>  
+       <module>spincast-plugins-date-formatter-parent</module>  
     </modules>
 
 </project>

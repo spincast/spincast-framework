@@ -92,8 +92,22 @@
                     </div>  
                 </p>
                 <p>
-                    2. Install the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastJdbcPluginModule.html">SpincastJdbcPluginModule</a> 
-                    module to your Guice context.
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/SpincastJdbcPlugin.html">SpincastJdbcPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,40"
+>
+
+Spincast.configure()
+        .plugin(new SpincastJdbcPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
                 </p>
             </section>
             

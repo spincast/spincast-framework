@@ -25,13 +25,13 @@
             <artifactId>spincast-default</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <!--=================================== 
-        Spincast config plugin
+        Spincast Date Formatter plugin
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-config</artifactId>
+            <artifactId>spincast-plugins-date-formatter</artifactId>
             <version>${project.version}</version>
         </dependency>
         

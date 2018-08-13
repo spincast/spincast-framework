@@ -251,4 +251,5 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
         assertTrue(getSpincastPebbleTemplatingEngineConfig().isStrictVariablesEnabled());
     }
 
+
 }

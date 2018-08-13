@@ -13,6 +13,13 @@ import org.spincast.core.json.JsonObject;
 public interface TemplatingEngine {
 
     /**
+     * Evaluates the content, without parameters.
+     * <p>
+     * Uses the default Locale.
+     */
+    public String evaluate(String content);
+
+    /**
      * Evaluates the content, using the given parameters.
      * 
      * Uses the default Locale.

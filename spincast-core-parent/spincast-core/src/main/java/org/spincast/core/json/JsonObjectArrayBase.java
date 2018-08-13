@@ -1,6 +1,7 @@
 package org.spincast.core.json;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -503,6 +504,10 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         return getDateFromObject(val);
     }
 
+    protected Date getDateFromObject(Object object) {
+        return getObjectConverter().convertToDateFromJsonDateFormat(object);
+    }
+
     public Date getDateNoKeyParsing(String jsonPath) {
         return getDate(jsonPath, false, null, false);
     }
@@ -516,8 +521,36 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         return getDateFromObject(val);
     }
 
-    protected Date getDateFromObject(Object object) {
-        return getObjectConverter().convertToDateFromJsonDateFormat(object);
+    @Override
+    public Instant getInstant(String jsonPath) throws CantConvertException {
+        return getInstantElement(jsonPath, false, null);
+    }
+
+    @Override
+    public Instant getInstant(String jsonPath, Instant defaultElement) throws CantConvertException {
+        return getInstantElement(jsonPath, true, defaultElement);
+    }
+
+    protected Instant getInstantElement(final String jsonPath, boolean hasdefaultElement, Instant defaultElement) {
+        Object val = getElement(jsonPath, hasdefaultElement, defaultElement, true);
+        return getInstantFromObject(val);
+    }
+
+    protected Instant getInstantFromObject(Object object) {
+        return getObjectConverter().convertToInstantFromJsonDateFormat(object);
+    }
+
+    public Instant getInstantNoKeyParsing(String jsonPath) {
+        return getInstant(jsonPath, false, null, false);
+    }
+
+    public Instant getInstantNoKeyParsing(String jsonPath, Instant defaultElement) {
+        return getInstant(jsonPath, true, defaultElement, false);
+    }
+
+    protected Instant getInstant(String jsonPath, boolean hasdefaultElement, Instant defaultElement, boolean parseJsonPath) {
+        Object val = getElement(jsonPath, hasdefaultElement, defaultElement, parseJsonPath);
+        return getInstantFromObject(val);
     }
 
     protected <T> T getArrayFirst(String jsonPath,
@@ -936,12 +969,48 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
             @Override
             public Date get(JsonArray array,
-                            boolean hasdefaultElement,
+                            boolean hasDefaultElement,
                             Date defaultElement) {
-                if (hasdefaultElement) {
+                if (hasDefaultElement) {
                     return array.getDate(0, defaultElement);
                 } else {
                     return array.getDate(0);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Instant getArrayFirstInstant(String key) {
+        return getArrayFirstInstant(key, true, false, null);
+    }
+
+    @Override
+    public Instant getArrayFirstInstant(String key, Instant defaultElement) {
+        return getArrayFirstInstant(key, true, true, defaultElement);
+    }
+
+    public Instant getArrayFirstInstantNoKeyParsing(String key) {
+        return getArrayFirstInstant(key, false, false, null);
+    }
+
+    public Instant getArrayFirstInstantNoKeyParsing(String key, Instant defaultElement) {
+        return getArrayFirstInstant(key, false, true, defaultElement);
+    }
+
+    protected Instant getArrayFirstInstant(String jsonPath, boolean parseJsonPath, boolean hasdefaultElement,
+                                           Instant defaultElement) {
+
+        return getArrayFirst(jsonPath, parseJsonPath, hasdefaultElement, defaultElement, new IFirstElementGetter<Instant>() {
+
+            @Override
+            public Instant get(JsonArray array,
+                               boolean hasDefaultElement,
+                               Instant defaultElement) {
+                if (hasDefaultElement) {
+                    return array.getInstant(0, defaultElement);
+                } else {
+                    return array.getInstant(0);
                 }
             }
         });

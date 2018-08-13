@@ -411,10 +411,89 @@ Docs : "Templating Engine"
                             </p> 
                         </div> 
                     </p>   
-    
                 </div>
- 
             </li>
+            
+            <li>
+                <a class="anchor_small" id="templating_functions_jsoneline" href="#templating_functions_jsoneline" title="permanent link"></a>
+                <code class="apiItem"><span>jsOneLine</span>(String code)</code>
+                <div class="well">
+                    <p>
+                        This function allows the output of javascript code inside quotes.
+                        It removes newlines and properly escapes the quotes in the code.
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,7,1,28"
+>
+
+let js="{{jsOneLine(code)}}";
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        You can pass <code>true</code> as a second parameter if <em>single</em> quotes needs to be
+                        escaped instead of double quotes:
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,7,1,34"
+>
+
+let js='{{jsOneLine(code, true)}}';
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                        
+                        
+                    </p> 
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="templating_functions_querystring" href="#templating_functions_querystring" title="permanent link"></a>
+                <code class="apiItem"><span>querystring</span>(String querystring)</code>
+                <div class="well">
+                    <p>
+                        This function will add the specified querystring 
+                        <em>to the existing one</em>. In other words, the querystring of the current
+                        request will be kept, but the specified one will be concatenated to it.
+                    </p>
+                    <p> 
+                        If a parameter name already exist in the current querystring, it is overwritten.
+
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,9,1,50"
+>
+
+&lt;a href="{{ querystring('?offset=' + newOffset) }}"&gt;link&lt;/a&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        If the previous example was evaluated part of a
+                        "<code>https://example.com?limit=10</code>" request,
+                        the resulting content would be something like 
+                        "<code>&lt;a href="?limit=10&offset=10"&gt;link&lt;/a&gt;</code>"
+                    </p>
+                    
+                    
+                    <p>
+                        Finally, note that if this function is called without being inside a
+                        request context, the specified querystring will simply be used as is.
+                    </p>
+                </div>
+            </li>
+            
         </ul>
     </p>
     
@@ -425,6 +504,7 @@ Docs : "Templating Engine"
 
     <p>
         <ul class="apiList">
+        
             <li>
                 <a class="anchor_small" id="templating_filters_get" href="#templating_filters_get" title="permanent link"></a>
                 <code class="apiItem"><em>pathExpression</em> | <span> get</span>()</code>
@@ -456,6 +536,89 @@ Docs : "Templating Engine"
                     </p>  
                 </div>
             </li>
+            
+            <li>
+                <a class="anchor_small" id="templating_filters_newline2br" href="#templating_filters_newline2br" title="permanent link"></a>
+                <code class="apiItem"><em>someText</em> | <span> newline2br</span>()</code>
+                <div class="well">
+                    <p>
+                        This filter will replace the newlines of the text with <code>&lt;br /&gt;\n</code>. This is
+                        useful when you want to display some text in an <code>HTML</code> template while 
+                        respecting the newlines.
+                    </p>
+                    <p>
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble"
+>
+
+{{ someText | newline2br }}
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        By default, the rest of the text will be properly escaped. For example, "<code>&lt;em&gt;a\nb&lt;/em&gt;</code>" will 
+                        become "<code>&amp;lt;em&amp;gt;a&lt;br /&gt;\nb&amp;lt;/em&amp;gt;</code>".
+                    </p>
+                    <p>
+                        To disable the escaping, pass <code>false</code> as a parameter:
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,25,1,30"
+>
+
+{{ someText | newline2br(false) }}
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                            <p>
+                                This would result in "<code>&lt;em&gt;a&lt;br /&gt;\nb&lt;/em&gt;</code>".
+                            </p>       
+                            
+                        </div> 
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="templating_filters_boolean" href="#templating_filters_boolean" title="permanent link"></a>
+                <code class="apiItem"><em>someVar</em> | <span> boolean</span>()</code>
+                <div class="well">
+                    <p>
+                        This filter converts a <code>"true"</code> or <code>"false"</code> string to
+                        a proper boolean. This allows the string variable to be used in <code>if</code>
+                        statements.
+                    </p>
+                    <p>
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="3,6,3,19"
+>
+
+// Let's say val is "true" (a string) here...
+
+{% if val | boolean %}ok{% endif %}
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        The main use case for this filter is when a form is submitted and contains a boolean
+                        field which is transformed to a string value. When redisplaying the form, you
+                        may need to interpret the value of the field as a true boolean to perform logic.
+                    </p>
+                    <p>
+                        If the variable is already a boolean, it will also work fine.
+                    </p>
+                </div>
+            </li>
+            
             <li>
                 <a class="anchor_small" id="templating_filters_checked" href="#templating_filters_checked" title="permanent link"></a>
                 <code class="apiItem"><em>someElements</em> | <span> checked</span>(String[] matchingValues)</code>

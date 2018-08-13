@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.routing.RoutingRequestContextAddon;
 import org.spincast.core.templating.TemplatingRequestContextAddon;
+import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Binding;
@@ -36,6 +38,7 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
     private final Object exchange;
     private final Provider<Injector> injectorProvider;
     private final LocaleResolver localeResolver;
+    private final TimeZoneResolver timeZoneResolver;
     private final JsonManager jsonManager;
     private final XmlManager xmlManager;
 
@@ -63,6 +66,7 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
         this.exchange = exchange;
         this.injectorProvider = requestContextBaseDeps.getInjectorProvider();
         this.localeResolver = requestContextBaseDeps.getLocaleResolver();
+        this.timeZoneResolver = requestContextBaseDeps.getTimeZoneResolver();
         this.jsonManager = requestContextBaseDeps.getJsonManager();
         this.xmlManager = requestContextBaseDeps.getXmlManager();
         this.variablesRequestContextAddonProvider = requestContextBaseDeps.getVariablesRequestContextAddonProvider();
@@ -87,6 +91,14 @@ public abstract class RequestContextBase<R extends RequestContext<R>> {
 
     public Locale getLocaleToUse() {
         return getLocaleResolver().getLocaleToUse();
+    }
+
+    protected TimeZoneResolver getTimeZoneResolver() {
+        return this.timeZoneResolver;
+    }
+
+    public TimeZone getTimeZoneToUse() {
+        return getTimeZoneResolver().getTimeZoneToUse();
     }
 
     protected JsonManager getJsonManager() {

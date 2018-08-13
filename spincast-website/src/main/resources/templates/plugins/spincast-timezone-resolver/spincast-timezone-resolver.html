@@ -1,0 +1,246 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-timezone-resolver{% endblock %}
+{% block meta_title %}Plugins - Spincast TimeZone Resolver{% endblock %}
+{% block meta_description %}Spincast TimeZone Resolver plugin helps find the best TimeZone to use.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast TimeZone Resolver plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast TimeZone Resolver <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/timezoneresolver/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Default plugin included in the 'spincast-default' artifact"><img class="inlineIcon" src="/public/images/default-badge.png" /></div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast TimeZone Resolver <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#examples">Quick Examples</a></li>
+                <li class="openable"><a href="#pebble">Pebble extension</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
+                <li class="openable"><a href="#config">Configuration</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin provides an implementation 
+                    of the <a class="javadoc" href="/public/javadoc/org/spincast/core/timezone/TimeZoneResolver.html">TimeZoneResolver</a> interface, 
+                    which is used to find the best TimeZone for the current user. The implementation,
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/TimeZoneResolverDefault.html">TimeZoneResolverDefault</a>,
+                    tries to find the best TimeZone this way:
+                    
+                    <ul>
+                        <li>
+                            If currently not inside a HTTP request scope, it uses the <em>default</em> TimeZone. This default TimeZone is
+                            configurable using <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getDefaultTimeZone--">SpincastConfig#getDefaultTimeZone()</a>
+                            and is "<code>UTC</code>" by default.
+                        </li>
+                        <li>
+                            If a cookie specified what TimeZone to use, this TimeZone is used. The name of this cookie is configurable using
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getCookieNameTimeZoneId--">SpincastConfig#getCookieNameTimeZoneId()</a>
+                            and is "<code>spincast_timezone</code>" by default.
+                        </li>
+                    </ul>
+	            </p>
+            </section>
+            
+            
+            <section id="examples">
+	            <h3>
+                    <a class="anchor" href="#examples" title="permanent link"></a>
+                    Quick Examples
+                </h3>
+	            <p>
+	                <ul>
+                        <li>
+                            You can inject the <a href="/public/javadoc/org/spincast/core/timezone/TimeZoneResolver.html">TimeZoneResolver</a> 
+                            component anywhere you need it, but you also 
+                            have a direct access to the best <code>TimeZone</code> to use
+                            inside a <code>Route Handler</code> :
+                            
+                            <div>
+                                <p>
+                                    <pre class="ace ace-java" data-ace-hi="1,36,1,55"
+>public void myHandler(AppRequestContext context) {
+    TimeZone timeZoneToUse = context.getTimeZoneToUse();
+    //...
+}</pre>
+                                </p>
+                            </div> 
+                        </li>   
+                    </ul>
+	            </p>
+            </section>
+            
+            <section id="pebble">
+                <h3>
+                    <a class="anchor" href="#pebble" title="permanent link"></a>
+                    Pebble extension
+                </h3>
+                <p>
+                    An extension for <a href="/plugins/spincast-pebble">Pebble</a>, the default <a href="/documentation#templating_engine">Templating Engine</a>, is provided.
+                    The interface of this extension is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/SpincastTimeZonePebbleExtension.html">SpincastTimeZonePebbleExtension</a>
+                    and the default implementation is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/SpincastTimeZonePebbleExtensionDefault.html">SpincastTimeZonePebbleExtensionDefault</a>.
+                </p>
+                <p> 
+                    The main function provided by this extension, "<strong><code>timeZoneCookie()</code></strong>", outputs a script that gets the timeZone of 
+                    the user with javascript and stores the result in a cookie. 
+                </p>
+                <p> 
+                    For example, in your <code>HTML</code> header:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="3,4,3,30"
+>&lt;head&gt;
+    // ...
+    
+    {{ timeZoneCookie(true) }}
+
+    // ...
+&lt;/head&gt;</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+             
+                </p>
+                <p>
+                    If "<code>true</code>" is pass as a parameter to this function, "<code>&lt;script&gt;&lt;/script&gt;</code>" tags will be added
+                    around the script. If "<code>false</code>" they won't.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    The are a couple of options for this script in the 
+                    <a href="#config">configurations</a>
+                    of the plugin. An interesting one is "<code>isRefreshPageAfterAddingPebbleTimeZoneCookie()</code>": if this configuration is
+                    "<code>true</code>", then the page will be <em>automatically reloaded</em> the very first time the script sets the timeZone cookie. This allows your
+                    application to always have access to the timeZone of the user, even on the very first page he visits! For this to work well, it is suggested that
+                    you add the script quite high in the "<code>&lt;head&gt;</code>" section of your layout, before the core of the page is loaded.
+                </p>
+                
+            </section>
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    <img class="inlineIcon" src="/public/images/default-badge.png" />
+                    <em>If you use the <code>spincast-default</code> artifact and the standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>, 
+                    this plugin is already installed by default so you have nothing to do!</em>
+                </p>
+                <p>
+                    If you start from scratch, using the <code>spincast-core</code> artifact, you can use the
+                    plugin by :
+                </p>
+                <p>
+                    1. 
+                    Adding this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-timezone-resolver&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Installing the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/SpincastTimeZoneResolverPluginModule.html">SpincastTimeZoneResolverPluginModule</a> 
+                    module to your Guice context.
+                </p>
+            </section>
+            
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
+                </h3>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/SpincastTimeZoneResolverPlugin.html">SpincastTimeZoneResolverPlugin</a>.
+                </p>
+            </section>
+
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
+                </h3>
+                <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/core/timezone/TimeZoneResolver.html">TimeZoneResolver</a>
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+           
+            <section id="config">
+                <h3>
+                    <a class="anchor" href="#config" title="permanent link"></a>
+                    Configuration
+                </h3>
+                <p>
+                    You can bind a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/config/SpincastTimeZoneResolverConfig.html">SpincastPebbleTemplatingEngineConfig</a>
+                    implementation to tweak the default configurations used by this plugin. By default, the
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/timezoneresolver/config/SpincastTimeZoneResolverConfigDefault.html">SpincastTimeZoneResolverConfigDefault</a>
+                    class is used as the implementation.
+                </p>  
+            </section>
+            
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.spincast.core.guice.SpincastRequestScoped;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Binding;
@@ -32,6 +34,7 @@ public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
     private final String peerId;
     private final WebsocketPeerManager peerManager;
     private final LocaleResolver localeResolver;
+    private final TimeZoneResolver timeZoneResolver;
     private final JsonManager jsonManager;
     private final XmlManager xmlManager;
     private final TemplatingEngine templatingEngine;
@@ -50,6 +53,7 @@ public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
         this.peerId = peerId;
         this.peerManager = peerManager;
         this.localeResolver = deps.getLocaleResolver();
+        this.timeZoneResolver = deps.getTimeZoneResolver();
         this.jsonManager = deps.getJsonManager();
         this.xmlManager = deps.getXmlManager();
         this.templatingEngine = deps.getTemplatingEngine();
@@ -93,7 +97,7 @@ public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
     }
 
     protected Map<Key<?>, Object> getInstanceFromGuiceCache() {
-        if(this.instanceFromGuiceCache == null) {
+        if (this.instanceFromGuiceCache == null) {
             this.instanceFromGuiceCache = new HashMap<Key<?>, Object>();
         }
         return this.instanceFromGuiceCache;
@@ -113,7 +117,7 @@ public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
 
         T obj = null;
         Map<Key<?>, Object> cache = getInstanceFromGuiceCache();
-        if(!cache.containsKey(key)) {
+        if (!cache.containsKey(key)) {
 
             obj = guice().getInstance(key);
 
@@ -122,8 +126,8 @@ public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
             // singletons!
             //==========================================
             Binding<T> binding = guice().getBinding(key);
-            if(Scopes.isScoped(binding, SpincastGuiceScopes.REQUEST, SpincastRequestScoped.class) ||
-               Scopes.isScoped(binding, Scopes.SINGLETON, Singleton.class)) {
+            if (Scopes.isScoped(binding, SpincastGuiceScopes.REQUEST, SpincastRequestScoped.class) ||
+                Scopes.isScoped(binding, Scopes.SINGLETON, Singleton.class)) {
                 cache.put(key, obj);
             }
         } else {
@@ -141,5 +145,14 @@ public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
     public Locale getLocaleToUse() {
         return getLocaleResolver().getLocaleToUse();
     }
+
+    protected TimeZoneResolver getTimeZoneResolver() {
+        return this.timeZoneResolver;
+    }
+
+    public TimeZone getTimeZoneToUse() {
+        return getTimeZoneResolver().getTimeZoneToUse();
+    }
+
 
 }

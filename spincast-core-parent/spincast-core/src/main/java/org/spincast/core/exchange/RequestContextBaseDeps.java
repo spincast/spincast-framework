@@ -4,6 +4,7 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.routing.RoutingRequestContextAddon;
 import org.spincast.core.templating.TemplatingRequestContextAddon;
+import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Inject;
@@ -33,6 +34,7 @@ import com.google.inject.Provider;
 public class RequestContextBaseDeps<R extends RequestContext<R>> {
 
     private final LocaleResolver localeResolver;
+    private final TimeZoneResolver timeZoneResolver;
     private final JsonManager jsonManager;
     private final XmlManager xmlManager;
     private final Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider;
@@ -47,7 +49,10 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
      * Constructor
      */
     @Inject
-    public RequestContextBaseDeps(LocaleResolver localeResolver, JsonManager jsonManager, XmlManager xmlManager,
+    public RequestContextBaseDeps(LocaleResolver localeResolver,
+                                  TimeZoneResolver timeZoneResolver,
+                                  JsonManager jsonManager,
+                                  XmlManager xmlManager,
                                   Provider<RequestRequestContextAddon<R>> requestRequestContextAddonProvider,
                                   Provider<RoutingRequestContextAddon<R>> routingRequestContextAddonProvider,
                                   Provider<ResponseRequestContextAddon<R>> responseRequestContextAddonProvider,
@@ -57,6 +62,7 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
                                   Provider<Injector> injectorProvider) {
 
         this.localeResolver = localeResolver;
+        this.timeZoneResolver = timeZoneResolver;
         this.jsonManager = jsonManager;
         this.xmlManager = xmlManager;
         this.requestRequestContextAddonProvider = requestRequestContextAddonProvider;
@@ -70,6 +76,10 @@ public class RequestContextBaseDeps<R extends RequestContext<R>> {
 
     public LocaleResolver getLocaleResolver() {
         return this.localeResolver;
+    }
+
+    public TimeZoneResolver getTimeZoneResolver() {
+        return this.timeZoneResolver;
     }
 
     public JsonManager getJsonManager() {

@@ -75,6 +75,9 @@ Docs : "Request Context"
     // Gets the best Locale to use for the current request
     Locale localeToUse = context.getLocaleToUse();
     
+    // Gets the best TimeZone to use for the current request
+    TimeZone timeZoneToUse = context.getTimeZoneToUse();
+    
     // Sends cache headers
     context.cacheHeaders().cache(3600);
     
@@ -449,6 +452,14 @@ if(context.cacheHeaders().eTag(resourceEtag).lastModified(modifDate).validate(tr
                 <p class="well">
                     The best <code>Locale</code> to use for the current request, as found by the 
                     <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a>.
+                </p>
+            </li>
+            
+            <li>
+                <code class="apiItem">TimeZone <span>getTimeZoneToUse</span>()</code>
+                <p class="well">
+                    The best <code>TimeZone</code> to use for the current request, as found by the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/timezone/TimeZoneResolver.html">TimeZoneResolver</a>.
                 </p>
             </li>
             

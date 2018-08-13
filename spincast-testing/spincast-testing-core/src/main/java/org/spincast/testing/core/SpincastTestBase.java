@@ -221,18 +221,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
 
     /**
      * Extra plugins to be added by the Guice Tweaker.
-     * <p>
-     * Most of the time, you want to make sure you
-     * keep the plugins already added by base classes.
-     * For example :
-     * <p>
-     * <code>
-     * List&lt;SpincastPlugin&gt; plugins = super.getGuiceTweakerPlugins();
      * 
-     * plugins.add(new YourPlugin());
-     * 
-     * return plugins;
-     * </code>
      */
     protected List<SpincastPlugin> getExtraPlugins() {
         // None by default.

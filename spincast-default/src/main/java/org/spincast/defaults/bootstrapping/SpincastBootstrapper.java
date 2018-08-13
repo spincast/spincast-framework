@@ -33,6 +33,7 @@ import org.spincast.plugins.request.SpincastRequestPlugin;
 import org.spincast.plugins.response.SpincastResponsePlugin;
 import org.spincast.plugins.routing.SpincastRoutingPlugin;
 import org.spincast.plugins.templatingaddon.SpincastTemplatingAddonPlugin;
+import org.spincast.plugins.timezoneresolver.SpincastTimeZoneResolverPlugin;
 import org.spincast.plugins.undertow.SpincastUndertowPlugin;
 import org.spincast.plugins.variables.SpincastVariablesPlugin;
 
@@ -73,6 +74,7 @@ public class SpincastBootstrapper {
     private boolean disableDefaultTemplatingAddonPlugin = false;
     private boolean disableDefaultVariablesPlugin = false;
     private boolean disableDefaultLocaleResolverPlugin = false;
+    private boolean disableDefaultTimeZoneResolverPlugin = false;
     private boolean disableDefaultHttpCachingPlugin = false;
     private boolean disableDefaultCookiesPlugin = false;
     private boolean disableDefaultConfigPlugin = false;
@@ -156,6 +158,10 @@ public class SpincastBootstrapper {
 
     protected boolean isDisableDefaultLocaleResolverPlugin() {
         return this.disableDefaultLocaleResolverPlugin;
+    }
+
+    protected boolean isDisableDefaultTimeZoneResolverPlugin() {
+        return this.disableDefaultTimeZoneResolverPlugin;
     }
 
     protected boolean isDisableDefaultHttpCachingPlugin() {
@@ -340,6 +346,14 @@ public class SpincastBootstrapper {
      */
     public SpincastBootstrapper disableDefaultLocaleResolverPlugin() {
         this.disableDefaultLocaleResolverPlugin = true;
+        return this;
+    }
+
+    /**
+     * Disables the default TimeZone Resolver plugin.
+     */
+    public SpincastBootstrapper disableDefaultTimeZoneResolverPlugin() {
+        this.disableDefaultTimeZoneResolverPlugin = true;
         return this;
     }
 
@@ -706,6 +720,10 @@ public class SpincastBootstrapper {
             plugins.add(getSpincastLocaleResolverPlugin());
         }
 
+        if (!isDisableDefaultTimeZoneResolverPlugin() && !pluginBound(SpincastTimeZoneResolverPlugin.class)) {
+            plugins.add(getSpincastTimeZoneResolverPlugin());
+        }
+
         if (!isDisableDefaultHttpCachingPlugin() && !pluginBound(SpincastHttpCachingPlugin.class)) {
             plugins.add(getSpincastHttpCachingPlugin());
         }
@@ -786,6 +804,10 @@ public class SpincastBootstrapper {
 
     protected SpincastLocaleResolverPlugin getSpincastLocaleResolverPlugin() {
         return new SpincastLocaleResolverPlugin();
+    }
+
+    protected SpincastTimeZoneResolverPlugin getSpincastTimeZoneResolverPlugin() {
+        return new SpincastTimeZoneResolverPlugin();
     }
 
     protected SpincastHttpCachingPlugin getSpincastHttpCachingPlugin() {

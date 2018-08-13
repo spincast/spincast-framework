@@ -1,6 +1,7 @@
 package org.spincast.core.json;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -524,6 +525,34 @@ public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String
      * required type.
      */
     public Date getDateNoKeyParsing(String key, Date defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an Instant from a <code>ISO 8601</code> date element.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getInstantNoKeyParsing(String key) throws CantConvertException;
+
+    /**
+     * Gets an Instant from a <code>ISO 8601</code> date element.
+     * <p>
+     * The <code>key</code> will be used <em>as is</em>, it won't be parsed
+     * as a <code>JsonPath</code>.
+     * </p>
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getInstantNoKeyParsing(String key, Instant defaultElement) throws CantConvertException;
+
 
     /**
      * Gets the first value (as JsonObject) of a <code>JsonArray</code> element

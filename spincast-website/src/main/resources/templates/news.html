@@ -6,11 +6,6 @@
 
 {% block scripts %}
 
-{#==========================================
-Moment.js, for dates formatting
-==========================================#}
-<script src="/public/js/moment.min.js"></script>
-
 <script>
 
     $(function() {
@@ -21,20 +16,7 @@ Moment.js, for dates formatting
             ==========================================#}
             app.toc(188);
         {% endif %}
-        
-        {#==========================================
-        Create friendly dates
-        ==========================================#}
-        app.createFriendlyDates();
     });
-    
-    app.createFriendlyDates = function() {
-    	$(".news_date").each(function(index, el) {
-    		var $el = $(el);
-    		var localDate = moment.utc($el.text(), "YYYY-MM-DD HH:mm").local();
-    		$el.html(localDate.format("YYYY-MM-DD HH:mm") + " <span>(" + localDate.fromNow() + ")</span>");
-    	});
-    }
 
 </script>
 
@@ -118,7 +100,8 @@ Moment.js, for dates formatting
                             <a href="/news/{{newsEntry.id}}">{{newsEntry.title | raw }}</a>
                         </h3>
                         <div class="news_date_div">
-                            <img class="inlineIcon alignMin3" src="/public/images/icons/date.png" /> <div class="news_date">{{newsEntry.publishedDate}}</div>
+                            <img class="inlineIcon alignMin3" src="/public/images/icons/date.png" /> 
+                            <div class="news_date">{{newsEntry.publishedDate | dateFormat('_', 'short', ' ')}} ({{newsEntry.publishedDate | dateFormat('relative') }})</div>
                         </div>
     
                         <div class="news_text">

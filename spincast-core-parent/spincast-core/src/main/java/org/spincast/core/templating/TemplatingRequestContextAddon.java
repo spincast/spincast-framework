@@ -96,6 +96,13 @@ public interface TemplatingRequestContextAddon<R extends RequestContext<?>> {
     public String fromTemplate(String templatePath, boolean isClasspathPath, Map<String, Object> params, Locale locale);
 
     /**
+     * Evaluates some content without any parameters.
+     * <p>
+     * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
+     */
+    public String evaluate(String content);
+
+    /**
      * Evaluates some content using the given parameters.
      * 
      * Uses the <code>Locale</code> found by the <code>LocaleResolver</code>.
@@ -167,5 +174,6 @@ public interface TemplatingRequestContextAddon<R extends RequestContext<?>> {
      * global templating variables.
      */
     public Map<String, Object> getSpincastReservedMap();
+
 
 }

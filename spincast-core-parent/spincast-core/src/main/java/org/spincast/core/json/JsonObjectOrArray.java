@@ -1,6 +1,7 @@
 package org.spincast.core.json;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 
 import org.spincast.core.exceptions.CantConvertException;
@@ -481,7 +482,7 @@ public interface JsonObjectOrArray {
     public byte[] getBytesFromBase64String(String jsonPath, byte[] defaultElement) throws CantConvertException;
 
     /**
-     * Gets a UTC timezoned date from a <code>ISO 8601</code> date element using the
+     * Gets a UTC timezoned date from a <code>ISO 8601</code> date string element using the
      * specified <code>JsonPath</code>.
      * 
      * @return the element or <code>null</code> if not found.
@@ -492,7 +493,7 @@ public interface JsonObjectOrArray {
     public Date getDate(String jsonPath) throws CantConvertException;
 
     /**
-     * Gets a UTC timezoned date from a <code>ISO 8601</code> date element using the
+     * Gets a UTC timezoned date from a <code>ISO 8601</code> date string element using the
      * specified <code>JsonPath</code>.
      * 
      * @return the element or the specified 
@@ -502,6 +503,29 @@ public interface JsonObjectOrArray {
      * required type.
      */
     public Date getDate(String jsonPath, Date defaultElement) throws CantConvertException;
+
+    /**
+     * Gets an Instant from a <code>ISO 8601</code> date string element using the
+     * specified <code>JsonPath</code>.
+     * 
+     * @return the element or <code>null</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getInstant(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets an Instant from a <code>ISO 8601</code> date string element using the
+     * specified <code>JsonPath</code>.
+     * 
+     * @return the element or the specified 
+     * <code>defaultElement</code> if not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getInstant(String jsonPath, Instant defaultElement) throws CantConvertException;
 
     /**
      * Gets an untyped Object using the
@@ -792,6 +816,31 @@ public interface JsonObjectOrArray {
      * required type.
      */
     public Date getArrayFirstDate(String jsonPath, Date defaultElement) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Instant) of a <code>JsonArray</code> property
+     * of the object, using the <code>JsonPath</code> to find the array.
+     * 
+     * @return the value of the property or <code>null</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getArrayFirstInstant(String jsonPath) throws CantConvertException;
+
+    /**
+     * Gets the first value (as Instant) of a <code>JsonArray</code> property
+     * of the object, using the <code>JsonPath</code> to find the array.
+     * 
+     * @return the value of the property or the specified 
+     * <code>defaultElement</code> if the array or
+     * the first element are not found.
+     * 
+     * @throws CantConvertException if an existing element can't be converted to the
+     * required type.
+     */
+    public Instant getArrayFirstInstant(String jsonPath, Instant defaultElement) throws CantConvertException;
 
     /**
      * Validates that the value at the specified <code>JsonPath</code> exists and

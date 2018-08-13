@@ -89,6 +89,12 @@
             "date" : "2018-08-10T15:00:00Z",
             "title" : "Internationalization (i18n)",
             "path" : "/news/2018-08-10.html"
+        },
+        {
+            "id" : "17",
+            "date" : "2018-08-13T22:00:00Z",
+            "title" : "Timezone resolver and Date formatter",
+            "path" : "/news/2018-08-13.html"
         }
 		
 	]

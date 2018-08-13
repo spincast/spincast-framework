@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-plugins-timezone-resolver-parent</artifactId>
+        <version>0.9.40-SNAPSHOT</version>
+    </parent>
+    
+	<artifactId>spincast-plugins-timezone-resolver</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>The default Spincast TimeZone Resolver plugin</description>
+    <url>https://www.spincast.org</url>
+
+	<dependencies>
+    
+        <!--=================================== 
+        Spincast core - provided
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Spincast Pebble plugin - provided
+        
+        If Pebble is available *at runtime*, an extension
+        will be bound.
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-pebble</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+	</dependencies>
+
+	<build>
+        <plugins>
+        </plugins>
+	</build>
+</project>

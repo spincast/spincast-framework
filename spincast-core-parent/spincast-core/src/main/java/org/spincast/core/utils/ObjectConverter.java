@@ -1,6 +1,7 @@
 package org.spincast.core.utils;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 
@@ -201,12 +202,22 @@ public interface ObjectConverter {
     /**
      * Converts the element to a <code>Date</code>.
      * <p>
-     * The source element must follow the <em>Json</em> date format.
+     * The source element must follow the <em>Json</em> date format (ISO 8601).
      * 
      * @throws CantConvertException if the element can't be converted to
      * the required type.
      */
     public Date convertToDateFromJsonDateFormat(Object element) throws CantConvertException;
+
+    /**
+     * Converts the element to a <code>Instant</code>.
+     * <p>
+     * The source element must follow the <em>Json</em> date format (ISO 8601).
+     * 
+     * @throws CantConvertException if the element can't be converted to
+     * the required type.
+     */
+    public Instant convertToInstantFromJsonDateFormat(Object element) throws CantConvertException;
 
     /**
      * Tries to convert the element to the specified <code>targetType</code>.

@@ -3,6 +3,7 @@ package org.spincast.core.config;
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
 import org.spincast.core.request.Form;
@@ -224,6 +225,16 @@ public interface SpincastConfig {
     public Locale getDefaultLocale();
 
     /**
+     * The default TimeZone to use if no other TimeZone can be found
+     * as a "best match", for the current request.
+     * 
+     * The default value is <code>UTC</code>.
+     * 
+     * @return the default TimeZone
+     */
+    public TimeZone getDefaultTimeZone();
+
+    /**
      * The maximum number of time a request can be forwarded to another
      * route. After this number, an exception will be thrown.
      * 
@@ -377,6 +388,14 @@ public interface SpincastConfig {
      * The default is "spincast_locale"
      */
     public String getCookieNameLocale();
+
+    /**
+     * Name of the Cookie to use to 
+     * save the id of the user <code>TimeZone</code>.
+     * <p>
+     * The default is "spincast_timezone"
+     */
+    public String getCookieNameTimeZoneId();
 
     /**
      * Name of the root variables reserved for

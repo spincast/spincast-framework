@@ -203,20 +203,22 @@ JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
                     </div>  
                 </p>
                 <p>
-                    2. Register the plugin using :
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/SpincastHttpClientPlugin.html">SpincastHttpClientPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
                     
-                    <div>
-                        <p>
-                            <pre class="ace ace-java" data-ace-hi="3,12,3,51"
->public static void main(String[] args) {
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,46"
+>
 
-    Spincast.configure()
-            .plugin(new SpincastHttpClientPlugin())
-            //...
-            .init(args);
-}</pre> 
-                        </p>
-                    </div>
+Spincast.configure()
+        .plugin(new SpincastHttpClientPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
                 </p>
                 
             </section>

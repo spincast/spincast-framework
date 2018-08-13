@@ -1,0 +1,519 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-date-formatter{% endblock %}
+{% block meta_title %}Plugins - Spincast Date Formatter{% endblock %}
+{% block meta_description %}Spincast Date Formatter plugin for easy date formatting.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Date Formatter plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Date Formatter <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/date-formatter/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Date Formatter <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#pebble">Pebble extension</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#plugin_class">Plugin class</a></li>
+                <li class="openable"><a href="#javadoc">Javadoc</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin allows you to format dates in many ways, using any <code>Locale</code>
+                    and any <code>TimeZone</code>. The fonctionnalities are available both in Java code and
+                    in templates (using the provided <a href="/plugins/spincast-pebble">Pebble</a> extension).
+                </p>
+
+                <p>
+                    There are two kind of formats that can be used :
+                    <ul>
+                        <li>
+                            <strong>Literal</strong> - such as "<code>Monday, December 3, 2007 - 10:15 AM</code>" or "<code>12/3/07</code>".
+                        </li>
+                        <li>
+                            <strong>Relative</strong> - such as "<code>10 years ago</code>" or "<code>10 years from now</code>".
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The <a href="http://www.ocpsoft.org/prettytime/">PrettyTime</a> library is used for the relative formatting.
+                </p>
+
+            </section>
+            
+            <section id="usage">
+                <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <p>
+                    In Java code, you inject the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/DateFormatterFactory.html">DateFormatterFactory</a>
+                    and use its <code>createFormatter()</code> or <code>createRelativeFormatter()</code> function to start creating a date formatter. The first parameter
+                    is the Date or the Instant to be formatted. For example:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="8,26,8,72|11,34,11,88"
+>@Injected
+private DateFormatterFactory dateFormatterFactory;
+
+// ...
+
+Instant now = Instant.now(); // or a Date
+
+// For a "literal" formatter
+DateFormatter formatter = getDateFormatterFactory().createFormatter(now);
+
+// Or, for a "relative" formatter
+RelativeDateFormatter formatter = getDateFormatterFactory().createRelativeFormatter(now);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    You can then configure the options of the formatter, and finally call <code>.format()</code>
+                    to get the resulting formatted date:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>
+Date now = new Date(); // or an Instant
+
+// A "literal" formatter
+DateFormatter formatter = getDateFormatterFactory().createFormatter(now);
+String dateFormatted = formatter.parts(DateParts.BOTH)
+                                .datePattern("YYYY")
+                                .timePattern(DatePattern.SHORT)
+                                .separator(",")
+                                .format();
+                                
+// A "relative" formatter
+RelativeDateFormatter formatter = getDateFormatterFactory().createRelativeFormatter(now);
+String dateFormatted = formatter.formatType(RelativeDateFormatType.DURATION)
+                                .locale(Locale.JAPANESE)
+                                .format();              
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}   
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_options_literal" href="#usage_options_literal" title="permanent link"></a>
+                    <em>Literal</em> formatter options
+                </h4>
+
+                <p>
+                    The options to create a literal formatter (<a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/DateFormatter.html">DateFormatter</a>)
+                    are:
+                    <ul>
+                        <li>
+                            <strong><code>parts()</code></strong> - to indicate if you want the <em>date</em> part, the <em>time</em>
+                            part or <em>both</em> parts in the resulting formatted date. Possibles values are :
+                            <p>
+                                <ul>
+                                    <li>
+                                        DateParts.DATE ("<code>Monday, December 3, 2007</code>")
+                                    </li>
+                                    <li>
+                                        DateParts.TIME ("<code>10:15 AM</code>")
+                                    </li>
+                                    <li>
+                                        DateParts.BOTH ("<code>Monday, December 3, 2007 - 10:15 AM</code>")
+                                    </li>
+                                </ul>
+                            </p>
+                        </li>
+                        <li>
+                            <strong><code>datePattern()</code></strong> and <strong><code>timePattern()</code></strong> 
+                            - to indicate the <a href="https://docs.oracle.com/javase/tutorial/i18n/format/dateFormat.html">standard Java provided formats</a> or
+                            a <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">custom pattern</a> to use, for each part to format.
+                            <p>
+                                <ul>
+                                    <li>
+                                        DatePattern.SHORT (Date: "<code>12/3/07</code>", Time: "<code>10:15 AM</code>")
+                                    </li>
+                                    <li>
+                                        DatePattern.MEDIUM (Date: "<code>Dec 3, 2007</code>", Time: "<code>10:15:30 AM</code>")
+                                    </li>
+                                    <li>
+                                        DatePattern.LONG (Date: "<code>December 3, 2007</code>", Time: "<code>10:15:30 AM UTC</code>")
+                                    </li>
+                                    <li>
+                                        DatePattern.FULL (Date: "<code>Monday, December 3, 2007</code>", Time: "<code>10:15:30 AM UTC</code>")
+                                    </li>
+                                    <li>
+                                        Custom pattern, as a String (Example for Date : "<code>YYYY</code>" will result in "<code>2007</code>").
+                                    </li>
+                                    
+                                </ul>
+                            </p>
+                            <p>
+                                The default pattern for the <em>date</em> part is "<code>DatePattern.FULL</code>" and the 
+                                default pattern for the <em>time</em> part is "<code>DatePattern.SHORT</code>" 
+                            </p>
+                        </li>
+                       <li>
+                            <strong><code>separator()</code></strong> - the separator string to use between the 
+                            <em>date</em> and <em>time</em> parts, when both are returned.
+                            <p>
+                                The default separator is "<code> - </code>".
+                            </p>
+                        </li>
+                        <li>
+                            <strong><code>locale()</code></strong> - the <code>Locale</code> to use for the formatting.
+                            <p>
+                                If not specified, the Locale returned by the <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a>
+                                will be used.
+                            </p>
+                        </li>
+                        <li>
+                            <strong><code>timezone()</code></strong> - the <code>TimeZone</code> to use for the formatting.
+                            <p>
+                                If not specified, the TimeZone returned by the <a class="javadoc" href="/public/javadoc/org/spincast/core/timezone/TimeZoneResolver.html">TimeZoneResolver</a>
+                                will be used.
+                            </p>
+                        </li>
+                    </ul>
+                </p>
+                <h4>
+                    <a class="anchor_small" id="usage_options_relative" href="#usage_options_relative" title="permanent link"></a>
+                    <em>Relative</em> formatter options
+                </h4>
+
+                <p>
+                    The options to create a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/RelativeDateFormatter.html">RelativeDateFormatter</a> formatter are:
+                    <ul>
+                        <li>
+                            <strong><code>formatType()</code></strong> - the type of format to use, as supported by the
+                            <a href="http://www.ocpsoft.org/prettytime/">PrettyTime</a> library. Possibles values are :
+                            <p>
+                                <ul>
+                                    <li>
+                                        RelativeDateFormatType.DEFAULT ("<code>10 years ago</code>")
+                                        <br>
+                                        Standard PrettyTime formatting.
+                                    </li>
+                                    <li>
+                                        RelativeDateFormatType.DURATION ("<code>10 years</code>")
+                                        <p>
+                                        From PrettyTime's Javadoc:
+                                            <cite>
+                                                "Format the given Date and return a non-relative (not decorated with past or future tense) String for the approximate duration of its difference between the reference Date."
+                                            </cite>
+                                        </p>
+                                    </li>
+                                    <li>
+                                        RelativeDateFormatType.UNROUNDED ("<code>9 years ago</code>")
+                                        <p>
+                                            From PrettyTime's Javadoc:
+                                            <cite>
+                                                "Format the given Date object. Rounding rules are ignored."
+                                            </cite>
+                                        </p>
+                                    </li>
+                                </ul>
+                            </p>
+                        </li>
+                        <li>
+                            <strong><code>locale()</code></strong> - the <code>Locale</code> to use for the formatting.
+                            <p>
+                                If not specified, the Locale returned by the <a class="javadoc" href="/public/javadoc/org/spincast/core/locale/LocaleResolver.html">LocaleResolver</a>
+                                will be used.
+                            </p>
+                        </li>
+                    </ul>
+                </p>
+            </section>
+            
+            <section id="pebble">
+                <h3>
+                    <a class="anchor" href="#pebble" title="permanent link"></a>
+                    Pebble extension
+                </h3>
+                <p>
+                    The plugin provides an extension for <a href="/plugins/spincast-pebble">Pebble</a>, the default <a href="/documentation#templating_engine">Templating Engine</a>.
+                    The interface of this extension is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/SpincastDateFormatterPebbleExtension.html">SpincastDateFormatterPebbleExtension</a>
+                    and the default implementation is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/SpincastDateFormatterPebbleExtensionDefault.html">SpincastDateFormatterPebbleExtensionDefault</a>.
+                </p>
+                <p> 
+                    The main filter provided by this extension, "<strong><code>dateFormat()</code></strong>", takes an <code>Instant</code>, a 
+                    <code>Date</code> or an <code>ISO-8601</code> string representation of a date, and formats it.
+                </p>
+                <p> 
+                    For example:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="1,18,1,45"
+>
+
+&lt;div class="date"&gt;{{someDate | dateFormat() }}&lt;/div&gt;
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <h4>
+                    <a class="anchor_small" id="pebble_dateformat" href="#pebble_dateformat" title="permanent link"></a>
+                    Options for <code>dateFormat()</code>
+                </h4>
+                
+                <h5>
+                    <a class="anchor_small" id="pebble_dateformat_relative" href="#pebble_dateformat_relative" title="permanent link"></a>
+                    <em>relative formatting</em>
+                </h5>
+                
+                <p>
+                    If the first parameter of <code>dateFormat()</code> is "<code>relative</code>", the date will be formatted using
+                    the <em>relative</em> formatter. For example:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="1,18,1,55"
+>
+
+&lt;div class="date"&gt;{{someDate | dateFormat('relative') }}&lt;/div&gt;
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+                <p>
+                    When the relative formatter is used, the second parameter can be "<code>default</code>",
+                     "<code>duration</code>" or "<code>unrounded</code>". Those values correspond to the
+                     <em>formatType</em> options, as listed in the <a href="#usage_options_relative">Relative formatter options</a>
+                     section.
+                </p>
+                
+                    <p>
+                        Examples:
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java"
+>// "10 years ago"
+&lt;div class="date"&gt;{{someDate | dateFormat('relative') }}&lt;/div&gt;
+
+// "10 years"
+&lt;div class="date"&gt;{{someDate | dateFormat('relative', 'duration') }}&lt;/div&gt;
+
+// "9 years ago"
+&lt;div class="date"&gt;{{someDate | dateFormat('relative', 'unrounded') }}&lt;/div&gt;
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                    </p>
+                
+
+                <h5>
+                    <a class="anchor_small" id="pebble_dateformat_literal" href="#pebble_dateformat_literal" title="permanent link"></a>
+                    <em>literal formatting</em>
+                </h5>
+                
+                <p>
+                    If the first parameter of <code>dateFormat()</code> is <strong>not</strong> "<code>relative</code>", the date will be formatted using
+                    the <em>literal</em> formatter. For example:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="1,18,1,66"
+>
+
+&lt;div class="date"&gt;{{someDate | dateFormat('short', 'full', ',') }}&lt;/div&gt;
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+                <p>
+                    When the <em>literal</em> formatter is used, the parameters are:
+                    <ol class="normal">
+                        <li>
+                            The "<strong>datePattern</strong>" : 
+                            <br />
+                            - Can be a standard format : "<code>short</code>", "<code>medium</code>", "<code>long</code>" or "<code>full</code>". 
+                            <br />
+                            - If it is an underscore "<code>_</code>", the <em>default pattern</em> will be used.
+                            <br />
+                            - If it is empty "", the <em>date</em> part won't be returned.
+                            <br />
+                            - For any other value, the parameter will be considered as a
+                            <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">custom pattern</a> for the date part.
+                        </li>
+                        <li>
+                            The "<strong>timePattern</strong>" : 
+                            <br />
+                            - Can be a standard format : "<code>short</code>", "<code>medium</code>", "<code>long</code>" or "<code>full</code>". 
+                            <br />
+                            - If it is an underscore "<code>_</code>", the <em>default pattern</em> will be used.
+                            <br />
+                            - If it is empty "", the <em>time</em> part won't be returned.
+                            <br />
+                            - For any other value, the parameter will be considered as a
+                            <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">custom pattern</a> for the time part.
+                        </li>
+                        <li>
+                            The "<strong>separator</strong>" to use between the <em>date</em> part and
+                            the <em>time</em> part, if both are returned.
+                        </li>
+                    </ol>
+                    
+                    <p>
+                        Examples:
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java"
+>// "12/3/07 , 10:15:30 AM UTC"
+&lt;div class="date"&gt;{{someDate | dateFormat('short', 'full', ' , ') }}&lt;/div&gt;
+
+// "Monday, December 3, 2007 - 10:15:30 AM UTC"
+&lt;div class="date"&gt;{{someDate | dateFormat('_', 'full') }}&lt;/div&gt;
+
+// "Monday, December 3, 2007 ~ 10:15 AM"
+&lt;div class="date"&gt;{{someDate | dateFormat('_', '_', ' ~ ') }}&lt;/div&gt;
+
+// "10:15 AM"
+&lt;div class="date"&gt;{{someDate | dateFormat('', '_') }}&lt;/div&gt;
+
+// "12/3/07"
+&lt;div class="date"&gt;{{someDate | dateFormat('short', '') }}&lt;/div&gt;
+
+// "2007 - 10:15 AM"
+&lt;div class="date"&gt;{{someDate | dateFormat('YYYY', '_') }}&lt;/div&gt;
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                    </p>    
+                </p>
+            </section>
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-date-formatter&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/SpincastDateFormatterPlugin.html">SpincastDateFormatterPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,49"
+>
+
+Spincast.configure()
+        .plugin(new SpincastDateFormatterPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+            
+            <section id="plugin_class">
+                <h3>
+                    <a class="anchor" href="#plugin_class" title="permanent link"></a>
+                    Plugin class
+                </h3>
+                <p>
+                    The class implementing the <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/SpincastPlugin.html">SpincastPlugin</a> 
+                    interface is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/dateformatter/SpincastDateFormatterPlugin.html">SpincastDateFormatterPlugin</a>.
+                </p>
+            </section>
+
+            
+            <section id="javadoc">
+                <h3>
+                    <a class="anchor" href="#javadoc" title="permanent link"></a>
+                    Javadoc
+                </h3>
+                <p>
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/dateformatter/package-summary.html">Date Formatter Plugin</a> javadoc
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+           
+            
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

@@ -3,6 +3,7 @@ package org.spincast.core.websocket;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.core.xml.XmlManager;
 
 import com.google.inject.Inject;
@@ -32,6 +33,7 @@ import com.google.inject.Provider;
 public class WebsocketContextBaseDeps<W extends WebsocketContext<?>> {
 
     private final LocaleResolver localeResolver;
+    private final TimeZoneResolver timeZoneResolver;
     private final JsonManager jsonManager;
     private final XmlManager xmlManager;
     private final TemplatingEngine templatingEngine;
@@ -42,11 +44,13 @@ public class WebsocketContextBaseDeps<W extends WebsocketContext<?>> {
      */
     @Inject
     public WebsocketContextBaseDeps(LocaleResolver localeResolver,
+                                    TimeZoneResolver timeZoneResolver,
                                     JsonManager jsonManager,
                                     XmlManager xmlManager,
                                     TemplatingEngine templatingEngine,
                                     Provider<Injector> injectorProvider) {
         this.localeResolver = localeResolver;
+        this.timeZoneResolver = timeZoneResolver;
         this.jsonManager = jsonManager;
         this.xmlManager = xmlManager;
         this.templatingEngine = templatingEngine;
@@ -55,6 +59,10 @@ public class WebsocketContextBaseDeps<W extends WebsocketContext<?>> {
 
     public LocaleResolver getLocaleResolver() {
         return this.localeResolver;
+    }
+
+    public TimeZoneResolver getTimeZoneResolver() {
+        return this.timeZoneResolver;
     }
 
     public JsonManager getJsonManager() {

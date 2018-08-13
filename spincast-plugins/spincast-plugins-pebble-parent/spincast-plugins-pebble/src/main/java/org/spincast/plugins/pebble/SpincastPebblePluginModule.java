@@ -6,6 +6,8 @@ import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.websocket.WebsocketContext;
 
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.Multibinder;
+import com.mitchellbosecke.pebble.extension.Extension;
 
 public class SpincastPebblePluginModule extends SpincastGuiceModuleBase {
 
@@ -22,15 +24,25 @@ public class SpincastPebblePluginModule extends SpincastGuiceModuleBase {
     protected void configure() {
 
         bind(TemplatingEngine.class).to(getSpincastPebbleTemplatingEngineClass()).in(Scopes.SINGLETON);
-        bind(SpincastPebbleExtension.class).to(getSpincastPebbleExtensionClass()).in(Scopes.SINGLETON);
+
+        //==========================================
+        // Spincast extension
+        //==========================================
+        bind(SpincastMainPebbleExtension.class).to(getSpincastPebbleExtensionClass()).in(Scopes.SINGLETON);
+
+        //==========================================
+        // Multibinder for Extensions
+        //==========================================
+        Multibinder<Extension> pebbleExtensionsMultibinder = Multibinder.newSetBinder(binder(), Extension.class);
+        pebbleExtensionsMultibinder.addBinding().to(SpincastMainPebbleExtension.class).in(Scopes.SINGLETON);
     }
 
     protected Class<? extends TemplatingEngine> getSpincastPebbleTemplatingEngineClass() {
         return SpincastPebbleTemplatingEngine.class;
     }
 
-    protected Class<? extends SpincastPebbleExtension> getSpincastPebbleExtensionClass() {
-        return SpincastPebbleExtensionDefault.class;
+    protected Class<? extends SpincastMainPebbleExtension> getSpincastPebbleExtensionClass() {
+        return SpincastMainPebbleExtensionDefault.class;
     }
 
 }

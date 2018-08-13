@@ -6,16 +6,20 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.request.Form;
 import org.spincast.core.request.FormFactory;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
+import org.spincast.shaded.org.apache.http.HttpStatus;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -1098,7 +1102,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
 
-        model.put("code", "let a=1;\n" +
+        model.put("code",
+                  "let a=1;\n" +
                           "let b=2;\r" +
                           "let c='3';\r\n" +
                           "let d=\"4\";\n");
@@ -1112,7 +1117,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
 
-        model.put("code", "let a=1;\n" +
+        model.put("code",
+                  "let a=1;\n" +
                           "let b=2;\r" +
                           "let c='3';\r\n" +
                           "let d=\"4\";\n");
@@ -1126,7 +1132,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
 
-        model.put("code", "let a=1;\n" +
+        model.put("code",
+                  "let a=1;\n" +
                           "let b=2;\r" +
                           "let c='3';\r\n" +
                           "let d=\"4\";\n");
@@ -1191,4 +1198,238 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         assertEquals("titi", html);
     }
 
+    @Test
+    public void newline2br() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", "<em>aaa\nbbb\r\nccc</em>");
+
+        // No newline2br
+        String html = getTemplatingEngine().evaluate("{{ val }}';", model);
+        assertEquals("&lt;em&gt;aaa\nbbb\r\nccc&lt;/em&gt;';", html);
+
+        // Default newline2br
+        html = getTemplatingEngine().evaluate("{{ val | newline2br }}';", model);
+        assertEquals("&lt;em&gt;aaa<br />\nbbb<br />\nccc&lt;/em&gt;';", html);
+
+        // newline2br + escape
+        html = getTemplatingEngine().evaluate("{{ val | newline2br(true) }}';", model);
+        assertEquals("&lt;em&gt;aaa<br />\nbbb<br />\nccc&lt;/em&gt;';", html);
+
+        // newline2br + no escape
+        html = getTemplatingEngine().evaluate("{{ val | newline2br(false) }}';", model);
+        assertEquals("<em>aaa<br />\nbbb<br />\nccc</em>';", html);
+    }
+
+    @Test
+    public void querystringNew() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "<a href=\"{{ querystring('?a=1') }}\">link</a>";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "<a href=\"?a=1\">link</a>");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void querystringAppend() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "<a href=\"{{ querystring('?a=1') }}\">link</a>";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "<a href=\"?titi=123&a=1\">link</a>");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one?titi=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void querystringAppendWithParam() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                JsonObject model = getJsonManager().create();
+                model.put("name", "Stromgol");
+
+                String content = "<a href=\"{{ querystring('?a=' + name) }}\">link</a>";
+                String result = context.templating().evaluate(content, model);
+                assertEquals(result, "<a href=\"?titi=123&a=Stromgol\">link</a>");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one?titi=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void querystringReplace() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "<a href=\"{{ querystring('?titi=456') }}\">link</a>";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "<a href=\"?titi=456\">link</a>");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one?titi=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void querystringNotInRequestContext() throws Exception {
+
+        String content = "<a href=\"{{ querystring('?titi=456') }}\">link</a>";
+        String result = getTemplatingEngine().evaluate(content);
+        assertEquals(result, "<a href=\"?titi=456\">link</a>");
+    }
+
+    @Test
+    public void querystringNoInterogationMark() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                JsonObject model = getJsonManager().create();
+                model.put("name", "Stromgol");
+
+                String content = "<a href=\"{{ querystring('a=' + name) }}\">link</a>";
+                String result = context.templating().evaluate(content, model);
+                assertEquals(result, "<a href=\"?titi=123&a=Stromgol\">link</a>");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one?titi=123").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void querystringAnd() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                JsonObject model = getJsonManager().create();
+                model.put("name", "Stromgol");
+
+                String content = "<a href=\"{{ querystring('&a=' + name) }}\">link</a>";
+                String result = context.templating().evaluate(content, model);
+                assertEquals(result, "<a href=\"?titi=123&a=Stromgol\">link</a>");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one?titi=123&").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void booleanWithout() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", "true");
+
+        String content = "{% if val %}ok{% else %}not ok{% endif %}";
+
+        try {
+            getTemplatingEngine().evaluate(content, model);
+            fail();
+        } catch (Exception ex) {
+        }
+    }
+
+    @Test
+    public void booleanAsString() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", "true");
+
+        String content = "{% if val | boolean %}ok{% else %}not ok{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "ok");
+    }
+
+    @Test
+    public void booleanAsStringFalse() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", "FALSE");
+
+        String content = "{% if val | boolean %}ok{% else %}not ok{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not ok");
+    }
+
+    @Test
+    public void booleanAsStringNot() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", "true");
+
+        String content = "{% if not val | boolean %}ok{% else %}not ok{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not ok");
+    }
+
+    @Test
+    public void booleanAsBoolean() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", true);
+
+        String content = "{% if val | boolean %}ok{% else %}not ok{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "ok");
+    }
+
+    @Test
+    public void booleanAsBooleanNot() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+        model.put("val", true);
+
+        String content = "{% if not val | boolean %}ok{% else %}not ok{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not ok");
+    }
+
 }
+
+
+
+

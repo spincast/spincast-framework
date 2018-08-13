@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -703,6 +704,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         Date someDate = cal.getTime();
         String someDateISO8601 = SpincastStatics.getIso8601DateParserDefault().format(someDate);
 
+        Instant someInstant = Instant.parse("2007-12-03T10:15:30.00Z");
+
         JsonObject jsonObj = getJsonManager().create();
         jsonObj.put("key1", "val1");
         jsonObj.put("key2", true);
@@ -712,6 +715,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         jsonObj.put("key6", "123");
         jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
         jsonObj.put("key8", someDateISO8601);
+        jsonObj.put("key9", someDate);
+        jsonObj.put("key10", someInstant);
 
         try {
             jsonObj.getDate("key1");
@@ -773,6 +778,114 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         result = jsonObj.getDate("nope", null);
         assertEquals(null, result);
+
+        result = jsonObj.getDate("key9");
+        assertNotNull(result);
+        assertEquals(someDate.toString(), result.toString());
+
+        result = jsonObj.getDate("key10");
+        assertNotNull(result);
+        assertEquals(Date.from(someInstant).toString(), result.toString());
+    }
+
+    @Test
+    public void getInstant() throws Exception {
+
+        JsonObject jsonObjInner = getJsonManager().create();
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2001);
+        cal.set(Calendar.MONTH, 3);
+        cal.set(Calendar.DATE, 6);
+        cal.set(Calendar.HOUR_OF_DAY, 12);
+
+        Date someDate = cal.getTime();
+
+        Instant someInstant = Instant.parse("2007-12-03T10:15:30.00Z");
+
+        String someDateISO8601 = someInstant.toString();
+
+        JsonObject jsonObj = getJsonManager().create();
+        jsonObj.put("key1", "val1");
+        jsonObj.put("key2", true);
+        jsonObj.put("key3", "true");
+        jsonObj.put("key4", jsonObjInner);
+        jsonObj.put("key5", 123);
+        jsonObj.put("key6", "123");
+        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.put("key8", someDateISO8601);
+        jsonObj.put("key9", someDate);
+        jsonObj.put("key10", someInstant);
+
+        try {
+            jsonObj.getInstant("key1");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key2");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key3");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key4");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key5");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key6");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key7");
+            fail();
+        } catch (Exception ex) {
+        }
+
+        try {
+            jsonObj.getInstant("key7", Instant.now());
+            fail();
+        } catch (Exception ex) {
+        }
+
+        Instant result = jsonObj.getInstant("key8");
+        assertNotNull(result);
+        assertEquals(someInstant.toString(), result.toString());
+
+        result = jsonObj.getInstant("nope");
+        assertNull(result);
+
+        result = jsonObj.getInstant("nope", someInstant);
+        assertEquals(someInstant, result);
+
+        result = jsonObj.getInstant("nope", null);
+        assertEquals(null, result);
+
+        result = jsonObj.getInstant("key9");
+        assertNotNull(result);
+        Date d = Date.from(result);
+        assertEquals(someDate.toString(), d.toString());
+
+        result = jsonObj.getInstant("key10");
+        assertNotNull(result);
+        assertEquals(someInstant.toString(), result.toString());
     }
 
     @Test
@@ -1771,6 +1884,37 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Date arrayFirst = array.getArrayFirstDate(1);
         assertNotNull(arrayFirst);
+    }
+
+    @Test
+    public void getArrayFirstInstant() throws Exception {
+
+        JsonArray array = getJsonManager().createArray();
+        array.add(Instant.now());
+        array.add("titi");
+
+        JsonObject jsonObj = getJsonManager().create();
+        jsonObj.put("arr", array);
+
+        Instant arrayFirst = jsonObj.getArrayFirstInstant("arr");
+        assertNotNull(arrayFirst);
+        assertTrue(arrayFirst instanceof Instant);
+    }
+
+    @Test
+    public void getArrayFirstInstantFromArray() throws Exception {
+
+        JsonArray array2 = getJsonManager().createArray();
+        array2.add(Instant.now());
+        array2.add("titi");
+
+        JsonArray array = getJsonManager().createArray();
+        array.add("nope");
+        array.add(array2);
+
+        Instant arrayFirst = array.getArrayFirstInstant(1);
+        assertNotNull(arrayFirst);
+        assertTrue(arrayFirst instanceof Instant);
     }
 
     @Test

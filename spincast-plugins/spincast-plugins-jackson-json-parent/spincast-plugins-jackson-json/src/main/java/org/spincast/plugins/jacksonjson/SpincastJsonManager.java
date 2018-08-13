@@ -791,6 +791,7 @@ public class SpincastJsonManager implements JsonManager {
             (originalObject instanceof BigDecimal) ||
             (originalObject instanceof byte[]) ||
             (originalObject instanceof Date) ||
+            (originalObject instanceof Instant) ||
             (originalObject instanceof JsonObject) ||
             (originalObject instanceof JsonArray)) {
 
@@ -845,7 +846,7 @@ public class SpincastJsonManager implements JsonManager {
         // {{something | checked(menuItemForm.availabilityTypes)}}
         //
         // Here, if "menuItemForm.availabilityTypes" was an object with
-        // ".name" and ".label" porperties, the filter wouldn't work.
+        // ".name" and ".label" properties, the filter wouldn't work.
         //
         // To convert an enum to a "friendly" JsonObject, one can
         // use the "enumToFriendlyJsonObject(...)" and
@@ -856,9 +857,16 @@ public class SpincastJsonManager implements JsonManager {
         }
 
         //==========================================
-        // Converts to a JsonObject
+        // Converts to a JsonObject or returns as 
+        // a string
         //==========================================
         String jsonStr = toJsonString(originalObject);
+
+        if (jsonStr.startsWith("\"") && jsonStr.endsWith("\"") && jsonStr.length() > 1) {
+            jsonStr = jsonStr.substring(1, jsonStr.length() - 1);
+            return jsonStr;
+        }
+
         JsonObject jsonObject = fromString(jsonStr);
         return jsonObject;
     }
