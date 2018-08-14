@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.dictionary.Dictionary;
@@ -67,6 +68,8 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
     public static final String FUNCTION_NAME_VALIDATION_JS_ONE_LINE = "jsOneLine";
     public static final String FUNCTION_NAME_MESSAGE = "msg";
     public static final String FUNCTION_NAME_QUERYSTRING_APPEND = "querystring";
+    public static final String FUNCTION_NAME_ROUTE = "isRoute";
+    public static final String FUNCTION_NAME_ROUTE_ID = "isRouteId";
 
     private final Provider<TemplatingEngine> templatingEngineProvider;
     private final SpincastPebbleTemplatingEngineConfig spincastPebbleTemplatingEngineConfig;
@@ -208,6 +211,8 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
         functions.put(getJsOneLinerOutputFunctionName(), getJsOneLinerOutputFunction());
         functions.put(getMessageFunctionName(), getMessageFunction());
         functions.put(getQuerystringAppendFunctionName(), getQuerystringAppendFunction());
+        functions.put(getRouteFunctionName(), getRouteFunction());
+        functions.put(getRouteIdFunctionName(), getRouteIdFunction());
 
         return functions;
     }
@@ -995,6 +1000,141 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
         }
 
         return value;
+    }
+
+    protected String getRouteFunctionName() {
+        return FUNCTION_NAME_ROUTE;
+    }
+
+    protected Function getRouteFunction() {
+
+        return new Function() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return Lists.newArrayList("path", "isRegEx", "subPathsToo");
+            }
+
+            @Override
+            public Object execute(Map<String, Object> args) {
+
+                Object pathToMatchObj = args.get("path");
+                String pathToMatch = "";
+                if (pathToMatchObj != null) {
+                    pathToMatch = pathToMatchObj.toString();
+                }
+                pathToMatch = pathToMatch.trim();
+                if (StringUtils.isBlank(pathToMatch)) {
+                    pathToMatch = "";
+                }
+
+                Object isRegExObj = args.get("isRegEx");
+                boolean isRegEx = false;
+                if (isRegExObj != null) {
+                    isRegEx = Boolean.parseBoolean(isRegExObj.toString());
+                }
+
+                Object subPathsTooObj = args.get("subPathsToo");
+                boolean subPathsToo = false;
+                if (subPathsTooObj != null) {
+                    subPathsToo = Boolean.parseBoolean(subPathsTooObj.toString());
+                }
+
+                String currentRoutePath;
+                try {
+                    RequestContext<?> context = getRequestContextProvider().get();
+                    currentRoutePath = context.request().getRequestPath();
+                } catch (OutOfScopeException | ProvisionException ex) {
+                    // Not in the scope a a request
+                    return false;
+                }
+
+                currentRoutePath = currentRoutePath.toLowerCase();
+                currentRoutePath = StringUtils.stripEnd(currentRoutePath, "/");
+
+                //==========================================
+                // RegEx
+                //==========================================
+                if (isRegEx) {
+
+                    if (subPathsToo) {
+                        if (pathToMatch.endsWith("/")) {
+                            pathToMatch = pathToMatch.substring(0, pathToMatch.length() - 1);
+                        }
+                        pathToMatch += "(/?$|/.*)";
+                    }
+
+
+                    if (Pattern.matches(pathToMatch, currentRoutePath)) {
+                        return true;
+                    }
+                //==========================================@formatter:off 
+                // Exact path
+                //==========================================@formatter:on
+                } else {
+                    pathToMatch = StringUtils.stripEnd(pathToMatch, "/");
+                    if (!pathToMatch.equals("") && !pathToMatch.startsWith("/")) {
+                        pathToMatch = "/" + pathToMatch;
+                    }
+
+                    if (currentRoutePath.equals(pathToMatch)) {
+                        return true;
+                    }
+
+                    if (subPathsToo) {
+                        if (currentRoutePath.startsWith(pathToMatch + "/")) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+        };
+    }
+
+    protected String getRouteIdFunctionName() {
+        return FUNCTION_NAME_ROUTE_ID;
+    }
+
+    protected Function getRouteIdFunction() {
+
+        return new Function() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return Lists.newArrayList("id");
+            }
+
+            @Override
+            public Object execute(Map<String, Object> args) {
+
+                Object idToMatchObj = args.get("id");
+                String idToMatch = "";
+                if (idToMatchObj == null) {
+                    return false;
+                }
+                idToMatch = idToMatchObj.toString().trim();
+                if (StringUtils.isBlank(idToMatch)) {
+                    return false;
+                }
+
+                String currentRouteId;
+                try {
+                    RequestContext<?> context = getRequestContextProvider().get();
+                    currentRouteId = context.routing().getCurrentRouteHandlerMatch().getSourceRoute().getId();
+                } catch (OutOfScopeException | ProvisionException ex) {
+                    // Not in the scope a a request
+                    return false;
+                }
+
+                if (idToMatch.equals(currentRouteId)) {
+                    return true;
+                }
+
+                return false;
+            }
+        };
     }
 
 }

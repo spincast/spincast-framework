@@ -196,6 +196,31 @@ router.SOME("/books", HttpMethod.POST, HttpMethod.PUT) ...
     </div>  
     
     {#==========================================
+    Section "routing / Route id"
+    ==========================================#}
+    <div id="route_id">
+        <h4>
+            <a class="anchor_small" href="#route_id" title="permanent link"></a>
+            Route id
+        </h4>
+    
+        You can assign an <code>id</code> to a route. This id can be useful later, for example
+        to validate at runtime what the route of the current request is.
+        <p>
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+
+router.GET("/users").id('users') ...
+</pre> 
+                </p>
+            </div>
+        </p>  
+    </div>  
+    
+    
+    {#==========================================
     Section "routing / Dynamic parameters"
     ==========================================#}
     <div id="dynamic_parameters">

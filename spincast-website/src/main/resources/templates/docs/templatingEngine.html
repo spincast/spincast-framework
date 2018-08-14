@@ -386,7 +386,8 @@ Docs : "Templating Engine"
                             </p> 
                         </div> 
                         <div>
-                            <img class="inlineIcon" src="/public/images/icons/tipy.png" /> Note that each parameter's key must have an
+                            <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+                            Note that each parameter's key must have an
                             associated value or an exeption will be thrown (the number of parameters must be even).
                         </div>
                     </p> 
@@ -493,6 +494,108 @@ let js='{{jsOneLine(code, true)}}';
                     </p>
                 </div>
             </li>
+            
+            <li>
+                <a class="anchor_small" id="templating_functions_isroute" href="#templating_functions_isroute" title="permanent link"></a>
+                <code class="apiItem"><span>isRoute</span>(String path, [boolean isRegEx, boolean allowSubPaths])</code>
+                <div class="well">
+                    <p>
+                        This function returns <code>true</code> if the specified path matches the 
+                        route of the current request.
+                    </p>
+                    <p> 
+                        For example:
+
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,24,1,41"
+>
+
+&lt;span class="menu {% if isRoute('/users') %}active{% endif %}"&lt;/span&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        If the second parameter is "<code>true</code>", the specified path will
+                        be considered as a regular expression:
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,24,1,54"
+>
+
+&lt;span class="menu {% if isRoute('/(user|users)', true) %}active{% endif %}"&lt;/span&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        Finally, if the third parameter is "<code>true</code>", any <em>subpath</em> of the specified
+                        path will also match. If the specified path is a regular expression,
+                        then "<code>(/?$|/.*)</code>" will be concatenated to it. This the path is not
+                        a regular expression, Spincast will use "<code>startWith(path)</code>" instead of 
+                        "<code>equals(path)</code>" to validate the current route:
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="2,24,2,54|5,24,5,60"
+>
+
+// Will match "/users", "users/123", "users/123/books/456"
+&lt;span class="menu {% if isRoute('/users', false, true) %}active{% endif %}"&lt;/span&gt;
+
+// Will match "/user", "/user/123/books/456", "/users/", "/users/123/books/456"
+&lt;span class="menu {% if isRoute('/(user|users)', true, true) %}active{% endif %}"&lt;/span&gt;
+
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                        If this function is evaluated outside of a request context (for example from a cron),
+                        then <code>false</code> is returned.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="templating_functions_isrouteid" href="#templating_functions_isrouteid" title="permanent link"></a>
+                <code class="apiItem"><span>isRouteId</span>(String routeId)</code>
+                <div class="well">
+                    <p>
+                        This function returns <code>true</code> if the specified id is the
+                        <a href="#route_id">id of the current route</a>.
+                    </p>
+                    <p> 
+                        For example:
+
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,24,1,51"
+>
+
+&lt;span class="menu {% if isRouteId('myUsersRouteId') %}active{% endif %}"&lt;/span&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                        If this function is evaluated outside of a request context (for example from a cron),
+                        then <code>false</code> is returned.
+                    </p>
+                </div>
+            </li> 
             
         </ul>
     </p>

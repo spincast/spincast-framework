@@ -1428,6 +1428,816 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         assertEquals(result, "not ok");
     }
 
+    @Test
+    public void routeExact1() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExact2() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExact3() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('one/') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExact4() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('one') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExact5() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/two') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExact6() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/two/') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeNotInRequestContext() throws Exception {
+
+        String content = "{% if isRoute('/one') %}yes{% else %}no{% endif %}";
+        String result = getTemplatingEngine().evaluate(content);
+        assertEquals(result, "no");
+    }
+
+    @Test
+    public void routeNoMatch1() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/two') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeNoMatch2() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeNoMatch3() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeNoMatch4() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute() %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeNoMatch5() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/two') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeDynamicMatch() throws Exception {
+
+        getRouter().GET("/${targetType:<A+>}").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeHome1() throws Exception {
+
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeHome2() throws Exception {
+
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeHome3() throws Exception {
+
+        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute() %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+
+    @Test
+    public void routeDynamicMatches() throws Exception {
+
+        getRouter().GET("/*{anything}").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/two') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeDynamicMatches2() throws Exception {
+
+        getRouter().GET("/*{anything}").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/two/') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeDynamicMatches3() throws Exception {
+
+        getRouter().GET("/*{anything}").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('one/two') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegEx1() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('.*', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegEx2() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/.{3}', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegEx3() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one/.*', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegEx4() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegEx4b() throws Exception {
+
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExNoMatchTrailingSlash() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)/', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExMatch() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)(/?$|/.*)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExMatch2() throws Exception {
+
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)(/?$|/.*)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExMatch3() throws Exception {
+
+        getRouter().GET("/one/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)(/?$|/.*)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExMatch4() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)(/?$|/.*)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExMatchNot() throws Exception {
+
+        getRouter().GET("oneeee").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)(/?$|/.*)', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/oneeee").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExSlashPrefixMissing() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('one/.*', true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExactWithSubPaths() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one', false, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeExactWithSubPathsNoMatch() throws Exception {
+
+        getRouter().GET("/oneee").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one', false, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/oneee").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExWithSubPaths() throws Exception {
+
+        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExWithSubPaths2() throws Exception {
+
+        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+
+    @Test
+    public void routeRegExWithSubPaths3() throws Exception {
+
+        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExWithSubPaths4() throws Exception {
+
+        getRouter().GET("/two/three/four").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/two/three/four").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExWithSubPathsNoMatch() throws Exception {
+
+        getRouter().GET("/oneee").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/(one|two)', true, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/oneee").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeRegExWithSubPathsButEndsWithDollarSign() throws Exception {
+
+        getRouter().GET("/one/two/").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRoute('/one$', true, true) %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one/two/").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeIdMatch() throws Exception {
+
+        getRouter().GET("/one").id("myRouteId").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRouteId('myRouteId') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "yes");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void routeIdNoMatch() throws Exception {
+
+        getRouter().GET("/one").id("myRouteId").save(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String content = "{% if isRouteId('nope') %}yes{% else %}no{% endif %}";
+                String result = context.templating().evaluate(content);
+                assertEquals(result, "no");
+
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        HttpResponse response = GET("/one").send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
 }
 
 
