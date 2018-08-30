@@ -249,7 +249,7 @@ public class SessionTest extends SessionTestBase {
                     SpincastSession currentSession = getSessionManager().getCurrentSession();
                     Instant now = Instant.now();
                     long ms = ChronoUnit.MILLIS.between(currentSession.getCreationDate(), now);
-                    assertTrue(ms > 1000);
+                    assertTrue(ms > 500);
 
                     assertTrue(currentSession.getCreationDate().isBefore(currentSession.getModificationDate()));
 

@@ -36,6 +36,15 @@
         </dependency>
         
         <!--=================================== 
+        Spincast TimeZone Resolver plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-timezone-resolver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
         Rome - For the RSS feed
         ====================================-->
         <dependency>
