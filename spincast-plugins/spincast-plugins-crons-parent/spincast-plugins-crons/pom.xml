@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-crons-parent</artifactId>
-        <version>0.9.43</version>
+        <version>0.9.44-SNAPSHOT</version>
     </parent>
     
 	<artifactId>spincast-plugins-crons</artifactId>
