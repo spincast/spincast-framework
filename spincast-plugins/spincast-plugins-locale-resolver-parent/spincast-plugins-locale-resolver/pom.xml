@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-locale-resolver-parent</artifactId>
-        <version>0.9.42-SNAPSHOT</version>
+        <version>0.9.42</version>
     </parent>
     
 	<artifactId>spincast-plugins-locale-resolver</artifactId>
