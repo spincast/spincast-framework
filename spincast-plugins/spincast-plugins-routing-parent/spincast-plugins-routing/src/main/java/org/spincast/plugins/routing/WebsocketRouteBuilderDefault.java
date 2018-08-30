@@ -28,6 +28,7 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
     private List<Handler<R>> beforeFilters;
     private WebsocketController<R, W> websocketController;
     private Set<String> beforeFilterIdsToSkip;
+    private boolean isSpicastCoreRouteOrPluginRoute = false;
 
     @AssistedInject
     public WebsocketRouteBuilderDefault(WebsocketRouteFactory<R, W> websocketRouteFactory) {
@@ -57,8 +58,12 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
         return this.id;
     }
 
+    public boolean isSpicastCoreRouteOrPluginRoute() {
+        return this.isSpicastCoreRouteOrPluginRoute;
+    }
+
     public Set<String> getBeforeFilterIdsToSkip() {
-        if(this.beforeFilterIdsToSkip == null) {
+        if (this.beforeFilterIdsToSkip == null) {
             this.beforeFilterIdsToSkip = new HashSet<>();
         }
         return this.beforeFilterIdsToSkip;
@@ -81,6 +86,12 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
     }
 
     @Override
+    public WebsocketRouteBuilder<R, W> spicastCoreRouteOrPluginRoute() {
+        this.isSpicastCoreRouteOrPluginRoute = true;
+        return this;
+    }
+
+    @Override
     public WebsocketRouteBuilder<R, W> before(Handler<R> beforeFilter) {
 
         Objects.requireNonNull(beforeFilter, "beforeFilter can't be NULL");
@@ -90,16 +101,16 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
     }
 
     public List<Handler<R>> getBeforeFilters() {
-        if(this.beforeFilters == null) {
+        if (this.beforeFilters == null) {
             this.beforeFilters = new ArrayList<Handler<R>>();
         }
         return this.beforeFilters;
     }
 
     @Override
-    public void save(WebsocketController<R, W> websocketController) {
+    public void handle(WebsocketController<R, W> websocketController) {
 
-        if(getRouter() == null) {
+        if (getRouter() == null) {
             throw new RuntimeException("No router specified, can't save the Websocket route!");
         }
 
@@ -112,7 +123,8 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
 
         this.websocketController = websocketController;
 
-        WebsocketRoute<R, W> websocketRoute = getWebsocketRouteFactory().createRoute(getId(),
+        WebsocketRoute<R, W> websocketRoute = getWebsocketRouteFactory().createRoute(isSpicastCoreRouteOrPluginRoute(),
+                                                                                     getId(),
                                                                                      getPath(),
                                                                                      getBeforeFilters(),
                                                                                      getBeforeFilterIdsToSkip(),
@@ -123,7 +135,7 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
     @Override
     public WebsocketRouteBuilder<R, W> skip(String beforeFilterId) {
 
-        if(StringUtils.isBlank(beforeFilterId)) {
+        if (StringUtils.isBlank(beforeFilterId)) {
             throw new RuntimeException("The beforeFilterId can't be empty.");
         }
 

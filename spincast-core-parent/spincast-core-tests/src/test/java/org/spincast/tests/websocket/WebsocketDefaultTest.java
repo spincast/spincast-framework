@@ -41,11 +41,11 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 //==========================================
                 // Validate cookies
                 //==========================================
-                String cookie = context.request().getCookie("username");
+                String cookie = context.request().getCookieValue("username");
                 assertNotNull(cookie);
                 assertEquals("Stromgol", cookie);
 
-                cookie = context.request().getCookie("cookie2");
+                cookie = context.request().getCookieValue("cookie2");
                 assertNotNull(cookie);
                 assertEquals("val2", cookie);
 
@@ -80,7 +80,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         //==========================================
         // The endpoint is created when the controller
@@ -89,8 +89,8 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
         WebsocketClientTest client = new WebsocketClientTest();
-        WebsocketClientWriter writer = websocket("/ws").addCookie("username", "Stromgol")
-                                                       .addCookie("cookie2", "val2")
+        WebsocketClientWriter writer = websocket("/ws").setCookie("username", "Stromgol")
+                                                       .setCookie("cookie2", "val2")
                                                        .addHeaderValue("customHeader", "test1")
                                                        .addHeaderValue("customHeader2", "test2")
                                                        .connect(client);
@@ -124,7 +124,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     public void closingTheEndpointShouldSendClosedEventToPeer() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
         WebsocketClientWriter writer = websocket("/ws").connect(client);
@@ -141,7 +141,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     public void closingTheLastPeerDoesntCloseTheEndpoint() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
@@ -200,7 +200,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -218,7 +218,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     public void createThenDeleteRoute() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").id("test").save(controller);
+        getRouter().websocket("/ws").id("test").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
         WebsocketClientWriter writer = websocket("/ws").connect(client);
@@ -260,7 +260,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     public void customEndpointClosingCode() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -284,7 +284,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     public void invalidCustomEndpointClosingCode() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -323,7 +323,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
@@ -395,7 +395,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -474,7 +474,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -549,7 +549,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -624,7 +624,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -688,7 +688,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -774,7 +774,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -849,7 +849,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 getEndpointManager("endpoint1").sendMessageExcept(context.getPeerId(), message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -924,7 +924,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -997,7 +997,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -1072,7 +1072,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 
@@ -1126,7 +1126,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         final Set<String> inFilters = new HashSet<>();
 
-        getRouter().ALL().pos(-10).id("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).id("myBeforeFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1134,7 +1134,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
         });
 
-        getRouter().ALL().pos(-10).id("myBeforeFilter2").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).id("myBeforeFilter2").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1142,7 +1142,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
         });
 
-        getRouter().ALL().pos(10).id("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).id("myAfterFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1170,7 +1170,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
             }
 
         };
-        getRouter().websocket("/ws").skip("myBeforeFilter").save(controller);
+        getRouter().websocket("/ws").skip("myBeforeFilter").handle(controller);
 
         assertNull(controller.getEndpointManager("endpoint1"));
 

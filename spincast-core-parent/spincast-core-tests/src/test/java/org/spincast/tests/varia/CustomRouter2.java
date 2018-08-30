@@ -20,7 +20,7 @@ public class CustomRouter2 extends SpincastRouter<DefaultRequestContext, Default
     @Inject
     public void addRoute(SpincastConfig spincastConfig) {
 
-        GET("/one").save(new Handler<DefaultRequestContext>() {
+        GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

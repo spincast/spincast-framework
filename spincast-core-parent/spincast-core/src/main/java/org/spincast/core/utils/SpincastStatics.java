@@ -445,4 +445,36 @@ public class SpincastStatics {
         return set.toArray(array);
     }
 
+    /**
+     * Returns <code>null</code> if the specified object
+     * is null or uses {@link String#valueOf(Object)} otherwise.
+     */
+    public static String stringValueOrNull(Object obj) {
+        return getInstance().stringValueOrNullInstance(obj);
+    }
+
+    public String stringValueOrNullInstance(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        return String.valueOf(obj);
+    }
+
+    /**
+     * Returns <code>null</code> if the specified object
+     * is null or uses {@link Long#parseLong(String)} otherwise,
+     * by casting the obj using <code>obj.toString()</code>
+     */
+    public static Long longValueOrNull(Object obj) {
+        return getInstance().longValueOrNullInstance(obj);
+    }
+
+    public Long longValueOrNullInstance(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        return Long.parseLong(obj.toString());
+    }
+
+
 }

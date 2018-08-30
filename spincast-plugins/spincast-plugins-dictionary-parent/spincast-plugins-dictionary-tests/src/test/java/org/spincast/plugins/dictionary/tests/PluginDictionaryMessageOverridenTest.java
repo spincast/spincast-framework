@@ -31,7 +31,7 @@ import com.google.inject.Scopes;
 public class PluginDictionaryMessageOverridenTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 
@@ -69,13 +69,13 @@ public class PluginDictionaryMessageOverridenTest extends NoAppStartHttpServerTe
     @Test
     public void formNameEmptyOverridenMessage() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    context.request().getForm("");
+                    context.request().getFormWithRootKey("");
                     fail();
                 } catch (Exception ex) {
                     assertEquals("my custom override", ex.getMessage());

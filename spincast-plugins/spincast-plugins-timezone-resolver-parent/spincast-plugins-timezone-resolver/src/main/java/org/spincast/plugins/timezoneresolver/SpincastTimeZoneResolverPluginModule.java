@@ -4,6 +4,8 @@ import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.plugins.timezoneresolver.config.SpincastTimeZoneResolverConfig;
+import org.spincast.plugins.timezoneresolver.config.SpincastTimeZoneResolverConfigDefault;
 
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
@@ -26,6 +28,8 @@ public class SpincastTimeZoneResolverPluginModule extends SpincastGuiceModuleBas
     @Override
     protected void configure() {
 
+        bind(SpincastTimeZoneResolverConfig.class).to(getSpincastTimeZoneResolverConfigImplClass()).in(Scopes.SINGLETON);
+
         //==========================================
         // TimeZone Resolver
         //==========================================
@@ -39,6 +43,10 @@ public class SpincastTimeZoneResolverPluginModule extends SpincastGuiceModuleBas
         if (isPebbleAvailable()) {
             bindPebbleExtension();
         }
+    }
+
+    protected Class<? extends SpincastTimeZoneResolverConfig> getSpincastTimeZoneResolverConfigImplClass() {
+        return SpincastTimeZoneResolverConfigDefault.class;
     }
 
     protected boolean isPebbleAvailable() {

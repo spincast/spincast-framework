@@ -27,7 +27,7 @@ import com.google.inject.Scopes;
 public class CustomSpincastDictionaryTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

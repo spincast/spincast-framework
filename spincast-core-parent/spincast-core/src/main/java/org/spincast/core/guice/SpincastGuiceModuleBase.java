@@ -54,7 +54,7 @@ public abstract class SpincastGuiceModuleBase extends AbstractModule implements 
     }
 
     protected Class<? extends RequestContext<?>> getRequestContextInterface() {
-        if(this.requestContextInterface == null) {
+        if (this.requestContextInterface == null) {
 
             //==========================================
             // We extract the Request Context interface
@@ -72,7 +72,7 @@ public abstract class SpincastGuiceModuleBase extends AbstractModule implements 
     }
 
     protected Type getWebsocketContextInterface() {
-        if(this.websocketContextInterface == null) {
+        if (this.websocketContextInterface == null) {
 
             //==========================================
             // We extract the Websocket Context interface
@@ -123,12 +123,15 @@ public abstract class SpincastGuiceModuleBase extends AbstractModule implements 
         // Set the Request Context type and the Websocket Context type
         // on SpincastContextTypesInterested modules...
         //==========================================
-        if(module instanceof SpincastContextTypesInterested) {
+        if (module instanceof SpincastContextTypesInterested) {
             ((SpincastContextTypesInterested)module).setRequestContextImplementationClass(getRequestContextImplementationClass());
             ((SpincastContextTypesInterested)module).setWebsocketContextImplementationClass(getWebsocketContextImplementationClass());
         }
 
         super.install(module);
     }
+
+    @Override
+    protected abstract void configure();
 
 }

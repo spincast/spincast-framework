@@ -165,7 +165,7 @@
                                     <pre class="ace ace-java"
 >public void myHandler(AppRequestContext context) {
     //...
-    context.response().getModel().put("user", someUser);
+    context.response().getModel().set("user", someUser);
     context.response().sendTemplateHtml("/templates/user.html");
 }</pre>
                                 </p>

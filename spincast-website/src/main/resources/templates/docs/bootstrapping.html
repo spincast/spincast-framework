@@ -72,7 +72,7 @@ Docs : "bootstrapping"
     
     @Inject
     protected void init(DefaultRouter router, Server server) {
-        router.GET("/").save(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
+        router.GET("/").handle(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
         server.start();
     }
 }</pre> 

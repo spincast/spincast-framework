@@ -476,7 +476,7 @@ public class SpincastXmlManager implements XmlManager {
                         //==========================================
                         JsonObject jsonObject = getJsonManager().create();
                         Object value = xmlParser.readValueAs(Object.class);
-                        jsonObject.put(fieldName, value);
+                        jsonObject.set(fieldName, value);
 
                         jsonArray.add(jsonObject);
                     }
@@ -519,7 +519,7 @@ public class SpincastXmlManager implements XmlManager {
             JsonObject jsonObject = getJsonManager().create();
 
             if (firstProperty != null) {
-                jsonObject.put(firstProperty.getKey(), firstProperty.getValue());
+                jsonObject.set(firstProperty.getKey(), firstProperty.getValue());
             }
 
             JsonToken token = xmlParser.getCurrentToken();
@@ -535,9 +535,9 @@ public class SpincastXmlManager implements XmlManager {
                 token = xmlParser.nextToken();
 
                 if (token == JsonToken.VALUE_NULL) {
-                    jsonObject.put(fieldName, getJsonManager().create());
+                    jsonObject.set(fieldName, getJsonManager().create());
                 } else if (token == JsonToken.START_OBJECT) {
-                    jsonObject.put(fieldName, deserializeObjectOrArray(xmlParser, context));
+                    jsonObject.set(fieldName, deserializeObjectOrArray(xmlParser, context));
                 } else {
                     Object value = xmlParser.readValueAs(Object.class);
 
@@ -546,9 +546,9 @@ public class SpincastXmlManager implements XmlManager {
                     // we create en empty *object*, not an empty String.
                     //==========================================
                     if (value instanceof String && StringUtils.isBlank((String)value)) {
-                        jsonObject.put(fieldName, getJsonManager().create());
+                        jsonObject.set(fieldName, getJsonManager().create());
                     } else {
-                        jsonObject.put(fieldName, value);
+                        jsonObject.set(fieldName, value);
                     }
                 }
                 token = xmlParser.nextToken();

@@ -18,11 +18,18 @@ public interface JsonManager {
      */
     public JsonObject create();
 
-
+    /**
+     * Creates an empty <code>JsonArray</code>.
+     */
+    public JsonArray createArray();
 
     /**
      * Creates a <code>JsonObject</code> from a <code>Json</code>
      * String.
+     * 
+     * @return the <code>JsonObject</code> version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public JsonObject fromString(String jsonString);
 
@@ -32,34 +39,53 @@ public interface JsonManager {
      * a modification won't affect any external references and vice-versa.
      * <p>
      * The keys will be used <em>as is</em>, not parsed as JsonPaths.
-     * </p>
+     * 
+     * @return the <code>JsonObject</code> version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public JsonObject fromMap(Map<String, ?> params);
 
     /**
-     * Creates an empty <code>JsonObject</code> based on the specified Map.
+     * Creates a <code>JsonObject</code> based on the specified Map.
      * An attempt will be made to create a deep copy of every elements so
      * a modification won't affect any external references and vice-versa.
      * 
      * @param parseKeysAsJsonPaths if <code>true</code>, the keys will
      * be parsed as <code>JsonPaths</code>, otherwise they will ne used
      * as is.
+     * 
+     * @return the <code>JsonObject</code> version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public JsonObject fromMap(Map<String, ?> params, boolean parseKeysAsJsonPaths);
 
     /**
      * Creates a <code>JsonObject</code> from an inputStream.
+     * 
+     * @return the <code>JsonObject</code> version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public JsonObject fromInputStream(InputStream inputStream);
 
     /**
      * Creates a <code>JsonObject</code> from a Json file.
+     * 
+     * @return the deserialized <code>JsonObject</code> 
+     * or <code>null</code> if the file is 
+     * <code>null</code> or doesn't exist.
      */
     public JsonObject fromFile(File jsonFile);
 
     /**
      * Creates a <code>JsonObject</code> from the path of
      * a file, on the file system.
+     * 
+     * @return the deserialized <code>JsonObject</code>
+     * or <code>null</code> if the file is 
+     * <code>null</code> or doesn't exist.
      */
     public JsonObject fromFile(String jsonFilePath);
 
@@ -69,52 +95,79 @@ public interface JsonManager {
      * 
      * @param the path to the classpath file. This path always
      * starts from the root of the classpath.
+     * 
+     * @return the deserialized <code>JsonObject</code>
+     * or <code>null</code> if the file doesn't exist.
+     * 
+     * @throws Exception if the path is <code>null</code>
      */
     public JsonObject fromClasspathFile(String path);
 
     /**
      * Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code>
      * String.
+     * 
+     * @return the <code>Map</code> version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public Map<String, Object> fromStringToMap(String jsonString);
 
     /**
      * Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code> inputStream.
+     * 
+     * @return the <code>Map</code> version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public Map<String, Object> fromInputStreamToMap(InputStream inputStream);
 
     /**
      * Creates an instance of the specified <code>T</code> type
      * from a <code>Json</code> String. 
+     * 
+     * @return the deserialized version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public <T> T fromString(String jsonString, Class<T> clazz);
 
     /**
      * Creates an instance of the specified <code>T</code> type
      * from a <code>Json</code> inputStream.
+     * 
+     * @return the deserialized version of the
+     * parameter or <code>null</code> if the parameter is 
+     * <code>null</code>.
      */
     public <T> T fromInputStream(InputStream inputStream, Class<T> clazz);
 
     /**
-     * Creates an empty <code>JsonArray</code>.
-     */
-    public JsonArray createArray();
-
-
-    /**
      * Creates a <code>JsonArray</code> from a <code>Json</code>
      * String.
+     * 
+     * @return the <code>JsonArray</code> version of the
+     * parameter or <code>null</code> if the parameter 
+     * is <code>null</code>.
      */
     public JsonArray fromStringArray(String jsonString);
 
     /**
      * Creates a <code>JsonArray</code> from a <code>List</code>
      * of elements.
+     * 
+     * @return the <code>JsonArray</code> version of the
+     * parameter or <code>null</code> if the parameter 
+     * is <code>null</code>.
      */
     public JsonArray fromListArray(List<?> elements);
 
     /**
      * Creates a <code>JsonArray</code> from an inputStream.
+     * 
+     * @return the <code>JsonArray</code> version of the
+     * parameter or <code>null</code> if the parameter 
+     * is <code>null</code>.
      */
     public JsonArray fromInputStreamArray(InputStream inputStream);
 

@@ -12,7 +12,7 @@ public class DemosTutorialsController {
     protected final Logger logger = LoggerFactory.getLogger(DemosTutorialsController.class);
 
     public void webSockets(AppRequestContext context) {
-        context.response().getModel().put("isHttps", context.request().isHttps());
+        context.response().getModel().set("isHttps", context.request().isHttps());
         context.response().sendTemplateHtml("/templates/demos/websockets.html");
     }
 

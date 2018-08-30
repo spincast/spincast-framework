@@ -39,12 +39,12 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void simpleForm() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form);
 
                 assertEquals("Slomo", form.getString("name"));
@@ -55,8 +55,8 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -69,12 +69,12 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void validationHasNoError() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form);
 
                 context.response().sendParseHtml("{% if validation['myForm._'] | validationHasErrors() %}yes{% endif %}");
@@ -82,8 +82,8 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -96,12 +96,12 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void validationHasError() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form);
 
                 form.addError("name", "name_invalid", "The name is invalid");
@@ -111,8 +111,8 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -125,12 +125,12 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void validationMessages() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form);
 
                 form.addError("name", "name_invalid", "The name is invalid");
@@ -140,8 +140,8 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -156,12 +156,12 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void customValidationElementName() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form, "myFormValidation");
 
                 form.addError("name", "name_invalid", "The name is invalid");
@@ -171,8 +171,8 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -187,16 +187,16 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void twoFormsDefaultValidationElement() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form);
                 form.addError("name", "name_invalid", "The name is invalid");
 
-                Form form2 = context.request().getForm("myForm2");
+                Form form2 = context.request().getFormWithRootKey("myForm2");
                 context.response().addForm(form2);
                 form2.addError("name2", "name2_invalid", "The name2 is invalid");
 
@@ -206,10 +206,10 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
-                         .addEntityFormDataValue("myForm2.name", "Slomo2")
-                         .addEntityFormDataValue("myForm2.age", "422")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
+                         .addFormBodyFieldValue("myForm2.name", "Slomo2")
+                         .addFormBodyFieldValue("myForm2.age", "422")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -225,16 +225,16 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void twoFormsDifferentValidationElement() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form, "myFormVal");
                 form.addError("name", "name_invalid", "The name is invalid");
 
-                Form form2 = context.request().getForm("myForm2");
+                Form form2 = context.request().getFormWithRootKey("myForm2");
                 context.response().addForm(form2);
                 form2.addError("name2", "name2_invalid", "The name2 is invalid");
 
@@ -244,10 +244,10 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
-                         .addEntityFormDataValue("myForm2.name", "Slomo2")
-                         .addEntityFormDataValue("myForm2.age", "422")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
+                         .addFormBodyFieldValue("myForm2.name", "Slomo2")
+                         .addFormBodyFieldValue("myForm2.age", "422")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -263,16 +263,16 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void twoFormsSameCustomValidationElement() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getForm("myForm");
+                Form form = context.request().getFormWithRootKey("myForm");
                 context.response().addForm(form, "myFormVal");
                 form.addError("name", "name_invalid", "The name is invalid");
 
-                Form form2 = context.request().getForm("myForm2");
+                Form form2 = context.request().getFormWithRootKey("myForm2");
                 context.response().addForm(form2, "myFormVal");
                 form2.addError("name2", "name2_invalid", "The name2 is invalid");
 
@@ -282,10 +282,10 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("myForm.name", "Slomo")
-                         .addEntityFormDataValue("myForm.age", "42")
-                         .addEntityFormDataValue("myForm2.name", "Slomo2")
-                         .addEntityFormDataValue("myForm2.age", "422")
+                POST("/").addFormBodyFieldValue("myForm.name", "Slomo")
+                         .addFormBodyFieldValue("myForm.age", "42")
+                         .addFormBodyFieldValue("myForm2.name", "Slomo2")
+                         .addFormBodyFieldValue("myForm2.age", "422")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());

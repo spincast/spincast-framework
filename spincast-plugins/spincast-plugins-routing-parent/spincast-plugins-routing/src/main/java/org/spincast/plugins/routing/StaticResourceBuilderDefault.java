@@ -31,6 +31,7 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     private final SpincastConfig spincastConfig;
     private final SpincastUtils spincastUtils;
     private final Router<R, W> router;
+    private boolean isSpicastOrPluginAddedResource = false;
     private final boolean isDir;
     private String url = null;
     private String path = null;
@@ -44,8 +45,9 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     private final StaticResourceCacheConfigFactory staticResourceCacheConfigFactory;
     private final SpincastRouterConfig spincastRouterConfig;
 
+
     @AssistedInject
-    public StaticResourceBuilderDefault(@Assisted boolean isDir,
+    public StaticResourceBuilderDefault(@Assisted("isDir") boolean isDir,
                                         StaticResourceFactory<R> staticResourceFactory,
                                         StaticResourceCorsConfigFactory staticResourceCorsConfigFactory,
                                         StaticResourceCacheConfigFactory staticResourceCacheConfigFactory,
@@ -64,7 +66,7 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
 
     @AssistedInject
     public StaticResourceBuilderDefault(@Assisted Router<R, W> router,
-                                        @Assisted boolean isDir,
+                                        @Assisted("isDir") boolean isDir,
                                         StaticResourceFactory<R> staticResourceFactory,
                                         StaticResourceCorsConfigFactory staticResourceCorsConfigFactory,
                                         StaticResourceCacheConfigFactory staticResourceCacheConfigFactory,
@@ -83,6 +85,10 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
 
     protected boolean isDir() {
         return this.isDir;
+    }
+
+    protected boolean isSpicastOrPluginAddedResource() {
+        return this.isSpicastOrPluginAddedResource;
     }
 
     protected Router<R, W> getRouter() {
@@ -139,6 +145,12 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
 
     public boolean isIgnoreQueryString() {
         return this.ignoreQueryString;
+    }
+
+    @Override
+    public StaticResourceBuilder<R> spicastOrPluginAddedResource() {
+        this.isSpicastOrPluginAddedResource = true;
+        return this;
     }
 
     @Override
@@ -319,17 +331,17 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     }
 
     @Override
-    public void save() {
-        save((Handler<R>)null);
+    public void handle() {
+        handle((Handler<R>)null);
     }
 
     @Override
-    public void save(Handler<R> generator) {
-        save(generator, false);
+    public void handle(Handler<R> generator) {
+        handle(generator, false);
     }
 
     @Override
-    public void save(Handler<R> generator, boolean ignoreQueryString) {
+    public void handle(Handler<R> generator, boolean ignoreQueryString) {
 
         if (getRouter() == null) {
             throw new RuntimeException("No router specified, can't save the static resource!");
@@ -378,7 +390,8 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
             cacheConfig = getDefaultCacheConfig();
         }
 
-        StaticResource<R> staticResource = getStaticResourceFactory().create(type,
+        StaticResource<R> staticResource = getStaticResourceFactory().create(isSpicastOrPluginAddedResource(),
+                                                                             type,
                                                                              getUrl(),
                                                                              getPath(),
                                                                              getGenerator(),

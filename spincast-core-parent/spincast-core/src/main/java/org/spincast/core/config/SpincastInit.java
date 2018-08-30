@@ -2,6 +2,7 @@ package org.spincast.core.config;
 
 import java.io.File;
 
+import org.spincast.core.server.ServerStartedListener;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
@@ -10,7 +11,7 @@ import com.google.inject.Inject;
 /**
  * Some basic initialization
  */
-public class SpincastInit {
+public class SpincastInit implements ServerStartedListener {
 
     private final SpincastConfig spincastConfig;
 
@@ -22,6 +23,11 @@ public class SpincastInit {
     @Inject
     public void init() {
         writableDirsCheck();
+    }
+
+    @Override
+    public void serverStartedSuccessfully() {
+        // Called when the server is started...
     }
 
     protected SpincastConfig getSpincastConfig() {
@@ -53,5 +59,6 @@ public class SpincastInit {
             throw SpincastStatics.runtimize(ex);
         }
     }
+
 
 }

@@ -58,7 +58,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundDefault() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -77,7 +77,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundPlainText() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -95,7 +95,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundPlainTextCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -113,7 +113,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundJson() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -131,7 +131,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundJsonCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -149,7 +149,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundXml() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -168,7 +168,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundXmlCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -186,7 +186,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundHtml() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -205,7 +205,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void notFoundHtmlCustomMessage() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -223,7 +223,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorDefault() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -248,7 +248,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorDefaultPublic() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -274,7 +274,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -298,7 +298,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorHtml() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -323,7 +323,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorHtmlDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -347,7 +347,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorJson() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -371,7 +371,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorJsonDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -395,7 +395,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorXml() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -420,7 +420,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void serverErrorXmlDedicatedMethod() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -445,7 +445,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void text() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -463,7 +463,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void textCustom() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -480,7 +480,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void html() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -497,7 +497,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void json() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -524,7 +524,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void jsonObj() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -551,7 +551,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void xml() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -579,7 +579,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void xmlObj() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -606,7 +606,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void customStatusCode() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -624,7 +624,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void customStatusCodeButException() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -644,7 +644,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void guessingContentTypeFromExtension() throws Exception {
 
-        getRouter().GET("/one.mkv").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.mkv").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -661,7 +661,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void noGuessingIfContentTypeSpecified() throws Exception {
 
-        getRouter().GET("/one.mkv").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.mkv").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -687,7 +687,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void guessStaticResourceContentTypeFromTargetFilePath() throws Exception {
 
-        getRouter().file("/image").classpath("/image.jpg").save();
+        getRouter().file("/image").classpath("/image.jpg").handle();
 
         HttpResponse response = GET("/image").send();
         assertNotNull(response);
@@ -698,7 +698,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
     @Test
     public void requestContentType() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -716,7 +716,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
         });
 
         HttpResponse response =
-                POST("/").setEntityString("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
+                POST("/").setStringBody("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());

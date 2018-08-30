@@ -109,7 +109,7 @@ public class ConvertToNativeTypeTest extends NoAppTestingBase {
     public void nativeTypesJsonObject() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("titi", 123);
+        jsonObj.set("titi", 123);
 
         Object result = getJsonManager().convertToNativeType(jsonObj);
         assertEquals(jsonObj, result);

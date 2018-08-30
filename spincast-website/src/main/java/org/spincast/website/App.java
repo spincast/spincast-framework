@@ -233,19 +233,19 @@ public class App {
         //==========================================
         // Public resources
         //==========================================
-        router.dir("/public").classpath("/public").save();
-        router.file("/favicon.ico").classpath("/public/favicon.ico").save();
-        router.file("/robots.txt").classpath("/public/robots.txt").save();
-        router.file("/humans.txt").classpath("/public/humans.txt").save();
-        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").save();
-        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").save();
-        router.file("/tile-wide.png").classpath("/public/tile-wide.png").save();
-        router.file("/tile.png").classpath("/public/tile.png").save();
+        router.dir("/public").classpath("/public").handle();
+        router.file("/favicon.ico").classpath("/public/favicon.ico").handle();
+        router.file("/robots.txt").classpath("/public/robots.txt").handle();
+        router.file("/humans.txt").classpath("/public/humans.txt").handle();
+        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").handle();
+        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").handle();
+        router.file("/tile-wide.png").classpath("/public/tile-wide.png").handle();
+        router.file("/tile.png").classpath("/public/tile.png").handle();
 
         //==========================================
         // Add some security headers.
         //==========================================
-        router.ALL().pos(-10).save(getSpincastFilters()::addSecurityHeaders);
+        router.ALL().pos(-10).handle(getSpincastFilters()::addSecurityHeaders);
 
         //==========================================
         // Not Found (404) handler
@@ -260,33 +260,33 @@ public class App {
         //==========================================
         // News Feed, as a dynamic resouce
         //==========================================
-        router.file("/rss").pathRelative("/feed/rss.xml").save(getFeedController()::rss);
+        router.file("/rss").pathRelative("/feed/rss.xml").handle(getFeedController()::rss);
 
         //==========================================
         // Admin - protected area
         //==========================================
         router.httpAuth("/admin", AppConstants.HTTP_AUTH_REALM_NAME_ADMIN);
-        router.GET("/admin").noCache().save(getAdminController()::index);
-        router.GET("/admin/news").save(getAdminController()::news);
+        router.GET("/admin").noCache().handle(getAdminController()::index);
+        router.GET("/admin/news").handle(getAdminController()::news);
 
         //==========================================
         // Static Pages
         //==========================================
-        router.file("/").pathRelative("/pages/index.html").save(appCtl::index);
-        router.file("/presentation").pathRelative("/pages/presentation.html").save(appCtl::presentation);
+        router.file("/").pathRelative("/pages/index.html").handle(appCtl::index);
+        router.file("/presentation").pathRelative("/pages/presentation.html").handle(appCtl::presentation);
 
         // Can't be a static resource since it accepts a "page"
         // querystring parameter which changes the content.
-        router.GET("/news").save(appCtl::news);
+        router.GET("/news").handle(appCtl::news);
 
-        router.file("/news/${newsId:<N>}").pathRelative("/pages/news/${newsId:<N>}.html").save(appCtl::newsEntry);
-        router.file("/documentation").pathRelative("/pages/documentation.html").save(appCtl::documentation);
-        router.file("/download").pathRelative("/pages/download.html").save(appCtl::download);
-        router.file("/plugins").pathRelative("/pages/plugins.html").save(appCtl::plugins);
-        router.file("/plugins/${pluginName}").pathRelative("/pages/plugins/${pluginName}.html").save(appCtl::plugin);
-        router.file("/community").pathRelative("/pages/community.html").save(appCtl::community);
-        router.file("/about").pathRelative("/pages/about.html").save(appCtl::about);
-        router.file("/more").pathRelative("/pages/more.html").save(appCtl::about);
+        router.file("/news/${newsId:<N>}").pathRelative("/pages/news/${newsId:<N>}.html").handle(appCtl::newsEntry);
+        router.file("/documentation").pathRelative("/pages/documentation.html").handle(appCtl::documentation);
+        router.file("/download").pathRelative("/pages/download.html").handle(appCtl::download);
+        router.file("/plugins").pathRelative("/pages/plugins.html").handle(appCtl::plugins);
+        router.file("/plugins/${pluginName}").pathRelative("/pages/plugins/${pluginName}.html").handle(appCtl::plugin);
+        router.file("/community").pathRelative("/pages/community.html").handle(appCtl::community);
+        router.file("/about").pathRelative("/pages/about.html").handle(appCtl::about);
+        router.file("/more").pathRelative("/pages/more.html").handle(appCtl::about);
 
         //==========================================
         // Demos/Tutorials
@@ -294,59 +294,59 @@ public class App {
         router.redirect("/demos-tutorials").temporarily().to("/demos-tutorials/hello-world");
 
         router.redirect("/demos-tutorials/hello-world").to("/demos-tutorials/hello-world/quick");
-        router.GET("/demos-tutorials/hello-world/quick").save(demoCtl::helloWorldQuick);
-        router.GET("/demos-tutorials/hello-world/better").save(demoCtl::helloWorldBetter);
-        router.GET("/demos-tutorials/hello-world/super").save(demoCtl::helloWorldSuper);
+        router.GET("/demos-tutorials/hello-world/quick").handle(demoCtl::helloWorldQuick);
+        router.GET("/demos-tutorials/hello-world/better").handle(demoCtl::helloWorldBetter);
+        router.GET("/demos-tutorials/hello-world/super").handle(demoCtl::helloWorldSuper);
 
         router.file("/demos-tutorials/full-website")
               .pathRelative("/pages/demos-tutorials/full-website.html")
-              .save(demoCtl::fullWebsite);
+              .handle(demoCtl::fullWebsite);
 
         router.file("/demos-tutorials/todo-list")
               .pathRelative("/pages/demos-tutorials/todo-list.html")
-              .save(demoCtl::todoList);
+              .handle(demoCtl::todoList);
 
         router.file("/demos-tutorials/http-authentication")
               .pathRelative("/pages/demos-tutorials/http-authentication.html")
-              .save(demoCtl::httpAuthentication);
+              .handle(demoCtl::httpAuthentication);
         router.httpAuth("/demos-tutorials/http-authentication/protected", AppConstants.HTTP_AUTH_REALM_NAME_EXAMPLE);
         router.redirect("/protected_example").to("/demos-tutorials/http-authentication/protected");
         router.file("/demos-tutorials/http-authentication/protected")
               .pathRelative("/pages/demos-tutorials/http-authentication/protected.html")
-              .save(demoCtl::httpAuthenticationProtectedPage);
+              .handle(demoCtl::httpAuthenticationProtectedPage);
 
         router.file("/demos-tutorials/websockets")
               .pathRelative("/pages/demos-tutorials/websockets.html")
-              .save(demoCtl::webSockets);
-        router.websocket("/demos-tutorials/websockets/echo-all-endpoint").save(getWebsocketsDemoEchoAllController());
+              .handle(demoCtl::webSockets);
+        router.websocket("/demos-tutorials/websockets/echo-all-endpoint").handle(getWebsocketsDemoEchoAllController());
         router.redirect("/showcase/websockets/echo-all").to("/demos-tutorials/websockets");
         router.redirect("/showcase/websockets/echo-all-endpoint").to("/demos-tutorials/websockets/echo-all-endpoint");
 
-        //router.GET("/demos-tutorials/form-authentication").save(getDemoFormAuthController()::index);
-        //router.POST("/demos-tutorials/form-authentication/login").save(getDemoFormAuthController()::login);
-        //router.POST("/demos-tutorials/form-authentication/register").save(getDemoFormAuthController()::login);
+        //router.GET("/demos-tutorials/form-authentication").handle(getDemoFormAuthController()::index);
+        //router.POST("/demos-tutorials/form-authentication/login").handle(getDemoFormAuthController()::login);
+        //router.POST("/demos-tutorials/form-authentication/register").handle(getDemoFormAuthController()::login);
 
         router.redirect("/demos-tutorials/html-forms").to("/demos-tutorials/html-forms/single-field");
 
         router.GET("/demos-tutorials/html-forms/single-field")
-              .save(getDemoHtmlFormsSingleFieldController()::singleField);
+              .handle(getDemoHtmlFormsSingleFieldController()::singleField);
         router.POST("/demos-tutorials/html-forms/single-field")
-              .save(getDemoHtmlFormsSingleFieldController()::singleFieldSubmit);
+              .handle(getDemoHtmlFormsSingleFieldController()::singleFieldSubmit);
 
         router.GET("/demos-tutorials/html-forms/multiple-fields")
-              .save(getDemoHtmlFormsMultipleFieldsController()::multipleFields);
+              .handle(getDemoHtmlFormsMultipleFieldsController()::multipleFields);
         router.POST("/demos-tutorials/html-forms/multiple-fields")
-              .save(getDemoHtmlFormsMultipleFieldsController()::multipleFieldsSubmit);
+              .handle(getDemoHtmlFormsMultipleFieldsController()::multipleFieldsSubmit);
 
         router.GET("/demos-tutorials/html-forms/dynamic-fields")
-              .save(getDemoHtmlFormsDynamicFieldsController()::dynamicFields);
+              .handle(getDemoHtmlFormsDynamicFieldsController()::dynamicFields);
         router.POST("/demos-tutorials/html-forms/dynamic-fields")
-              .save(getDemoHtmlFormsDynamicFieldsController()::dynamicFieldsSubmit);
+              .handle(getDemoHtmlFormsDynamicFieldsController()::dynamicFieldsSubmit);
 
         router.GET("/demos-tutorials/html-forms/file-upload")
-              .save(getDemoHtmlFormsFileUploadController()::fileUpload);
+              .handle(getDemoHtmlFormsFileUploadController()::fileUpload);
         router.POST("/demos-tutorials/html-forms/file-upload")
-              .save(getDemoHtmlFormsFileUploadController()::fileUploadSubmit);
+              .handle(getDemoHtmlFormsFileUploadController()::fileUploadSubmit);
 
     }
 }

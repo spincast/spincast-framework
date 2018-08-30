@@ -14,7 +14,7 @@ public class VariousMethodsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getIp() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

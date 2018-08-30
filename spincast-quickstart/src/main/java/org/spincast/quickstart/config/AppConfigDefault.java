@@ -1,5 +1,6 @@
 package org.spincast.quickstart.config;
 
+import org.spincast.core.guice.TestingMode;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 
@@ -14,8 +15,8 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
      * Constructor
      */
     @Inject
-    public AppConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-        super(spincastConfigPluginConfig);
+    public AppConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+        super(spincastConfigPluginConfig, testingMode);
     }
 
     @Override

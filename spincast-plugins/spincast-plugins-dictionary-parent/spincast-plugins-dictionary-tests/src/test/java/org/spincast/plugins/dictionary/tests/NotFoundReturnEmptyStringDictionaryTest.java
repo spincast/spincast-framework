@@ -13,6 +13,7 @@ import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.dictionary.DictionaryEntries;
 import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.defaults.testing.NoAppTestingBase;
@@ -49,8 +50,8 @@ public class NotFoundReturnEmptyStringDictionaryTest extends NoAppTestingBase {
     protected static class CustomTestingDefault extends SpincastConfigTestingDefault {
 
         @Inject
-        protected CustomTestingDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected CustomTestingDefault(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

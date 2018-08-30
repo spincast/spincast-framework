@@ -110,7 +110,7 @@ public interface JsonObjectOrArray {
     public JsonObjectOrArray remove(String jsonPath);
 
     /**
-     * Puts an element at the specified <code>JsonPath</code>.
+     * Sets an element at the specified <code>JsonPath</code>.
      * Overwrites any existing element at that <code>JsonPath</code>.
      * <p>
      * The required hierarchy will be created, if required, to
@@ -147,10 +147,10 @@ public interface JsonObjectOrArray {
      * </ul>
      * </p>
      */
-    public JsonObjectOrArray put(String jsonPath, Object element);
+    public JsonObjectOrArray set(String jsonPath, Object element);
 
     /**
-     * Puts an element at the specified <code>JsonPath</code>.
+     * Sets an element at the specified <code>JsonPath</code>.
      * Overwrites any existing element at that <code>JsonPath</code>.
      * <p>
      * The required hierarchy will be created, if required, to
@@ -195,7 +195,7 @@ public interface JsonObjectOrArray {
      * always be cloned. Doing so, we can make sure the current object is always 
      * <em>fully</em> mutable or <em>fully</em> immutable.
      */
-    public JsonObjectOrArray put(String jsonPath, Object element, boolean clone);
+    public JsonObjectOrArray set(String jsonPath, Object element, boolean clone);
 
     /**
      * Gets an element as <code>JsonObject</code> using the

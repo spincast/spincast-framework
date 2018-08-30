@@ -93,7 +93,7 @@ public class OverrideSpincastExtensionTest extends NoAppTestingBase {
     public void dateFormatModified() throws Exception {
 
         JsonObject model = this.jsonManager.create();
-        model.put("now", Instant.now());
+        model.set("now", Instant.now());
 
         String html = this.templatingEngine.evaluate("{{ now | get() }}", model);
         assertEquals("custom!", html);

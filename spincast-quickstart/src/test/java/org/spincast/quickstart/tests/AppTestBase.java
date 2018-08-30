@@ -1,6 +1,7 @@
 package org.spincast.quickstart.tests;
 
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.quickstart.App;
 import org.spincast.quickstart.config.AppConfig;
@@ -20,7 +21,7 @@ import com.google.inject.Inject;
 public abstract class AppTestBase extends AppBasedTestingBase<AppRequestContext, AppWebsocketContext> {
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(getMainArgs());
     }
 
@@ -66,8 +67,8 @@ public abstract class AppTestBase extends AppBasedTestingBase<AppRequestContext,
         private int serverPort = -1;
 
         @Inject
-        public AppTestingConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        public AppTestingConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         /**

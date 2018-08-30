@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
@@ -41,8 +42,9 @@ public class JsonPathsMergeTest extends NoAppTestingBase {
          * Constructor
          */
         @Inject
-        protected SpincastTestConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected SpincastTestConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                         @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -827,9 +829,9 @@ public class JsonPathsMergeTest extends NoAppTestingBase {
     public void mergeAtJsonPath() throws Exception {
 
         JsonObject root = getJsonManager().create();
-        root.put("key1", "value1");
+        root.set("key1", "value1");
 
-        root.put("titi.toto[2].tata", "value2");
+        root.set("titi.toto[2].tata", "value2");
 
         assertEquals("value1", root.getString("key1"));
 
@@ -849,12 +851,12 @@ public class JsonPathsMergeTest extends NoAppTestingBase {
     public void mergeAtJsonPathNoClone() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key3", "value3");
+        inner.set("key3", "value3");
 
         JsonObject root = getJsonManager().create();
-        root.put("key1", "value1");
+        root.set("key1", "value1");
 
-        root.put("titi.toto[2].tata", inner);
+        root.set("titi.toto[2].tata", inner);
 
         assertEquals("value1", root.getString("key1"));
 
@@ -872,7 +874,7 @@ public class JsonPathsMergeTest extends NoAppTestingBase {
 
         assertEquals("value3", obj.getString("key3"));
 
-        inner.put("key3", "value4");
+        inner.set("key3", "value4");
 
         assertEquals("value4", obj.getString("key3"));
     }
@@ -881,12 +883,12 @@ public class JsonPathsMergeTest extends NoAppTestingBase {
     public void mergeAtJsonPathClone() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key3", "value3");
+        inner.set("key3", "value3");
 
         JsonObject root = getJsonManager().create();
-        root.put("key1", "value1");
+        root.set("key1", "value1");
 
-        root.put("titi.toto[2].tata", inner, true);
+        root.set("titi.toto[2].tata", inner, true);
 
         assertEquals("value1", root.getString("key1"));
 
@@ -904,7 +906,7 @@ public class JsonPathsMergeTest extends NoAppTestingBase {
 
         assertEquals("value3", obj.getString("key3"));
 
-        inner.put("key3", "value4");
+        inner.set("key3", "value4");
 
         assertEquals("value3", obj.getString("key3"));
     }

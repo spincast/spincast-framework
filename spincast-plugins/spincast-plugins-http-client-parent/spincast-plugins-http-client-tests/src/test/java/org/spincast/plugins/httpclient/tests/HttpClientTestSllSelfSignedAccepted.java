@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
@@ -31,8 +32,8 @@ public class HttpClientTestSllSelfSignedAccepted extends NoAppStartHttpServerTes
          * Constructor
          */
         @Inject
-        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -72,7 +73,7 @@ public class HttpClientTestSllSelfSignedAccepted extends NoAppStartHttpServerTes
     @Test
     public void selfSignedCertificateAccepted() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

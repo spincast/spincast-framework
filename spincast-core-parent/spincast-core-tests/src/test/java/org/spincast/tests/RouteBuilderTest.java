@@ -66,7 +66,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void minimumConfigs() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -84,7 +84,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void filterPosition() throws Exception {
 
-        getRouter().GET("/").pos(100).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").pos(100).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -92,7 +92,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/").pos(-1).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").pos(-1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -100,7 +100,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -108,7 +108,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/").pos(1000).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").pos(1000).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -116,7 +116,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/").pos(-2).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").pos(-2).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -124,7 +124,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -169,7 +169,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
                        }
                    })
                    .after(handler)
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -189,7 +189,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().GET("/")
                    .accept(ContentTypeDefaults.JSON)
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -212,7 +212,7 @@ public class RouteBuilderTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().GET("/")
                    .acceptAsString("application/json")
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {

@@ -72,18 +72,18 @@ Docs : "Sending the response"
     JsonObject responseModel = context.response().getModel();
 
     // Adds a simple String variable
-    responseModel.put("simpleVar", "test");
+    responseModel.set("simpleVar", "test");
     
     // Adds a Book : this object will automatically
     // be converted to a JsonObject
     Book book = getBook(42);
-    responseModel.put("myBook", book);
+    responseModel.set("myBook", book);
         
     // Then adds a JsonObject representing a user
     JsonObject user = context.json().create();
-    user.put("name", "Stromgol");
-    user.put("age", 30);
-    responseModel.put("user", user);
+    user.set("name", "Stromgol");
+    user.set("age", 30);
+    responseModel.set("user", user);
 
     // ...
 }</pre>
@@ -208,9 +208,9 @@ Docs : "Sending the response"
     JsonObject responseModel = context.response().getModel();
     
     JsonObject user = context.json().create();
-    user.put("name", "Stromgol");
-    user.put("age", 42);
-    responseModel.put("user", user);
+    user.set("name", "Stromgol");
+    user.set("age", 42);
+    responseModel.set("user", user);
     
     // This will send the response model as "application/json" :
     // {"user":{"name":"Stromgol","age":42}}

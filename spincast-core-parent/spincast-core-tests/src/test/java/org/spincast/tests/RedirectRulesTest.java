@@ -48,7 +48,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void redirectDefault() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -56,7 +56,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -76,7 +76,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void redirectPermanently() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -84,7 +84,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -104,7 +104,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void redirectTemporarily() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -112,7 +112,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -132,7 +132,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFound() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -140,7 +140,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -158,7 +158,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fullUrl() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -166,7 +166,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -187,7 +187,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void oldRouteNotFound() throws Exception {
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -207,7 +207,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dynParams() throws Exception {
 
-        getRouter().GET("/two/three/four").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/three/four").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -227,7 +227,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void splatParam() throws Exception {
 
-        getRouter().GET("/two/three/four").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/three/four").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -247,7 +247,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void startOrDollarSignAreInterchnageableInTheNewPath() throws Exception {
 
-        getRouter().GET("/two/four/five/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/four/five/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -267,7 +267,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void startOrDollarSignAreInterchnageableInTheNewPathNotFound() throws Exception {
 
-        getRouter().GET("/two/four/five/nope").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/four/five/nope").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -285,7 +285,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dynParamsCanBeUsedAnywhereInTheNewPath() throws Exception {
 
-        getRouter().GET("/aaabbbccc/dddeee/fff").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/aaabbbccc/dddeee/fff").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -305,7 +305,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void nullNewPathLeadsToRoot() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -325,7 +325,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void emptyNewPathLeadsToRoot() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -345,7 +345,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postIsNotRedirectedButWeReceive301Default() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -353,7 +353,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -371,7 +371,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postIsNotRedirectedButWeReceive301() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -379,7 +379,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -397,7 +397,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postIsNotRedirectedButWeReceive302() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -405,7 +405,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -430,7 +430,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
                 fail();
             }
         };
-        getRouter().websocket("/one").save(controller1);
+        getRouter().websocket("/one").handle(controller1);
 
         DefaultWebsocketControllerTest controller2 = new DefaultWebsocketControllerTest(getServer()) {
 
@@ -440,7 +440,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
                 context.sendMessageToCurrentPeer("ok!");
             }
         };
-        getRouter().websocket("/two").save(controller2);
+        getRouter().websocket("/two").handle(controller2);
 
         getRouter().redirect("/one").to("/two");
 
@@ -467,7 +467,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
                 context.sendMessageToCurrentPeer("ok!");
             }
         };
-        getRouter().websocket("/final").save(controller);
+        getRouter().websocket("/final").handle(controller);
 
         getRouter().redirect("/one").to("/two");
         getRouter().redirect("/two").to("/three");
@@ -497,7 +497,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
                 context.sendMessageToCurrentPeer("ok!");
             }
         };
-        getRouter().websocket("/final").save(controller);
+        getRouter().websocket("/final").handle(controller);
 
         getRouter().redirect("/one").to("/two");
         getRouter().redirect("/two").to("/three");

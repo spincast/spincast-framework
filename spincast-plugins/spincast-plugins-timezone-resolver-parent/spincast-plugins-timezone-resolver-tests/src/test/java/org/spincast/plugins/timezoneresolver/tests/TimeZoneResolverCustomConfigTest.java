@@ -7,6 +7,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.timezone.TimeZoneResolver;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
@@ -27,8 +28,8 @@ public class TimeZoneResolverCustomConfigTest extends NoAppStartHttpServerTestin
     static class CustomConfig extends SpincastConfigTestingDefault {
 
         @Inject
-        protected CustomConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected CustomConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -47,7 +48,7 @@ public class TimeZoneResolverCustomConfigTest extends NoAppStartHttpServerTestin
     @Test
     public void requestContextNoCookie() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -66,7 +67,7 @@ public class TimeZoneResolverCustomConfigTest extends NoAppStartHttpServerTestin
     @Test
     public void withCookie() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -78,7 +79,7 @@ public class TimeZoneResolverCustomConfigTest extends NoAppStartHttpServerTestin
             }
         });
 
-        HttpResponse response = GET("/").addCookie(getSpincastConfig().getCookieNameTimeZoneId(),
+        HttpResponse response = GET("/").setCookie(getSpincastConfig().getCookieNameTimeZoneId(),
                                                    "America/New_York",
                                                    false)
                                         .send();
@@ -88,7 +89,7 @@ public class TimeZoneResolverCustomConfigTest extends NoAppStartHttpServerTestin
     @Test
     public void withCookieInvalid() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -100,7 +101,7 @@ public class TimeZoneResolverCustomConfigTest extends NoAppStartHttpServerTestin
             }
         });
 
-        HttpResponse response = GET("/").addCookie(getSpincastConfig().getCookieNameTimeZoneId(),
+        HttpResponse response = GET("/").setCookie(getSpincastConfig().getCookieNameTimeZoneId(),
                                                    "xxx",
                                                    false)
                                         .send();

@@ -65,12 +65,12 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
         String placeholder = this.templatingEngine.createPlaceholder("param1");
         FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("param1", "Hello!");
+                context.response().getModel().set("param1", "Hello!");
 
                 context.response().sendTemplateHtml(testFile.getAbsolutePath(), false);
             }
@@ -90,12 +90,12 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
         String placeholder = this.templatingEngine.createPlaceholder("fontPxSize");
         FileUtils.writeStringToFile(testFile, "body {font-size : " + placeholder + "px;}", "UTF-8");
 
-        getRouter().GET("/test.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/test.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("fontPxSize", 16);
+                context.response().getModel().set("fontPxSize", 16);
 
                 context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css");
             }
@@ -123,14 +123,14 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
         // When using router.file(...) and a generator, the generated
         // resource will automatically be saved.
         //==========================================
-        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/test.css").pathAbsolute(generatedFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 nbrTimeCalled[0]++;
 
-                context.response().getModel().put("fontPxSize", 16);
+                context.response().getModel().set("fontPxSize", 16);
 
                 context.response().sendTemplate(testFile.getAbsolutePath(), false, "text/css");
             }
@@ -167,7 +167,7 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
     public void evaluateJsonObject() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("name", "Stromgol");
+        jsonObj.set("name", "Stromgol");
 
         String placeholder = this.templatingEngine.createPlaceholder("name");
         String result = this.templatingEngine.evaluate("Hello " + placeholder, jsonObj);
@@ -198,7 +198,7 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
         FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("param1", "Stromgol");
+        jsonObj.set("param1", "Stromgol");
 
         String result = this.templatingEngine.fromTemplate(testFile.getAbsolutePath(), false, jsonObj);
         assertNotNull(result);
@@ -208,12 +208,12 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void defaultTemplateVariables() throws Exception {
 
-        getRouter().GET("/one/${param1}").id("test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/${param1}").id("test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.variables().add("oneVar", "oneVal");
+                context.variables().set("oneVar", "oneVal");
 
                 Map<String, Object> varsRoot = context.templating().getTemplatingGlobalVariables();
                 assertNotNull(varsRoot);
@@ -279,7 +279,7 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val", false)
+        HttpResponse response = GET("/one/test1?key1=val1").setCookie("cookie1", "cookie1Val", false)
                                                            .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());

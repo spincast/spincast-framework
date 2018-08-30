@@ -43,7 +43,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws1").save(controller);
+        getRouter().websocket("/ws1").handle(controller);
 
         DefaultWebsocketControllerTest controller2 = new DefaultWebsocketControllerTest(getServer()) {
 
@@ -64,7 +64,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws2").save(controller2);
+        getRouter().websocket("/ws2").handle(controller2);
 
         endpointIdToUse[0] = "endpoint1";
         peerIdToUse[0] = "peer1";
@@ -130,7 +130,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws1").save(controller);
+        getRouter().websocket("/ws1").handle(controller);
 
         DefaultWebsocketControllerTest controller2 = new DefaultWebsocketControllerTest(getServer()) {
 
@@ -151,7 +151,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws2").save(controller2);
+        getRouter().websocket("/ws2").handle(controller2);
 
         endpointIdToUse[0] = "endpoint1";
         peerIdToUse[0] = "peer1";
@@ -244,7 +244,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertFalse(controller.isEndpointOpen("endpoint1"));
         assertFalse(controller.isEndpointOpen("endpoint2"));
@@ -392,7 +392,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         assertFalse(controller.isEndpointOpen("endpoint1"));
         assertFalse(controller.isEndpointOpen("endpoint2"));

@@ -8,8 +8,8 @@ public class AppController {
     public void index(DefaultRequestContext context) {
 
         JsonObject user = context.json().create();
-        user.put("name", "Stromgol");
-        user.put("age", 42);
+        user.set("name", "Stromgol");
+        user.set("age", 42);
 
         context.response().sendJson(user);
     }

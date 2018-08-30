@@ -16,65 +16,39 @@ public class SpincastDictionaryPlugin extends SpincastPluginBase {
 
     public static final String PLUGIN_ID = SpincastDictionaryPlugin.class.getName();
 
-    private Class<? extends Dictionary> dictionaryImplClass;
-
-    /**
-     * Constructor
-     */
-    public SpincastDictionaryPlugin() {
-    }
-
-    /**
-     * Constructor
-     * 
-     * @param dictionaryImplClass the specific
-     * dictionary implementation class to use.
-     */
-    public SpincastDictionaryPlugin(Class<? extends Dictionary> dictionaryImplClass) {
-        this.dictionaryImplClass = dictionaryImplClass;
-    }
-
     @Override
     public String getId() {
         return PLUGIN_ID;
     }
 
-    protected Class<? extends Dictionary> getDictionaryImplClass() {
-        return this.dictionaryImplClass;
-    }
-
     @Override
     public Module apply(Module module) {
 
-        Class<? extends Dictionary> dictionaryImplClass = getDictionaryImplClass();
+        Class<? extends Dictionary> dictionaryImplClass = null;
 
         //==========================================
         // Check if a custom SpincastDictionary implementation
         // class must be used...
         //==========================================
-        if (dictionaryImplClass == null) {
-            GuiceModuleUtils guiceModuleUtils = new GuiceModuleUtils(module);
+        GuiceModuleUtils guiceModuleUtils = new GuiceModuleUtils(module);
 
-            Set<Class<? extends Dictionary>> classes =
-                    guiceModuleUtils.getBoundClassesExtending(Dictionary.class);
-            if (classes.size() > 0) {
+        Set<Class<? extends Dictionary>> classes =
+                guiceModuleUtils.getBoundClassesExtending(Dictionary.class);
+        if (classes.size() > 0) {
 
-                if (classes.size() > 1) {
-                    String msg = "More than one custom implementations of " +
-                                 Dictionary.class.getName() + " " +
-                                 "has been found. You'll have to pass the implementation " +
-                                 "to use the constructor of this plugin to remove the " +
-                                 "ambiguity about which one to use. Bindings found :\n";
+            if (classes.size() > 1) {
+                String msg = "More than one custom implementations of " +
+                             Dictionary.class.getName() + " " +
+                             "has been found. Bindings found :\n";
 
-                    for (Class<? extends Dictionary> clazz : classes) {
-                        msg += "- " + clazz.getName() + "\n";
-                    }
-                    throw new RuntimeException(msg);
+                for (Class<? extends Dictionary> clazz : classes) {
+                    msg += "- " + clazz.getName() + "\n";
                 }
-
-                Class<? extends Dictionary> temp = (Class<? extends Dictionary>)classes.iterator().next();
-                dictionaryImplClass = temp;
+                throw new RuntimeException(msg);
             }
+
+            Class<? extends Dictionary> temp = (Class<? extends Dictionary>)classes.iterator().next();
+            dictionaryImplClass = temp;
         }
 
         Module pluginModule = getPluginModule(dictionaryImplClass);

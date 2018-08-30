@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
@@ -28,8 +29,9 @@ public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
          * Constructor
          */
         @Inject
-        protected TestingSpincastConfig2(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected TestingSpincastConfig2(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                         @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         //==========================================
@@ -44,7 +46,7 @@ public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void get() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -62,7 +64,7 @@ public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postSmall() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -71,7 +73,7 @@ public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/one").setEntityString("1234567890", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
+                POST("/one").setStringBody("1234567890", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("ok", response.getContentAsString());
@@ -80,7 +82,7 @@ public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postTooBig() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -92,7 +94,7 @@ public class RequestBodyMaxSizeTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/one").setEntityString("12345678901", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
+                POST("/one").setStringBody("12345678901", ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()).send();
         assertEquals(HttpStatus.SC_REQUEST_TOO_LONG, response.getStatus());
     }
 

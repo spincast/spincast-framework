@@ -40,7 +40,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundCustom() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -71,21 +71,21 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundCustomWithFilters() throws Exception {
 
-        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("111");
             }
         });
-        getRouter().ALL("/nope").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/nope").pos(-1).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("nope");
             }
         });
-        getRouter().ALL("/one").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/one").pos(-1).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -93,7 +93,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{any}").pos(1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{any}").pos(1).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -117,7 +117,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                            context.response().sendHtml("after");
                        }
                    })
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -135,7 +135,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundCustomChangeHttpStatus() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -154,14 +154,14 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundCustomFirst() throws Exception {
 
-        getRouter().GET("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{path}").notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
                 context.response().sendHtml("custom404_1");
             }
         });
-        getRouter().GET("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{path}").notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -179,7 +179,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundException() throws Exception {
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -201,7 +201,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     public void notFoundExceptionWithBeforeFiltersReset() throws Exception {
 
         // Apply to the original route AND to the Not Found route
-        getRouter().GET("/*{any}").pos(-1).found().notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-1).found().notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -210,7 +210,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // Apply to the original route only
-        getRouter().GET("/one").found().pos(-1).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").found().pos(-1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -218,7 +218,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -236,7 +236,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundExceptionCustomHandler() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -244,7 +244,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -267,7 +267,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFoundExceptionCustomHandlerNoReset() throws Exception {
 
-        getRouter().ALL("/*{path}").notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -275,7 +275,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -299,7 +299,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     public void notFoundExceptionWithFiltersReset() throws Exception {
 
         // "before" filter A
-        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -308,7 +308,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // "before" filter B
-        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-1).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -334,7 +334,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                        }
                    })
 
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -345,7 +345,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                    });
 
         // "after" filter E
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -354,7 +354,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // "after" filter F
-        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(10).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -374,7 +374,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     public void notFoundExceptionWithFiltersNoReset() throws Exception {
 
         // "before" filter A
-        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -383,7 +383,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // "before" filter B
-        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -410,7 +410,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                        }
                    })
 
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -419,7 +419,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                    });
 
         // "after" filter E
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -428,7 +428,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // "after" filter F
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -457,7 +457,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
     public void notFoundExceptionWithFiltersNoResetButSkipOneBefore() throws Exception {
 
         // "before" filter A
-        getRouter().GET("/*{any}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -472,7 +472,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // "before" filter B
-        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -500,7 +500,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                        }
                    })
 
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -509,7 +509,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                    });
 
         // "after" filter E
-        getRouter().GET("/*{any}").pos(10).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{any}").pos(10).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -518,7 +518,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         });
 
         // "after" filter F
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

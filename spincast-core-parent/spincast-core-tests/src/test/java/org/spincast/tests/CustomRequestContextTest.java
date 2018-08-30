@@ -57,7 +57,7 @@ public class CustomRequestContextTest extends
     @Test
     public void customRequestContext() throws Exception {
 
-        getRouter().GET("/").save(new Handler<CustomRequestContext>() {
+        getRouter().GET("/").handle(new Handler<CustomRequestContext>() {
 
             @Override
             public void handle(CustomRequestContext context) {

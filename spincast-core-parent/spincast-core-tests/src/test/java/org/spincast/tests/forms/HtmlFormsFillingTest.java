@@ -38,20 +38,20 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fillHtmlForm() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 JsonObject model = context.json().create();
-                model.put("email", "test@example.com");
+                model.set("email", "test@example.com");
 
                 JsonObject obj1 = context.json().create();
-                model.put("obj1", obj1);
+                model.set("obj1", obj1);
 
-                obj1.put("name", "Stromgol");
+                obj1.set("name", "Stromgol");
                 JsonArray arr1 = context.json().createArray();
-                obj1.put("books", arr1);
+                obj1.set("books", arr1);
                 arr1.add("book1");
                 arr1.add("book2");
                 arr1.add("book3");
@@ -59,7 +59,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject obj2 = context.json().create();
                 arr1.add(obj2);
 
-                obj2.put("name", "obj2");
+                obj2.set("name", "obj2");
 
                 context.response().setModel(model);
                 context.response().sendTemplateHtml("/forms/form01_1.html");
@@ -78,7 +78,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dynamicNumberOfElements() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -86,7 +86,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject model = context.json().create();
 
                 JsonArray arr1 = context.json().createArray();
-                model.put("books", arr1);
+                model.set("books", arr1);
                 arr1.add("book1");
                 arr1.add("book2");
                 arr1.add("book3");
@@ -111,7 +111,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void checkboxes() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -119,21 +119,21 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject model = context.json().create();
 
                 JsonArray arr1 = context.json().createArray();
-                model.put("books", arr1);
+                model.set("books", arr1);
 
                 JsonObject book1 = context.json().create();
-                book1.put("value", "book1");
-                book1.put("selected", true);
+                book1.set("value", "book1");
+                book1.set("selected", true);
                 arr1.add(book1);
 
                 JsonObject book2 = context.json().create();
-                book2.put("value", "book2");
-                book2.put("selected", false);
+                book2.set("value", "book2");
+                book2.set("selected", false);
                 arr1.add(book2);
 
                 JsonObject book3 = context.json().create();
-                book3.put("value", "book3");
-                book3.put("selected", true);
+                book3.set("value", "book3");
+                book3.set("selected", true);
                 arr1.add(book3);
 
                 context.response().setModel(model);
@@ -154,7 +154,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void radios() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -162,24 +162,24 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject model = context.json().create();
 
                 JsonArray arr1 = context.json().createArray();
-                model.put("books", arr1);
+                model.set("books", arr1);
 
                 JsonObject book1 = context.json().create();
-                book1.put("value", "book1");
-                book1.put("text", "My book2");
-                book1.put("selected", false);
+                book1.set("value", "book1");
+                book1.set("text", "My book2");
+                book1.set("selected", false);
                 arr1.add(book1);
 
                 JsonObject book2 = context.json().create();
-                book2.put("value", "book2");
-                book2.put("text", "My book2");
-                book2.put("selected", true);
+                book2.set("value", "book2");
+                book2.set("text", "My book2");
+                book2.set("selected", true);
                 arr1.add(book2);
 
                 JsonObject book3 = context.json().create();
-                book3.put("value", "book3");
-                book3.put("text", "My book2");
-                book3.put("selected", false);
+                book3.set("value", "book3");
+                book3.set("text", "My book2");
+                book3.set("selected", false);
                 arr1.add(book3);
 
                 context.response().setModel(model);
@@ -200,7 +200,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void select() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -208,24 +208,24 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject model = context.json().create();
 
                 JsonArray arr1 = context.json().createArray();
-                model.put("books", arr1);
+                model.set("books", arr1);
 
                 JsonObject book1 = context.json().create();
-                book1.put("value", "book1");
-                book1.put("text", "My book1");
-                book1.put("selected", false);
+                book1.set("value", "book1");
+                book1.set("text", "My book1");
+                book1.set("selected", false);
                 arr1.add(book1);
 
                 JsonObject book2 = context.json().create();
-                book2.put("value", "book2");
-                book2.put("text", "My book2");
-                book2.put("selected", true);
+                book2.set("value", "book2");
+                book2.set("text", "My book2");
+                book2.set("selected", true);
                 arr1.add(book2);
 
                 JsonObject book3 = context.json().create();
-                book3.put("value", "book3");
-                book3.put("text", "My book3");
-                book3.put("selected", false);
+                book3.set("value", "book3");
+                book3.set("text", "My book3");
+                book3.set("selected", false);
                 arr1.add(book3);
 
                 context.response().setModel(model);
@@ -246,7 +246,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void selectMultiple() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -254,24 +254,24 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject model = context.json().create();
 
                 JsonArray arr1 = context.json().createArray();
-                model.put("books", arr1);
+                model.set("books", arr1);
 
                 JsonObject book1 = context.json().create();
-                book1.put("value", "book1");
-                book1.put("text", "My book1");
-                book1.put("selected", true);
+                book1.set("value", "book1");
+                book1.set("text", "My book1");
+                book1.set("selected", true);
                 arr1.add(book1);
 
                 JsonObject book2 = context.json().create();
-                book2.put("value", "book2");
-                book2.put("text", "My book2");
-                book2.put("selected", true);
+                book2.set("value", "book2");
+                book2.set("text", "My book2");
+                book2.set("selected", true);
                 arr1.add(book2);
 
                 JsonObject book3 = context.json().create();
-                book3.put("value", "book3");
-                book3.put("text", "My book3");
-                book3.put("selected", false);
+                book3.set("value", "book3");
+                book3.set("text", "My book3");
+                book3.set("selected", false);
                 arr1.add(book3);
 
                 context.response().setModel(model);
@@ -292,7 +292,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void deepReferences() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -300,40 +300,40 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
                 JsonObject model = context.json().create();
 
                 JsonObject user1 = context.json().create();
-                model.put("user1", user1);
+                model.set("user1", user1);
                 JsonObject user2 = context.json().create();
-                model.put("user2", user2);
+                model.set("user2", user2);
 
                 JsonObject child1 = context.json().create();
-                user2.put("child1", child1);
+                user2.set("child1", child1);
                 JsonObject child2 = context.json().create();
-                user2.put("child2", child2);
+                user2.set("child2", child2);
 
                 JsonArray arr1 = context.json().createArray();
-                child2.put("books", arr1);
+                child2.set("books", arr1);
 
                 JsonObject book1 = context.json().create();
-                book1.put("value", "book1");
-                book1.put("text", "My book1");
-                book1.put("selected", true);
+                book1.set("value", "book1");
+                book1.set("text", "My book1");
+                book1.set("selected", true);
                 arr1.add(book1);
 
                 JsonObject book2 = context.json().create();
-                book2.put("value", "book2");
-                book2.put("text", "My book2");
-                book2.put("selected", true);
+                book2.set("value", "book2");
+                book2.set("text", "My book2");
+                book2.set("selected", true);
 
                 JsonObject info = context.json().create();
-                book2.put("info", info);
-                info.put("title", "The Title");
-                info.put("year", "1999");
+                book2.set("info", info);
+                info.set("title", "The Title");
+                info.set("year", "1999");
 
                 arr1.add(book2);
 
                 JsonObject book3 = context.json().create();
-                book3.put("value", "book3");
-                book3.put("text", "My book3");
-                book3.put("selected", false);
+                book3.set("value", "book3");
+                book3.set("text", "My book3");
+                book3.set("selected", false);
                 arr1.add(book3);
 
                 context.response().setModel(model);

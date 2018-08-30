@@ -34,7 +34,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noOutput() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -53,7 +53,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void flush() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -72,7 +72,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void end() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -96,7 +96,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void textThenBytes() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -104,7 +104,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -125,7 +125,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void textThenBytesAndContentType() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -133,7 +133,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -154,7 +154,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void textAndBytesFlush() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -162,7 +162,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -183,7 +183,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void clearBuffer() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -191,7 +191,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -209,7 +209,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void clearBufferAlreadyFlushed() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -218,7 +218,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -236,7 +236,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void clearBufferAlreadyFlushed2() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -244,7 +244,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -262,7 +262,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void bytes() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -285,7 +285,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseFluent() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -307,13 +307,13 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void sendModelAsJson() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("someKey", "test1");
-                context.response().getModel().put("aaa.bbb", "test2");
+                context.response().getModel().set("someKey", "test1");
+                context.response().getModel().set("aaa.bbb", "test2");
 
                 context.response().sendJson();
 
@@ -333,13 +333,13 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void sendModelAsJsonFlush() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("someKey", "test1");
-                context.response().getModel().put("aaa.bbb", "test2");
+                context.response().getModel().set("someKey", "test1");
+                context.response().getModel().set("aaa.bbb", "test2");
 
                 context.response().sendJson(true);
 
@@ -359,13 +359,13 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void sendModelAsXml() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("someKey", "test1");
-                context.response().getModel().put("aaa.bbb", "test2");
+                context.response().getModel().set("someKey", "test1");
+                context.response().getModel().set("aaa.bbb", "test2");
 
                 context.response().sendXml();
 
@@ -385,13 +385,13 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void sendModelAsXmlFlush() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("someKey", "test1");
-                context.response().getModel().put("aaa.bbb", "test2");
+                context.response().getModel().set("someKey", "test1");
+                context.response().getModel().set("aaa.bbb", "test2");
 
                 context.response().sendXml(true);
 
@@ -411,12 +411,12 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void addAlert() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("someKey", "test1");
+                context.response().getModel().set("someKey", "test1");
 
                 context.response().addAlert(AlertLevel.SUCCESS, "my alert");
 

@@ -47,7 +47,7 @@ public class LocaleResolverDefault implements LocaleResolver {
         try {
             RequestContext<?> context = getRequestContextProvider().get();
 
-            String cookieValue = context.request().getCookie(getSpincastConfig().getCookieNameLocale());
+            String cookieValue = context.request().getCookieValue(getSpincastConfig().getCookieNameLocale());
             if (cookieValue != null) {
 
                 try {

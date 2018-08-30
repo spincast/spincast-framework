@@ -49,7 +49,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -102,7 +102,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -148,7 +148,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -195,7 +195,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
 
         getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -256,7 +256,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
 
         getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -293,7 +293,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
 
         getRouter().dir("/generated/*{resourcePath}").pathAbsolute(dynamicDir.getAbsolutePath())
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -342,7 +342,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         try {
             getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/*{splat}")
-                       .save(new Handler<DefaultRequestContext>() {
+                       .handle(new Handler<DefaultRequestContext>() {
 
                            @Override
                            public void handle(DefaultRequestContext context) {
@@ -359,7 +359,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         try {
             getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/${splat}")
-                       .save(new Handler<DefaultRequestContext>() {
+                       .handle(new Handler<DefaultRequestContext>() {
 
                            @Override
                            public void handle(DefaultRequestContext context) {
@@ -382,7 +382,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         getRouter().file("/test/${name}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -422,7 +422,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         getRouter().file("/test/${name}/coco")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${name}.css")
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -464,7 +464,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         getRouter().file("/${param1}/${param2}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${param2}/${param1}.css")
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -504,7 +504,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         getRouter().file("/${param1}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/toto.css")
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -547,7 +547,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         getRouter().file("/test/${name}")
                    .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -571,7 +571,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         try {
             getRouter().file("/test/*{name}")
                        .pathAbsolute(getTestingWritableDir() + "/somepath/titi")
-                       .save(new Handler<DefaultRequestContext>() {
+                       .handle(new Handler<DefaultRequestContext>() {
 
                            @Override
                            public void handle(DefaultRequestContext context) {
@@ -592,7 +592,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -636,7 +636,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -680,7 +680,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

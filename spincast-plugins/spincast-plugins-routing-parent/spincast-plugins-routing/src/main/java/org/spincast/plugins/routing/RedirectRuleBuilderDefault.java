@@ -84,7 +84,7 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
         getRouter().ALL(getOldPath())
                    .pos(getSpincastRouterConfig().getRedirectFilterPosition())
                    .found().notFound()
-                   .save(new Handler<R>() {
+                   .handle(new Handler<R>() {
 
                        @Override
                        public void handle(R context) {

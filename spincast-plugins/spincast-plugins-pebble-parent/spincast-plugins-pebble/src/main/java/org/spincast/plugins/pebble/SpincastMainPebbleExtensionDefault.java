@@ -847,7 +847,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                 for (Entry<String, Object> entry : args.entrySet()) {
 
                     String key = entry.getKey();
-                    String val = String.valueOf(entry.getValue());
+                    String val = SpincastStatics.stringValueOrNull(entry.getValue());
 
                     if (!key.matches("^\\d+$")) {
                         continue;

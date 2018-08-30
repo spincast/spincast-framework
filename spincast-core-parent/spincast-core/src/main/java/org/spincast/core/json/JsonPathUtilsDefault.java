@@ -75,7 +75,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
         Objects.requireNonNull(array, "The array can't be NULL");
 
         JsonObject root = getJsonManager().create();
-        root.putNoKeyParsing("array", array, false);
+        root.setNoKeyParsing("array", array, false);
 
         jsonPath = "array" + jsonPath;
 
@@ -101,7 +101,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
             jsonPath = "array" + jsonPath;
 
             rootObj = getJsonManager().create();
-            rootObj.putNoKeyParsing("array", (JsonArray)root, false);
+            rootObj.setNoKeyParsing("array", (JsonArray)root, false);
 
         } else {
             throw new RuntimeException("Not managed here : " + root);
@@ -127,7 +127,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
         }
 
         JsonObject root = getJsonManager().create();
-        root.putNoKeyParsing("a", array, false);
+        root.setNoKeyParsing("a", array, false);
 
         jsonPath = "a" + jsonPath;
 
@@ -156,7 +156,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
         }
 
         JsonObject root = getJsonManager().create();
-        root.putNoKeyParsing("a", array, false);
+        root.setNoKeyParsing("a", array, false);
 
         jsonPath = "a" + jsonPath;
 
@@ -298,7 +298,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
                                 return false;
                             } else {
                                 obj = getJsonManager().create();
-                                currentObj.put(token, obj);
+                                currentObj.set(token, obj);
                             }
                         }
 
@@ -410,7 +410,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
                                         return false;
                                     } else {
                                         obj = getJsonManager().create();
-                                        currentObj.put(token, obj);
+                                        currentObj.set(token, obj);
                                     }
                                 }
                                 currentObj = obj;
@@ -507,7 +507,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
                                     return false;
                                 } else {
                                     array = getJsonManager().createArray();
-                                    currentObj.put(token, array);
+                                    currentObj.set(token, array);
                                 }
                             }
 
@@ -765,7 +765,7 @@ public class JsonPathUtilsDefault implements JsonPathUtils {
                 // Cloning must habe been done before this method.
                 // No more parsing of the key.
                 //==========================================
-                currentObj.putNoKeyParsing(token, valueToPut, false);
+                currentObj.setNoKeyParsing(token, valueToPut, false);
 
                 return null;
 

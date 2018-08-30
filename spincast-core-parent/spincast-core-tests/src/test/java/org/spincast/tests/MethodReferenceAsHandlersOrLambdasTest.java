@@ -24,7 +24,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends NoAppStartHttpServer
     }
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 
@@ -41,7 +41,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends NoAppStartHttpServer
     @Test
     public void methodHandler() throws Exception {
 
-        getRouter().GET("/one").save(this.ctl::test);
+        getRouter().GET("/one").handle(this.ctl::test);
 
         HttpResponse response = GET("/one").send();
 
@@ -53,7 +53,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends NoAppStartHttpServer
     @Test
     public void lambda() throws Exception {
 
-        getRouter().GET("/one").save(context -> context.response().sendPlainText(SpincastTestUtils.TEST_STRING));
+        getRouter().GET("/one").handle(context -> context.response().sendPlainText(SpincastTestUtils.TEST_STRING));
 
         HttpResponse response = GET("/one").send();
 

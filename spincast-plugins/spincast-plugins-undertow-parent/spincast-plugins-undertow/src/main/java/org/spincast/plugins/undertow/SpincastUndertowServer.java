@@ -35,10 +35,12 @@ import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.controllers.FrontController;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.cookies.CookieFactory;
+import org.spincast.core.cookies.CookieSameSite;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.Server;
+import org.spincast.core.server.ServerUtils;
 import org.spincast.core.server.UploadedFile;
 import org.spincast.core.server.UploadedFileDefault;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -106,6 +108,7 @@ public class SpincastUndertowServer implements Server {
     private final FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
     private final SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
     private final SSLContextFactory sslContextFactory;
+    private final ServerUtils serverUtils;
 
     private Undertow undertowServer;
     private IoCallback doNothingCallback = null;
@@ -151,7 +154,8 @@ public class SpincastUndertowServer implements Server {
                                   FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                   SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                   WebsocketEndpointFactory spincastWebsocketEndpointFactory,
-                                  SSLContextFactory sslContextFactory) {
+                                  SSLContextFactory sslContextFactory,
+                                  ServerUtils serverUtils) {
         this.config = config;
         this.spincastUndertowConfig = spincastUndertowConfig;
         this.frontController = frontController;
@@ -166,6 +170,7 @@ public class SpincastUndertowServer implements Server {
         this.spincastHttpAuthIdentityManagerFactory = spincastHttpAuthIdentityManagerFactory;
         this.spincastWebsocketEndpointFactory = spincastWebsocketEndpointFactory;
         this.sslContextFactory = sslContextFactory;
+        this.serverUtils = serverUtils;
     }
 
     protected SpincastConfig getConfig() {
@@ -238,6 +243,10 @@ public class SpincastUndertowServer implements Server {
 
     protected SSLContextFactory getSslContextFactory() {
         return this.sslContextFactory;
+    }
+
+    protected ServerUtils getServerUtils() {
+        return this.serverUtils;
     }
 
     @Override
@@ -1114,6 +1123,11 @@ public class SpincastUndertowServer implements Server {
             undertowCookie.setDomain(cookie.getDomain());
             undertowCookie.setExpires(cookie.getExpires());
             undertowCookie.setHttpOnly(cookie.isHttpOnly());
+            CookieSameSite sameSite = cookie.getSameSite();
+            if (sameSite != null) {
+                undertowCookie.setSameSite(true);
+                undertowCookie.setSameSiteMode(sameSite.toString());
+            }
             undertowCookie.setPath(cookie.getPath());
             undertowCookie.setSecure(cookie.isSecure());
             undertowCookie.setVersion(cookie.getVersion());

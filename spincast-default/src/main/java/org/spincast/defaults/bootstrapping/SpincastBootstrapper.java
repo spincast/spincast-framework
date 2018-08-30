@@ -59,7 +59,7 @@ public class SpincastBootstrapper {
 
     private static Module defaultModuleWithCore;
     private static Module defaultModuleWithoutCore;
-    private Set<Module> modules;
+    private Set<Module> appModules;
     private List<SpincastPlugin> plugins;
     private Set<String> pluginsToDisable;
 
@@ -201,12 +201,12 @@ public class SpincastBootstrapper {
         return this.plugins;
     }
 
-    protected Set<Module> getModules() {
+    protected Set<Module> getAppModules() {
 
-        if (this.modules == null) {
-            this.modules = new HashSet<Module>();
+        if (this.appModules == null) {
+            this.appModules = new HashSet<Module>();
         }
-        return this.modules;
+        return this.appModules;
     }
 
     protected Set<String> getPluginsToDisable() {
@@ -402,7 +402,7 @@ public class SpincastBootstrapper {
      */
     public SpincastBootstrapper module(Module module) {
         Objects.requireNonNull(module, "The module can't be NULL");
-        getModules().add(module);
+        getAppModules().add(module);
         return this;
     }
 
@@ -500,7 +500,7 @@ public class SpincastBootstrapper {
             Class<?> appClass = null;
             if (getAppClass() != null) {
                 appClass = getAppClass();
-                getModules().add(new SpincastGuiceModuleBase() {
+                getAppModules().add(new SpincastGuiceModuleBase() {
 
                     @Override
                     protected void configure() {
@@ -519,7 +519,7 @@ public class SpincastBootstrapper {
             // Websocket Context type on modules and
             // plugins
             //==========================================
-            for (Module module : getModules()) {
+            for (Module module : getAppModules()) {
                 if (module instanceof SpincastContextTypesInterested) {
                     setSpincastContextes((SpincastContextTypesInterested)module);
                 }
@@ -529,9 +529,19 @@ public class SpincastBootstrapper {
             }
 
             //==========================================
-            // Combines the standalone modules
+            // We start the creation of the Guice context
+            // with the app's modules.
+            //
+            // This is required so some plugins can
+            // know if a specific implementation has to
+            // be used instead of a default one.
+            //
+            // For example, in SpincastRoutingPlugin,
+            // we check if there is a custom implementation
+            // of the "Router" and we bind this custom
+            // implementation to 3 other Guice Keys!
             //==========================================
-            Module combinedModule = Modules.combine(getModules());
+            Module combinedModule = Modules.combine(getAppModules());
 
             //==========================================
             // GuiceTweaker : tweaks the combined Module
@@ -554,8 +564,20 @@ public class SpincastBootstrapper {
             }
 
             //==========================================
-            // GuiceTweaker : tweaks the combined Module
-            // after applying the plugins.
+            // We add the application modules *again*, this
+            // time as an "override"...
+            // This is required for the app to be able to
+            // override a default plugin configuration
+            // class, for example.
+            //
+            // The app must have the very last word on
+            // what bindings to use (exceot if a GuiceTweaker
+            // is used, during testing)
+            //==========================================
+            combinedModule = Modules.override(combinedModule).with(getAppModules());
+
+            //==========================================
+            // GuiceTweaker : final tweaks of the modules...
             //==========================================
             if (guiceTweaker != null) {
                 combinedModule = guiceTweaker.afterPlugins(combinedModule);
@@ -616,7 +638,7 @@ public class SpincastBootstrapper {
 
         final Class<?> callerClassFinal = callerClass;
         if (callerClassFinal != null) {
-            getModules().add(new SpincastGuiceModuleBase() {
+            getAppModules().add(new SpincastGuiceModuleBase() {
 
                 @Override
                 protected void configure() {
@@ -652,7 +674,7 @@ public class SpincastBootstrapper {
             mainArgs = new String[]{};
         }
         final String[] mainArgsFinal = mainArgs;
-        getModules().add(new SpincastGuiceModuleBase() {
+        getAppModules().add(new SpincastGuiceModuleBase() {
 
             @Override
             protected void configure() {
@@ -752,7 +774,7 @@ public class SpincastBootstrapper {
             }
         }
 
-        Set<Module> modules = getModules();
+        Set<Module> modules = getAppModules();
         for (Module module : modules) {
             if (clazz.isAssignableFrom(module.getClass())) {
                 return true;

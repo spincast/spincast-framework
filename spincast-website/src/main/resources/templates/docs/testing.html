@@ -114,7 +114,7 @@ Testing demo
                         AppController ctrl,
                         Server server) {
 
-        router.POST("/sum").save(ctrl::sumRoute);
+        router.POST("/sum").handle(ctrl::sumRoute);
         server.start();
     }
 }</pre> 
@@ -138,7 +138,7 @@ Testing demo
 public class SumTest extends AppBasedDefaultContextTypesTestingBase {
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
     
@@ -189,7 +189,7 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
                     </li>
                     <li>
                         <span class="code-line-nbr">4-7</span> : The base class we are using requires that we implement the
-                        <code>startApp()</code> method. In this method we have to start the application to test. This is
+                        <code>callAppMainMethod()</code> method. In this method we have to initialize the application to test. This is
                         easily done by calling its <code>main(...)</code> method.
                     </li>
                     <li>
@@ -232,8 +232,8 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
     @Test
     public void validRequest() throws Exception {
     
-        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "1")
-                                            .addEntityFormDataValue("second", "2")
+        HttpResponse response = POST("/sum").addFormBodyFieldValue("first", "1")
+                                            .addFormBodyFieldValue("second", "2")
                                             .addJsonAcceptHeader()
                                             .send();
     
@@ -320,7 +320,7 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
 public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBase {
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
     
@@ -359,7 +359,7 @@ public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBas
     }
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -415,7 +415,7 @@ public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBas
     @Test
     public void isGzipped() throws Exception {
      
-        HttpResponse response = POST("/sum").addEntityFormDataValue("toto", "titi")
+        HttpResponse response = POST("/sum").addFormBodyFieldValue("toto", "titi")
                                             .addJsonAcceptHeader()
                                             .send();
     
@@ -508,11 +508,11 @@ Guice Tweaker
             	</p>
             </li>
             <li>
-                <strong><em>getExtraOverridingModule2(...)</em></strong> : to make the Guice Tweaker
+                <strong><em>getExtraOverridingModule(...)</em></strong> : to make the Guice Tweaker
                 add an extra module to the created Guice context.
             </li>
             <li>
-                <strong><em>getExtraPlugins2(...)</em></strong> :  to make the Guice Tweaker
+                <strong><em>getExtraPlugins(...)</em></strong> :  to make the Guice Tweaker
                 add extra plugins to the created Guice context.
             </li>
             <li>
@@ -793,6 +793,44 @@ Spincast JUnit runner
     
 </section>
 
+
+{#==========================================
+Managing cookies
+==========================================#}         
+<section id="testing_cookies">
+    <h4>
+        <a class="anchor_small" href="#testing_cookies" title="permanent link"></a>
+        Managing cookies
+    </h4>
+    
+    <p>
+        A frequent need during integration testing is to be able to keep cookies across
+        multiple requests... In doing so, the behavior of a real browser is simulated.
+    </p>
+    <p>
+        To keep the cookies sent by a response, simple call
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/AppBasedTestingBase.html#saveResponseCookies-org.spincast.plugins.httpclient.HttpResponse-">saveResponseCookies(response)</a>
+        when a valid response is received. Then, you can add back those cookies to a new request using 
+        <code>.setCookies(getPreviousResponseCookies())</code>:
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,0,3,29|6,22,6,63" 
+>// First request, we save the cookies from the response...
+HttpResponse response = GET("/one").send();
+assertEquals(HttpStatus.SC_OK, response.getStatus());
+saveResponseCookies(response);
+
+// Second request, we resend the cookies!
+response = GET("/two").setCookies(getPreviousResponseCookies()).send();
+assertEquals(HttpStatus.SC_OK, response.getStatus());
+saveResponseCookies(response);
+</pre> 
+            </p>
+        </div>    
+    </p>
+    
+</section>
     
     
     

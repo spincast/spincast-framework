@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.ImmutablePair;
@@ -25,7 +26,7 @@ import com.google.inject.Inject;
 public abstract class WebsiteIntegrationTestBase extends AppBasedTestingBase<AppRequestContext, DefaultWebsocketContext> {
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(new String[]{});
     }
 
@@ -67,8 +68,8 @@ public abstract class WebsiteIntegrationTestBase extends AppBasedTestingBase<App
         protected Integer port;
 
         @Inject
-        public WebsiteTestingConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        public WebsiteTestingConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

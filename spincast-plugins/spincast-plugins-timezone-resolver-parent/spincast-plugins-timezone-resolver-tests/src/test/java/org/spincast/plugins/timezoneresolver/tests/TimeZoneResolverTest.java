@@ -32,7 +32,7 @@ public class TimeZoneResolverTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void requestContextNoCookie() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -51,7 +51,7 @@ public class TimeZoneResolverTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void withCookie() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -63,7 +63,7 @@ public class TimeZoneResolverTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = GET("/").addCookie(getSpincastConfig().getCookieNameTimeZoneId(),
+        HttpResponse response = GET("/").setCookie(getSpincastConfig().getCookieNameTimeZoneId(),
                                                    "America/New_York",
                                                    false)
                                         .send();
@@ -73,7 +73,7 @@ public class TimeZoneResolverTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void withCookieInvalid() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -85,7 +85,7 @@ public class TimeZoneResolverTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = GET("/").addCookie(getSpincastConfig().getCookieNameTimeZoneId(),
+        HttpResponse response = GET("/").setCookie(getSpincastConfig().getCookieNameTimeZoneId(),
                                                    "xxx",
                                                    false)
                                         .send();

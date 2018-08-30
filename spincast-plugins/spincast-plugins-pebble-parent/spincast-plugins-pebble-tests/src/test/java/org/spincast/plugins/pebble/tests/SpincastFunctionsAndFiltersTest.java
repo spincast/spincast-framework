@@ -35,7 +35,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     }
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -93,7 +93,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void invalidFilter() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("name", "Stromgol");
+        model.set("name", "Stromgol");
         try {
             getTemplatingEngine().evaluate("{{name | nope()}}",
                                            model);
@@ -109,7 +109,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject user = getJsonManager().create();
 
-        model.put("user", user);
+        model.set("user", user);
 
         String html = getTemplatingEngine().evaluate("{{user.name | default('')}}", model);
         assertEquals("", html);
@@ -121,9 +121,9 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        user.put("name", null);
+        user.set("name", null);
 
-        model.put("user", user);
+        model.set("user", user);
 
         String html = getTemplatingEngine().evaluate("{{user.name | default('')}}", model);
         assertEquals("", html);
@@ -135,9 +135,9 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        user.put("name", "");
+        user.set("name", "");
 
-        model.put("user", user);
+        model.set("user", user);
 
         String html = getTemplatingEngine().evaluate("{{user.name | default('')}}", model);
         assertEquals("", html);
@@ -149,9 +149,9 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        user.put("name", "Stromgol");
+        user.set("name", "Stromgol");
 
-        model.put("user", user);
+        model.set("user", user);
 
         String html = getTemplatingEngine().evaluate("{{user.name | default('')}}", model);
         assertEquals("Stromgol", html);
@@ -163,19 +163,19 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
+        model.set("user", user);
 
-        user.put("name", "Stromgol");
+        user.set("name", "Stromgol");
 
         JsonArray books = getJsonManager().createArray();
-        user.put("books", books);
+        user.set("books", books);
 
         JsonObject book = getJsonManager().create();
-        book.put("title", "book1");
+        book.set("title", "book1");
         books.add(book);
 
         book = getJsonManager().create();
-        book.put("title", "book2");
+        book.set("title", "book2");
         books.add(book);
 
         String html = getTemplatingEngine().evaluate("{{user.books[0].title | default('')}}", model);
@@ -194,9 +194,9 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        user.put("color", "red");
+        user.set("color", "red");
 
-        model.put("user", user);
+        model.set("user", user);
 
         String html =
                 getTemplatingEngine().evaluate("{{user.color | checked('blue')}}-{{user.color | checked('red')}}-{{user.color | checked('green')}}",
@@ -210,21 +210,21 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonArray colors = getJsonManager().createArray();
-        model.put("colors", colors);
+        model.set("colors", colors);
 
         JsonObject color = getJsonManager().create();
-        color.put("name", "blue");
-        color.put("selected", false);
+        color.set("name", "blue");
+        color.set("selected", false);
         colors.add(color);
 
         color = getJsonManager().create();
-        color.put("name", "red");
-        color.put("selected", true);
+        color.set("name", "red");
+        color.set("selected", true);
         colors.add(color);
 
         color = getJsonManager().create();
-        color.put("name", "green");
-        color.put("selected", false);
+        color.set("name", "green");
+        color.set("selected", false);
         colors.add(color);
 
         String html =
@@ -239,11 +239,11 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         JsonArray validColors = getJsonManager().createArray();
-        model.put("validColors", validColors);
+        model.set("validColors", validColors);
         validColors.add("blue");
         validColors.add("red");
         validColors.add("yellow");
@@ -259,8 +259,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         String html = getTemplatingEngine().evaluate("{{user.color | checked(['blue', 'red', 'yellow'])}}",
                                                      model);
@@ -273,11 +273,11 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         JsonArray validColors = getJsonManager().createArray();
-        model.put("validColors", validColors);
+        model.set("validColors", validColors);
         validColors.add("blue");
         validColors.add("green");
         validColors.add("yellow");
@@ -293,8 +293,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         String html = getTemplatingEngine().evaluate("{{user.color | checked(['blue', 'green', 'yellow'])}}",
                                                      model);
@@ -305,7 +305,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void checkedFilterEquivalenceTrue() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", "true");
+        model.set("key", "true");
 
         String html =
                 getTemplatingEngine().evaluate("{{key | checked('true')}}-{{key | checked(true)}}-{{key | checked('1')}}",
@@ -317,7 +317,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void checkedFilterEquivalenceFalse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", "false");
+        model.set("key", "false");
 
         String html =
                 getTemplatingEngine().evaluate("{{key | checked('false')}}-{{key | checked(false)}}-{{key | checked('0')}}",
@@ -329,7 +329,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void checkedFilterEquivalenceNumber() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", 123);
+        model.set("key", 123);
 
         String html =
                 getTemplatingEngine().evaluate("{{key | checked('123')}}-{{key | checked(123.00)}}-{{key | checked('123.2')}}",
@@ -341,7 +341,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void checkedFilterEquivalenceTrueInverse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", true);
+        model.set("key", true);
 
         String html =
                 getTemplatingEngine().evaluate("{{key | checked('true')}}-{{key | checked(true)}}-{{key | checked('1')}}",
@@ -353,7 +353,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void checkedFilterEquivalenceFalseInverse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", false);
+        model.set("key", false);
 
         String html =
                 getTemplatingEngine().evaluate("{{key | checked('false')}}-{{key | checked(false)}}-{{key | checked('0')}}",
@@ -365,7 +365,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void checkedFilterEquivalenceNumberInverse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", "123.0");
+        model.set("key", "123.0");
 
         String html =
                 getTemplatingEngine().evaluate("{{key | checked(123)}}-{{key | checked(123.00)}}-{{key | checked('123.2')}}",
@@ -379,9 +379,9 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        user.put("color", "red");
+        user.set("color", "red");
 
-        model.put("user", user);
+        model.set("user", user);
 
         String html =
                 getTemplatingEngine().evaluate("{{user.color | selected('blue')}}-{{user.color | selected('red')}}-{{user.color | selected('green')}}",
@@ -395,21 +395,21 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonArray colors = getJsonManager().createArray();
-        model.put("colors", colors);
+        model.set("colors", colors);
 
         JsonObject color = getJsonManager().create();
-        color.put("name", "blue");
-        color.put("selected", false);
+        color.set("name", "blue");
+        color.set("selected", false);
         colors.add(color);
 
         color = getJsonManager().create();
-        color.put("name", "red");
-        color.put("selected", true);
+        color.set("name", "red");
+        color.set("selected", true);
         colors.add(color);
 
         color = getJsonManager().create();
-        color.put("name", "green");
-        color.put("selected", false);
+        color.set("name", "green");
+        color.set("selected", false);
         colors.add(color);
 
         String html =
@@ -424,11 +424,11 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         JsonArray validColors = getJsonManager().createArray();
-        model.put("validColors", validColors);
+        model.set("validColors", validColors);
         validColors.add("blue");
         validColors.add("red");
         validColors.add("yellow");
@@ -444,8 +444,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         String html = getTemplatingEngine().evaluate("{{user.color | selected(['blue', 'red', 'yellow'])}}",
                                                      model);
@@ -458,11 +458,11 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         JsonArray validColors = getJsonManager().createArray();
-        model.put("validColors", validColors);
+        model.set("validColors", validColors);
         validColors.add("blue");
         validColors.add("green");
         validColors.add("yellow");
@@ -478,8 +478,8 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         JsonObject model = getJsonManager().create();
 
         JsonObject user = getJsonManager().create();
-        model.put("user", user);
-        user.put("color", "red");
+        model.set("user", user);
+        user.set("color", "red");
 
         String html = getTemplatingEngine().evaluate("{{user.color | selected(['blue', 'green', 'yellow'])}}",
                                                      model);
@@ -490,7 +490,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void selectedFilterEquivalenceTrue() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", "true");
+        model.set("key", "true");
 
         String html =
                 getTemplatingEngine().evaluate("{{key | selected('true')}}-{{key | selected(true)}}-{{key | selected('1')}}",
@@ -502,7 +502,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void selectedFilterEquivalenceFalse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", "false");
+        model.set("key", "false");
 
         String html =
                 getTemplatingEngine().evaluate("{{key | selected('false')}}-{{key | selected(false)}}-{{key | selected('0')}}",
@@ -514,7 +514,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void selectedFilterEquivalenceNumber() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", 123);
+        model.set("key", 123);
 
         String html =
                 getTemplatingEngine().evaluate("{{key | selected('123')}}-{{key | selected(123.00)}}-{{key | selected('123.2')}}",
@@ -526,7 +526,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void selectedFilterEquivalenceTrueInverse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", true);
+        model.set("key", true);
 
         String html =
                 getTemplatingEngine().evaluate("{{key | selected('true')}}-{{key | selected(true)}}-{{key | selected('1')}}",
@@ -538,7 +538,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void selectedFilterEquivalenceFalseInverse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", false);
+        model.set("key", false);
 
         String html =
                 getTemplatingEngine().evaluate("{{key | selected('false')}}-{{key | selected(false)}}-{{key | selected('0')}}",
@@ -550,7 +550,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void selectedFilterEquivalenceNumberInverse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("key", "123.0");
+        model.set("key", "123.0");
 
         String html =
                 getTemplatingEngine().evaluate("{{key | selected(123)}}-{{key | selected(123.00)}}-{{key | selected('123.2')}}",
@@ -564,7 +564,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         String html = getTemplatingEngine().evaluate("{{validation['myFormName.name'] | validationMessages()}}",
@@ -582,7 +582,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("name", "name", "message");
@@ -604,7 +604,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         String html = getTemplatingEngine().evaluate("{{validation['myFormName.myGroup'] | validationGroupMessages()}}",
@@ -622,7 +622,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("myGroup", "myGroup", "message");
@@ -644,7 +644,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         String html = getTemplatingEngine().evaluate("{{validation['myFormName.name'] | validationClass()}}",
@@ -662,7 +662,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("name", "name", "message");
@@ -688,7 +688,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
 
         String html = getTemplatingEngine().evaluate(" {% if validation['_'] | validationFresh() %}fresh{% endif %}",
                                                      model)
@@ -702,7 +702,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         String html = getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationFresh() %}fresh{% endif %}",
@@ -717,7 +717,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("myGroup", "myGroup", "message");
@@ -734,7 +734,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         String html =
@@ -749,7 +749,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
 
         String html =
                 getTemplatingEngine().evaluate(" {% if validation['myFormName._'] | validationSubmitted() %}fresh{% endif %}",
@@ -764,7 +764,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("name", "name", "message");
@@ -783,7 +783,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("name", "name", "message");
@@ -802,7 +802,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("name", "name", "message");
@@ -821,7 +821,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("name", "name", "message");
@@ -840,7 +840,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("name", "name", "message");
@@ -859,7 +859,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("name", "name", "message");
@@ -878,7 +878,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("name", "name", "message");
@@ -896,7 +896,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addError("name", "name", "message");
@@ -914,7 +914,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -933,7 +933,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addWarning("age", "age1", "message");
@@ -952,7 +952,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -972,7 +972,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -991,7 +991,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -1010,7 +1010,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -1028,7 +1028,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -1046,7 +1046,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
         Form form = getFormFactory().createForm("myFormName", null);
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
         form.setValidationObject(validationElement);
 
         form.addSuccess("age", "age1", "message");
@@ -1062,10 +1062,10 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void filterGet() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
+        obj.set("name", "Stromgol");
 
         JsonObject model = getJsonManager().create();
-        model.put("toto.titi", obj);
+        model.set("toto.titi", obj);
 
         String html = getTemplatingEngine().evaluate("{{('toto.ti' + 'ti.na' + 'me') | get()}}", model).trim();
         assertEquals("Stromgol", html);
@@ -1075,10 +1075,10 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void functionGet() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
+        obj.set("name", "Stromgol");
 
         JsonObject model = getJsonManager().create();
-        model.put("toto.titi", obj);
+        model.set("toto.titi", obj);
 
         String html = getTemplatingEngine().evaluate("{{get('toto.ti' + 'ti.na' + 'me')}}", model).trim();
         assertEquals("Stromgol", html);
@@ -1088,10 +1088,10 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void functionGetVariable() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("name", "Stromgol");
+        obj.set("name", "Stromgol");
 
         JsonObject model = getJsonManager().create();
-        model.put("toto.titi", obj);
+        model.set("toto.titi", obj);
 
         String html = getTemplatingEngine().evaluate("{% set myKey = 'toto.ti' + 'ti.na' + 'me' %} {{get(myKey)}}", model).trim();
         assertEquals("Stromgol", html);
@@ -1102,7 +1102,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
 
-        model.put("code",
+        model.set("code",
                   "let a=1;\n" +
                           "let b=2;\r" +
                           "let c='3';\r\n" +
@@ -1117,7 +1117,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
 
-        model.put("code",
+        model.set("code",
                   "let a=1;\n" +
                           "let b=2;\r" +
                           "let c='3';\r\n" +
@@ -1132,7 +1132,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
 
-        model.put("code",
+        model.set("code",
                   "let a=1;\n" +
                           "let b=2;\r" +
                           "let c='3';\r\n" +
@@ -1147,18 +1147,18 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         JsonObject model = getJsonManager().create();
         JsonObject validationElement = getJsonManager().create();
-        model.put(getSpincastConfig().getValidationElementDefaultName(), validationElement);
+        model.set(getSpincastConfig().getValidationElementDefaultName(), validationElement);
 
         Form myForm = getFormFactory().createForm("myForm", null);
-        model.put("myForm", myForm);
+        model.set("myForm", myForm);
         myForm.setValidationObject(validationElement);
-        myForm.put("name1", "toto");
+        myForm.set("name1", "toto");
         myForm.addError("name1", "name1", "message1");
 
         Form myForm2 = getFormFactory().createForm("myForm2", null);
-        model.put("myForm2", myForm2);
+        model.set("myForm2", myForm2);
         myForm2.addSuccess("name2", "name2", "message2");
-        myForm2.put("name2", "titi");
+        myForm2.set("name2", "titi");
         myForm2.setValidationObject(validationElement);
 
         String html = getTemplatingEngine().evaluate(" {% if validation['myForm._'] | validationHasSuccesses() %}yes{% endif %}",
@@ -1202,7 +1202,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void newline2br() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", "<em>aaa\nbbb\r\nccc</em>");
+        model.set("val", "<em>aaa\nbbb\r\nccc</em>");
 
         // No newline2br
         String html = getTemplatingEngine().evaluate("{{ val }}';", model);
@@ -1224,7 +1224,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void querystringNew() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1244,7 +1244,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void querystringAppend() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1264,13 +1264,13 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void querystringAppendWithParam() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 JsonObject model = getJsonManager().create();
-                model.put("name", "Stromgol");
+                model.set("name", "Stromgol");
 
                 String content = "<a href=\"{{ querystring('?a=' + name) }}\">link</a>";
                 String result = context.templating().evaluate(content, model);
@@ -1287,7 +1287,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void querystringReplace() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1315,13 +1315,13 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void querystringNoInterogationMark() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 JsonObject model = getJsonManager().create();
-                model.put("name", "Stromgol");
+                model.set("name", "Stromgol");
 
                 String content = "<a href=\"{{ querystring('a=' + name) }}\">link</a>";
                 String result = context.templating().evaluate(content, model);
@@ -1338,13 +1338,13 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void querystringAnd() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 JsonObject model = getJsonManager().create();
-                model.put("name", "Stromgol");
+                model.set("name", "Stromgol");
 
                 String content = "<a href=\"{{ querystring('&a=' + name) }}\">link</a>";
                 String result = context.templating().evaluate(content, model);
@@ -1362,7 +1362,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void booleanWithout() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", "true");
+        model.set("val", "true");
 
         String content = "{% if val %}ok{% else %}not ok{% endif %}";
 
@@ -1377,7 +1377,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void booleanAsString() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", "true");
+        model.set("val", "true");
 
         String content = "{% if val | boolean %}ok{% else %}not ok{% endif %}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -1388,7 +1388,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void booleanAsStringFalse() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", "FALSE");
+        model.set("val", "FALSE");
 
         String content = "{% if val | boolean %}ok{% else %}not ok{% endif %}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -1399,7 +1399,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void booleanAsStringNot() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", "true");
+        model.set("val", "true");
 
         String content = "{% if not val | boolean %}ok{% else %}not ok{% endif %}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -1410,7 +1410,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void booleanAsBoolean() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", true);
+        model.set("val", true);
 
         String content = "{% if val | boolean %}ok{% else %}not ok{% endif %}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -1421,7 +1421,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     public void booleanAsBooleanNot() throws Exception {
 
         JsonObject model = getJsonManager().create();
-        model.put("val", true);
+        model.set("val", true);
 
         String content = "{% if not val | boolean %}ok{% else %}not ok{% endif %}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -1431,7 +1431,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExact1() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1451,7 +1451,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExact2() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1471,7 +1471,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExact3() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1491,7 +1491,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExact4() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1511,7 +1511,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExact5() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1531,7 +1531,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExact6() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1559,7 +1559,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeNoMatch1() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1579,7 +1579,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeNoMatch2() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1599,7 +1599,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeNoMatch3() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1619,7 +1619,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeNoMatch4() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1639,7 +1639,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeNoMatch5() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1659,7 +1659,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeDynamicMatch() throws Exception {
 
-        getRouter().GET("/${targetType:<A+>}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${targetType:<A+>}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1679,7 +1679,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeHome1() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1699,7 +1699,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeHome2() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1719,7 +1719,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeHome3() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1740,7 +1740,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeDynamicMatches() throws Exception {
 
-        getRouter().GET("/*{anything}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{anything}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1760,7 +1760,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeDynamicMatches2() throws Exception {
 
-        getRouter().GET("/*{anything}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{anything}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1780,7 +1780,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeDynamicMatches3() throws Exception {
 
-        getRouter().GET("/*{anything}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{anything}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1800,7 +1800,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegEx1() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1820,7 +1820,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegEx2() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1840,7 +1840,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegEx3() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1860,7 +1860,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegEx4() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1880,7 +1880,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegEx4b() throws Exception {
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1900,7 +1900,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExNoMatchTrailingSlash() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1920,7 +1920,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExMatch() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1940,7 +1940,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExMatch2() throws Exception {
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1960,7 +1960,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExMatch3() throws Exception {
 
-        getRouter().GET("/one/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1980,7 +1980,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExMatch4() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2000,7 +2000,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExMatchNot() throws Exception {
 
-        getRouter().GET("oneeee").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("oneeee").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2020,7 +2020,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExSlashPrefixMissing() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2040,7 +2040,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExactWithSubPaths() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2060,7 +2060,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeExactWithSubPathsNoMatch() throws Exception {
 
-        getRouter().GET("/oneee").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/oneee").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2080,7 +2080,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExWithSubPaths() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2100,7 +2100,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExWithSubPaths2() throws Exception {
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2121,7 +2121,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExWithSubPaths3() throws Exception {
 
-        getRouter().GET("/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2141,7 +2141,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExWithSubPaths4() throws Exception {
 
-        getRouter().GET("/two/three/four").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/three/four").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2161,7 +2161,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExWithSubPathsNoMatch() throws Exception {
 
-        getRouter().GET("/oneee").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/oneee").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2181,7 +2181,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeRegExWithSubPathsButEndsWithDollarSign() throws Exception {
 
-        getRouter().GET("/one/two/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/two/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2201,7 +2201,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeIdMatch() throws Exception {
 
-        getRouter().GET("/one").id("myRouteId").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").id("myRouteId").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -2221,7 +2221,7 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     @Test
     public void routeIdNoMatch() throws Exception {
 
-        getRouter().GET("/one").id("myRouteId").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").id("myRouteId").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

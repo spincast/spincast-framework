@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.spincast.core.utils.Pair;
+import org.spincast.core.utils.SpincastStatics;
 
 /**
  * Base class that can be used for a {@link Dictionary}
@@ -28,7 +29,7 @@ public abstract class DictionaryBase {
         }
 
         for (Pair langMsg : langMsgs) {
-            map.put(langMsg.getKey(), String.valueOf(langMsg.getValue()));
+            map.put(langMsg.getKey(), SpincastStatics.stringValueOrNull(langMsg.getValue()));
         }
     }
 

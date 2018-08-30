@@ -26,7 +26,7 @@ import com.google.inject.Scopes;
 public class PluginDictionaryMessageDeleteCoreRequiredKeyTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 

@@ -41,7 +41,7 @@ public class WebsocketServerPingsDisabled extends NoAppWebsocketTestingBase {
     public void serverShouldNotDetectClosedPeerSincePingsAreDisabled() throws Exception {
 
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 

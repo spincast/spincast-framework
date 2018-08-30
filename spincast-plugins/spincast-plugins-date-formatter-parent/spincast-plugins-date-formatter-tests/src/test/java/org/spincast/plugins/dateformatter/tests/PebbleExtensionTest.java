@@ -16,7 +16,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -29,7 +29,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('full', '') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -42,7 +42,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('short', '') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -55,7 +55,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('YYYY', '') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -68,7 +68,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('q', '') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -81,7 +81,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('', 'short') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -94,7 +94,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('', 'long') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -107,7 +107,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('', 'HH') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -120,7 +120,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('', 'q') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -133,7 +133,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('full', 'full') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -146,7 +146,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('_', 'full') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -159,7 +159,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('short', '_') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -172,7 +172,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('_', '_') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -185,7 +185,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject model = getJsonManager().create();
-        model.put("now", now);
+        model.set("now", now);
 
         String content = "{{now | dateFormat('_', '_', ' * ') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -199,7 +199,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         date = date.minus(10 * 365, ChronoUnit.DAYS);
 
         JsonObject model = getJsonManager().create();
-        model.put("date", date);
+        model.set("date", date);
 
         String content = "{{date | dateFormat('relative') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -213,7 +213,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         date = date.minus(10 * 365, ChronoUnit.DAYS);
 
         JsonObject model = getJsonManager().create();
-        model.put("date", date);
+        model.set("date", date);
 
         String content = "{{date | dateFormat('relative', 'default') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -227,7 +227,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         date = date.minus(10 * 365, ChronoUnit.DAYS);
 
         JsonObject model = getJsonManager().create();
-        model.put("date", date);
+        model.set("date", date);
 
         String content = "{{date | dateFormat('relative', 'duration') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -241,7 +241,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         date = date.minus(10 * 365, ChronoUnit.DAYS);
 
         JsonObject model = getJsonManager().create();
-        model.put("date", date);
+        model.set("date", date);
 
         String content = "{{date | dateFormat('relative', 'unrounded') }}";
         String result = getTemplatingEngine().evaluate(content, model);
@@ -255,7 +255,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
         date = date.minus(10 * 365, ChronoUnit.DAYS);
 
         JsonObject model = getJsonManager().create();
-        model.put("date", date.toString());
+        model.set("date", date.toString());
 
         String content = "{{date | dateFormat('relative') }}";
         String result = getTemplatingEngine().evaluate(content, model);

@@ -27,7 +27,7 @@ public class ITAppInitDefaultTest extends IntegrationConfigTestClassBase {
     }
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 

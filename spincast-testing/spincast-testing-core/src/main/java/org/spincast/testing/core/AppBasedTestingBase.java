@@ -3,10 +3,14 @@ package org.spincast.testing.core;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.cookies.Cookie;
 import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
@@ -14,6 +18,7 @@ import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.routing.Router;
 import org.spincast.core.server.Server;
 import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.builders.ConnectRequestBuilder;
 import org.spincast.plugins.httpclient.builders.DeleteRequestBuilder;
 import org.spincast.plugins.httpclient.builders.GetRequestBuilder;
@@ -29,14 +34,18 @@ import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilde
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.google.inject.util.Modules;
 
 public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                          extends SpincastTestBase {
+
+    private Set<Cookie> previousResponseCookies = new HashSet<Cookie>();
 
     @Inject
     private HttpClient httpClient;
@@ -51,12 +60,17 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     private CookieFactory cookieFactory;
 
     @Override
+    public void beforeClass() {
+        super.beforeClass();
+    }
+
+    @Override
     protected final Injector createInjector() {
 
         //==========================================
         // Starts the app!
         //==========================================
-        startApp();
+        callAppMainMethod();
 
         //==========================================
         // The Guice injector should now have been added
@@ -80,9 +94,52 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     @Override
-    protected final Module getExtraOverridingModule() {
+    protected Set<Key<?>> getExtraExactBindingsToRemoveBeforePlugins() {
+        Set<Key<?>> extraExactBindingsToRemove = super.getExtraExactBindingsToRemoveBeforePlugins();
 
-        Module extraModuleUserSpecified = getExtraOverridingModule2();
+        //==========================================
+        // We remove ALL bindings related to configurations
+        // before the plugins are bound.
+        //
+        // Configurations bindings is a special case:
+        // we allow a test file to bind a different
+        // testing implementation for SpincastConfig and for
+        // the AppConfig interfaces. This means that two
+        // bound implementations can ultimatly implements
+        // SpincastConfig (since the AppConfig can also
+        // extend it!). The SpincastConfigPlugin
+        // doesn't like that: it throws an exeption
+        // if it founds more than one binding ultimately
+        // implementing SpincastConfig.
+        //
+        // Anyway, all the "getExtraOverridingModule()"
+        // are bound again *after* the plugins are applied,
+        // so the configurations bindings will there be
+        // overriden properly.
+        //==========================================
+
+        extraExactBindingsToRemove.add(Key.get(SpincastConfig.class));
+
+        if (getAppTestingConfigs().getAppConfigTestingImplementationClass() != null) {
+            extraExactBindingsToRemove.add(Key.get(getAppTestingConfigs().getAppConfigTestingImplementationClass()));
+        }
+
+        if (getAppTestingConfigs().getAppConfigInterface() != null) {
+            extraExactBindingsToRemove.add(Key.get(getAppTestingConfigs().getAppConfigInterface()));
+        }
+
+        if (getAppTestingConfigs().getSpincastConfigTestingImplementationClass() != null) {
+            extraExactBindingsToRemove.add(Key.get(getAppTestingConfigs().getSpincastConfigTestingImplementationClass()));
+        }
+
+        return extraExactBindingsToRemove;
+    }
+
+
+    @Override
+    protected final Module getGuiceTweakerExtraOverridingModule() {
+
+        Module extraModuleUserSpecified = getExtraOverridingModule();
         if (extraModuleUserSpecified == null) {
             extraModuleUserSpecified = new SpincastGuiceModuleBase() {
 
@@ -93,7 +150,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
             };
         }
 
-        Module localModule = super.getExtraOverridingModule();
+        Module localModule = super.getGuiceTweakerExtraOverridingModule();
 
         //==========================================
         // The SpincastConfig testing binding is done by
@@ -102,7 +159,6 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
         // we tweak the *app* testing configuration bindings, 
         // if required...
         //==========================================
-
         final AppTestingConfigs testingConfigs = getAppTestingConfigs();
         if (getAppTestingConfigs().getAppConfigInterface() != null ||
             getAppTestingConfigs().getAppConfigTestingImplementationClass() != null) {
@@ -146,19 +202,41 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
         return Modules.override(localModule).with(extraModuleUserSpecified);
     }
 
-    protected Module getExtraOverridingModule2() {
-        return null;
+    /**
+     * Can be overriden with something like :
+     * 
+     * <pre>
+     * return Modules.override(super.getExtraOverridingModule()).with(new SpincastGuiceModuleBase() {
+     *     protected void configure() {
+     *         // ...
+     *     }
+     * });
+     * </pre>
+     */
+    protected Module getExtraOverridingModule() {
+        //==========================================
+        // Empty Module, so Modules.combine() and
+        // Modules.override() can be used by the extending
+        // classes.
+        //==========================================
+        return new SpincastGuiceModuleBase() {
+
+            @Override
+            protected void configure() {
+                // nothing
+            }
+        };
     }
 
     /**
      * The extra required plugins.
      */
     @Override
-    protected final List<SpincastPlugin> getExtraPlugins() {
+    protected final List<SpincastPlugin> getGuiceTweakerExtraPlugins() {
 
-        List<SpincastPlugin> plugins = super.getExtraPlugins();
+        List<SpincastPlugin> plugins = super.getGuiceTweakerExtraPlugins();
 
-        List<SpincastPlugin> pluginsUserDefined = getExtraPlugins2();
+        List<SpincastPlugin> pluginsUserDefined = getExtraPlugins();
         if (pluginsUserDefined != null) {
             plugins.addAll(pluginsUserDefined);
         }
@@ -173,9 +251,15 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
 
     /**
      * The extra required plugins.
+     * Example:
+     * <pre>
+     * List&lt;SpincastPlugin&gt; extraPlugins = super.getExtraPlugins();
+     * extraPlugins.add(new XXX());
+     * return extraPlugins;
+     * </pre>
      */
-    protected List<SpincastPlugin> getExtraPlugins2() {
-        return null;
+    protected List<SpincastPlugin> getExtraPlugins() {
+        return Lists.newArrayList();
     }
 
     @Override
@@ -767,6 +851,85 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
+     * The {@link Cookie}s returned by the previous
+     * {@link HttpResponse}. This allows you to simulate
+     * a real browser which would automatically resend
+     * cookies on a particular domain. Example:
+     * <pre>
+     * GET("/").addCookies(getPreviousResponseCookies())...
+     * </pre>
+     * <p>
+     * Note that for this to work, <em>you have to manually 
+     * save the cookies</em> using {@link #saveResponseCookies(HttpResponse)} 
+     * when a response is received!
+     */
+    protected Set<Cookie> getPreviousResponseCookies() {
+        if (this.previousResponseCookies == null) {
+            this.previousResponseCookies = new HashSet<Cookie>();
+        }
+        return this.previousResponseCookies;
+    }
+
+    protected Cookie getPreviousResponseCookie(String cookieName) {
+        if (cookieName == null) {
+            return null;
+        }
+
+        for (Cookie cookie : getPreviousResponseCookies()) {
+            if (cookie != null && cookieName.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Removes all the cookies saved from a previous
+     * response.
+     */
+    protected void clearPreviousResponseCookies() {
+        getPreviousResponseCookies().clear();
+    }
+
+    /**
+     * Saves the current response's cookies.<p>
+     * You would then be able to resend them in a
+     * request by using {@link #getPreviousResponseCookies()}.
+     * Example: 
+     * <pre>
+     * GET("/").addCookies(getPreviousResponseCookies())...
+     * </pre>
+     */
+    protected void saveResponseCookies(HttpResponse response) {
+        clearPreviousResponseCookies();
+        if (response == null) {
+            return;
+        }
+
+        Map<String, Cookie> cookies = response.getCookies();
+        if (cookies == null || cookies.size() == 0) {
+            return;
+        }
+
+        for (Cookie cookie : cookies.values()) {
+            if (isSetSecureFalseOnCookiesFromBag()) {
+                cookie.setSecure(false);
+                getPreviousResponseCookies().add(cookie);
+            }
+        }
+    }
+
+    /**
+     * Will set {@link Cookie#setSecure(boolean)} to
+     * <code>false</code> on cookies added to the 
+     * {@link #getPreviousResponseCookies()} so their can be resend
+     * in tests file using HTTP (not HTTPS).
+     */
+    protected boolean isSetSecureFalseOnCookiesFromBag() {
+        return true;
+    }
+
+    /**
      * We force test classes to provide information about
      * the required testing configurations.
      * <p>
@@ -783,23 +946,14 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * Starts the application.
      * <p>
      * In this method, you should call your
-     * application <code>main()</code> method.
+     * application <code>main()</code> method. 
      * <p>
-     * Returns a boolean to tell if the 
-     * class calling the Spincast bootstrapper,
-     * commonly named "App", should be added to the
-     * Guice context or not.
-     * <p>
-     * Returning <code>true</code> is common if your
-     * test class runs <em>integration</em> tests, since
-     * it is probably the calling class that starts the
-     * HTTP server. Return <code>false</code> if you
-     * don't need any server to be started, but still
-     * want the full application Guice context to be 
-     * created (used in general for <em>unit</em> tests). 
+     * There is no need to start the 
+     * {@link Server} here, since the target
+     * application is supposed to do it by itself,
+     * in general in an "{@literal @}Inject init()" 
+     * method!
      */
-    protected abstract void startApp();
-
-
+    protected abstract void callAppMainMethod();
 
 }

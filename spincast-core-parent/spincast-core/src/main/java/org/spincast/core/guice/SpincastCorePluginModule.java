@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
+import org.spincast.core.config.ServerStartedInterceptor;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastInit;
 import org.spincast.core.config.SpincastInitValidator;
@@ -29,6 +30,11 @@ import org.spincast.core.filters.CorsFilter;
 import org.spincast.core.filters.CorsFilterDefault;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.filters.SpincastFiltersDefault;
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessageDefault;
+import org.spincast.core.flash.FlashMessageFactory;
+import org.spincast.core.flash.FlashMessagesHolder;
+import org.spincast.core.flash.FlashMessagesHolderDefault;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonArrayDefault;
 import org.spincast.core.json.JsonManager;
@@ -48,11 +54,9 @@ import org.spincast.core.routing.Router;
 import org.spincast.core.routing.RoutingRequestContextAddon;
 import org.spincast.core.routing.StaticResourceFactory;
 import org.spincast.core.server.Server;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessageDefault;
-import org.spincast.core.session.FlashMessageFactory;
-import org.spincast.core.session.FlashMessagesHolder;
-import org.spincast.core.session.FlashMessagesHolderDefault;
+import org.spincast.core.server.ServerStartedListener;
+import org.spincast.core.server.ServerUtils;
+import org.spincast.core.server.ServerUtilsDefault;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.templating.TemplatingRequestContextAddon;
 import org.spincast.core.timezone.TimeZoneResolver;
@@ -84,10 +88,14 @@ import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.util.Modules;
 
 
 public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
+
+    protected boolean isSpincastRequestScopedBound = false;
 
     public SpincastCorePluginModule() {
         super();
@@ -223,6 +231,21 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         bindCoreDictionaryMessages();
 
         //==========================================
+        // Binds ServerUtils
+        //==========================================
+        bindServerUtils();
+
+        //==========================================
+        // Binds server started listener multibinder
+        //==========================================
+        bindServerStartedListenersMultibinder();
+
+        //==========================================
+        // Binds some interceptors
+        //==========================================
+        bindsInterceptors();
+
+        //==========================================
         // Some basic initializations
         //==========================================
         spincastInit();
@@ -271,10 +294,19 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         bind(Type.class).annotatedWith(WebsocketContextType.class).toInstance(type);
     }
 
+    /**
+     * Note that {@LINK #bindScope(Class, com.google.inject.Scope)}
+     * can only be called once. It can't be called a second time
+     * when we use {@link Modules#override(com.google.inject.Module...)}!
+     * 
+     * For infos on custom scopes:
+     * @see https://github.com/google/guice/wiki/CustomScopes
+     */
     protected void bindSpincastRequestScope() {
-
-        // @see https://github.com/google/guice/wiki/CustomScopes
-        bindScope(SpincastRequestScoped.class, SpincastGuiceScopes.REQUEST);
+        if (!this.isSpincastRequestScopedBound) {
+            this.isSpincastRequestScopedBound = true;
+            bindScope(SpincastRequestScoped.class, SpincastGuiceScopes.REQUEST);
+        }
         bind(SpincastRequestScope.class).toInstance(SpincastGuiceScopes.REQUEST);
     }
 
@@ -440,9 +472,16 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
         return SpincastCoreDictionaryEntriesDefault.class;
     }
 
-
     protected Class<? extends WebsocketEndpointToControllerManager> getWebsocketEndpointToControllerKeysMapClass() {
         return WebsocketEndpointToControllerManagerDefault.class;
+    }
+
+    protected void bindServerUtils() {
+        bind(ServerUtils.class).to(getServerUtilsImplClass()).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends ServerUtils> getServerUtilsImplClass() {
+        return ServerUtilsDefault.class;
     }
 
     protected void bindSSLContextFactory() {
@@ -546,5 +585,23 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
     protected void spincastInit() {
         bind(SpincastInit.class).asEagerSingleton();
     }
+
+    protected void bindServerStartedListenersMultibinder() {
+        Multibinder<ServerStartedListener> serverStartedListenerMultibinder =
+                Multibinder.newSetBinder(binder(), ServerStartedListener.class);
+        serverStartedListenerMultibinder.addBinding().to(SpincastInit.class).asEagerSingleton();
+    }
+
+    protected void bindsInterceptors() {
+        bindServerStartedInterceptor();
+    }
+
+    protected void bindServerStartedInterceptor() {
+        bindInterceptor(Matchers.subclassesOf(Server.class),
+                        // new GuiceModuleUtils.MethodCalledMatcher("start"),
+                        new GuiceAopMethodNameMatcher("start"),
+                        new ServerStartedInterceptor(getProvider(ServerUtils.class)));
+    }
+
 
 }

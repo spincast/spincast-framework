@@ -1,6 +1,7 @@
 package org.spincast.testing.core.utils;
 
 import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 
@@ -18,8 +19,9 @@ public class SpincastConfigTestingDefault extends SpincastConfigDefault {
      * Constructor
      */
     @Inject
-    protected SpincastConfigTestingDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-        super(spincastConfigPluginConfig);
+    protected SpincastConfigTestingDefault(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                           @TestingMode boolean testingMode) {
+        super(spincastConfigPluginConfig, testingMode);
     }
 
     /**

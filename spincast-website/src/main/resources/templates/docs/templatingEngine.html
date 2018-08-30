@@ -58,7 +58,7 @@ Docs : "Templating Engine"
     User user = getUser();
     
     JsonObject params = context.json().create();
-    params.put("user", user);
+    params.set("user", user);
     
     String emailBody = context.templating().fromTemplate("/templates/email.html", params);
         
@@ -79,7 +79,7 @@ Docs : "Templating Engine"
     User user = getUser();
     
     JsonObject params = context.json().create();
-    params.put("user", user);
+    params.set("user", user);
     
     String emailBody = context.templating().fromTemplate("/templates/email.html", 
                                                          false, // From the file system!
@@ -104,7 +104,7 @@ Docs : "Templating Engine"
     // We can use a standard Map&lt;String, Object&gt; instead
     // of a JsonObject for the parameters
     Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-    params.put("name", "Stromgol");
+    params.set("name", "Stromgol");
 
     // This will be evaluated to "Hi Stromgol!"
     String result = context.templating().evaluate("Hi {{name}}!", params);
@@ -150,8 +150,8 @@ Docs : "Templating Engine"
     // Creates a "user" on adds it to the
     // response model
     JsonObject user = context.json().create();
-    user.put("name", "Stromgol");
-    model.put("user", user);
+    user.set("name", "Stromgol");
+    model.set("user", user);
 
     // Renders a template and sends it as HTML
     context.response().sendTemplateHtml("/templates/myTemplate.html");
@@ -388,7 +388,7 @@ Docs : "Templating Engine"
                         <div>
                             <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
                             Note that each parameter's key must have an
-                            associated value or an exeption will be thrown (the number of parameters must be even).
+                            associated value or an exception will be thrown (the number of parameters must be even).
                         </div>
                     </p> 
                     

@@ -17,6 +17,7 @@ import com.google.inject.assistedinject.AssistedInject;
  */
 public class StaticResourceDefault<R extends RequestContext<?>> implements StaticResource<R> {
 
+    private final boolean isSpicastOrPluginAddedResource;
     private final StaticResourceType staticResourceType;
     private final String urlPath;
     private final String resourcePath;
@@ -26,13 +27,15 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
     private final boolean ignoreQueryString;
 
     @AssistedInject
-    public StaticResourceDefault(@Assisted StaticResourceType staticResourceType,
+    public StaticResourceDefault(@Assisted("isSpicastOrPluginAddedResource") boolean isSpicastOrPluginAddedResource,
+                                 @Assisted StaticResourceType staticResourceType,
                                  @Assisted("url") String urlPath,
                                  @Assisted("path") String resourcePath,
                                  @Assisted @Nullable Handler<R> generator,
                                  @Assisted @Nullable StaticResourceCorsConfig corsConfig,
                                  @Assisted @Nullable StaticResourceCacheConfig cacheConfig,
-                                 @Assisted boolean ignoreQueryString) {
+                                 @Assisted("ignoreQueryString") boolean ignoreQueryString) {
+        this.isSpicastOrPluginAddedResource = isSpicastOrPluginAddedResource;
         this.staticResourceType = staticResourceType;
         this.urlPath = urlPath;
         this.resourcePath = resourcePath;
@@ -40,6 +43,11 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
         this.corsConfig = corsConfig;
         this.cacheConfig = cacheConfig;
         this.ignoreQueryString = ignoreQueryString;
+    }
+
+    @Override
+    public boolean isSpicastOrPluginAddedResource() {
+        return this.isSpicastOrPluginAddedResource;
     }
 
     @Override

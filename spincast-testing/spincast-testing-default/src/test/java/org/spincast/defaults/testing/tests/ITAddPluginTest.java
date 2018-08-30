@@ -60,7 +60,7 @@ public class ITAddPluginTest extends IntegrationConfigTestClassBase {
     }
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 

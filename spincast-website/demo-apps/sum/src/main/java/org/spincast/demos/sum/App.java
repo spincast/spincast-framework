@@ -19,7 +19,7 @@ public class App {
                         AppController ctrl,
                         Server server) {
 
-        router.POST("/sum").save(ctrl::sumRoute);
+        router.POST("/sum").handle(ctrl::sumRoute);
         server.start();
     }
 }

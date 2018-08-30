@@ -18,7 +18,7 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void pathParamDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -37,7 +37,7 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void queryStringDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -56,7 +56,7 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void queryStringParamDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -75,7 +75,7 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fullUrlDecoding() throws Exception {
 
-        getRouter().GET("/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

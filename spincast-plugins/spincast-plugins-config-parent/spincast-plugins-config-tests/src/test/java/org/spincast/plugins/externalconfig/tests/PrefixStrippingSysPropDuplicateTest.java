@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.config.SpincastConfigPluginConfigDefault;
@@ -26,7 +27,7 @@ public class PrefixStrippingSysPropDuplicateTest extends ConfigTestingBase {
     }
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -79,8 +80,8 @@ public class PrefixStrippingSysPropDuplicateTest extends ConfigTestingBase {
     public static class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
 
         @Inject
-        public AppConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        public AppConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

@@ -9,12 +9,12 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessageFactory;
+import org.spincast.core.flash.FlashMessageLevel;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.request.Form;
 import org.spincast.core.server.UploadedFile;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessageFactory;
-import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -59,7 +59,7 @@ public class DemoHtmlFormsFileUploadController {
             if (uploadFileBase64ImageSrc == null) {
                 this.logger.error("The uploadFileBase64ImageSrc was expected...");
             } else {
-                context.response().getModel().put("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
+                context.response().getModel().set("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
             }
         }
 
@@ -81,7 +81,7 @@ public class DemoHtmlFormsFileUploadController {
         // The validation message will be added to the
         // default "validation" element of the model.
         //==========================================
-        Form form = context.request().getForm("demoForm");
+        Form form = context.request().getFormWithRootKey("demoForm");
         context.response().addForm(form);
 
         //==========================================
@@ -144,7 +144,7 @@ public class DemoHtmlFormsFileUploadController {
                     String base64Str = Base64.encodeBase64String(FileUtils.readFileToByteArray(file));
                     String formatName = iter.next().getFormatName();
                     String uploadFileBase64ImageSrc = "data:image/" + formatName + ";charset=utf-8;base64," + base64Str;
-                    variables.put("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
+                    variables.set("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
                 }
 
             } catch (Exception ex) {

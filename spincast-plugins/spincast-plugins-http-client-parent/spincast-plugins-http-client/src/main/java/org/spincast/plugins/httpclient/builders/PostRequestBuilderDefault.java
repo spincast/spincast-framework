@@ -15,7 +15,7 @@ import com.google.inject.assistedinject.AssistedInject;
 /**
  * Implementation for the Http Client builder for a POST request.
  */
-public class PostRequestBuilderDefault extends EntitySenderRequestBuilderBaseDefault<PostRequestBuilder>
+public class PostRequestBuilderDefault extends BodySenderRequestBuilderBaseDefault<PostRequestBuilder>
                                        implements PostRequestBuilder {
 
     @AssistedInject

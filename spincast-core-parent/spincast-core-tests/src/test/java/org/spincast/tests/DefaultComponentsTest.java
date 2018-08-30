@@ -40,7 +40,7 @@ public class DefaultComponentsTest extends NoAppStartHttpServerTestingBase {
     public void defaultComponents() throws Exception {
 
         // DefaultHandler
-        this.defaultRouter.GET("/default").save(new DefaultHandler() {
+        this.defaultRouter.GET("/default").handle(new DefaultHandler() {
 
             // DefaultRequestContext
             @Override
@@ -50,7 +50,7 @@ public class DefaultComponentsTest extends NoAppStartHttpServerTestingBase {
         });
 
         // Handler
-        this.genericRouter.GET("/generic").save(new Handler() {
+        this.genericRouter.GET("/generic").handle(new Handler() {
 
             @Override
             public void handle(RequestContext context) {

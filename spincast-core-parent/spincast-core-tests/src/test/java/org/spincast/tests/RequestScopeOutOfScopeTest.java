@@ -18,7 +18,7 @@ import com.google.inject.Scopes;
 public class RequestScopeOutOfScopeTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 

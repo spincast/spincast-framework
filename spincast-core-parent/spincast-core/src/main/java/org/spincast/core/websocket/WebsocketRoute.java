@@ -17,6 +17,13 @@ public interface WebsocketRoute<R extends RequestContext<?>, W extends Websocket
     public String getId();
 
     /**
+     * Is this a route added by Spincast itself
+     * or by a plugin? Otherwise, the route is
+     * considered as an application route.
+     */
+    public boolean isSpicastCoreRouteOrPluginRoute();
+
+    /**
      * The WebSocket route path.
      */
     public String getPath();

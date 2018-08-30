@@ -35,7 +35,7 @@ public class HttpAuthenticationTest extends NoAppStartHttpServerTestingBase {
         assertNotNull(path);
         assertEquals("/one", path);
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -43,7 +43,7 @@ public class HttpAuthenticationTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

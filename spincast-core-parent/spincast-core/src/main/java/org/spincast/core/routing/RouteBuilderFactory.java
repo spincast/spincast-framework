@@ -10,7 +10,7 @@ public interface RouteBuilderFactory<R extends RequestContext<?>, W extends Webs
 
     /**
      * Creates a route builder without using a router.
-     * The {@link org.spincast.core.routing.RouteBuilder#save(Handler) save()} method
+     * The {@link org.spincast.core.routing.RouteBuilder#handle(Handler) save()} method
      * will throw an expception if called. Only 
      * {@link org.spincast.core.routing.RouteBuilder#create(Handler) create()}
      * will be available.

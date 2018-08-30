@@ -26,7 +26,12 @@ import com.google.inject.Singleton;
 
 /**
  * The base implementation for a request context object.
- * 
+ * <p>
+ * When you extend this class, don't forget to annotate
+ * the constructor with {@literal @}AssistedInject and
+ * the <code>exchange</code> parameter as
+ * {@literal @}Assisted ! 
+ * <p>
  * We need to inject *providers* for the add-ons because they depend on the
  * request context this class build!
  * {@link https://github.com/google/guice/wiki/CyclicDependencies#break-the-cycle-with-a-provider}

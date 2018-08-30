@@ -33,7 +33,7 @@ import com.google.inject.Scopes;
 public class ExceptionInDefaultExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -75,7 +75,7 @@ public class ExceptionInDefaultExceptionHandlerTest extends NoAppStartHttpServer
     @Test
     public void lastResortExceptionHandler() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -83,7 +83,7 @@ public class ExceptionInDefaultExceptionHandlerTest extends NoAppStartHttpServer
             }
         });
 
-        getRouter().ALL("/*{path}").exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -148,7 +148,7 @@
 >public void myHandler(AppRequestContext context) {
 
     Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-    params.put("name", "Stromgol");
+    params.set("name", "Stromgol");
 
     String html = context.templating().evaluate("&lt;h1&gt;Hi {{name}}!&lt;/h1&gt;", params);
     System.out.println(html); // &lt;h1&gt;Hi Stromgol!&lt;/h1&gt;

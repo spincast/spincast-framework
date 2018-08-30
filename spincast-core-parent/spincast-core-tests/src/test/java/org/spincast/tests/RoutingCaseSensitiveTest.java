@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.exchange.RequestRequestContextAddon;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Router;
@@ -44,8 +45,9 @@ public class RoutingCaseSensitiveTest extends NoAppStartHttpServerTestingBase {
          * Constructor
          */
         @Inject
-        protected TestingSpincastConfigCaseSensitive(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected TestingSpincastConfigCaseSensitive(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                                     @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -57,7 +59,7 @@ public class RoutingCaseSensitiveTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void predefinedPatternAlphaCaseSensitive() throws Exception {
 
-        getRouter().GET("/${param1:<A>}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<A>}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -101,7 +103,7 @@ public class RoutingCaseSensitiveTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").save(SpincastTestUtils.dummyRouteHandler);
+        router.GET("/one").handle(SpincastTestUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));

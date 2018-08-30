@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-dictionary-parent</artifactId>
-        <version>0.9.41</version>
+        <version>0.9.42-SNAPSHOT</version>
     </parent>
 	
 	<artifactId>spincast-plugins-dictionary-tests</artifactId>

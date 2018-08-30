@@ -165,7 +165,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 routingResult = prepareNotFoundRouting(exchange, requestContext);
 
                 // Keeps the custom Not Found message, if any.
-                requestContext.variables().add(SpincastConstants.RequestScopedVariables.NOT_FOUND_PUBLIC_MESSAGE,
+                requestContext.variables().set(SpincastConstants.RequestScopedVariables.NOT_FOUND_PUBLIC_MESSAGE,
                                                notFoundException.getMessage());
 
                 callRouteHandlers(requestContext, routingResult);
@@ -200,9 +200,9 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 // the Exception handling process and add the
                 // exception as a variable.
                 //==========================================
-                requestContext.variables().add(SpincastConstants.RequestScopedVariables.IS_EXCEPTION_HANDLING, true);
-                requestContext.variables().add(SpincastConstants.RequestScopedVariables.IS_NOT_FOUND_ROUTE, false);
-                requestContext.variables().add(SpincastConstants.RequestScopedVariables.EXCEPTION, ex);
+                requestContext.variables().set(SpincastConstants.RequestScopedVariables.IS_EXCEPTION_HANDLING, true);
+                requestContext.variables().set(SpincastConstants.RequestScopedVariables.IS_NOT_FOUND_ROUTE, false);
+                requestContext.variables().set(SpincastConstants.RequestScopedVariables.EXCEPTION, ex);
 
                 //==========================================
                 // If the headers are not sent yet, we reset everything.
@@ -287,7 +287,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         // Add a variable in the request context to
         // say this is a Not Found route.
         //==========================================
-        requestContext.variables().add(SpincastConstants.RequestScopedVariables.IS_NOT_FOUND_ROUTE, true);
+        requestContext.variables().set(SpincastConstants.RequestScopedVariables.IS_NOT_FOUND_ROUTE, true);
 
         //==========================================
         // Add a default 404 HTTP status for a Not Found route
@@ -303,7 +303,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     protected void addDefaultNotFoundRoute() {
         getRouter().ALL(Router.DEFAULT_ROUTE_PATH)
                    .notFound()
-                   .save(getDefaultNotFoundHandler());
+                   .handle(getDefaultNotFoundHandler());
     }
 
     /**
@@ -357,13 +357,13 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
     protected String getNotFoundJsonContent(String message) {
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("error", message);
+        jsonObj.set("error", message);
         return jsonObj.toJsonString();
     }
 
     protected String getNotFoundXmlContent(String message) {
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("error", message);
+        jsonObj.set("error", message);
         return getXmlManager().toXml(jsonObj);
     }
 
@@ -397,13 +397,13 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
             RoutingResult<R> exceptionRoutingResult = getRouter().route(requestContext, RoutingType.EXCEPTION);
             if (exceptionRoutingResult != null) {
 
-                requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
+                requestContext.variables().set(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
                                                exceptionRoutingResult);
 
                 //==========================================
                 // Add the original route info to the requestContext.
                 //==========================================
-                requestContext.variables().add(SpincastConstants.RequestScopedVariables.ORIGINAL_ROUTING_RESULT,
+                requestContext.variables().set(SpincastConstants.RequestScopedVariables.ORIGINAL_ROUTING_RESULT,
                                                originalRoutingResult);
 
                 //==========================================
@@ -467,7 +467,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // Saves the current routing result
         //==========================================
-        requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
+        requestContext.variables().set(SpincastConstants.RequestScopedVariables.ROUTING_RESULT,
                                        routingResult);
 
         //==========================================
@@ -479,7 +479,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
             RouteHandlerMatch<R> routeHandlerMatch = routeHandlerMatches.get(i);
 
-            requestContext.variables().add(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH,
+            requestContext.variables().set(SpincastConstants.RequestScopedVariables.ROUTE_HANDLER_MATCH,
                                            routeHandlerMatch);
 
             Handler<R> handlerMethod = routeHandlerMatch.getHandler();
@@ -581,7 +581,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                                        getSpincastConfig().getRouteForwardingMaxNumber() + "." +
                                        "This route won't be called : " + ex.getNewRoute());
         }
-        context.variables().add(SpincastConstants.RequestScopedVariables.ROUTE_FORWARDED_NBR, nbrTimeForwarded);
+        context.variables().set(SpincastConstants.RequestScopedVariables.ROUTE_FORWARDED_NBR, nbrTimeForwarded);
 
         //==========================================
         // Should we reset the response?
@@ -609,7 +609,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // We also keep the exception message so it can be displayed.
         //==========================================
-        context.variables().add(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_EXCEPTION_MESSAGE,
+        context.variables().set(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_EXCEPTION_MESSAGE,
                                 ex.getMessage());
 
         callRouteHandlers(context, routingResult);
@@ -641,7 +641,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                              fullUrlOrRelativePathAndQueryString;
             }
 
-            context.variables().add(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_URL,
+            context.variables().set(SpincastConstants.RequestScopedVariables.FORWARD_ROUTE_URL,
                                     newFullUrl);
 
             return context;
@@ -796,7 +796,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     protected String getInternalErrorJsonContent(String errorMessage) {
 
         JsonObject jsonObject = getJsonManager().create();
-        jsonObject.put("error", errorMessage);
+        jsonObject.set("error", errorMessage);
 
         return jsonObject.toJsonString();
     }
@@ -804,7 +804,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
     protected String getInternalErrorXmlContent(String errorMessage) {
 
         JsonObject jsonObject = getJsonManager().create();
-        jsonObject.put("error", errorMessage);
+        jsonObject.set("error", errorMessage);
 
         return getXmlManager().toXml(jsonObject);
     }

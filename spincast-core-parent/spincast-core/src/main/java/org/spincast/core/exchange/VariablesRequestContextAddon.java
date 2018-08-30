@@ -13,23 +13,27 @@ public interface VariablesRequestContextAddon<R extends RequestContext<?>> {
 
     /**
      * Adds a request scoped variable. 
-     * 
+    * <p>
      * It is recommended that you prefixe the name of the
      * <code>key</code> with the name of your class
      * (for example : <code>this.getClass().getName()</code>),
      * so it doesn't clash with other keys!
+     * <p>
+     * If the variable already exists, it is overwritten.
      */
-    public void add(String key, Object obj);
+    public void set(String key, Object obj);
 
     /**
      * Adds request scoped variables.
-     * 
+     * <p>
      * It is recommended that you prefixe the name of the
      * <code>keys</code> with the name of your class
      * (for example : <code>this.getClass().getName()</code>),
      * so they don't clash with other keys!
+     * <p>
+     * If some variables already exist, they are overwritten.
      */
-    public void add(Map<String, Object> variables);
+    public void set(Map<String, Object> variables);
 
     /**
      * Gets all the request scoped variables.

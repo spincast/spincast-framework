@@ -30,7 +30,7 @@ Docs : "JsonObjects"
 JsonObject jsonObj = getJsonManager().create();
 
 // Adds an element
-jsonObj.put("myElement", "42");
+jsonObj.set("myElement", "42");
 
 // Gets the element as a String
 String asString = jsonObj.getString("myElement");
@@ -137,7 +137,7 @@ User user = getUser(123);
 
 // Adds this user to a JsonObject
 JsonObject jsonObj = getJsonManager().create();
-jsonObj.put("myUser", user);
+jsonObj.set("myUser", user);
 
 // Gets back the user... It is now a JsonObject!
 JsonObject userAsJsonObj = jsonObj.getJsonObject("myUser");</pre> 
@@ -169,8 +169,8 @@ JsonObject userAsJsonObj = jsonObj.getJsonObject("myUser");</pre>
 
     // JsonObject creation
     JsonObject obj = context.json().create();
-    obj.put("name", "Stromgol");
-    obj.put("lastName", "Laroche");
+    obj.set("name", "Stromgol");
+    obj.set("lastName", "Laroche");
 
     // JsonArray creation
     JsonArray array = context.json().createArray();
@@ -206,7 +206,7 @@ JsonObject userAsJsonObj = jsonObj.getJsonObject("myUser");</pre>
 JsonObject obj = getJsonManager().create();
 
 // Adds the array to the obj
-obj.put("colors", colors);
+obj.set("colors", colors);
 
 // Only then do we add elements to the array
 colors.add("red");
@@ -223,7 +223,7 @@ String firstColor = obj.getArrayFirstString("colors");</pre>
         to be two <em>distinct</em> instances so modifications to one don't affect the other! 
         In those cases, you can call the <code><em>"clone()"</em></code> method on the original 
         <code>JsonObject</code> object, or you can use <code>"true"</code>
-        as the <code>"clone"</code> parameter when calling <code>put(...)</code>/<code>add(...)</code> methods.
+        as the <code>"clone"</code> parameter when calling <code>set(...)</code>/<code>add(...)</code> methods.
         Both methods result in the original object being cloned. Let's see an example :
     </p>
     <p>
@@ -234,10 +234,10 @@ String firstColor = obj.getArrayFirstString("colors");</pre>
 JsonObject obj = getJsonManager().create();
 
 // Add a *clone* of the array to the object
-obj.put("colors", colors, true);
+obj.set("colors", colors, true);
 
 // Or :
-obj.put("colors", colors.clone());
+obj.set("colors", colors.clone());
 
 // Then we add elements to the original array
 colors.add("red");
@@ -270,13 +270,13 @@ String firstColor = obj.getArrayFirstString("colors");</pre>
             <p>
                 <pre class="ace ace-java" data-ace-hi="4,32,4,45"
 >JsonObject obj = getJsonManager().create();
-obj.put("name", "Stromgol");
+obj.set("name", "Stromgol");
 
 // "false" => make the clone not mutable!
 JsonObject immutableClone = obj.clone(false);
 
 // This will throw an exception!
-immutableClone.put("nope", "doesn't work");
+immutableClone.set("nope", "doesn't work");
 </pre> 
             </p>
         </div>
@@ -301,7 +301,7 @@ immutableClone.put("nope", "doesn't work");
     <p>
         Have a look at the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonObject.html">JsonObject Javadoc</a> 
         for a complete list of available methods. Here we're simply going to introduce some interesting ones, 
-        other than <code>put(...)</code>, <code>getXXX(...)</code> and <code>clone(...)</code> we already saw : 
+        other than <code>set(...)</code>, <code>getXXX(...)</code> and <code>clone(...)</code> we already saw : 
     </p>
     <p>
         <ul class="apiList">
@@ -537,11 +537,11 @@ String title = book.getString("title");</pre>
                 <pre class="ace ace-java" data-ace-hi="6,15,6,28"
 >// Creates a book object
 JsonObject book = getJsonManager().create();
-book.put("title", "The Hitchhiker's Guide to the Galaxy");
+book.set("title", "The Hitchhiker's Guide to the Galaxy");
 
 // Creates a "myJsonObj" object and adds the book to it
 JsonObject myJsonObj = getJsonManager().create();
-myJsonObj.put("user.books[2]", book);
+myJsonObj.set("user.books[2]", book);
 </pre>
             </p>
         </div>
@@ -576,19 +576,19 @@ myJsonObj.put("user.books[2]", book);
         in a <code>JsonObject</code> using a key containing some of the <code>JsonPaths</code>
         special characters (which are <code>"."</code>, <code>"["</code> and <code>"]"</code>),
         and <em>without that key being parsed as a <code>JsonPath</code></em>, you can do so by
-        using the <code>putNoKeyParsing(...)</code> method. For example :
+        using the <code>setNoKeyParsing(...)</code> method. For example :
         
         <div>
             <p>
                 <pre class="ace ace-java" data-ace-hi="7,9,7,48"
 >// Creates a book object
 JsonObject book = getJsonManager().create();
-book.put("title", "The Hitchhiker's Guide to the Galaxy");
+book.set("title", "The Hitchhiker's Guide to the Galaxy");
 
 // Creates a "myJsonObj" object and adds the book to it
 // using an unparsed key!
 JsonObject myJsonObj = getJsonManager().create();
-myJsonObj.putNoKeyParsing("user.books[2]", book);
+myJsonObj.setNoKeyParsing("user.books[2]", book);
 </pre>
             </p>
             

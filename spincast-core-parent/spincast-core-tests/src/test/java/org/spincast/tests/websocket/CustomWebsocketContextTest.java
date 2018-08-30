@@ -77,7 +77,7 @@ public class CustomWebsocketContextTest extends
                     }
                 };
 
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
         WebsocketClientWriter writer = websocket("/ws").connect(client);

@@ -45,6 +45,15 @@ public interface HttpResponse {
     public Cookie getCookie(String name);
 
     /**
+     * Gets the value of a cookie.
+     * 
+     * @return the value of the cookie or
+     * <code>null</code> if the cookie doesn't
+     * exist.
+     */
+    public String getCookieValue(String name);
+
+    /**
      * Is the response gzipped?
      */
     public boolean isGzipped();

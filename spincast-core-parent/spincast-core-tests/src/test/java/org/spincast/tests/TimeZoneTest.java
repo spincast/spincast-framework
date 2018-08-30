@@ -19,7 +19,7 @@ public class TimeZoneTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void defaultTimeZone() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -38,7 +38,7 @@ public class TimeZoneTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void timeZoneCookie() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -56,7 +56,7 @@ public class TimeZoneTest extends NoAppStartHttpServerTestingBase {
         cookie.setPath("/");
         cookie.setSecure(false);
 
-        HttpResponse response = GET("/one").addCookie(cookie).send();
+        HttpResponse response = GET("/one").setCookie(cookie).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(timeZoneId, response.getContentAsString());

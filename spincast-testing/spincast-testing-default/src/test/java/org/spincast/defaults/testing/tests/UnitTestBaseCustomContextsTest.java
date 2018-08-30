@@ -29,7 +29,7 @@ public class UnitTestBaseCustomContextsTest extends
     protected @Named("testing") String testing;
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override

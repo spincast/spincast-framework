@@ -117,8 +117,8 @@ HttpClient httpClient = getHttpClient();
 
 WebsocketClientWriter websocketWriter =
         httpClient.websocket("http://example.com/someEndpoint")
-                  .addCookie("cookieKey", "cookieValue")
-                  .addHeaderValue("headerKey", "headerValue")
+                  .setCookie("cookieKey", "cookieValue")
+                  .setHeader("headerKey", "headerValue")
                   .connect(websocketHandler);
 
 websocketWriter.sendMessage("Hi server!");

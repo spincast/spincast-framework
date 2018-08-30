@@ -103,6 +103,17 @@ public interface Cookie {
     public void setHttpOnly(boolean httpOnly);
 
     /**
+     * The "sameSite" attribute. May be 
+     * <code>null</code> to not add it at all.
+     */
+    public CookieSameSite getSameSite();
+
+    /**
+     * The "sameSite" attribute to add.
+     */
+    public void setSameSite(CookieSameSite sameSite);
+
+    /**
      * Is this cookie to be discarded?
      */
     public boolean isDiscard();

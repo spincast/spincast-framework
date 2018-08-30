@@ -9,6 +9,7 @@ import java.util.TimeZone;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,9 @@ import com.google.inject.Inject;
  * configuration), beware that causing circular dependencies is very 
  * easy if you inject more dependencies than SpincastConfigPluginConfig!
  * Indeed, most components depend on the config components.
- * 
+ * <p>
+ * Also, don't forget to annotated the <code>testingMode</code>
+ * parameter with {@literal @}TestingMode!
  */
 public class SpincastConfigDefault extends ConfigFinder implements SpincastConfig {
 
@@ -30,6 +33,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     private StaticResourceCacheConfig staticResourceCacheConfig;
     private StaticResourceCacheConfig dynamicResourceCacheConfig;
     private String publicServerSchemeHostPort;
+    private final boolean testingMode;
 
     private URI publicUri;
 
@@ -37,7 +41,8 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
      * Constructor
      */
     @Inject
-    protected SpincastConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
+    protected SpincastConfigDefault(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                    @TestingMode boolean testingMode) {
         super(spincastConfigPluginConfig.getClasspathFilePath(),
               spincastConfigPluginConfig.getExternalFilePath(),
               spincastConfigPluginConfig.getEnvironmentVariablesPrefixes(),
@@ -47,6 +52,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
               spincastConfigPluginConfig.isExternalFileConfigsOverrideEnvironmentVariables(),
               spincastConfigPluginConfig.isThrowExceptionIfSpecifiedClasspathConfigFileIsNotFound(),
               spincastConfigPluginConfig.isThrowExceptionIfSpecifiedExternalConfigFileIsNotFound());
+        this.testingMode = testingMode;
     }
 
     @Inject
@@ -171,6 +177,11 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     @Override
     public boolean isDebugEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean isTestingMode() {
+        return this.testingMode;
     }
 
     @Override

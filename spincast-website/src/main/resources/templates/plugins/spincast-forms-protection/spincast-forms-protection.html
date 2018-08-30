@@ -1,0 +1,666 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-forms-protection{% endblock %}
+{% block meta_title %}Plugins - Spincast Forms Protection{% endblock %}
+{% block meta_description %}Spincast Forms Protection plugin - CSRF attacks and double submission protection{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Forms Protection plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Forms Protection <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/formsprotection/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Forms Protection <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage_csrf">CSRF protection</a></li>
+                <li class="openable"><a href="#usage_doublesubmit">Double Submit protection</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#configurations">Configurations</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin provides ways of protecting your forms.
+                    Currently, it can protect them from <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)">CSRF attacks</a> 
+                    and from unwanted Double Submissions.
+                </p>
+                
+            </section>
+
+            <section id="usage_csrf">
+	            <h3>
+                    <a class="anchor" href="#usage_csrf" title="permanent link"></a>
+                    CSRF protection
+                </h3>
+                
+                <h4 id="usage_csrf_intro">
+                    <a class="anchor_small" href="#usage_csrf_intro" title="permanent link"></a>
+                    Introduction
+                </h4> 
+	            <p>
+                    The CSRF protection is achieved by combining two technics:
+                    
+                    <ul>
+                        <li>
+                            Validating the <code>origin</code> and <code>referer</code> headers.
+                        </li>
+                        <li>
+                            Validating a special <code>protection id</code> that is added to the form before it is submitted.
+                        </li>
+                    </ul>
+                    
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Our implementation is an adaptation of <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet">OWASP suggestions</a>.  
+                    
+	            </p>
+                
+                <h4 id="usage_csrf_filter">
+                    <a class="anchor_small" href="#usage_csrf_filter" title="permanent link"></a>
+                    Filter
+                </h4> 
+                <p> 
+                    The first thing to do to enable CSRF protection in your application is to add the provided 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/csrf/SpincastFormsCsrfProtectionFilter.html">SpincastFormsCsrfProtectionFilter</a>
+                    "before" <a href="/documentation#filters">filter</a>.
+                </p>
+                <p> 
+                    Here's how we suggest you add the filter :
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>router.ALL()
+      .pos(-100)
+      .found()
+      .skipResourcesRequests()
+      .handle(spincastFormsCsrfProtectionFilter::handle);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : The filter will be called for every kind of
+                                    HTTP method. It is going to manage by itself what kind of method can be dangerous 
+                                    or not.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">2</span> : It needs to be a <code>before filter</code>, but you can adjust
+                                    the exact position by taking into account your other filters.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : Only the regular routes ("<code>found</code>") should be
+                                    protected. You don't want to run the filter again if an exception occurs, for example.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">4</span> : There is no need to protect 
+                                    <a href="/documentation#dynamic_resources">resources</a>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : The <code>SpincastFormsCsrfProtectionFilter</code> filter's handler.
+                                </li>
+                            </ul>
+                        </p> 
+                    </div>   
+                </p>
+                
+                <h4 id="usage_csrf_token">
+                    <a class="anchor_small" href="#usage_csrf_token" title="permanent link"></a>
+                    Adding CSRF protection ids to forms
+                </h4> 
+                <p> 
+                    If you use the default templating engine, <a href="/plugins/spincast-pebble">Pebble</a>, two functions are provided
+                    by the plugin to easily add CSRF protection ids to your forms: 
+                    
+                    <ul>
+                        <li>
+                            <code>formCsrfProtectionFieldName()</code> : 
+                            Outputs the name of the field to use to store the
+                            CSRF protection ids. In general, you want to use it on a <em>hidden field</em>.
+                        </li>
+                        <li>
+                            <code>formCsrfProtectionFieldValue()</code>:
+                            Outputs the CSRF protection id to use.
+                        </li>
+                     </ul>  
+                     
+                     For example:
+                     
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-pebble"
+>&lt;form&gt;
+    &lt;input type="hidden" 
+           name="{{ formCsrfProtectionFieldName() }}" 
+           value="{{ formCsrfProtectionFieldValue() }}" /&gt;
+   
+    // other fields...
+&lt;/form&gt;</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>       
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    If you are <em>not</em> using Pebble, you have to generate the same
+                    field using those:
+                    
+                    <ul>
+                        <li>
+                            <code><a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/config/SpincastFormsProtectionConfig.html#getFormCsrfProtectionIdFieldName--">SpincastFormsProtectionConfig#getFormCsrfProtectionIdFieldName()</a></code>:
+                            to get the name of the field to use.
+                        </li>
+                        <li>
+                            <code><a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/csrf/SpincastFormsCsrfProtectionFilter.html#getCurrentCsrfToken--">SpincastFormsCsrfProtectionFilter#getCurrentCsrfToken()</a></code>:
+                            to get the protection id to use.
+                        </li>
+                    </ul>
+                </p> 
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    That's it, your forms are now protected against CSRF attacks!
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that once the CSRF filter is added, <em>all forms</em> must send a
+                    CSRF protection id, otherwise they will be rejected!
+                </p> 
+                
+                <h4 id="usage_csrf_config">
+                    <a class="anchor_small" href="#usage_csrf_config" title="permanent link"></a>
+                    Configuration
+                </h4> 
+                <p> 
+                    Have a look at the <a href="#configurations">Configurations</a> section to learn the
+                    available options to tweak this CSRF protection.
+                </p>
+ 
+            </section>
+            
+            <section id="usage_doublesubmit">
+                <h3>
+                    <a class="anchor" href="#usage_doublesubmit" title="permanent link"></a>
+                    Double Submit protection
+                </h3>
+                
+                <h4 id="usage_doublesubmit_intro">
+                    <a class="anchor_small" href="#usage_doublesubmit_intro" title="permanent link"></a>
+                    Introduction
+                </h4> 
+                <p>
+                    The Double Submit protection works that way: once a form is submitted with a 
+                    protection id, this id is saved on the server. If the same form (id) is submitted again, 
+                    a filter will reject it.
+                </p>
+                <p>
+                    The form will also be rejected <em>if it is too old</em>. The lifespan of a form is 
+                    <a href="#configs_ds_forms_minutes">configurable</a>.
+                </p>
+                
+                <h4 id="usage_doublesubmit_repository">
+                    <a class="anchor_small" href="#usage_doublesubmit_repository" title="permanent link"></a>
+                    Implementing the repository
+                </h4> 
+                <p>
+                    The Double Submit protection is agnostic on how the protection ids of the submitted forms are stored
+                    on the server. This is why you have to provide the code of saving and retrieving the ids.
+                </p>
+                <p>
+                    You do this by biding an implementation of the
+                    <a class="javadoc" href="/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionRepository.html">SpincastFormsDoubleSubmitProtectionRepository</a>
+                    interface. There are three methods to implement :
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="usage_doublesubmit_repository_save" href="#usage_doublesubmit_repository_save" title="permanent link"></a>
+                            <code class="apiItem">void <span>saveSubmittedFormProtectionId</span>(Instant date, String protectedId)</code>
+                            <div class="well">
+                                <p>
+                                    Called by the plugin when the <code>protection id</code> of a submitted form
+                                    needs to be saved.
+                                </p>    
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_doublesubmit_repository_save" href="#usage_doublesubmit_repository_save" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isFormAlreadySubmitted</span>(String protectedId)</code>
+                            <div class="well">
+                                <p>
+                                    Called by the plugin to see if a form was already submitted.
+                                </p>    
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_doublesubmit_repository_save" href="#usage_doublesubmit_repository_save" title="permanent link"></a>
+                            <code class="apiItem">void <span>deleteOldFormsProtectionIds</span>(int maxAgeMinutes)</code>
+                            <div class="well">
+                                <p>
+                                    Called by the plugin to delete the protection ids 
+                                    that have been saved for more than "<code>maxAgeMinutes</code>" minutes.
+                                </p>    
+                            </div>
+                        </li> 
+                    </ul>
+                </p>
+                <p>
+                    When your implementation is ready, you bind it in your application's
+                    Guice module:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>bind(SpincastFormsDoubleSubmitProtectionRepository.class)
+        .to(YourAppFormsDoubleSubmitProtectionRepository.class)
+        .in(Scopes.SINGLETON);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>  
+                </p>
+
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Finally, here's an example of an SQL script (targeting <code>PostgreSQL</code>) to create a
+                    "<code>forms_submitted</code>" table. You will probably have to adjust this query
+                    for your own database! Or even to use something totally different if you 
+                    are not using a relational database.
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-sql"
+>CREATE TABLE forms_submitted (
+    id VARCHAR(36) PRIMARY KEY,
+    creation_date TIMESTAMPTZ NOT NULL
+)</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+                
+                
+                <h4 id="usage_doublesubmit_filter">
+                    <a class="anchor_small" href="#usage_doublesubmit_filter" title="permanent link"></a>
+                    Filter
+                </h4> 
+                <p> 
+                    You also have to add a provided 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionFilter.html">SpincastFormsDoubleSubmitProtectionFilter</a>
+                    "before" <a href="/documentation#filters">filter</a> to your router.
+                </p>
+                <p> 
+                    Here's how we suggest you add the filter:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>router.ALL()
+      .pos(-200)
+      .found()
+      .skipResourcesRequests()
+      .handle(spincastFormsDoubleSubmitProtectionFilter::handle);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : The filter should be called for every kind of
+                                    HTTP method.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">2</span> : It needs to be a <code>before filter</code>, but you can adjust
+                                    the exact position by taking into account your other filters.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : Only the regular routes ("<code>found</code>") should be
+                                    protected. You don't need to run the filter again if an exception occurs, for example.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">4</span> : There is no need to protect 
+                                    <a href="/documentation#dynamic_resources">resources</a>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : The <code>SpincastFormsDoubleSubmitProtectionFilter</code> filter's handler.
+                                </li>
+                            </ul>
+                        </p> 
+                    </div>   
+                </p>
+                
+                <h4 id="usage_doublesubmit_token">
+                    <a class="anchor_small" href="#usage_doublesubmit_token" title="permanent link"></a>
+                    Adding Double Submit protection ids to forms
+                </h4> 
+                <p> 
+                    If you use the default templating engine, <a href="/plugins/spincast-pebble">Pebble</a>, three functions are provided
+                    by the plugin to easily add a Double Submit protection id to a form: 
+                    
+                    <ul>
+                        <li>
+                            <code>formDoubleSubmitProtectionFieldName()</code> : 
+                            This fonction will output the name of the field to use to store the
+                            Double Submit protection id. In general, you want to use it on a <em>hidden field</em>.
+                        </li>
+                        <li>
+                            <code>formDoubleSubmitProtectionFieldValue()</code>:
+                            This fonction will output the value of the Double Submit protection id to be used.
+                        </li>
+                     </ul>  
+                     
+                     For example:
+                     
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-pebble"
+>&lt;form&gt;
+    &lt;input type="hidden" 
+           name="{{ formDoubleSubmitProtectionFieldName() }}" 
+           value="{{ formDoubleSubmitProtectionFieldValue() }}" /&gt;
+   
+    // other fields...
+&lt;/form&gt;</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>       
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    If you are <em>not</em> using Pebble, you have to generate the same
+                    field using those:
+                    
+                    <ul>
+                        <li>
+                            <code><a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/config/SpincastFormsProtectionConfig.html#getFormDoubleSubmitProtectionIdFieldName--">SpincastFormsProtectionConfig#getFormDoubleSubmitProtectionIdFieldName()</a></code>:
+                            to get the name of the field to use.
+                        </li>
+                        <li>
+                            <code><a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionFilter.html#createNewFormDoubleSubmitProtectionId--">SpincastFormsDoubleSubmitProtectionFilter#createNewFormDoubleSubmitProtectionId()</a></code>:
+                            to get the protection id to use.
+                        </li>
+                    </ul>
+                </p> 
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    And that's it, your form is protected agains Double Submissions!
+                </p>
+                
+                <h4 id="usage_doublesubmit_disabling">
+                    <a class="anchor_small" href="#usage_doublesubmit_disabling" title="permanent link"></a>
+                    Disabling the Double Submit protection
+                </h4> 
+                <p> 
+                    Note that, by default, once the Double Submit filter is added, <em>all forms</em> must send a
+                    protection id, otherwise they will be rejected!
+                </p>  
+                <p> 
+                    But the Double Submit protection is not always required. In fact, it sometimes even 
+                    <em>have</em> to be disabled! For example, you may have a form that is used to upload 
+                    images via Ajax. This form may well be used more than once and it's perfectly fine!
+                </p>  
+                <p> 
+                    If you use Pebble, you can easily disable a form from being protected by using this function:
+                    
+                    <ul>
+                        <li>
+                            <code>formDoubleSubmitDisableProtectionFieldName()</code>
+                        </li>
+                     </ul>
+                     
+                     In your form, you add a field (most of the time an <em>hidden field</em>)
+                     with the name this function outputs and set any value to it ("<code>1</code>" for example).
+                </p>  
+                <p> 
+                     
+                     When the <code>SpincastFormsDoubleSubmitProtectionFilter</code> filter sees that a submitted
+                     form contains this field, it won't validate the form at all.
+                </p>  
+                
+                <h4 id="usage_doublesubmit_config">
+                    <a class="anchor_small" href="#usage_doublesubmit_config" title="permanent link"></a>
+                    Configuration
+                </h4> 
+                <p> 
+                    Have a look at the <a href="#configurations">Configurations</a> section to learn the
+                    available options to tweak this Double Submit protection.
+                </p>  
+            </section> 
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    This plugin depends on three plugins which are <em>not</em>
+                    provided by default by the <code>spincast-default</code> package:
+                    
+                    <ul>
+                        <li>
+                            <a href="/plugins/spincast-crypto">Spincast Crypto</a>
+                        </li>
+                        <li>
+                            <a href="/plugins/spincast-crons">Spincast Crons</a>
+                        </li>
+                        <li>
+                            <a href="/plugins/spincast-session">Spincast Session</a>
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Those dependencies <em>will be automatically installed</em>, 
+                    you don't need to install them by yourself in your application (but you can). 
+                </p> 
+                <p>
+                    Just don't be surprised if you see transitive dependencies being added to your application!
+                </p>
+            </section> 
+            
+            <section id="installation">
+            
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                
+                <p>
+                    As you learn in the previous sections, you need to add two "before" filters,
+                    bind an implementation for the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionRepository.html">SpincastFormsDoubleSubmitProtectionRepository</a>
+                    interface, and optionally also bind some <a href="#configurations">custom configurations</a>. 
+                </p>
+                <p>
+                    Other than that, the plugin is installed as any other one:
+                </p>
+
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-forms-protection&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/SpincastFormsProtectionPlugin.html">SpincastFormsProtectionPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,51"
+>
+
+Spincast.configure()
+        .plugin(new SpincastFormsProtectionPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+
+            </section>
+            
+            <section id="configurations">
+                <h3>
+                    <a class="anchor" href="#configurations" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    The configuration interface for this plugin is 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/config/SpincastFormsProtectionConfig.html">SpincastFormsProtectionConfig</a>.
+                    To change the default configurations, you can bind an implementation of that interface, extending the default 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/config/SpincastFormsProtectionConfigDefault.html">SpincastFormsProtectionConfigDefault</a> 
+                    implementation if you don't want to start from scratch.
+                </p>
+                <p>
+                    <h4>Options:</h4>
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="configs_csrf_field_name" href="#configs_csrf_field_name" title="permanent link"></a>
+                            <code class="apiItem">String <span>getFormCsrfProtectionIdFieldName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The name of the field (in general a <em>hidden field</em>) to use 
+                                    in a form for CSRF protection.
+                                </p>
+                                <p>
+                                    Defaults to "<code>spincast_csrf_id</code>".
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_ds_field_name" href="#configs_ds_field_name" title="permanent link"></a>
+                            <code class="apiItem">String <span>getFormDoubleSubmitProtectionIdFieldName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The name of the field (in general a <em>hidden field</em>) to use 
+                                    in a form for Double Submit protection.
+                                </p>
+                                <p>
+                                    Defaults to "<code>spincast_ds_id</code>".
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_ds_disable_field_name" href="#configs_ds_disable_field_name" title="permanent link"></a>
+                            <code class="apiItem">String <span>getFormDoubleSubmitDisableProtectionIdFieldName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The name of the field (in general a <em>hidden field</em>) to use 
+                                    in a form <em>to disable</em> Double Submit protection.
+                                </p>
+                                <p>
+                                    Defaults to "<code>spincast_ds_disabled</code>".
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_ds_cron_auto" href="#configs_ds_cron_auto" title="permanent link"></a>
+                            <code class="apiItem">String <span>autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Should the plugin automatically register a cron that will call 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionRepository.html#deleteOldFormsProtectionIds-int-">deleteOldFormsProtectionIds()</a>
+                                    to clean old Double Submit protection ids?
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code>.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_ds_cron_minutes" href="#configs_ds_cron_minutes" title="permanent link"></a>
+                            <code class="apiItem">int <span>getDeleteOldDoubleSubmitProtectionIdsCronRunEveryNbrMinutes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    If <a href="#configs_ds_cron_auto">autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob()</a>
+                                    is <code>true</code>, this configuration specifies the number of minutes between 
+                                    two launches of the cron.
+                                </p>
+                                <p>
+                                    Defaults to <code>15</code>.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_ds_forms_minutes" href="#configs_ds_forms_minutes" title="permanent link"></a>
+                            <code class="apiItem">int <span>getFormDoubleSubmitFormValidForNbrMinutes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The number of minutes a form is considered as <em>valid</em>. If the form is
+                                    older than the specified number of minutes, it will be rejected by the
+                                    Double Submit protection filter.
+                                </p>
+                                <p>
+                                    Defaults to <code>120</code> (2 hours).
+                                </p> 
+                            </div>
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

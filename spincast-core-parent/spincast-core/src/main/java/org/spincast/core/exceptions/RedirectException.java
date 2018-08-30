@@ -1,8 +1,8 @@
 package org.spincast.core.exceptions;
 
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessageLevel;
 import org.spincast.core.json.JsonObject;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessageLevel;
 
 /**
  * Exception that will immediately send redirection headers.

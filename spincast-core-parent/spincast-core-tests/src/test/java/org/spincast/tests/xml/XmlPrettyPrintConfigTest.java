@@ -17,7 +17,7 @@ import com.google.inject.Module;
 public class XmlPrettyPrintConfigTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -52,7 +52,7 @@ public class XmlPrettyPrintConfigTest extends NoAppStartHttpServerTestingBase {
     public void toXmlPretty() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("someInt", 123);
+        jsonObj.set("someInt", 123);
 
         String xml = this.xmlManager.toXml(jsonObj, true);
         assertNotNull(xml);

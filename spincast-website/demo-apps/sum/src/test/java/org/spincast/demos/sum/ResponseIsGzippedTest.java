@@ -21,7 +21,7 @@ import com.google.inject.Scopes;
 public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBase {
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 
@@ -70,7 +70,7 @@ public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBas
      * by the {@link GuiceTweaker Guice Tweaker}.
      */
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -83,7 +83,7 @@ public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBas
     @Test
     public void isGzipped() throws Exception {
 
-        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "Stromgol")
+        HttpResponse response = POST("/sum").addFormBodyFieldValue("first", "Stromgol")
                                             .addJsonAcceptHeader()
                                             .send();
 

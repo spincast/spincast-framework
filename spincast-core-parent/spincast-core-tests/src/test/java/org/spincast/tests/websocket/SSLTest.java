@@ -9,6 +9,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
@@ -38,8 +39,8 @@ public class SSLTest extends NoAppWebsocketTestingBase {
          * Constructor
          */
         @Inject
-        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -87,7 +88,7 @@ public class SSLTest extends NoAppWebsocketTestingBase {
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -118,7 +119,7 @@ public class SSLTest extends NoAppWebsocketTestingBase {
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 

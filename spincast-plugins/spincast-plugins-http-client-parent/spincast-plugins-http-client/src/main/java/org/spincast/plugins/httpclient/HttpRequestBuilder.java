@@ -57,24 +57,24 @@ public interface HttpRequestBuilder<T extends HttpRequestBuilder<?>> {
     public T addPlainTextAcceptHeader();
 
     /**
-     * Adds a cookie. Secure by default (HTTPS only)!
+     * Sets a cookie. Secure by default (HTTPS only)!
      */
-    public T addCookie(String name, String value);
+    public T setCookie(String name, String value);
 
     /**
-     * Adds a cookie, secure or not.
+     * Sets a cookie, secure or not.
      */
-    public T addCookie(String name, String value, boolean secure);
+    public T setCookie(String name, String value, boolean secure);
 
     /**
-     * Adds a cookie.
+     * Sets a cookie.
      */
-    public T addCookie(Cookie cookie);
+    public T setCookie(Cookie cookie);
 
     /**
-     * Adds some cookies.
+     * Sets some cookies.
      */
-    public T addCookies(Collection<Cookie> cookies);
+    public T setCookies(Collection<Cookie> cookies);
 
     /**
      * Sets a custom <code>RequestConfig</code> to use. If not provided,

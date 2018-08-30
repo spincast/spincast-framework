@@ -31,11 +31,8 @@ public class MainPagesController {
     private final AppConfig appConfig;
 
     @Inject
-    public MainPagesController(@MainArgs String[] mainArgs,
-                               JsonManager jsonManager,
-                               SpincastUtils spincastUtils,
-                               NewsService newsService,
-                               AppConfig appConfig) {
+    public MainPagesController(@MainArgs String[] mainArgs, JsonManager jsonManager, SpincastUtils spincastUtils,
+                               NewsService newsService, AppConfig appConfig) {
         this.mainArgs = mainArgs;
         this.jsonManager = jsonManager;
         this.spincastUtils = spincastUtils;
@@ -74,7 +71,8 @@ public class MainPagesController {
     public void documentation(AppRequestContext context) {
 
         if (context.request().getQueryStringParamFirst("alert") != null) {
-            context.response().getModel().put("alertDemoMsg", "This is an example Success Alert message, using no javascript!");
+            context.response().getModel().set("alertDemoMsg",
+                                              "This is an example Success Alert message, using no javascript!");
         }
 
         context.response().sendTemplateHtml("/templates/documentation.html");
@@ -110,12 +108,12 @@ public class MainPagesController {
         String pluginDocTemplatePath = getPluginDocTemplatePath(pluginName);
         if (pluginDocTemplatePath == null) {
 
-            //==========================================
-            // We specify the classes of the current section so the 
+            // ==========================================
+            // We specify the classes of the current section so the
             // menu can keep track of it, even if the Not Found
             // route is used.
-            //==========================================
-            context.variables().add(AppConstants.RC_VARIABLE_HTML_SECTION_CLASSES, Lists.newArrayList("plugins"));
+            // ==========================================
+            context.variables().set(AppConstants.RC_VARIABLE_HTML_SECTION_CLASSES, Lists.newArrayList("plugins"));
 
             throw new NotFoundException("Plugin not found");
         }
@@ -124,8 +122,8 @@ public class MainPagesController {
     }
 
     /**
-     * Return the classpath path to the plugin documentation template
-     * or NULL if not found.
+     * Return the classpath path to the plugin documentation template or NULL if not
+     * found.
      */
     protected String getPluginDocTemplatePath(String pluginName) {
 
@@ -133,9 +131,9 @@ public class MainPagesController {
             return null;
         }
 
-        //==========================================
+        // ==========================================
         // Sanitization
-        //==========================================
+        // ==========================================
         if (!Pattern.matches("[-_0-9a-z]+", pluginName)) {
             this.logger.info("Invalid plugin name tried : " + pluginName);
             return null;
@@ -184,12 +182,14 @@ public class MainPagesController {
             nextPage = page + 1;
         }
 
-        int nbrPageTotal = (int)Math.floor((newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() - 1) / nbrNewsEntriesPerPage) + 1;
+        int nbrPageTotal = (int)Math
+                                    .floor((newsEntriesAndTotalNbr.getNbrNewsEntriesTotal() - 1) / nbrNewsEntriesPerPage) +
+                           1;
 
-        context.response().getModel().put("newsEntries", newsEntriesAndTotalNbr.getNewsEntries());
-        context.response().getModel().put("currentPage", page);
-        context.response().getModel().put("nextPage", nextPage);
-        context.response().getModel().put("nbrPageTotal", nbrPageTotal);
+        context.response().getModel().set("newsEntries", newsEntriesAndTotalNbr.getNewsEntries());
+        context.response().getModel().set("currentPage", page);
+        context.response().getModel().set("nextPage", nextPage);
+        context.response().getModel().set("nbrPageTotal", nbrPageTotal);
 
         context.response().sendTemplateHtml("/templates/news.html");
 
@@ -213,7 +213,7 @@ public class MainPagesController {
             throw new NotFoundException("The news entry '" + newsId + "' was not found.");
         }
 
-        context.response().getModel().put("newsEntry", newsEntry);
+        context.response().getModel().set("newsEntry", newsEntry);
         context.response().sendTemplateHtml("/templates/newsEntry.html");
     }
 

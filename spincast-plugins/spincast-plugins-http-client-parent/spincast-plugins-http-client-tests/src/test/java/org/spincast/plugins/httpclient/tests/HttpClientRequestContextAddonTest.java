@@ -63,7 +63,7 @@ public class HttpClientRequestContextAddonTest extends
     @Test
     public void httpClientAddon() throws Exception {
 
-        getRouter().GET("/two").save(new Handler<CustomRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<CustomRequestContext>() {
 
             @Override
             public void handle(CustomRequestContext context) {
@@ -79,7 +79,7 @@ public class HttpClientRequestContextAddonTest extends
 
         final String url2 = createTestUrl("/two");
 
-        getRouter().GET("/").save(new Handler<CustomRequestContext>() {
+        getRouter().GET("/").handle(new Handler<CustomRequestContext>() {
 
             @Override
             public void handle(CustomRequestContext context) {

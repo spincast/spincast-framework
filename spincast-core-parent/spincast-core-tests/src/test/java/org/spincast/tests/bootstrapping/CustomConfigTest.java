@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
@@ -37,8 +38,9 @@ public class CustomConfigTest {
          * Constructor
          */
         @Inject
-        protected SpincastConfigTestDefault(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected SpincastConfigTestDefault(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                            @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

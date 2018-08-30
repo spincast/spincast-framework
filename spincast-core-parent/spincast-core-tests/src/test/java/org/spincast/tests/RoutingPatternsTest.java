@@ -23,7 +23,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void paramNoPattern() throws Exception {
 
-        getRouter().GET("/${param1}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -40,7 +40,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void paramNoPatternNoName() throws Exception {
 
-        getRouter().GET("/${}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -56,7 +56,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void paramPattern1() throws Exception {
 
-        getRouter().GET("/${param1:a+}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:a+}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -90,7 +90,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void paramPatternNumeric() throws Exception {
 
-        getRouter().GET("/users/${param1:\\d+}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/users/${param1:\\d+}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -119,7 +119,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void emptyPattern() throws Exception {
 
-        getRouter().GET("/${param1:}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -144,7 +144,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
         try {
             String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaAliasKey();
 
-            getRouter().GET("/${param1:<" + key + "}").save(new Handler<DefaultRequestContext>() {
+            getRouter().GET("/${param1:<" + key + "}").handle(new Handler<DefaultRequestContext>() {
 
                 @Override
                 public void handle(DefaultRequestContext context) {
@@ -160,7 +160,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
     public void paramPredefinedPatternNotFound() throws Exception {
 
         try {
-            getRouter().GET("/${param1:<NOPE>}").save(new Handler<DefaultRequestContext>() {
+            getRouter().GET("/${param1:<NOPE>}").handle(new Handler<DefaultRequestContext>() {
 
                 @Override
                 public void handle(DefaultRequestContext context) {
@@ -177,7 +177,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
         try {
             String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaAliasKey();
 
-            getRouter().GET("/*{param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+            getRouter().GET("/*{param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
                 @Override
                 public void handle(DefaultRequestContext context) {
@@ -193,7 +193,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -250,7 +250,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.geNumericAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -304,7 +304,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaPlusAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -368,7 +368,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.geNumericPlusAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -426,7 +426,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaNumericAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -493,7 +493,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         String key = this.defaultPredefinedRouteParamPatternsBinder.getAlphaNumericPlusAliasKey();
 
-        getRouter().GET("/${param1:<" + key + ">}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<" + key + ">}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -566,7 +566,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().addRouteParamPatternAlias("XX", "abc");
 
-        getRouter().GET("/${param1:<XX>}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<XX>}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -627,7 +627,7 @@ public class RoutingPatternsTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().addRouteParamPatternAlias("USERS", "user|users|usr");
 
-        getRouter().GET("/${param1:<USERS>}/${userId}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1:<USERS>}/${userId}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

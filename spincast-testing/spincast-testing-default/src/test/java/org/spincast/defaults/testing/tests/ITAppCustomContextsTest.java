@@ -80,7 +80,7 @@ public class ITAppCustomContextsTest extends AppBasedTestingBase<RequestContextT
     }
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 

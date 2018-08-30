@@ -15,7 +15,7 @@ import com.google.inject.assistedinject.AssistedInject;
 /**
  * Implementation for the Http Client builder for a PATCH request.
  */
-public class PatchRequestBuilderDefault extends EntitySenderRequestBuilderBaseDefault<PatchRequestBuilder>
+public class PatchRequestBuilderDefault extends BodySenderRequestBuilderBaseDefault<PatchRequestBuilder>
                                         implements PatchRequestBuilder {
 
     @AssistedInject

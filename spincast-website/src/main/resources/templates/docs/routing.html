@@ -188,7 +188,7 @@ router.DELETE("/users/${userId}") ...
 router.ALL("/books") ...
 
 // Handles POST and PUT requests only
-router.SOME("/books", HttpMethod.POST, HttpMethod.PUT) ...
+router.methods("/books", HttpMethod.POST, HttpMethod.PUT) ...
 </pre> 
                 </p>
             </div>
@@ -439,11 +439,11 @@ router.GET("/").notFound().exception() ...
                     <pre class="ace ace-java"
 >
 // Synonym of : 
-// router.ALL("/*{path}").notFound().save(handler)
+// router.ALL("/*{path}").notFound().handle(handler)
 router.notFound(handler);
 
 // Synonym of : 
-// router.ALL("/*{path}").exception().save(handler)
+// router.ALL("/*{path}").exception().handle(handler)
 router.exception(handler);
 </pre> 
                 </p>
@@ -555,7 +555,7 @@ router.file("/favicon.ico").cache(86400).classpath("/public/favicon.ico") ...</p
                 <p>
                     <pre class="ace ace-java"
 >
-router.GET("/test").noCache().save(handler);
+router.GET("/test").noCache().handle(handler);
 </pre> 
                 </p>
             </div>
@@ -578,7 +578,7 @@ router.GET("/test").noCache().save(handler);
         
         <p>
             When your Route definition is complete, you save the generated Route to the <code>router</code> by passing
-            a last parameter to the <code>save(...)</code> method : the <code>Route Handler</code> to use to handle the
+            a last parameter to the <code>handle(...)</code> method : the <code>Route Handler</code> to use to handle the
             Route. With Java 8, you can use a <code>method handler </code>or a <code>lambda</code> for this parameter :
         <p>
             <div>
@@ -586,10 +586,10 @@ router.GET("/test").noCache().save(handler);
                     <pre class="ace ace-java"
 >
 // A method handler
-router.GET("/").save(controller::indexHandler);
+router.GET("/").handle(controller::indexHandler);
 
 // A lambda expression
-router.GET("/").save(context -> controller.indexHandler(context));
+router.GET("/").handle(context -> controller.indexHandler(context));
 </pre> 
                 </p>
             </div>
@@ -606,7 +606,7 @@ router.GET("/").save(context -> controller.indexHandler(context));
 // requested user is not found.
 // This may occure if you throw a "NotFoundException" after you validated
 // the "userId" path parameter...
-router.GET("/users/${userId}").notFound().json().xml().save(usersController::userNotFound);
+router.GET("/users/${userId}").notFound().json().xml().handle(usersController::userNotFound);
     </pre> 
                 </p>
             </div>  
@@ -644,26 +644,26 @@ router.GET("/users/${userId}").notFound().json().xml().save(usersController::use
 >
 // This Filter is a "before" Filter and
 // will be run first.
-router.GET("/").pos(-3).save(ctl::filter1);
+router.GET("/").pos(-3).handle(ctl::filter1);
 
-// ThisFilter is also a "before" Filter and
+// This Filter is also a "before" Filter and
 // will be run second.
-router.GET("/").pos(-1).save(ctl::filter2);
+router.GET("/").pos(-1).handle(ctl::filter2);
 
 // This is not a Filter, it's a main Route Handler 
 // and the ".pos(0)" part is superfluous!
-router.GET("/").pos(0).save(ctl::mainHandler);
+router.GET("/").pos(0).handle(ctl::mainHandler);
 
 // This Filter is an "after" Filter and will run
 // after the main Route Handler
-router.GET("/").pos(100).save(ctl::filter3);
+router.GET("/").pos(100).handle(ctl::filter3);
 </pre> 
                 </p>
             </div>
         </p>  
         <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            A Route definition can <em>disable</em> a Filter that would otherwise be run, by 
+            A Route definition can disable a Filter that would otherwise be run, by 
             using the <code>skip(...)</code> method. The target Filter must have
             been declared with an <code>"id"</code> for this to be possible though. He're
             an example :
@@ -673,10 +673,29 @@ router.GET("/").pos(100).save(ctl::filter3);
                     <pre class="ace ace-java"
 >
 // This "myFilter" Filter will be applied on all Routes by default
-router.ALL().pos(-100).id("myFilter").save(ctl::filter);
+router.ALL().pos(-100).id("myFilter").handle(ctl::filterHandler);
 
 // ... but this Route disables it!
-router.GET("/test").skip("myFilter").save(ctl::testHandler);
+router.GET("/test").skip("myFilter").handle(ctl::testHandler);
+</pre> 
+                </p>
+            </div>
+        </p>  
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            A Route definition can also disable a Filter that would otherwise be run 
+            when a <a href="/documentation#dynamic_resources">Dynamic Resource</a> is generated. To
+            do so, simply call <code>skipResourcesRequests()</code>:
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>
+// This Filter will be applied on all routes
+router.ALL().pos(-100).handle(ctl::someHandler);
+
+// This one on all routes but dynamic resources ones!
+router.ALL().pos(-100).skipResourcesRequests().handle(ctl::someHandler);
 </pre> 
                 </p>
             </div>
@@ -698,7 +717,7 @@ router.GET("/users/${userId}")
       .before(ctl::beforeFilter1)
       .before(ctl::beforeFilter2)
       .after(ctl::afterFilter)
-      .save(ctl::mainHandler);</pre> 
+      .handle(ctl::mainHandler);</pre> 
                 </p>
             </div>
         </p>  
@@ -771,7 +790,7 @@ router.GET("/users/${userId}")
             <div>
                 <p>
                     <pre class="ace ace-java"
->router.websocket("/chat").before(someFilter).save(chatWebsocketController);</pre> 
+>router.websocket("/chat").before(someFilter).handle(chatWebsocketController);</pre> 
                 </p>
             </div>
         </p>  
@@ -812,27 +831,27 @@ router.GET("/users/${userId}")
 // Will serve all requests starting with the
 // URL "/public" with files under the classpath
 // directory "/public_files".
-router.dir("/public").classpath("/public_files").save();
+router.dir("/public").classpath("/public_files").handle();
 
 // Uses an absolute path to a directory on the file system  
 // as a static resources root.
-router.dir("/public").pathAbsolute("/user/www/myprojet/public_files").save();
+router.dir("/public").pathAbsolute("/user/www/myprojet/public_files").handle();
 
 // Uses a path relative to the Spincast writable directory, 
 // on the file system, as the root for the static resources.
-router.dir("/public").pathRelative("/public_files").save();
+router.dir("/public").pathRelative("/public_files").handle();
 
 // Will serve the requests for a specific file,
 // here "/favicon.ico", using a file from the classpath.
-router.file("/favicon.ico").classpath("/public/favicon.ico").save();
+router.file("/favicon.ico").classpath("/public/favicon.ico").handle();
 
 // Uses an absolute path to a file on the file system 
 // as the static resource target.
-router.file("/favicon.ico").pathAbsolute("/user/www/myprojet/public_files/favicon.ico").save();
+router.file("/favicon.ico").pathAbsolute("/user/www/myprojet/public_files/favicon.ico").handle();
 
 // Uses a path relative to the Spincast writable directory, 
 // on the file system, as the static resource target file.
-router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").save();
+router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").handle();
 
 </pre> 
                 </p>
@@ -841,7 +860,7 @@ router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").save();
         <p>
         	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Be aware that since requests for Static Resources don't reach the framework, <em>Filters don't apply to them</em>! Even a
-            "catch all" Filter such as <code>router.ALL().pos(-1).save(handler)</code> 
+            "catch all" Filter such as <code>router.ALL().pos(-1).handle(handler)</code> 
             won't be applied...
         </p> 
         <p>
@@ -874,8 +893,8 @@ router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").save();
                 <p>
                     <pre class="ace ace-java"
 >
-router.dir("/public").cache(3600).classpath("/public_files").save();
-router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").save();
+router.dir("/public").cache(3600).classpath("/public_files").handle();
+router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").handle();
 </pre> 
                 </p>
             </div>
@@ -922,7 +941,7 @@ router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").sa
                 <p>
                     <pre class="ace ace-java"
 >router.dir("/images/tags/${tagId}").pathAbsolute("/generated_tags")
-      .save(new DefaultHandler() {
+      .handle(new DefaultHandler() {
 
           @Override
           public void handle(DefaultRequestContext context) {
@@ -945,7 +964,7 @@ router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").sa
                     <pre class="ace ace-java"
 >router.file("/css/generated.css")
       .pathAbsolute("/user/www/myprojet/public_files/css/generated.css")
-      .save(new DefaultHandler() {
+      .handle(new DefaultHandler() {
 
           @Override
           public void handle(DefaultRequestContext context) {
@@ -986,7 +1005,7 @@ router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").sa
                     <pre class="ace ace-java" data-ace-hi="10,9,10,13"
 >router.file("/css/generated.css")
       .pathAbsolute("/user/www/myprojet/public_files/css/generated.css")
-      .save(new DefaultHandler() {
+      .handle(new DefaultHandler() {
 
           @Override
           public void handle(DefaultRequestContext context) {
@@ -1021,7 +1040,7 @@ router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").sa
 			                    <pre class="ace ace-java" data-ace-hi="1,19,1,30"
 >
 
-router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").save(generator);
+router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").handle(generator);
 </pre> 
 			                </p>
 			            </div>
@@ -1036,7 +1055,7 @@ router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").save(g
 			                    <pre class="ace ace-java" data-ace-hi="1,23,1,31"
 >
 
-router.dir("/generated/*{splat}").pathRelative("/someDir").save(generator);
+router.dir("/generated/*{splat}").pathRelative("/someDir").handle(generator);
 </pre> 
 			                </p>
 			            </div>
@@ -1051,7 +1070,7 @@ router.dir("/generated/*{splat}").pathRelative("/someDir").save(generator);
 			                    <pre class="ace ace-java" data-ace-hi="1,60,1,71"
 >
 
-router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").save(generator);
+router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").handle(generator);
 </pre> 
 			                </p>
 			            </div>
@@ -1066,13 +1085,24 @@ router.file("/test/${fileName}").pathAbsolute("/usr/someDir/${fileName}").save(g
 			                <p>
 			                    <pre class="ace ace-java" data-ace-hi="1,57,1,65"
 >// This is NOT valid!
-router.dir("/generated/*{splat}").pathAbsolute("/someDir/*{splat}").save(generator);
+router.dir("/generated/*{splat}").pathAbsolute("/someDir/*{splat}").handle(generator);
 </pre> 
 			                </p>
 			            </div>
 			        </p> 
         		</li>
         	</ul>
+        </p> 
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            Finally, note that when a dynamic resource is generated (in other words when its
+            <code>generator</code> is called), <em>the filters will be applied</em>,
+            as with any reguar route!
+        </p> 
+        <p>
+            If you don't want a specific filter to be applied when a dynamic resource is
+            generated, you can use <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/RouteBuilder.html#skipResourcesRequests--">.skipResourcesRequests()</a>
+            on the route of that filter.
         </p> 
         
     </div>
@@ -1113,11 +1143,11 @@ getRouter().cors("/api/*{path}");
 
 // Enable CORS on a Static Resource directory.
 getRouter().dir("/public").classpath("/public_files")
-           .cors().save();
+           .cors().handle();
            
 // Enable CORS on a Static Resource file.
 getRouter().file("/public/test.txt").classpath("/public_files/test.txt")
-           .cors().save();</pre> 
+           .cors().handle();</pre> 
 
                 </p>
             </div>
@@ -1490,9 +1520,9 @@ router.redirect("/the-original-route").to("/the-new-route");
     }
 
     protected void addRoutes(DefaultRouter router) {
-        router.GET("/users/${userId}").save(this::getUser);
-        router.POST("/users").save(this::addUser);
-        router.DELETE("/users/${userId}").save(this::deleteUser);
+        router.GET("/users/${userId}").handle(this::getUser);
+        router.POST("/users").handle(this::addUser);
+        router.DELETE("/users/${userId}").handle(this::deleteUser);
     }
 
     @Override

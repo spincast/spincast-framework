@@ -41,7 +41,7 @@ public class ITAppTestingConfigAreUsedTest extends IntegrationConfigTestClassBas
     }
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 

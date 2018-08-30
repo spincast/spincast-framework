@@ -179,10 +179,10 @@ public class LoadTest extends NoAppWebsocketTestingBase {
                     // We specify the endpointId and peerId to use by coookie,
                     // so the calling code can control them.
                     //==========================================
-                    final String endpointIdCookie = context.request().getCookie("endpointId");
+                    final String endpointIdCookie = context.request().getCookieValue("endpointId");
                     assertNotNull(endpointIdCookie);
 
-                    final String peerIdCookie = context.request().getCookie("peerId");
+                    final String peerIdCookie = context.request().getCookieValue("peerId");
                     assertNotNull(peerIdCookie);
 
                     return new WebsocketConnectionConfig() {
@@ -215,7 +215,7 @@ public class LoadTest extends NoAppWebsocketTestingBase {
 
             };
             getControllers().put(createControllerId(controllerPos), controller);
-            getRouter().websocket("/ws" + controllerPos).save(controller);
+            getRouter().websocket("/ws" + controllerPos).handle(controller);
         }
     }
 
@@ -246,8 +246,8 @@ public class LoadTest extends NoAppWebsocketTestingBase {
 
                     Peer peer = new Peer(controllerId, endpointId, peerId);
                     WebsocketClientWriter writer =
-                            websocket("/ws" + controllerPos).addCookie("endpointId", endpointId)
-                                                            .addCookie("peerId", peerId)
+                            websocket("/ws" + controllerPos).setCookie("endpointId", endpointId)
+                                                            .setCookie("peerId", peerId)
                                                             .connect(peer);
                     assertNotNull(writer);
                     peer.setWriter(writer);

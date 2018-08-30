@@ -13,7 +13,7 @@ import org.spincast.core.exceptions.CantConvertException;
 public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String, Object>> {
 
     /**
-     * Puts an element at the specified key, without parsing this
+     * Sets an element at the specified key, without parsing this
      * key as a <code>JsonPath</code>.
      * <p>
      * If the element to add is not of a native type,
@@ -44,10 +44,10 @@ public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String
      * </li>
      * </ul>
      */
-    public JsonObject putNoKeyParsing(String key, Object element);
+    public JsonObject setNoKeyParsing(String key, Object element);
 
     /**
-     * Puts an element at the specified key, without parsing this
+     * Sets an element at the specified key, without parsing this
      * key as a <code>JsonPath</code>.
      * <p>
      * If the element to add is not of a native type,
@@ -87,7 +87,7 @@ public interface JsonObject extends JsonObjectOrArray, Iterable<Map.Entry<String
      * <code>JsonObject</code> is always 
      * <em>fully</em> mutable or <em>fully</em> immutable.
      */
-    public JsonObject putNoKeyParsing(String key, Object element, boolean clone);
+    public JsonObject setNoKeyParsing(String key, Object element, boolean clone);
 
     /**
      * Merges all the specified Map elements in the JsonObject. The keys

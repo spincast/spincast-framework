@@ -14,6 +14,8 @@ import com.google.inject.assistedinject.Assisted;
 public interface RouteFactory<R extends RequestContext<?>> {
 
     public Route<R> createRoute(@Assisted("id") String id,
+                                @Assisted("isResourceRoute") boolean isResourceRoute,
+                                @Assisted("isSpicastCoreRouteOrPluginRoute") boolean isSpicastCoreRouteOrPluginRoute,
                                 @Assisted("httpMethods") Set<HttpMethod> httpMethods,
                                 @Assisted("path") String path,
                                 @Assisted("routingTypes") Set<RoutingType> routingTypes,
@@ -22,5 +24,6 @@ public interface RouteFactory<R extends RequestContext<?>> {
                                 @Assisted("after") List<Handler<R>> afterFilters,
                                 @Assisted("position") int position,
                                 @Assisted("acceptedContentTypes") Set<String> acceptedContentTypes,
-                                @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip);
+                                @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip,
+                                @Assisted("skipResources") boolean skipResources);
 }

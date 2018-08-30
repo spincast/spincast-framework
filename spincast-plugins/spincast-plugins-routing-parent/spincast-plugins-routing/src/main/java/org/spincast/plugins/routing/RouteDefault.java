@@ -19,6 +19,8 @@ import com.google.inject.assistedinject.AssistedInject;
 public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
 
     private final String id;
+    private final boolean isResourceRoute;
+    private final boolean spicastCoreRouteOrPluginRoute;
     private final String path;
     private final Set<HttpMethod> httpMethods;
     private final Set<String> acceptedContentTypes;
@@ -28,12 +30,15 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     private final List<Handler<R>> afterFilters;
     private final int position;
     private final Set<String> filterIdsToSkip;
+    private final boolean skipResourcesRequests;
 
     /** 
      * Constructor
      */
     @AssistedInject
     public RouteDefault(@Assisted("id") @Nullable String id,
+                        @Assisted("isResourceRoute") boolean isResourceRoute,
+                        @Assisted("isSpicastCoreRouteOrPluginRoute") boolean spicastCoreRouteOrPluginRoute,
                         @Assisted("httpMethods") Set<HttpMethod> httpMethods,
                         @Assisted("path") String path,
                         @Assisted("routingTypes") Set<RoutingType> routingTypes,
@@ -42,8 +47,11 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
                         @Assisted("after") @Nullable List<Handler<R>> afterFilters,
                         @Assisted("position") int position,
                         @Assisted("acceptedContentTypes") @Nullable Set<String> acceptedContentTypes,
-                        @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip) {
+                        @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip,
+                        @Assisted("skipResources") boolean skipResources) {
         this.id = id;
+        this.isResourceRoute = isResourceRoute;
+        this.spicastCoreRouteOrPluginRoute = spicastCoreRouteOrPluginRoute;
         this.position = position;
         this.httpMethods = httpMethods;
         this.path = path;
@@ -75,6 +83,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
             filterIdsToSkip = new HashSet<String>();
         }
         this.filterIdsToSkip = filterIdsToSkip;
+        this.skipResourcesRequests = skipResources;
     }
 
     @Override
@@ -93,8 +102,23 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     }
 
     @Override
+    public boolean isResourceRoute() {
+        return this.isResourceRoute;
+    }
+
+    @Override
+    public boolean isSpicastCoreRouteOrPluginRoute() {
+        return this.spicastCoreRouteOrPluginRoute;
+    }
+
+    @Override
     public String getPath() {
         return this.path;
+    }
+
+    @Override
+    public boolean isSkipResourcesRequests() {
+        return this.skipResourcesRequests;
     }
 
     @Override

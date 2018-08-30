@@ -80,13 +80,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void toJsonString() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("someBoolean", true);
-        jsonObj.put("someInt", 123);
+        jsonObj.set("someBoolean", true);
+        jsonObj.set("someInt", 123);
 
         JsonObject jsonObj2 = getJsonManager().create();
-        jsonObj2.put("anotherBoolean", true);
-        jsonObj2.put("anotherInt", 44444);
-        jsonObj2.put("innerObj", jsonObj);
+        jsonObj2.set("anotherBoolean", true);
+        jsonObj2.set("anotherInt", 44444);
+        jsonObj2.set("innerObj", jsonObj);
 
         String jsonStr = getJsonManager().toJsonString(jsonObj2);
         assertNotNull(jsonStr);
@@ -116,7 +116,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void toJsonStringPretty() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("someInt", 123);
+        jsonObj.set("someInt", 123);
 
         String jsonStr = getJsonManager().toJsonString(jsonObj, true);
         assertNotNull(jsonStr);
@@ -136,7 +136,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         JsonObject jsonObj = getJsonManager().create();
         byte[] bytes = SpincastTestUtils.TEST_STRING.getBytes("UTF-8");
-        jsonObj.put("someBytes", bytes);
+        jsonObj.set("someBytes", bytes);
 
         String jsonStr = getJsonManager().toJsonString(jsonObj);
         assertNotNull(jsonStr);
@@ -157,7 +157,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         Date someDate = cal.getTime();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("someDate", someDate);
+        jsonObj.set("someDate", someDate);
 
         String jsonStr = getJsonManager().toJsonString(jsonObj);
         assertNotNull(jsonStr);
@@ -178,7 +178,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         Date someDate = cal.getTime();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("someDate", someDate);
+        jsonObj.set("someDate", someDate);
 
         String jsonStr = getJsonManager().toJsonString(jsonObj);
         assertNotNull(jsonStr);
@@ -189,8 +189,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void jsonObjectLoop() throws Exception {
 
         JsonObject jsonObj2 = getJsonManager().create();
-        jsonObj2.put("anotherBoolean", true);
-        jsonObj2.put("anotherInt", 44444);
+        jsonObj2.set("anotherBoolean", true);
+        jsonObj2.set("anotherInt", 44444);
 
         boolean boolFound = false;
         boolean intFound = false;
@@ -238,13 +238,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         Object object = jsonObj.getString("key1");
         assertEquals("val1", object);
@@ -283,13 +283,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         try {
             jsonObj.getBigDecimal("key1");
@@ -350,16 +350,16 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
-        jsonObj.put("keyA", "false");
-        jsonObj.put("keyB", false);
+        jsonObj.set("keyA", "false");
+        jsonObj.set("keyB", false);
 
         try {
             jsonObj.getBoolean("key1");
@@ -427,13 +427,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         try {
             jsonObj.getDouble("key1");
@@ -493,13 +493,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         try {
             jsonObj.getInteger("key1");
@@ -562,13 +562,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         try {
             jsonObj.getLong("key1");
@@ -630,13 +630,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         try {
             jsonObj.getFloat("key1");
@@ -707,16 +707,16 @@ public class JsonObjectsTest extends NoAppTestingBase {
         Instant someInstant = Instant.parse("2007-12-03T10:15:30.00Z");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
-        jsonObj.put("key8", someDateISO8601);
-        jsonObj.put("key9", someDate);
-        jsonObj.put("key10", someInstant);
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key8", someDateISO8601);
+        jsonObj.set("key9", someDate);
+        jsonObj.set("key10", someInstant);
 
         try {
             jsonObj.getDate("key1");
@@ -806,16 +806,16 @@ public class JsonObjectsTest extends NoAppTestingBase {
         String someDateISO8601 = someInstant.toString();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
-        jsonObj.put("key8", someDateISO8601);
-        jsonObj.put("key9", someDate);
-        jsonObj.put("key10", someInstant);
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key8", someDateISO8601);
+        jsonObj.set("key9", someDate);
+        jsonObj.set("key10", someInstant);
 
         try {
             jsonObj.getInstant("key1");
@@ -894,13 +894,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObjInner = getJsonManager().create();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
 
         String result = jsonObj.getString("key1");
         assertNotNull(result);
@@ -945,14 +945,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
         String base64String = Base64.encodeBase64String(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
-        jsonObj.put("key8", base64String);
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key8", base64String);
 
         byte[] result = jsonObj.getBytesFromBase64String("key1");
         assertNotNull(result);
@@ -1008,14 +1008,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonArray jsonArrayInner = getJsonManager().createArray();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
-        jsonObj.put("key8", jsonArrayInner);
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key8", jsonArrayInner);
 
         try {
             jsonObj.getJsonObject("key1");
@@ -1084,14 +1084,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonArray jsonArrayInner = getJsonManager().createArray();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "val1");
-        jsonObj.put("key2", true);
-        jsonObj.put("key3", "true");
-        jsonObj.put("key4", jsonObjInner);
-        jsonObj.put("key5", 123);
-        jsonObj.put("key6", "123");
-        jsonObj.put("key7", "12345678901234567890123456789012345678901234567890");
-        jsonObj.put("key8", jsonArrayInner);
+        jsonObj.set("key1", "val1");
+        jsonObj.set("key2", true);
+        jsonObj.set("key3", "true");
+        jsonObj.set("key4", jsonObjInner);
+        jsonObj.set("key5", 123);
+        jsonObj.set("key6", "123");
+        jsonObj.set("key7", "12345678901234567890123456789012345678901234567890");
+        jsonObj.set("key8", jsonArrayInner);
 
         try {
             jsonObj.getJsonArray("key1");
@@ -1163,8 +1163,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         jsonArray.add(getJsonManager().create());
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", "test");
-        jsonObj.put("someArray", jsonArray);
+        jsonObj.set("key1", "test");
+        jsonObj.set("someArray", jsonArray);
 
         String jsonString = jsonObj.toJsonString();
         assertEquals("{\"key1\":\"test\",\"someArray\":[{},123,\"abc\",{}]}".length(), jsonString.length());
@@ -1354,8 +1354,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         obj.setName("test");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("aaa", "bbb");
-        jsonObj.put("custom", obj);
+        jsonObj.set("aaa", "bbb");
+        jsonObj.set("custom", obj);
 
         String jsonString = jsonObj.toJsonString();
         assertNotNull(jsonString);
@@ -1374,7 +1374,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         String[] array = new String[]{"aaa", "bbb"};
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", array);
+        jsonObj.set("array", array);
 
         JsonArray result = jsonObj.getJsonArray("array");
         assertNotNull(result);
@@ -1390,7 +1390,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         list.add("bbb");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", list);
+        jsonObj.set("array", list);
 
         JsonArray result = jsonObj.getJsonArray("array");
         assertNotNull(result);
@@ -1406,7 +1406,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         list.add("bbb");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", list);
+        jsonObj.set("array", list);
 
         JsonArray result = jsonObj.getJsonArray("array");
         assertNotNull(result);
@@ -1422,7 +1422,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         map.put("key2", "val2");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", map);
+        jsonObj.set("inner", map);
 
         JsonObject result = jsonObj.getJsonObject("inner");
         assertNotNull(result);
@@ -1458,7 +1458,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void mapConvertedToJsonObjectUsingCreate() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("innerKey1", "toto");
+        inner.set("innerKey1", "toto");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("key1", "val1");
@@ -1473,9 +1473,9 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertEquals("toto", innerResult.getString("innerKey1"));
 
         // A clone has been made
-        inner.put("otherKey", "titi");
+        inner.set("otherKey", "titi");
         assertEquals(null, innerResult.getString("otherKey"));
-        innerResult.put("innerKey2", "tutu");
+        innerResult.set("innerKey2", "tutu");
         assertEquals(null, inner.getString("innerKey2"));
     }
 
@@ -1483,7 +1483,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void jsonObjectFromFile() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("test", "Stromgol");
+        jsonObj.set("test", "Stromgol");
 
         File file = new File(createTestingFilePath());
 
@@ -1498,7 +1498,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void jsonObjectFromFilePath() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("test", "Stromgol");
+        jsonObj.set("test", "Stromgol");
 
         File file = new File(createTestingFilePath());
 
@@ -1634,7 +1634,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         JsonArray jsonArray = jsonObj.getJsonArray("arr");
         assertNotNull(jsonArray);
@@ -1651,7 +1651,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         String arrayFirst = jsonObj.getArrayFirstString("arr");
         assertNotNull(arrayFirst);
@@ -1685,7 +1685,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Integer arrayFirst = jsonObj.getArrayFirstInteger("arr");
         assertNotNull(arrayFirst);
@@ -1715,7 +1715,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Long arrayFirst = jsonObj.getArrayFirstLong("arr");
         assertNotNull(arrayFirst);
@@ -1745,7 +1745,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Float arrayFirst = jsonObj.getArrayFirstFloat("arr");
         assertNotNull(arrayFirst);
@@ -1775,7 +1775,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Double arrayFirst = jsonObj.getArrayFirstDouble("arr");
         assertNotNull(arrayFirst);
@@ -1805,7 +1805,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Boolean arrayFirst = jsonObj.getArrayFirstBoolean("arr");
         assertNotNull(arrayFirst);
@@ -1835,7 +1835,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         BigDecimal arrayFirst = jsonObj.getArrayFirstBigDecimal("arr");
         assertNotNull(arrayFirst);
@@ -1865,7 +1865,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Date arrayFirst = jsonObj.getArrayFirstDate("arr");
         assertNotNull(arrayFirst);
@@ -1894,7 +1894,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         Instant arrayFirst = jsonObj.getArrayFirstInstant("arr");
         assertNotNull(arrayFirst);
@@ -1925,7 +1925,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         byte[] arrayFirst = jsonObj.getArrayFirstBytesFromBase64String("arr");
         assertNotNull(arrayFirst);
@@ -1989,14 +1989,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void getArrayFirstElementAsJsonObject() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("name", "inner");
+        inner.set("name", "inner");
 
         JsonArray array = getJsonManager().createArray();
         array.add(inner);
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         JsonObject arrayFirst = jsonObj.getArrayFirstJsonObject("arr");
         assertNotNull(arrayFirst);
@@ -2007,7 +2007,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void getArrayFirstElementAsJsonObjectFromArray() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("name", "inner");
+        inner.set("name", "inner");
 
         JsonArray array2 = getJsonManager().createArray();
         array2.add(inner);
@@ -2033,7 +2033,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", array);
+        jsonObj.set("arr", array);
 
         JsonArray arrayFirst = jsonObj.getArrayFirstJsonArray("arr");
         assertNotNull(arrayFirst);
@@ -2067,7 +2067,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("yo", "yeah");
+        jsonObj.set("yo", "yeah");
 
         JsonArray arrayFirstJsonArray = jsonObj.getJsonArray("nope", array);
         assertNotNull(arrayFirstJsonArray);
@@ -2079,7 +2079,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void getArrayFirstElementAsJsonArrayNoDefaultValue() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("yo", "yeah");
+        jsonObj.set("yo", "yeah");
 
         JsonArray result = jsonObj.getJsonArray("nope");
         assertNull(result);
@@ -2091,7 +2091,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         String[] inner = new String[]{"titi"};
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", inner);
+        jsonObj.set("arr", inner);
 
         String first = jsonObj.getArrayFirstString("arr");
         assertNotNull(first);
@@ -2104,7 +2104,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         String[] inner = new String[]{"titi"};
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", inner);
+        jsonObj.set("arr", inner);
 
         String first = jsonObj.getArrayFirstString("arr");
         assertNotNull(first);
@@ -2115,12 +2115,12 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void getRealArrayFirstElementJsonObject() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("yo", "yeah");
+        inner.set("yo", "yeah");
 
         JsonObject[] arr = new JsonObject[]{inner};
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("arr", arr);
+        jsonObj.set("arr", arr);
 
         JsonObject first = jsonObj.getArrayFirstJsonObject("arr");
         assertNotNull(first);
@@ -2133,7 +2133,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         List<String> inner = Lists.newArrayList("titi");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("list", inner);
+        jsonObj.set("list", inner);
 
         String first = jsonObj.getArrayFirstString("list");
         assertNotNull(first);
@@ -2147,7 +2147,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         map.put("name", "Stromgol");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("map", map);
+        jsonObj.set("map", map);
 
         JsonObject map2 = jsonObj.getJsonObject("map");
         assertNotNull(map2);
@@ -2162,7 +2162,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonArray emptyArray = getJsonManager().createArray();
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", emptyArray);
+        jsonObj.set("array", emptyArray);
 
         String result = jsonObj.getArrayFirstString("array", "default");
         assertNotNull(result);
@@ -2176,7 +2176,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("someString");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", array);
+        jsonObj.set("array", array);
 
         try {
             jsonObj.getInteger("array", 123);
@@ -2255,7 +2255,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void getOrEmptyWithNullProperty() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("key1", null);
+        jsonObj.set("key1", null);
 
         String result = jsonObj.getJsonObjectOrEmpty("key1")
                                .getJsonArrayOrEmpty("nope")
@@ -2285,7 +2285,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("aaa");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", array);
+        jsonObj.set("array", array);
 
         JsonArray innerArray = jsonObj.getJsonArray("array");
         assertEquals(1, innerArray.size());
@@ -2309,7 +2309,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("aaa");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("array", array, true);
+        jsonObj.set("array", array, true);
 
         JsonArray innerArray = jsonObj.getJsonArray("array");
         assertEquals(1, innerArray.size());
@@ -2328,10 +2328,10 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void putJsonObjectConvertNoClone() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "val1");
+        obj.set("key1", "val1");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", obj);
+        jsonObj.set("inner", obj);
 
         JsonObject innerObj = jsonObj.getJsonObject("inner");
         assertEquals("val1", innerObj.getString("key1"));
@@ -2341,7 +2341,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertNull(innerObj.getString("key3"));
         assertNull(obj.getString("key3"));
 
-        innerObj.put("key2", "val2");
+        innerObj.set("key2", "val2");
         assertEquals("val1", innerObj.getString("key1"));
         assertEquals("val1", obj.getString("key1"));
         assertEquals("val2", innerObj.getString("key2"));
@@ -2349,7 +2349,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertNull(innerObj.getString("key3"));
         assertNull(obj.getString("key3"));
 
-        obj.put("key3", "val3");
+        obj.set("key3", "val3");
         assertEquals("val1", innerObj.getString("key1"));
         assertEquals("val1", obj.getString("key1"));
         assertEquals("val2", innerObj.getString("key2"));
@@ -2362,10 +2362,10 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void putJsonObjectConvertClone() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "val1");
+        obj.set("key1", "val1");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", obj, true);
+        jsonObj.set("inner", obj, true);
 
         JsonObject innerObj = jsonObj.getJsonObject("inner");
         assertEquals("val1", innerObj.getString("key1"));
@@ -2375,14 +2375,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertNull(innerObj.getString("key3"));
         assertNull(obj.getString("key3"));
 
-        innerObj.put("key2", "val2");
+        innerObj.set("key2", "val2");
         assertEquals("val1", innerObj.getString("key1"));
         assertEquals("val2", innerObj.getString("key2"));
         assertNull(obj.getString("key2"));
         assertNull(innerObj.getString("key3"));
         assertNull(obj.getString("key3"));
 
-        obj.put("key3", "val3");
+        obj.set("key3", "val3");
         assertEquals("val1", innerObj.getString("key1"));
         assertEquals("val1", obj.getString("key1"));
         assertEquals("val2", innerObj.getString("key2"));
@@ -2454,7 +2454,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void jsonObjectClone() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "val1");
+        obj.set("key1", "val1");
 
         JsonObject clone = obj.clone(true);
         assertEquals("val1", clone.getString("key1"));
@@ -2464,14 +2464,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertNull(clone.getString("key3"));
         assertNull(obj.getString("key3"));
 
-        clone.put("key2", "val2");
+        clone.set("key2", "val2");
         assertEquals("val1", clone.getString("key1"));
         assertEquals("val2", clone.getString("key2"));
         assertNull(obj.getString("key2"));
         assertNull(clone.getString("key3"));
         assertNull(obj.getString("key3"));
 
-        obj.put("key3", "val3");
+        obj.set("key3", "val3");
         assertEquals("val1", clone.getString("key1"));
         assertEquals("val1", obj.getString("key1"));
         assertEquals("val2", clone.getString("key2"));
@@ -2486,8 +2486,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject inner = getJsonManager().create();
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "val1");
-        obj.put("inner", inner);
+        obj.set("key1", "val1");
+        obj.set("inner", inner);
 
         JsonObject clone = obj.clone(false);
         assertEquals("val1", clone.getString("key1"));
@@ -2499,24 +2499,24 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertNull(inner.getString("innerKey"));
         assertNull(innerClone.getString("innerKey"));
 
-        obj.put("key2", "val2");
+        obj.set("key2", "val2");
         assertEquals("val1", clone.getString("key1"));
         assertEquals("val1", obj.getString("key1"));
         assertNull(clone.getString("key2"));
         assertEquals("val2", obj.getString("key2"));
 
-        inner.put("innerKey", "innerValue");
+        inner.set("innerKey", "innerValue");
         assertEquals("innerValue", inner.getString("innerKey"));
         assertNull(innerClone.getString("innerKey"));
 
         try {
-            clone.put("key3", "val3");
+            clone.set("key3", "val3");
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            innerClone.put("key4", "val4");
+            innerClone.set("key4", "val4");
             fail();
         } catch (Exception ex) {
         }
@@ -2566,7 +2566,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         }
 
         JsonObject obj = getJsonManager().create();
-        obj.put("array", immutableArray);
+        obj.set("array", immutableArray);
 
         try {
             immutableArray.add("nope");
@@ -2618,22 +2618,22 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject immutableObj = obj2.clone(false);
 
         try {
-            immutableObj.put("nope", "I don't think so");
+            immutableObj.set("nope", "I don't think so");
             fail();
         } catch (Exception ex) {
         }
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", immutableObj);
+        obj.set("inner", immutableObj);
 
         try {
-            immutableObj.put("nope", "I don't think so");
+            immutableObj.set("nope", "I don't think so");
             fail();
         } catch (Exception ex) {
         }
 
         JsonObject innerObj = obj.getJsonObject("inner");
-        innerObj.put("key1", "yes!");
+        innerObj.set("key1", "yes!");
 
     }
 
@@ -2645,7 +2645,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject immutableObj = obj2.clone(false);
 
         try {
-            immutableObj.put("nope", "I don't think so");
+            immutableObj.set("nope", "I don't think so");
             fail();
         } catch (Exception ex) {
         }
@@ -2654,13 +2654,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add(immutableObj);
 
         try {
-            immutableObj.put("nope", "I don't think so");
+            immutableObj.set("nope", "I don't think so");
             fail();
         } catch (Exception ex) {
         }
 
         JsonObject innerObj = array.getJsonObject(0);
-        innerObj.put("key1", "yes!");
+        innerObj.set("key1", "yes!");
 
     }
 
@@ -2787,9 +2787,9 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void convert() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("someBoolean", true);
-        jsonObj.put("someInt", 123);
-        jsonObj.put("someString", "test");
+        jsonObj.set("someBoolean", true);
+        jsonObj.set("someInt", 123);
+        jsonObj.set("someString", "test");
 
         ConvertTest result = jsonObj.convert(ConvertTest.class);
         assertNotNull(result);
@@ -2802,13 +2802,13 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void convertWithParent() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("someBoolean", true);
-        jsonObj.put("someInt", 123);
-        jsonObj.put("someString", "test");
+        jsonObj.set("someBoolean", true);
+        jsonObj.set("someInt", 123);
+        jsonObj.set("someString", "test");
 
         JsonObject parent = getJsonManager().create();
-        parent.put("someObj", jsonObj);
-        parent.put("someString", "test2");
+        parent.set("someObj", jsonObj);
+        parent.set("someString", "test2");
 
         ConvertTestParent result = parent.convert(ConvertTestParent.class);
         assertNotNull(result);
@@ -2824,10 +2824,10 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void isElementExistsNoKeyParsing() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
+        inner.set("key1", "test");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", inner);
+        jsonObj.set("inner", inner);
 
         assertTrue(jsonObj.isElementExistsNoKeyParsing("inner"));
 
@@ -2839,10 +2839,10 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void isElementExists() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
+        inner.set("key1", "test");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", inner);
+        jsonObj.set("inner", inner);
 
         assertFalse(jsonObj.isElementExists(null));
         assertFalse(jsonObj.isElementExists(""));
@@ -2858,7 +2858,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void arrayIsIndexExists() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
+        inner.set("key1", "test");
 
         JsonArray array = getJsonManager().createArray();
         array.set(1, inner);
@@ -2873,7 +2873,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void arrayisElementExists() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
+        inner.set("key1", "test");
 
         JsonArray array = getJsonManager().createArray();
         array.set(1, inner);
@@ -2893,16 +2893,16 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void objRemove() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
-        inner.put("key2", "test2");
+        inner.set("key1", "test");
+        inner.set("key2", "test2");
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key3", "test3");
-        inner2.put("key4", "test4");
+        inner2.set("key3", "test3");
+        inner2.set("key4", "test4");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", inner);
-        jsonObj.put("inner2", inner2);
+        jsonObj.set("inner", inner);
+        jsonObj.set("inner2", inner2);
 
         assertTrue(jsonObj.isElementExists("inner"));
         assertTrue(jsonObj.isElementExists("inner.key1"));
@@ -2939,16 +2939,16 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void objRemoveNoKeyParsing() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
-        inner.put("key2", "test2");
+        inner.set("key1", "test");
+        inner.set("key2", "test2");
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key3", "test3");
-        inner2.put("key4", "test4");
+        inner2.set("key3", "test3");
+        inner2.set("key4", "test4");
 
         JsonObject jsonObj = getJsonManager().create();
-        jsonObj.put("inner", inner);
-        jsonObj.put("inner2", inner2);
+        jsonObj.set("inner", inner);
+        jsonObj.set("inner2", inner2);
 
         assertTrue(jsonObj.isElementExists("inner"));
         assertTrue(jsonObj.isElementExists("inner.key1"));
@@ -2987,12 +2987,12 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void arrayRemove() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
-        inner.put("key2", "test2");
+        inner.set("key1", "test");
+        inner.set("key2", "test2");
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key3", "test3");
-        inner2.put("key4", "test4");
+        inner2.set("key3", "test3");
+        inner2.set("key4", "test4");
 
         JsonArray array = getJsonManager().createArray();
         array.set(1, inner);
@@ -3031,12 +3031,12 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void arrayRemoveIndex() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "test");
-        inner.put("key2", "test2");
+        inner.set("key1", "test");
+        inner.set("key2", "test2");
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key3", "test3");
-        inner2.put("key4", "test4");
+        inner2.set("key3", "test3");
+        inner2.set("key4", "test4");
 
         JsonArray array = getJsonManager().createArray();
         array.set(1, inner);
@@ -3076,7 +3076,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         BigDecimal bigDecimal = new BigDecimal("1234E+4");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", bigDecimal);
+        obj.set("key1", bigDecimal);
 
         assertEquals("{\"key1\":\"12340000\"}", obj.toJsonString());
 
@@ -3160,7 +3160,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void arrayPutUsingJsonPath() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "aaa");
+        obj.set("key1", "aaa");
 
         JsonArray arrayInner = getJsonManager().createArray();
         arrayInner.add("aaa");
@@ -3171,9 +3171,9 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add("aaa");
         array.add(arrayInner);
 
-        array.put("[1][2].name", "Stromgol");
-        array.put("[0]", "test");
-        array.put("[3]", "titi");
+        array.set("[1][2].name", "Stromgol");
+        array.set("[0]", "test");
+        array.set("[3]", "titi");
 
         assertNotNull(obj.getString("name"));
         assertEquals("Stromgol", obj.getString("name"));
@@ -3200,7 +3200,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonArray array = getJsonManager().createArray();
 
         try {
-            array.put("name", "Stromgol");
+            array.set("name", "Stromgol");
             fail();
         } catch (Exception ex) {
         }
@@ -3219,7 +3219,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertEquals("val1", obj.getString("key1"));
         assertEquals("val2", obj.getString("key2"));
 
-        obj.put("key3", "val3");
+        obj.set("key3", "val3");
         assertEquals(3, obj.size());
         assertEquals("val3", obj.getString("key3"));
     }
@@ -3238,7 +3238,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertEquals("val2", obj.getString("key2"));
 
         try {
-            obj.put("key3", "val3");
+            obj.set("key3", "val3");
             fail();
         } catch (Exception ex) {
         }
@@ -3249,8 +3249,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void withInitialObjMutable() throws Exception {
 
         JsonObject initialObj = getJsonManager().create();
-        initialObj.put("key1", "val1");
-        initialObj.put("key2", "val2");
+        initialObj.set("key1", "val1");
+        initialObj.set("key2", "val2");
 
         JsonObject obj = getJsonObjectFactory().create(initialObj, true);
         assertNotNull(obj);
@@ -3258,7 +3258,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertEquals("val1", obj.getString("key1"));
         assertEquals("val2", obj.getString("key2"));
 
-        obj.put("key3", "val3");
+        obj.set("key3", "val3");
         assertEquals(3, obj.size());
         assertEquals("val3", obj.getString("key3"));
     }
@@ -3267,8 +3267,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void withInitialObjImmutable() throws Exception {
 
         JsonObject initialObj = getJsonManager().create();
-        initialObj.put("key1", "val1");
-        initialObj.put("key2", "val2");
+        initialObj.set("key1", "val1");
+        initialObj.set("key2", "val2");
 
         JsonObject obj = getJsonObjectFactory().create(initialObj, false);
         assertNotNull(obj);
@@ -3277,7 +3277,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         assertEquals("val2", obj.getString("key2"));
 
         try {
-            obj.put("key3", "val3");
+            obj.set("key3", "val3");
             fail();
         } catch (Exception ex) {
         }
@@ -3288,7 +3288,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void addIfDoesntExistJsonObject() throws Exception {
 
         JsonObject initialObj = getJsonManager().create();
-        initialObj.put("key1", "val1");
+        initialObj.set("key1", "val1");
 
         assertNull(initialObj.getJsonObject("toto"));
         JsonObject toto = initialObj.getJsonObjectOrEmpty("toto");
@@ -3304,7 +3304,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void addIfDoesntExistJsonArray() throws Exception {
 
         JsonObject initialObj = getJsonManager().create();
-        initialObj.put("key1", "val1");
+        initialObj.set("key1", "val1");
 
         assertNull(initialObj.getJsonArray("toto"));
         JsonArray toto = initialObj.getJsonArrayOrEmpty("toto");

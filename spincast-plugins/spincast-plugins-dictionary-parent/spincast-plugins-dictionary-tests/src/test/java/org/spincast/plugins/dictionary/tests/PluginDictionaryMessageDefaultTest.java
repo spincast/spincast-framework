@@ -17,13 +17,13 @@ public class PluginDictionaryMessageDefaultTest extends NoAppStartHttpServerTest
     @Test
     public void formNameEmptyDefaultMessage() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    context.request().getForm("");
+                    context.request().getFormWithRootKey("");
                     fail();
                 } catch (Exception ex) {
                     assertEquals("The name can't be empty.", ex.getMessage());

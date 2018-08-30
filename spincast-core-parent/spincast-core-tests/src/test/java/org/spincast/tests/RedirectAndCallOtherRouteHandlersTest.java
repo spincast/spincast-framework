@@ -9,11 +9,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.spincast.core.exceptions.RedirectException;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessageLevel;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
@@ -37,7 +37,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectAbsolutePath() throws Exception {
 
-        getRouter().GET("/permanently/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/permanently/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -45,7 +45,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/permanently/one/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/permanently/one/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -53,7 +53,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/temporary/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/temporary/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -61,7 +61,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/temporary/one/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/temporary/one/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -69,7 +69,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/custom/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/custom/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -77,7 +77,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/custom/one/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/custom/one/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -85,7 +85,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -145,7 +145,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectRelativePath() throws Exception {
 
-        getRouter().GET("/permanently/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/permanently/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -153,7 +153,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/permanently/one/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/permanently/one/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -161,7 +161,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/temporary/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/temporary/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -169,7 +169,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/temporary/one/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/temporary/one/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -177,7 +177,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/custom/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/custom/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -185,7 +185,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/custom/one/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/custom/one/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -193,7 +193,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -259,7 +259,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
         final String urlDoubleSlashFinal = urlDoubleSlash.substring("http:".length());
 
-        getRouter().GET("/test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -267,7 +267,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/permanently/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/permanently/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -275,7 +275,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/temporary/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/temporary/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -283,7 +283,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/custom/one/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/custom/one/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -351,7 +351,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         };
 
-        getRouter().ALL("/*{path}").pos(-1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(-1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -360,9 +360,9 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         });
 
         // Use handler2!
-        getRouter().ALL("/*{path}").pos(1).save(handler2);
+        getRouter().ALL("/*{path}").pos(1).handle(handler2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -384,7 +384,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void standardRedirection() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -392,7 +392,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -409,7 +409,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectException() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -417,7 +417,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -439,7 +439,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
         final boolean[] redirected = new boolean[]{false};
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -469,7 +469,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
         final boolean[] redirected = new boolean[]{false};
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -501,7 +501,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
         final boolean[] redirected = new boolean[]{false};
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -531,7 +531,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
         final boolean[] redirected = new boolean[]{false};
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -555,7 +555,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void standardRedirectionDoesntSkipRemainingFilters() throws Exception {
 
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -563,7 +563,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -583,7 +583,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void standardRedirectCanBeCancelled() throws Exception {
 
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -594,7 +594,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -619,7 +619,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         final boolean[] wasCalled5 = new boolean[]{false};
         final boolean[] wasCalled6 = new boolean[]{false};
 
-        getRouter().ALL().pos(-100).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-100).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -627,7 +627,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().ALL().pos(-90).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-90).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -636,7 +636,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().ALL().pos(-80).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-80).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -644,7 +644,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -652,7 +652,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -660,7 +660,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().ALL().pos(20).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(20).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -693,7 +693,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     public void redirectExceptionDoesNotSkipRemainingAfterFilters() throws Exception {
 
         final boolean[] wasCalled = new boolean[]{false};
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -701,7 +701,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -729,7 +729,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectExceptionTemporarily() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext spincast) {
@@ -749,7 +749,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectWithFlashMessage() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -757,7 +757,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -779,7 +779,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectExceptionWithFlashMessage() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -787,7 +787,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -809,7 +809,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
     @Test
     public void redirectWithFlashMessageAutomaticallyAddedToAlerts() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -817,11 +817,11 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().getModel().put("key1", "val1");
+                context.response().getModel().set("key1", "val1");
                 context.response().sendJson();
             }
         });

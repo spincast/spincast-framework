@@ -16,7 +16,7 @@ public class ResponseContentModificationTest extends NoAppStartHttpServerTesting
     @Test
     public void changeContent() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -25,7 +25,7 @@ public class ResponseContentModificationTest extends NoAppStartHttpServerTesting
                 context.response().sendPlainText("plain text");
             }
         });
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -45,7 +45,7 @@ public class ResponseContentModificationTest extends NoAppStartHttpServerTesting
     @Test
     public void changeContentHeaderSent() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -62,7 +62,7 @@ public class ResponseContentModificationTest extends NoAppStartHttpServerTesting
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
-        getRouter().ALL("/*{path}").pos(1).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

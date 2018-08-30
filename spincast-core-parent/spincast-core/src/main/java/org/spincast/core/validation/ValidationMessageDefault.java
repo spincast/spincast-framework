@@ -68,9 +68,9 @@ public class ValidationMessageDefault implements ValidationMessage {
         if(this.jsonObjectVersion == null) {
 
             JsonObject obj = getJsonManager().create();
-            obj.put("code", getCode());
-            obj.put("level", getValidationLevel().toString());
-            obj.put("text", getText());
+            obj.set("code", getCode());
+            obj.set("level", getValidationLevel().toString());
+            obj.set("text", getText());
 
             // Immutable
             this.jsonObjectVersion = obj.clone(false);

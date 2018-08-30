@@ -39,7 +39,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchMatching() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -86,7 +86,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchNotMatching() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -133,7 +133,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchNotMatchingWeakComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -166,7 +166,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchChanged() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             private int nbr = 1;
 
@@ -217,7 +217,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchWeakRequestStrongComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -250,7 +250,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchWeakRequestWeakComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -284,7 +284,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchWeakActualStrongComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -318,7 +318,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchWeakActualWeakComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -352,7 +352,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchBothWeakStrongComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -386,7 +386,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchBothWeakWeakComparison() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -420,7 +420,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchHeaderMatch() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -454,7 +454,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchHeaderNoMatch() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -479,7 +479,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchWildcardedResourceExist() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -513,7 +513,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchWildcardedResourceDoesntExist() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -538,7 +538,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchResourceDoesntExist() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -563,7 +563,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchWildcardedResourceExist() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -596,7 +596,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchWildcardedResourceDoesntExist() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -625,7 +625,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchMultipleValuesMatch() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -659,7 +659,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchMultipleValuesNoMatch() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -683,7 +683,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchMultipleValuesMatch2() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -720,7 +720,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfMatchMultipleValuesNoMatch2() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -746,7 +746,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchMultipleValuesMatch() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -778,7 +778,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchMultipleValuesNoMatch() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -810,7 +810,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchMultipleValuesMatch2() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -845,7 +845,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void eTagIfNoneMatchMultipleValuesNoMatch2() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -880,7 +880,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void multipleValues() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -939,7 +939,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -967,7 +967,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date oldDate = SpincastTestUtils.getTestDateNoTime();
         final Date newDate = DateUtils.addSeconds(oldDate, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -996,7 +996,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1024,7 +1024,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1053,7 +1053,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1082,7 +1082,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1109,7 +1109,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1139,7 +1139,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1167,7 +1167,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1206,7 +1206,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1246,7 +1246,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1285,7 +1285,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1323,7 +1323,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1362,7 +1362,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1401,7 +1401,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1440,7 +1440,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1478,7 +1478,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1515,7 +1515,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1555,7 +1555,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1595,7 +1595,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1634,7 +1634,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1673,7 +1673,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
 
         final Date date = SpincastTestUtils.getTestDateNoTime();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1712,7 +1712,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1752,7 +1752,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
         final Date date = SpincastTestUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1788,7 +1788,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noCache() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1825,7 +1825,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noCacheUsingCacheForZero() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1862,7 +1862,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noCacheUsingCacheForLessThanZero() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1899,7 +1899,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheForDefault() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1930,7 +1930,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheForPrivate() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1961,7 +1961,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheForPrivateCdnSeconds() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

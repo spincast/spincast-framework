@@ -79,7 +79,7 @@ Quick Example
         <div>
             <p>
                 <pre class="ace ace-java"
->router.websocket("/chat").save(chatWebsocketController);</pre>
+>router.websocket("/chat").handle(chatWebsocketController);</pre>
             </p>
         </div>
     </p>  
@@ -313,7 +313,7 @@ WebSocket Routing
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" /> 
         Finally, like you do during the creating of a regular Route, you <em>save</em> the WebSocket Route. The 
-        <code>save(...)</code> method for a WebSocket Route takes a <a href="#websockets_controllers">WebSocket Controller</a>, 
+        <code>handle(...)</code> method for a WebSocket Route takes a <a href="#websockets_controllers">WebSocket Controller</a>, 
         not a <code>Route Handler</code> as regular HTTP Routes do.
     </p>
     <p>
@@ -324,7 +324,7 @@ WebSocket Routing
       .id("chat-endpoint")
       .before(beforeFilter1) 
       .before(beforeFilter2)
-      .save(chatWebsocketController);</pre> 
+      .handle(chatWebsocketController);</pre> 
             </p>
         </div>
     </p>  
@@ -624,7 +624,7 @@ WebSocket Controllers
 
     @Override
     public void onEndpointReady(WebsocketEndpointManager endpointManager) {
-        getEndpointManagers().put(endpointManager.getEndpointId(), endpointManager);
+        getEndpointManagers().set(endpointManager.getEndpointId(), endpointManager);
     }
 
     @Override
@@ -727,7 +727,7 @@ WebSocket Controllers
                 <pre class="ace ace-java"
 >public void onEndpointReady(WebsocketEndpointManager endpointManager) {
 
-    getEndpointManagers().put(endpointManager.getEndpointId(), endpointManager);
+    getEndpointManagers().set(endpointManager.getEndpointId(), endpointManager);
 
     final String endpointId = endpointManager.getEndpointId();
 

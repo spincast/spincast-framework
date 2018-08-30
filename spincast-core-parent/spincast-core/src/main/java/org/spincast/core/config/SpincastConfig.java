@@ -35,6 +35,15 @@ public interface SpincastConfig {
     public boolean isDebugEnabled();
 
     /**
+     * Returns <code>true</code> if the context
+     * has been created for running tests.
+     * <p>
+     * For example, this would by default disable the
+     * cron jobs to be registered.
+     */
+    public boolean isTestingMode();
+
+    /**
      * The application can't know by itself on which
      * scheme/host/port it is served publicly.
      * <p>

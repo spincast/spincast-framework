@@ -135,6 +135,15 @@ public class HttpResponseDefault implements HttpResponse {
     }
 
     @Override
+    public String getCookieValue(String name) {
+        Cookie cookie = getCookie(name);
+        if (cookie == null) {
+            return null;
+        }
+        return cookie.getValue();
+    }
+
+    @Override
     public boolean isGzipped() {
         return this.isGzipped;
     }

@@ -54,13 +54,13 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
     }
 
     public SpincastRoutingPluginModule(Class<? extends RequestContext<?>> requestContextImplementationClass,
-                                      Class<? extends WebsocketContext<?>> websocketContextImplementationClass) {
+                                       Class<? extends WebsocketContext<?>> websocketContextImplementationClass) {
         this(requestContextImplementationClass, websocketContextImplementationClass, null);
     }
 
     public SpincastRoutingPluginModule(Class<? extends RequestContext<?>> requestContextImplementationClass,
-                                      Class<? extends WebsocketContext<?>> websocketContextImplementationClass,
-                                      Class<? extends Router<?, ?>> specificRouterImplementationClass) {
+                                       Class<? extends WebsocketContext<?>> websocketContextImplementationClass,
+                                       Class<? extends Router<?, ?>> specificRouterImplementationClass) {
         super(requestContextImplementationClass, websocketContextImplementationClass);
         this.specificRouterImplementationClass = specificRouterImplementationClass;
     }
@@ -167,18 +167,18 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         //==========================================
         // Specific Router implementation class to use?
         //==========================================
-        if(getSpecificRouterImplementationClass() != null) {
+        if (getSpecificRouterImplementationClass() != null) {
             return Key.get(getSpecificRouterImplementationClass());
         }
 
         //==========================================
         // If we use the default request context and default
-        // Websocket context, we directly bind the DefaultRouter that
+        // Websocket context, we directly bind the DefaultRouterDefault that
         // implements the "DefaultRouter" interface, for
-        // easy injection of the default router.
+        // easy injection.
         //==========================================
-        if(getRequestContextInterface().equals(DefaultRequestContext.class) &&
-           getWebsocketContextInterface().equals(DefaultWebsocketContext.class)) {
+        if (getRequestContextInterface().equals(DefaultRequestContext.class) &&
+            getWebsocketContextInterface().equals(DefaultWebsocketContext.class)) {
             return Key.get(DefaultRouterDefault.class);
         } else {
             return parameterizeWithContextInterfaces(SpincastRouter.class);
@@ -203,7 +203,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         Key key = getRouterImplementationKey();
         try {
             key.getTypeLiteral().getSupertype(Router.class);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("The router Key must implement " + Router.class.getName() + " : " + key);
         }
 
@@ -234,8 +234,8 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         // "DefaultRouter" interface for easier access to the parameterized 
         // router!
         //==========================================
-        if(getRequestContextInterface().equals(DefaultRequestContext.class) &&
-           DefaultRouter.class.isAssignableFrom(key.getTypeLiteral().getRawType())) {
+        if (getRequestContextInterface().equals(DefaultRequestContext.class) &&
+            DefaultRouter.class.isAssignableFrom(key.getTypeLiteral().getRawType())) {
             bind(DefaultRouter.class).to(key).in(Scopes.SINGLETON);
         }
     }
@@ -246,7 +246,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         Key key = getRouteKey();
         try {
             key.getTypeLiteral().getSupertype(Route.class);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("The route Key must implement " +
                                        Route.class.getName() + " : " + key);
         }
@@ -256,7 +256,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
-        if(annotation != null) {
+        if (annotation != null) {
             install(new FactoryModuleBuilder().implement(routeKey.getTypeLiteral(),
                                                          annotation,
                                                          key.getTypeLiteral())
@@ -273,7 +273,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         Key key = getWebsocketRouteKey();
         try {
             key.getTypeLiteral().getSupertype(WebsocketRoute.class);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("The websocket route Key must implement " +
                                        WebsocketRoute.class.getName() + " : " + key);
         }
@@ -283,7 +283,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
-        if(annotation != null) {
+        if (annotation != null) {
             install(new FactoryModuleBuilder().implement(routeKey.getTypeLiteral(),
                                                          annotation,
                                                          key.getTypeLiteral())
@@ -377,7 +377,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         Key key = getStaticResourceKey();
         try {
             key.getTypeLiteral().getSupertype(StaticResource.class);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("The static resource Key must implement " +
                                        StaticResource.class.getName() + " : " + key);
         }
@@ -387,7 +387,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
 
         // Bind as assisted factory
         Annotation annotation = key.getAnnotation();
-        if(annotation != null) {
+        if (annotation != null) {
             install(new FactoryModuleBuilder().implement(staticResourceKey.getTypeLiteral(),
                                                          annotation,
                                                          key.getTypeLiteral())

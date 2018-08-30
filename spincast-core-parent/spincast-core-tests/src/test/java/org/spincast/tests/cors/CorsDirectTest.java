@@ -40,7 +40,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -76,7 +76,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -118,7 +118,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -162,7 +162,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example1.com", "https://example1.com"));
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -206,7 +206,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example3.com"));
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -245,7 +245,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("https://example1.com"));
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -286,7 +286,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          Sets.newHashSet("extra-header-to-be-read-1",
                                          "extra-header-to-be-read-2"));
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -335,7 +335,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          null,
                          false);
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -385,7 +385,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          false,
                          Sets.newHashSet(HttpMethod.PATCH));
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -434,7 +434,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          false,
                          Sets.newHashSet(HttpMethod.PATCH));
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -486,7 +486,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          false,
                          Sets.newHashSet(HttpMethod.PATCH));
 
-        getRouter().HEAD("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().HEAD("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -532,7 +532,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -622,7 +622,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -674,7 +674,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example1.com", "https://example1.com"));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -723,7 +723,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors(Sets.newHashSet("http://example3.com"));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -767,7 +767,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          Sets.newHashSet("extra-header-to-be-sent-1",
                                          "extra-header-to-be-sent-2"));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -823,7 +823,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          Sets.newHashSet("extra-header-to-be-sent-1",
                                          "*"));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -881,7 +881,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                                          "extra-header-to-be-read-2"),
                          Sets.newHashSet("extra-header-to-send-1", "extra-header-2"));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -924,7 +924,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                                          "extra-header-to-be-read-2"),
                          null);
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -971,7 +971,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                                          "extra-header-to-be-sent-2"),
                          false);
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1026,7 +1026,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          false,
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1082,7 +1082,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          false,
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT));
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1127,7 +1127,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT),
                          123);
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1184,7 +1184,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT),
                          0);
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1240,7 +1240,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
                          Sets.newHashSet(HttpMethod.DELETE, HttpMethod.PUT),
                          -123);
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1289,7 +1289,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1307,7 +1307,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                        .addCookie(cookie)
+                                        .setCookie(cookie)
                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
@@ -1342,7 +1342,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors("/");
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1386,7 +1386,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors("/*{path}");
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1430,7 +1430,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors("/nope");
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1471,7 +1471,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors("/${param}");
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1516,7 +1516,7 @@ public class CorsDirectTest extends NoAppStartHttpServerTestingBase {
         // Cors filter
         getRouter().cors("/*{param}", Sets.newHashSet("*"));
 
-        getRouter().DELETE("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().DELETE("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

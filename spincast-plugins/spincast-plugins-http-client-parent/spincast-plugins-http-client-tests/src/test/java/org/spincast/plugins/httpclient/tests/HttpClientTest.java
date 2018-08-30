@@ -39,7 +39,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void get() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -61,7 +61,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithSetHeaders() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -97,7 +97,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithSetHeaderValues() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -125,7 +125,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithAddHeaderValues() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -152,7 +152,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithAddHeaderValueAndRedirect() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -165,7 +165,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -185,7 +185,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithAddHeaderValueAndRedirectException() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -198,7 +198,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -218,7 +218,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithRequestConfigNoRedirect() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -228,7 +228,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -247,7 +247,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getValidateGzip() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -257,7 +257,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().file("/image").classpath("/image.jpg").save();
+        getRouter().file("/image").classpath("/image.jpg").handle();
 
         HttpResponse response = GET("/").send();
         assertNotNull(response);
@@ -272,7 +272,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getResponseHeaders() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -317,27 +317,27 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getWithCookies() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 assertEquals("", context.request().getBodyAsString());
 
-                String cookie = context.request().getCookie("sendCookie1");
+                String cookie = context.request().getCookieValue("sendCookie1");
                 assertNotNull(cookie);
                 assertEquals("sendCookieVal1", cookie);
 
-                cookie = context.request().getCookie("sendCookie2");
+                cookie = context.request().getCookieValue("sendCookie2");
                 assertNotNull(cookie);
                 assertEquals("sendCookieVal2", cookie);
 
-                cookie = context.request().getCookie("sendCookie13");
+                cookie = context.request().getCookieValue("sendCookie13");
                 assertNotNull(cookie);
                 assertEquals("sendCookieVal3", cookie);
 
-                context.response().addCookieSession("cookie1", "cookieVal1");
-                context.response().addCookieSession("cookie2", "cookieVal2");
+                context.response().setCookieSession("cookie1", "cookieVal1");
+                context.response().setCookieSession("cookie2", "cookieVal2");
 
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
@@ -346,9 +346,9 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
         Cookie cookie = getCookieFactory().createCookie("sendCookie13", "sendCookieVal3");
         cookie.setSecure(false);
 
-        HttpResponse response = GET("/").addCookie("sendCookie1", "sendCookieVal1", false)
-                                        .addCookie("sendCookie2", "sendCookieVal2", false)
-                                        .addCookie(cookie)
+        HttpResponse response = GET("/").setCookie("sendCookie1", "sendCookieVal1", false)
+                                        .setCookie("sendCookie2", "sendCookieVal2", false)
+                                        .setCookie(cookie)
                                         .send();
         assertNotNull(response);
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -365,7 +365,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void customHttpClientBuilder() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -399,18 +399,18 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void customCookieStore() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 assertEquals("", context.request().getBodyAsString());
 
-                String cookie = context.request().getCookie("sentCookie1");
+                String cookie = context.request().getCookieValue("sentCookie1");
                 assertNotNull(cookie);
                 assertEquals("sent1", cookie);
 
-                context.response().addCookieSession("testCookie", "testValue");
+                context.response().setCookieSession("testCookie", "testValue");
                 context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
             }
         });
@@ -421,7 +421,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
         customHttpClientBuilder.setDefaultCookieStore(cookieStore);
 
         HttpResponse response = GET("/").setHttpClientBuilder(customHttpClientBuilder)
-                                        .addCookie("sentCookie1", "sent1", false)
+                                        .setCookie("sentCookie1", "sent1", false)
                                         .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -445,7 +445,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void trace() throws Exception {
 
-        getRouter().TRACE("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().TRACE("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -465,7 +465,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void options() throws Exception {
 
-        getRouter().OPTIONS("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().OPTIONS("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -485,7 +485,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void head() throws Exception {
 
-        getRouter().HEAD("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().HEAD("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -509,7 +509,7 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
         getServer().addHttpAuthentication("testRealm", "user1", "pass1");
 
         getRouter().httpAuth("/one", "testRealm");
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

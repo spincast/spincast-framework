@@ -1,14 +1,8 @@
 package org.spincast.plugins.timezoneresolver.config;
 
-import com.google.inject.ImplementedBy;
-
 /**
  * Configurations for the Spincast TimeZone Resolver plugin.
- * 
- * We use "@ImplementedBy" to specify the default configurations
- * to use if none is specified in a Guice module.
  */
-@ImplementedBy(SpincastTimeZoneResolverConfigDefault.class)
 public interface SpincastTimeZoneResolverConfig {
 
     /**

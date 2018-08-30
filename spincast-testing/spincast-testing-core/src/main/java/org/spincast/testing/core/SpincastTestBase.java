@@ -6,9 +6,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.After;
@@ -30,6 +32,7 @@ import org.spincast.testing.utils.TestFailureListener;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
@@ -54,6 +57,13 @@ import com.google.inject.Scopes;
  * allows you to start your actual application, using its main() method.
  * Note that the Guice tweaker only works when the Guice context is created
  * using the standard <code>Spincast Bootstrapper</code> .
+ * <p>
+ * Note that you can annotate a test class with:
+ * <pre>
+ * {@literal @}FixMethodOrder(MethodSorters.NAME_ASCENDING)
+ * </pre>
+ * if you need its tests to be ran in order (using the
+ * alphabetical order of the test methods' names).
  */
 @RunWith(SpincastJUnitRunner.class)
 public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvider,
@@ -132,6 +142,14 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     }
 
     /**
+     * Extra exact bindings to remvoe before the
+     * plugins are applied.
+     */
+    protected Set<Key<?>> getExtraExactBindingsToRemoveBeforePlugins() {
+        return new HashSet<Key<?>>();
+    }
+
+    /**
      * Resets System properties.
      */
     protected void resetSystemProperties() {
@@ -168,7 +186,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         //==========================================
         // Extra plugins to add?
         //==========================================
-        List<SpincastPlugin> plugins = getExtraPlugins();
+        List<SpincastPlugin> plugins = getGuiceTweakerExtraPlugins();
         if (plugins != null) {
             for (SpincastPlugin plugin : plugins) {
                 guiceTweaker.plugin(plugin);
@@ -185,9 +203,19 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
 
         //==========================================
         // Tells GuiceTweaker to remove the current
-        // configuration bindings.
+        // Spincast configuration binding.
         //==========================================
         guiceTweaker.bindingHierarchyToRemove(SpincastConfig.class);
+
+        //==========================================
+        // Some extra exact bindings to remove?
+        //==========================================
+        Set<Key<?>> extraExactBindingsToRemove = getExtraExactBindingsToRemoveBeforePlugins();
+        if (extraExactBindingsToRemove != null) {
+            for (Key<?> key : extraExactBindingsToRemove) {
+                guiceTweaker.exactBindingToRemove(key);
+            }
+        }
 
         guiceTweaker.overridingModule(new SpincastGuiceModuleBase() {
 
@@ -201,8 +229,8 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         //==========================================
         // Extra Module to add?
         //==========================================
-        if (getExtraOverridingModule() != null) {
-            guiceTweaker.overridingModule(getExtraOverridingModule());
+        if (getGuiceTweakerExtraOverridingModule() != null) {
+            guiceTweaker.overridingModule(getGuiceTweakerExtraOverridingModule());
         }
 
         //==========================================
@@ -221,9 +249,8 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
 
     /**
      * Extra plugins to be added by the Guice Tweaker.
-     * 
      */
-    protected List<SpincastPlugin> getExtraPlugins() {
+    protected List<SpincastPlugin> getGuiceTweakerExtraPlugins() {
         // None by default.
         return new ArrayList<SpincastPlugin>();
     }
@@ -231,8 +258,19 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     /**
      * If an overriding Module is to be added using the
      * Guice tweaker.
+     * <p>
+     * 
+     * Can be overriden with something like :
+     * 
+     * <pre>
+     * return Modules.override(super.getGuiceTweakerExtraOverridingModule()).with(new SpincastGuiceModuleBase() {
+     *     protected void configure() {
+     *         // ...
+     *     }
+     * });
+     * </pre>
      */
-    protected Module getExtraOverridingModule() {
+    protected Module getGuiceTweakerExtraOverridingModule() {
 
         //==========================================
         // Empty Module, so Modules.combine() and

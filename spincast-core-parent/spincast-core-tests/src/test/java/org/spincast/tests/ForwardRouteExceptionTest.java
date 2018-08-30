@@ -30,7 +30,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void defaultReset() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -39,7 +39,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -57,7 +57,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void reset() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -66,7 +66,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -84,7 +84,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noReset() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -93,7 +93,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -111,7 +111,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void forwardTwoTimesPlusPathParam() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -120,7 +120,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -129,7 +129,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/three/${param}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/three/${param}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -153,7 +153,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
         int routeForwardingMaxNumber = getSpincastConfig().getRouteForwardingMaxNumber();
         assertTrue(routeForwardingMaxNumber < 3);
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -161,7 +161,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -169,7 +169,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/three").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/three").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -177,7 +177,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/four").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/four").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -193,7 +193,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void forwardMustChangeSomeRequestInfo() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -201,7 +201,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -226,7 +226,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void forwardMustKeepSomeRequestInfo() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -234,7 +234,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -245,7 +245,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
                 assertEquals(ContentTypeDefaults.JSON.getMainVariation(), header);
 
                 // Keep the cookies
-                String cookie = context.request().getCookie("name1");
+                String cookie = context.request().getCookieValue("name1");
                 assertNotNull(cookie);
                 assertEquals("toto", cookie);
 
@@ -270,14 +270,14 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
         cookie.setPath("/");
         cookie.setSecure(false);
 
-        HttpResponse response = GET("/one?q=one").addCookie(cookie).setHeaders(headers).send();
+        HttpResponse response = GET("/one?q=one").setCookie(cookie).setHeaders(headers).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void forwardMustKeepSomeRequestPostInfo() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -285,7 +285,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -303,7 +303,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one?q=one").setEntityString("{\"name\":\"toto\"}",
+        HttpResponse response = POST("/one?q=one").setStringBody("{\"name\":\"toto\"}",
                                                                    ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                                   .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -313,7 +313,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void forwardNotFound() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -338,7 +338,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void forwardMustRespectHttpMethod() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -346,7 +346,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().POST("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -362,7 +362,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void isForwarded() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -371,7 +371,7 @@ public class ForwardRouteExceptionTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

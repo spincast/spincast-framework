@@ -88,7 +88,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noFilter() throws Exception {
 
-        getRouter().GET("/").save(this.mainHandler);
+        getRouter().GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -98,7 +98,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notFound() throws Exception {
 
-        getRouter().GET("/").save(this.mainHandler);
+        getRouter().GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/nope").send();
         assertEquals(404, response.getStatus());
@@ -108,7 +108,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void filterBeforeByRoute() throws Exception {
 
-        getRouter().GET("/").before(this.beforeFilter).save(this.mainHandler);
+        getRouter().GET("/").before(this.beforeFilter).handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -118,7 +118,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void filterAfterByRoute() throws Exception {
 
-        getRouter().GET("/").after(this.afterFilter).save(this.mainHandler);
+        getRouter().GET("/").after(this.afterFilter).handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -128,7 +128,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void filterBeforeAfterByRoute() throws Exception {
 
-        getRouter().GET("/").before(this.beforeFilter).after(this.afterFilter).save(this.mainHandler);
+        getRouter().GET("/").before(this.beforeFilter).after(this.afterFilter).handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -141,7 +141,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
         // Not valid!
 
         try {
-            getRouter().GET("/").save(null);
+            getRouter().GET("/").handle(null);
             fail();
         } catch (Exception ex) {
         }
@@ -150,7 +150,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void nullBeforeFilter() throws Exception {
         try {
-            getRouter().GET("/").before(null).save(this.mainHandler);
+            getRouter().GET("/").before(null).handle(this.mainHandler);
             fail();
         } catch (Exception ex) {
         }
@@ -160,7 +160,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     public void nullAfterFilter() throws Exception {
 
         try {
-            getRouter().GET("/").before(this.beforeFilter).after(null).save(this.mainHandler);
+            getRouter().GET("/").before(this.beforeFilter).after(null).handle(this.mainHandler);
             fail();
         } catch (Exception ex) {
         }
@@ -171,8 +171,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").pos(-10).save(this.beforeFilter);
-        router.GET("/").save(this.mainHandler);
+        router.ALL("/").pos(-10).handle(this.beforeFilter);
+        router.GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -184,8 +184,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/").save(this.mainHandler);
-        router.ALL("/").pos(-10).save(this.beforeFilter);
+        router.GET("/").handle(this.mainHandler);
+        router.ALL("/").pos(-10).handle(this.beforeFilter);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -197,9 +197,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/one").pos(-10).save(this.beforeFilter);
-        router.GET("/one").save(this.mainHandler);
-        router.GET("/two").save(this.mainHandler);
+        router.ALL("/one").pos(-10).handle(this.beforeFilter);
+        router.GET("/one").handle(this.mainHandler);
+        router.GET("/two").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -216,8 +216,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeFilter);
-        router.GET("/").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeFilter);
+        router.GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -229,8 +229,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -242,8 +242,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -255,8 +255,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeFilter);
-        router.GET("/one/two/three").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeFilter);
+        router.GET("/one/two/three").handle(this.mainHandler);
 
         HttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
@@ -268,8 +268,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeFilter);
-        router.GET("/one/*{param1}").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeFilter);
+        router.GET("/one/*{param1}").handle(this.mainHandler);
 
         HttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
@@ -281,9 +281,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/one/*{path}").pos(-10).save(this.beforeFilter);
-        router.GET("/one").save(this.mainHandler);
-        router.GET("/one/*{path}").save(this.mainHandler);
+        router.ALL("/one/*{path}").pos(-10).handle(this.beforeFilter);
+        router.GET("/one").handle(this.mainHandler);
+        router.GET("/one/*{path}").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -305,8 +305,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").pos(-10).save(this.beforeFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/").pos(-10).handle(this.beforeFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -318,8 +318,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").pos(10).save(this.afterFilter);
-        router.GET("/").save(this.mainHandler);
+        router.ALL("/").pos(10).handle(this.afterFilter);
+        router.GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -331,8 +331,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/").save(this.mainHandler);
-        router.ALL("/").pos(10).save(this.afterFilter);
+        router.GET("/").handle(this.mainHandler);
+        router.ALL("/").pos(10).handle(this.afterFilter);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -344,9 +344,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/one").pos(10).save(this.afterFilter);
-        router.GET("/one").save(this.mainHandler);
-        router.GET("/two").save(this.mainHandler);
+        router.ALL("/one").pos(10).handle(this.afterFilter);
+        router.GET("/one").handle(this.mainHandler);
+        router.GET("/two").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -363,8 +363,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(10).save(this.afterFilter);
-        router.GET("/").save(this.mainHandler);
+        router.ALL("/*{path}").pos(10).handle(this.afterFilter);
+        router.GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -376,8 +376,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(10).save(this.afterFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/*{path}").pos(10).handle(this.afterFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -389,8 +389,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(10).save(this.afterFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/*{path}").pos(10).handle(this.afterFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -402,8 +402,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(10).save(this.afterFilter);
-        router.GET("/one/two/three").save(this.mainHandler);
+        router.ALL("/*{path}").pos(10).handle(this.afterFilter);
+        router.GET("/one/two/three").handle(this.mainHandler);
 
         HttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
@@ -415,8 +415,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(10).save(this.afterFilter);
-        router.GET("/one/*{param1}").save(this.mainHandler);
+        router.ALL("/*{path}").pos(10).handle(this.afterFilter);
+        router.GET("/one/*{param1}").handle(this.mainHandler);
 
         HttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
@@ -428,11 +428,11 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/one/*{path}").pos(10).save(this.afterFilter);
-        router.GET("/one").save(this.mainHandler);
-        router.GET("/one/*{path}").save(this.mainHandler);
-        router.GET("/one/*{param}").save(this.mainHandler);
-        router.GET("/one/${param}").save(this.mainHandler);
+        router.ALL("/one/*{path}").pos(10).handle(this.afterFilter);
+        router.GET("/one").handle(this.mainHandler);
+        router.GET("/one/*{path}").handle(this.mainHandler);
+        router.GET("/one/*{param}").handle(this.mainHandler);
+        router.GET("/one/${param}").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -454,8 +454,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").pos(10).save(this.afterFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/").pos(10).handle(this.afterFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -467,9 +467,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/").save(this.mainHandler);
+        router.ALL("/").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -481,9 +481,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/").save(this.mainHandler);
-        router.ALL("/").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/").pos(10).save(this.beforeAndAfterFilter);
+        router.GET("/").handle(this.mainHandler);
+        router.ALL("/").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/").pos(10).handle(this.beforeAndAfterFilter);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -495,10 +495,10 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/one").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/one").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one").save(this.mainHandler);
-        router.GET("/two").save(this.mainHandler);
+        router.ALL("/one").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/one").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one").handle(this.mainHandler);
+        router.GET("/two").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -515,9 +515,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/*{path}").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/*{path}").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/").handle(this.mainHandler);
 
         HttpResponse response = GET("/").send();
         assertEquals(200, response.getStatus());
@@ -529,9 +529,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/*{path}").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/*{path}").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -543,9 +543,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/*{path}").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/*{path}").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -557,9 +557,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/*{path}").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one/two/three").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/*{path}").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one/two/three").handle(this.mainHandler);
 
         HttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
@@ -571,9 +571,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/*{path}").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/*{path}").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one/*{param1}").save(this.mainHandler);
+        router.ALL("/*{path}").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/*{path}").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one/*{param1}").handle(this.mainHandler);
 
         HttpResponse response = GET("/one/two/three").send();
         assertEquals(200, response.getStatus());
@@ -585,10 +585,10 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/one/*{path}").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/one/*{path}").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one").save(this.mainHandler);
-        router.GET("/one/*{path}").save(this.mainHandler);
+        router.ALL("/one/*{path}").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/one/*{path}").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one").handle(this.mainHandler);
+        router.GET("/one/*{path}").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -610,9 +610,9 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").pos(-10).save(this.beforeAndAfterFilter);
-        router.ALL("/").pos(10).save(this.beforeAndAfterFilter);
-        router.GET("/one").save(this.mainHandler);
+        router.ALL("/").pos(-10).handle(this.beforeAndAfterFilter);
+        router.ALL("/").pos(10).handle(this.beforeAndAfterFilter);
+        router.GET("/one").handle(this.mainHandler);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -624,10 +624,10 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").save(this.mainHandler);
+        router.GET("/one").handle(this.mainHandler);
 
-        router.ALL("/one").pos(-10).save(this.beforeFilter);
-        router.ALL("/one").pos(-10).save(this.beforeFilter2);
+        router.ALL("/one").pos(-10).handle(this.beforeFilter);
+        router.ALL("/one").pos(-10).handle(this.beforeFilter2);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -639,10 +639,10 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").save(this.mainHandler);
+        router.GET("/one").handle(this.mainHandler);
 
-        router.ALL("/one").pos(-10).save(this.beforeFilter2);
-        router.ALL("/one").pos(-10).save(this.beforeFilter);
+        router.ALL("/one").pos(-10).handle(this.beforeFilter2);
+        router.ALL("/one").pos(-10).handle(this.beforeFilter);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -654,10 +654,10 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").save(this.mainHandler);
+        router.GET("/one").handle(this.mainHandler);
 
-        router.ALL("/one").pos(10).save(this.afterFilter);
-        router.ALL("/one").pos(10).save(this.afterFilter2);
+        router.ALL("/one").pos(10).handle(this.afterFilter);
+        router.ALL("/one").pos(10).handle(this.afterFilter2);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -669,10 +669,10 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").save(this.mainHandler);
+        router.GET("/one").handle(this.mainHandler);
 
-        router.ALL("/one").pos(10).save(this.afterFilter2);
-        router.ALL("/one").pos(10).save(this.afterFilter);
+        router.ALL("/one").pos(10).handle(this.afterFilter2);
+        router.ALL("/one").pos(10).handle(this.afterFilter);
 
         HttpResponse response = GET("/one").send();
         assertEquals(200, response.getStatus());
@@ -684,7 +684,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 
         // The filter will be called with its own DefaultRequestContext,
         // containing its parameters.
-        getRouter().ALL("/${paramFilter1}/*{anything}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/${paramFilter1}/*{anything}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -741,7 +741,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
                            context.response().sendPlainText(param1);
                        }
                    })
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -769,7 +769,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void validateRouteHandlers() throws Exception {
 
-        getRouter().ALL("/*{before}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{before}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -791,7 +791,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{after}").pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{after}").pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -839,8 +839,8 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         };
 
-        getRouter().ALL("/*{beforeAfter}").pos(-10).save(handler);
-        getRouter().ALL("/*{beforeAfter}").pos(10).save(handler);
+        getRouter().ALL("/*{beforeAfter}").pos(-10).handle(handler);
+        getRouter().ALL("/*{beforeAfter}").pos(10).handle(handler);
 
         getRouter().GET("/${param1}")
                    .before(new Handler<DefaultRequestContext>() {
@@ -885,7 +885,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
                            context.response().sendPlainText("RAF");
                        }
                    })
-                   .save(new Handler<DefaultRequestContext>() {
+                   .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
@@ -933,7 +933,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
                       context.response().sendPlainText("C");
                   }
               })
-              .save(new Handler<DefaultRequestContext>() {
+              .handle(new Handler<DefaultRequestContext>() {
 
                   @Override
                   public void handle(DefaultRequestContext context) {
@@ -956,7 +956,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
                       context.response().sendPlainText("F");
                   }
               })
-              .save(new Handler<DefaultRequestContext>() {
+              .handle(new Handler<DefaultRequestContext>() {
 
                   @Override
                   public void handle(DefaultRequestContext context) {
@@ -964,7 +964,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
                   }
               });
 
-        router.GET("/one").save(new Handler<DefaultRequestContext>() {
+        router.GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -980,7 +980,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void deleteFilter() throws Exception {
 
-        getRouter().ALL("/*{path}").id("myFilter").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").id("myFilter").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -988,7 +988,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1010,7 +1010,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void skipFilter() throws Exception {
 
-        getRouter().ALL("/*{path}").id("myBeforeFilter").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").id("myBeforeFilter").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1018,7 +1018,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL("/*{path}").id("myAfterFilter").pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").id("myAfterFilter").pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1026,7 +1026,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1034,7 +1034,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").skip("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").skip("myBeforeFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1042,7 +1042,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/three").skip("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/three").skip("myAfterFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1050,7 +1050,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/four").skip("myBeforeFilter").skip("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/four").skip("myBeforeFilter").skip("myAfterFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1078,7 +1078,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void skipFiltersKeywords() throws Exception {
 
-        getRouter().ALL().pos(-10).id("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).id("myBeforeFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1086,7 +1086,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().ALL().pos(10).id("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).id("myAfterFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1094,7 +1094,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1102,7 +1102,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two").skip("myBeforeFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").skip("myBeforeFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1110,7 +1110,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/three").skip("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/three").skip("myAfterFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -1118,7 +1118,7 @@ public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/four").skip("myBeforeFilter").skip("myAfterFilter").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/four").skip("myBeforeFilter").skip("myAfterFilter").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

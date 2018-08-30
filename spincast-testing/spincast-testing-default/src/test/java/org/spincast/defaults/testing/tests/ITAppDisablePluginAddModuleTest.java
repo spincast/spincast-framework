@@ -84,7 +84,7 @@ public class ITAppDisablePluginAddModuleTest extends IntegrationConfigTestClassB
     }
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 

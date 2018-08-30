@@ -27,7 +27,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void requestHeaders() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -95,7 +95,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersMutable() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -127,7 +127,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersResetEverything() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -165,7 +165,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersAdd() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -201,7 +201,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersAddValues() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -236,7 +236,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersSet() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -269,7 +269,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersRemove() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -300,7 +300,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersRemoveWithSetNull() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -331,7 +331,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersGetFirstValue() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -362,7 +362,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void responseHeadersFlush() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

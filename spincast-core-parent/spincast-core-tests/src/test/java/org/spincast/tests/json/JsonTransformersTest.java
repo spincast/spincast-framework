@@ -73,17 +73,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void trimAllDefault() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         assertEquals("a", obj.getObject("key1"));
         assertEquals("b  ", obj.getObject("key2"));
@@ -115,17 +115,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void trimAllRecursive() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         assertEquals("a", obj.getObject("key1"));
         assertEquals("b  ", obj.getObject("key2"));
@@ -157,17 +157,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void trimAllNotRecursive() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         // transformation
         obj.trimAll(false);
@@ -188,17 +188,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void trimOneOnly() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         // transformation
         obj.trim("key3");
@@ -381,13 +381,13 @@ public class JsonTransformersTest extends NoAppTestingBase {
         inner.add("z  ");
 
         JsonObject objInner = getJsonManager().create();
-        objInner.put("key1", "a");
-        objInner.put("key2", "b  ");
-        objInner.put("key3", "   c   ");
-        objInner.put("key4", "      ");
-        objInner.put("key5", null);
-        objInner.put("key6", 123);
-        objInner.put("inner", inner);
+        objInner.set("key1", "a");
+        objInner.set("key2", "b  ");
+        objInner.set("key3", "   c   ");
+        objInner.set("key4", "      ");
+        objInner.set("key5", null);
+        objInner.set("key6", 123);
+        objInner.set("inner", inner);
 
         JsonArray array = getJsonManager().createArray();
         array.add("a");
@@ -399,9 +399,9 @@ public class JsonTransformersTest extends NoAppTestingBase {
         array.add(objInner);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a  ");
-        obj.put("key2", array);
-        obj.put("key3", "b  ");
+        obj.set("key1", "a  ");
+        obj.set("key2", array);
+        obj.set("key3", "b  ");
 
         assertEquals("a  ", obj.getObject("key1"));
         assertEquals("b  ", obj.getObject("key3"));
@@ -465,17 +465,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void customTransformerAllDefault() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         assertEquals("a", obj.getObject("key1"));
         assertEquals("b  ", obj.getObject("key2"));
@@ -507,17 +507,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void customTransformerAllRecursive() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         assertEquals("a", obj.getObject("key1"));
         assertEquals("b  ", obj.getObject("key2"));
@@ -549,17 +549,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void customTransformerAllNotRecursive() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         // transformation
         obj.transformAll(getSpaceToStarTransformer(), false);
@@ -581,17 +581,17 @@ public class JsonTransformersTest extends NoAppTestingBase {
     public void customTransformerOneOnly() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("keyInner1", "x  ");
-        innerObj.put("keyInner2", " ");
+        innerObj.set("keyInner1", "x  ");
+        innerObj.set("keyInner2", " ");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a");
-        obj.put("key2", "b  ");
-        obj.put("key3", "   c   ");
-        obj.put("key4", "      ");
-        obj.put("key5", null);
-        obj.put("key6", 123);
-        obj.put("inner", innerObj);
+        obj.set("key1", "a");
+        obj.set("key2", "b  ");
+        obj.set("key3", "   c   ");
+        obj.set("key4", "      ");
+        obj.set("key5", null);
+        obj.set("key6", 123);
+        obj.set("inner", innerObj);
 
         // transformation
         obj.transform("key3", getSpaceToStarTransformer());
@@ -774,13 +774,13 @@ public class JsonTransformersTest extends NoAppTestingBase {
         inner.add("z  ");
 
         JsonObject objInner = getJsonManager().create();
-        objInner.put("key1", "a");
-        objInner.put("key2", "b  ");
-        objInner.put("key3", "   c   ");
-        objInner.put("key4", "      ");
-        objInner.put("key5", null);
-        objInner.put("key6", 123);
-        objInner.put("inner", inner);
+        objInner.set("key1", "a");
+        objInner.set("key2", "b  ");
+        objInner.set("key3", "   c   ");
+        objInner.set("key4", "      ");
+        objInner.set("key5", null);
+        objInner.set("key6", 123);
+        objInner.set("inner", inner);
 
         JsonArray array = getJsonManager().createArray();
         array.add("a");
@@ -792,9 +792,9 @@ public class JsonTransformersTest extends NoAppTestingBase {
         array.add(objInner);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "a  ");
-        obj.put("key2", array);
-        obj.put("key3", "b  ");
+        obj.set("key1", "a  ");
+        obj.set("key2", array);
+        obj.set("key3", "b  ");
 
         assertEquals("a  ", obj.getObject("key1"));
         assertEquals("b  ", obj.getObject("key3"));

@@ -12,12 +12,12 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.exceptions.SkipRemainingHandlersException;
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessageLevel;
 import org.spincast.core.response.Alert;
 import org.spincast.core.response.AlertLevel;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
@@ -298,7 +298,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             @Override
             public boolean requestContainsCookies() {
 
-                Map<String, String> cookies = context.request().getCookies();
+                Map<String, String> cookies = context.request().getCookiesValues();
                 return (cookies != null) && (cookies.size() > 0);
             }
 
@@ -522,7 +522,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
                 context.request().getQueryStringParams());
 
         map.put(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_COOKIES,
-                context.request().getCookies());
+                context.request().getCookiesValues());
 
         //==========================================
         // Flash message : we add it to the

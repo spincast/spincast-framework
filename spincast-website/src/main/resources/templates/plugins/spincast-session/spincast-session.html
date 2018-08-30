@@ -1,0 +1,598 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-session{% endblock %}
+{% block meta_title %}Plugins - Spincast Session{% endblock %}
+{% block meta_description %}Spincast Session plugin - manage sessions for the application users{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Session plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Session <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/session/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Session <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#configurations">Configurations</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin provides the logic required to manage sessions for the users of your application.
+                </p>
+                <p>
+                    In summary, a <code>session</code> is an object containing informations about a particular user.
+                    Those informations can be saved in the application and later associated back to the user when 
+                    he performs a new request. The default mechanism used to be able to bind such informations
+                    to a specific user is to save a <code>"session id"</code> in a <em>cookie</em>, on the user.
+                </p>
+                <p>
+                    This plugin is above all useful for your application needs, but it may
+                    also be used <em>by other plugins</em> that need to keep informations about users.
+                    For example, the <a href="/plugins/spincast-forms-protection">Spincast Forms Protection</a> plugin
+                    uses the sessions provided by this plugin to store "<code>CSRF</code>" tokens required to
+                    protect forms, in your application.
+                </p>
+            </section>
+
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4 id="usage_current">
+                    <a class="anchor_small" href="#usage_current" title="permanent link"></a>
+                    Getting the session of the current visitor
+                </h4> 
+	            <p>
+                    Once the plugin and its associated filters have been <a href="#installation">properly installed</a>,
+                    you simply need to use the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionManager.html">SpincastSessionManager</a>
+                    to manage sessions.
+	            </p>
+                <p>
+                    The most important method provided by this manager is <code>getCurrentSession()</code>, which gives you access
+                    to the session of the current visitor:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class MyClass {
+
+    private final SpincastSessionManager spincastSessionManager;
+    
+    @Inject
+    public MyClass(SpincastSessionManager spincastSessionManager) {
+        this.spincastSessionManager = spincastSessionManager;
+    }
+    
+    protected SpincastSessionManager getSpincastSessionManager() {
+        return this.spincastSessionManager;
+    }
+    
+    public void myRouteHandler(AppRequestContext context) {
+        SpincastSession currentSession = getSpincastSessionManager().getCurrentSession();  
+        Long userId = currentSession.getAttributes().getLong("userId");
+        if(userId != null) {
+            User user = getUserService().getUser(userId);
+        }
+        
+        // ....
+    }
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">15</span> : Gets the session of the current
+                                    visitor.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">16</span> : Gets an information 
+                                    you associated with this session (here a "<code>user id</code>"). 
+                                    The informations saved in the session are 
+                                    named "<code>attributes</code>" and they are implemented using a 
+                                    <a href="/documentation#jsonobject">JsonObject</a>.
+                                </li>
+                            </ul>
+                        </p> 
+                    </div>   
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that once the plugin has been installed properly, a session returned by
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionManager.html#getCurrentSession--">SpincastSessionManager#getCurrentSession()</a>
+                    is never <code>null</code>! If no session already exists for the current visitor, a new one is automatically created.
+                </p>
+                
+                <h4 id="usage_attributes">
+                    <a class="anchor_small" href="#usage_attributes" title="permanent link"></a>
+                    Storing and retrieving session attributes
+                </h4> 
+                <p>
+                    Since the attributes of a session are accessible on a <a href="/documentation#jsonobject">JsonObject</a> object, 
+                    getting them in a typed way is really easy. Adding new ones too. You simply call 
+                    <a href="/public/javadoc/org/spincast/plugins/session/SpincastSession.html#getAttributes--">getAttributes()</a>
+                    on the session to have access to them.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that an <code>after</code> <a href="#installation_filters">filter</a> will
+                    take care of saving a session that has been modified during a request, you don't have to do it
+                    manually!
+                </p>
+                
+                <h4 id="usage_addon">
+                    <a class="anchor_small" href="#usage_addon" title="permanent link"></a>
+                    Getting the current session using an add-on
+                </h4> 
+                <p>
+                    If you use sessions a lot in your application, we suggest you add a 
+                    "<code>session()</code>" <a href="/documentation#extending_request_context">add-on</a>
+                    to your custom Request Context! 
+                </p>
+                <p>
+                    By adding a new "<code>session()</code>" method pointing to 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionManager.html#getCurrentSession--">SpincastSessionManager#getCurrentSession()</a>,
+                    you get easy access to the current session in your routes handlers:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" data-ace-hi="2,25,2,35"
+>public void myRouteHandler(AppRequestContext context) {
+
+    Long userId = context.session().getAttributes().getLong("userId");
+    if(userId != null) {
+        User user = getUserService().getUser(userId);
+    }
+    
+    // ....
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>  
+                </p>
+
+            </section>
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    The Spincast Session plugin depends on the <a href="/plugins/spincast-crons">Spincast Crons plugin</a>, a plugin which is <em>not</em>
+                    provided by default by the <code>spincast-default</code> package. This dependency plugin <em>will be automatically installed</em>, 
+                    you don't need to install it by yourself in your application (but you can). 
+                </p> 
+                <p>
+                    Just don't be surprised if you see transitive dependencies being added to your application!
+                </p>
+            </section> 
+            
+            <section id="installation">
+            
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                
+                <p>
+                    The installation of this plugin requires a couple of steps. 
+                    To work properly, it <em>needs</em> a custom
+                    implementation of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>
+                    to be bound in the Guice context and <em>needs</em> two filters to be added to your router.
+                </p>
+                <p>
+                    But let's start with step one...
+                </p>
+
+                <h4 id="installation_plugin">
+                    <a class="anchor_small" href="#installation_plugin" title="permanent link"></a>
+                    Installing the plugin itself
+                </h4>
+                
+                <p>
+                    <strong>1.</strong>
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-session&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    <strong>2.</strong> 
+                    Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionPlugin.html">SpincastSessionPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,42"
+>
+
+Spincast.configure()
+        .plugin(new SpincastSessionPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+                
+                <h4 id="installation_filters">
+                    <a class="anchor_small" href="#installation_filters" title="permanent link"></a>
+                    Adding the provided filters to your router
+                </h4>
+
+                <p>
+                    You need to add to the <a href="/documentation#filters">router</a> of your application
+                    two filters provided by the plugin:
+                </p>
+                <p>
+                    <ul>
+                        <li>
+                            The first one, a <em>before</em> filter, <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionFilter.html#before-org.spincast.core.exchange.RequestContext-">SpincastSessionFilter#before</a>, 
+                            will make sure the session of the current visitor is loaded and accessible to your application. 
+                        </li>
+                        <li>
+                            The second one, an <em>after</em> filter, <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionFilter.html#after-org.spincast.core.exchange.RequestContext-">SpincastSessionFilter#after</a>, 
+                            will make sure a dirty session (a session which has been modified) will be saved in your database, once the request is over.
+                        </li> 
+                    </ul>
+                </p>
+                <p>
+                    For example, in the class where you add the filters for your application:
+
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>@Inject
+SpincastSessionFilter spincastSessionFilter;
+
+// "Before" filter
+router.ALL().pos(-1000).skipResourcesRequests().handle(spincastSessionFilter::before);
+
+// "After" filter
+router.ALL().pos(100).skipResourcesRequests().handle(spincastSessionFilter::after);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    Those filters are not automatically added to the router by the plugin (even if they could). We
+                    decided to do it this way because in our opinion it is clearer when pretty much all the filters 
+                    of an application are grouped together...
+                    Therefore, <em>you</em> are responsible to add them to the router and to choose 
+                    which "<code>positions</code>" they must be added to, considering your other filters.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    In a typical application, a filter that is often created is one to retrieve a logged in
+                    <code>User</code> from the database and add it to the <a href="/plugins/spincast-variables-addon">request's variables</a>, 
+                    so it is easily accessible to the application's code. 
+                </p>
+                <p>
+                    Such <code>UserFilter</code> would be added at a position <em>after</em> the 
+                    <code>spincastSessionFilter::before</code> filter! Indeed,
+                    the <code>UserFilter</code> would <em>use the session of the current visitor</em> to determine 
+                    if he is a logged in user or not and, if so, what is his "<code>userId</code>" (an <em>attribute</em>
+                    saved in the session!).
+                </p>
+                
+                <h4 id="installation_repo">
+                    <a class="anchor_small" href="#installation_repo" title="permanent link"></a>
+                    Providing a repository implementation
+                </h4>
+
+                <p>
+                    You need to bind an implementation of the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>,
+                    in the Guice context. The reason is that this plugin is totally agnostic on how the sessions are actually persisted. 
+                    <em>You</em> decide how and where to save them...
+                </p>
+                <p>
+                    In general, you are going to save them in the same database/data source that your application already uses.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    There are four methods to implement: 
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="installation_repo_save" href="#installation_repo_save" title="permanent link"></a>
+                            <code class="apiItem">void <span>saveSession</span>(SpincastSession session)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called by the plugin when a current session needs to be
+                                    saved to the database.
+                                </p>  
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Note that the <code>modification date</code> of the session to save <em>is
+                                    already updated</em> when this method is called! You don't have to update it by yourself,
+                                    manually or using a database trigger.
+                                </p>  
+                                 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="installation_repo_get" href="#installation_repo_get" title="permanent link"></a>
+                            <code class="apiItem">SpincastSession <span>getSession</span>(String sessionId)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called by the plugin to retrieve a session saved in
+                                    the database.
+                                </p>
+                                <p>
+                                    It must return a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSession.html">SpincastSession</a>
+                                    instance, or <code>null</code> if it's not found.
+                                </p>   
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="installation_repo_delete" href="#installation_repo_delete" title="permanent link"></a>
+                            <code class="apiItem">void <span>deleteSession</span>(String sessionId)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called by the plugin to delete a session.
+                                </p>
+                                <p>
+                                    If no session with this <code>sessionId</code> exists, nothing is done.
+                                </p>    
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="installation_repo_delete_old" href="#installation_repo_delete_old" title="permanent link"></a>
+                            <code class="apiItem">void <span>deleteOldInactiveSession</span>(int sessionMaxInactiveMinutes)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called by the plugin to delete sessions that have been inactive
+                                    for more than <code>sessionMaxInactiveMinutes</code> minutes.
+                                </p>
+                                <p>
+                                    Your query/code must use the <code>modification date</code> of the saved sessions to 
+                                    determine which sessions to delete.
+                                </p>   
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+                <h4 id="installation_sql">
+                    <a class="anchor_small" href="#installation_sql" title="permanent link"></a>
+                    SQL/JDBC example
+                </h4>
+
+                <p>
+                    Here's an example of an SQL script (targeting <code>PostgreSQL</code>) to create a
+                    "<code>sessions</code>" table. You will probably have to adjust this query
+                    for your own database! Or even to use something totally different if you 
+                    are not using a relational database.
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-sql"
+>CREATE TABLE sessions (
+    session_id VARCHAR(36) PRIMARY KEY,
+    attributes_serialized TEXT, 
+    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(), 
+    modification_date TIMESTAMPTZ NOT NULL DEFAULT NOW()
+)</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    To serialize and deserialize the session's <code>attributes</code>, you can
+                    simply use the JsonObject's 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonObjectOrArray.html#toJsonString--">toJsonString()</a>
+                    and JsonManager's <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html#fromString-java.lang.String-">fromString()</a>:
+                    
+                    {% verbatim %}
+                    <div>
+                        <em>Saving a session to the database:</em>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="2,39,2,77"
+>InsertStatement stm = jdbc().statements().createInsertStatement(connection);
+stm.sql("INSERT INTO sessions(  // ...
+stm.setString("attributes_serialized", session.getAttributes().toJsonString());
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                    
+                    
+                    {% verbatim %}
+                    <div>
+                        <em>Retrieving a session from the database:</em>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="4,20,4,70"
+>SelectStatement stm = jdbc().statements().createSelectStatement(connection);
+stm.sql("SELECT session_id, // ...
+
+JsonObject attributes = 
+    getJsonManager().fromString(rs.getString("attributes_serialized"));
+
+SpincastSession session =
+        getSpincastSessionManager().createSession(rs.getString("session_id"),
+                                                  rs.getInstant("creation_date"),
+                                                  rs.getInstant("modification_date"),
+                                                  attributes);</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                    
+                </p>
+
+            </section>
+            
+            <section id="configurations">
+                <h3>
+                    <a class="anchor" href="#configurations" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    The configuration interface for this plugin is 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfig.html">SpincastSessionConfig</a>.
+                    To change the default configurations, you can bind an implementation of 
+                    that interface, extending the default 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfigDefault.html">SpincastSessionConfigDefault</a> 
+                    implementation if you don't want to start from scratch.
+                </p>
+                <p>
+                    <h4>Options:</h4>
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="configs_session_life" href="#configs_session_life" title="permanent link"></a>
+                            <code class="apiItem">int <span>getSessionMaxInactiveMinutes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The number of minutes an existing session can stay inactive (not being used) before it is
+                                    garbage collected by the cleanup cron job.
+                                </p>
+                                <p>
+                                    If a user with a saved session doesn't visit your application for this long, his session
+                                    will be lost.
+                                </p>
+                                <p>
+                                    Defaults to <code>10080</code> minutes (7 days).
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_delete_old_mins" href="#configs_delete_old_mins" title="permanent link"></a>
+                            <code class="apiItem">int <span>getDeleteOldSessionsCronRunEveryNbrMinutes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    How often should the cron job to delete the old sessions (by calling the 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html#deleteOldInactiveSession-int-">
+                                    deleteOldInactiveSession()</a> method that <a href="#installation_repo_delete_old">you implemented</a>) run? This
+                                    configuration returns the number of minutes between two launches of the cleanup cron job.
+                                </p>
+                                <p>
+                                    Defaults to <code>30</code> minutes.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_delete_dirty_interval" href="#configs_delete_dirty_interval" title="permanent link"></a>
+                            <code class="apiItem">int <span>getUpdateNotDirtySessionPeriodInSeconds</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The <code>after</code> filter provided by the plugin (and that <a href="#installation_filters">you added to your router</a>!) 
+                                    doesn't save a session that is not dirty on each and every request, simply to update its <code>modification date</code> ... 
+                                    This wouldn't be very efficient. The filter rather saves a session that is not dirty only <em>once</em> during the period 
+                                     specified by this configuration. 
+                                </p>
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Important! This period <em>must be shorter</em> than the period
+                                    specified by <a href="#configs_session_life">getSessionMaxInactiveMinutes()</a>
+                                    or otherwise some active sessions may be deleted!
+                                </p>
+                                <p>
+                                    Defaults to <code>300</code> seconds (5 minutes).
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_cookie" href="#configs_cookie" title="permanent link"></a>
+                            <code class="apiItem">String <span>getSessionIdCookieName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The name of the cookie that is used to store the session, on the user.
+                                </p>
+                                <p>
+                                    Defaults to the String generated by this code:
+                                    {% verbatim %}
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-java" data-ace-hi="4,20,4,70"
+> SpincastSessionPlugin.class.getName() + "_sessionId"</pre>
+                                        </p>
+                                    </div> 
+                                    {% endverbatim %} 
+                                    
+                                    This is a pretty ugly default name for the cookie, but plugins are required to pick
+                                    names that are guaranteed to not be in conflict with anything already existing
+                                    in your application!   
+                                </p>
+                                <p>
+                                    You can easily override this name for something such as "<code>sid</code>", if
+                                    you want.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

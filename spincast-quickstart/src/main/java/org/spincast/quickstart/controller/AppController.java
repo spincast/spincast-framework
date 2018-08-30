@@ -33,8 +33,8 @@ public class AppController {
      * Adds some common elements to the response's model.
      */
     protected void addCommonModelElements(AppRequestContext context) {
-        context.response().getModel().put("appName", getAppConfig().getAppName());
-        context.response().getModel().put("serverPort", getAppConfig().getHttpServerPort());
+        context.response().getModel().set("appName", getAppConfig().getAppName());
+        context.response().getModel().set("serverPort", getAppConfig().getHttpServerPort());
     }
 
     /**
@@ -56,8 +56,8 @@ public class AppController {
         if (!StringUtils.isBlank(userName)) {
             greetings = "Hi " + userName + "!";
         }
-        context.response().getModel().put("userName", userName);
-        context.response().getModel().put("greetings", greetings);
+        context.response().getModel().set("userName", userName);
+        context.response().getModel().set("greetings", greetings);
 
         addCommonModelElements(context);
 
@@ -96,10 +96,10 @@ public class AppController {
         //==========================================
         if (context.request().isJsonShouldBeReturn()) {
             JsonObject errorObj = context.json().create();
-            errorObj.put("message", notFoundMessage);
+            errorObj.set("message", notFoundMessage);
             context.response().sendJson(errorObj);
         } else {
-            context.response().getModel().put("notFoundMessage", notFoundMessage);
+            context.response().getModel().set("notFoundMessage", notFoundMessage);
             addCommonModelElements(context);
             context.response().sendTemplateHtml("/templates/notFound.html");
         }
@@ -135,10 +135,10 @@ public class AppController {
         //==========================================
         if (context.request().isJsonShouldBeReturn()) {
             JsonObject errorObj = context.json().create();
-            errorObj.put("error", errorMessage);
+            errorObj.set("error", errorMessage);
             context.response().sendJson(errorObj);
         } else {
-            context.response().getModel().put("errorMessage", errorMessage);
+            context.response().getModel().set("errorMessage", errorMessage);
             addCommonModelElements(context);
             context.response().sendTemplateHtml("/templates/exception.html");
         }

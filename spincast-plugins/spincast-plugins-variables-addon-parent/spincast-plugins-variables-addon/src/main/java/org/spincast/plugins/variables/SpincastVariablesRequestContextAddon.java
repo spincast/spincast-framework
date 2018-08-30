@@ -16,12 +16,12 @@ public class SpincastVariablesRequestContextAddon<R extends RequestContext<?>>
     private final Map<String, Object> requestScopedVariables = new HashMap<String, Object>();
 
     @Override
-    public void add(String key, Object obj) {
+    public void set(String key, Object obj) {
         getRequestScopedVariables().put(key, obj);
     }
 
     @Override
-    public void add(Map<String, Object> variables) {
+    public void set(Map<String, Object> variables) {
         if(variables == null) {
             return;
         }

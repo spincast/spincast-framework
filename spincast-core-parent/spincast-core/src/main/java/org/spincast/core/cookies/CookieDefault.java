@@ -20,6 +20,7 @@ public class CookieDefault implements Cookie {
     private Date expires;
     private boolean secure = false;
     private boolean httpOnly = false;
+    private CookieSameSite cookieSameSite = null;
     private boolean discard = false;
     private int version = 0;
 
@@ -29,7 +30,7 @@ public class CookieDefault implements Cookie {
     @AssistedInject
     public CookieDefault(@Assisted("name") String name,
                          SpincastConfig spincastConfig) {
-        this(name, null, null, null, null, true, false, false, 0, spincastConfig);
+        this(name, null, null, null, null, true, false, null, false, 0, spincastConfig);
     }
 
     /**
@@ -39,7 +40,7 @@ public class CookieDefault implements Cookie {
     public CookieDefault(@Assisted("name") String name,
                          @Assisted("value") String value,
                          SpincastConfig spincastConfig) {
-        this(name, value, null, null, null, true, false, false, 0, spincastConfig);
+        this(name, value, null, null, null, true, false, null, false, 0, spincastConfig);
     }
 
     /**
@@ -53,6 +54,7 @@ public class CookieDefault implements Cookie {
                          @Assisted("expires") @Nullable Date expires,
                          @Assisted("secure") boolean secure,
                          @Assisted("httpOnly") boolean httpOnly,
+                         @Assisted("cookieSameSite") @Nullable CookieSameSite cookieSameSite,
                          @Assisted("discard") boolean discard,
                          @Assisted("version") int version,
                          SpincastConfig spincastConfig) {
@@ -79,6 +81,7 @@ public class CookieDefault implements Cookie {
         this.expires = expires;
         this.secure = secure;
         this.httpOnly = httpOnly;
+        this.cookieSameSite = cookieSameSite;
         this.discard = discard;
         this.version = version;
     }
@@ -162,6 +165,16 @@ public class CookieDefault implements Cookie {
     @Override
     public boolean isHttpOnly() {
         return this.httpOnly;
+    }
+
+    @Override
+    public CookieSameSite getSameSite() {
+        return this.cookieSameSite;
+    }
+
+    @Override
+    public void setSameSite(CookieSameSite cookieSameSite) {
+        this.cookieSameSite = cookieSameSite;
     }
 
     @Override

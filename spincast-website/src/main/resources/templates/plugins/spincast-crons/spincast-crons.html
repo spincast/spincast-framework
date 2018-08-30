@@ -1,0 +1,243 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-crons{% endblock %}
+{% block meta_title %}Plugins - Spincast Crons{% endblock %}
+{% block meta_description %}Spincast Crons plugin - Cron jobs / Scheduled tasks management{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Crons plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Crons <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/crons/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Crons <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin allows your application and the other plugins to register cron jobs to be run.
+                    A cron job, also called "<em>scheduled task</em>", is a piece of code that will be run one
+                    or multiple times, at a specific date or at a specific interval.
+                </p>
+                <p>
+                    The plugin uses the <a href="http://www.quartz-scheduler.org/">Quartz scheduler</a> library under the hood, and provides
+                    utilities to easily register your cron jobs, with full dependency injection support.
+                </p>
+                
+            </section>
+            
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4 id="usage_cron_class">
+                    <a class="anchor_small" href="#usage_cron_class" title="permanent link"></a>
+                    Writing a Cron Job class
+                </h4>
+	            <p>
+                    The first thing to do is to create a class for your new cron job. A cron job's class must implement
+                    the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crons/SpincastCronJob.html">SpincastCronJob</a>
+                    interface, but we also  recommend that it extends the default 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crons/SpincastCronJobBase.html">SpincastCronJobBase</a> abstract
+                    class, which provides some built-in functionalities.
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class MyCronJob extends SpincastCronJobBase {
+
+    @Override
+    public Trigger getTrigger() {
+        return TriggerBuilder.newTrigger()
+                             .startNow()
+                             .withSchedule(simpleSchedule().withIntervalInMinutes(60)
+                                                           .repeatForever())
+                             .build();
+    }
+
+    @Override
+    public void executeSafe(JobExecutionContext context) {
+        // The actions to be executed...
+        System.out.println("I run!");
+    }
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">3-10</span> : The <code>getTrigger()</code> is the
+                                    method by which you define <em>when</em> the cron job should run. Have a look
+                                    at the  <a href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-04.html">Quartz documentation</a>
+                                    to see all the available options. There are a lot!
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">12-16</span> : The <code>executeSafe()</code> is the
+                                    method executed when the cron job runs. You implement the logic of your cron job there.
+                                    Note that since we extend the provided <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crons/SpincastCronJobBase.html">SpincastCronJobBase</a>
+                                    class, the execution of the cron is <em>safe</em>: if a previous instance of the job is already running, 
+                                    any new instance will be canceled and won't run.
+                                </li>
+                            </ul>
+                        </p> 
+                    </div>  
+	            </p>
+                <h4 id="usage_registering">
+                    <a class="anchor_small" href="#usage_registering" title="permanent link"></a>
+                    Registering the Crons Jobs
+                </h4>
+                <p>
+                    Once your cron jobs are ready, you need to register them in the Guice context. You do this
+                    using the <code>Multibinder&lt;SpincastCronJob&gt;</code> <a href="https://github.com/google/guice/wiki/Multibindings">multibinder</a>,
+                    in your application's Guice module:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class AppModule extends SpincastGuiceModuleBase {
+    @Override
+    protected void configure() {
+       
+        // Register the app's cron jobs
+        Multibinder&lt;SpincastCronJob&gt; cronsMultibinder = Multibinder.newSetBinder(binder(), SpincastCronJob.class);
+        cronsMultibinder.addBinding().to(MyCronJob.class).in(Scopes.SINGLETON);
+        cronsMultibinder.addBinding().to(MyOtherCronJob.class).in(Scopes.SINGLETON);
+        
+        // Other bindings...
+    }
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>  
+                </p>
+                <p>
+                    You can also use the <code>Multibinder&lt;Set&lt;SpincastCronJob&gt;&gt;</code> to
+                    register a <em>set</em> of cron jobs, instead of registering them one by one. This alternative
+                    is useful when you have a <code>Provider</code> that decides of the cron jobs to bind:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class AppModule extends SpincastGuiceModuleBase {
+    @Override
+    protected void configure() {
+       
+        // Register the app's cron jobs provider
+        Multibinder&lt;Set&lt;SpincastCronJob&gt;&gt; cronsSetsMultibinder =
+                Multibinder.newSetBinder(binder(), 
+                                         Key.get(new TypeLiteral&lt;Set&lt;SpincastCronJob&gt;&gt;() {}));
+        cronsSetsMultibinder.addBinding()
+                            .toProvider(MyCronJobsProvider.class)
+                            .in(Scopes.SINGLETON);
+        
+        // Other bindings...
+    }
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>  
+                </p>
+                <p>
+                    There is nothing more to do! When you start your application, the registered cron jobs should run 
+                    respecting their <code>Triggers</code>.
+                </p>  
+            </section>
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-crons&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crons/SpincastCronsPlugin.html">SpincastCronsPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,42"
+>
+
+Spincast.configure()
+        .plugin(new SpincastCronsPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

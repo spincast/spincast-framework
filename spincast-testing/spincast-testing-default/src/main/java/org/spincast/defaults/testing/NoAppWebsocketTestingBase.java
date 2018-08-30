@@ -48,7 +48,7 @@ public abstract class NoAppWebsocketTestingBase extends
     }
 
     @Override
-    protected final void startApp() {
+    protected final void callAppMainMethod() {
         Spincast.configure()
                 .bindCurrentClass(false)
                 .init(getMainArgs());

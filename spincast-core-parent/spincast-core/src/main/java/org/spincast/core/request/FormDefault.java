@@ -177,11 +177,11 @@ public class FormDefault extends JsonObjectDefault implements Form {
             this.validationJsonObject = getJsonManager().create();
 
             JsonObject wholeValidation = getJsonManager().create();
-            this.validationJsonObject.putNoKeyParsing(getWholeValidationKey(), wholeValidation);
-            wholeValidation.put(ELEMENT_KEYS_IS_VALID, true);
-            wholeValidation.put(ELEMENT_KEYS_HAS_SUCCESSES, false);
-            wholeValidation.put(ELEMENT_KEYS_HAS_WARNINGS, false);
-            wholeValidation.put(ELEMENT_KEYS_HAS_ERRORS, false);
+            this.validationJsonObject.setNoKeyParsing(getWholeValidationKey(), wholeValidation);
+            wholeValidation.set(ELEMENT_KEYS_IS_VALID, true);
+            wholeValidation.set(ELEMENT_KEYS_HAS_SUCCESSES, false);
+            wholeValidation.set(ELEMENT_KEYS_HAS_WARNINGS, false);
+            wholeValidation.set(ELEMENT_KEYS_HAS_ERRORS, false);
         }
         return this.validationJsonObject;
     }
@@ -223,30 +223,30 @@ public class FormDefault extends JsonObjectDefault implements Form {
         JsonObject validationForKey = getValidationResultAsJsonObject().getJsonObjectNoKeyParsing(validationKeyPrefixed);
         if (validationForKey == null) {
             validationForKey = getJsonManager().create();
-            getValidationResultAsJsonObject().putNoKeyParsing(validationKeyPrefixed, validationForKey);
+            getValidationResultAsJsonObject().setNoKeyParsing(validationKeyPrefixed, validationForKey);
         }
 
         JsonArray messagesForKey = validationForKey.getJsonArrayOrEmpty("messages", true);
         messagesForKey.add(message.convertToJsonObject());
-        validationForKey.put(ELEMENT_KEYS_IS_VALID,
+        validationForKey.set(ELEMENT_KEYS_IS_VALID,
                              validationForKey.getBoolean(ELEMENT_KEYS_IS_VALID, true) && !message.isError());
-        validationForKey.put(ELEMENT_KEYS_HAS_SUCCESSES,
+        validationForKey.set(ELEMENT_KEYS_HAS_SUCCESSES,
                              validationForKey.getBoolean(ELEMENT_KEYS_HAS_SUCCESSES, false) || message.isSuccess());
-        validationForKey.put(ELEMENT_KEYS_HAS_WARNINGS,
+        validationForKey.set(ELEMENT_KEYS_HAS_WARNINGS,
                              validationForKey.getBoolean(ELEMENT_KEYS_HAS_WARNINGS, false) || message.isWarning());
-        validationForKey.put(ELEMENT_KEYS_HAS_ERRORS,
+        validationForKey.set(ELEMENT_KEYS_HAS_ERRORS,
                              validationForKey.getBoolean(ELEMENT_KEYS_HAS_ERRORS, false) || message.isError());
 
         //==========================================
         // Results for the whole validation.
         //==========================================
         JsonObject wholeValidation = getValidationResultAsJsonObject().getJsonObjectNoKeyParsing(getWholeValidationKey());
-        wholeValidation.put(ELEMENT_KEYS_IS_VALID, wholeValidation.getBoolean(ELEMENT_KEYS_IS_VALID, true) && !message.isError());
-        wholeValidation.put(ELEMENT_KEYS_HAS_SUCCESSES,
+        wholeValidation.set(ELEMENT_KEYS_IS_VALID, wholeValidation.getBoolean(ELEMENT_KEYS_IS_VALID, true) && !message.isError());
+        wholeValidation.set(ELEMENT_KEYS_HAS_SUCCESSES,
                             wholeValidation.getBoolean(ELEMENT_KEYS_HAS_SUCCESSES, false) || message.isSuccess());
-        wholeValidation.put(ELEMENT_KEYS_HAS_WARNINGS,
+        wholeValidation.set(ELEMENT_KEYS_HAS_WARNINGS,
                             wholeValidation.getBoolean(ELEMENT_KEYS_HAS_WARNINGS, false) || message.isWarning());
-        wholeValidation.put(ELEMENT_KEYS_HAS_ERRORS,
+        wholeValidation.set(ELEMENT_KEYS_HAS_ERRORS,
                             wholeValidation.getBoolean(ELEMENT_KEYS_HAS_ERRORS, false) || message.isError());
     }
 
@@ -494,7 +494,7 @@ public class FormDefault extends JsonObjectDefault implements Form {
         }
 
         if (formatType == ValidationMessageFormatType.JSON || formatType == ValidationMessageFormatType.XML) {
-            jsonObject.put(key, messages);
+            jsonObject.set(key, messages);
             return;
         }
 

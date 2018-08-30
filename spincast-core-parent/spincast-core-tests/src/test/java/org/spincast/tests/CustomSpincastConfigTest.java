@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
@@ -30,8 +31,8 @@ public class CustomSpincastConfigTest extends NoAppStartHttpServerTestingBase {
          * Constructor
          */
         @Inject
-        protected CustomSpincastConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected CustomSpincastConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -46,7 +47,7 @@ public class CustomSpincastConfigTest extends NoAppStartHttpServerTestingBase {
         final SpincastConfig spincastConfig = getInjector().getInstance(SpincastConfig.class);
         assertNotNull(spincastConfig);
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -16,9 +16,33 @@ public interface Route<R extends RequestContext<?>> {
     public String getId();
 
     /**
+     * Is this a route for a resource? It is
+     * if it was was started using
+     * {@link Router#dir(String)} or {@link Router#file(String)}.
+     * <p>
+     * On a resource route, we may want to skip some filters,
+     * for example.
+     */
+    public boolean isResourceRoute();
+
+    /**
+     * Is this a route added by Spincast itself
+     * or by a plugin? Otherwise, the route is
+     * considered as an application route.
+     */
+    public boolean isSpicastCoreRouteOrPluginRoute();
+
+    /**
      * The route path.
      */
     public String getPath();
+
+    /**
+     * Should a request for a resource be skipped?
+     * <p>
+     * Only used if the current route is a filter.
+     */
+    public boolean isSkipResourcesRequests();
 
     /**
      * The <code>HTTP methods</code> this route applies to.

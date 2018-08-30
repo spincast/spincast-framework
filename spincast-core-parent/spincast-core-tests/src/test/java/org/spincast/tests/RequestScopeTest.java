@@ -23,7 +23,7 @@ import com.google.inject.Scopes;
 public class RequestScopeTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 
@@ -68,7 +68,7 @@ public class RequestScopeTest extends NoAppStartHttpServerTestingBase {
             assertNotNull(requestContext2);
             assertTrue(requestContext1 == requestContext2);
 
-            requestContext1.response().addCookieSession("testCookie", "testValue");
+            requestContext1.response().setCookieSession("testCookie", "testValue");
 
             requestContext1.response().sendPlainText(requestContext1.getLocaleToUse().toString());
         }
@@ -97,7 +97,7 @@ public class RequestScopeTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void oneInstanceOnly() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -128,7 +128,7 @@ public class RequestScopeTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void getRequestScopeObjectsFromElsewhereThanHandler() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

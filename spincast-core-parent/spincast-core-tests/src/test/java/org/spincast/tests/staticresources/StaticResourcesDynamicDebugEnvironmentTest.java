@@ -8,6 +8,7 @@ import java.io.File;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
@@ -39,8 +40,8 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends NoAppStartHttpSe
          * Constructor
          */
         @Inject
-        protected TestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected TestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         /**
@@ -72,7 +73,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends NoAppStartHttpSe
         final int[] nbrTimeCalled = new int[]{0};
         final String content1 = "body{ font-size:12px;}";
 
-        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.css").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

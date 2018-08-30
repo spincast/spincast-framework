@@ -14,7 +14,7 @@ public class App {
 
     @Inject
     protected void init(DefaultRouter router, Server server) {
-        router.GET("/").save(context -> context.response().sendHtml("<h1>Hello World!</h1>"));
+        router.GET("/").handle(context -> context.response().sendHtml("<h1>Hello World!</h1>"));
         server.start();
     }
 

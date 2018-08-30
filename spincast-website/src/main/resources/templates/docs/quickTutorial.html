@@ -109,10 +109,10 @@ Docs : "Quick Tutorial"
                     <pre class="ace ace-java"
 >// For a GET request. Uses a method reference
 // to target a controller method as the Route Handler :
-router.GET("/books/${bookId}").save(bookController::booksGet);
+router.GET("/books/${bookId}").handle(bookController::booksGet);
        
 // For any HTTP request. Uses an inine Route Handler :
-router.ALL("/hello").save(context -> context.response().sendPlainText("Hello!"));
+router.ALL("/hello").handle(context -> context.response().sendPlainText("Hello!"));
 </pre>
                 </p>
             </div>
@@ -201,11 +201,11 @@ router.ALL("/hello").save(context -> context.response().sendPlainText("Hello!"))
     //...
     
     JsonObject book = context.json().create();
-    book.put("author", "Douglas Adams");
-    book.put("title", "The Hitchhiker's Guide to the Galaxy");
+    book.set("author", "Douglas Adams");
+    book.set("title", "The Hitchhiker's Guide to the Galaxy");
     
     // Adds the book to the response model
-    context.response().getModel().put("book", book);
+    context.response().getModel().set("book", book);
     
     //...
 }</pre>
@@ -351,11 +351,11 @@ router.ALL("/hello").save(context -> context.response().sendPlainText("Hello!"))
                     <pre class="ace ace-java"
 >// The static "index.html" page that is going to bootstrap
 // our SPA
-router.file("/").classpath("/index.html").save();
+router.file("/").classpath("/index.html").handle();
 
 // The resources (.js, .css, images, etc.) will 
 // be located under the "/public" path :
-router.dir("/public").classpath("/myResources").save();
+router.dir("/public").classpath("/myResources").handle();
 
 // ... the REST endpoints routes
 </pre>
@@ -379,11 +379,11 @@ router.dir("/public").classpath("/myResources").save();
                     <pre class="ace ace-java"
 >// Inline Route Handler that evaluates
 // a template to generate the HTML index page.
-router.GET("/").save(context -> {
+router.GET("/").handle(context -> {
     
     // Adds some variables to the response model so
     // the template has access to them.
-    context.response().getModel().put("randomQuote", getRandomQuote());
+    context.response().getModel().set("randomQuote", getRandomQuote());
     
     // Renders the template
     context.response().sendTemplateHtml("/index.html"); 
@@ -391,7 +391,7 @@ router.GET("/").save(context -> {
 
 // The resources (.js, .css, images, etc.) will 
 // be located under the "/public" path :
-router.dir("/public").classpath("/public").save();
+router.dir("/public").classpath("/public").handle();
 
 // ... the REST endpoints routes
 </pre>
@@ -416,10 +416,10 @@ router.dir("/public").classpath("/public").save();
                 <p>
                     <pre class="ace ace-java"
 >// Endpoint to get a book
-router.GET("/books/${bookId}").save(bookController::booksGet);
+router.GET("/books/${bookId}").handle(bookController::booksGet);
 
 // Endpoint to modify a book
-router.POST("/books/${bookId}").save(bookController::booksPost);
+router.POST("/books/${bookId}").handle(bookController::booksPost);
         
 // ...</pre>
                 </p>
@@ -544,13 +544,13 @@ router.POST("/books/${bookId}").save(bookController::booksPost);
 
     // Adds the book to the response model, using
     // the "data.book" key
-    responseModel.put("data.book", book);
+    responseModel.set("data.book", book);
 
     // Adds a "code" element to the response model
-    responseModel.put("code", AppCode.APP_CODE_ACCEPTED);
+    responseModel.set("code", AppCode.APP_CODE_ACCEPTED);
 
     // Adds a timestamp to the response model
-    responseModel.put("timestamp", new Date());
+    responseModel.set("timestamp", new Date());
     
     // This is going to send the response model as Json
     context.response().sendJson();

@@ -19,7 +19,7 @@ public class RequestPathParamsAndQueryStringParamsTest extends NoAppStartHttpSer
     @Test
     public void paramsAndQueryStringParams() throws Exception {
 
-        getRouter().GET("/${param1}/two/${param2}/four/*{param3}").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/${param1}/two/${param2}/four/*{param3}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

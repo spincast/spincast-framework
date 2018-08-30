@@ -40,7 +40,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postEmptyEntity() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -60,16 +60,16 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postAddEntityFormDataValue() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String value = context.request().getFormData().getString("key1");
+                String value = context.request().getFormBodyAsJsonObject().getString("key1");
                 assertNotNull(value);
                 assertEquals("value1", value);
 
-                value = context.request().getFormData().getString("key2");
+                value = context.request().getFormBodyAsJsonObject().getString("key2");
                 assertNotNull(value);
                 assertEquals("value2", value);
 
@@ -77,8 +77,8 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("key1", "value1")
-                                         .addEntityFormDataValue("key2", "value2").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("key1", "value1")
+                                         .addFormBodyFieldValue("key2", "value2").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -88,12 +88,12 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postSetEntityFormData() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray values = context.request().getFormData().getJsonArray("key1");
+                JsonArray values = context.request().getFormBodyAsJsonObject().getJsonArray("key1");
                 assertNotNull(values);
                 assertEquals(2, values.size());
 
@@ -104,8 +104,8 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").setEntityFormData("key1[0]", Lists.newArrayList("value1"))
-                                         .setEntityFormData("key1[1]", Lists.newArrayList("value2"))
+        HttpResponse response = POST("/").setFormBodyField("key1[0]", Lists.newArrayList("value1"))
+                                         .setFormBodyField("key1[1]", Lists.newArrayList("value2"))
                                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -116,7 +116,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postSetEntityString() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -134,7 +134,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").setEntityString("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
+                POST("/").setStringBody("<toto>the entity</toto>", ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -145,7 +145,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postSetEntityHttpEntity() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -168,7 +168,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             HttpEntity entity =
                     new InputStreamEntity(stream, ContentType.parse(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset()));
 
-            HttpResponse response = POST("/").setEntity(entity).send();
+            HttpResponse response = POST("/").setBody(entity).send();
 
             assertEquals(HttpStatus.SC_OK, response.getStatus());
             assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -182,7 +182,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postSendBinaryEntity() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -209,7 +209,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             HttpEntity entity =
                     new InputStreamEntity(stream, ContentType.parse("image/jpeg"));
 
-            HttpResponse response = POST("/").setEntity(entity).send();
+            HttpResponse response = POST("/").setBody(entity).send();
 
             assertEquals(HttpStatus.SC_OK, response.getStatus());
             assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -223,7 +223,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void postSetEntityStringJson() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -243,7 +243,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").setEntityString("{\"name\":\"test\"}", ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                POST("/").setStringBody("{\"name\":\"test\"}", ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -254,7 +254,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void putSetJsonEntity() throws Exception {
 
-        getRouter().PUT("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().PUT("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -274,9 +274,9 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
         });
 
         JsonObject obj = this.jsonManager.create();
-        obj.put("name", "test");
+        obj.set("name", "test");
 
-        HttpResponse response = PUT("/").setEntityJson(obj).send();
+        HttpResponse response = PUT("/").setJsonStringBody(obj).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -286,7 +286,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void patchSetEntityStringJson() throws Exception {
 
-        getRouter().PATCH("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().PATCH("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -306,7 +306,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                PATCH("/").setEntityString("{\"name\":\"test\"}", ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
+                PATCH("/").setStringBody("{\"name\":\"test\"}", ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                           .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -317,7 +317,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void uploadFile() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -334,14 +334,14 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
+        HttpResponse response = POST("/one").addFileToUploadBody("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void overwriteEntity() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -358,15 +358,15 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one").addEntityFormDataValue("key1", "value1")
-                                            .addEntityFileUpload("someFile.txt", true, "someName").send();
+        HttpResponse response = POST("/one").addFormBodyFieldValue("key1", "value1")
+                                            .addFileToUploadBody("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void setEntityJson() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -387,9 +387,9 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
         });
 
         JsonObject obj = this.jsonManager.create();
-        obj.put("name", "test");
+        obj.set("name", "test");
 
-        HttpResponse response = POST("/").setEntityJson(obj).send();
+        HttpResponse response = POST("/").setJsonStringBody(obj).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -399,7 +399,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void setEntityXml() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -419,9 +419,9 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
         });
 
         JsonObject obj = this.jsonManager.create();
-        obj.put("name", "test");
+        obj.set("name", "test");
 
-        HttpResponse response = POST("/").setEntityXml(obj).send();
+        HttpResponse response = POST("/").setXmlStringBody(obj).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

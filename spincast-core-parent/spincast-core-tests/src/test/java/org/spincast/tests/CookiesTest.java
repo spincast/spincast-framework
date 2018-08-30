@@ -27,14 +27,14 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
         final String random = UUID.randomUUID().toString();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 Cookie cookie = getCookieFactory().createCookie(SpincastTestUtils.TEST_STRING + "name");
                 cookie.setValue(SpincastTestUtils.TEST_STRING + random);
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
 
                 context.response().sendPlainText("test");
             }
@@ -59,30 +59,30 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
         final String random = UUID.randomUUID().toString();
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 Cookie cookie = getCookieFactory().createCookie("name");
                 cookie.setValue(random);
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("name");
+                String cookie = context.request().getCookieValue("name");
                 assertNotNull(cookie);
                 assertEquals(random, cookie);
 
                 context.response().deleteCookie("name");
 
                 // Cookie should still be there
-                cookie = context.request().getCookie("name");
+                cookie = context.request().getCookieValue("name");
                 assertNotNull(cookie);
             }
         });
@@ -97,7 +97,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
         assertEquals(random, cookie.getValue());
         cookie.setSecure(false);
 
-        response = GET("/two").addCookies(cookies.values()).send();
+        response = GET("/two").setCookies(cookies.values()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         cookies = response.getCookies();
@@ -109,23 +109,23 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
         final String random = UUID.randomUUID().toString();
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 Cookie cookie = getCookieFactory().createCookie("name");
                 cookie.setValue(random);
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
-        getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("name");
+                String cookie = context.request().getCookieValue("name");
                 assertNull(cookie);
             }
         });
@@ -152,12 +152,12 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
         final String random1 = UUID.randomUUID().toString();
         final String random2 = UUID.randomUUID().toString();
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Map<String, String> cookies = context.request().getCookies();
+                Map<String, String> cookies = context.request().getCookiesValues();
                 assertEquals(cookies.size(), 2);
 
                 String cookie = cookies.get("name1");
@@ -166,7 +166,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
                 cookie = cookies.get("name2");
                 assertEquals(random2, cookie);
 
-                context.response().addCookieSession("name3", "val3");
+                context.response().setCookieSession("name3", "val3");
 
                 context.response().deleteAllCookiesUserHas();
             }
@@ -182,7 +182,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
         cookie2.setPath("/");
         cookie2.setSecure(false);
 
-        HttpResponse response = GET("/one").addCookie(cookie).addCookie(cookie2).send();
+        HttpResponse response = GET("/one").setCookie(cookie).setCookie(cookie2).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
 
         Map<String, Cookie> cookies = response.getCookies();
@@ -192,12 +192,12 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void invalidCookieNull() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().addCookie(null);
+                context.response().setCookie(null);
             }
         });
 
@@ -211,13 +211,13 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void invalidCookieEmptyName() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 Cookie cookie = getCookieFactory().createCookie("");
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
@@ -234,7 +234,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
         final String random = UUID.randomUUID().toString();
         final Date expires = DateUtils.addDays(new Date(), 1);
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -246,9 +246,10 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
                                                                 expires,
                                                                 false,
                                                                 false,
+                                                                null,
                                                                 false,
                                                                 1);
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
@@ -275,7 +276,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
         final String random = UUID.randomUUID().toString();
         final Integer maxAge = 1000;
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -284,7 +285,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(maxAge);
 
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
@@ -311,7 +312,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
     public void setExpiresUsingMaxAgeZero() throws Exception {
 
         final String random = UUID.randomUUID().toString();
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -320,7 +321,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(0);
 
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
@@ -336,7 +337,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
     public void setExpiresUsingMaxAgeUnderZero() throws Exception {
 
         final String random = UUID.randomUUID().toString();
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -345,7 +346,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
                 cookie.setValue(random);
                 cookie.setExpiresUsingMaxAge(-1);
 
-                context.response().addCookie(cookie);
+                context.response().setCookie(cookie);
             }
         });
 
@@ -359,12 +360,12 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void secureCookieViaHttp() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("myKey");
+                String cookie = context.request().getCookieValue("myKey");
                 assertNull(cookie);
                 context.response().sendPlainText("ok");
             }
@@ -372,19 +373,19 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
 
-        HttpResponse response = GET("/").addCookie(cookie).send();
+        HttpResponse response = GET("/").setCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void unsecureCookieViaHttp() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("myKey");
+                String cookie = context.request().getCookieValue("myKey");
                 assertNotNull(cookie);
                 assertEquals("titi", cookie);
                 context.response().sendPlainText("ok");
@@ -394,7 +395,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
         cookie.setSecure(false);
 
-        HttpResponse response = GET("/").addCookie(cookie).send();
+        HttpResponse response = GET("/").setCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

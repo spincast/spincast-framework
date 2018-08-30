@@ -127,9 +127,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         //==========================================
         if (getSpincastConfig().isAddDefaultTemplateVariablesFilter()) {
             ALL(DEFAULT_ROUTE_PATH).id("spincast_default_template_variables")
+                                   .spicastCoreRouteOrPluginRoute() // Spincast route!
                                    .pos(getSpincastConfig().getDefaultTemplateVariablesFilterPosition())
                                    .found().notFound().exception()
-                                   .save(new Handler<R>() {
+                                   .handle(new Handler<R>() {
 
                                        @Override
                                        public void handle(R context) {
@@ -440,12 +441,12 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
-    public void removeAllRoutes(boolean removeSpincastRoutesToo) {
+    public void removeAllRoutes(boolean removeSpincastAndPluginsRoutesToo) {
 
         this.globalBeforeFilters = null; // reset cache
         this.globalAfterFilters = null; // reset cache
 
-        if (removeSpincastRoutesToo) {
+        if (removeSpincastAndPluginsRoutesToo) {
 
             getGlobalBeforeFiltersPerPosition().clear();
             getMainRoutes().clear();
@@ -457,7 +458,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             for (List<Route<R>> routes : routeLists) {
                 for (int i = routes.size() - 1; i >= 0; i--) {
                     Route<R> route = routes.get(i);
-                    if (!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                    if (!route.isSpicastCoreRouteOrPluginRoute()) {
                         routes.remove(i);
                     }
                 }
@@ -467,7 +468,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             for (List<Route<R>> routes : routeLists) {
                 for (int i = routes.size() - 1; i >= 0; i--) {
                     Route<R> route = routes.get(i);
-                    if (!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                    if (!route.isSpicastCoreRouteOrPluginRoute()) {
                         routes.remove(i);
                     }
                 }
@@ -476,20 +477,11 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             List<Route<R>> routes = getMainRoutes();
             for (int i = routes.size() - 1; i >= 0; i--) {
                 Route<R> route = routes.get(i);
-                if (!startsWithAnyOf(route.getId(), getRouteIdsPrefixToKeepByDefaultWhenRemovingAll())) {
+                if (!route.isSpicastCoreRouteOrPluginRoute()) {
                     routes.remove(i);
                 }
             }
         }
-    }
-
-    /**
-     * The route with ids starting with those prefixes won't be removed
-     * by default when removeAllRoutes() is called without the
-     * "delete all" parameter.
-     */
-    protected Set<String> getRouteIdsPrefixToKeepByDefaultWhenRemovingAll() {
-        return Sets.newHashSet("spincast_");
     }
 
     protected boolean startsWithAnyOf(String id, Set<String> prefixes) {
@@ -611,6 +603,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                         continue;
                     }
 
+                    if (isMustSkipResourceRequest(matchingRoute, route)) {
+                        continue;
+                    }
+
                     List<RouteHandlerMatch<R>> beforeRouteHandlerMatches = createRegularHandlerMatches(routingType,
                                                                                                        route,
                                                                                                        httpMethod,
@@ -640,6 +636,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                     }
 
                     if (!isRoutingTypeMatch(routingType, route)) {
+                        continue;
+                    }
+
+                    if (isMustSkipResourceRequest(matchingRoute, route)) {
                         continue;
                     }
 
@@ -673,6 +673,13 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         Objects.requireNonNull(route, "route can't be NULL");
 
         return route.getRoutingTypes() != null && route.getRoutingTypes().contains(routingType);
+    }
+
+    protected boolean isMustSkipResourceRequest(Route<R> mainRoute, Route<R> filterRoute) {
+        if (mainRoute.isResourceRoute() && filterRoute.isSkipResourcesRequests()) {
+            return true;
+        }
+        return false;
     }
 
     protected RoutingResult<R> createRoutingResult(List<RouteHandlerMatch<R>> routeHandlerMatches) {
@@ -1153,34 +1160,34 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
-    public RouteBuilder<R> SOME(HttpMethod... httpMethods) {
-        return SOME(DEFAULT_ROUTE_PATH, httpMethods);
+    public RouteBuilder<R> methods(HttpMethod... httpMethods) {
+        return methods(DEFAULT_ROUTE_PATH, httpMethods);
     }
 
     @Override
-    public RouteBuilder<R> SOME(String path, HttpMethod... httpMethods) {
+    public RouteBuilder<R> methods(String path, HttpMethod... httpMethods) {
 
         if (httpMethods.length == 0) {
-            throw new RuntimeException("Using SOME(...), you have to specify at least one HTTP method.");
+            throw new RuntimeException("Using methods(...), you have to specify at least one HTTP method.");
         }
 
-        return SOME(path, Sets.newHashSet(httpMethods));
+        return methods(path, Sets.newHashSet(httpMethods));
     }
 
     @Override
-    public RouteBuilder<R> SOME(Set<HttpMethod> httpMethods) {
-        return SOME(DEFAULT_ROUTE_PATH, httpMethods);
+    public RouteBuilder<R> methods(Set<HttpMethod> httpMethods) {
+        return methods(DEFAULT_ROUTE_PATH, httpMethods);
     }
 
     @Override
-    public RouteBuilder<R> SOME(String path, Set<HttpMethod> httpMethods) {
+    public RouteBuilder<R> methods(String path, Set<HttpMethod> httpMethods) {
 
         if (httpMethods == null || httpMethods.size() == 0) {
-            throw new RuntimeException("Using SOME(...), you have to specify at least one HTTP method.");
+            throw new RuntimeException("Using methods(...), you have to specify at least one HTTP method.");
         }
 
         RouteBuilder<R> builder = getRouteBuilderFactory().create(this);
-        builder = builder.SOME(httpMethods);
+        builder = builder.methods(httpMethods);
         builder = builder.path(path);
 
         return builder;
@@ -1193,7 +1200,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     @Override
     public void exception(String path, Handler<R> handler) {
-        ALL(path).exception().save(handler);
+        ALL(path).exception().handle(handler);
     }
 
     @Override
@@ -1203,7 +1210,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     @Override
     public void notFound(String path, Handler<R> handler) {
-        ALL(path).notFound().save(handler);
+        ALL(path).notFound().handle(handler);
     }
 
     @Override
@@ -1270,7 +1277,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     public void cors(String path) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1284,7 +1291,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                      final Set<String> allowedOrigins) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1300,7 +1307,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                      final Set<String> extraHeadersAllowedToBeRead) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1318,7 +1325,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                      final Set<String> extraHeadersAllowedToBeSent) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1338,7 +1345,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                      final boolean allowCookies) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1360,7 +1367,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                      final Set<HttpMethod> allowedMethods) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1384,7 +1391,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                      final int maxAgeInSeconds) {
 
         ALL(path).pos(getSpincastRouterConfig().getCorsFilterPosition())
-                 .found().notFound().save(new Handler<R>() {
+                 .found().notFound().handle(new Handler<R>() {
 
                      @Override
                      public void handle(R context) {
@@ -1509,7 +1516,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         if (staticResource.isDirResource() && splatParamFound) {
 
             StaticResource<R> staticResourceNoDynParams =
-                    getStaticResourceFactory().create(staticResource.getStaticResourceType(),
+                    getStaticResourceFactory().create(staticResource.isSpicastOrPluginAddedResource(),
+                                                      staticResource.getStaticResourceType(),
                                                       urlWithoutSplatParam,
                                                       staticResource.getResourcePath(),
                                                       staticResource.getGenerator(),
@@ -1636,7 +1644,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                             if (mustBeRegisteredOnServer) {
 
                                 StaticResource<R> newStaticResource =
-                                        getStaticResourceFactory().create(staticResource.getStaticResourceType(),
+                                        getStaticResourceFactory().create(staticResource.isSpicastOrPluginAddedResource(),
+                                                                          staticResource.getStaticResourceType(),
                                                                           context.request().getRequestPath(),
                                                                           targetPath,
                                                                           staticResource.getGenerator(),
@@ -1663,6 +1672,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             }
 
             route = getRouteFactory().createRoute(null,
+                                                  true, // is a resource route!
+                                                  staticResource.isSpicastOrPluginAddedResource(),
                                                   Sets.newHashSet(HttpMethod.GET),
                                                   staticResource.getUrlPath(),
                                                   Sets.newHashSet(RoutingType.FOUND),
@@ -1671,7 +1682,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                   saveResourceFilter != null ? Arrays.asList(saveResourceFilter) : null,
                                                   0,
                                                   null,
-                                                  null);
+                                                  null,
+                                                  false);
 
             addRoute(route);
         }
@@ -1744,8 +1756,23 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             }
 
             @Override
+            public boolean isResourceRoute() {
+                return false;
+            }
+
+            @Override
+            public boolean isSpicastCoreRouteOrPluginRoute() {
+                return websocketRoute.isSpicastCoreRouteOrPluginRoute();
+            }
+
+            @Override
             public String getPath() {
                 return websocketRoute.getPath();
+            }
+
+            @Override
+            public boolean isSkipResourcesRequests() {
+                return false;
             }
 
             @Override
@@ -1809,6 +1836,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             public Set<String> getFilterIdsToSkip() {
                 return websocketRoute.getFilterIdsToSkip();
             }
+
         };
 
         return httpRoute;

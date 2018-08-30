@@ -23,7 +23,7 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void oneFile() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -40,14 +40,14 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName").send();
+        HttpResponse response = POST("/one").addFileToUploadBody("someFile.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void twoFilesSameName() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -67,15 +67,15 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
-                                            .addEntityFileUpload("someFile2.txt", true, "someName").send();
+        HttpResponse response = POST("/one").addFileToUploadBody("someFile.txt", true, "someName")
+                                            .addFileToUploadBody("someFile2.txt", true, "someName").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void multipleFiles() throws Exception {
 
-        getRouter().POST("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -128,10 +128,10 @@ public class FileUploadTest extends NoAppStartHttpServerTestingBase {
         String testFilePath = createTestingFilePath();
         FileUtils.copyInputStreamToFile(stream, new File(testFilePath));
 
-        HttpResponse response = POST("/one").addEntityFileUpload("someFile.txt", true, "someName")
-                                            .addEntityFileUpload("someFile2.txt", true, "someName")
-                                            .addEntityFileUpload("someFile3.txt", true, "other")
-                                            .addEntityFileUpload(testFilePath, false, "fileSystemBased")
+        HttpResponse response = POST("/one").addFileToUploadBody("someFile.txt", true, "someName")
+                                            .addFileToUploadBody("someFile2.txt", true, "someName")
+                                            .addFileToUploadBody("someFile3.txt", true, "other")
+                                            .addFileToUploadBody(testFilePath, false, "fileSystemBased")
                                             .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());

@@ -34,18 +34,18 @@ public class XmlTest extends NoAppTestingBase {
     public void toXml() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("someBoolean", true);
-        jsonObj.put("someInt", 123);
+        jsonObj.set("someBoolean", true);
+        jsonObj.set("someInt", 123);
 
         JsonArray jsonArray = this.jsonManager.createArray();
         jsonArray.add("toto");
         jsonArray.add(123);
 
         JsonObject jsonObj2 = this.jsonManager.create();
-        jsonObj2.put("anotherBoolean", true);
-        jsonObj2.put("anotherInt", 44444);
-        jsonObj2.put("innerObj", jsonObj);
-        jsonObj2.put("someArray", jsonArray);
+        jsonObj2.set("anotherBoolean", true);
+        jsonObj2.set("anotherInt", 44444);
+        jsonObj2.set("innerObj", jsonObj);
+        jsonObj2.set("someArray", jsonArray);
 
         String xml = this.xmlManager.toXml(jsonObj2);
         assertNotNull(xml);
@@ -72,11 +72,11 @@ public class XmlTest extends NoAppTestingBase {
 
         JsonObject jsonObject = this.jsonManager.create();
         JsonArray array = this.jsonManager.createArray();
-        jsonObject.put("someArray", array);
+        jsonObject.set("someArray", array);
         JsonObject inner = this.jsonManager.create();
-        inner.put("fieldName", "email");
-        inner.put("message", "Not a valid email address.");
-        inner.put("type", "VALIDATION_TYPE_EMAIL");
+        inner.set("fieldName", "email");
+        inner.set("message", "Not a valid email address.");
+        inner.set("type", "VALIDATION_TYPE_EMAIL");
         array.add(inner);
 
         String xml = this.xmlManager.toXml(jsonObject, true);
@@ -169,7 +169,7 @@ public class XmlTest extends NoAppTestingBase {
 
         JsonObject jsonObject = this.jsonManager.create();
         JsonArray array = this.jsonManager.createArray();
-        jsonObject.put("someArray", array);
+        jsonObject.set("someArray", array);
 
         JsonArray inner = this.jsonManager.createArray();
         inner.add("aaa");
@@ -196,18 +196,18 @@ public class XmlTest extends NoAppTestingBase {
         JsonObject jsonObject = this.jsonManager.create();
 
         JsonObject innerObj = this.jsonManager.create();
-        innerObj.put("name", "Stromgol");
-        jsonObject.put("inner1", innerObj);
+        innerObj.set("name", "Stromgol");
+        jsonObject.set("inner1", innerObj);
 
         JsonArray array = this.jsonManager.createArray();
-        jsonObject.put("someArray", array);
+        jsonObject.set("someArray", array);
 
         JsonArray inner = this.jsonManager.createArray();
         inner.add("aaa");
         inner.add("bbb");
         inner.add("ccc");
         JsonObject innerObj2 = this.jsonManager.create();
-        innerObj2.put("name", "Stromgol2");
+        innerObj2.set("name", "Stromgol2");
         inner.add(innerObj2);
         array.add(inner);
 
@@ -514,7 +514,7 @@ public class XmlTest extends NoAppTestingBase {
     public void toXmlPretty() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("someInt", 123);
+        jsonObj.set("someInt", 123);
 
         String xml = this.xmlManager.toXml(jsonObj, true);
         assertNotNull(xml);
@@ -754,12 +754,12 @@ public class XmlTest extends NoAppTestingBase {
         JsonObject jsonObject = this.jsonManager.create();
 
         JsonArray array = this.jsonManager.createArray();
-        jsonObject.put("someArray", array);
+        jsonObject.set("someArray", array);
 
         JsonObject inner = this.jsonManager.create();
-        inner.put("fieldName", "email");
-        inner.put("message", "Not a valid email address.");
-        inner.put("type", "VALIDATION_TYPE_EMAIL");
+        inner.set("fieldName", "email");
+        inner.set("message", "Not a valid email address.");
+        inner.set("type", "VALIDATION_TYPE_EMAIL");
         array.add(inner);
 
         String xml = this.xmlManager.toXml(jsonObject, true);

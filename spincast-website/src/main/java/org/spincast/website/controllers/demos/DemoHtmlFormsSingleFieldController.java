@@ -2,8 +2,8 @@ package org.spincast.website.controllers.demos;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.flash.FlashMessageLevel;
 import org.spincast.core.request.Form;
-import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.website.exchange.AppRequestContext;
 
@@ -36,7 +36,7 @@ public class DemoHtmlFormsSingleFieldController {
         // The validation message will be added to the
         // default "validation" model element.
         //==========================================
-        Form form = context.request().getForm("demoForm");
+        Form form = context.request().getFormWithRootKey("demoForm");
         context.response().addForm(form);
 
         //==========================================

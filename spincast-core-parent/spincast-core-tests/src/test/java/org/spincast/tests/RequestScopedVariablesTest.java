@@ -29,7 +29,7 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").pos(-1).save(new Handler<DefaultRequestContext>() {
+        router.GET("/one").pos(-1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -37,7 +37,7 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
                 assertNotNull(variables);
                 int nbr = variables.size();
 
-                context.variables().add("key1", "val1");
+                context.variables().set("key1", "val1");
 
                 assertEquals("val1", context.variables().get("key1"));
 
@@ -60,7 +60,7 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
                       vars.put("key2", "val2");
                       vars.put("key3", "val3");
 
-                      context.variables().add(vars);
+                      context.variables().set(vars);
 
                       variables = context.variables().getAll();
                       assertEquals(nbr + 2, variables.size());
@@ -82,7 +82,7 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
                       vars.put("key2", "val2");
                       vars.put("key3", "val3");
 
-                      context.variables().add(vars);
+                      context.variables().set(vars);
 
                       variables = context.variables().getAll();
                       assertEquals(nbr + 2, variables.size());
@@ -92,7 +92,7 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
                   }
               })
 
-              .save(new Handler<DefaultRequestContext>() {
+              .handle(new Handler<DefaultRequestContext>() {
 
                   @Override
                   public void handle(DefaultRequestContext context) {
@@ -110,11 +110,11 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
 
                       assertEquals(nbr - 3, context.variables().getAll().size());
 
-                      context.variables().add("key4", "val4");
+                      context.variables().set("key4", "val4");
                   }
               });
 
-        router.GET("/one").pos(1).save(new Handler<DefaultRequestContext>() {
+        router.GET("/one").pos(1).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -141,12 +141,12 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
     @Test
     public void classAndKey() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.variables().add("asClass", new Date());
+                context.variables().set("asClass", new Date());
 
                 Date date = context.variables().get("asClass", Date.class);
                 assertNotNull(date);
@@ -158,7 +158,7 @@ public class RequestScopedVariablesTest extends NoAppStartHttpServerTestingBase 
                 } catch (Exception ex) {
                 }
 
-                context.variables().add("asKey", new ArrayList<Date>());
+                context.variables().set("asKey", new ArrayList<Date>());
 
                 Key<ArrayList<Date>> key = Key.get(new TypeLiteral<ArrayList<Date>>() {});
                 ArrayList<Date> dates = context.variables().get("asKey", key);

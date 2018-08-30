@@ -29,7 +29,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void removeCacheBusterRegularRoute() throws Exception {
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -62,7 +62,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void removeCacheBusterStaticResource() throws Exception {
 
-        getRouter().file("/someFile.txt").classpath("/someFile.txt").save();
+        getRouter().file("/someFile.txt").classpath("/someFile.txt").handle();
 
         String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
@@ -79,7 +79,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -113,7 +113,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -147,7 +147,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -181,7 +181,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -216,7 +216,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -251,7 +251,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -286,7 +286,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -320,7 +320,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -354,7 +354,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -388,7 +388,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -396,7 +396,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -430,7 +430,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -438,7 +438,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -472,7 +472,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -480,7 +480,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -514,7 +514,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -522,7 +522,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -557,7 +557,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -565,7 +565,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -600,7 +600,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -608,7 +608,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -643,7 +643,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -651,7 +651,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -685,7 +685,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -693,7 +693,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -727,7 +727,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
         final String cacheBusterCode = getSpincastUtils().getCacheBusterCode();
 
-        getRouter().GET("/one.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -735,7 +735,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().GET("/two.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -833,7 +833,7 @@ validationSet.prefixValidationKeys("someObject.");
 
 // Adds the Validation Set (with the validation keys
 // now modified) to the response model
-context.response().getModel().put("validation", validationSet);</pre>        
+context.response().getModel().set("validation", validationSet);</pre>        
             </p>
         </div>    
     </p>
@@ -1474,7 +1474,7 @@ ValidationSet lastResult = userValidationSet.validationEmail()
             <p>
                 <pre class="ace ace-java" data-ace-hi="9,44,9,62|14,66,14,73"
 >JsonObject user = getJsonManager().create();
-user.put("email", "nope");
+user.set("email", "nope");
 
 JsonObjectValidationSet userValidationSet = user.validationSet();
 

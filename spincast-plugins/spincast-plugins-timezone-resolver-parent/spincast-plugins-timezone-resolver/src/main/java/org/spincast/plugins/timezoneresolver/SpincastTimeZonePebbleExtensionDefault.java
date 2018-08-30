@@ -103,7 +103,7 @@ public class SpincastTimeZonePebbleExtensionDefault extends AbstractExtension
                 //==========================================
                 try {
                     RequestContext<?> context = getRequestContextProvider().get();
-                    String cookieValue = context.request().getCookie(getSpincastConfig().getCookieNameTimeZoneId());
+                    String cookieValue = context.request().getCookieValue(getSpincastConfig().getCookieNameTimeZoneId());
                     if (cookieValue != null) {
                         return "";
                     }

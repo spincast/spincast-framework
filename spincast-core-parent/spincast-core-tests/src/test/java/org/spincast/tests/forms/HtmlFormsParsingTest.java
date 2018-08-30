@@ -33,15 +33,15 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void simple() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String name = context.request().getFormData().getString("name");
+                String name = context.request().getFormBodyAsJsonObject().getString("name");
                 assertEquals("Stromgol", name);
 
-                JsonObject jsonObj = context.request().getFormData();
+                JsonObject jsonObj = context.request().getFormBodyAsJsonObject();
                 assertNotNull(jsonObj);
                 name = jsonObj.getString("name");
                 assertEquals("Stromgol", name);
@@ -50,7 +50,7 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name", "Stromgol").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name", "Stromgol").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -60,12 +60,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void oneKeyTwoValues() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray names = context.request().getFormData().getJsonArray("name");
+                JsonArray names = context.request().getFormBodyAsJsonObject().getJsonArray("name");
                 assertNotNull(names);
                 assertEquals(2, names.size());
                 assertEquals("Stromgol", names.getString(0));
@@ -75,8 +75,8 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name[0]", "Stromgol")
-                                         .addEntityFormDataValue("name[1]", "Slomo").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name[0]", "Stromgol")
+                                         .addFormBodyFieldValue("name[1]", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -86,13 +86,13 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notArrayKeyOneValue() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    context.request().getFormData().getJsonArray("name");
+                    context.request().getFormBodyAsJsonObject().getJsonArray("name");
                     fail();
                 } catch (Exception ex) {
                 }
@@ -101,7 +101,7 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name", "Stromgol").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name", "Stromgol").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -111,12 +111,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notArrayKeyMultipleValues() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray array = context.request().getFormData().getJsonArray("name");
+                JsonArray array = context.request().getFormBodyAsJsonObject().getJsonArray("name");
                 assertNotNull(array);
 
                 // Order is not garanteed
@@ -131,8 +131,8 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name", "Stromgol")
-                                         .addEntityFormDataValue("name", "Slomo").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name", "Stromgol")
+                                         .addFormBodyFieldValue("name", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -142,12 +142,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void arrayKeyOneValue() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray array = context.request().getFormData().getJsonArray("name");
+                JsonArray array = context.request().getFormBodyAsJsonObject().getJsonArray("name");
                 assertNotNull(array);
                 assertEquals("Stromgol", array.getString(0));
 
@@ -155,7 +155,7 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name[]", "Stromgol").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name[]", "Stromgol").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -165,12 +165,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void arrayKeyMultipleValues() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray array = context.request().getFormData().getJsonArray("name");
+                JsonArray array = context.request().getFormBodyAsJsonObject().getJsonArray("name");
                 assertNotNull(array);
 
                 // Order is not garanteed
@@ -185,8 +185,8 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name[]", "Stromgol")
-                                         .addEntityFormDataValue("name[]", "Slomo").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name[]", "Stromgol")
+                                         .addFormBodyFieldValue("name[]", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -196,12 +196,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void arrayMultipleElementsAtSamePositionLastOneWins() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray array = context.request().getFormData().getJsonArray("name");
+                JsonArray array = context.request().getFormBodyAsJsonObject().getJsonArray("name");
                 assertNotNull(array);
                 assertEquals(2, array.size());
 
@@ -212,9 +212,9 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name[0]", "Stromgol1")
-                                         .addEntityFormDataValue("name[1]", "first")
-                                         .addEntityFormDataValue("name[1]", "Slomo").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name[0]", "Stromgol1")
+                                         .addFormBodyFieldValue("name[1]", "first")
+                                         .addFormBodyFieldValue("name[1]", "Slomo").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -224,12 +224,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void oneValueInArray() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonArray names = context.request().getFormData().getJsonArray("name");
+                JsonArray names = context.request().getFormBodyAsJsonObject().getJsonArray("name");
                 assertNotNull(names);
                 assertEquals(1, names.size());
                 assertEquals("Stromgol", names.getString(0));
@@ -238,7 +238,7 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name[0]", "Stromgol").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name[0]", "Stromgol").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -248,23 +248,23 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void formDataObjectIsImmutable() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonObject formDatas = context.request().getFormData();
+                JsonObject formDatas = context.request().getFormBodyAsJsonObject();
                 assertNotNull(formDatas);
                 assertEquals("Stromgol", formDatas.getString("name"));
 
                 try {
-                    formDatas.put("nope", "immutable");
+                    formDatas.set("nope", "immutable");
                     fail();
                 } catch (Exception ex) {
                 }
                 JsonObject mutableClone = formDatas.clone(true);
                 assertNotNull(mutableClone);
-                mutableClone.put("key1", "value1");
+                mutableClone.set("key1", "value1");
 
                 assertEquals("value1", mutableClone.getString("key1"));
 
@@ -274,7 +274,7 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/").addEntityFormDataValue("name", "Stromgol").send();
+        HttpResponse response = POST("/").addFormBodyFieldValue("name", "Stromgol").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -284,12 +284,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void multipleLevels() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonObject jsonObj = context.request().getFormData();
+                JsonObject jsonObj = context.request().getFormBodyAsJsonObject();
                 assertNotNull(jsonObj);
 
                 String defaultValue = jsonObj.getJsonObjectOrEmpty("user2")
@@ -343,9 +343,9 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][0][0]", "Stromgol1")
-                         .addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][0][1]", "Stromgol2")
-                         .addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][2]", "Slomo")
+                POST("/").addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][0][0]", "Stromgol1")
+                         .addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][0][1]", "Stromgol2")
+                         .addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][2]", "Slomo")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -356,12 +356,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void multipleLevelsOrder2() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonObject jsonObj = context.request().getFormData();
+                JsonObject jsonObj = context.request().getFormBodyAsJsonObject();
                 assertNotNull(jsonObj);
 
                 String defaultValue = jsonObj.getJsonObjectOrEmpty("user2")
@@ -415,9 +415,9 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][0][0]", "Stromgol1")
-                         .addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][2]", "Slomo")
-                         .addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][0][1]", "Stromgol2")
+                POST("/").addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][0][0]", "Stromgol1")
+                         .addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][2]", "Slomo")
+                         .addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][0][1]", "Stromgol2")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -428,12 +428,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void multipleLevelsOrder3() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonObject jsonObj = context.request().getFormData();
+                JsonObject jsonObj = context.request().getFormBodyAsJsonObject();
                 assertNotNull(jsonObj);
 
                 String defaultValue = jsonObj.getJsonObjectOrEmpty("user2")
@@ -487,9 +487,9 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][2]", "Slomo")
-                         .addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][0][0]", "Stromgol1")
-                         .addEntityFormDataValue("user2.child2.books[1].author[\"info\"]['names'][0][1]", "Stromgol2")
+                POST("/").addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][2]", "Slomo")
+                         .addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][0][0]", "Stromgol1")
+                         .addFormBodyFieldValue("user2.child2.books[1].author[\"info\"]['names'][0][1]", "Stromgol2")
                          .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -500,12 +500,12 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void emptyIndexesAreFilledWithNulls() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                JsonObject jsonObj = context.request().getFormData();
+                JsonObject jsonObj = context.request().getFormBodyAsJsonObject();
                 assertNotNull(jsonObj);
 
                 Object val = jsonObj.getJsonArrayOrEmpty("books")
@@ -555,9 +555,9 @@ public class HtmlFormsParsingTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/").addEntityFormDataValue("books[0].titi[0].toto", "Slomo")
-                         .addEntityFormDataValue("books[0].titi[3].toto", "Stromgol2")
-                         .addEntityFormDataValue("books[2].titi[2].toto", "Stromgol1")
+                POST("/").addFormBodyFieldValue("books[0].titi[0].toto", "Slomo")
+                         .addFormBodyFieldValue("books[0].titi[3].toto", "Stromgol2")
+                         .addFormBodyFieldValue("books[2].titi[2].toto", "Stromgol1")
 
                          .send();
 

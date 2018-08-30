@@ -28,7 +28,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
     @Test
     public void simpleWebsocketUpgradeRequestSuccess() throws Exception {
 
-        getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
+        getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
@@ -57,12 +57,12 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
     @Test
     public void upgradeRefusedBecauseOfCookie() throws Exception {
 
-        getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
+        getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("username");
+                String cookie = context.request().getCookieValue("username");
                 assertNotNull(cookie);
 
                 if (!("Stromgol".equals(cookie))) {
@@ -88,7 +88,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope", false).send();
+        HttpResponse response = websocket(path).setCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -106,7 +106,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("username");
+                String cookie = context.request().getCookieValue("username");
                 assertNotNull(cookie);
 
                 if (!("Stromgol".equals(cookie))) {
@@ -115,7 +115,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
             }
         };
 
-        getRouter().websocket("/ws").before(beforeFilter).save(new DefaultWebsocketControllerTest(getServer()) {
+        getRouter().websocket("/ws").before(beforeFilter).handle(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
@@ -136,7 +136,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope", false).send();
+        HttpResponse response = websocket(path).setCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -154,7 +154,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("username");
+                String cookie = context.request().getCookieValue("username");
                 assertNotNull(cookie);
 
                 if (!("Stromgol".equals(cookie))) {
@@ -163,9 +163,9 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
             }
         };
 
-        getRouter().ALL("/*{path}").pos(-10).save(beforeFilter);
+        getRouter().ALL("/*{path}").pos(-10).handle(beforeFilter);
 
-        getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
+        getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
@@ -186,7 +186,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope", false).send();
+        HttpResponse response = websocket(path).setCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -199,12 +199,12 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
     @Test
     public void upgradeAcceptedBecauseOfValidCookie() throws Exception {
 
-        getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
+        getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("username");
+                String cookie = context.request().getCookieValue("username");
                 assertNotNull(cookie);
 
                 if (!("Stromgol".equals(cookie))) {
@@ -229,7 +229,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "Stromgol", false).send();
+        HttpResponse response = websocket(path).setCookie("username", "Stromgol", false).send();
         validateIsWebsocketUpgradeHttpResponse(path, response);
     }
 
@@ -243,12 +243,12 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
                 fail();
             }
         };
-        getRouter().ALL("/*{path}").pos(10).save(afterFilter);
+        getRouter().ALL("/*{path}").pos(10).handle(afterFilter);
 
-        getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()));
+        getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()));
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).setCookie("username", "nope").send();
         assertNotNull(response);
 
         validateIsWebsocketUpgradeHttpResponse(path, response);
@@ -267,9 +267,9 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
                 filterCalled[0] = true;
             }
         };
-        getRouter().ALL("/*{path}").pos(10).save(afterFilter);
+        getRouter().ALL("/*{path}").pos(10).handle(afterFilter);
 
-        getRouter().websocket("/ws").save(new DefaultWebsocketControllerTest(getServer()) {
+        getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()) {
 
             @Override
             public WebsocketConnectionConfig onPeerPreConnect(DefaultRequestContext context) {
@@ -279,7 +279,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).addCookie("username", "nope").send();
+        HttpResponse response = websocket(path).setCookie("username", "nope").send();
         assertNotNull(response);
 
         validateIsNotWebsocketUpgradeHttpResponse(response);

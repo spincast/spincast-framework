@@ -19,7 +19,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void none() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -43,7 +43,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void proto() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -68,7 +68,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void protoHost() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -94,7 +94,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void protoHostAndPort() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -119,7 +119,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void hostAndPort() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -143,7 +143,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void protoPort() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

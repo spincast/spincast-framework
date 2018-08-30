@@ -20,7 +20,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void gzipped() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -36,7 +36,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void notGzipped() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -56,7 +56,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void unknowContentType() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -76,7 +76,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void changeContentType() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -97,7 +97,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void guessingContentType() throws Exception {
 
-        getRouter().GET("/one.txt").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one.txt").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -117,7 +117,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void resourceGzipped() throws Exception {
 
-        getRouter().file("/txt").classpath("/someFile.txt").save();
+        getRouter().file("/txt").classpath("/someFile.txt").handle();
 
         HttpResponse response = GET("/txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -127,7 +127,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void resourceNotGzipped() throws Exception {
 
-        getRouter().file("/image").classpath("/image.jpg").save();
+        getRouter().file("/image").classpath("/image.jpg").handle();
 
         HttpResponse response = GET("/image").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -137,7 +137,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void disableGzip() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -162,7 +162,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
             }
         };
 
-        getRouter().GET("/one").before(noGzip).save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").before(noGzip).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -178,7 +178,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void forceGzip() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -195,7 +195,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void defaultGzip() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -212,7 +212,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void headersSent() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

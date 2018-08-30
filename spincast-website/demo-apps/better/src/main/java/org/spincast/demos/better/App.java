@@ -16,7 +16,7 @@ public class App {
 
     @Inject
     protected void init(Server server, DefaultRouter router, AppController ctrl) {
-        router.GET("/").save(ctrl::index);
+        router.GET("/").handle(ctrl::index);
         server.start();
     }
 

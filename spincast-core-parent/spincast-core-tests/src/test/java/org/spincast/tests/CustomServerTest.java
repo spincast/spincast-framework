@@ -68,7 +68,7 @@ public class CustomServerTest extends NoAppStartHttpServerTestingBase {
     public void test2() throws Exception {
         assertEquals("constructorstart", getCustomServer().serverFlag);
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

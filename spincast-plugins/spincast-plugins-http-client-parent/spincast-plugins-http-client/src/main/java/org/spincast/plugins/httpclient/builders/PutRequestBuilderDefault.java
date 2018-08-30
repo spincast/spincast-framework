@@ -15,7 +15,7 @@ import com.google.inject.assistedinject.AssistedInject;
 /**
  * Implementation for the Http Client builder for a PUT request.
  */
-public class PutRequestBuilderDefault extends EntitySenderRequestBuilderBaseDefault<PutRequestBuilder>
+public class PutRequestBuilderDefault extends BodySenderRequestBuilderBaseDefault<PutRequestBuilder>
                                       implements PutRequestBuilder {
 
     @AssistedInject

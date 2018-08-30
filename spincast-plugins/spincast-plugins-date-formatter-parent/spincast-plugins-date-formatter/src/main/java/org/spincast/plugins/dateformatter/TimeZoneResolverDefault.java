@@ -45,7 +45,7 @@ public class TimeZoneResolverDefault implements TimeZoneResolver {
             //==========================================
             // TimeZone saved to a cookie?
             //==========================================
-            String cookieValue = context.request().getCookie(getSpincastConfig().getCookieNameTimeZoneId());
+            String cookieValue = context.request().getCookieValue(getSpincastConfig().getCookieNameTimeZoneId());
             if (cookieValue != null) {
 
                 try {

@@ -23,7 +23,7 @@ public class LocaleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void defaultLocale() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -44,7 +44,7 @@ public class LocaleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void acceptLanguageHeader() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -68,7 +68,7 @@ public class LocaleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void localeCookie() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -84,7 +84,7 @@ public class LocaleTest extends NoAppStartHttpServerTestingBase {
         cookie.setSecure(false);
 
         HttpResponse response =
-                GET("/one").addCookie(cookie).addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
+                GET("/one").setCookie(cookie).addHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, "fr_CA").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

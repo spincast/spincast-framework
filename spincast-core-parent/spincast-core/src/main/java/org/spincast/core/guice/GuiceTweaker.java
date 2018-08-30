@@ -62,14 +62,14 @@ public class GuiceTweaker implements SpincastPlugin {
         return this.overridingModules;
     }
 
-    protected Set<Key<?>> getExactBindingsToRemove() {
+    protected Set<Key<?>> getExactBindingsToRemoveBeforePlugins() {
         if (this.exactBindingsToRemove == null) {
             this.exactBindingsToRemove = new HashSet<Key<?>>();
         }
         return this.exactBindingsToRemove;
     }
 
-    public Set<Class<?>> getBindingsHierarchiesToRemove() {
+    public Set<Class<?>> getBindingsHierarchiesToRemoveBeforePlugins() {
         if (this.bindingsHierarchiesToRemove == null) {
             this.bindingsHierarchiesToRemove = new HashSet<Class<?>>();
         }
@@ -103,14 +103,33 @@ public class GuiceTweaker implements SpincastPlugin {
         GuiceModuleUtils guiceModuleUtils = new GuiceModuleUtils(newModule);
 
         //==========================================
+        // Apply overriding modules, before applying
+        // the plugins.
+        //
+        // This is required so some plugins can
+        // know if a specific implementation has to
+        // be used instead of a default one.
+        //
+        // For example, in SpincastRoutingPlugin,
+        // we check if there is a custom implementation
+        // of the "Router" and we bind this custom
+        // implementation to 3 other Guice Keys!
+        //
+        // In a test, a custom implementation of the
+        // Router must then be bound *before* the
+        // plugins are ran...
+        //==========================================
+        newModule = addOverridingModules(newModule);
+
+        //==========================================
         // Removes some bindings hierarchies
         //==========================================
-        if (getBindingsHierarchiesToRemove().size() > 0) {
-            for (Class<?> parentClass : this.bindingsHierarchiesToRemove) {
+        if (getBindingsHierarchiesToRemoveBeforePlugins().size() > 0) {
+            for (Class<?> parentClass : getBindingsHierarchiesToRemoveBeforePlugins()) {
                 Set<Class<?>> classes = guiceModuleUtils.getBoundClassesExtending(parentClass);
                 if (classes.size() > 0) {
                     for (Class<?> clazz : classes) {
-                        getExactBindingsToRemove().add(Key.get(clazz));
+                        getExactBindingsToRemoveBeforePlugins().add(Key.get(clazz));
                     }
                 }
             }
@@ -119,8 +138,8 @@ public class GuiceTweaker implements SpincastPlugin {
         //==========================================
         // Removes some exact bindings
         //==========================================
-        if (getExactBindingsToRemove().size() > 0) {
-            newModule = GuiceModuleUtils.removeBindings(newModule, getExactBindingsToRemove());
+        if (getExactBindingsToRemoveBeforePlugins().size() > 0) {
+            newModule = GuiceModuleUtils.removeBindings(newModule, getExactBindingsToRemoveBeforePlugins());
         }
 
         return newModule;
@@ -154,8 +173,22 @@ public class GuiceTweaker implements SpincastPlugin {
     public Module afterPlugins(Module combinedModule) {
 
         //==========================================
-        // Apply overriding modules
+        // Apply overriding modules, AGAIN, after applying
+        // the plugins.
+        //
+        // This is required for the tests to be able to
+        // override a default plugin configuration
+        // class, for example.
         //==========================================
+        return addOverridingModules(combinedModule);
+    }
+
+    /**
+     * Those overriding modules will be added
+     * both *before* and then, again, *after* 
+     * the plugins are applied.
+     */
+    protected Module addOverridingModules(Module combinedModule) {
         Set<Module> overridingModules = getOverridingModules();
         if (overridingModules != null && overridingModules.size() > 0) {
 
@@ -170,7 +203,6 @@ public class GuiceTweaker implements SpincastPlugin {
         }
 
         return combinedModule;
-
     }
 
     @Override
@@ -215,7 +247,7 @@ public class GuiceTweaker implements SpincastPlugin {
      */
     public void exactBindingToRemove(Key<?> key) {
         Objects.requireNonNull(key, "The key can't be NULL");
-        getExactBindingsToRemove().add(key);
+        getExactBindingsToRemoveBeforePlugins().add(key);
     }
 
     /**
@@ -228,7 +260,7 @@ public class GuiceTweaker implements SpincastPlugin {
      */
     public void bindingHierarchyToRemove(Class<?> parentClass) {
         Objects.requireNonNull(parentClass, "The class can't be NULL");
-        getBindingsHierarchiesToRemove().add(parentClass);
+        getBindingsHierarchiesToRemoveBeforePlugins().add(parentClass);
     }
 
     /**

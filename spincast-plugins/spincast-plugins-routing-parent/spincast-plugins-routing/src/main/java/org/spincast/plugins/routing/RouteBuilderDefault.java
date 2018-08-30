@@ -39,12 +39,14 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     private String id = null;
     private String path = null;
     private int position = 0;
+    private boolean skipResources = false;
     private Set<RoutingType> routingTypes;
     private List<Handler<R>> beforeFilters;
     private Handler<R> mainHandler;
     private List<Handler<R>> afterFilters;
     private Set<String> acceptedContentTypes;
     private Set<String> filterIdsToSkip;
+    private boolean isSpicastCoreRouteOrPluginRoute = false;
 
     @AssistedInject
     public RouteBuilderDefault(RouteFactory<R> routeFactory,
@@ -91,12 +93,20 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         return this.id;
     }
 
+    public boolean isSpicastCoreRouteOrPluginRoute() {
+        return this.isSpicastCoreRouteOrPluginRoute;
+    }
+
     public String getPath() {
         return this.path;
     }
 
     public int getPosition() {
         return this.position;
+    }
+
+    public boolean isSkipResources() {
+        return this.skipResources;
     }
 
     public Set<RoutingType> getRoutingTypes() {
@@ -145,9 +155,17 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         return this.filterIdsToSkip;
     }
 
+
+
     @Override
     public RouteBuilder<R> id(String id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public RouteBuilder<R> spicastCoreRouteOrPluginRoute() {
+        this.isSpicastCoreRouteOrPluginRoute = true;
         return this;
     }
 
@@ -316,19 +334,19 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     }
 
     @Override
-    public RouteBuilder<R> SOME(Set<HttpMethod> httpMethods) {
+    public RouteBuilder<R> methods(Set<HttpMethod> httpMethods) {
         getHttpMethods().addAll(httpMethods);
         return this;
     }
 
     @Override
-    public RouteBuilder<R> SOME(HttpMethod... httpMethods) {
+    public RouteBuilder<R> methods(HttpMethod... httpMethods) {
         getHttpMethods().addAll(Sets.newHashSet(httpMethods));
         return this;
     }
 
     @Override
-    public void save(Handler<R> mainHandler) {
+    public void handle(Handler<R> mainHandler) {
 
         if (getRouter() == null) {
             throw new RuntimeException("No router specified, can't save the route!");
@@ -360,6 +378,8 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         }
 
         Route<R> route = getRouteFactory().createRoute(getId(),
+                                                       false, // is not a resource route!
+                                                       isSpicastCoreRouteOrPluginRoute(),
                                                        getHttpMethods(),
                                                        getPath(),
                                                        routingTypes,
@@ -368,7 +388,8 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
                                                        getAfterFilters(),
                                                        getPosition(),
                                                        getAcceptedContentTypes(),
-                                                       getFilterIdsToSkip());
+                                                       getFilterIdsToSkip(),
+                                                       isSkipResources());
         return route;
     }
 
@@ -437,6 +458,12 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
         getFilterIdsToSkip().add(filterId);
 
+        return this;
+    }
+
+    @Override
+    public RouteBuilder<R> skipResourcesRequests() {
+        this.skipResources = true;
         return this;
     }
 

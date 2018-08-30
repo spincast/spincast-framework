@@ -95,6 +95,12 @@
             "date" : "2018-08-13T22:00:00Z",
             "title" : "Timezone resolver and Date formatter",
             "path" : "/news/2018-08-13.html"
+        },
+        {
+            "id" : "18",
+            "date" : "2018-08-29T23:00:00Z",
+            "title" : "4 new plugins",
+            "path" : "/news/2018-08-29.html"
         }
 		
 	]

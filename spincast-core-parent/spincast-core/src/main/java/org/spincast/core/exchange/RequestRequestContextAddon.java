@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.spincast.core.flash.FlashMessage;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.request.Form;
 import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.UploadedFile;
-import org.spincast.core.session.FlashMessage;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.validation.ValidationSet;
 
@@ -292,7 +292,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * The request's body as a String, using the specified encoding.
      * Note that once part of the InputStream is read, it can't be read again!
      */
-    public String getBodyAsString(String encoding);
+    public String getStringBody(String encoding);
 
     /**
      * The request's body deserialized to an immutable <code>JsonObject</code>. 
@@ -339,9 +339,10 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public <T> T getXmlBody(Class<T> clazz);
 
     /**
-     * The raw datas submitted from a <code>FORM</code> via a 
-     * <code>POST</code> method, as a <code>Map</code>.
-     * More than one value with the same <code>key</code> is possible.
+     * The data submitted as a <code>FORM</code> body 
+     * (in general via a <code>POST</code> method),
+     * as a <code>Map</code>.
+     * <p>
      * The names are <em>case sensitive</em>.
      * <p>
      * This returns the keys/values as is, without trying to parse
@@ -352,14 +353,16 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * be able to add or remove elements.
      * </p>
      */
-    public Map<String, List<String>> getFormDataRaw();
+    public Map<String, List<String>> getFormBodyRaw();
 
     /**
-     * The data submitted from a <code>FORM</code> via a <code>POST</code> method,
+     * The data submitted as a <code>FORM</code> body 
+     * (in general via a <code>POST</code> method),
      * as an immutable <code>JsonObject</code>.
-     * The keys are <em>case sensitive</em>.
      * <p>
-     * The keys will be parsed as <code>JsonPaths</code> to build the final
+     * The root keys of the field names and  are <em>case sensitive</em>.
+     * <p>
+     * The root keys will be parsed as <code>JsonPaths</code> to build the final
      * <code>JsonObject</code>. For example : <code>user.books[1].name</code>
      * will be converted to a "user" <code>JsonObject</code> with a "books" arrays 
      * with one book at index "1" and this book 
@@ -369,26 +372,45 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * If you want to get a mutable instance, you can call <code>.clone(true)</code>
      * on this object.
      */
-    public JsonObject getFormData();
+    public JsonObject getFormBodyAsJsonObject();
 
     /**
-     * The data submitted from a <code>FORM</code> via a <code>POST</code> method,
-     * as a {@link Form} object.
+     * Gets the part of the submitted <code>FORM</code> body 
+     * that is scoped by the specified <code>root key</code>.
      * <p>
-     * A {@link Form} object is a {@link JsonObject} containing the submitted
-     * data and a {@link ValidationSet} to store validations performed on it.
+     * When an HTML form is submitted, there may be utility fields
+     * (such as a CSRF token, etc.) in addition to
+     * business logic fields. 
+     * By using this {@link #getFormWithRootKey(String)}
+     * you only get the fields which names start with the specified
+     * <code>root key</code>. For example, if this HTML form was submitted:
+     * <pre>
+     * &lt;form&gt;
+     *  &lt;input type="text" name="csrfToken" value="12345" /&gt;
+     *  &lt;input type="text" name="myUser.userName" value="Stromgol" /&gt;
+     *  &lt;input type="text" name="myUser.lastNameName" value="LaPierre" /&gt;
+     * ...
+     * </pre>
      * <p>
-     * The same <code>Form</code> object is returned, everytime this method is called
+     * ... then calling <code>getFormWithRootKey("myUser")</code> would
+     * return a {@link Form} object containing the "userName" and the "userName"
+     * fields, but not the "csrfToken".
+     * </p>
+     * <p>
+     * A {@link Form} object is in fact a {@link JsonObject} containing the submitted
+     * fields and a {@link ValidationSet} to store validations performed on it.
+     * <p>
+     * The same field is returned, everytime this method is called
      * with the same <code>name</code>.
      * <p>
-     * If not found in the POSTed data, an empty form will be created.
+     * If the root key is not found in the POSTed data, an empty 
+     * form will be created.
      * <p>
      * Never returns <code>null</code>.
      * <p>
-     * The keys are <em>case sensitive</em>.
-     * 
+     * The key are <em>case sensitive</em>.
      */
-    public Form getForm(String name);
+    public Form getFormWithRootKey(String rootKey);
 
     /**
      * The key of the map if the HTML's <code>name</code> attribute. 
@@ -473,14 +495,14 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * Gets the the request cookies values as a Map, 
      * using the names of the cookies as the keys.
      */
-    public Map<String, String> getCookies();
+    public Map<String, String> getCookiesValues();
 
     /**
      * Gets the value of a request cookie by name.
      * 
      * @return the value or <code>null</code> if not found.
      */
-    public String getCookie(String name);
+    public String getCookieValue(String name);
 
 
     /**

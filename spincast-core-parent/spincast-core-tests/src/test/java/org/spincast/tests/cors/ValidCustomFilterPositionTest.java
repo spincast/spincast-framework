@@ -25,7 +25,7 @@ import com.google.inject.Scopes;
 public class ValidCustomFilterPositionTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -54,7 +54,7 @@ public class ValidCustomFilterPositionTest extends NoAppStartHttpServerTestingBa
         // Cors filter
         getRouter().cors();
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

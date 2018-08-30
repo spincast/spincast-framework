@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.routing.Handler;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
@@ -32,8 +33,8 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
          * Constructor
          */
         @Inject
-        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -73,12 +74,12 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void secureCookieViaHttps() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("myKey");
+                String cookie = context.request().getCookieValue("myKey");
                 assertNotNull(cookie);
                 assertEquals("titi", cookie);
                 context.response().sendPlainText("ok");
@@ -87,19 +88,19 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
 
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
 
-        HttpResponse response = GET("/", false, true).addCookie(cookie).send();
+        HttpResponse response = GET("/", false, true).setCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
     public void unsecureCookieViaHttps() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                String cookie = context.request().getCookie("myKey");
+                String cookie = context.request().getCookieValue("myKey");
                 assertNotNull(cookie);
                 assertEquals("titi", cookie);
                 context.response().sendPlainText("ok");
@@ -109,7 +110,7 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
         cookie.setSecure(false);
 
-        HttpResponse response = GET("/", false, true).addCookie(cookie).send();
+        HttpResponse response = GET("/", false, true).setCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

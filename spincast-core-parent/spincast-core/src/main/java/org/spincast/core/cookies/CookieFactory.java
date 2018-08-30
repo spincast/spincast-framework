@@ -30,18 +30,19 @@ public interface CookieFactory {
      * of the session only.
      */
     public Cookie createCookie(@Assisted("name") String name,
-                                @Assisted("value") String value);
+                               @Assisted("value") String value);
 
     /**
      * Creates a cookie using all available configurations.
      */
     public Cookie createCookie(@Assisted("name") String name,
-                                @Assisted("value") String value,
-                                @Assisted("path") String path,
-                                @Assisted("domain") String domain,
-                                @Assisted("expires") Date expires,
-                                @Assisted("secure") boolean secure,
-                                @Assisted("httpOnly") boolean httpOnly,
-                                @Assisted("discard") boolean discard,
-                                @Assisted("version") int version);
+                               @Assisted("value") String value,
+                               @Assisted("path") String path,
+                               @Assisted("domain") String domain,
+                               @Assisted("expires") Date expires,
+                               @Assisted("secure") boolean secure,
+                               @Assisted("httpOnly") boolean httpOnly,
+                               @Assisted("cookieSameSite") CookieSameSite cookieSameSite,
+                               @Assisted("discard") boolean discard,
+                               @Assisted("version") int version);
 }

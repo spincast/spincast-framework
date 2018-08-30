@@ -110,6 +110,4 @@ public class SpincastJdbcPluginModule extends SpincastGuiceModuleBase {
         return JdbcUtilsDefault.class;
     }
 
-
-
 }

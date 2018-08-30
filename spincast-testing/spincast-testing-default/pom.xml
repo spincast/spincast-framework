@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-testing-parent</artifactId>
-        <version>0.9.41</version>
+        <version>0.9.42-SNAPSHOT</version>
     </parent>
     
 	<artifactId>spincast-testing-default</artifactId>
@@ -33,6 +33,17 @@
             <artifactId>spincast-testing-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <!--=================================== 
+        Logs to the console
+        ====================================-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
+
 
 	</dependencies>
 

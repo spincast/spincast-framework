@@ -33,7 +33,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directString() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "value1");
+        obj.set("key1", "value1");
 
         String result = obj.getString("key1");
         assertEquals("value1", result);
@@ -55,7 +55,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directInteger() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", 123);
+        obj.set("key1", 123);
 
         Integer result = obj.getInteger("key1");
         assertEquals(new Integer(123), result);
@@ -74,7 +74,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directLong() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", 123L);
+        obj.set("key1", 123L);
 
         Long result = obj.getLong("key1");
         assertEquals(new Long(123), result);
@@ -93,7 +93,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directFloat() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", 12.34F);
+        obj.set("key1", 12.34F);
 
         Float result = obj.getFloat("key1");
         assertEquals(new Float(12.34), result);
@@ -112,7 +112,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directDouble() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", 12.34);
+        obj.set("key1", 12.34);
 
         Double result = obj.getDouble("key1");
         assertEquals(new Double(12.34), result);
@@ -131,7 +131,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directBoolean() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", true);
+        obj.set("key1", true);
 
         Boolean result = obj.getBoolean("key1");
         assertEquals(true, result);
@@ -150,7 +150,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directBigDecimal() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", new BigDecimal("1234"));
+        obj.set("key1", new BigDecimal("1234"));
 
         BigDecimal result = obj.getBigDecimal("key1");
         assertEquals(new BigDecimal("1234"), result);
@@ -169,7 +169,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void directBytes() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", "test".getBytes("UTF-8"));
+        obj.set("key1", "test".getBytes("UTF-8"));
 
         byte[] result = obj.getBytesFromBase64String("key1");
         assertTrue(Arrays.equals("test".getBytes("UTF-8"), result));
@@ -190,7 +190,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         Date date = new Date();
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", date);
+        obj.set("key1", date);
 
         Date result = obj.getDate("key1");
         assertEquals(date, result);
@@ -211,10 +211,10 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void obj() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "value1");
+        inner.set("key1", "value1");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         JsonObject result = obj.getJsonObject("inner");
         assertNotNull(result);
@@ -227,7 +227,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         assertNotNull(result);
 
         JsonObject defaultObj = getJsonManager().create();
-        defaultObj.put("key2", "value2");
+        defaultObj.set("key2", "value2");
 
         result = obj.getJsonObject("nope", defaultObj);
         assertNotNull(result);
@@ -241,7 +241,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner.add("value1");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         JsonArray result = obj.getJsonArray("inner");
         assertNotNull(result);
@@ -265,10 +265,10 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void objString() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "value1");
+        inner.set("key1", "value1");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner.key1");
         assertEquals("value1", result);
@@ -284,10 +284,10 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void objInteger() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", 123);
+        inner.set("key1", 123);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         Integer result = obj.getInteger("inner.key1");
         assertEquals(new Integer(123), result);
@@ -303,13 +303,13 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void objObjString() throws Exception {
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key1", "value1");
+        inner2.set("key1", "value1");
 
         JsonObject inner = getJsonManager().create();
-        inner.put("inner2", inner2);
+        inner.set("inner2", inner2);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner.inner2.key1");
         assertEquals("value1", result);
@@ -335,7 +335,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner.add("value2");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner[0]");
         assertEquals("value1", result);
@@ -362,7 +362,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner.add(inner2);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner[0]");
         assertEquals("value3", result);
@@ -388,10 +388,10 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner2.add("value2");
 
         JsonObject inner = getJsonManager().create();
-        inner.put("inner2", inner2);
+        inner.set("inner2", inner2);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner.inner2[0]");
         assertEquals("value1", result);
@@ -410,14 +410,14 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void arrayObjString() throws Exception {
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key1", "value1");
+        inner2.set("key1", "value1");
 
         JsonArray inner = getJsonManager().createArray();
         inner.add("value3");
         inner.add(inner2);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner[0]");
         assertEquals("value3", result);
@@ -445,12 +445,12 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner7.add(date);
 
         JsonObject inner6 = getJsonManager().create();
-        inner6.put("key5", inner7);
-        inner6.put("key6", "value6");
+        inner6.set("key5", inner7);
+        inner6.set("key6", "value6");
 
         JsonObject inner5 = getJsonManager().create();
-        inner5.put("key3", "value3");
-        inner5.put("key4", inner6);
+        inner5.set("key3", "value3");
+        inner5.set("key4", inner6);
 
         JsonArray inner4 = getJsonManager().createArray();
         inner4.add("value2");
@@ -460,15 +460,15 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner3.add(inner4);
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key1", "value1");
-        inner2.put("key2", inner3);
+        inner2.set("key1", "value1");
+        inner2.set("key2", inner3);
 
         JsonArray inner = getJsonManager().createArray();
         inner.add("value0");
         inner.add(inner2);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         String result = obj.getString("inner[0]");
         assertEquals("value0", result);
@@ -548,7 +548,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void fromArrayObjectString() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key2", "value2");
+        inner.set("key2", "value2");
 
         JsonArray array = getJsonManager().createArray();
         array.add("value1");
@@ -574,12 +574,12 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner7.add("value7");
 
         JsonObject inner6 = getJsonManager().create();
-        inner6.put("key5", inner7);
-        inner6.put("key6", "value6");
+        inner6.set("key5", inner7);
+        inner6.set("key6", "value6");
 
         JsonObject inner5 = getJsonManager().create();
-        inner5.put("key3", "value3");
-        inner5.put("key4", inner6);
+        inner5.set("key3", "value3");
+        inner5.set("key4", inner6);
 
         JsonArray inner4 = getJsonManager().createArray();
         inner4.add("value2");
@@ -589,15 +589,15 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner3.add(inner4);
 
         JsonObject inner2 = getJsonManager().create();
-        inner2.put("key1", "value1");
-        inner2.put("key2", inner3);
+        inner2.set("key1", "value1");
+        inner2.set("key2", inner3);
 
         JsonArray inner = getJsonManager().createArray();
         inner.add("value0");
         inner.add(inner2);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         JsonArray array = getJsonManager().createArray();
         array.add("toto");
@@ -617,7 +617,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
         inner.add("value1");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         try {
             obj.getString("inner[2", "defaultVal");
@@ -630,10 +630,10 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void invalidEmptyKey() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key1", "value1");
+        inner.set("key1", "value1");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("inner", inner);
+        obj.set("inner", inner);
 
         try {
             obj.getString("inner..inner", "defaultVal");
@@ -647,7 +647,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void jsonPathIsUsedAsIsWithBracketsAndQuotesAndCorrectEscaping() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.putNoKeyParsing("this'.\"is[\\a.key[x", "value1", false);
+        obj.setNoKeyParsing("this'.\"is[\\a.key[x", "value1", false);
 
         String result = obj.getString("[\"this'.\\\"is[\\\\a.key[x\"]", "defaultVal");
         assertEquals("value1", result);
@@ -663,7 +663,7 @@ public class JsonPathsSelectTest extends NoAppTestingBase {
     public void jsonPathOnImmutableObjets() throws Exception {
 
         JsonObject obj = getJsonManager().create();
-        obj.put("aaa.bbb[2].ccc", "Stromgol");
+        obj.set("aaa.bbb[2].ccc", "Stromgol");
 
         obj = obj.clone(false);
         assertFalse(obj.isMutable());

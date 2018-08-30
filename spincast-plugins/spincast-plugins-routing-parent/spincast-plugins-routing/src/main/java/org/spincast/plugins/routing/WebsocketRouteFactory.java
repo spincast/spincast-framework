@@ -13,7 +13,8 @@ import com.google.inject.assistedinject.Assisted;
 
 public interface WebsocketRouteFactory<R extends RequestContext<?>, W extends WebsocketContext<?>> {
 
-    public WebsocketRoute<R, W> createRoute(@Assisted("id") String id,
+    public WebsocketRoute<R, W> createRoute(@Assisted("isSpicastCoreRouteOrPluginRoute") boolean isSpicastCoreRouteOrPluginRoute,
+                                            @Assisted("id") String id,
                                             @Assisted("path") String path,
                                             @Assisted("before") List<Handler<R>> beforeFilters,
                                             @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip,

@@ -45,7 +45,7 @@ public class MainArgsTest extends NoAppStartHttpServerTestingBase {
         assertEquals("one", this.mainArgsList.get(0));
         assertEquals("two", this.mainArgsList.get(1));
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -12,6 +12,24 @@ import org.spincast.core.utils.ContentTypeDefaults;
 public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
+     * This should only by called by *plugins*.
+     * <p>
+     * When this method is called, the resulting route won't
+     * be remove by default when the
+     * {@link Router#removeAllRoutes()} method is used. The
+     * {@link Router#removeAllRoutes(boolean)} with <code>true</code>
+     * will have to be called to actually remove it.
+     * <p>
+     * This is useful during development, when an hotreload mecanism
+     * is used to reload the Router without
+     * restarting the application, when the application routes changed.
+     * By default only the routes for which the 
+     * {@link #isSpicastCoreRouteOrPluginRoute()}
+     * method has been called would then be reloaded.
+     */
+    public RouteBuilder<R> spicastCoreRouteOrPluginRoute();
+
+    /**
      * An id that can be used to identify the route.
      * Must be unique.
      */
@@ -217,7 +235,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * <code>Router</code> object, you already specified some 
      * supported HTTP methods. Those new ones will simply be added.
      */
-    public RouteBuilder<R> SOME(Set<HttpMethod> httpMethods);
+    public RouteBuilder<R> methods(Set<HttpMethod> httpMethods);
 
     /**
      * Adds the specified HTTP methods as being supported.
@@ -226,7 +244,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * <code>Router</code> object, you already specified some 
      * supported HTTP methods. Those new ones will simply be added.
      */
-    public RouteBuilder<R> SOME(HttpMethod... httpMethods);
+    public RouteBuilder<R> methods(HttpMethod... httpMethods);
 
     /**
      * Creates the route and saves it to the router.
@@ -234,7 +252,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * an <code>Router</code> object, an exception will be
      * thrown.
      */
-    public void save(Handler<R> mainHandler);
+    public void handle(Handler<R> mainHandler);
 
     /**
      * Creates and returns the route without adding it to
@@ -301,5 +319,19 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * </p>
      */
     public RouteBuilder<R> skip(String filterId);
+
+    /**
+     * Won't be applied if the request is for a resource
+     * ({@link Route#isResourceRoute()}). In the case
+     * of <a href="https://www.spincast.org/documentation#dynamic_resources">Dynamic Resources</a>,
+     * the filters will indeed be called <em>when the generator is used</em>. By
+     * calling this {@link #skipResourcesRequests()} method, the current filter
+     * will never be called for such resources.
+     * <p>
+     * This feature only makes sense if the current route 
+     * <em>if a filter</em>. Otherwise, it won't be used.
+     */
+    public RouteBuilder<R> skipResourcesRequests();
+
 
 }

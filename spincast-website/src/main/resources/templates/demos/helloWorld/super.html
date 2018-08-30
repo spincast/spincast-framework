@@ -271,9 +271,9 @@
         String src = context.httpClient().GET(url).send().getContentAsString();
 
         JsonObject response = context.json().create();
-        response.put("username", username);
-        response.put("url", url);
-        response.put("source", src);
+        response.set("username", username);
+        response.set("url", url);
+        response.set("source", src);
 
         context.response().sendJson(response);
     }
@@ -341,8 +341,8 @@
     @Inject
     protected void init(Router&lt;AppRequestContext, DefaultWebsocketContext&gt; router) {
 
-        router.GET("/").save(this::indexPage);
-        router.GET("/github-source/${username}").save(this::githubSource);
+        router.GET("/").handle(this::indexPage);
+        router.GET("/github-source/${username}").handle(this::githubSource);
     }   
 }</pre>   
         </p>
@@ -594,5 +594,14 @@ api:
 <p id="superimg" style="display:none;">
     <img src="/public/images/marypoppins.gif" />
 </p>
+
+<h4>
+    <a class="anchor_small" href="#tooeasy" id="tooeasy" title="permanent link"></a>
+    Too complex?
+</h4>
+<p>
+    Try the <a href="/demos-tutorials/hello-world/quick">Quick</a> "<em>Hello World!</em>" demo, for an easier version!
+</p>
+
 
 {% endblock %}

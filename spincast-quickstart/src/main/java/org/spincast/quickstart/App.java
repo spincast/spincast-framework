@@ -69,39 +69,39 @@ public class App {
         // Serves everything under "/public" as 
         // Static Resources.
         //==========================================
-        router.dir("/public").classpath("/public").save();
+        router.dir("/public").classpath("/public").handle();
 
         //==========================================
         // Some common files which are not expected to
         // be under a "/public" URL.
         //==========================================
-        router.file("/favicon.ico").classpath("/public/favicon.ico").save();
-        router.file("/robots.txt").classpath("/public/robots.txt").save();
-        router.file("/humans.txt").classpath("/public/humans.txt").save();
-        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").save();
-        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").save();
-        router.file("/tile-wide.png").classpath("/public/tile-wide.png").save();
-        router.file("/tile.png").classpath("/public/tile.png").save();
+        router.file("/favicon.ico").classpath("/public/favicon.ico").handle();
+        router.file("/robots.txt").classpath("/public/robots.txt").handle();
+        router.file("/humans.txt").classpath("/public/humans.txt").handle();
+        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").handle();
+        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").handle();
+        router.file("/tile-wide.png").classpath("/public/tile-wide.png").handle();
+        router.file("/tile.png").classpath("/public/tile.png").handle();
 
         //==========================================
         // Add some security headers on every route
         //==========================================
-        router.ALL().pos(-10).save(spincastFilters::addSecurityHeaders);
+        router.ALL().pos(-10).handle(spincastFilters::addSecurityHeaders);
 
         //==========================================
         // Index page, can be cached.
         //==========================================
-        router.GET("/").cache(3600).save(ctrl::index);
+        router.GET("/").cache(3600).handle(ctrl::index);
 
         //==========================================
         // Form example page
         //==========================================
-        router.GET("/form").save(ctrl::formExample);
+        router.GET("/form").handle(ctrl::formExample);
 
         //==========================================
         // Exception example
         //==========================================
-        router.GET("/exception-example").save(ctrl::exceptionExample);
+        router.GET("/exception-example").handle(ctrl::exceptionExample);
 
         //==========================================
         // "Not Found" handler

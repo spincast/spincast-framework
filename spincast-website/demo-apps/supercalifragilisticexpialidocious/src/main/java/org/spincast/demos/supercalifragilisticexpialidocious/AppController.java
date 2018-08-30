@@ -14,8 +14,8 @@ public class AppController {
     @Inject
     protected void init(Router<AppRequestContext, DefaultWebsocketContext> router) {
 
-        router.GET("/").save(this::indexPage);
-        router.GET("/github-source/${username}").save(this::githubSource);
+        router.GET("/").handle(this::indexPage);
+        router.GET("/github-source/${username}").handle(this::githubSource);
 
         router.cors();
     }
@@ -42,9 +42,9 @@ public class AppController {
         String src = context.httpClient().GET(url).send().getContentAsString();
 
         JsonObject response = context.json().create();
-        response.put("username", username);
-        response.put("url", url);
-        response.put("source", src);
+        response.set("username", username);
+        response.set("url", url);
+        response.set("source", src);
 
         context.response().sendJson(response);
     }

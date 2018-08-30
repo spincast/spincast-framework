@@ -248,28 +248,28 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
     }
 
     @Override
-    public T addCookie(String name, String value) {
-        return addCookie(name, value, true);
+    public T setCookie(String name, String value) {
+        return setCookie(name, value, true);
     }
 
     @Override
-    public T addCookie(String name, String value, boolean secure) {
+    public T setCookie(String name, String value, boolean secure) {
         Objects.requireNonNull(name, "The name can't be NULL");
 
         Cookie cookie = getCookieFactory().createCookie(name, value);
         cookie.setSecure(secure);
-        return addCookie(cookie);
+        return setCookie(cookie);
     }
 
     @Override
-    public T addCookie(Cookie cookie) {
+    public T setCookie(Cookie cookie) {
         Objects.requireNonNull(cookie, "The cookie can't be NULL");
 
-        return addCookies(Lists.newArrayList(cookie));
+        return setCookies(Lists.newArrayList(cookie));
     }
 
     @Override
-    public T addCookies(Collection<Cookie> cookies) {
+    public T setCookies(Collection<Cookie> cookies) {
 
         if (cookies != null) {
 
@@ -517,7 +517,8 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
                                                                         responseCookie.getDomain(),
                                                                         responseCookie.getExpiryDate(),
                                                                         responseCookie.isSecure(),
-                                                                        false, // "httpOnly" not supported in current Apache HttpClient version!
+                                                                        false, // "httpOnly" not supported in current Apache HttpClient version
+                                                                        null, // "sameSite" not supported in current Apache HttpClient version
                                                                         !responseCookie.isPersistent(),
                                                                         responseCookie.getVersion());
                         cookies.put(cookie.getName(), cookie);

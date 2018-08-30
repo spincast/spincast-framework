@@ -14,12 +14,12 @@ public class AppControllerDefault implements AppController {
     @Override
     public void sumRoute(DefaultRequestContext context) {
 
-        String firstNbr = context.request().getFormData().getString("first");
+        String firstNbr = context.request().getFormBodyAsJsonObject().getString("first");
         if (StringUtils.isBlank(firstNbr)) {
             throw new PublicExceptionDefault("The 'first' post parameter is required.",
                                              HttpStatus.SC_BAD_REQUEST);
         }
-        String secondNbr = context.request().getFormData().getString("second");
+        String secondNbr = context.request().getFormBodyAsJsonObject().getString("second");
         if (StringUtils.isBlank(secondNbr)) {
             throw new PublicExceptionDefault("The 'second' post parameter is required.",
                                              HttpStatus.SC_BAD_REQUEST);
@@ -60,9 +60,9 @@ public class AppControllerDefault implements AppController {
         JsonObject resultObj = context.json().create();
         if (error != null) {
             context.response().setStatusCode(HttpStatus.SC_BAD_REQUEST);
-            resultObj.put("error", error);
+            resultObj.set("error", error);
         } else {
-            resultObj.put("result", String.valueOf(sum));
+            resultObj.set("result", String.valueOf(sum));
         }
 
         context.response().sendJson(resultObj);

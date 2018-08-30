@@ -116,7 +116,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         if (obj == null) {
             obj = getJsonManager().create();
             if (addIfDoesntExist) {
-                put(jsonPath, obj);
+                set(jsonPath, obj);
             }
         }
 
@@ -182,7 +182,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         if (array == null) {
             array = getJsonManager().createArray();
             if (addIfDoesntExist) {
-                put(jsonPath, array);
+                set(jsonPath, array);
             }
         }
 
@@ -1509,7 +1509,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
     public void transform(String jsonPath, ElementTransformer transformer) {
         Object obj = getObject(jsonPath);
         obj = transformer.transform(obj);
-        put(jsonPath, obj);
+        set(jsonPath, obj);
     }
 
     @Override
@@ -1518,12 +1518,12 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
     }
 
     @Override
-    public JsonObjectOrArray put(String jsonPath, Object element) {
+    public JsonObjectOrArray set(String jsonPath, Object element) {
         return put(jsonPath, element, false, true);
     }
 
     @Override
-    public JsonObjectOrArray put(String jsonPath, Object element, boolean clone) {
+    public JsonObjectOrArray set(String jsonPath, Object element, boolean clone) {
         return put(jsonPath, element, clone, true);
     }
 

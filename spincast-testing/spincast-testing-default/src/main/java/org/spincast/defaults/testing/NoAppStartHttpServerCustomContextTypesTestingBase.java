@@ -47,7 +47,7 @@ public abstract class NoAppStartHttpServerCustomContextTypesTestingBase<R extend
     }
 
     @Override
-    protected final void startApp() {
+    protected final void callAppMainMethod() {
         createBootstrapper().init(getMainArgs());
     }
 
@@ -62,6 +62,10 @@ public abstract class NoAppStartHttpServerCustomContextTypesTestingBase<R extend
         return null;
     }
 
+    /**
+     * Don't forget to first call
+     * <code>super.beforeClass()</code>
+     */
     @Override
     public void beforeClass() {
         super.beforeClass();

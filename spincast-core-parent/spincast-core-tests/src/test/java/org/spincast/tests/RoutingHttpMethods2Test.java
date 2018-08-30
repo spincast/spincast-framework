@@ -15,7 +15,7 @@ public class RoutingHttpMethods2Test extends NoAppStartHttpServerTestingBase {
     @Test
     public void get() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -30,7 +30,7 @@ public class RoutingHttpMethods2Test extends NoAppStartHttpServerTestingBase {
     @Test
     public void post() throws Exception {
 
-        getRouter().POST("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().POST("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

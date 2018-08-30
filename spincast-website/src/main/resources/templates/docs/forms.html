@@ -68,10 +68,10 @@ public void myHandlerGet(AppRequestContext context) {
     JsonObject form = context.response().getModel().getJsonObject("userForm");
     if (form == null) {
         form = context.json().create();
-        context.response().getModel().put("userForm", form);
+        context.response().getModel().set("userForm", form);
         
         User user = getUser(...);
-        form.put("name", user.getName());
+        form.set("name", user.getName());
     }
     
     context.response().sendTemplateHtml("/templates/userEdit.html");
@@ -117,7 +117,7 @@ public void myHandlerGet(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form form = context.request().getForm("userForm");
+    Form form = context.request().getFormWithRootKey("userForm");
     context.response().addForm(form);
     
     validateForm(form);
@@ -211,7 +211,7 @@ public void myHandlerGet(AppRequestContext context) {
         // No username and no email elements are specified.
         userForm = context.json().create();
         
-        context.response().getModel().put("userForm", userForm);
+        context.response().getModel().set("userForm", userForm);
     }
     
     context.response().sendTemplateHtml("/templates/userEdit.html");
@@ -269,7 +269,7 @@ public void myHandlerGet(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getForm("userForm");
+    Form userForm = context.request().getFormWithRootKey("userForm");
     context.response().addForm(userForm);
     
     // The "username" and "email" elements have been
@@ -385,7 +385,7 @@ public void myHandlerPost(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void manageArticle(AppRequestContext context) {
 
-    Form form = context.request().getForm("articleForm");
+    Form form = context.request().getFormWithRootKey("articleForm");
     context.response().addForm(form);
 
     // Get all the tags of the article, as an array
@@ -646,21 +646,21 @@ public void myHandlerPost(AppRequestContext context) {
     // itself (but you can!).
     //==========================================
     JsonArray allDrinks = context.json().createArray();
-    context.response().getModel().put("allDrinks", allDrinks);
+    context.response().getModel().set("allDrinks", allDrinks);
 
     JsonObject drink = context.json().create();
-    drink.put("id", 1);
-    drink.put("name", "Tea");
+    drink.set("id", 1);
+    drink.set("name", "Tea");
     allDrinks.add(drink);
 
     drink = context.json().create();
-    drink.put("id", 2);
-    drink.put("name", "Coffee");
+    drink.set("id", 2);
+    drink.set("name", "Coffee");
     allDrinks.add(drink);
 
     drink = context.json().create();
-    drink.put("id", 3);
-    drink.put("name", "Beer");
+    drink.set("id", 3);
+    drink.set("name", "Beer");
     allDrinks.add(drink);
 
     //==========================================
@@ -669,12 +669,12 @@ public void myHandlerPost(AppRequestContext context) {
     JsonObject form = context.response().getModel().getJsonObject("userForm");
     if (userForm == null) {
         form = context.json().create();
-        context.response().getModel().put("userForm", form);
+        context.response().getModel().set("userForm", form);
         
         // Specifies the initial favorite drink of the user.
         User user = getUser(...);
         JsonObject user = context.json().create();
-        form.put("favDrink", user.getFavDrink());
+        form.set("favDrink", user.getFavDrink());
     }
 
     context.response().sendTemplateHtml("/templates/userTemplate.html");
@@ -781,7 +781,7 @@ public void myHandlerPost(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void myRouteHandler(AppRequestContext context) {
 
-    Form form = context.request().getForm("myForm");
+    Form form = context.request().getFormWithRootKey("myForm");
     context.response().addForm(form);
 
     boolean tosAccepted = form.getBoolean("tosAccepted");
@@ -952,13 +952,13 @@ public void myHandlerPost(AppRequestContext context) {
         
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="4,38,4,57"
+                <pre class="ace ace-java" data-ace-hi="4,38,4,68"
 >
 
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getForm("userForm");
+    Form userForm = context.request().getFormWithRootKey("userForm");
     context.response().addForm(userForm);
     
     //...
@@ -980,14 +980,14 @@ public void myHandlerPost(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getForm("userForm");
+    Form userForm = context.request().getFormWithRootKey("userForm");
     if(userForm.getString("userFormBtn") != null) {
         context.response().addForm(userForm);
         processUserForm(context, userForm);
         return;
     }
     
-    Form bookForm = context.request().getForm("bookForm");
+    Form bookForm = context.request().getFormWithRootKey("bookForm");
     if(bookForm.getString("bookFormBtn") != null) {
         context.response().addForm(bookForm);
         processBookForm(context, bookForm);
@@ -1021,7 +1021,7 @@ public void myHandlerPost(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form form = context.request().getForm("userForm");
+    Form form = context.request().getFormWithRootKey("userForm");
     context.response().addForm(form);
     
     String email = form.getString("email");
@@ -1088,7 +1088,7 @@ public void myHandlerPost(AppRequestContext context) {
                 <pre class="ace ace-java" data-ace-hi="4,0,4,29"
 >
 
-Form form = context.request().getForm("userForm");
+Form form = context.request().getFormWithRootKey("userForm");
 
 String name = form.getString("name");
 if(StringUtils.isBlank(name)) {
@@ -1136,7 +1136,7 @@ if(StringUtils.isBlank(name)) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getForm("userForm");
+    Form userForm = context.request().getFormWithRootKey("userForm");
     
     // Uses "userFormValidation" as the name for the
     // validation element.
@@ -1688,7 +1688,7 @@ public void myHandlerPost(AppRequestContext context) {
     
     // ... that is quickly converted to a 
     // JsonObject anyway when added to the response model!
-    context.response().getModel().put("userForm", userForm);
+    context.response().getModel().set("userForm", userForm);
     
     sendMyTemplate();
 }</pre> 
@@ -1706,7 +1706,7 @@ public void myHandlerPost(AppRequestContext context) {
 
     // Back to a typed version of the form model!
     UserCreationForm userForm = context.request()
-                                       .getForm("userForm")
+                                       .getFormWithRootKey("userForm")
                                        .convert(UserCreationForm.class);
                                        
    // ...

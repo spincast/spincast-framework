@@ -123,35 +123,35 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Starts the creation of a route matching the specified
      * HTTP methods and on any path. Same as 
-     * <code>SOME("/*{path}", httpMethods)</code>.
+     * <code>methods("/*{path}", httpMethods)</code>.
      */
-    public RouteBuilder<R> SOME(Set<HttpMethod> httpMethods);
+    public RouteBuilder<R> methods(Set<HttpMethod> httpMethods);
 
     /**
      * Starts the creation of a route matching the specified
      * HTTP methods.
      */
-    public RouteBuilder<R> SOME(String path, Set<HttpMethod> httpMethods);
+    public RouteBuilder<R> methods(String path, Set<HttpMethod> httpMethods);
 
     /**
      * Starts the creation of a route matching the specified
      * HTTP methods and on any path. Same as 
-     * <code>SOME("/*{path}", httpMethods)</code>.
+     * <code>methods("/*{path}", httpMethods)</code>.
      */
-    public RouteBuilder<R> SOME(HttpMethod... httpMethods);
+    public RouteBuilder<R> methods(HttpMethod... httpMethods);
 
     /**
      * Starts the creation of a route matching the specified
      * HTTP methods.
      */
-    public RouteBuilder<R> SOME(String path, HttpMethod... httpMethods);
+    public RouteBuilder<R> methods(String path, HttpMethod... httpMethods);
 
     /**
      * Creates a route considered during an "Exception" routing process.
      * <p>
      * Synonym of : 
      * <p>
-     * <code>ALL("/*{path}").exception().save(handler)</code>
+     * <code>ALL("/*{path}").exception().handle(handler)</code>
      */
     public void exception(Handler<R> handler);
 
@@ -160,7 +160,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
      * <p>
      * Synonym of : 
      * <p>
-     * <code>ALL(path).exception().save(handler)</code>
+     * <code>ALL(path).exception().handle(handler)</code>
      */
     public void exception(String path, Handler<R> handler);
 
@@ -169,7 +169,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
      * <p>
      * Synonym of : 
      * <p>
-     * <code>ALL("/*{path}").notFound().save(handler)</code>
+     * <code>ALL("/*{path}").notFound().handle(handler)</code>
      */
     public void notFound(Handler<R> handler);
 
@@ -178,7 +178,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
      * <p>
      * Synonym of : 
      * <p>
-     * <code>ALL(path).notFound().save(handler)</code>
+     * <code>ALL(path).notFound().handle(handler)</code>
      */
     public void notFound(String path, Handler<R> handler);
 
@@ -457,18 +457,18 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public void addRoute(Route<R> route);
 
     /**
-     * Removes all routes, except the one Spincast
-     * addds automatically (their ids start with "spincast_").
+     * Removes all application routes (not the 
+     * ones added by Spincast and plugins).
      */
     public void removeAllRoutes();
 
     /**
      * Removes all routes.
      * 
-     * @param removeSpincastRoutesToo Should the routes added by 
-     * Spincast be removed too?
+     * @param removeSpincastAndPluginsRoutesToo Should the routes added by 
+     * Spincast and plugins be removed too?
      */
-    public void removeAllRoutes(boolean removeSpincastRoutesToo);
+    public void removeAllRoutes(boolean removeSpincastAndPluginsRoutesToo);
 
     /**
      * Removes a route using its <code>routeId</code>.

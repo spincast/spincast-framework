@@ -198,10 +198,10 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
     public void notImmutableNoCaching() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key2", "value2");
+        inner.set("key2", "value2");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", inner);
+        obj.set("key1", inner);
 
         assertEquals(0, getRequestedJsonPaths().size());
         assertEquals(0, getJsonPathCachingMapGlobal().size());
@@ -209,7 +209,7 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         String result = obj.getString("key1.key2");
         assertEquals("value2", result);
 
-        inner.put("key2", "value3");
+        inner.set("key2", "value3");
 
         result = obj.getString("key1.key2");
         assertEquals("value3", result);
@@ -222,10 +222,10 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
     public void caching() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key2", "value2");
+        inner.set("key2", "value2");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", inner);
+        obj.set("key1", inner);
 
         assertEquals(0, getRequestedJsonPaths().size());
         assertEquals(0, getJsonPathCachingMapGlobal().size());
@@ -255,10 +255,10 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
     public void cachingKeyDoesntExist() throws Exception {
 
         JsonObject inner = getJsonManager().create();
-        inner.put("key2", "value2");
+        inner.set("key2", "value2");
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", inner);
+        obj.set("key1", inner);
 
         assertEquals(0, getRequestedJsonPaths().size());
         assertEquals(0, getJsonPathCachingMapGlobal().size());
@@ -288,14 +288,14 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
     public void cachingWithJsonArray() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("key2", "value2");
+        innerObj.set("key2", "value2");
 
         JsonArray inner = getJsonManager().createArray();
         inner.add("123");
         inner.add(innerObj);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", inner);
+        obj.set("key1", inner);
 
         JsonArray array = getJsonManager().createArray();
         array.add(obj);
@@ -328,14 +328,14 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
     public void cachingWithJsonArrayKeyDoesntExist() throws Exception {
 
         JsonObject innerObj = getJsonManager().create();
-        innerObj.put("key2", "value2");
+        innerObj.set("key2", "value2");
 
         JsonArray inner = getJsonManager().createArray();
         inner.add("123");
         inner.add(innerObj);
 
         JsonObject obj = getJsonManager().create();
-        obj.put("key1", inner);
+        obj.set("key1", inner);
 
         JsonArray array = getJsonManager().createArray();
         array.add(obj);

@@ -16,7 +16,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
     @Test
     public void skipRemainingHandlersExceptionInMainHandler() throws Exception {
 
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -24,7 +24,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -43,7 +43,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
     @Test
     public void skipRemainingHandlersExceptionInFilter() throws Exception {
 
-        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -52,7 +52,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
             }
         });
 
-        getRouter().ALL().pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -60,7 +60,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
             }
         });
 
-        getRouter().ALL().pos(10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL().pos(10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -68,7 +68,7 @@ public class SkipRemainingHandlersExceptionTest extends NoAppStartHttpServerTest
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

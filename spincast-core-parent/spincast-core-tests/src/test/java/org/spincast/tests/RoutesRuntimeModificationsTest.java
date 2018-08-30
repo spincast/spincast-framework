@@ -19,7 +19,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
     @Test
     public void idsAreUnique() throws Exception {
 
-        getRouter().GET("/a").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/a").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -27,7 +27,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
             }
         });
 
-        getRouter().GET("/b").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/b").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -35,7 +35,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
             }
         });
 
-        getRouter().GET("/c").id("test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/c").id("test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -44,7 +44,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
         });
 
         try {
-            getRouter().GET("/d").id("test").save(new Handler<DefaultRequestContext>() {
+            getRouter().GET("/d").id("test").handle(new Handler<DefaultRequestContext>() {
 
                 @Override
                 public void handle(DefaultRequestContext context) {
@@ -61,7 +61,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
     @Test
     public void getRouteById() throws Exception {
 
-        getRouter().GET("/one").id("test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").id("test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -69,7 +69,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -90,12 +90,12 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
     @Test
     public void addRouteDynamically() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                getRouter().GET("/two").save(new Handler<DefaultRequestContext>() {
+                getRouter().GET("/two").handle(new Handler<DefaultRequestContext>() {
 
                     @Override
                     public void handle(DefaultRequestContext context) {
@@ -124,7 +124,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
     @Test
     public void removeRouteDynamically() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -133,7 +133,7 @@ public class RoutesRuntimeModificationsTest extends NoAppStartHttpServerTestingB
             }
         });
 
-        getRouter().GET("/two").id("routeTwo").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/two").id("routeTwo").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -24,7 +24,7 @@ public class RoutingTypesFoundOnlyByDefaultTest extends NoAppStartHttpServerTest
     @Test
     public void defaultRouteTypes() throws Exception {
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

@@ -18,6 +18,7 @@ public class SpincastWebsocketRoute<R extends RequestContext<?>, W extends Webso
                                    implements WebsocketRoute<R, W> {
 
     private final String id;
+    private final boolean spicastCoreRouteOrPluginRoute;
     private final String path;
     private final List<Handler<R>> beforeFilters;
     private final Set<String> filterIdsToSkip;
@@ -27,17 +28,23 @@ public class SpincastWebsocketRoute<R extends RequestContext<?>, W extends Webso
      * Constructor
      */
     @AssistedInject
-    public SpincastWebsocketRoute(@Assisted("id") @Nullable String id,
+    public SpincastWebsocketRoute(@Assisted("isSpicastCoreRouteOrPluginRoute") boolean spicastCoreRouteOrPluginRoute,
+                                  @Assisted("id") @Nullable String id,
                                   @Assisted("path") String path,
                                   @Assisted("before") @Nullable List<Handler<R>> beforeFilters,
                                   @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip,
                                   @Assisted("controller") WebsocketController<R, W> websocketController) {
-
+        this.spicastCoreRouteOrPluginRoute = spicastCoreRouteOrPluginRoute;
         this.id = id;
         this.path = path;
         this.beforeFilters = beforeFilters;
         this.filterIdsToSkip = filterIdsToSkip;
         this.websocketController = websocketController;
+    }
+
+    @Override
+    public boolean isSpicastCoreRouteOrPluginRoute() {
+        return this.spicastCoreRouteOrPluginRoute;
     }
 
     @Override

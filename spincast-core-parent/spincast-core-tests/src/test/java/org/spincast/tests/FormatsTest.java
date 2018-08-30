@@ -36,19 +36,19 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void toJsonString() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 JsonObject jsonObj = context.json().create();
-                jsonObj.put("someBoolean", true);
-                jsonObj.put("someInt", 123);
+                jsonObj.set("someBoolean", true);
+                jsonObj.set("someInt", 123);
 
                 JsonObject jsonObj2 = context.json().create();
-                jsonObj2.put("anotherBoolean", true);
-                jsonObj2.put("anotherInt", 44444);
-                jsonObj2.put("innerObj", jsonObj);
+                jsonObj2.set("anotherBoolean", true);
+                jsonObj2.set("anotherInt", 44444);
+                jsonObj2.set("innerObj", jsonObj);
 
                 String jsonString = context.json().toJsonString(jsonObj2);
 
@@ -68,7 +68,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fromJsonStringToJsonObject() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -93,7 +93,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fromJsonStringToMap() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -118,7 +118,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fromJsonStringToT() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -143,7 +143,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fromJsonInputStreamToJsonObject() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -173,7 +173,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fromJsonInputStreamToMap() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -203,7 +203,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fromJsonInputStreamToT() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -234,7 +234,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void toXmlStringFromMap() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -266,19 +266,19 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void toXmlStringFromJsonObject() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 JsonObject jsonObj = context.json().create();
-                jsonObj.put("someBoolean", true);
-                jsonObj.put("someInt", 123);
+                jsonObj.set("someBoolean", true);
+                jsonObj.set("someInt", 123);
 
                 JsonObject jsonObj2 = context.json().create();
-                jsonObj2.put("anotherBoolean", true);
-                jsonObj2.put("anotherInt", 44444);
-                jsonObj2.put("innerObj", jsonObj);
+                jsonObj2.set("anotherBoolean", true);
+                jsonObj2.set("anotherInt", 44444);
+                jsonObj2.set("innerObj", jsonObj);
 
                 String xmlString = context.xml().toXml(jsonObj2);
 
@@ -306,7 +306,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void evaluate() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -331,7 +331,7 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
         String placeholder = this.templatingEngine.createPlaceholder("param1");
         FileUtils.writeStringToFile(testFile, "<p>test : " + placeholder + "</p>", "UTF-8");
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

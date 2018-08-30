@@ -1,6 +1,7 @@
 package org.spincast.tests.https;
 
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
@@ -25,8 +26,8 @@ public class HttpsTestInvalidKeyStorePassword extends NoAppStartHttpServerTestin
          * Constructor
          */
         @Inject
-        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

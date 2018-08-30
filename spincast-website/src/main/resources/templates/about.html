@@ -244,23 +244,23 @@
                 <div id="not_asynchronous">
                     <h4><a class="anchor_small" href="#not_asynchronous" title="permanent link"></a> Not asynchronous</h4>
                     <p>
-                        There are some situations where asynchronous code is clearly the way to go. If you work on
-                        the Walt-Mart website or if your site <em>really</em> gets millions of requests per minute,
-                        you better make sure your threads don't block, or you'll probably have some problems. But, in our
-                        experience, 95% of the web applications are perfectly fine with synchronous code! 
-                        Even quite <em>big</em> applications.
-                    </p>
-                    <p>
-                        The problem with asynchronous applications is that they are a lot harder
-                        to develop and trickier to get right. Thinking in an asynchronous manner is not 
+                        The problem with asynchronous code is that it's a lot harder
+                        and trickier to get right. Thinking in an asynchronous manner when coding is not 
                         natural! It is no coincidence that constructs like 
                         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promises</a>, 
                         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*">generators</a> 
-                        and many libraries like <a href="https://github.com/caolan/async">async</a> have been 
-                        created: they try to make asynchronous coding less painful.
+                        have been created: they try to make asynchronous coding less painful. The <code>Async/Await</code> pattern is ok,
+                        but still hard to get right in some situations.
                     </p>  
                     <p> 
-                        Spincast is synchronous, and this is clearly a conscious decision. You may say this is one of the 
+                        Don't get us wrong... We <em>do love</em> asynchronous processing at Spincast! We strongly believe that reactive patterns 
+                        using <code>Message brokers</code> / <code>Queuing</code> are very good approaches in many applications. 
+                        But the important thing to understand is that the
+                        <em>code itself doesn't have to be asynchronous for asynchronous patterns to be implemented</em>! In fact, our opinion is that
+                        they are more easy to implement using a synchronous code base.
+                    </p> 
+                    <p> 
+                        So Spincast is synchronous, and this is clearly a conscious decision. You may say this is one of the 
                         points where Spincast is not "flexible" and will probably never be.
                     </p> 
                 </div>
@@ -314,10 +314,9 @@
             <section id="contact">
                 <h3><a class="anchor" href="#contact" title="permanent link"></a> Contact</h3>
                 <p>
-                    You can send an email to <a href="https://ca.linkedin.com/in/juliendev">Julien Lamarre</a>, 
-                    Spincast lead developer. 
-                    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Nnh5Nl-8h7LmGXH_0bspGQ==&amp;c=qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE=" onclick="window.open('http://www.google.com/recaptcha/mailhide/d?k\07501Nnh5Nl-8h7LmGXH_0bspGQ\75\75\46c\75qQZ4MIkBtc70pelTacnMg_yc5WGaYszjr1BYtUbpsQE\075', '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=500,height=300'); return false;" 
-                    title="Reveal this e-mail address">Click Here</a> to get Julien's email address.
+                    You can send an email to <a href="https://ca.linkedin.com/in/juliendev">Julien Lamarre</a> ("<code>LinkedIn</code>"), 
+                    Spincast lead developer. Use "<code>julien@</code>" and append the site's domain:
+                    "<code>spincast.org</code>".
                 </p>
             </section>
 

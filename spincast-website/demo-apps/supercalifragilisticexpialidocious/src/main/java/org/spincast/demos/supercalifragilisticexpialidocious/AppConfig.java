@@ -1,5 +1,6 @@
 package org.spincast.demos.supercalifragilisticexpialidocious;
 
+import org.spincast.core.guice.TestingMode;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 
@@ -11,8 +12,8 @@ public class AppConfig extends SpincastConfigDefault {
      * Constructor
      */
     @Inject
-    protected AppConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-        super(spincastConfigPluginConfig);
+    protected AppConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+        super(spincastConfigPluginConfig, testingMode);
     }
 
     /**

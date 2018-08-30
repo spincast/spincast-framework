@@ -34,7 +34,7 @@ public class HttpProtectedTest extends NoAppWebsocketTestingBase {
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -61,7 +61,7 @@ public class HttpProtectedTest extends NoAppWebsocketTestingBase {
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -89,7 +89,7 @@ public class HttpProtectedTest extends NoAppWebsocketTestingBase {
                 context.sendMessageToCurrentPeer("Pong " + message);
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 

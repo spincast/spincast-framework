@@ -6,12 +6,12 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spincast.core.flash.FlashMessageFactory;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.request.Form;
 import org.spincast.core.response.AlertLevel;
-import org.spincast.core.session.FlashMessageFactory;
 import org.spincast.core.validation.ValidationFactory;
 import org.spincast.core.validation.ValidationSet;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
@@ -67,13 +67,13 @@ public class DemoHtmlFormsDynamicFieldsController {
         JsonObject form = context.response().getModel().getJsonObject("demoForm");
         if (form == null) {
             form = context.json().create();
-            context.response().getModel().put("demoForm", form);
+            context.response().getModel().set("demoForm", form);
 
             //==========================================
             // The initial users array
             //==========================================
             JsonArray users = context.json().createArray();
-            form.put("users", users);
+            form.set("users", users);
 
             JsonObject firstUser = createFirstUser();
             users.add(firstUser);
@@ -91,14 +91,14 @@ public class DemoHtmlFormsDynamicFieldsController {
     protected JsonObject createFirstUser() {
 
         JsonObject firstUser = getJsonManager().create();
-        firstUser.put("name", "Stromgol");
-        firstUser.put("city", "Amos");
+        firstUser.set("name", "Stromgol");
+        firstUser.set("city", "Amos");
 
         JsonArray firstUserTags = getJsonManager().createArray();
         firstUserTags.add("myTag1");
         firstUserTags.add("myTag2");
         firstUserTags.add("myTag3");
-        firstUser.put("tags", firstUserTags);
+        firstUser.set("tags", firstUserTags);
 
         return firstUser;
     }
@@ -114,25 +114,25 @@ public class DemoHtmlFormsDynamicFieldsController {
         // The validation message will be added to the
         // default "validation" element of the model.
         //==========================================
-        Form form = context.request().getForm("demoForm");
+        Form form = context.request().getFormWithRootKey("demoForm");
         context.response().addForm(form);
 
         //==========================================
         // Adds a new user (when javascript is disabled)
         //==========================================
         boolean actionDone = false;
-        if (context.request().getFormData().isElementExists("addUserBtn")) {
+        if (context.request().getFormBodyAsJsonObject().isElementExists("addUserBtn")) {
             actionDone = true;
 
             JsonArray users = form.getJsonArrayOrEmpty("users");
             JsonObject newUser = context.json().create();
-            newUser.put("name", "");
-            newUser.put("city", "");
+            newUser.set("name", "");
+            newUser.set("city", "");
             users.add(newUser);
 
             JsonArray newUserTags = context.json().createArray();
             newUserTags.add("");
-            newUser.put("tags", newUserTags);
+            newUser.set("tags", newUserTags);
         }
 
         //==========================================
@@ -149,7 +149,7 @@ public class DemoHtmlFormsDynamicFieldsController {
                     JsonArray tags = user.getJsonArray("tags");
                     if (tags == null) {
                         tags = context.json().createArray();
-                        user.put("tags", tags);
+                        user.set("tags", tags);
                     }
                     tags.add("");
                 }
@@ -185,7 +185,7 @@ public class DemoHtmlFormsDynamicFieldsController {
     protected Integer getUserToAddTagTo(AppRequestContext context) {
 
         Integer userPositionToAddTagTo = null;
-        for (Entry<String, Object> formDatas : context.request().getFormData()) {
+        for (Entry<String, Object> formDatas : context.request().getFormBodyAsJsonObject()) {
 
             String key = formDatas.getKey();
             if (key != null && key.startsWith("addTag_")) {

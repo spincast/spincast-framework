@@ -77,7 +77,7 @@ public class StoppingServerTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         Set<WebsocketClientTest> clients = new HashSet<WebsocketClientTest>();
 
@@ -143,7 +143,7 @@ public class StoppingServerTest extends NoAppWebsocketTestingBase {
                 };
             }
         };
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         Set<WebsocketClientTest> clients = new HashSet<WebsocketClientTest>();
 

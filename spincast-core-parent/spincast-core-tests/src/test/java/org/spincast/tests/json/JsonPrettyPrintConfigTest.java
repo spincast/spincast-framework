@@ -53,7 +53,7 @@ public class JsonPrettyPrintConfigTest extends NoAppTestingBase {
     public void toJsonStringPretty() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("someInt", 123);
+        jsonObj.set("someInt", 123);
 
         String jsonStr = this.jsonManager.toJsonString(jsonObj, true);
         assertNotNull(jsonStr);

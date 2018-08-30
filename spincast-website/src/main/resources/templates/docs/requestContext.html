@@ -69,7 +69,7 @@ Docs : "Request Context"
 
     // Direct access to the Templating Engine
     Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-    params.put("name", "Stromgol");
+    params.set("name", "Stromgol");
     context.templating().evaluate("Hello {{name}}", params);
     
     // Gets the best Locale to use for the current request
@@ -100,7 +100,7 @@ Docs : "Request Context"
 >public void myRouteHandler(DefaultRequestContext context) {
 
     Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-    params.put("name", "Stromgol");
+    params.set("name", "Stromgol");
     String content = context.templating().evaluate("Hi {{name}}!", params);
 
     // Do something with the evaluated content...
@@ -137,7 +137,7 @@ Docs : "Request Context"
     public void myRouteHandler(DefaultRequestContext context) {
 
         Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
-        params.put("name", "Stromgol");
+        params.set("name", "Stromgol");
         String content = getTemplatingEngine().evaluate("Hi {{name}}!", params);
 
         // Do something with the evaluated content...
@@ -262,14 +262,14 @@ String userId = context.request().getPathParam("userId");</pre>
 >// Sets the status code
 context.response().setStatusCode(HttpStatus.SC_FORBIDDEN);
 
-// Adds a HTTP header value
-context.response().addHeaderValue(HttpHeaders.CONTENT_LANGUAGE, "en");
+// Sets a HTTP header value
+context.response().setHeader(HttpHeaders.CONTENT_LANGUAGE, "en");
 
 // Sets the content-type
 context.response().setContentType(ContentTypeDefaults.JSON.getMainVariation());
 
 // Sets a cookie
-context.response().addCookie("locale", "en-US");
+context.response().setCookie("locale", "en-US");
 
 // Permanently redirects to a new url (the new url
 // can be absolute or relative). A Flash message
@@ -277,7 +277,7 @@ context.response().addCookie("locale", "en-US");
 context.response().redirect("/new-url", true, myFlashMessage);
 
 // Adds an element to the response model
-context.response().getModel().put("name", "Stromgol");
+context.response().getModel().set("name", "Stromgol");
 
 // Sends the response model as Json
 context.response().sendJson();
@@ -342,7 +342,7 @@ boolean isExceptionHandling = context.routing().isExceptionRoute();</pre>
                         <p>
                                 {% verbatim %}<pre class="ace ace-java"
 >Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();
-params.put("name", "Stromgol");
+params.set("name", "Stromgol");
 
 // Evaluation of inline content 
 String html = context.templating().evaluate("Hello {{name}}", params);
@@ -377,7 +377,7 @@ JsonObject info = context.variables().getAsJsonObject("someObjectName");
 String info = context.variables().getAsString("someKey");
 
 // Adds a new request scoped variable 
-context.variables().add("someKey", "someValue");
+context.variables().set("someKey", "someValue");
 </pre>
                         </p> 
                     </div>   
@@ -636,7 +636,7 @@ Section "Request Context / Extending the Request Context type"
 
 Router&lt;AppRequestContext, DefaultWebsocketContext&gt; router = getRouter();
 
-router.GET("/").save(context -&gt; {
+router.GET("/").handle(context -&gt; {
     String translated = context.translate("Hello World!", Locale.ENGLISH, Locale.FRENCH);
     // do something with the translated sentence...
 });</pre>
@@ -655,7 +655,7 @@ router.GET("/").save(context -&gt; {
 
 Router&lt;AppRequestContext, DefaultWebsocketContext&gt; router = getRouter();
 
-router.GET("/").save(new Handler&lt;AppRequestContext&gt;() {
+router.GET("/").handle(new Handler&lt;AppRequestContext&gt;() {
 
     @Override
     public void handle(AppRequestContext context) {

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
@@ -25,8 +26,9 @@ public class PebbleDebugModeTest extends NoAppTestingBase {
          * Constructor
          */
         @Inject
-        protected SpincastTestConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected SpincastTestConfigTest(SpincastConfigPluginConfig spincastConfigPluginConfig,
+                                         @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

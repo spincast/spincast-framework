@@ -16,7 +16,7 @@ public class InjectedGuiceInjectorTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void test() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

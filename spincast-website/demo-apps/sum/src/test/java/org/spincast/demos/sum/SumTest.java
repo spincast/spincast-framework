@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 public class SumTest extends AppBasedDefaultContextTypesTestingBase {
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 
@@ -56,8 +56,8 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
     @Test
     public void validRequest() throws Exception {
 
-        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "42")
-                                            .addEntityFormDataValue("second", "1024")
+        HttpResponse response = POST("/sum").addFormBodyFieldValue("first", "42")
+                                            .addFormBodyFieldValue("second", "1024")
                                             .addJsonAcceptHeader()
                                             .send();
 
@@ -79,7 +79,7 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
     public void paramMissing() throws Exception {
 
         // The "second" parameter is missing...
-        HttpResponse response = POST("/sum").addEntityFormDataValue("first", "42")
+        HttpResponse response = POST("/sum").addFormBodyFieldValue("first", "42")
                                             .addJsonAcceptHeader()
                                             .send();
 
@@ -100,8 +100,8 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
     public void resultOverflows() throws Exception {
 
         // This will overflow the Integer max value...
-        HttpResponse response = POST("/sum").addEntityFormDataValue("first", String.valueOf(Integer.MAX_VALUE))
-                                            .addEntityFormDataValue("second", "1")
+        HttpResponse response = POST("/sum").addFormBodyFieldValue("first", String.valueOf(Integer.MAX_VALUE))
+                                            .addFormBodyFieldValue("second", "1")
                                             .addJsonAcceptHeader()
                                             .send();
 

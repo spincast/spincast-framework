@@ -25,6 +25,8 @@ import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.exchange.RequestRequestContextAddon;
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessagesHolder;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
@@ -35,8 +37,6 @@ import org.spincast.core.routing.ETagFactory;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
 import org.spincast.core.server.UploadedFile;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessagesHolder;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
@@ -85,7 +85,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     private JsonObject formDatasAsImmutableJsonObject;
     private Map<String, List<UploadedFile>> uploadedFiles;
     private Map<String, List<String>> headers;
-    private Map<String, Form> forms;
+    private Map<String, Form> scopedForms;
 
     private final R requestContext;
     private final Server server;
@@ -212,12 +212,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public String getCookie(String name) {
-        return getCookies().get(name);
+    public String getCookieValue(String name) {
+        return getCookiesValues().get(name);
     }
 
     @Override
-    public Map<String, String> getCookies() {
+    public Map<String, String> getCookiesValues() {
         if (this.cookies == null) {
             this.cookies = getServer().getCookies(getRequestContext().exchange());
         }
@@ -226,7 +226,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public boolean isCookiesEnabledValidated() {
-        return getCookies().size() > 0;
+        return getCookiesValues().size() > 0;
     }
 
     @Override
@@ -547,11 +547,11 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     @Override
     public String getBodyAsString() {
-        return getBodyAsString("UTF-8");
+        return getStringBody("UTF-8");
     }
 
     @Override
-    public String getBodyAsString(String encoding) {
+    public String getStringBody(String encoding) {
 
         try {
 
@@ -638,7 +638,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public Map<String, List<String>> getFormDataRaw() {
+    public Map<String, List<String>> getFormBodyRaw() {
         if (this.formDatasAsImmutableMap == null) {
 
             Map<String, List<String>> formDatasServer = getServer().getFormData(getExchange());
@@ -663,11 +663,11 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public JsonObject getFormData() {
+    public JsonObject getFormBodyAsJsonObject() {
 
         if (this.formDatasAsImmutableJsonObject == null) {
 
-            Map<String, List<String>> formDatasRaw = getFormDataRaw();
+            Map<String, List<String>> formDatasRaw = getFormBodyRaw();
 
             Map<String, Map<Integer, String>> formDataArrays = new LinkedHashMap<String, Map<Integer, String>>();
             JsonObject obj = getJsonManager().create();
@@ -734,12 +734,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
                         JsonArray array = getJsonManager().createArray();
                         array.addAll(values);
-                        obj.put(key, array);
+                        obj.set(key, array);
                     } else {
                         if (values.size() > 0) {
-                            obj.put(key, values.get(0));
+                            obj.set(key, values.get(0));
                         } else {
-                            obj.put(key, null);
+                            obj.set(key, null);
                         }
                     }
                 }
@@ -774,7 +774,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                     }
                 }
 
-                obj.put(key, array);
+                obj.set(key, array);
             }
 
             //==========================================
@@ -788,9 +788,9 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public Form getForm(String name) {
+    public Form getFormWithRootKey(String scopeName) {
 
-        if (StringUtils.isBlank(name)) {
+        if (StringUtils.isBlank(scopeName)) {
 
             //==========================================
             // This message doesn't have to be localized, but
@@ -802,17 +802,17 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             throw new RuntimeException(msg);
         }
 
-        if (this.forms == null) {
-            this.forms = new HashMap<String, Form>();
+        if (this.scopedForms == null) {
+            this.scopedForms = new HashMap<String, Form>();
         }
 
-        if (!this.forms.containsKey(name)) {
-            JsonObject formData = getFormData().getJsonObjectOrEmpty(name);
-            Form form = getFormFactory().createForm(name, formData);
-            this.forms.put(name, form);
+        if (!this.scopedForms.containsKey(scopeName)) {
+            JsonObject formData = getFormBodyAsJsonObject().getJsonObjectOrEmpty(scopeName);
+            Form form = getFormFactory().createForm(scopeName, formData);
+            this.scopedForms.put(scopeName, form);
         }
 
-        Form form = this.forms.get(name);
+        Form form = this.scopedForms.get(scopeName);
         return form;
     }
 
@@ -1005,7 +1005,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
         //==========================================
         // TODO Maybe we should use a user session.
         //==========================================
-        flashMessageId = getCookie(getSpincastConfig().getCookieNameFlashMessage());
+        flashMessageId = getCookieValue(getSpincastConfig().getCookieNameFlashMessage());
         if (flashMessageId != null) {
             if (removeIt) {
                 getRequestContext().response().deleteCookie(getSpincastConfig().getCookieNameFlashMessage());

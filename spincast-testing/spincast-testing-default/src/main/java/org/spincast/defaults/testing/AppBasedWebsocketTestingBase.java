@@ -46,7 +46,7 @@ public abstract class AppBasedWebsocketTestingBase<R extends RequestContext<?>, 
     private String secSocketKey;
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         Module extraModuleUserSpecified = getExtraOverridingModule3();
         if (extraModuleUserSpecified == null) {

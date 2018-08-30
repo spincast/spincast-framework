@@ -154,13 +154,13 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
     }
 
     @Override
-    public JsonObject putNoKeyParsing(String jsonPath, Object value) {
+    public JsonObject setNoKeyParsing(String jsonPath, Object value) {
         put(jsonPath, value, false, false);
         return this;
     }
 
     @Override
-    public JsonObject putNoKeyParsing(String jsonPath, Object value, boolean clone) {
+    public JsonObject setNoKeyParsing(String jsonPath, Object value, boolean clone) {
         put(jsonPath, value, clone, false);
         return this;
     }
@@ -182,7 +182,7 @@ public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject
         }
 
         for (Entry<String, ?> entry : map.entrySet()) {
-            put(entry.getKey(), entry.getValue(), clone);
+            set(entry.getKey(), entry.getValue(), clone);
         }
         return this;
     }

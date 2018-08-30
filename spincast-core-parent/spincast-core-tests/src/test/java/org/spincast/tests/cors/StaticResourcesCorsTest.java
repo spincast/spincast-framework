@@ -28,9 +28,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void noCorsConfig() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").save();
+        getRouter().file("/").classpath("/image.jpg").handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -62,9 +62,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void corsDefault() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -104,7 +104,7 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void corsFilterButNoCorsHeaders() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
         HttpResponse response = GET("/").send();
 
@@ -130,7 +130,7 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void sameOriginWithCorsHeaders() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                         .addHeaderValue(HttpHeaders.HOST, "example1.com")
@@ -161,9 +161,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().file("/").classpath("/image.jpg")
                    .cors(Sets.newHashSet("http://example1.com", "https://example1.com"))
-                   .save();
+                   .handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -205,9 +205,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().file("/").classpath("/image.jpg")
                    .cors(Sets.newHashSet("http://example3.com"))
-                   .save();
+                   .handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -245,9 +245,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().file("/").classpath("/image.jpg")
                    .cors(Sets.newHashSet("https://example1.com"))
-                   .save();
+                   .handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -287,9 +287,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
                    .cors(Sets.newHashSet("https://example1.com"),
                          Sets.newHashSet("extra-header-to-be-read-1",
                                          "extra-header-to-be-read-2"))
-                   .save();
+                   .handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -336,7 +336,7 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
                                          "extra-header-to-be-read-2"),
                          Sets.newHashSet("*"),
                          false)
-                   .save();
+                   .handle();
 
         // Cors filter
         getRouter().cors(Sets.newHashSet("https://example1.com"),
@@ -345,7 +345,7 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
                          null,
                          false);
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -391,9 +391,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
                                          "extra-header-to-be-read-2"),
                          Sets.newHashSet("*"),
                          false)
-                   .save();
+                   .handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -436,9 +436,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
                                          "extra-header-to-be-read-2"),
                          Sets.newHashSet("*"),
                          false)
-                   .save();
+                   .handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -471,9 +471,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void httpMethodHead() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -513,9 +513,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void wildcardNotValidWhenThereAreCookies() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -529,7 +529,7 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
 
         HttpResponse response = GET("/").addHeaderValue(HttpHeaders.ORIGIN, "https://example1.com")
                                         .addHeaderValue(HttpHeaders.HOST, "example2.com")
-                                        .addCookie(cookie)
+                                        .setCookie(cookie)
                                         .send();
 
         String allowOriginHeader = response.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN);
@@ -560,9 +560,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void preflightDefault() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -609,9 +609,9 @@ public class StaticResourcesCorsTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void preflightInvalidMethodAsked() throws Exception {
 
-        getRouter().file("/").classpath("/image.jpg").cors().save();
+        getRouter().file("/").classpath("/image.jpg").cors().handle();
 
-        getRouter().ALL("/*{path}").save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{path}").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

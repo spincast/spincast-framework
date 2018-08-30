@@ -78,6 +78,11 @@ a:hover {
     padding: 0;
     text-align:center;
     font-size: 64px;
+    color: #DC8D14;
+}
+
+#pre01 h1 {
+    color: #000000;
 }
 
 #pre01 #playPresentation {
@@ -94,7 +99,7 @@ a:hover {
 }
 
 #pre20 {
-	xbackground-size: 100% auto;
+	background-size: 40% auto;
 	background-repeat: no-repeat;
 	background-position: right bottom;
 	background-image: url("/public/images/presentation/power.png");
@@ -160,6 +165,19 @@ a:hover {
 #pre90 .stepContent, #pre40 .stepContent {
 	text-align:center;
 }
+
+#pre100 {
+    text-align: center;
+}
+
+#pre100 #tested {
+    margin-top: 40px;
+}
+
+#pre100 #tested img {
+    max-height: 120px;
+}
+
 
 #pre110 {
 	width:1700px;

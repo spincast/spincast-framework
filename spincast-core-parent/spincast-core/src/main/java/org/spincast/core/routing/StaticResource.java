@@ -16,6 +16,13 @@ import org.spincast.core.exchange.RequestContext;
 public interface StaticResource<R extends RequestContext<?>> {
 
     /**
+     * Is this a resource added by Spincast itself
+     * or by a plugin? Otherwise, the resource is
+     * considered as an application resource.
+     */
+    public boolean isSpicastOrPluginAddedResource();
+
+    /**
      * The type of static resource.
      */
     public StaticResourceType getStaticResourceType();

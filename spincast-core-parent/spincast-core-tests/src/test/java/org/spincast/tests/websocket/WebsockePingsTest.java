@@ -78,7 +78,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
     public void pings() throws Exception {
 
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -99,7 +99,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
     public void noPings() throws Exception {
 
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 
@@ -119,7 +119,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
     public void serverShouldDetectClosedPeerViaPings() throws Exception {
 
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
-        getRouter().websocket("/ws").save(controller);
+        getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
 

@@ -152,9 +152,9 @@ System.out.println(response.getContentAsString());</pre>
                                     <pre class="ace ace-java"
 >User user = getUser();
 HttpResponse response = httpClient.POST("https://example.com/api/users")
-                                   .setEntityJson(user)
-                                   .addCookie("cookieKey", "cookieValue")
-                                   .addHeaderValue("headerKey", "headerValue")
+                                   .setJsonStringBody(user)
+                                   .setCookie("cookieKey", "cookieValue")
+                                   .setHeader("headerKey", "headerValue")
                                    .send();
                                            
 if(response.getStatus() == 200) { // or use : HttpStatus.SC_OK

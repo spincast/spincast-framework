@@ -40,7 +40,7 @@ public class SpincastConfigPluginModule extends SpincastGuiceModuleBase {
 
         //==========================================
         // asEagerSingleton() : we want to validate
-        // the configurations as asoon as the app starts.
+        // the configurations as soon as the app starts.
         //==========================================
         bind(SpincastConfig.class).to(getConfigImplClass()).asEagerSingleton();
     }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.timezone.TimeZoneResolver;
@@ -70,8 +71,8 @@ public class PebbleExtensionCustomConfigTest extends NoAppTestingBase {
     static class CustomSpincastConfig extends SpincastConfigTestingDefault {
 
         @Inject
-        protected CustomSpincastConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected CustomSpincastConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override

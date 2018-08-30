@@ -45,7 +45,7 @@ public class CustomRequestContextAddonsTest extends
     }
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
 
         return new SpincastGuiceModuleBase() {
 
@@ -103,7 +103,7 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void cacheForRequestScopedObjects() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<TestRequestContext>() {
 
             @Override
             public void handle(TestRequestContext context) {
@@ -126,7 +126,7 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void cacheForSingletons() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<TestRequestContext>() {
 
             @Override
             public void handle(TestRequestContext context) {
@@ -148,7 +148,7 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void noCacheForOtherScopedObjects() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<TestRequestContext>() {
 
             @Override
             public void handle(TestRequestContext context) {
@@ -172,7 +172,7 @@ public class CustomRequestContextAddonsTest extends
     @Test
     public void useAddon() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<TestRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<TestRequestContext>() {
 
             @Override
             public void handle(TestRequestContext context) {

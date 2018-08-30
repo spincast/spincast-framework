@@ -43,7 +43,7 @@
 
     @Inject
     protected void init(DefaultRouter router, Server server) {
-        router.GET("/").save(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
+        router.GET("/").handle(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
         server.start();
     }
 }</pre>   
@@ -111,6 +111,14 @@
 </p>
 <p>
     The application is then accessible at <a href="http://localhost:44419">http://localhost:44419</a>
+</p>
+
+<h4>
+    <a class="anchor_small" href="#tooeasy" id="tooeasy" title="permanent link"></a>
+    Too simple for you?
+</h4>
+<p>
+    Try the <a href="/demos-tutorials/hello-world/better">Better...</a> "<em>Hello World!</em>" demo, for an improved version!
 </p>
 
 

@@ -23,13 +23,17 @@
     <div class="row"> 
         <div class="col-xs-12">
             <p>
-                Most plugins provide a Guice module that you have to install in your application. By doing so,
-                extra components are bound and can be used in your application. 
-                Note that the plugins with a dotted line below their title are
-                already installed if you use the <code>spincast-default</code> artifact and the
-                standard <a href="/documentation#boot_bootstrapper">Bootstrapper</a>
-                (or if you start from the
-                <a href="/documentation#quick_start">Quick Start</a> template application)!
+                A <code>plugin</code> provides a set of functionalities you can add to your application. It will bind
+                new components to the Guice context, and may also add <a href="/documentation#filters">filters</a> and 
+                <a href="/plugins/spincast-crons">crons</a> to the Router to be able to perform its tasks properly.
+                Each plugin is different and has different needs... Make sure you read the documentation associated with
+                a plugin when you install one!
+            </p>
+            <p>
+                Note that the plugins with a <span id="blueIcon">blue icon</span> are
+                already installed if you use the <code>spincast-default</code> artifact or if you start 
+                your application from the <a href="/documentation#quick_start">Quick Start</a> template!
+                You need to manually install the other ones.
             </p>
         </div>
     </div>
@@ -288,8 +292,7 @@
             <a href="/plugins/spincast-date-formatter" class="pluginLink">
                 <div class="thumbnail niceWell">
                     <div class="caption">
-                        <h4>Spincast Date Formatter
-                        </h4>
+                        <h4>Spincast Date Formatter</h4>
                         <p class="center"><img src="/public/images/plugins/date-formatter.png" /><p>
                         <p>
                             Easy date formatting, in Java code and in templates.
@@ -298,6 +301,73 @@
                 </div>
             </a>
         </div>
+        
+        <div class="col-sm-6 col-md-4">
+            <a href="/plugins/spincast-crypto" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Crypto</h4>
+                        <p class="center"><img src="/public/images/plugins/crypto.png" /><p>
+                        <p>
+                            Utilities related to cryptography, encryption, hashing.
+                        </p> 
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-sm-6 col-md-4">
+            <a href="/plugins/spincast-crons" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Crons</h4>
+                        <p class="center"><img src="/public/images/plugins/crons.png" /><p>
+                        <p>
+                            Register cron jobs ("<em>scheduled tasks</em>") that are going to be run
+                            at specific times or specific intervals.
+                        </p> 
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-sm-6 col-md-4">
+            <a href="/plugins/spincast-session" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Session</h4>
+                        <p class="center"><img src="/public/images/plugins/session.png" /><p>
+                        <p>
+                            Create and manage sessions associated with your users.
+                        </p> 
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-sm-6 col-md-4">
+            <a href="/plugins/spincast-forms-protection" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Forms Protection</h4>
+                        <p class="center"><img src="/public/images/plugins/forms-protection.png" /><p>
+                        <p>
+                            Protect your forms from:
+                            
+                            <ul>
+                                <li>
+                                    CSRF attacks
+                                </li>
+                                <li>
+                                    Unwanted double submissions
+                                </li>  
+                            </ul>
+                        </p> 
+                    </div>
+                </div>
+            </a>
+        </div>
+ 
  
     </div>
 </div> 

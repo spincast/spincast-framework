@@ -10,7 +10,7 @@ public interface WebsocketRouteBuilderFactory<R extends RequestContext<?>, W ext
 
     /**
      * Creates a route builder without using a router.
-     * The {@link org.spincast.core.websocket.WebsocketRouteBuilder#save(IWebsocketHandler) save()} method
+     * The {@link org.spincast.core.websocket.WebsocketRouteBuilder#handle(IWebsocketHandler) save()} method
      * will throw an expception if called. Only 
      * {@link org.spincast.core.websocket.WebsocketRouteBuilder#validationSet(IWebsocketHandler) create()}
      * will be available.

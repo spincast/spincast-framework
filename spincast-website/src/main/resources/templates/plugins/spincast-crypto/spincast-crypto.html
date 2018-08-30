@@ -1,0 +1,310 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-crypto{% endblock %}
+{% block meta_title %}Plugins - Spincast Crypto{% endblock %}
+{% block meta_description %}Spincast Crypto plugin - utilities related to cryptography, encryption, hashing{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Crypto plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Crypto <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/crypto/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Crypto <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#configurations">Configurations</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin provides utilities related to cryptography, encryption, hashing.
+                </p>
+                <p>
+                    The utilities are accessible via the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crypto/SpincastCryptoUtils.html">SpincastCryptoUtils</a>
+                    interface (for which the default implementation is 
+                    <a class="javadoc" href="http://spincast.loc:44420/public/javadoc/org/spincast/plugins/crypto/SpincastCryptoUtilsDefault.html">SpincastCryptoUtilsDefault</a>).
+                </p>
+                <p>
+                    Simply inject the interface in classes where you need to use it:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class MyClass {
+
+    private final SpincastCryptoUtils cryptoUtils;
+    
+    @Inject
+    public MyClass(SpincastCryptoUtils cryptoUtils) {
+        this.cryptoUtils = cryptoUtils;
+    }
+    
+    protected SpincastCryptoUtils getCryptoUtils() {
+        return this.cryptoUtils;
+    }
+    
+    //...
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+                    Note that this plugin doesn't try to implement custom security algorithms by itself. It simply makes it 
+                    easier to use existing and proven security libraries, written by experts of the field.
+                </p>
+                
+            </section>
+            
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+	            <p>
+                    <ul class="apiList">
+            
+                        <li>
+                            <a class="anchor_small" id="usage_remove_restrictions" href="#usage_remove_restrictions" title="permanent link"></a>
+                            <code class="apiItem"><span>removeCryptographyRestrictions</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Prior to Java 9, some security restrictions are enabled by default. You are not allowed
+                                    to perform some encryptions without performing some 
+                                    <a href="https://stackoverflow.com/questions/1179672/how-to-avoid-installing-unlimited-strength-jce-policy-files-when-deploying-an/22492582#22492582">manipulations</a> first.
+                                </p>
+                                <p>
+                                    This method will remove the restrictions, if they are enabled. You will then be able to use
+                                    the other methods provided by the plugin.
+                                </p>
+                                <p>
+                                    By default this plugin will <em>automatically</em> remove the security restrictions when it is installed.
+                                    But if you <a href="#configs_remove_restrictions">disable this feature</a>, 
+                                    and want to do it by yourself, we suggest that you call 
+                                    this method in an <a href="/documentation#init_method">init</a> 
+                                    method, as soon as your application starts.
+                                    <div>
+                                        <p>
+                                            {% verbatim %}
+                                            <pre class="ace ace-java" data-ace-hi="2,20,2,53"
+>@Inject
+public void init() {
+    getCryptoUtils().removeCryptographyRestrictions();
+}</pre> 
+                                        {% endverbatim %}
+                                        </p> 
+                                    </div> 
+                                </p>   
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="usage_is_restrictions" href="#usage_is_restrictions" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isRestrictedCryptographyJavaVersion</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Let you check if your current Java version has cryptography restrictions enabled by default.
+                                </p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="usage_encrypt" href="#usage_encrypt" title="permanent link"></a>
+                            <code class="apiItem"><span>encrypt</span>(String toEncrypt, String secretKey)</code>
+                            <div class="well">
+                                <p>
+                                    Encrypts the "<code>toEncrypt</code>" string using the specified secret key. The resulting 
+                                    encrypted payload is
+                                    also <em>Base64 encoded,</em> so it can directly be used almost everywhere (in URLs, etc.).
+                                    The encryption algorithm is <code>AES</code>.
+                                <p>
+                                    Example: 
+                                    <div>
+                                        <p>
+                                            {% verbatim %}
+                                            <pre class="ace ace-java" data-ace-hi="1,35,1,85"
+>
+
+String encrypted = getCryptoUtils().encrypt("my String to encrypt", "my$ecretKey!42");
+// results in: "PZWI78fsypZZOuQu3-pSxJ-xReQ7wTGRmqXQtnt0FA8="
+</pre> 
+                                        {% endverbatim %}
+                                        </p> 
+                                    </div> 
+                                </p>  
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    For this method to work, your Java version must not have cryptography
+                                    restrictions enabled by default, or you must have removed those restrictions
+                                    using <a href="#usage_remove_restrictions"><code>removeCryptographyRestrictions()</code></a>.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_decrypt" href="#usage_decrypt" title="permanent link"></a>
+                            <code class="apiItem"><span>decrypt</span>(String payload, String secretKey)</code>
+                            <div class="well">
+                                <p>
+                                    Decrypts the encrypted "<code>payload</code>" using the specified secret key. The payload is first
+                                    <em>Base 64 decoded</em>, then decrypted. The decryption algorithm is <code>AES</code>.
+                                </p>
+                                <p>
+                                    Example: 
+                                    <div>
+                                        <p>
+                                            {% verbatim %}
+                                            <pre class="ace ace-java" data-ace-hi="1,35,1,94|2,44,2,61"
+>
+
+String encrypted = getCryptoUtils().decrypt("// PZWI78fsypZZOuQu3-pSxJ-xReQ7wTGRmqXQtnt0FA8=", 
+                                            "my$ecretKey!42");
+// results in: "my String to encrypt"
+</pre> 
+                                        {% endverbatim %}
+                                        </p> 
+                                    </div> 
+                                </p>  
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    For this method to work, your Java version must not have cryptography
+                                    restrictions enabled by default, or you must have removed those restrictions
+                                    using <a href="#usage_remove_restrictions"><code>removeCryptographyRestrictions()</code></a>.
+                                </p> 
+                            </div>
+                        </li>
+                        
+                    </ul>
+	            </p>
+            </section>
+            
+            <section id="configurations">
+                <h3>
+                    <a class="anchor" href="#configurations" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    The configuration interface for this plugin is 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crypto/config/SpincastCryptoConfig.html">SpincastCryptoConfig</a>.
+                    To change the default configurations, you can bind an implementation of 
+                    that interface, extending the default 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crypto/config/SpincastCryptoConfigDefault.html">SpincastCryptoConfigDefault</a> 
+                    implementation if you don't want to start from scratch.
+                </p>
+                <p>
+                    <h4>Options:</h4>
+                    
+                    <ul class="apiList">
+            
+                        <li>
+                            <a class="anchor_small" id="configs_remove_restrictions" href="#configs_remove_restrictions" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>removeJavaCryptoRestrictionsOnInit</span>()</code>
+                            <div class="well">
+                                <p>
+                                    If <code>true</code> is returned, the plugin will <em>automatically</em> remove the 
+                                    cryptography restrictions if required by your Java version. It will do so by calling
+                                    "<code><a href="#usage_remove_restrictions">removeCryptographyRestrictions()</a></code>"
+                                    as soon as it is installed.
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code>.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-crypto&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crypto/SpincastCryptoPlugin.html">SpincastCryptoPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,42"
+>
+
+Spincast.configure()
+        .plugin(new SpincastCryptoPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

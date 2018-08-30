@@ -2,6 +2,7 @@ package org.spincast.core.websocket;
 
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.Router;
 
 /**
  * Builder for WebSocket routes.
@@ -18,6 +19,24 @@ public interface WebsocketRouteBuilder<R extends RequestContext<?>, W extends We
      * The WebSocket route id.
      */
     public WebsocketRouteBuilder<R, W> id(String id);
+
+    /**
+     * This sould only by called by *plugins*.
+     * <p>
+     * When this method is called, the resulting route won't
+     * be remove by default when the
+     * {@link Router#removeAllRoutes()} method is used. The
+     * {@link Router#removeAllRoutes(boolean)} with <code>true</code>
+     * will have to be called to actually remove it.
+     * <p>
+     * This is useful during development, when an hotreload mecanism
+     * is used to reload the Router without
+     * restarting the application, when the application routes changed.
+     * By default only the routes for which the 
+     * {@link #isSpicastCoreRouteOrPluginRoute()}
+     * method has been called would then be reloaded.
+     */
+    public WebsocketRouteBuilder<R, W> spicastCoreRouteOrPluginRoute();
 
     /**
      * Adds a before filter. Those will be run before the
@@ -43,7 +62,7 @@ public interface WebsocketRouteBuilder<R extends RequestContext<?>, W extends We
     /**
      * Saves the WebSocket route on the router.
      */
-    public void save(WebsocketController<R, W> websocketController);
+    public void handle(WebsocketController<R, W> websocketController);
 
     /**
      * Creates and returns the WebSocket route without adding it to

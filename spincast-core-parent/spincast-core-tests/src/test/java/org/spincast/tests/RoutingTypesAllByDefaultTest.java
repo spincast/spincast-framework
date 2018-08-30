@@ -22,7 +22,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void notFoundWithOneInvalidOneValidFilter() throws Exception {
 
-        getRouter().GET("/*{param}").pos(-1).exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -30,7 +30,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -50,7 +50,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesFoundSplat() throws Exception {
 
-        getRouter().ALL("/nope").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/nope").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -58,7 +58,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -66,7 +66,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -84,7 +84,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesFoundNotRouteType() throws Exception {
 
-        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -92,7 +92,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -100,7 +100,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -118,7 +118,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesNotFoundSplat() throws Exception {
 
-        getRouter().ALL("/nope").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/nope").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -126,7 +126,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -134,7 +134,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -154,7 +154,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void defaultRouteTypesNotFoundNotRouteType() throws Exception {
 
-        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -162,7 +162,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -170,7 +170,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).found().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).found().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -178,7 +178,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -198,7 +198,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void foundSpecifiedTypesBefore() throws Exception {
 
-        getRouter().ALL("/*{param}").pos(-10).save(new Handler<DefaultRequestContext>() {
+        getRouter().ALL("/*{param}").pos(-10).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -206,7 +206,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).found().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).found().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -214,7 +214,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -222,7 +222,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -230,7 +230,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).found().notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).found().notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -238,7 +238,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).found().exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).found().exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -246,7 +246,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(-1).notFound().exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(-1).notFound().exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -254,7 +254,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -272,7 +272,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
     @Test
     public void foundSpecifiedTypesAfter() throws Exception {
 
-        getRouter().GET("/*{param}").pos(1).allRoutingTypes().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).allRoutingTypes().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -280,7 +280,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(1).found().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).found().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -288,7 +288,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(1).notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -296,7 +296,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(1).exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -304,7 +304,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(1).found().notFound().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).found().notFound().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -312,7 +312,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(1).found().exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).found().exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -320,7 +320,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/*{param}").pos(1).notFound().exception().save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/*{param}").pos(1).notFound().exception().handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -328,7 +328,7 @@ public class RoutingTypesAllByDefaultTest extends NoAppStartHttpServerTestingBas
             }
         });
 
-        getRouter().GET("/").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {

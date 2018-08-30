@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.guice.TestingMode;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.testing.core.AppTestingConfigs;
@@ -22,8 +23,8 @@ public class ITAppCustomConfigTest extends IntegrationConfigTestClassBase {
          * Constructor
          */
         @Inject
-        protected SpincastConfigCustom(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-            super(spincastConfigPluginConfig);
+        protected SpincastConfigCustom(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+            super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
@@ -89,7 +90,7 @@ public class ITAppCustomConfigTest extends IntegrationConfigTestClassBase {
     }
 
     @Override
-    protected void startApp() {
+    protected void callAppMainMethod() {
         App.main(null);
     }
 

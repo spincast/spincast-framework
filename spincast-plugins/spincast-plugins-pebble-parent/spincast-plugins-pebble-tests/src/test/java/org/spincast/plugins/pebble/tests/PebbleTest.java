@@ -30,7 +30,7 @@ import com.google.inject.Scopes;
 public class PebbleTest extends NoAppStartHttpServerTestingBase {
 
     @Override
-    protected Module getExtraOverridingModule2() {
+    protected Module getExtraOverridingModule() {
         return new SpincastGuiceModuleBase() {
 
             @Override
@@ -80,12 +80,12 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void htmlTemplate() throws Exception {
 
-        getRouter().GET("/one").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().getModel().put("param1", "Hello!");
+                context.response().getModel().set("param1", "Hello!");
                 context.response().sendTemplateHtml("/template.html");
             }
         });
@@ -100,11 +100,11 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void genericTemplate() throws Exception {
 
-        getRouter().GET("/test.css").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/test.css").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().getModel().put("fontPxSize", 16);
+                context.response().getModel().set("fontPxSize", 16);
                 context.response().sendTemplate("/template.css", "text/css");
             }
         });
@@ -127,14 +127,14 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
         // When using router.file(...) and a generator, the generated
         // resource will automatically be saved.
         //==========================================
-        getRouter().file("/test.css").pathAbsolute(generatedFilePath).save(new Handler<DefaultRequestContext>() {
+        getRouter().file("/test.css").pathAbsolute(generatedFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
                 nbrTimeCalled[0]++;
 
-                context.response().getModel().put("fontPxSize", 16);
+                context.response().getModel().set("fontPxSize", 16);
                 context.response().sendTemplate("/template.css", "text/css");
             }
         });
@@ -170,7 +170,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     public void evaluateJsonObject() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("name", "Stromgol");
+        jsonObj.set("name", "Stromgol");
 
         String result = this.templatingEngine.evaluate("Hello {{name}}", jsonObj);
         assertNotNull(result);
@@ -192,7 +192,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     public void fromTemplateJsonObject() throws Exception {
 
         JsonObject jsonObj = this.jsonManager.create();
-        jsonObj.put("param1", "Stromgol");
+        jsonObj.set("param1", "Stromgol");
 
         String result = this.templatingEngine.fromTemplate("template.html", jsonObj);
         assertNotNull(result);
@@ -202,20 +202,20 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void defaultVariables() throws Exception {
 
-        getRouter().GET("/one/${param1}").id("test").save(new Handler<DefaultRequestContext>() {
+        getRouter().GET("/one/${param1}").id("test").handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.variables().add("oneVar", "oneVal");
+                context.variables().set("oneVar", "oneVal");
 
-                context.response().getModel().put("extraParam1", "extraParam1Val");
+                context.response().getModel().set("extraParam1", "extraParam1Val");
 
                 context.response().sendTemplateHtml("/templateDefaultVars.html");
             }
         });
 
-        HttpResponse response = GET("/one/test1?key1=val1").addCookie("cookie1", "cookie1Val", false).send();
+        HttpResponse response = GET("/one/test1?key1=val1").setCookie("cookie1", "cookie1Val", false).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());

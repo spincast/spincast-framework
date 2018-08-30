@@ -11,6 +11,25 @@ import org.spincast.core.exchange.RequestContext;
 public interface StaticResourceBuilder<R extends RequestContext<?>> {
 
     /**
+     * This should only by called by *plugins*.
+     * <p>
+     * When this method is called, the resulting route for
+     * the resource won't
+     * be remove by default when the
+     * {@link Router#removeAllRoutes()} method is used. The
+     * {@link Router#removeAllRoutes(boolean)} with <code>true</code>
+     * will have to be called to actually remove it.
+     * <p>
+     * This is useful during development, when an hotreload mecanism
+     * is used to reload the Router without
+     * restarting the application, when the application routes changed.
+     * By default only the routes for which the 
+     * {@link #isSpicastCoreRouteOrPluginRoute()}
+     * method has been called would then be reloaded.
+     */
+    public StaticResourceBuilder<R> spicastOrPluginAddedResource();
+
+    /**
      * The URL pointing to the resource.
      */
     public StaticResourceBuilder<R> url(String url);
@@ -157,7 +176,7 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      * an <code>Router</code> object, an exception will be
      * thrown.
      */
-    public void save();
+    public void handle();
 
     /**
      * Saves the static resource route.
@@ -174,7 +193,7 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      * generator will be used to generate it and
      * the result will be saved.
      */
-    public void save(Handler<R> generator);
+    public void handle(Handler<R> generator);
 
     /**
      * Saves the static resource route.
@@ -193,7 +212,7 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
      * <code>false</code> (the default), the resource will always be
      * generated if there is a queryString.
      */
-    public void save(Handler<R> generator, boolean ignoreQueryString);
+    public void handle(Handler<R> generator, boolean ignoreQueryString);
 
     /**
      * Creates and returns the static resource without adding it to

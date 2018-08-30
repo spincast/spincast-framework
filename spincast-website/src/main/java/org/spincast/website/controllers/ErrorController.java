@@ -34,7 +34,7 @@ public class ErrorController {
         if(!StringUtils.isBlank(customMessage)) {
             message = customMessage;
         }
-        context.response().getModel().put("message", message);
+        context.response().getModel().set("message", message);
 
         //==========================================
         // Do we have HTML classes for the original section
@@ -46,7 +46,7 @@ public class ErrorController {
         if(htmlSectionClasses == null) {
             htmlSectionClasses = new ArrayList<String>();
         }
-        context.response().getModel().put("htmlSectionClasses", htmlSectionClasses);
+        context.response().getModel().set("htmlSectionClasses", htmlSectionClasses);
 
         context.response().sendTemplateHtml("/templates/errorNotFound.html");
     }
@@ -77,7 +77,7 @@ public class ErrorController {
             if(context.request().isJsonShouldBeReturn()) {
                 context.response().sendJson(exception.getMessage());
             } else {
-                context.response().getModel().put("message", exception.getMessage());
+                context.response().getModel().set("message", exception.getMessage());
                 context.response().sendTemplateHtml("/templates/exceptionPublic.html");
             }
         } else {

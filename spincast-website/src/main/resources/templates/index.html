@@ -10,21 +10,11 @@
 
 <script>
 
-	{#==========================================
-    If Impress.js is supported, we hide the static
-    features section and we show the presentation.
-    ==========================================#}
     $(function() {  
 		if(window.impress.supported) {
-			$("#noPresentation").css("display", "none");
 			$("#presentationIframe").css("display", "block");
 			$("#presentationControls").css("display", "inline");
-			
-			$("#showText").on("click", function(event) {
-				event.preventDefault();
-				$("#noPresentation").toggle();
-			});	
-			
+
 			$("#previousBtn").on("click", function(event) {
 				event.preventDefault();
 				document.getElementById("presentationIframe").contentWindow.impress.api.prev();
@@ -49,14 +39,6 @@
 	        })
 	        .mouseout(function() {
 	        	$(this).attr("src", "/public/images/presentation/next.png");
-	        });
-		    
-		    $("#showText img")
-	        .mouseover(function() { 
-	            $(this).attr("src", "/public/images/presentation/text_over.png");
-	        })
-	        .mouseout(function() {
-	        	$(this).attr("src", "/public/images/presentation/text.png");
 	        });
 			
 		} else {
@@ -100,19 +82,86 @@
 						<span id="previousBtn" class="hint--bottom-left hint--bounce" data-hint="Previous slide">
 							<img src="/public/images/presentation/previous.png" />
 						</span>
-						<span id="showText" class="pointerCursor hint--bottom hint--bounce" data-hint="Display the features as text">
-							<img src="/public/images/presentation/text.png" />
-						</span>
 						<span id="nextBtn" class="pointerCursor hint--bottom-right hint--bounce" data-hint="Next slide">
 							<img src="/public/images/presentation/next.png" />
 						</span>
 				    </div>
-					
-			        {#==========================================
-			        Impress not supported
-			        ==========================================#}
+                    
+                    <div class="codeExample">
+                        <h4>A simple but fully working application:</h4>
+                        
+                        <p>
+                            <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.init(args);
+    }
+
+    @Inject
+    protected void init(DefaultRouter router, Server server) {
+        router.GET("/").handle(context -> context.response().sendHtml("&lt;h1&gt;Hello World!&lt;/h1&gt;"));
+        server.start();
+    }
+}</pre>   
+                        </p>       
+                    </div>
+                    
+                    <div class="codeExample">
+                        <h4>When needed, you have access to a lot of power and flexibility...</h4>
+                        
+                        <p>
+                            <pre class="ace ace-java"
+>public class App {
+
+    public static void main(String[] args) {
+        Spincast.configure()
+                .module(new AppGuiceModule())
+                .plugin(new SpincastHttpClientPlugin())
+                .plugin(new SpincastJdbcPlugin())
+                .plugin(new SpincastFormsProtectionPlugin())
+                .plugin(new SpincastCronsPlugin())
+                .plugin(new SpincastSessionPlugin())
+                .requestContextImplementationClass(AppRequestContextDefault.class)
+                .init(args);
+    }
+
+    @Inject
+    protected void init(AppRouter router, AppServer server) {
+    
+        router.methods(HttpMethod.POST, HttpMethod.PUT)
+              .path("/users/${userId:&lt;N&gt;}")
+              .accept(ContentTypeDefaults.JSON)
+              .handle(context -> {
+        
+            context.response().setCacheSeconds(3600);
+            context.response().setCookie1year("myCookie", context.customMethodYouDefined());
+            context.response().setHeader("x-powered-by", "Robert'); DROP TABLE Students;--");
+
+            JsonObject userObj = context.json().create();
+            userObj.set("user.id", context.request().getPathParam("userId"));
+            userObj.set("user.timeZone", context.getTimeZoneToUse());
+            userObj.set("user.locale", context.getLocaleToUse());
+            
+            System.out.println(userObj.toJsonString(true));
+            // {
+            //     "user" : {
+            //         "id" : "HAL9000",
+            //         "timeZone" : "America/New_York",
+            //         "locale" : "en_US"
+            //     }
+            // }
+
+            context.response().sendXml(userObj);
+        });
+        
+        server.start();
+    }
+}</pre>   
+                        </p>       
+                    </div>
+
 					<div id="noPresentation">
-					
 						<div class="row">
 						
 					        <div class="col-sm-6 col-md-4">
@@ -121,10 +170,10 @@
 					                    <p class="featureLogo">
 					                    	<img src="/public/images/features/web.png" /> 
 					                    </p>
-					                    <h4>Any web application</h4>
+					                    <h4>Web applications and APIs</h4>
 					                    <p class="featureContent">Spincast is a framework to serve as a backend for Single Page Applications (<code>SPA</code>),
 									        to develop old-school <code>HTML</code> generated websites or 
-									        even to be a <code>REST</code> web service / microservice platform.
+									        to be a <code>REST API</code> services platform.
 									    </p>
 					                </div>
 					            </div>
@@ -157,8 +206,9 @@
 					                    </p>
 					                    <h4>.... <em id="veryFlexible">very</em> flexible!</h4>
 							        	<p class="featureContent">
-							        		Spincast aims to feel more like a <em>library</em> than like a framework.
-	         								It is not opinionated and favors configuration over convention. 
+							        		Spincast aims to feel more like a library than like a framework.
+	         								It is not opinionated and favors configuration over convention. Its main
+                                            goal is to gives <em>power to the developers</em>.
 									    </p>
 					                </div>
 					            </div>
@@ -172,8 +222,9 @@
 					                    </p>
 					                    <h4>Modular</h4>
 							        	<p class="featureContent">
-							        		Spincast is composed of a small <strong>core</strong> 
-		        							and a <a href="/plugins">plugins</a> ecosystem.
+							        		Spincast is composed of a small core 
+		        							and a big <a href="/plugins">plugins</a> ecosystem.
+                                            <em>You</em> choose what your application needs.
 									    </p>
 					                </div>
 					            </div>
@@ -200,10 +251,9 @@
 					                    </p>
 					                    <h4>Embedded server</h4>
 					                    <p class="featureContent">The embedded server
-									        makes everything easy to develop, test and deploy...
-									        Think <code>Node.js</code> + <code>Express</code>, but easier to develop 
-									        (no asynchronous code)
-									        and using a better language than Javascript!
+									        makes everything easy to develop, test and deploy... When
+                                            deployed, the application is fully contained, 
+                                            in a single <code>.jar</code>  file.
 									    </p>
 					                </div>
 					            </div>
@@ -231,9 +281,10 @@
 					                    <p class="featureLogo">
 					                    	<img src="/public/images/features/tested.png" /> 
 					                    </p>
-					                    <h4>Compatible and tested</h4>
+					                    <h4>Well tested</h4>
 					                    <p class="featureContent">
-									       Spincast is validated using more than 1600 tests.
+									       Spincast is fully tested and even provides it own
+                                           <a href="/documentation#testing">Testing utilities</a>.
 									    </p>
 					                </div>
 					            </div>
@@ -266,13 +317,6 @@
 					        
 					    </div>
 					</div>
-								
-			        {#==========================================
-			        We hide the "No preesentation" as soon as possible
-			        if javascript is enabled.
-			        ==========================================#}
-					<script>document.getElementById("noPresentation").style.display = "none";</script>
-
 				</div>	
             </div>
         </div>

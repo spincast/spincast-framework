@@ -6,11 +6,12 @@ import java.util.Map;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.cookies.Cookie;
+import org.spincast.core.cookies.CookieSameSite;
+import org.spincast.core.flash.FlashMessage;
+import org.spincast.core.flash.FlashMessageLevel;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.request.Form;
 import org.spincast.core.response.AlertLevel;
-import org.spincast.core.session.FlashMessage;
-import org.spincast.core.session.FlashMessageLevel;
 import org.spincast.core.utils.GzipOption;
 
 import com.google.inject.assistedinject.Assisted;
@@ -756,7 +757,7 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * Gets the cookies already added to the response as a Map, 
      * using their names as the keys.
      * <p>
-     * NOTE : use the {@link RequestRequestContextAddon#getCookies()} 
+     * NOTE : use the {@link RequestRequestContextAddon#getCookiesValues()} 
      * from the <code>request()</code> add-on instead
      * to get the cookies sent by the user!
      */
@@ -765,7 +766,7 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
     /**
      * Gets a cookie already added to the response, by its name.
      * <p>
-     * NOTE : use the {@link RequestRequestContextAddon#getCookie(String)} 
+     * NOTE : use the {@link RequestRequestContextAddon#getCookieValue(String)} 
      * from the <code>request()</code> add-on instead
      * to get a cookie sent by the user!
      * 
@@ -782,66 +783,105 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * of the session only.
      * <p>
      * You have to add the cookie using the
-     * {@link #addCookie(Cookie)} method after it is
+     * {@link #setCookie(Cookie)} method after it is
      * properly created.
      */
     public Cookie createCookie(@Assisted("name") String name);
 
     /**
-     * Adds a cookie.
+     * Sets a cookie.
      */
-    public void addCookie(Cookie cookie);
+    public void setCookie(Cookie cookie);
 
     /**
-     * Adds a cookie using the specified name and value.
+     * Sets a cookie using the specified name and value.
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
      * is uses as the cookie's <code>domain</code>
      * and the cookie is valid for the time of the session only.
      */
-    public void addCookieSession(String name, String value);
+    public void setCookieSession(String name, String value);
 
     /**
-     * Adds a cookie using the specified name, value
-     * and if it's http only.
+     * Sets a cookie using the specified name and value.
+     * The cookie will be "secure", "httpOnly"
+     * and a {@link CookieSameSite} value of {@link CookieSameSite#LAX}.
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
-     * is uses as the cookie's <code>domain</code>.
+     * is uses as the cookie's <code>domain</code>
+     * and the cookie is valid for the time of the session only.
      */
-    public void addCookieSession(String name, String value, boolean httpOnly);
+    public void setCookieSessionSafe(String name, String value);
 
     /**
-     * Adds a cookie using the specified name, value
+     * Sets a cookie using the specified name, value
      * and number of seconds to live.
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
      * is uses as the cookie's <code>domain</code>.
      */
-    public void addCookie(String name, String value, int nbrSecondsToLive);
+    public void setCookie(String name, String value, int nbrSecondsToLive);
 
     /**
-     * Adds a cookie using the specified name, value,
+     * Sets a cookie using the specified name, value,
      * number of seconds to live and if it's http only.
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
      * is uses as the cookie's <code>domain</code>.
      */
-    public void addCookie(String name, String value, int nbrSecondsToLive, boolean httpOnly);
+    public void setCookie(String name, String value, int nbrSecondsToLive, boolean httpOnly);
 
     /**
-     * Adds a permanent cookie (10 years) using the specified 
+     * Sets a permanent cookie (1 years) using the specified 
      * name and value.
      * <p>
      * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
      * is uses as the cookie's <code>domain</code>.
      */
-    public void addCookie10years(String name, String value);
+    public void setCookie1year(String name, String value);
 
     /**
-     * Adds a cookie, using all available configurations.
+     * Sets a permanent cookie (1 years) using the specified 
+     * name and value. The cookie will be "secure", "httpOnly"
+     * and a {@link CookieSameSite} value of {@link CookieSameSite#LAX}.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
      */
-    public void addCookie(String name, String value, String path, String domain, Date expires, boolean secure,
-                          boolean httpOnly, boolean discard, int version);
+    public void setCookie1yearSafe(String name, String value);
+
+    /**
+     * Sets a permanent cookie (10 years) using the specified 
+     * name and value.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
+     */
+    public void setCookie10years(String name, String value);
+
+    /**
+     * Sets a permanent cookie (10 years) using the specified 
+     * name and value. The cookie will be "secure", "httpOnly"
+     * and a {@link CookieSameSite} value of {@link CookieSameSite#LAX}.
+     * <p>
+     * By default, the public host ({@link SpincastConfig#getPublicServerHost()}) 
+     * is uses as the cookie's <code>domain</code>.
+     */
+    public void setCookie10yearsSafe(String name, String value);
+
+    /**
+     * Sets a cookie, using all available configurations.
+     */
+    public void setCookie(String name,
+                          String value,
+                          String path,
+                          String domain,
+                          Date expires,
+                          boolean secure,
+                          boolean httpOnly,
+                          CookieSameSite cookieSameSite,
+                          boolean discard,
+                          int version);
 
     /**
      * Deletes a cookie. In fact, this sets the cookie's <code>expires date</code> in the
