@@ -101,6 +101,12 @@
             "date" : "2018-08-29T23:00:00Z",
             "title" : "4 new plugins",
             "path" : "/news/2018-08-29.html"
+        },
+        {
+            "id" : "19",
+            "date" : "2018-09-02T23:00:00Z",
+            "title" : "Spincast Attempts Limiter plugin",
+            "path" : "/news/2018-09-02.html"
         }
 		
 	]

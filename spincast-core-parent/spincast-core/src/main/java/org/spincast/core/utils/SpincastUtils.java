@@ -177,5 +177,11 @@ public interface SpincastUtils {
      */
     public String inQuotesStringFormat(String str, boolean singleQuotes);
 
+    /**
+     * Perform a <em>case insensitive</em> 
+     * <code>valueOf(value)</code> search on an enum.
+     */
+    public <T extends Enum<?>> T enumValueOfInsensitive(Class<T> enumClass, String str);
+
 
 }

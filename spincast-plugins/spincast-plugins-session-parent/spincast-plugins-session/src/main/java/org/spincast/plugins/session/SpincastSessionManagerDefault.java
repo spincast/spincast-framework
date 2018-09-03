@@ -88,7 +88,7 @@ public class SpincastSessionManagerDefault implements SpincastSessionManager {
 
         //==========================================
         // This can be called outside of a Request scope, for
-        // example by a cron job.
+        // example by a scheduled task.
         //==========================================
         try {
             RequestContext<?> context = getRequestContextProvider().get();

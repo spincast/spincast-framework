@@ -1,5 +1,7 @@
 package org.spincast.testing.core.utils;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -262,6 +264,34 @@ public class SpincastTestUtils {
         }
 
         return testDate;
+    }
+
+    /**
+     * This method can be called to log some information about
+     * an exception wihch is hard to debug. It will log it in
+     * a directory which won't be deleted when the tests are done.
+     */
+    public static void logException(String fileName, Exception ex, String info) {
+
+        try {
+            File baseDir = new File(System.getProperty("java.io.tmpdir"));
+            if (!baseDir.isDirectory()) {
+                throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
+            }
+
+            File dir = new File(baseDir, "/spincast_testing_exceptions");
+            if (!dir.isDirectory()) {
+                boolean mkdirs = dir.mkdirs();
+                assertTrue(mkdirs);
+            }
+            assertTrue(dir.canWrite());
+
+            File file = new File(dir.getAbsolutePath() + "/" + fileName);
+
+            FileUtils.write(file, info + "\n" + ex.getMessage() + "\n" + SpincastStatics.getStackTrace(ex), "UTF-8");
+        } catch (Exception ex2) {
+            System.err.println("Error logging testing exception: " + ex2);
+        }
     }
 
 }

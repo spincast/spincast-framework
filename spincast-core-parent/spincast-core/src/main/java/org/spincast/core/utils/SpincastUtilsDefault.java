@@ -705,4 +705,19 @@ public class SpincastUtilsDefault implements SpincastUtils {
         return str;
     }
 
+    @Override
+    public <T extends Enum<?>> T enumValueOfInsensitive(Class<T> enumClass, String str) {
+        Objects.requireNonNull(enumClass, "The enumClass can't be NULL");
+        if (str == null) {
+            return null;
+        }
+
+        for (T enumElement : enumClass.getEnumConstants()) {
+            if (enumElement.name().equalsIgnoreCase(str)) {
+                return enumElement;
+            }
+        }
+        return null;
+    }
+
 }

@@ -3,8 +3,8 @@ package org.spincast.plugins.formsprotection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.SpincastPluginBase;
-import org.spincast.plugins.crons.SpincastCronsPlugin;
 import org.spincast.plugins.crypto.SpincastCryptoPlugin;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTasksPlugin;
 import org.spincast.plugins.session.SpincastSessionPlugin;
 
 import com.google.inject.Module;
@@ -46,7 +46,7 @@ public class SpincastFormsProtectionPlugin extends SpincastPluginBase {
 
     protected Module applyRequiredPlugins(Module module) {
         module = applySpincastCryptoPlugin(module);
-        module = applySpincastCronsPlugin(module);
+        module = applySpincastScheduledTasksPlugin(module);
         module = applySpincastSessionPlugin(module);
         return module;
     }
@@ -56,9 +56,9 @@ public class SpincastFormsProtectionPlugin extends SpincastPluginBase {
         return spincastCryptoPlugin.apply(module);
     }
 
-    protected Module applySpincastCronsPlugin(Module module) {
-        SpincastCronsPlugin spincastCronsPlugin = new SpincastCronsPlugin();
-        return spincastCronsPlugin.apply(module);
+    protected Module applySpincastScheduledTasksPlugin(Module module) {
+        SpincastScheduledTasksPlugin spincastScheduledTasksPlugin = new SpincastScheduledTasksPlugin();
+        return spincastScheduledTasksPlugin.apply(module);
     }
 
     protected Module applySpincastSessionPlugin(Module module) {

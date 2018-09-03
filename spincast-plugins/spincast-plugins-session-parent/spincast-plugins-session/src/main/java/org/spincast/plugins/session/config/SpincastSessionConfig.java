@@ -6,8 +6,7 @@ package org.spincast.plugins.session.config;
 public interface SpincastSessionConfig {
 
     /**
-     * If {@link #autoRegisterCronJobToDeleteOldSessions()} is
-     * enabled, this is the number of minutes before
+     * The number of minutes before
      * an inactive session is deleted.
      * <p>
      * Defaults to 7 days.
@@ -15,10 +14,10 @@ public interface SpincastSessionConfig {
     public int getSessionMaxInactiveMinutes();
 
     /**
-     * The cron to delete old sessions should run 
+     * The acheduled task to delete old sessions should run 
      * every X minutes.
      */
-    public int getDeleteOldSessionsCronRunEveryNbrMinutes();
+    public int getDeleteOldSessionsScheduledTaskRunEveryNbrMinutes();
 
     /**
      * The name of the cookie used to store the

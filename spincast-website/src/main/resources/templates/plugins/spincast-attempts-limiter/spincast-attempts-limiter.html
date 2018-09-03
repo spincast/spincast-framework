@@ -1,0 +1,636 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-attempts-limiter{% endblock %}
+{% block meta_title %}Plugins - Spincast Attempts Limiter{% endblock %}
+{% block meta_description %}Spincast Attempts Limiter plugin - Limit the number of attempts a user can do at something.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Attempts Limiter plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Attempts Limiter <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/attemptslimiter/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Attempts Limiter <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+                <li class="openable"><a href="#configurations">Configurations</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+                <p>
+                    This plugin lets you limit the number of attempts users can make 
+                    trying to perform some actions.
+                </p>
+                <p>
+                    For each kind of action you want to protect, you specify the number
+                    of allowed attempts, a duration and some criteria. For example:
+
+                    <blockquote class="niceQuote">
+                        <em>Limit the number of attempts at <code>log in to the site</code> 
+                        (the action to protect) to maximum <code>10 times</code> (the maximum number
+                        of attempts) <code>per 15 minutes</code> (the duration) given requests
+                        from the same <code>IP address</code> (the criteria).</em>
+                    </blockquote>
+                </p>
+                <p>
+                    With this rule in place, multiple requests coming from the same IP address and
+                    trying to log in more than 10 times in 15 minutes would be blocked.
+                </p>
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_rule" href="#usage_rule" title="permanent link"></a>
+                    Registering your Attempt Rules
+                </h4>
+                
+	            <p>
+                    Once the plugin is <a href="#installation">properly installed</a>, the first thing to do
+                    is to register your <em>attempt rules</em>.
+                </p>
+                <p>
+                    An <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptRule.html">AttemptRule</a> contains three things:
+                    <ul>
+                        <li>
+                            The <code>name</code> of the action to protect. For example "<em>login</em>", "<em>confirm order</em>", etc.
+                        </li>
+                        <li>
+                            The <code>maximum number of attempts</code> allowed for a duration. For example "<em>3</em>".
+                        </li>
+                        <li>
+                            The <code>duration</code> to consider. For example "<em>15 minutes</em>", "<em>2 days</em>", etc.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    You register those rules anywhere in your code, using the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptsManager.html">AttemptsManager</a>
+                    provided by the plugin. In general, you may want to register a rule in the same class where the  
+                    action to protect occurs (in a <em>controller</em>, for example). You also probably want to perform those registrations in 
+                    an <a href="/documentation#init_method">init</a> method
+                    so the rules are registered as soon as the application starts:
+                </p>
+                <p>
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class LoginController {
+
+    private final AttemptsManager attemptsManager;
+    
+    protected AttemptsManager getAttemptsManager() {
+        return this.attemptsManager;
+    }
+    
+    @Inject
+    public LoginController(AttemptsManager attemptsManager) {
+        this.attemptsManager = attemptsManager;
+    }
+    
+    @Inject
+    protected void init() {
+        getAttemptsManager().registerAttempRule("login", 
+                                                10, 
+                                                Duration.of(15, ChronoUnit.MINUTES));
+    }
+
+    //...
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">14-15</span> : The <code>init</code> method
+                                    is called as soon as the controller instance is available.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">16</span> : Using the <code>AttemptsManager</code>,
+                                    we start registering an <code>Attempt Rule</code> for the action to protect
+                                    "<code>login</code>".
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">17</span> : This rule will allow 10 attempts...
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">18</span> : ... for a duration of 15 minutes.
+                                </li>  
+                            </ul>
+                        </p> 
+                    </div> 
+                </p>
+                
+                <p>
+                    Note that you can also use the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptFactory.html">AttemptFactory</a>
+                    to create an <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptRule.html">AttemptRule</a>
+                    instance by yourself:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>@Injected
+private AttemptFactory attemptFactory;
+
+//...
+
+AttemptRule changePasswordAttemptRule = 
+    attemptFactory.createAttemptRule("changePassword",
+                                     5,
+                                     Duration.of(1, ChronoUnit.HOURS));
+                                     
+getAttemptsManager().registerAttempRule(changePasswordAttemptRule);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div> 
+	            </p>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_validating" href="#usage_validating" title="permanent link"></a>
+                    Validating an attempt
+                </h4>
+                
+                <p>
+                    Let's continue with our "<em>login</em>" example.
+                </p>
+                <p>
+                    When a login request enters the <code>route handler</code> in
+                    charge of handling it, we call the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptsManager.html">attempt(...)</a>
+                    method of the <code>AttemptsManager</code> object. This method returns an 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/Attempt.html">Attempt</a> instance
+                    representing the current attempt.
+                </p>
+                <p>
+                    With this <code>Attempt</code> instance, we're able to know if the associated action
+                    (here "<em>trying to log in on the site</em>") must be allowed or be denied:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class LoginController {
+
+    // ...
+    
+    public void loginPost(AppRequestContext context) {
+        Attempt attempt = 
+            getAttemptsManager().attempt("login",
+                                         AttemptCriteria.of("ip", context.request().getIp()));
+        if (attempt.isMaxReached()) {
+            // Attempt denied!
+            // Manage this as you want : throw an exception, display
+            // a warning message, etc.
+        }
+    }
+}</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : The "<em>loginPost</em>" method is the 
+                                    <em>route handler</em> managing a login request.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">6-7</span> : We call the "<code>attempt(...)</code>"
+                                    method of the <code>AttemptsManager</code> object. We first specify the name of the
+                                    action we are interested in ("<em>login</em>"). This name must match the name
+                                    used in a registered <code>AttemptRule</code>!
+                                </li> 
+                                <li>
+                                    <span class="code-line-nbr">8</span> : We specify the <code>criteria</code> we
+                                    want to use to validate the request. Here, we use the <em>IP address</em> of the request.
+                                    The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptCriteria.html#of-java.lang.String-java.lang.String-">AttemptCriteria#of(...)</a>
+                                    method is an easy way to create such <code>criteria</code>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">9</span> : You call the 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/Attempt.html#isMaxReached--">isMaxReached()</a>
+                                    method on the <code>Attempt</code> object to see if the associated action should be allowed or not!
+                                </li> 
+                                <li>
+                                    <span class="code-line-nbr">10-12</span> : If the action should be denied, 
+                                    you can throw an Exception, display a warning message to the user, etc.
+                                </li> 
+                            </ul>
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that you can specify as many <code>criteria</code> as you want! For example, you may want to
+                    limit the number of attempts for the "<em>send contact message</em>" action not only by IP address, but also
+                    by <em>user id</em>:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>Attempt attempt = 
+    getAttemptsManager().attempt("send contact",
+                                 AttemptCriteria.of("ip", context.request().getIp()),
+                                 AttemptCriteria.of("userId", user.getId()));
+if (attempt.isMaxReached()) {
+// ...</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>      
+                </p>
+                
+                <p>
+                    The only important thing is that you use consistent names for your
+                    criteria, as the plugin will use those to find the correct number of attempts made 
+                    with them! But, otherwise, the plugin doesn't care: it will use any criteria names and
+                    values you provide at runtime to <em>group</em> attempts together in order to
+                    determine if the maximum was reached or not.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Also note that if you try to validate an attempt using the name of an action which isn't found in any
+                    registered <code>AttemptRules</code>, the <code>attempt.isMaxReached()</code> method
+                    will always return <code>true</code>, so the action will be denied!
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_incrementing" href="#usage_incrementing" title="permanent link"></a>
+                    Incrementing the number of attempts
+                </h4>
+                
+                <p>
+                    By default, the number of attempts will be <em>automatically incremented</em>, when you call
+                    the <code>attempt(...)</code> method. This means that without any extra code,
+                    <code>attempt.isMaxReached()</code> will automatically become <em>true</em> when too many
+                    attempts are made.   
+                </p>
+                <p>
+                    But sometimes you may need more control. You may want to manage by yourself <em>when</em>
+                    to increment the number of attempts! For example, you may want to allow
+                    an action to be performed as many times as a user want, <em>as long as he provides a correct
+                    password</em>. If the user always sends the correct password, each time, he can perform the action as many times as
+                    he wants. In that situation, you <em>don't want</em> the attempts to be automatically incremented,
+                    since the action would be denied after a while...
+                </p>
+                <p>
+                    You can configure how the auto-increment is done (or not done) by passing a
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptsAutoIncrementType.html">AttemptsAutoIncrementType</a>
+                    parameter when calling the <code>.attempt(...)</code> method:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" data-ace-hi="2,33,2,64"
+>Attempt attempt = 
+    getAttemptsManager().attempt("login",
+                                 AttemptsAutoIncrementType.NEVER,
+                                 AttemptCriteria.of("ip", context.request().getIp()));
+if (attempt.isMaxReached()) {
+// ...</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>   
+                </p>
+                <p>
+                    This parameter can be:
+                    
+                    <ul>
+                        <li>
+                            <code>ALWAYS</code>: the method will always automatically increment the number of attempts 
+                            (this is the default).
+                        </li>
+                        <li>
+                            <code>NEVER</code>: the method will never increment the number of attempts.
+                        </li>
+                        <li>
+                            <code>IF_MAX_REACHED</code>: the method will only increment the number of attempts
+                            automatically if the current attempt is denied.
+                        </li>
+                        <li>
+                            <code>IF_MAX_NOT_REACHED</code>: the method will only increment the number of attempts
+                            automatically if the current attempt is allowed.
+                        </li> 
+                    </ul>
+                </p>
+                <p>
+                    If you don't let the <code>.attempt(...)</code> method increment the number of attempts by itself, you
+                    are responsible to do it by yourself. You do so by calling 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/Attempt.html#incrementAttemptsCount--">incrementAttemptsCount()</a>
+                    on the <code>Attempt</code> instance. For example:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" data-ace-hi="2,33,2,64|11,11,11,36"
+>Attempt attempt = 
+    getAttemptsManager().attempt("login",
+                                 AttemptsAutoIncrementType.NEVER,
+                                 AttemptCriteria.of("ip", context.request().getIp()));
+if (attempt.isMaxReached()) {
+    // ...
+}
+
+// We only increment the number of attempts if
+// the password provided by the user is invalid!
+if(!passwordValid) {
+    attempt.incrementAttemptsCount();
+}
+
+//...</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that even if <code>.incrementAttemptsCount()</code> is called multiple times,
+                    the attempts will only be incremented <em>once</em>.
+                </p>
+                
+            </section>
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    The Spincast Attempts Limiter plugin depends on the <a href="/plugins/spincast-scheduled-tasks">Spincast Scheduled Tasks plugin</a>, a plugin which is <em>not</em>
+                    provided by default by the <code>spincast-default</code> package. This dependency plugin <em>will be automatically installed</em>, 
+                    you don't need to install it by yourself in your application (but you can). 
+                </p> 
+                <p>
+                    Just don't be surprised if you see transitive dependencies being added to your application!
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Also, note that is you want to use the provided <a href="#installation_repository">repository implementation example</a>,
+                    as is, you will need to install the <a href="/plugins/spincast-jdbc">Spincast JDBC plugin</a>.
+                </p>
+                
+            </section> 
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="installation_plugin" href="#installation_plugin" title="permanent link"></a>
+                    The plugin itself
+                </h4>
+                
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-attempts-limiter&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/SpincastAttemptsLimiterPlugin.html">SpincastAttemptsLimiterPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,51"
+>
+
+Spincast.configure()
+        .plugin(new SpincastAttemptsLimiterPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="installation_repository" href="#installation_repository" title="permanent link"></a>
+                    The repository implementation
+                </h4>
+                
+                <p>
+                    This plugin is agnostic on what database is used to save the information about the attempts. Therefore you
+                    need to bind a custom implementation of the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/SpincastAttemptsLimiterPluginRepository.html">SpincastAttemptsLimiterPluginRepository</a>
+                    in the Guice context to specify how it should be done.
+                </p>
+                <p>
+                    There are four methods to implement in that repository:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="installation_repo_save" href="#installation_repo_save" title="permanent link"></a>
+                            <code class="apiItem">void <span>saveNewAttempt</span>(String actionName, AttemptCriteria... criterias)</code>
+                            <div class="well">
+                                <p>
+                                    Called by the plugin to save a new attempt, with its
+                                    associated criteria.
+                                </p>   
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="installation_repo_save" href="#installation_repo_save" title="permanent link"></a>
+                            <code class="apiItem">Map&lt;String,Integer&gt; <span>getAttemptsNumberPerCriteriaSince</span>(String actionName, Instant sinceDate, AttemptCriteria... criterias)</code>
+                            <div class="well">
+                                <p>
+                                    Called to get a Map consisting of the <code>criteria</code> and the number of
+                                    attempts associated with them currently in the database, since the specified <code>date</code>.
+                                </p>   
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="installation_repo_save" href="#installation_repo_save" title="permanent link"></a>
+                            <code class="apiItem">void <span>deleteAttempts</span>(String actionName, AttemptCriteria... criterias)</code>
+                            <div class="well">
+                                <p>
+                                    Called to delete all attempts saved in the database, given the <code>action name</code>
+                                    and a set of <code>criteria</code>.
+                                </p>   
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="installation_repo_save" href="#installation_repo_save" title="permanent link"></a>
+                            <code class="apiItem">void <span>deleteAttemptsOlderThan</span>(String actionName, Instant date)</code>
+                            <div class="well">
+                                <p>
+                                    Called to delete the attempts for the <code>action name</code> and that are older 
+                                    than the specified <code>date</code>.
+                                </p>   
+                            </div>
+                        </li>  
+                    </ul>   
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Those methods are not totally trivial to implement if you don't know 
+                    what they must do exactly. But you can use this as a reference:
+                    <em>
+                        <img src="/public/images/database.png" />
+                        <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-attempts-limiter-parent/spincast-plugins-attempts-limiter-tests/src/test/java/org/spincast/plugins/attemptslimiter/tests/utils/SpincastAttemptsLimiterPluginRepositoryTesting.java#L32">repository implementation example</a> 
+                    </em> [<em>GitHub</em>].
+                </p>
+                <p>
+                    This implementation uses a H2 database (the database we use to test the plugin).
+                    We also tested this implementation using <em>PostgreSQL</em>, and very few
+                    modifications were required
+                    ("<code>TIMESTAMPTZ</code>" instead of "<code>TIMESTAMP WITH TIME ZONE</code>" for the "<em>creation_date </em>" column was one, for example).
+                </p>
+                <p>
+                    In addition to the methods required by the repository interface, this example also contains the SQL required to 
+                    create the "<code>attempts</code>" table and its indexes, in the 
+                    <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-plugins/spincast-plugins-attempts-limiter-parent/spincast-plugins-attempts-limiter-tests/src/test/java/org/spincast/plugins/attemptslimiter/tests/utils/SpincastAttemptsLimiterPluginRepositoryTesting.java#L58"><code>createAttemptTable()</code></a> method.
+                </p>
+                
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    When your implementation of the repository is ready, you bind it in your application's Guice module:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java"
+>bind(SpincastAttemptsLimiterPluginRepository.class)
+    .to(AppAttemptsLimiterPluginRepository.class)
+    .in(Scopes.SINGLETON);</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+
+            </section>
+            
+            
+            <section id="configurations">
+                <h3>
+                    <a class="anchor" href="#configurations" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    The configuration interface for this plugin is 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/config/SpincastAttemptsLimiterPluginConfig.html">SpincastAttemptsLimiterPluginConfig</a>.
+                    To change the default configurations, you can bind an implementation of 
+                    that interface, extending the default 
+                    <a class="javadoc" href=/public/javadoc/org/spincast/plugins/attemptslimiter/config/SpincastAttemptsLimiterPluginConfigDefault.html">SpincastAttemptsLimiterPluginConfigDefault</a> 
+                    implementation if you don't want to start from scratch.
+                </p>
+                <p>
+                    <h4>Options:</h4>
+                    
+                    <ul class="apiList">
+            
+                        <li>
+                            <a class="anchor_small" id="configs_increment_type" href="#configs_increment_type" title="permanent link"></a>
+                            <code class="apiItem">AttemptsAutoIncrementType <span>getDefaultAttemptAutoIncrementType</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The default type auto-increment performed by the
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/AttemptsManager.html">attempt(...)</a>
+                                    method.
+                                </p>
+                                <p>
+                                    Defaults to <code>ALWAYS</code>.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_scheduled_task_enabled" href="#configs_scheduled_task_enabled" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isAutoBindDeleteOldAttemptsScheduledTask</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Should a scheduled task to delete old attempts in the database be automatically registered?
+                                    If you disable this option, you are responsible to clean up your database of old attempts entries.
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code>.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_scheduled_task_minutes" href="#configs_scheduled_task_minutes" title="permanent link"></a>
+                            <code class="apiItem">int <span>getDeleteOldAttemptsScheduledTaskIntervalMinutes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The number of minutes between two launches of the scheduled task that will clean the database from old attempts, 
+                                    if <a href="#configs_scheduled_task_enabled">isAutoBindDeleteOldAttemptsScheduledTask()</a> is enabled.
+                                </p>
+                                <p>
+                                    Defaults to <code>10</code>.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </p> 
+            </section>
+
+
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

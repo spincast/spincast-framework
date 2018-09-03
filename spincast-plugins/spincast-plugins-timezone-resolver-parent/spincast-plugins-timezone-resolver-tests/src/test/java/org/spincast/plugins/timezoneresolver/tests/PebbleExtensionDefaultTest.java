@@ -39,11 +39,11 @@ public class PebbleExtensionDefaultTest extends NoAppTestingBase {
         String content = "{{ timeZoneCookie() }}";
         String result = getTemplatingEngine().evaluate(content);
         assertTrue(result.indexOf("<script>") > -1);
-        assertTrue(result.indexOf("document.cookie = \"spincast_timezone=") > -1);
+        assertTrue(result.indexOf("document.cookie ='spincast_timezone=") > -1);
         assertTrue(result.indexOf("domain=." + getSpincastConfig().getPublicServerHost() + ";") > -1);
-        assertTrue(result.indexOf("path=/;") > -1);
-        assertTrue(result.indexOf("var part = 'spincast_tz=1';") > -1);
-        assertTrue(result.indexOf("window.location.href = url;") > -1);
+        assertTrue(result.indexOf("path=/';") > -1);
+        assertTrue(result.indexOf("var flag = 'spincast_tz=1';") > -1);
+        assertTrue(result.indexOf("window.location.replace(url);") > -1);
         assertTrue(result.indexOf("</script>") > -1);
     }
 
@@ -53,11 +53,11 @@ public class PebbleExtensionDefaultTest extends NoAppTestingBase {
         String content = "{{ timeZoneCookie(true) }}";
         String result = getTemplatingEngine().evaluate(content);
         assertTrue(result.indexOf("<script>") > -1);
-        assertTrue(result.indexOf("document.cookie = \"spincast_timezone=") > -1);
+        assertTrue(result.indexOf("document.cookie ='spincast_timezone=") > -1);
         assertTrue(result.indexOf("domain=." + getSpincastConfig().getPublicServerHost() + ";") > -1);
-        assertTrue(result.indexOf("path=/;") > -1);
-        assertTrue(result.indexOf("var part = 'spincast_tz=1';") > -1);
-        assertTrue(result.indexOf("window.location.href = url;") > -1);
+        assertTrue(result.indexOf("path=/';") > -1);
+        assertTrue(result.indexOf("var flag = 'spincast_tz=1';") > -1);
+        assertTrue(result.indexOf("window.location.replace(url);") > -1);
         assertTrue(result.indexOf("</script>") > -1);
     }
 
@@ -67,11 +67,11 @@ public class PebbleExtensionDefaultTest extends NoAppTestingBase {
         String content = "{{ timeZoneCookie(false) }}";
         String result = getTemplatingEngine().evaluate(content);
         assertTrue(result.indexOf("<script>") == -1);
-        assertTrue(result.indexOf("document.cookie = \"spincast_timezone=") > -1);
+        assertTrue(result.indexOf("document.cookie ='spincast_timezone=") > -1);
         assertTrue(result.indexOf("domain=." + getSpincastConfig().getPublicServerHost() + ";") > -1);
-        assertTrue(result.indexOf("path=/;") > -1);
-        assertTrue(result.indexOf("var part = 'spincast_tz=1';") > -1);
-        assertTrue(result.indexOf("window.location.href = url;") > -1);
+        assertTrue(result.indexOf("path=/';") > -1);
+        assertTrue(result.indexOf("var flag = 'spincast_tz=1';") > -1);
+        assertTrue(result.indexOf("window.location.replace(url);") > -1);
         assertTrue(result.indexOf("</script>") == -1);
     }
 

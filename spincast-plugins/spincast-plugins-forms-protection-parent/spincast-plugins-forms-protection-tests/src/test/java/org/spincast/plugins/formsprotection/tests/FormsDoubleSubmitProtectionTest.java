@@ -87,7 +87,7 @@ public class FormsDoubleSubmitProtectionTest extends FormsProtectionTestBase {
     }
 
     @Test
-    public void deleteOldFormsProtectionIdsCron() throws Exception {
+    public void deleteOldFormsProtectionIdsScheduledTask() throws Exception {
         Thread.sleep(1000);
         assertEquals(1, deleteOldFormsProtectionIdsCalled[0]);
     }

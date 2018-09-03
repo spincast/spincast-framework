@@ -1,14 +1,12 @@
 package org.spincast.plugins.session.config;
 
-import org.spincast.plugins.session.SpincastSessionPlugin;
-
 /**
  * Default configurations for Spincast Session plugin.
  */
 public class SpincastSessionConfigDefault implements SpincastSessionConfig {
 
     @Override
-    public int getDeleteOldSessionsCronRunEveryNbrMinutes() {
+    public int getDeleteOldSessionsScheduledTaskRunEveryNbrMinutes() {
         return 30;
     }
 
@@ -19,7 +17,7 @@ public class SpincastSessionConfigDefault implements SpincastSessionConfig {
 
     @Override
     public String getSessionIdCookieName() {
-        return SpincastSessionPlugin.class.getName() + "_sessionId";
+        return "spincast_sid";
     }
 
     @Override

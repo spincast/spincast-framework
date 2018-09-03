@@ -39,7 +39,7 @@ public interface SpincastConfig {
      * has been created for running tests.
      * <p>
      * For example, this would by default disable the
-     * cron jobs to be registered.
+     * scheduled tasks to be registered.
      */
     public boolean isTestingMode();
 

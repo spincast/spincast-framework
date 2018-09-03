@@ -69,7 +69,7 @@
                     The utilities are accessible via the 
                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crypto/SpincastCryptoUtils.html">SpincastCryptoUtils</a>
                     interface (for which the default implementation is 
-                    <a class="javadoc" href="http://spincast.loc:44420/public/javadoc/org/spincast/plugins/crypto/SpincastCryptoUtilsDefault.html">SpincastCryptoUtilsDefault</a>).
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/crypto/SpincastCryptoUtilsDefault.html">SpincastCryptoUtilsDefault</a>).
                 </p>
                 <p>
                     Simply inject the interface in classes where you need to use it:
@@ -206,7 +206,7 @@ String encrypted = getCryptoUtils().encrypt("my String to encrypt", "my$ecretKey
                                             <pre class="ace ace-java" data-ace-hi="1,35,1,94|2,44,2,61"
 >
 
-String encrypted = getCryptoUtils().decrypt("// PZWI78fsypZZOuQu3-pSxJ-xReQ7wTGRmqXQtnt0FA8=", 
+String encrypted = getCryptoUtils().decrypt("PZWI78fsypZZOuQu3-pSxJ-xReQ7wTGRmqXQtnt0FA8=", 
                                             "my$ecretKey!42");
 // results in: "my String to encrypt"
 </pre> 

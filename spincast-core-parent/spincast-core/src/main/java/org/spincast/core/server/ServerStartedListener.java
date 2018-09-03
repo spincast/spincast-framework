@@ -1,7 +1,7 @@
 package org.spincast.core.server;
 
 /**
- * To register to be informed after the application server
+ * To implement to be informed after the application server
  * is started succesfully.
  * <p>
  * The {@link #serverStartedSuccessfully()} method

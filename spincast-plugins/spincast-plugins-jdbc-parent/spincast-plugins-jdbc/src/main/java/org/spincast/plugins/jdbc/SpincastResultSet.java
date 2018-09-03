@@ -49,6 +49,16 @@ public interface SpincastResultSet extends ResultSet {
     public Byte getByteOrNull(String columnLabel) throws SQLException;
 
     /**
+     * Returns <code>0</code> when null.
+     */
+    public Byte getByteOrZero(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Byte getByteOrZero(String columnLabel) throws SQLException;
+
+    /**
      * Returns <code>null</code> when null, not <code>0</code> as
      * JDBC does by default!
      */
@@ -61,16 +71,36 @@ public interface SpincastResultSet extends ResultSet {
     public Short getShortOrNull(String columnLabel) throws SQLException;
 
     /**
-     * Returns <code>null</code> when null, not <code>0</code> as
-     * JDBC does by default!
+     * Returns <code>0</code> when null.
      */
-    public Integer getIntOrNull(int columnIndex) throws SQLException;
+    public Short getShortOrZero(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Short getShortOrZero(String columnLabel) throws SQLException;
 
     /**
      * Returns <code>null</code> when null, not <code>0</code> as
      * JDBC does by default!
      */
-    public Integer getIntOrNull(String columnLabel) throws SQLException;
+    public Integer getIntegerOrNull(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>null</code> when null, not <code>0</code> as
+     * JDBC does by default!
+     */
+    public Integer getIntegerOrNull(String columnLabel) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Integer getIntegerOrZero(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Integer getIntegerOrZero(String columnLabel) throws SQLException;
 
     /**
      * Returns <code>null</code> when null, not <code>0</code> as
@@ -85,6 +115,16 @@ public interface SpincastResultSet extends ResultSet {
     public Long getLongOrNull(String columnLabel) throws SQLException;
 
     /**
+     * Returns <code>0</code> when null.
+     */
+    public Long getLongOrZero(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Long getLongOrZero(String columnLabel) throws SQLException;
+
+    /**
      * Returns <code>null</code> when null, not <code>0</code> as
      * JDBC does by default!
      */
@@ -97,6 +137,16 @@ public interface SpincastResultSet extends ResultSet {
     public Float getFloatOrNull(String columnLabel) throws SQLException;
 
     /**
+     * Returns <code>0</code> when null.
+     */
+    public Float getFloatOrZero(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Float getFloatOrZero(String columnLabel) throws SQLException;
+
+    /**
      * Returns <code>null</code> when null, not <code>0</code> as
      * JDBC does by default!
      */
@@ -107,6 +157,16 @@ public interface SpincastResultSet extends ResultSet {
      * JDBC does by default!
      */
     public Double getDoubleOrNull(String columnLabel) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Double getDoubleOrZero(int columnIndex) throws SQLException;
+
+    /**
+     * Returns <code>0</code> when null.
+     */
+    public Double getDoubleOrZero(String columnLabel) throws SQLException;
 
     /**
      * Use {@link #getBooleanOrNull(int)} or
@@ -125,84 +185,84 @@ public interface SpincastResultSet extends ResultSet {
     boolean getBoolean(String columnLabel) throws SQLException;
 
     /**
-     * Use {@link #getByteOrNull(int)} instead.
+     * Use {@link #getByteOrNull(int)} or {@link #getByteOrZero(int)} instead.
      */
     @Deprecated
     @Override
     byte getByte(int columnIndex) throws SQLException;
 
     /**
-     * Use {@link #getByteOrNull(String)} instead.
+     * Use {@link #getByteOrNull(String)}or {@link #getByteOrZero(String)} instead.
      */
     @Deprecated
     @Override
     byte getByte(String columnLabel) throws SQLException;
 
     /**
-     * Use {@link #getShortOrNull(int)} instead.
+     * Use {@link #getShortOrNull(int)} or {@link #getShortOrZero(int)}} instead.
      */
     @Deprecated
     @Override
     short getShort(int columnIndex) throws SQLException;
 
     /**
-     * Use {@link #getShortOrNull(String)} instead.
+     * Use {@link #getShortOrNull(String)}  or {@link #getShortOrZero(String)}instead.
      */
     @Deprecated
     @Override
     short getShort(String columnLabel) throws SQLException;
 
     /**
-     * Use {@link #getIntOrNull(int)} instead.
+     * Use {@link #getIntegerOrNull(int)} or {@link #getIntegerOrZero(int)} instead.
      */
     @Deprecated
     @Override
     int getInt(int columnIndex) throws SQLException;
 
     /**
-     * Use {@link #getIntOrNull(String)} instead.
+     * Use {@link #getIntegerOrNull(String)} or {@link #getIntegerOrZero(String)} instead.
      */
     @Deprecated
     @Override
     int getInt(String columnLabel) throws SQLException;
 
     /**
-     * Use {@link #getLongOrNull(int)} instead.
+     * Use {@link #getLongOrNull(int)}  or {@link #getLongOrLong(int)} instead.
      */
     @Deprecated
     @Override
     long getLong(int columnIndex) throws SQLException;
 
     /**
-     * Use {@link #getLongOrNull(String)} instead.
+     * Use {@link #getLongOrNull(String)} or {@link #getLongOrZero(String)}  instead.
      */
     @Deprecated
     @Override
     long getLong(String columnLabel) throws SQLException;
 
     /**
-     * Use {@link #getFloatOrNull(int)} instead.
+     * Use {@link #getFloatOrNull(int)} or {@link #getFloatOrZero(int)} instead.
      */
     @Deprecated
     @Override
     float getFloat(int columnIndex) throws SQLException;
 
     /**
-     * Use {@link #getFloatOrNull(String)} instead.
+     * Use {@link #getFloatOrNull(String)} or {@link #getFloatOrZero(String)} instead.
      */
     @Deprecated
     @Override
     float getFloat(String columnLabel) throws SQLException;
 
     /**
-     * Use {@link #getDoubleOrNull(int)} instead.
+     * Use {@link #getDoubleOrNull(int)} or {@link #getDoubleOrZero(int)} instead.
      */
     @Deprecated
     @Override
     double getDouble(int columnIndex) throws SQLException;
 
     /**
-     * Use {@link #getDoubleOrNull(String)} instead.
+     * Use {@link #getDoubleOrNull(String)} or {@link #getDoubleOrZero(String)} instead.
      */
     @Deprecated
     @Override

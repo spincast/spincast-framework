@@ -253,7 +253,7 @@
                     on the server. This is why you have to provide the code for saving and retrieving the ids.
                 </p>
                 <p>
-                    You do this by biding an implementation of the
+                    You do this by binding an implementation of the
                     <a class="javadoc" href="/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionRepository.html">SpincastFormsDoubleSubmitProtectionRepository</a>
                     interface. There are three methods to implement :
                     
@@ -457,7 +457,22 @@
                      </ul>
                      
                      In your form, you add a field (most of the time an <em>hidden field</em>)
-                     with the name this function outputs and set any value to it ("<code>1</code>" for example).
+                     with the name this function outputs and set any value to it ("<code>1</code>" for example):
+                     
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-pebble"
+>&lt;form&gt;
+    &lt;input type="hidden" 
+           name="{{ formDoubleSubmitDisableProtectionFieldName() }}" 
+           value="1" /&gt;
+   
+    // other fields...
+&lt;/form&gt;</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div>       
                 </p>  
                 <p> 
                      
@@ -490,7 +505,7 @@
                             <a href="/plugins/spincast-crypto">Spincast Crypto</a>
                         </li>
                         <li>
-                            <a href="/plugins/spincast-crons">Spincast Crons</a>
+                            <a href="/plugins/spincast-scheduled-tasks">Spincast Scheduled Tasks</a>
                         </li>
                         <li>
                             <a href="/plugins/spincast-session">Spincast Session</a>
@@ -614,11 +629,11 @@ Spincast.configure()
                             </div>
                         </li>
                         <li>
-                            <a class="anchor_small" id="configs_ds_cron_auto" href="#configs_ds_cron_auto" title="permanent link"></a>
-                            <code class="apiItem">String <span>autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob</span>()</code>
+                            <a class="anchor_small" id="configs_ds_scheduledtask_auto" href="#configs_ds_scheduledtask_auto" title="permanent link"></a>
+                            <code class="apiItem">String <span>autoRegisterDeleteOldDoubleSubmitProtectionIdsScheduledTask</span>()</code>
                             <div class="well">
                                 <p>
-                                    Should the plugin automatically register a cron that will call 
+                                    Should the plugin automatically register a scheduled task that will call 
                                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/formsprotection/doublesubmit/SpincastFormsDoubleSubmitProtectionRepository.html#deleteOldFormsProtectionIds-int-">deleteOldFormsProtectionIds()</a>
                                     to clean old Double Submit protection ids?
                                 </p>
@@ -628,13 +643,13 @@ Spincast.configure()
                             </div>
                         </li>
                         <li>
-                            <a class="anchor_small" id="configs_ds_cron_minutes" href="#configs_ds_cron_minutes" title="permanent link"></a>
-                            <code class="apiItem">int <span>getDeleteOldDoubleSubmitProtectionIdsCronRunEveryNbrMinutes</span>()</code>
+                            <a class="anchor_small" id="configs_ds_scheduledtask_minutes" href="#configs_ds_scheduledtask_minutes" title="permanent link"></a>
+                            <code class="apiItem">int <span>getDeleteOldDoubleSubmitProtectionIdsScheduledTaskRunEveryNbrMinutes</span>()</code>
                             <div class="well">
                                 <p>
-                                    If <a href="#configs_ds_cron_auto">autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob()</a>
+                                    If <a href="#configs_ds_scheduledtask_auto">autoRegisterDeleteOldDoubleSubmitProtectionIdsScheduledTask()</a>
                                     is <code>true</code>, this configuration specifies the number of minutes between 
-                                    two launches of the cron.
+                                    two launches of the scheduled task.
                                 </p>
                                 <p>
                                     Defaults to <code>15</code>.

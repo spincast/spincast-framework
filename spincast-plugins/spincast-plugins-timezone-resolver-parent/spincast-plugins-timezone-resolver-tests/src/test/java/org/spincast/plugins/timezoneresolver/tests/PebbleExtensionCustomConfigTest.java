@@ -112,12 +112,12 @@ public class PebbleExtensionCustomConfigTest extends NoAppTestingBase {
 
         assertTrue(result.indexOf("<script>") > -1);
         assertTrue(result.indexOf("document.cookie = \"spincast_timezone=") == -1);
-        assertTrue(result.indexOf("document.cookie = \"prout=") > -1);
+        assertTrue(result.indexOf("document.cookie ='prout=") > -1);
         assertTrue(result.indexOf("domain=." + getSpincastConfig().getPublicServerHost() + ";") == -1);
         assertTrue(result.indexOf("domain=" + getSpincastConfig().getPublicServerHost() + ";") > -1);
-        assertTrue(result.indexOf("path=/;") == -1);
-        assertTrue(result.indexOf("path=/titi;") > -1);
-        assertTrue(result.indexOf("var part = 'spincast_tz=1';") == -1);
+        assertTrue(result.indexOf("path=/';") == -1);
+        assertTrue(result.indexOf("path=/titi';") > -1);
+        assertTrue(result.indexOf("var flag = 'spincast_tz=1';") == -1);
         assertTrue(result.indexOf("window.location.href = url;") == -1);
         assertTrue(result.indexOf("</script>") > -1);
     }

@@ -1,5 +1,7 @@
 server: 
-  port: 44420
+  port: 
+    http: -1
+    https: 44420
   
 api:
   base: http://localhost:44420

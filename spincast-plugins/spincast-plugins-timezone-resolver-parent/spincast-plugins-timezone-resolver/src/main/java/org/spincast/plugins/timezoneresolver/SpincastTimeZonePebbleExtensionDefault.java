@@ -117,10 +117,10 @@ public class SpincastTimeZonePebbleExtensionDefault extends AbstractExtension
                     addScriptTag = false;
                 }
 
-                OffsetDateTime oneHourFromNow =
+                OffsetDateTime hoursFromNow =
                         OffsetDateTime.now(ZoneOffset.UTC)
                                       .plus(Duration.ofHours(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookieExpiredHoursNbr()));
-                String expiresDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(oneHourFromNow);
+                String expiresDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(hoursFromNow);
 
                 StringBuilder b = new StringBuilder();
 
@@ -129,39 +129,53 @@ public class SpincastTimeZonePebbleExtensionDefault extends AbstractExtension
                 }
 
                 b.append(jstzClean).append("\n");
+                /** 1 */
                 b.append("(function(){\n");
 
-                b.append("document.cookie = \"");
-                b.append(getSpincastConfig().getCookieNameTimeZoneId());
-                b.append("=\" + spincast_jstz.determine().name() + \"; ");
-                b.append("domain=").append(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookieDomain()).append("; path=")
-                 .append(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookiePath())
-                 .append("; ");
-                b.append("expires=").append(expiresDate).append(";\";\n");
-                if (getSpincastTimeZoneResolverConfig().isRefreshPageAfterAddingPebbleTimeZoneCookie()) {
+                /** 2 */
+                b.append("function getCookie(n) {\n");
+                b.append("  var v = \"; \" + document.cookie;\n");
+                b.append("  var p = v.split(\"; \" + n + \"=\");\n");
+                b.append("  if (p.length == 2) return p.pop().split(\";\").shift();\n");
+                b.append("}\n");
 
-                    b.append("var url = window.location.href;\n");
-                    b.append("var part = '").append(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookieReloadingQsParamName())
-                     .append("=1';\n");
+                b.append("var previousTz = getCookie('").append(getSpincastConfig().getCookieNameTimeZoneId()).append("');\n");
+                b.append("var newTz = spincast_jstz.determine().name();\n");
+                b.append("if(newTz !== previousTz) {\n");
 
-                    //==========================================
-                    // We only reload the page if the cookie can
-                    // now be read and the page has not already
-                    // been reloaded!
-                    //==========================================
-                    b.append("if (document.cookie.includes('")
-                     .append(getSpincastConfig().getCookieNameTimeZoneId()).append("=")
-                     .append("') && !url.includes(part)) {\n");
+                b.append("document.cookie ='").append(getSpincastConfig().getCookieNameTimeZoneId())
+                 .append("=' + newTz + '; expires=").append(expiresDate)
+                 .append("; domain=").append(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookieDomain())
+                 .append("; path=").append(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookiePath())
+                 .append("';\n");
 
-                    //==========================================
-                    // Thanks : https://stackoverflow.com/questions/486896/adding-a-parameter-to-the-url-with-javascript#comment11988623_4811158
-                    //==========================================
-                    b.append("url = (url.indexOf(\"?\") != -1 ? url.split(\"?\")[0]+\"?\"+part+\"&\"+url.split(\"?\")[1] : (url.indexOf(\"#\") != -1 ? url.split(\"#\")[0]+\"?\"+part+\"#\"+ url.split(\"#\")[1] : url+'?'+part));\n");
-                    b.append("window.location.href = url;\n");
+                //==========================================
+                // We only reload the page if the cookie can
+                // be read and the page has not already
+                // been reloaded!
+                //==========================================
+                b.append("var url = window.location.href;\n");
+                b.append("var flag = '")
+                 .append(getSpincastTimeZoneResolverConfig().getPebbleTimeZoneCookieReloadingQsParamName())
+                 .append("=1';\n");
 
-                    b.append("}\n");
-                }
+                /** 3 */
+                b.append("if (getCookie('").append(getSpincastConfig().getCookieNameTimeZoneId())
+                 .append("') === newTz && !url.includes(flag)) {\n");
 
+                //==========================================
+                // Thanks : https://stackoverflow.com/questions/486896/adding-a-parameter-to-the-url-with-javascript#comment11988623_4811158
+                //==========================================
+                b.append("url = (url.indexOf(\"?\") != -1 ? url.split(\"?\")[0]+\"?\"+flag+\"&\"+url.split(\"?\")[1] : (url.indexOf(\"#\") != -1 ? url.split(\"#\")[0]+\"?\"+flag+\"#\"+ url.split(\"#\")[1] : url+'?'+flag));\n");
+                b.append("window.location.replace(url);\n");
+
+                /** 3 */
+                b.append("}\n");
+
+                /** 2 */
+                b.append("}\n");
+
+                /** 1 */
                 b.append("})()\n");
 
                 if (addScriptTag) {

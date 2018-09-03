@@ -35,36 +35,36 @@ public interface SpincastFormsProtectionConfig {
     public String getFormDoubleSubmitDisableProtectionIdFieldName();
 
     /**
-     * Should this plugin automatically register a cron
+     * Should this plugin automatically register a scheduled task
      * that will call {@link SpincastFormsDoubleSubmitProtectionRepository#deleteOldFormsProtectionIds(int)}
      * for cleanup?
      * <p>
-     * Note that wathever the value, the cron will only be registered if a proper
+     * Note that wathever the value, the scheduled task will only be registered if a proper
      * implementation of {@link SpincastFormsDoubleSubmitProtectionFilter} was
      * bound in the first place.
      * <p>
-     * If disabled, you are responsible to register the cron job by
+     * If disabled, you are responsible to register the scheduled task by
      * yourself, or at least delete those old ids
      * by yourself.
      * <p>
      * Defaults to <code>true</code>.
      */
-    public boolean autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob();
+    public boolean autoRegisterDeleteOldDoubleSubmitProtectionIdsScheduledTask();
 
     /**
-     * If {@link #autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob()} is
+     * If {@link #autoRegisterDeleteOldDoubleSubmitProtectionIdsScheduledTask()} is
      * enabled, the cleanup of old saved protection ids should runs 
      * every X minutes.
      */
-    public int getDeleteOldDoubleSubmitProtectionIdsCronRunEveryNbrMinutes();
+    public int getDeleteOldDoubleSubmitProtectionIdsScheduledTaskRunEveryNbrMinutes();
 
     /**
      * If the {@link SpincastFormsDoubleSubmitProtectionFilter} filter is used,
      * this is the number of minutes maximum of form will be considered as
      * valid. Older than that, it will be refused.
      * <p>
-     * If {@link #autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob()} is
-     * enabled, the cron will also use this value to decide when to delete old
+     * If {@link #autoRegisterDeleteOldDoubleSubmitProtectionIdsScheduledTask()} is
+     * enabled, the scheduled task will also use this value to decide when to delete old
      * protection ids.
      * <p>
      * Defaults to 120 minutes (2 hours).

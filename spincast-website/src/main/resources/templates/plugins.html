@@ -24,8 +24,8 @@
         <div class="col-xs-12">
             <p>
                 A <code>plugin</code> provides a set of functionalities you can add to your application. It will bind
-                new components to the Guice context, and may also add <a href="/documentation#filters">filters</a> and 
-                <a href="/plugins/spincast-crons">crons</a> to the Router to be able to perform its tasks properly.
+                new components to the Guice context, and may also add <a href="/plugins/spincast-scheduledtasks">scheduled tasks</a> 
+                and <a href="/documentation#filters">filters</a> to be able to perform its tasks properly.
                 Each plugin is different and has different needs... Make sure you read the documentation associated with
                 a plugin when you install one!
             </p>
@@ -317,13 +317,13 @@
         </div>
         
         <div class="col-sm-6 col-md-4">
-            <a href="/plugins/spincast-crons" class="pluginLink">
+            <a href="/plugins/spincast-scheduled-tasks" class="pluginLink">
                 <div class="thumbnail niceWell">
                     <div class="caption">
-                        <h4>Spincast Crons</h4>
-                        <p class="center"><img src="/public/images/plugins/crons.png" /><p>
+                        <h4>Spincast Scheduled Tasks</h4>
+                        <p class="center"><img src="/public/images/plugins/scheduledtasks.png" /><p>
                         <p>
-                            Register cron jobs ("<em>scheduled tasks</em>") that are going to be run
+                            Register tasks ("<em>cron jobs</em>") that are going to be run
                             at specific times or specific intervals.
                         </p> 
                     </div>
@@ -362,6 +362,20 @@
                                     Unwanted double submissions
                                 </li>  
                             </ul>
+                        </p> 
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-sm-6 col-md-4">
+            <a href="/plugins/spincast-attempts-limiter" class="pluginLink">
+                <div class="thumbnail niceWell">
+                    <div class="caption">
+                        <h4>Spincast Attempts Limiter</h4>
+                        <p class="center"><img src="/public/images/plugins/attempts-limiter.png" /><p>
+                        <p>
+                            Limit the number of attempts a user can make at some actions.
                         </p> 
                     </div>
                 </div>

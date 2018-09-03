@@ -119,6 +119,18 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     }
 
     @Override
+    public Byte getByteOrZero(int columnIndex) throws SQLException {
+        byte val = getByte(columnIndex);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
+    public Byte getByteOrZero(String columnLabel) throws SQLException {
+        byte val = getByte(columnLabel);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
     public short getShort(int columnIndex) throws SQLException {
         return this.wrappedResultSet.getShort(columnIndex);
     }
@@ -141,12 +153,24 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     }
 
     @Override
+    public Short getShortOrZero(int columnIndex) throws SQLException {
+        short val = getShort(columnIndex);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
+    public Short getShortOrZero(String columnLabel) throws SQLException {
+        short val = getShort(columnLabel);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
     public int getInt(int columnIndex) throws SQLException {
         return this.wrappedResultSet.getInt(columnIndex);
     }
 
     @Override
-    public Integer getIntOrNull(int columnIndex) throws SQLException {
+    public Integer getIntegerOrNull(int columnIndex) throws SQLException {
         int val = getInt(columnIndex);
         return wasNull() ? null : val;
     }
@@ -157,9 +181,21 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     }
 
     @Override
-    public Integer getIntOrNull(String columnLabel) throws SQLException {
+    public Integer getIntegerOrNull(String columnLabel) throws SQLException {
         int val = getInt(columnLabel);
         return wasNull() ? null : val;
+    }
+
+    @Override
+    public Integer getIntegerOrZero(String columnLabel) throws SQLException {
+        int val = getInt(columnLabel);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
+    public Integer getIntegerOrZero(int columnIndex) throws SQLException {
+        int val = getInt(columnIndex);
+        return wasNull() ? 0 : val;
     }
 
     @Override
@@ -185,6 +221,18 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     }
 
     @Override
+    public Long getLongOrZero(int columnIndex) throws SQLException {
+        long val = getLong(columnIndex);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
+    public Long getLongOrZero(String columnLabel) throws SQLException {
+        long val = getLong(columnLabel);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
     public float getFloat(int columnIndex) throws SQLException {
         return this.wrappedResultSet.getFloat(columnIndex);
     }
@@ -207,6 +255,18 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     }
 
     @Override
+    public Float getFloatOrZero(int columnIndex) throws SQLException {
+        float val = getFloat(columnIndex);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
+    public Float getFloatOrZero(String columnLabel) throws SQLException {
+        float val = getFloat(columnLabel);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
     public double getDouble(int columnIndex) throws SQLException {
         return this.wrappedResultSet.getDouble(columnIndex);
     }
@@ -226,6 +286,18 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     public Double getDoubleOrNull(String columnLabel) throws SQLException {
         double val = getDouble(columnLabel);
         return wasNull() ? null : val;
+    }
+
+    @Override
+    public Double getDoubleOrZero(int columnIndex) throws SQLException {
+        double val = getDouble(columnIndex);
+        return wasNull() ? 0 : val;
+    }
+
+    @Override
+    public Double getDoubleOrZero(String columnLabel) throws SQLException {
+        double val = getDouble(columnLabel);
+        return wasNull() ? 0 : val;
     }
 
     @SuppressWarnings("deprecation")

@@ -63,7 +63,7 @@ public class TimeZoneResolverDefault implements TimeZoneResolver {
 
         //==========================================
         // This can be called outside of a Request scope, for
-        // example by a cron job. In that case, the default
+        // example by a scheduled task. In that case, the default
         // TimeZone will be used.
         //==========================================
         try {

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -236,35 +235,6 @@ public class SessionTest extends SessionTestBase {
         HttpResponse response = GET("/") /* .addCookies(getPreviousResponseCookies() )*/ .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         saveResponseCookies(response);
-    }
-
-    @Test
-    public void t06_dates2() throws Exception {
-
-        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-                try {
-                    SpincastSession currentSession = getSessionManager().getCurrentSession();
-                    Instant now = Instant.now();
-                    long ms = ChronoUnit.MILLIS.between(currentSession.getCreationDate(), now);
-                    assertTrue(ms > 500);
-
-                    assertTrue(currentSession.getCreationDate().isBefore(currentSession.getModificationDate()));
-
-                    context.response().sendPlainText(currentSession.getAttributes().getString("toti"));
-                } catch (Exception ex) {
-                    throw SpincastStatics.runtimize(ex);
-                }
-            }
-        });
-
-        Thread.sleep(1000);
-        HttpResponse response = GET("/").setCookies(getPreviousResponseCookies()).send();
-        assertEquals(HttpStatus.SC_OK, response.getStatus());
-        saveResponseCookies(response);
-        assertEquals("123", response.getContentAsString());
     }
 
     @Test

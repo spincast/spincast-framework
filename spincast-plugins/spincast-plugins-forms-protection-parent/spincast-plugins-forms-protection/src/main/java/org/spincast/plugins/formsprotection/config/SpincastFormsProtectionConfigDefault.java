@@ -21,12 +21,12 @@ public class SpincastFormsProtectionConfigDefault implements SpincastFormsProtec
     }
 
     @Override
-    public boolean autoRegisterDeleteOldDoubleSubmitProtectionIdsCronJob() {
+    public boolean autoRegisterDeleteOldDoubleSubmitProtectionIdsScheduledTask() {
         return true;
     }
 
     @Override
-    public int getDeleteOldDoubleSubmitProtectionIdsCronRunEveryNbrMinutes() {
+    public int getDeleteOldDoubleSubmitProtectionIdsScheduledTaskRunEveryNbrMinutes() {
         return 15;
     }
 

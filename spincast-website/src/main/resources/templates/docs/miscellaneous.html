@@ -32,9 +32,9 @@ Dictionary
         You get a localized message by injecting the Dictionary in a class
         and by specifying the <code>key</code> of the message to get :
         
-            <div>
-                <p>
-                    <pre class="ace ace-java" data-ace-hi="14,34,14,73"
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="14,34,14,73"
 >public class MyClass { 
 
     private final Dictionary dictionary;
@@ -849,6 +849,60 @@ Using an init() method
         <a href="https://github.com/google/guice/wiki/Scopes#eager-singletons">asEagerSingleton()</a>!
     </p>
     
-</section>        
+</section>    
+
+
+{#==========================================
+
+==========================================#}     
+<section id="serverstartedlisteners">
+    <h4>
+        <a class="anchor_small" href="#serverstartedlisteners" title="permanent link"></a>
+        Server started listeners
+    </h4>
+    
+    <p>
+       Spincast provides a hook so you can be informed when your application's <em>HTTP server
+       has been successfully started</em>. For a class to be called:
+    </p> 
+    <p>
+        <strong>1.</strong> The class must implement the
+       <a class="javadoc" href="/public/javadoc/org/spincast/core/server/ServerStartedListener.html">ServerStartedListener</a>
+       interface. When the server is started, the <code>serverStartedSuccessfully()</code> method would be called:
+       
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>public class MyClass implements ServerStartedListener { 
+
+    @Override
+    public void serverStartedSuccessfully() {
+        System.out.println("Server started hook!");
+    }
+    
+    //...
+}</pre> 
+            </p> 
+        </div>
+    </p> 
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Note that the <code>serverStartedSuccessfully()</code> methods are each
+        called <em>in a new Thread</em>.
+    </p> 
+    <p>
+       <strong>2.</strong> The class must be registered on the <code>Multibinder&lt;ServerStartedListener&gt;</code>
+       <a href="https://github.com/google/guice/wiki/Multibindings">multibinder</a>, in your application's Guice module:
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>Multibinder&lt;ServerStartedListener&gt; serverStartedListenersMultibinder =
+        Multibinder.newSetBinder(binder(), ServerStartedListener.class);
+serverStartedListenersMultibinder.addBinding().to(MyClass.class).in(Scopes.SINGLETON);</pre> 
+            </p> 
+        </div>  
+    </p> 
+
+</section>    
             
             

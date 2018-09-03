@@ -31,18 +31,39 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
         super(spincastConfigPluginConfig, testingMode);
     }
 
-    /**
-     * We use "44420" as the default port for the website, if
-     * not overriden.
-     */
-    @Override
-    public int getHttpServerPort() {
-        return getInteger("server.port", 44420);
-    }
-
     @Override
     public String getPublicUrlBase() {
         return getString("api.base", super.getPublicUrlBase());
+    }
+
+    @Override
+    public int getHttpServerPort() {
+        return getInteger("server.port.http", -1);
+    }
+
+    @Override
+    public int getHttpsServerPort() {
+        return getInteger("server.port.https", 44420);
+    }
+
+    @Override
+    public String getHttpsKeyStorePath() {
+        return "certificates/devKeyStore.jks";
+    }
+
+    @Override
+    public String getHttpsKeyStoreType() {
+        return "JKS";
+    }
+
+    @Override
+    public String getHttpsKeyStoreStorePass() {
+        return "myStorePass";
+    }
+
+    @Override
+    public String getHttpsKeyStoreKeyPass() {
+        return "myKeyPass";
     }
 
     @Override

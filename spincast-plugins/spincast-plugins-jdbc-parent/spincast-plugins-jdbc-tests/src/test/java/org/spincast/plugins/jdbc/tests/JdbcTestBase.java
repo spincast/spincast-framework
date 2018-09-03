@@ -211,7 +211,7 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
 
                     @Override
                     public Integer handle(SpincastResultSet rs) throws Exception {
-                        return rs.getIntOrNull("count");
+                        return rs.getIntegerOrNull("count");
                     }
                 });
                 return count;

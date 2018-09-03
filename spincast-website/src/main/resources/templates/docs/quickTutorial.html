@@ -41,7 +41,7 @@ Docs : "Quick Tutorial"
             This is different from the more recent  
             <a href="#quick_tutorial_spa">SPA</a> approach, where the interface is generated
             <em>client side</em> (using javascript) and where the backend only provides <code>REST services</code>
-            (by returning  <code>Json</code> or, more rarely, <code>XML</code>).
+            (by returning  <code>Json</code> or, more rarely these days, <code>XML</code>).
         </p>
         
         <h5>
@@ -99,7 +99,7 @@ Docs : "Quick Tutorial"
         </p>
         <p> 
             The <code>Routes</code> definitions can be all grouped together in a dedicated class or can be defined in controllers
-            directly (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+            (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
         </p>
         <p> 
             You can learn more about the various routing options in the <a href="#routing">Routing</a>
@@ -278,7 +278,7 @@ router.ALL("/hello").handle(context -> context.response().sendPlainText("Hello!"
             Instead, most of the logic is client-side, and your Spincast application only acts as a provider 
             of <code>REST services</code>
             to which your client-side application talks using <code>Json</code> 
-            or, more rarely, <code>XML</code>.
+            or, more rarely these days, <code>XML</code>.
         </p>
         
         <h5>
@@ -303,7 +303,7 @@ router.ALL("/hello").handle(context -> context.response().sendPlainText("Hello!"
                 </li>
             </ul>
             
-            Here's a quick example of using the application builder :
+            Here's a quick example of using the bootstrapper :
             
             <div>
                 <p>
@@ -336,7 +336,7 @@ router.ALL("/hello").handle(context -> context.response().sendPlainText("Hello!"
         </p>
         <p> 
             The <code>Routes</code> definitions can be all grouped together in a dedicated class or can be defined in controllers
-            directly (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
+            (have a look at <a href="#router_dynamic">The Router is dynamic</a> for an example).
         </p>
         </p>
             In general, if you are building a <code>SPA</code>, you want to return a <em>single</em> <code>HTML</code>
@@ -419,7 +419,7 @@ router.dir("/public").classpath("/public").handle();
 router.GET("/books/${bookId}").handle(bookController::booksGet);
 
 // Endpoint to modify a book
-router.POST("/books/${bookId}").handle(bookController::booksPost);
+router.POST("/books/${bookId}").handle(bookController::booksModify);
         
 // ...</pre>
                 </p>

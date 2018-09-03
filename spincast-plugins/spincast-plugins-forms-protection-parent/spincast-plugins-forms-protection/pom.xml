@@ -36,11 +36,11 @@
         </dependency>
         
         <!--=================================== 
-        Spincast Crons plugin
+        Spincast Scheduled Tasks plugin
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-crons</artifactId>
+            <artifactId>spincast-plugins-scheduledtasks</artifactId>
             <version>${project.version}</version>
         </dependency>
         

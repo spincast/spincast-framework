@@ -536,8 +536,8 @@ let js='{{jsOneLine(code, true)}}';
                     </p>
                     <p>
                         Finally, if the third parameter is "<code>true</code>", any <em>subpath</em> of the specified
-                        path will also match. If the specified path is a regular expression,
-                        then "<code>(/?$|/.*)</code>" will be concatenated to it. This the path is not
+                        path will also match! If the specified path is a regular expression,
+                        then "<code>(/?$|/.*)</code>" will be concatenated to it. If the path is not
                         a regular expression, Spincast will use "<code>startWith(path)</code>" instead of 
                         "<code>equals(path)</code>" to validate the current route:
                         
@@ -560,7 +560,7 @@ let js='{{jsOneLine(code, true)}}';
                     </p>
                     <p>
                         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                        If this function is evaluated outside of a request context (for example from a cron),
+                        If this function is evaluated outside of a request context (for example from a scheduled task),
                         then <code>false</code> is returned.
                     </p>
                 </div>
@@ -591,7 +591,7 @@ let js='{{jsOneLine(code, true)}}';
                     </p>
                     <p>
                         <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                        If this function is evaluated outside of a request context (for example from a cron),
+                        If this function is evaluated outside of a request context (for example from a scheduled task),
                         then <code>false</code> is returned.
                     </p>
                 </div>

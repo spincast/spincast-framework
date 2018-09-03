@@ -361,7 +361,7 @@ User user = stm.selectOne(new ResultSetHandler&lt;User&gt;() {
     @Override
     public User handle(SpincastResultSet rs) throws Exception {
         User user = new User(rs.getString("name"),
-                             rs.getIntOrNull("level"));
+                             rs.getIntegerOrNull("level"));
         return user;
     }
 });     
@@ -379,14 +379,65 @@ User user = stm.selectOne(new ResultSetHandler&lt;User&gt;() {
         <p>
             <img class="inlineIcon" src="/public/images/icons/para.png" />
             In <code>SpincastResultSet</code>, those methods are deprecated: <code>getBoolean(...)</code>, <code>getByte(...)</code>,
-            <code>getShort(...)</code>, <code>getInt(...)</code>, <code>getLong(...)</code>, <code>getFloat(...)</code>,
+            <code>getShort(...)</code>, <code>getInteger(...)</code>, <code>getLong(...)</code>, <code>getFloat(...)</code>,
             <code>getDouble(...)</code>.
         </p>
         <p>
-            They are replaced by : <code>getBooleanOrNull(...)</code>, <code>getByteOrNull(...)</code>,
-            <code>getShortOrNull(...)</code>, <code>getIntOrNull(...)</code>, <code>getLongOrNull(...)</code>, <code>getFloatOrNull(...)</code>,
-            <code>getDoubleOrNull(...)</code>.
+            They are replaced by : 
+            
+            <ul>
+                <li>
+                    <code>getBooleanOrNull(...)</code>
+                </li>
+                <li>
+                    <code>getByteOrNull(...)</code>
+                </li>
+                <li>
+                    <code>getShortOrNull(...)</code>
+                </li>
+                <li>
+                    <code>getIntegerOrNull(...)</code>
+                </li>
+                <li>
+                    <code>getLongOrNull(...)</code>
+                </li>
+                <li>
+                    <code>getFloatOrNull(...)</code>
+                </li>
+                <li>
+                    <code>getDoubleOrNull(...)</code>
+                </li>
+            </ul>
         </p>
+        <p>
+            Or, to get <code>0</code> like the original JDBC's getters would return when the actual value in 
+            the database is <code>null</code>: 
+            
+            <ul>
+                <li>
+                    <code>getBooleanOrZero(...)</code>
+                </li>
+                <li>
+                    <code>getByteOrZero(...)</code>
+                </li>
+                <li>
+                    <code>getShortOrZero(...)</code>
+                </li>
+                <li>
+                    <code>getIntegerOrZero(...)</code>
+                </li>
+                <li>
+                    <code>getLongOrZero(...)</code>
+                </li>
+                <li>
+                    <code>getFloatOrZero(...)</code>
+                </li>
+                <li>
+                    <code>getDoubleOrZero(...)</code>
+                </li>
+            </ul>
+        </p>
+        
         <p>
             We do this to deal with the bad decision JDBC's creators did by using <em>primitive types</em> as return types for
             those getters and therefore preventing <code>null</code> from being returned properly. Using plain JDBC, when a <code>null</code> value is returned

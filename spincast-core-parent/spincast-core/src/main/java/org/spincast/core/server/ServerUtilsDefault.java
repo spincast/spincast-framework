@@ -21,16 +21,14 @@ public class ServerUtilsDefault implements ServerUtils {
     public void callServerStartedListeners() {
 
         for (ServerStartedListener serverStartedListener : getServerStartedListeners()) {
-            serverStartedListener.serverStartedSuccessfully();
+            Thread t = new Thread(new Runnable() {
 
-            //            Thread t = new Thread(new Runnable() {
-            //
-            //                @Override
-            //                public void run() {
-            //                    serverStartedListener.serverStartedSuccessfully();
-            //                }
-            //            });
-            //            t.start();
+                @Override
+                public void run() {
+                    serverStartedListener.serverStartedSuccessfully();
+                }
+            });
+            t.start();
         }
     }
 

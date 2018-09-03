@@ -911,7 +911,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
 
                 //==========================================
                 // This can be called outside of a Request scope, for
-                // example by a cron job.
+                // example by a scheduled task.
                 //==========================================
                 Map<String, List<String>> currentQueryStringParams = new HashMap<String, List<String>>();
                 try {

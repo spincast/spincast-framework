@@ -4,11 +4,10 @@ import java.util.Set;
 
 import org.spincast.core.dictionary.DictionaryEntries;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.plugins.crons.SpincastCronJob;
 import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionConfig;
 import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionConfigDefault;
-import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionPluginCronJobProvider;
-import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionPluginCronJobProviderDefault;
+import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionPluginScheduledTaskProvider;
+import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionPluginScheduledTaskProviderDefault;
 import org.spincast.plugins.formsprotection.csrf.SpincastFormsCsrfProtectionFilter;
 import org.spincast.plugins.formsprotection.csrf.SpincastFormsCsrfProtectionFilterDefault;
 import org.spincast.plugins.formsprotection.dictionary.SpincastFormsProtectionPluginDictionaryEntries;
@@ -17,6 +16,7 @@ import org.spincast.plugins.formsprotection.doublesubmit.SpincastFormsDoubleSubm
 import org.spincast.plugins.formsprotection.doublesubmit.SpincastFormsDoubleSubmitProtectionRepository;
 import org.spincast.plugins.formsprotection.pebble.SpincastFormsProtectionPebbleExtension;
 import org.spincast.plugins.formsprotection.pebble.SpincastFormsProtectionPebbleExtensionDefault;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTask;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -67,16 +67,17 @@ public class SpincastFormsProtectionPluginModule extends SpincastGuiceModuleBase
         // Binds Dictionary entries
         //==========================================
         Multibinder<DictionaryEntries> dictionaryMultibinder = Multibinder.newSetBinder(binder(), DictionaryEntries.class);
-        dictionaryMultibinder.addBinding().to(SpincastFormsProtectionPluginDictionaryEntries.class).asEagerSingleton();
+        dictionaryMultibinder.addBinding().to(SpincastFormsProtectionPluginDictionaryEntries.class).in(Scopes.SINGLETON);
 
         //==========================================
-        // Binds cron jobs
+        // Binds scheduled tasks
         //==========================================
-        bind(SpincastFormsProtectionPluginCronJobProvider.class).to(getSpincastFormsProtectionPluginCronJobProviderImplClass())
-                                                                .in(Scopes.SINGLETON);
-        Multibinder<Set<SpincastCronJob>> cronsSetsMultibinder =
-                Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<Set<SpincastCronJob>>() {}));
-        cronsSetsMultibinder.addBinding().toProvider(SpincastFormsProtectionPluginCronJobProvider.class).in(Scopes.SINGLETON);
+        bind(SpincastFormsProtectionPluginScheduledTaskProvider.class).to(getSpincastFormsProtectionPluginScheduledTaskProviderImplClass())
+                                                                      .in(Scopes.SINGLETON);
+        Multibinder<Set<SpincastScheduledTask>> scheduledTasksSetsMultibinder =
+                Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<Set<SpincastScheduledTask>>() {}));
+        scheduledTasksSetsMultibinder.addBinding().toProvider(SpincastFormsProtectionPluginScheduledTaskProvider.class)
+                                     .in(Scopes.SINGLETON);
     }
 
     protected Class<? extends SpincastFormsProtectionConfig> getSpincastFormsProtectionConfigImplClass() {
@@ -105,8 +106,8 @@ public class SpincastFormsProtectionPluginModule extends SpincastGuiceModuleBase
         return SpincastFormsProtectionPebbleExtensionDefault.class;
     }
 
-    protected Class<? extends SpincastFormsProtectionPluginCronJobProvider> getSpincastFormsProtectionPluginCronJobProviderImplClass() {
-        return SpincastFormsProtectionPluginCronJobProviderDefault.class;
+    protected Class<? extends SpincastFormsProtectionPluginScheduledTaskProvider> getSpincastFormsProtectionPluginScheduledTaskProviderImplClass() {
+        return SpincastFormsProtectionPluginScheduledTaskProviderDefault.class;
     }
 
     protected Class<? extends SpincastFormsCsrfProtectionFilter> getSpincastFormsCsrfProtectionFilterImplClass() {

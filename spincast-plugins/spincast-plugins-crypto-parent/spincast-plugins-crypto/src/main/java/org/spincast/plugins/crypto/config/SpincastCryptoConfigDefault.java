@@ -1,7 +1,7 @@
 package org.spincast.plugins.crypto.config;
 
 /**
- * Default configurations for Spincast Simple Crypto plugin.
+ * Default configurations for Spincast Crypto plugin.
  */
 public class SpincastCryptoConfigDefault implements SpincastCryptoConfig {
 

@@ -3,11 +3,11 @@ package org.spincast.plugins.session;
 import java.util.Set;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.plugins.crons.SpincastCronJob;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTask;
 import org.spincast.plugins.session.config.SpincastSessionConfig;
 import org.spincast.plugins.session.config.SpincastSessionConfigDefault;
-import org.spincast.plugins.session.config.SpincastSessionPluginCronJobProvider;
-import org.spincast.plugins.session.config.SpincastSessionPluginCronJobProviderDefault;
+import org.spincast.plugins.session.config.SpincastSessionPluginScheduledTaskProvider;
+import org.spincast.plugins.session.config.SpincastSessionPluginScheduledTaskProviderDefault;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -43,13 +43,13 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
                                          .in(Scopes.SINGLETON);
 
         //==========================================
-        // Binds cron jobs
+        // Binds scheduled tasks
         //==========================================
-        bind(SpincastSessionPluginCronJobProvider.class).to(getSpincastSessionPluginCronJobProviderImplClass())
-                                                        .in(Scopes.SINGLETON);
-        Multibinder<Set<SpincastCronJob>> cronsSetsMultibinder =
-                Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<Set<SpincastCronJob>>() {}));
-        cronsSetsMultibinder.addBinding().toProvider(SpincastSessionPluginCronJobProvider.class);
+        bind(SpincastSessionPluginScheduledTaskProvider.class).to(getSpincastSessionPluginScheduledTaskProviderImplClass())
+                                                              .in(Scopes.SINGLETON);
+        Multibinder<Set<SpincastScheduledTask>> scheduledTaskSetsMultibinder =
+                Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<Set<SpincastScheduledTask>>() {}));
+        scheduledTaskSetsMultibinder.addBinding().toProvider(SpincastSessionPluginScheduledTaskProvider.class);
     }
 
     protected Class<? extends SpincastSessionConfig> getSpincastSessionConfigImplClass() {
@@ -64,8 +64,8 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
         return SpincastSessionFilterDefault.class;
     }
 
-    protected Class<? extends SpincastSessionPluginCronJobProvider> getSpincastSessionPluginCronJobProviderImplClass() {
-        return SpincastSessionPluginCronJobProviderDefault.class;
+    protected Class<? extends SpincastSessionPluginScheduledTaskProvider> getSpincastSessionPluginScheduledTaskProviderImplClass() {
+        return SpincastSessionPluginScheduledTaskProviderDefault.class;
     }
 
     protected Class<? extends SpincastSessionManager> getSpincastSessionManagerImplClass() {

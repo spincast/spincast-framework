@@ -60,6 +60,10 @@ img {
     max-width:100%;
 }
 
+blockquote code {
+    font-size: 0.9em;
+}
+
 .well, #pluginsWrapper .thumbnail {
     background: #ffffff;
     background: -moz-linear-gradient(top, #ffffff 0%, #f6f6f6 47%, #ededed 100%);
@@ -205,6 +209,52 @@ h4 {
 
 blockquote {
 	margin-top:20px;
+}
+
+blockquote.niceQuote {
+    border: 90px;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-style: italic;
+    width: 90%;
+    margin: 0.25em 0;
+    margin-left:40px;
+    padding: 0.25em 40px;
+    line-height: 1.45;
+    position: relative;
+    color: #383838;
+}
+blockquote.niceQuote:before {
+    display: block;
+    content: "\201C";
+    font-size: 80px;
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    color: #7a7a7a;
+}
+blockquote.niceQuote cite {
+    color: #999999;
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+}
+
+blockquote.niceQuote.niceQuoteSmall {
+    color: #505B67;
+    font-size: 18px;
+    font-style: italic;
+    width: 100%;
+    margin-top:10px;
+    margin-left:20px;
+    padding: 0px 0px 0px 14px;
+}
+blockquote.niceQuote.niceQuoteSmall:before {
+    font-size: 52px;
+}
+ 
+blockquote.niceQuote cite:before {
+    content: "\2014 \2009";
 }
 
 code, code.block, .code-line-nbr {
@@ -583,10 +633,13 @@ a.love:hover::after {
 .quickStartWrapper, .pluginDocBtn {
     text-align:center;
     margin-top:0px;
-    margin-bottom:15px;
 }
 .quickStartWrapper span, .pluginDocBtn  span {
     font-weight:bold;
+}
+
+.quickStartWrapper, #version {
+    margin-bottom: 23px;
 }
 
 .pluginDocBtn a, .pluginDocBtn a:active, .pluginDocBtn a:visited 
@@ -1073,7 +1126,7 @@ a.pluginLink {
 
 .ace_active-line, .code-line-nbr:hover, .stayHi {
     background: #DCEBF4 !important;  
-    border: 1px solid #4993CB;
+    xborder: 1px solid #4993CB;
 }
 
 .ace-pebble .ace_active-line, .ace-pebble .code-line-nbr:hover, .ace-pebble .stayHi,
@@ -1439,10 +1492,6 @@ ul.tutoBullets li {
 
 #right-sidebar {
 	padding-left:0px;
-}
-
-#version {
-	margin-bottom: 15px;
 }
 
 #version h4 {
@@ -1875,7 +1924,5 @@ input.has-no-message:focus, input.has-success:focus {
     margin-top:60px;
     text-align:center;
 }
-
-
 
 

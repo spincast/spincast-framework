@@ -36,9 +36,9 @@
         <module>spincast-plugins-date-formatter-parent</module>  
         <module>spincast-plugins-crypto-parent</module>  
         <module>spincast-plugins-forms-protection-parent</module>  
-        <module>spincast-plugins-crons-parent</module>
+        <module>spincast-plugins-scheduledtasks-parent</module>
         <module>spincast-plugins-session-parent</module>
-        
+        <module>spincast-plugins-attempts-limiter-parent</module>
     </modules>
 
 </project>

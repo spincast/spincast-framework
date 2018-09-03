@@ -71,6 +71,8 @@ public abstract class StatementBase implements Statement {
     @Override
     public void clearSql(boolean keepCurrentBoundParams) {
         getQueryBuilder().setLength(0);
+        this.parsedQuery = null;
+
         if (!keepCurrentBoundParams) {
             getStaticTokens().clear();
             getParams().clear();

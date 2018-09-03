@@ -3,7 +3,7 @@ package org.spincast.plugins.session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.guice.SpincastPluginBase;
-import org.spincast.plugins.crons.SpincastCronsPlugin;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTasksPlugin;
 
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
@@ -39,13 +39,13 @@ public class SpincastSessionPlugin extends SpincastPluginBase {
     }
 
     protected Module applyRequiredPlugins(Module module) {
-        module = applySpincastCronsPlugin(module);
+        module = applySpincastScheduledTasksPlugin(module);
         return module;
     }
 
-    protected Module applySpincastCronsPlugin(Module module) {
-        SpincastCronsPlugin spincastCronsPlugin = new SpincastCronsPlugin();
-        return spincastCronsPlugin.apply(module);
+    protected Module applySpincastScheduledTasksPlugin(Module module) {
+        SpincastScheduledTasksPlugin spincastScheduledTasksPlugin = new SpincastScheduledTasksPlugin();
+        return spincastScheduledTasksPlugin.apply(module);
     }
 
     protected Module getPluginModule() {

@@ -149,13 +149,13 @@ public class Jdbc2Test extends JdbcTestBase {
                         bool3 = rs.getBooleanOrNull(9);
                         assertEquals(false, bool3);
 
-                        Integer nbr = rs.getIntOrNull("nbr");
+                        Integer nbr = rs.getIntegerOrNull("nbr");
                         assertNull(nbr);
 
-                        Integer nbr2 = rs.getIntOrNull("nbr2");
+                        Integer nbr2 = rs.getIntegerOrNull("nbr2");
                         assertEquals((Integer)123, nbr2);
 
-                        Integer nbr3 = rs.getIntOrNull("nbr3");
+                        Integer nbr3 = rs.getIntegerOrNull("nbr3");
                         assertEquals((Integer)0, nbr3);
 
                         Long nbrl = rs.getLongOrNull("nbr");

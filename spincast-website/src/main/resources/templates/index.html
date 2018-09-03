@@ -120,7 +120,7 @@
                 .plugin(new SpincastHttpClientPlugin())
                 .plugin(new SpincastJdbcPlugin())
                 .plugin(new SpincastFormsProtectionPlugin())
-                .plugin(new SpincastCronsPlugin())
+                .plugin(new SpincastScheduledTasksPlugin())
                 .plugin(new SpincastSessionPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
                 .init(args);
@@ -146,7 +146,7 @@
             System.out.println(userObj.toJsonString(true));
             // {
             //     "user" : {
-            //         "id" : "HAL9000",
+            //         "id" : "42",
             //         "timeZone" : "America/New_York",
             //         "locale" : "en_US"
             //     }
@@ -349,7 +349,7 @@
 	        Quote
 	        ==========================================#}
             <div class="well right-section">
-                <blockquote>
+                <blockquote class="niceQuote niceQuoteSmall">
                     <p><em>Simple things should be simple, complex
                      things should be possible.</em></p>
                     <footer>Alan Kay</footer>

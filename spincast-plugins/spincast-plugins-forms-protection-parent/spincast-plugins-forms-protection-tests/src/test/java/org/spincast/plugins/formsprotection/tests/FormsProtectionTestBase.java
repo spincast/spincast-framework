@@ -12,15 +12,15 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
-import org.spincast.plugins.crons.SpincastCronJob;
-import org.spincast.plugins.crons.SpincastCronJobRegister;
-import org.spincast.plugins.crons.SpincastCronJobRegistrerDefault;
-import org.spincast.plugins.crons.SpincastCronsPlugin;
 import org.spincast.plugins.formsprotection.SpincastFormsProtectionPlugin;
 import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionConfig;
 import org.spincast.plugins.formsprotection.csrf.SpincastFormsCsrfProtectionFilter;
 import org.spincast.plugins.formsprotection.doublesubmit.SpincastFormsDoubleSubmitProtectionFilter;
 import org.spincast.plugins.formsprotection.doublesubmit.SpincastFormsDoubleSubmitProtectionRepository;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTask;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegister;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegistrerDefault;
+import org.spincast.plugins.scheduledtasks.SpincastScheduledTasksPlugin;
 import org.spincast.plugins.session.SpincastSession;
 import org.spincast.plugins.session.SpincastSessionFilter;
 import org.spincast.plugins.session.SpincastSessionManager;
@@ -96,7 +96,7 @@ public abstract class FormsProtectionTestBase extends NoAppStartHttpServerTestin
         List<SpincastPlugin> extraPlugins = super.getExtraPlugins();
         extraPlugins.add(new SpincastFormsProtectionPlugin());
         extraPlugins.add(new SpincastSessionPlugin());
-        extraPlugins.add(new SpincastCronsPlugin());
+        extraPlugins.add(new SpincastScheduledTasksPlugin());
         return extraPlugins;
     }
 
@@ -109,7 +109,7 @@ public abstract class FormsProtectionTestBase extends NoAppStartHttpServerTestin
                 bind(SpincastSessionRepository.class).to(TestSessionRepository.class).in(Scopes.SINGLETON);
                 bind(SpincastFormsDoubleSubmitProtectionRepository.class).to(TestFormsDoubleSubmitProtectionRepository.class)
                                                                          .in(Scopes.SINGLETON);
-                bind(SpincastCronJobRegister.class).to(TestSpincastCronJobRegistrer.class).in(Scopes.SINGLETON);
+                bind(SpincastScheduledTaskRegister.class).to(TestSpincastScheduledTaskRegistrer.class).in(Scopes.SINGLETON);
             }
         });
     }
@@ -121,18 +121,19 @@ public abstract class FormsProtectionTestBase extends NoAppStartHttpServerTestin
         addFilters();
     }
 
-    public static class TestSpincastCronJobRegistrer extends SpincastCronJobRegistrerDefault {
+    public static class TestSpincastScheduledTaskRegistrer extends SpincastScheduledTaskRegistrerDefault {
 
         @Inject
-        public TestSpincastCronJobRegistrer(Set<SpincastCronJob> cronJobs, Set<Set<SpincastCronJob>> cronJobsSets,
-                                            Scheduler scheduler, SpincastConfig spincastConfig) {
-            super(cronJobs, cronJobsSets, scheduler, spincastConfig);
+        public TestSpincastScheduledTaskRegistrer(Set<SpincastScheduledTask> scheduledTasks,
+                                                  Set<Set<SpincastScheduledTask>> scheduledTaskSets,
+                                                  Scheduler scheduler, SpincastConfig spincastConfig) {
+            super(scheduledTasks, scheduledTaskSets, scheduler, spincastConfig);
         }
 
         @Override
-        protected boolean registerCronJobInTestingMode() {
+        protected boolean registerScheduledTasksInTestingMode() {
             //==========================================
-            // We need to activate the crons even in testing mode
+            // We need to activate the scheduled tasks even in testing mode
             //==========================================
             return true;
         }
