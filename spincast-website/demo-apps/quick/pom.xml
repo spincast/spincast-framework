@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent</artifactId>
-        <version>0.9.45</version>
+        <version>0.9.46-SNAPSHOT</version>
         <relativePath>../../../spincast-parent</relativePath>
     </parent>
     <artifactId>spincast-demos-quick</artifactId>
