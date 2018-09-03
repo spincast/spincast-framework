@@ -2,7 +2,7 @@
 
 {% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-attempts-limiter{% endblock %}
 {% block meta_title %}Plugins - Spincast Attempts Limiter{% endblock %}
-{% block meta_description %}Spincast Attempts Limiter plugin - Limit the number of attempts a user can do at something.{% endblock %}
+{% block meta_description %}Spincast Attempts Limiter plugin - Limit the number of attempts a user can make at something.{% endblock %}
 
 {% block scripts %}
 <script>
@@ -366,7 +366,7 @@ if (attempt.isMaxReached()) {
                     </ul>
                 </p>
                 <p>
-                    If you don't let the <code>.attempt(...)</code> method increment the number of attempts by itself, you
+                    If you don't let the <code>.attempt(...)</code> method increment the number of attempts, you
                     are responsible to do it by yourself. You do so by calling 
                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/attemptslimiter/Attempt.html#incrementAttemptsCount--">incrementAttemptsCount()</a>
                     on the <code>Attempt</code> instance. For example:
