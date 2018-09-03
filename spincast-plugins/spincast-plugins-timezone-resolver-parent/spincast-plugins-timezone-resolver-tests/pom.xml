@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-timezone-resolver-parent</artifactId>
-        <version>0.9.45-SNAPSHOT</version>
+        <version>0.9.45</version>
     </parent>
 	
 	<artifactId>spincast-plugins-timezone-resolver-tests</artifactId>
