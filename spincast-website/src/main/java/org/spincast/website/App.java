@@ -182,7 +182,7 @@ public class App {
         try {
 
             String logbackFilePath = "conf/logback.prod.xml";
-            if (getConfig().isDebugEnabled()) {
+            if (getConfig().isDevelopmentMode()) {
                 logbackFilePath = "conf/logback.debug.xml";
             }
 
@@ -215,7 +215,7 @@ public class App {
         }
 
         System.out.println("Environment : " + getConfig().getEnvironmentName());
-        System.out.println("Debug enabled? " + getConfig().isDebugEnabled());
+        System.out.println("Debug enabled? " + getConfig().isDevelopmentMode());
         System.out.println("====================================================");
         System.out.println();
     }
@@ -279,7 +279,11 @@ public class App {
         // querystring parameter which changes the content.
         router.GET("/news").handle(appCtl::news);
 
-        router.file("/news/${newsId:<N>}").pathRelative("/pages/news/${newsId:<N>}.html").handle(appCtl::newsEntry);
+        // For now, the relative date is server-server generated as
+        // an example,fot can't be static.
+        //router.file("/news/${newsId:<N>}").pathRelative("/pages/news/${newsId:<N>}.html").handle(appCtl::newsEntry);
+        router.GET("/news/${newsId:<N>}").handle(appCtl::newsEntry);
+
         router.file("/documentation").pathRelative("/pages/documentation.html").handle(appCtl::documentation);
         router.file("/download").pathRelative("/pages/download.html").handle(appCtl::download);
         router.file("/plugins").pathRelative("/pages/plugins.html").handle(appCtl::plugins);

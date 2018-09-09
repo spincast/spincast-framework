@@ -119,7 +119,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void resourceUsingTemplate() throws Exception {
 
-        String generatedFilePath = getTestingWritableDir().getAbsolutePath() + "/generated.css";
+        String generatedFilePath = getTestingWritableTempDir().getAbsolutePath() + "/generated.css";
 
         final int[] nbrTimeCalled = new int[]{0};
 

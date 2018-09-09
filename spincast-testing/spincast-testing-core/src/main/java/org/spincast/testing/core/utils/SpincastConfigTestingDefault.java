@@ -28,7 +28,7 @@ public class SpincastConfigTestingDefault extends SpincastConfigDefault {
      * We do not run in "debug" mode.
      */
     @Override
-    public boolean isDebugEnabled() {
+    public boolean isDevelopmentMode() {
         return false;
     }
 

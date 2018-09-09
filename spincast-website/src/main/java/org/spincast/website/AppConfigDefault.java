@@ -72,8 +72,8 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
     }
 
     @Override
-    public boolean isDebugEnabled() {
-        return getBoolean("environment.isDebug", super.isDebugEnabled());
+    public boolean isDevelopmentMode() {
+        return getBoolean("environment.isDebug", super.isDevelopmentMode());
     }
 
     @Override
@@ -122,7 +122,7 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
                 //==========================================
                 // Dev credentials
                 //==========================================
-                if (isDebugEnabled() && getPublicUrlBase().startsWith("http://localhost:")) {
+                if (isDevelopmentMode() && getPublicUrlBase().startsWith("http://localhost:")) {
                     Pair<String, String> userPassPair = Pair.of("admin", "admin");
                     usernamesPasswords.add(userPassPair);
                 }

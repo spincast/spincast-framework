@@ -32,7 +32,7 @@ public class PebbleDebugModeTest extends NoAppTestingBase {
         }
 
         @Override
-        public boolean isDebugEnabled() {
+        public boolean isDevelopmentMode() {
             return true;
         }
     }

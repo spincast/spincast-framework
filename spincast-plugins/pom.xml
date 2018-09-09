@@ -39,6 +39,7 @@
         <module>spincast-plugins-scheduledtasks-parent</module>
         <module>spincast-plugins-session-parent</module>
         <module>spincast-plugins-attempts-limiter-parent</module>
+        <module>spincast-plugins-hotswap-parent</module>
     </modules>
 
 </project>

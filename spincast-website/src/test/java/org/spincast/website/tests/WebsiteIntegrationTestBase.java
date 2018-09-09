@@ -102,7 +102,7 @@ public abstract class WebsiteIntegrationTestBase extends AppBasedTestingBase<App
         }
 
         @Override
-        public boolean isDebugEnabled() {
+        public boolean isDevelopmentMode() {
             return false;
         }
 

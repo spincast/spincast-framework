@@ -91,7 +91,7 @@ public class TemplateFilesRepository implements NewsRepository {
     public List<NewsEntry> getNewsEntries(boolean ascOrder) {
 
         if(ascOrder) {
-            if(this.newsEntriesAsc == null || getAppConfig().isDebugEnabled()) {
+            if(this.newsEntriesAsc == null || getAppConfig().isDevelopmentMode()) {
 
                 List<NewsEntry> entries = getNewsEntriesLocal();
 
@@ -108,7 +108,7 @@ public class TemplateFilesRepository implements NewsRepository {
             return this.newsEntriesAsc;
 
         } else {
-            if(this.newsEntriesDesc == null || getAppConfig().isDebugEnabled()) {
+            if(this.newsEntriesDesc == null || getAppConfig().isDevelopmentMode()) {
                 List<NewsEntry> newsEntriesAsc = getNewsEntries(true);
                 this.newsEntriesDesc = Lists.reverse(newsEntriesAsc);
             }
@@ -181,7 +181,7 @@ public class TemplateFilesRepository implements NewsRepository {
 
     protected Map<Long, NewsEntry> getNewsEntriesById() {
 
-        if(this.newsEntriesById == null || getAppConfig().isDebugEnabled()) {
+        if(this.newsEntriesById == null || getAppConfig().isDevelopmentMode()) {
             this.newsEntriesById = new HashMap<Long, NewsEntry>();
             List<NewsEntry> newsEntries = getNewsEntriesLocal();
             for(NewsEntry newsEntry : newsEntries) {
@@ -194,9 +194,9 @@ public class TemplateFilesRepository implements NewsRepository {
 
     protected List<NewsEntry> getNewsEntriesLocal() {
 
-        if(this.newsEntries == null || getAppConfig().isDebugEnabled()) {
+        if(this.newsEntries == null || getAppConfig().isDevelopmentMode()) {
             synchronized(this.getNewsEntriesLocalLock) {
-                if(this.newsEntries == null || getAppConfig().isDebugEnabled()) {
+                if(this.newsEntries == null || getAppConfig().isDevelopmentMode()) {
 
                     try {
 

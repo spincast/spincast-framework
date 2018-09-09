@@ -48,7 +48,7 @@ public class StaticResourcesDynamicDebugEnvironmentTest extends NoAppStartHttpSe
          * Run in "debug" mode.
          */
         @Override
-        public boolean isDebugEnabled() {
+        public boolean isDevelopmentMode() {
             return true;
         }
 

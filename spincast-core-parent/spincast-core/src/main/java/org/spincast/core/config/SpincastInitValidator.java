@@ -56,7 +56,7 @@ public class SpincastInitValidator {
 
     protected void validateLocalhostHost() {
 
-        if (!getSpincastConfig().isDebugEnabled() && !"local".equals(getSpincastConfig().getEnvironmentName()) &&
+        if (!getSpincastConfig().isDevelopmentMode() && !"local".equals(getSpincastConfig().getEnvironmentName()) &&
             "localhost".equals(getSpincastConfig().getPublicServerHost()) &&
             getSpincastConfig().isValidateLocalhostHost()) {
             throw new RuntimeException("Did you forget to override the SpincastConfig#getPublicUrlBase() " +

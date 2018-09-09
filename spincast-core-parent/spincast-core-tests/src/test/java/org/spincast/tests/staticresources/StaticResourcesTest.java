@@ -245,7 +245,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fileFileSystemAbsolute() throws Exception {
 
-        File fileTarget = SpincastTestUtils.generateTempClassFile(getTestingWritableDir());
+        File fileTarget = SpincastTestUtils.generateTempClassFile(getTestingWritableTempDir());
         assertTrue(fileTarget.isFile());
 
         getRouter().file("/file").pathAbsolute(fileTarget.getAbsolutePath()).handle();
@@ -258,10 +258,10 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dirFileSystemAbsolute() throws Exception {
 
-        File dir = new File(getTestingWritableDir() + "/dirFileSystem");
+        File dir = new File(getTestingWritableTempDir() + "/dirFileSystem");
         assertTrue(dir.mkdirs());
 
-        File fileTemp = SpincastTestUtils.generateTempClassFile(getTestingWritableDir());
+        File fileTemp = SpincastTestUtils.generateTempClassFile(getTestingWritableTempDir());
         assertTrue(fileTemp.isFile());
 
         File fileTarget = new File(dir.getAbsolutePath() + "/" + fileTemp.getName());
@@ -449,10 +449,10 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dirSplatAbsolutePathValid() throws Exception {
 
-        File file = new File(getTestingWritableDir(), "dirSplatAbsolutePathValid.html");
+        File file = new File(getTestingWritableTempDir(), "dirSplatAbsolutePathValid.html");
         FileUtils.writeStringToFile(file, "test", "UTF-8");
 
-        getRouter().dir("/one/*{remaining}").pathAbsolute(getTestingWritableDir().getAbsolutePath()).handle();
+        getRouter().dir("/one/*{remaining}").pathAbsolute(getTestingWritableTempDir().getAbsolutePath()).handle();
 
         HttpResponse response = GET("/one/dirSplatAbsolutePathValid.html").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -463,10 +463,10 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dirSplatAbsolutePathNotFound() throws Exception {
 
-        File file = new File(getTestingWritableDir(), "dirSplatAbsolutePathValid.html");
+        File file = new File(getTestingWritableTempDir(), "dirSplatAbsolutePathValid.html");
         FileUtils.writeStringToFile(file, "test", "UTF-8");
 
-        getRouter().dir("/one/*{remaining}").pathAbsolute(getTestingWritableDir().getAbsolutePath()).handle();
+        getRouter().dir("/one/*{remaining}").pathAbsolute(getTestingWritableTempDir().getAbsolutePath()).handle();
 
         HttpResponse response = GET("/one/dirSplatAbsolutePathValid.nope").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
@@ -516,52 +516,52 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void dirDynamicParametersInvalid() throws Exception {
 
-        getRouter().dir("/one").pathAbsolute(getTestingWritableDir() + "/").handle();
+        getRouter().dir("/one").pathAbsolute(getTestingWritableTempDir() + "/").handle();
 
         try {
-            getRouter().dir("/${param1}").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/${param1}").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/${param1}/one").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/${param1}/one").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/one/${param1}").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/one/${param1}").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/${path:a+}").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/${path:a+}").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/${path:<N>}").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/${path:<N>}").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/*{param1}/one").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/*{param1}/one").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/one/*{param1}/one").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/one/*{param1}/one").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
 
         try {
-            getRouter().dir("/*{splat}/${param1}").pathAbsolute(getTestingWritableDir() + "/").handle();
+            getRouter().dir("/*{splat}/${param1}").pathAbsolute(getTestingWritableTempDir() + "/").handle();
             fail();
         } catch (Exception ex) {
         }
@@ -764,7 +764,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheDefaultWithGenerator() throws Exception {
 
-        File file = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString() + ".txt");
+        File file = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString() + ".txt");
         getRouter().file("/one").pathAbsolute(file.getAbsolutePath()).handle(new Handler<DefaultRequestContext>() {
 
             @Override
@@ -810,7 +810,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheSecondsWithGenerator() throws Exception {
 
-        File file = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString() + ".txt");
+        File file = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString() + ".txt");
         getRouter().file("/one").cache(123).pathAbsolute(file.getAbsolutePath()).handle(new Handler<DefaultRequestContext>() {
 
             @Override
@@ -855,7 +855,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheSecondsPrivateWithGenerator() throws Exception {
 
-        File file = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString() + ".txt");
+        File file = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString() + ".txt");
         getRouter().file("/one").cache(123, true).pathAbsolute(file.getAbsolutePath())
                    .handle(new Handler<DefaultRequestContext>() {
 
@@ -901,7 +901,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheSecondsPrivateSecondsCdnWithGenerator() throws Exception {
 
-        File file = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString() + ".txt");
+        File file = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString() + ".txt");
         getRouter().file("/one").cache(123, true, 456).pathAbsolute(file.getAbsolutePath())
                    .handle(new Handler<DefaultRequestContext>() {
 
@@ -1035,7 +1035,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheDefaultWithGeneratorDir() throws Exception {
 
-        File dir = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString());
+        File dir = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString());
         getRouter().dir("/one/*{resourcePath}").pathAbsolute(dir.getAbsolutePath()).handle(new Handler<DefaultRequestContext>() {
 
             @Override
@@ -1080,7 +1080,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheSecondsWithGeneratorDir() throws Exception {
 
-        File dir = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString());
+        File dir = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString());
         getRouter().dir("/one/*{resourcePath}").cache(123).pathAbsolute(dir.getAbsolutePath())
                    .handle(new Handler<DefaultRequestContext>() {
 
@@ -1126,7 +1126,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheSecondsPrivateWithGeneratorDir() throws Exception {
 
-        File dir = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString());
+        File dir = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString());
         getRouter().dir("/one/*{resourcePath}").cache(123, true).pathAbsolute(dir.getAbsolutePath())
                    .handle(new Handler<DefaultRequestContext>() {
 
@@ -1172,7 +1172,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void cacheSecondsPrivateSecondsCdnWithGeneratorDir() throws Exception {
 
-        File dir = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString());
+        File dir = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString());
         getRouter().dir("/one/*{resourcePath}").cache(123, true, 456).pathAbsolute(dir.getAbsolutePath())
                    .handle(new Handler<DefaultRequestContext>() {
 
@@ -1266,7 +1266,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
 
         getRouter().dir("/one").cache(123).classpath("/oneDir").handle();
 
-        File file = new File(getTestingWritableDir() + "/" + UUID.randomUUID().toString() + ".txt");
+        File file = new File(getTestingWritableTempDir() + "/" + UUID.randomUUID().toString() + ".txt");
         getRouter().file("/one/titi.txt").cache(123).pathAbsolute(file.getAbsolutePath())
                    .handle(new Handler<DefaultRequestContext>() {
 

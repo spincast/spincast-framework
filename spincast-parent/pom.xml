@@ -20,7 +20,6 @@
     <properties>
         <guice.version>4.2.0</guice.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <jsr305.version>3.0.2</jsr305.version> 
         <undertow.version>2.0.12.Final</undertow.version> 
     </properties>
     
@@ -44,11 +43,6 @@
             </dependency>
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-multibindings</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-throwingproviders</artifactId>
                 <version>${guice.version}</version>
             </dependency>
@@ -57,16 +51,7 @@
                 <artifactId>guice-assistedinject</artifactId>
                 <version>${guice.version}</version>
             </dependency>
-            
-            <!--=================================== 
-            For the @Nullable annotation 
-            ====================================-->
-            <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>${jsr305.version}</version>
-            </dependency>
-    
+
             <!--=================================== 
             Slf4j - Logging
             ====================================-->

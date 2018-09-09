@@ -33,7 +33,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         super.beforeTest();
 
         try {
-            FileUtils.cleanDirectory(getTestingWritableDir());
+            FileUtils.cleanDirectory(getTestingWritableTempDir());
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
@@ -341,7 +341,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
     public void dynamicDirSplatParamUsedInTargetPath() throws Exception {
 
         try {
-            getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/*{splat}")
+            getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableTempDir().getCanonicalPath() + "/*{splat}")
                        .handle(new Handler<DefaultRequestContext>() {
 
                            @Override
@@ -358,7 +358,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
     public void dynamicDirDynParamUserdInTargetPath() throws Exception {
 
         try {
-            getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableDir().getCanonicalPath() + "/${splat}")
+            getRouter().dir("/generated/*{splat}").pathAbsolute(getTestingWritableTempDir().getCanonicalPath() + "/${splat}")
                        .handle(new Handler<DefaultRequestContext>() {
 
                            @Override
@@ -377,11 +377,11 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content = "body{ font-size:12px;}";
 
-        File file = new File(getTestingWritableDir() + "/somepath/test1.css");
+        File file = new File(getTestingWritableTempDir() + "/somepath/test1.css");
         assertFalse(file.exists());
 
         getRouter().file("/test/${name}")
-                   .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
+                   .pathAbsolute(getTestingWritableTempDir() + "/somepath/${name}")
                    .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
@@ -417,11 +417,11 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content = "body{ font-size:12px;}";
 
-        File file = new File(getTestingWritableDir() + "/somepath/test1.css");
+        File file = new File(getTestingWritableTempDir() + "/somepath/test1.css");
         assertFalse(file.exists());
 
         getRouter().file("/test/${name}/coco")
-                   .pathAbsolute(getTestingWritableDir() + "/somepath/${name}.css")
+                   .pathAbsolute(getTestingWritableTempDir() + "/somepath/${name}.css")
                    .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
@@ -459,11 +459,11 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content = "body{ font-size:12px;}";
 
-        File file = new File(getTestingWritableDir() + "/somepath/test2/test1.css");
+        File file = new File(getTestingWritableTempDir() + "/somepath/test2/test1.css");
         assertFalse(file.exists());
 
         getRouter().file("/${param1}/${param2}")
-                   .pathAbsolute(getTestingWritableDir() + "/somepath/${param2}/${param1}.css")
+                   .pathAbsolute(getTestingWritableTempDir() + "/somepath/${param2}/${param1}.css")
                    .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
@@ -499,11 +499,11 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content = "body{ font-size:12px;}";
 
-        File file = new File(getTestingWritableDir() + "/somepath/toto.css");
+        File file = new File(getTestingWritableTempDir() + "/somepath/toto.css");
         assertFalse(file.exists());
 
         getRouter().file("/${param1}")
-                   .pathAbsolute(getTestingWritableDir() + "/somepath/toto.css")
+                   .pathAbsolute(getTestingWritableTempDir() + "/somepath/toto.css")
                    .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
@@ -539,14 +539,14 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         final int[] nbrTimeCalled = new int[]{0};
         final String content = "body{ font-size:12px;}";
 
-        File file = new File(getTestingWritableDir() + "/somepath/test1.css");
+        File file = new File(getTestingWritableTempDir() + "/somepath/test1.css");
         assertFalse(file.exists());
 
-        File file2 = new File(getTestingWritableDir() + "/somepath/nope/test1.css");
+        File file2 = new File(getTestingWritableTempDir() + "/somepath/nope/test1.css");
         assertFalse(file2.exists());
 
         getRouter().file("/test/${name}")
-                   .pathAbsolute(getTestingWritableDir() + "/somepath/${name}")
+                   .pathAbsolute(getTestingWritableTempDir() + "/somepath/${name}")
                    .handle(new Handler<DefaultRequestContext>() {
 
                        @Override
@@ -570,7 +570,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         try {
             getRouter().file("/test/*{name}")
-                       .pathAbsolute(getTestingWritableDir() + "/somepath/titi")
+                       .pathAbsolute(getTestingWritableTempDir() + "/somepath/titi")
                        .handle(new Handler<DefaultRequestContext>() {
 
                            @Override

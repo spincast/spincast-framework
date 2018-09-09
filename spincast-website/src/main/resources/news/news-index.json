@@ -107,6 +107,12 @@
             "date" : "2018-09-02T23:00:00Z",
             "title" : "Spincast Attempts Limiter plugin",
             "path" : "/news/2018-09-02.html"
+        },
+        {
+            "id" : "20",
+            "date" : "2018-09-09T20:00:00Z",
+            "title" : "Hot Swapping",
+            "path" : "/news/2018-09-09.html"
         }
 		
 	]

@@ -175,7 +175,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     }
 
     @Override
-    public boolean isDebugEnabled() {
+    public boolean isDevelopmentMode() {
         return true;
     }
 
@@ -325,7 +325,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
 
     @Override
     public boolean isWriteToDiskDynamicStaticResource() {
-        return !isDebugEnabled();
+        return !isDevelopmentMode();
     }
 
     @Override
@@ -455,7 +455,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     @Override
     public DictionaryEntryNotFoundBehavior getDictionaryEntryNotFoundBehavior() {
 
-        if (isDebugEnabled()) {
+        if (isDevelopmentMode()) {
             return DictionaryEntryNotFoundBehavior.EXCEPTION;
         }
 

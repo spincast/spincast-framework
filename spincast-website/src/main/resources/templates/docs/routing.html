@@ -51,14 +51,14 @@ Routing
             But what if no <code>main Route Handler</code> matches? What if we receive a request that uses an invalid URL? Then, 
             we enter a routing process with a <code>routing process type</code> called <code><em>"Not Found"</em></code> (404). We'll see in the 
             <a href="#routing_types">Routing Types</a> section that we can define some routes
-            as dedicted to the <code>Not Found</code> routing process. Those routes are the ones that are 
+            for the <code>Not Found</code> routing process. Those routes are the ones that are 
             going to be considered when a <code>Not Found</code> routing process occures.
         </p> 
         <p>    
             <img class="inlineIcon" src="/public/images/icons/para.png" /> 
             So when we receive a request for an invalid URL, the <code>Not Found</code> routing process
             is triggered and the dedicated Routes are considered as potential handlers.
-            But that <code>Not Found</code> routing process can also be activated if a 
+            Note that the <code>Not Found</code> routing process is also activated if a 
             <a class="javadoc" href="/public/javadoc/org/spincast/core/exceptions/NotFoundException.html"><code>NotFoundException</code></a> is 
             thrown in our application! Suppose you have a <code>"/users/${userId}"</code> Route, and a 
             request for <code>"/users/42"</code> is received... Then a <code>main Route Handler</code> may be found and called,

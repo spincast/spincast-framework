@@ -637,7 +637,7 @@ if(configFile.isAbsolute()) {
                         The <code>environment name</code> is not "local".
                     </li>
                     <li>
-                        <code>isDebugEnabled()</code> configuration returns <code>false</code>.
+                        <code>isDevelopmentMode()</code> configuration returns <code>false</code>.
                     </li>
                     <li>
                         The <code>public host</code> is still <code>"localhost"</code>.
@@ -669,7 +669,7 @@ if(configFile.isAbsolute()) {
                 certificate to use.
             </li>
             <li>
-                <code>isDebugEnabled()</code> : If <code>true</code>,
+                <code>isDevelopmentMode()</code> : If <code>true</code>,
                 a <em>development</em> environment is taken for granted, and
                 internal error messages may be displayed publicly, no cache will be
                 used for the templates, etc. The default is <code>true</code>, so make

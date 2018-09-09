@@ -164,7 +164,7 @@ public class ConfigTypesTest extends ConfigTestingBase {
         }
 
         @Override
-        public boolean isDebugEnabled() {
+        public boolean isDevelopmentMode() {
             return false;
         }
 

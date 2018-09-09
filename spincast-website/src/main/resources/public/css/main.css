@@ -1925,4 +1925,6 @@ input.has-no-message:focus, input.has-success:focus {
     text-align:center;
 }
 
-
+.plugins-spincast-hotswap .dcevmWrap img {
+    max-width: 50%;
+}

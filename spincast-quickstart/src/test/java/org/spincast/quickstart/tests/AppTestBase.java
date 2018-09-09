@@ -72,10 +72,10 @@ public abstract class AppTestBase extends AppBasedTestingBase<AppRequestContext,
         }
 
         /**
-         * We do not run in "debug" mode.
+         * We do not run in "development" mode.
          */
         @Override
-        public boolean isDebugEnabled() {
+        public boolean isDevelopmentMode() {
             return false;
         }
 

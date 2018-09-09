@@ -50,7 +50,7 @@ public class ITAppTestingConfigAreUsedTest extends IntegrationConfigTestClassBas
         assertNotNull(getApp());
         assertNotNull(getApp().getSpincastConfig());
         assertNotEquals(44419, getApp().getSpincastConfig().getHttpServerPort());
-        assertFalse(getApp().getSpincastConfig().isDebugEnabled());
+        assertFalse(getApp().getSpincastConfig().isDevelopmentMode());
     }
 
 }

@@ -34,7 +34,7 @@ public class SpincastPebbleTemplatingEngineConfigDefault implements SpincastPebb
     @Override
     public int getTemplateCacheItemNbr() {
 
-        if (getSpincastConfig().isDebugEnabled()) {
+        if (getSpincastConfig().isDevelopmentMode()) {
             return 0;
         }
 
@@ -48,7 +48,7 @@ public class SpincastPebbleTemplatingEngineConfigDefault implements SpincastPebb
     @Override
     public int getTagCacheTypeItemNbr() {
 
-        if (getSpincastConfig().isDebugEnabled()) {
+        if (getSpincastConfig().isDevelopmentMode()) {
             return 0;
         }
 
@@ -57,7 +57,7 @@ public class SpincastPebbleTemplatingEngineConfigDefault implements SpincastPebb
 
     @Override
     public boolean isStrictVariablesEnabled() {
-        return getSpincastConfig().isDebugEnabled();
+        return getSpincastConfig().isDevelopmentMode();
     }
 
     @Override

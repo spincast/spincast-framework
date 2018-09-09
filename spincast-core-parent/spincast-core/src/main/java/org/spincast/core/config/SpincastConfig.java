@@ -24,15 +24,17 @@ public interface SpincastConfig {
     public String getEnvironmentName();
 
     /**
-     * Let this to <code>true</code> on development environment,
+     * Let this to <code>true</code> on a development environment,
      * where errors can be publicly displayed, where cache can
-     * be disabled, etc. In production set it to <code>false</code>
-     * 
+     * be disabled, where class redefinition can be done, etc. 
+     * <p>
+     * In production set it to <code>false</code>
+     * <p>
      * The default value is <code>true</code>.
      * 
      * @return <code>true</code> if debug mode is enabled.
      */
-    public boolean isDebugEnabled();
+    public boolean isDevelopmentMode();
 
     /**
      * Returns <code>true</code> if the context
@@ -350,7 +352,7 @@ public interface SpincastConfig {
     /**
      * By default, if {@link #getPublicServerHost()} returns
      * <code>"localhost"</code>, {@link #getEnvironmentName()} is
-     * not <code>"local"</code> and {@link #isDebugEnabled()} is false,
+     * not <code>"local"</code> and {@link #isDevelopmentMode()} is false,
      * an exception is thrown when the application starts.
      * <p>
      * This validation is to make sure the developers 

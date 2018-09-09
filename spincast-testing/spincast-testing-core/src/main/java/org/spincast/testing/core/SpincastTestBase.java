@@ -73,7 +73,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     protected final Logger logger = LoggerFactory.getLogger(SpincastTestBase.class);
 
     private Injector guice;
-    private File testingWritableDir;
+    private File testingWritableTempDir;
     private GuiceTweaker previousGuiceTweaker;
     private Map<String, String> extraSystemProperties;
     private Map<String, String> extraSystemPropertiesOriginal;
@@ -294,11 +294,17 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         return SpincastConfigTestingDefault.class;
     }
 
+    /**
+     * This method will be called before each test.
+     */
     @Before
     public void beforeTest() {
         // nothing by default
     }
 
+    /**
+     * This method will be called after each test.
+     */
     @After
     public void afterTest() {
         // nothing by default
@@ -316,7 +322,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
             this.logger.warn(ex.getMessage());
         }
 
-        deleteTempDir();
+        deleteTestingWritableTempDir();
     }
 
     @Override
@@ -342,22 +348,34 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         // nothing
     }
 
+    /**
+     * Returns the Guice injector.
+     */
     protected Injector getInjector() {
         return this.guice;
     }
 
-    protected void deleteTempDir() {
+    /**
+     * Deletes the testing writable temp directory.
+     */
+    protected void deleteTestingWritableTempDir() {
         try {
-            if (this.testingWritableDir != null) {
-                FileUtils.deleteDirectory(this.testingWritableDir);
+            if (this.testingWritableTempDir != null) {
+                FileUtils.deleteDirectory(this.testingWritableTempDir);
             }
         } catch (Exception ex) {
             System.err.println(ex);
         }
     }
 
-    protected File getTestingWritableDir() {
-        if (this.testingWritableDir == null) {
+    /**
+     * Returns the directory that can be used to create files
+     * and subdirectories during testing.
+     * <p>
+     * This directory will be deleted when the tests are done.
+     */
+    protected File getTestingWritableTempDir() {
+        if (this.testingWritableTempDir == null) {
 
             //==========================================
             // We don't use the configurations to find a writable
@@ -372,14 +390,14 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
                 throw new RuntimeException("Temporary directory doesn't exist : " + baseDir.getAbsolutePath());
             }
 
-            this.testingWritableDir = new File(baseDir, "/spincast/testing");
-            if (!this.testingWritableDir.isDirectory()) {
-                boolean mkdirs = this.testingWritableDir.mkdirs();
+            this.testingWritableTempDir = new File(baseDir, "/spincast/testing");
+            if (!this.testingWritableTempDir.isDirectory()) {
+                boolean mkdirs = this.testingWritableTempDir.mkdirs();
                 assertTrue(mkdirs);
             }
-            assertTrue(this.testingWritableDir.canWrite());
+            assertTrue(this.testingWritableTempDir.canWrite());
         }
-        return this.testingWritableDir;
+        return this.testingWritableTempDir;
     }
 
     protected SpincastConfig getSpincastConfig() {
@@ -389,12 +407,21 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     /**
      * Create a temporary test file, using the given relative path.
      */
+
+    /**
+     * Returns the absolute path to use, given the relative one,
+     * to create a temporary test file.
+     * <p>
+     * This file will be deleted when the tests are done.
+     */
     protected String createTestingFilePath(String relativePath) {
-        return getTestingWritableDir().getAbsolutePath() + "/" + relativePath;
+        return getTestingWritableTempDir().getAbsolutePath() + "/" + relativePath;
     }
 
     /**
-     * Create a temporary test file.
+     * Returns a unique path to use to create a temporary test file.
+     * <p>
+     * This file will be deleted when the tests are done.
      */
     protected String createTestingFilePath() {
         return createTestingFilePath(UUID.randomUUID().toString());

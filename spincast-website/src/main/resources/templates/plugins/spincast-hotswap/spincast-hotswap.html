@@ -1,0 +1,711 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-hotswap{% endblock %}
+{% block meta_title %}Plugins - Spincast HotSwap{% endblock %}
+{% block meta_description %}Spincast HotSwap plugin - class redefinitions and file modifications listeners.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast HotSwap plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast HotSwap <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/hotswap/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast HotSwap <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin helps you configure your application for <code><em>Hot Swapping</em></code> (also called
+                    "<em>Hot Reloading</em>") and let you easily register <em>listeners</em> 
+                    so you are able to run custom code when modifications are made on classes or on regular files.
+                </p>
+                <p>
+                    Hot Swapping is really useful during development: you change a class and the
+                    modifications are immediately available, <em>without having to restart the application
+                    or the server</em>. This leads to a good development experience!
+                </p>
+                <p>
+                    Java doesn't provide hot swapping out-of-the-box, and this is why
+                    third-party solutions have emerged.
+                    The most known of those solutions is <a href="https://zeroturnaround.com/software/jrebel/">JRebel</a>
+                    which is a very nice product but that is way, <em>way</em> too expensive. From the other available
+                    solutions, the more mature is <a href="http://hotswapagent.org">HotswapAgent</a> + <a href="https://github.com/dcevm/dcevm">DCEVM</a>, 
+                    which is <em>free</em> and works very well too! 
+                    It is the solution uses by this plugin...
+                </p>
+                
+                <p>
+                    In short, here's what this plugin has to offer:
+                    <ul>
+                        <li>
+                            <strong>Help with installing <em>DCEVM</em> and <em>HotswapAgent</em></strong>
+                            <br />
+                            Those two are both required for class redefinitions and associated listeners to work.
+                        </li>
+                        <li>
+                            <strong><span class="underline">Classes</span> modifications listening mechanism</strong>
+                            <br />
+                            In addition to
+                            classes being automatically reloaded by HotswapAgent, you
+                            can register some <em>listeners</em> to be called when
+                            classes are modified. This allows you to run custom code
+                            to react to modifications (for example by clearing
+                            some cache, reloading routes, etc.).
+                        </li>
+                        <li>
+                            <strong><span class="underline">Files</span> modifications listening mechanism</strong>
+                            <br />
+                            HotswapAgent is about <em>classes redefinition</em>, but sometimes you also
+                            need to react to modifications made to regular files ( 
+                            <code>.yaml</code> or <code>.properties</code> files, for
+                            example). This plugin provides an easy way to register listeners
+                            for files modifications.
+                        </li>
+                    </ul>
+                </p>
+                
+            </section>
+            
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_classes" href="#usage_classes" title="permanent link"></a>
+                    Classes redefinitions
+                </h4>
+	            <p>
+                    HotswapAgent, when <a href="#installation">properly installed</a>, will make most of the changes made to
+                    your code available immediately, without having to restart the application!
+                    In addition to this, this current plugin allows you to register <em>listeners</em>, 
+                    that will be called when classes are redefined by HotswapAgent.
+                </p>
+                
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that if the application is <em>not</em> started with the HotswapAgent agent,
+                    all features related to classes redefinitions and the associated listeners will be
+                    automatically disabled. This is the behavior you want for an application running
+                    on any environment other than locally. Classes redefinitions are in general only
+                    done during <em>development</em>.
+                </p>
+                
+                <p>
+                    <a class="anchor_xsmall" id="usage_add_listener" href="#usage_add_listener" title="permanent link"></a>
+                    <strong>Adding a class redefinition listener</strong>
+                </p>
+                <p>
+                    You can register some <em>listeners</em> to be called when some specific classes are
+                    redefined by HotswapAgent. The entry point for adding such listeners
+                    is  <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/HotSwapManager.html">HotSwapManager</a>. 
+                    From this manager, you get the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/classeswatcher/HotSwapClassesRedefinitionsWatcher.html">classes redefinitions watcher</a>
+                    and register your listeners:
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="10,18,10,80"
+>@Injected
+protected HotSwapManager hotSwapManager;
+
+@Injected
+protected Class123RedefinitionListener myListener;
+
+//...
+
+@Inject
+protected void init() {
+    hotSwapManager.getClassesRedefinitionsWatcher().registerListener(myListener);
+}</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    You'll probably want to register your listeners as soon as the application
+                    starts, using an <a href="/documentation#init_method">init method</a> for example.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    A classes redefinitions listener (such as "<code>myListener</code>" in the above code) is
+                    a class that implements 
+                    the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/classeswatcher/HotSwapClassesRedefinitionsListener.html">HotSwapClassesRedefinitionsListener</a>
+                    interface. There are three methods to provide when you create such listeners:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="usage_listener_classes" href="#usage_listener_classes" title="permanent link"></a>
+                            <code class="apiItem">Set&lt;Class&lt;?&gt;&gt; <span>getClassesToWatch</span>()</code>
+                            <div class="well">
+                                <p>
+                                    This is where you specify for which classes you want to be called, when
+                                    modifications are made. A listener can be interested in a single class or in
+                                    multiple classes.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_listener_hook" href="#usage_listener_hook" title="permanent link"></a>
+                            <code class="apiItem">void <span>classRedefined</span>(Class&lt;?&gt; redefinedClass)</code>
+                            <div class="well">
+                                <p>
+                                    The method that is called when a class is modified. This is your hook!
+                                    In this method, you can reload/call some code to make use of the newly redefined
+                                    class.
+                                </p>
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="usage_listener_enabled" href="#usage_listener_enabled" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isEnabled</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The listener will only be registered if this method returns 
+                                    <code>true</code>.
+                                </p>
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Note that all classes redefinitions listeners are automatically
+                                    disabled if the application is started without 
+                                    HotswapAgent! But this method allows you fine grain control,
+                                    during development.
+                                </p>
+                            </div>
+                        </li> 
+                    </ul>
+                </p>
+                <p>
+                    <a class="anchor_xsmall" id="usage_example" href="#usage_example" title="permanent link"></a>
+                    <strong>Classes redefinitions listener example</strong>
+                </p>
+                
+                <p>
+                    Here's an example of a classes redefinitions listener. It listens to changes to an
+                    "<code>AppRoutes</code>" class which may be the place where the routes of
+                     an application are defined. When this
+                    class changes, the listener makes sure the routes cache is cleared and routes are reloaded!
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppMainClassClassesRedefinitionsListener implements HotSwapClassesRedefinitionsListener {
+
+    private final AppRouter appRouter;
+
+    @Inject
+    public AppMainClassClassRedefinitionListener(AppRouter appRouter) {
+        this.appRouter = appRouter;
+    }
+
+    protected AppRouter getAppRouter() {
+        return this.appRouter;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Set&lt;Class&lt;?&gt;&gt; getClassesToWatch() {
+        return Sets.newHashSet(AppRoutes.class);
+    }
+
+    @Override
+    public void classRedefined(Class&lt;?&gt; redefinedClass) {
+        getAppRouter().clearCacheAndReloadRoutes();
+    }
+}</pre> 
+                        </p>
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : The listener implements 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/classeswatcher/HotSwapClassesRedefinitionsListener.html">HotSwapClassesRedefinitionsListener</a>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">14-17</span> : The listener will be always be enabled
+                                    (if the application is started with <code>HotswapAgent</code>).
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">19-22</span> : We are only interested in modifications
+                                    made to the <code>AppRoutes</code> class, which is responsible in this example for defining 
+                                    the application's routes.
+                                </li>
+                              <li>
+                                    <span class="code-line-nbr">24-27</span> : When the <code>AppRoutes</code> class
+                                    is modified, the <code>classRedefined()</code> method is called. In this method, we tell our
+                                    <code>router</code> to reload the cached routes. Note that we only
+                                    watch one class ("<code>AppRoutes</code>") in this example, so there is no need to use
+                                    the "<code><em>redefinedClass</em></code>" parameter to validate if the current modification
+                                    has been made on that class or on another!
+                                </li>  
+                            </ul>
+                        </p> 
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Remember that you may register as many listeners as you want. Each can listen to a different
+                    class or they may share some. If one of your listeners is interested in more than
+                    one class, you then may have to use the "<code>redefinedClass</code>" parameter, provided
+                    when the <code>classRedefined()</code> method is called, to validate which class
+                    was actually modified!
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_files" href="#usage_files" title="permanent link"></a>
+                    Files modifications
+                </h4>
+                <p>
+                    In addition to classes redefinitions listeners, this plugin also provides an easy way
+                    of listening to modifications made <em>on regular files</em>.
+                </p>
+                <p>
+                    For example, during development, you may change a <a href="/documentation#config_strategy_sources">app-config.yaml</a>
+                    file to tweak some configurations of your application.
+                    By registering a <em>listener</em> for this file, you would be able to refresh
+                    the <code>AppConfigs</code> object uses to access the configurations in your Java code.
+                </p>
+                
+                <p>
+                    <a class="anchor_xsmall" id="usage_files_add_listener" href="#usage_files_add_listener" title="permanent link"></a>
+                    <strong>Adding a file modifications listener</strong>
+                </p>
+                <p>
+                    To add a new files modifications listener, you first get the
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/HotSwapManager.html">HotSwapManager</a>
+                    instance. From this manager, you then access the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/fileswatcher/HotSwapFilesModificationsWatcher.html">files modifications watcher</a>
+                    and you register your listeners:
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="10,18,10,79"
+>@Injected
+protected HotSwapManager hotSwapManager;
+
+@Injected
+protected File123ModificationListener myListener;
+
+//...
+
+@Inject
+protected void init() {
+    hotSwapManager.getFilesModificationsWatcher().registerListener(myListener);
+}</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    You'll probably want to register your listeners as soon as the application
+                    starts, using an <a href="/documentation#init_method">init method</a>, for example.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    A files modifications listener (such as "<code>myListener</code>" in the above example), is
+                    a class that implements 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/fileswatcher/HotSwapFilesModificationsListener.html">HotSwapFilesModificationsListener</a>.
+                    There are three methods to provide when you create such listener:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="usage_files_listener_files" href="#usage_files_listener_files" title="permanent link"></a>
+                            <code class="apiItem">Set&lt;FileToWatch&lt;?&gt;&gt; <span>getFilesToWatch</span>()</code>
+                            <div class="well">
+                                <p>
+                                    This is where you specify <em>which files you want to watch</em>. A listener can be interested in 
+                                    a single file or in multiple files. The files can be on the file system or on the classpath.
+                                    We'll have a look at <code>FileToWatch</code> and how to define the watched files soon.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_files_listener_hook" href="#usage_files_listener_hook" title="permanent link"></a>
+                            <code class="apiItem">void <span>fileModified</span>(File modifiedFile)</code>
+                            <div class="well">
+                                <p>
+                                    The method is called when a file is modified. This is your hook!
+                                    For example, you can programmatically delete some cache in your application.
+                                </p>
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="usage_files_listener_enabled" href="#usage_files_listener_enabled" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isEnabled</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The listener will only be registered if this method returns 
+                                    <code>true</code>. Most of the time, you only want to listen to
+                                    files modifications <em>during development</em>.
+                                    A common pattern is therefore to make use of 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a> :
+
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-java"
+>@Override
+public boolean isEnabled() {
+    return getSpincastConfig().isDevelopmentMode();
+}</pre> 
+                                        </p>
+                                    </div>  
+                                </p>
+                            </div>
+                        </li> 
+                    </ul>
+                </p>
+                <p>
+                    <a class="anchor_xsmall" id="usage_files_example" href="#usage_files_example" title="permanent link"></a>
+                    <strong>Files modifications listener example</strong>
+                </p>
+                
+                <p>
+                    Here's an example of a files modifications listener. It listens on changes to
+                    the "<code>app-configs.yaml</code>" configurations file.
+                    When this file changes, it then clears the configurations cache so the new
+                    values are used:
+                    
+                    <div>
+                        <p>
+                            <pre class="ace ace-java"
+>public class AppConfigFileModificationsListener implements HotSwapFilesModificationsListener {
+
+    private final AppConfigs appConfigs;
+
+    @Inject
+    public AppConfigFileModificationListener(AppConfigs appConfigs) {
+        this.appConfigs = appConfigs;
+    }
+
+    protected AppConfigs getAppConfigs() {
+        return this.appConfigs;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return getAppConfigs().isDevelopmentMode();
+    }
+
+    @Override
+    public Set&lt;FileToWatch&gt; getFilesToWatch() {
+        return Sets.newHashSet(FileToWatch.ofClasspath("app-config.yaml"));
+    }
+
+    @Override
+    public void fileModified(File modifiedFile) {
+        getAppConfigs().clearConfigCache();
+    }
+}</pre> 
+                        </p>
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : The listener implements 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/fileswatcher/HotSwapFilesModificationsListener.html">HotSwapFilesModificationsListener</a>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">14-17</span> : The listener will be enabled only
+                                    during development!
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">19-22</span> : We are interested by changes made to 
+                                    the "<code>app-config.yaml</code>" file, which is located at the root of the
+                                    classpath. In the next section, we'll learn how to use <code>FileToWatch</code>
+                                    to define the files to watch!
+                                </li>
+                              <li>
+                                    <span class="code-line-nbr">24-27</span> : When the  "<code>app-config.yaml</code>" file
+                                    is modified, we tell <code>AppConfigs</code> to clear its cache.
+                                    Note that, in this example, we only listen to one file so there is no need to use
+                                    the "<code>modifiedFile</code>" parameter to validate what file was modified.
+                                </li>  
+                            </ul>
+                        </p> 
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    You may have as many listeners as you want. Each one can listen to different
+                    files or share some of them. If one of your listeners is interested in more than
+                    one file, you may have to use the "<code>modifiedFile</code>" parameter provided
+                    when the <code>fileModified()</code> method is called, to validate which one exactly
+                    has been modified.
+                </p>
+                
+                <p>
+                    <a class="anchor_xsmall" id="usage_files_filetowatch" href="#usage_files_filetowatch" title="permanent link"></a>
+                    <strong>Using <code>FileToWatch</code></strong>
+                </p> 
+                <p>
+                    The <code>getFilesToWatch()</code> method has to return a set of 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/fileswatcher/FileToWatch.html">FileToWatch</a>.
+                    A <code>FileToWatch</code> is able to specify if the files to watch are on the file system or on the
+                    classpath, and it also allows you to target files using a <em>regular expression</em>.
+                </p>
+                <p>
+                    Let's see the three methods you can use to create an instance of <code>FileToWatch</code>:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="usage_files_filetowatch_fs" href="#usage_files_filetowatch_fs" title="permanent link"></a>
+                            <code class="apiItem">FileToWatch <span>ofFileSystem</span>(String fileAbsolutePath)</code>
+                            <div class="well">
+                                <p>
+                                    Creates a <code>FileToWatch</code> from the absolute path of a file
+                                    on the file system. For example:
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-java"
+>
+
+FileToWatch file = FileToWatch.ofFileSystem("/home/stromgol/dev/some-file-to-watch.json");
+</pre> 
+                                        </p>
+                                    </div>  
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_files_filetowatch_cp" href="#usage_files_filetowatch_cp" title="permanent link"></a>
+                            <code class="apiItem">FileToWatch <span>ofClasspath</span>(String classpathFilePath)</code>
+                            <div class="well">
+                                <p>
+                                    Creates a <code>FileToWatch</code> from a <em>classpath</em> path. The path can start
+                                    with a "/" or not, it doesn't make any difference.
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-java"
+>
+
+FileToWatch file = FileToWatch.ofClasspath("app-configs.yaml");
+</pre> 
+                                        </p>
+                                    </div>  
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_files_filetowatch_regex" href="#usage_files_filetowatch_regex" title="permanent link"></a>
+                            <code class="apiItem">FileToWatch <span>ofRegEx</span>(String dirPath, String fileNameRegEx, boolean isClassPath)</code>
+                            <div class="well">
+                                <p>
+                                    This factory is the most powerful of the three! It allows you to specify a regular expression
+                                    to use for the names of the files to watch. Those files can be on the file system or on
+                                    the classpath. 
+                                </p> 
+                                <p> 
+                                    Note that using a regular expression is available for the names of the files, but you
+                                    still have to specify the directory where those files are located.
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-java"
+>
+
+FileToWatch fileToWatch = FileToWatch.ofRegEx("/home/stromgol/news/", 
+                                              "news-[0-9]+\\.yaml", 
+                                              false);
+</pre> 
+                                        </p>
+                                        
+                                        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                        As you can see in this example, a <code>FileToWatch</code>
+                                        may represent <em>more than one file</em>! Here, any files
+                                        matching the provided regular expression (such as "<code>news-12.yaml</code>", 
+                                        "news-687.yaml", etc.) will be watched. In this situation, you may have to
+                                        check what file actually changed by using the <code>modifiedFile</code>
+                                        parameter provided when the <code>fileModified()</code> hook is
+                                        called!
+                                        
+                                    </div>  
+                                </p>
+                            </div>
+                        </li>
+                    </ul>  
+                </p>
+
+            </section>
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    Installing the plugin itself is very simple, but enabling
+                    <a href="http://hotswapagent.org">HotswapAgent</a> and
+                    <a href="https://github.com/dcevm/dcevm">DCEVM</a> is a little bit trickier.
+                    The time you spend installing those will be well rewarded, as you'll then have
+                    in place the best free Java Hot Swapping solution out there!
+ 
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="installation_plugin" href="#installation_plugin" title="permanent link"></a>
+                    The plugin itself
+                </h4>
+
+                <p>
+                
+                    <strong>1.</strong> 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-hotswap&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    <strong>2.</strong> Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/SpincastHotSwapPlugin.html">SpincastHotSwapPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,43"
+>
+
+Spincast.configure()
+        .plugin(new SpincastHotSwapPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="installation_dcevm" href="#installation_dcevm" title="permanent link"></a>
+                    DCEVM
+                </h4>
+                
+                <p>
+                    <strong>1.</strong>
+                    Spincast currently requires Java 8 and therefore the way to install 
+                    <code>DCEVM</code> is by downloading a binary for the Java8 version you
+                    are using from <a href="https://github.com/dcevm/dcevm/releases">this page</a>.
+                    For example: "<code>DCEVM-8u181-installer.jar</code>".
+                </p>
+                <p>
+                    <strong>2.</strong> You launch this <em>.jar</em> (by double-clicking it or from a terminal). This will
+                    open a window allowing you to install the DCEVM patch on one or many of your Java
+                    installations: 
+                </p>
+                <p class="center dcevmWrap">
+                    <a href="/public/images/DCEVM.png" target="_blank"><img src="/public/images/DCEVM.png" /></a>
+                </p>
+                <p>
+                    You choose "<em>Install DCEVM as altvm</em>" on the JDK you want to patch.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that you should probably only install DCEVM <em>locally</em>, for
+                    development purposes.
+                </p>
+                
+                
+                <h4>
+                    <a class="anchor_small" id="installation_agent" href="#installation_agent" title="permanent link"></a>
+                    Hotswap Agent
+                </h4>
+                
+                <p>
+                    <strong>1.</strong> You download the latest <a href="https://github.com/HotswapProjects/HotswapAgent/releases">Hotswap Agent version</a>
+                    and save it somewhere on your computer (we'll use "<code>C:\hotswap-agent-1.3.0.jar</code>" as the path, on a Windows machine, in this example).
+                </p>
+                <p>
+                    <strong>2.</strong> When you start your application during development (most of the time inside an IDE), you add those
+                    two <em>VM arguments</em>: "<code>-XXaltjvm=dcevm -javaagent:C:\hotswap-agent-1.3.0.jar</code>". 
+                </p>
+                <p>
+                    Here's an example in Eclipse:
+                </p>
+                <p class="center dcevmWrap">
+                    <a href="/public/images/agent-eclipse.png" target="_blank"><img src="/public/images/agent-eclipse.png" /></a>
+                </p>
+                <p>
+                    And that's it! 
+                </p>
+                <p>
+                    When you start your application with this in place, any modification to a class will
+                    make this class being automatically <em>redefined</em>. And if you have <a href="#usage_add_listener">register some listeners</a>, 
+                    they will be called.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Make sure you read the HotswapAgent's <a href="http://hotswapagent.org">documentation</a>
+                    if you have issues.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that the steps required to use <code>DCEVM</code> and <code>HotswapAgent</code> are different
+                    starting with Java9+! You now have to use an already patched version of
+                    OpenJDK <a href="https://github.com/HotswapProjects/openjdk-jdk9/releases/tag/jdk9-b94-dcevm-beta">provided by them</a>.
+                    We'll make sure we update this plugin documentation as soon as Spincast supports Java 9+.
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

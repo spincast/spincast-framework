@@ -220,28 +220,15 @@ Docs : "overview"
             Transitive dependencies
         </h4>
         <p>
-            The <code>spincast-core</code> Maven artifact only has 3 direct dependencies which are external to Spincast:
+            The <code>spincast-core</code> Maven artifact only has two direct dependencies which are external to Spincast:
             
             <ul>
                 <li>
-                    <strong>com.google.inject:*</strong> (Guice), which pulls three transitive dependencies :
-                    <ul>
-                        <li>
-                            <strong>com.google.guava:guava-parent</strong> (Guava)
-                        </li>
-                        <li>
-                            <strong>javax.inject:javax.inject</strong>
-                        </li>
-                        <li>
-                            <strong>aopalliance:aopalliance</strong>
-                        </li>
-                    </ul>
+                    <strong><a href="https://github.com/google/guice">Guice</a></strong>, which itself pulls some transitive dependencies,
+                    such as "<code>Guava</code>" and "<code>jsr305</code>".
                 </li>
                 <li>
-                    <strong>com.google.code.findbugs:jsr305</strong> : For the <code>@Nullable</code> annotation.
-                </li>
-                <li>
-                    <strong>org.slf4j:slf4j-api</strong> : The <code>SLF4J</code> logging facade.
+                    <strong><a href="https://www.slf4j.org/">SLF4J</a></strong> : The logging facade.
                 </li>
             </ul>
         </p>   

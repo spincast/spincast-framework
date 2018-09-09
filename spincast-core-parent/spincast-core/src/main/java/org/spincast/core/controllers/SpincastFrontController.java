@@ -695,7 +695,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // More info when debug is enabled.
         //==========================================
-        if (getSpincastConfig().isDebugEnabled()) {
+        if (getSpincastConfig().isDevelopmentMode()) {
             errorMessage += "\n\nDebug info :\n\n" + SpincastStatics.getStackTrace(((Throwable)publicException));
         }
 
@@ -724,7 +724,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
         //==========================================
         // More info when debug mode is enabled.
         //==========================================
-        if (getSpincastConfig().isDebugEnabled()) {
+        if (getSpincastConfig().isDevelopmentMode()) {
             errorMessage += "\n\nDebug info :\n\n" + SpincastStatics.getStackTrace(exception);
         }
 

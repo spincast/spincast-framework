@@ -63,22 +63,11 @@
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-throwingproviders</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-        </dependency>
-        <!--=================================== 
-        For the @Nullable annotation 
-        ====================================-->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
         </dependency>
 
         <!--=================================== 

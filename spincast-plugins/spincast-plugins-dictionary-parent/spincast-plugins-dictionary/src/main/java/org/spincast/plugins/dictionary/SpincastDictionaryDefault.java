@@ -143,7 +143,7 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
 
     public String get(String key, Locale locale, Map<String, Object> params, Locale originalLocale) {
 
-        if (!this.messagesLoaded || getSpincastConfig().isDebugEnabled()) {
+        if (!this.messagesLoaded || getSpincastConfig().isDevelopmentMode()) {
             addCoreAndPluginsMessages();
             addMessages();
             this.messagesLoaded = true;
@@ -187,7 +187,7 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
 
         DictionaryEntryNotFoundBehavior notFoundResult = getSpincastConfig().getDictionaryEntryNotFoundBehavior();
 
-        if (!getSpincastConfig().isDebugEnabled() && notFoundResult != DictionaryEntryNotFoundBehavior.EXCEPTION) {
+        if (!getSpincastConfig().isDevelopmentMode() && notFoundResult != DictionaryEntryNotFoundBehavior.EXCEPTION) {
             this.logger.error("A dictionary key is missing! Key \"" + key + "\" for Locale \"" + originalLocale + "\".");
         }
 

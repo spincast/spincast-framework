@@ -115,7 +115,7 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
         String placeholder = this.templatingEngine.createPlaceholder("fontPxSize");
         FileUtils.writeStringToFile(testFile, "body {font-size : " + placeholder + "px;}", "UTF-8");
 
-        String generatedFilePath = getTestingWritableDir().getAbsolutePath() + "/generated.css";
+        String generatedFilePath = getTestingWritableTempDir().getAbsolutePath() + "/generated.css";
 
         final int[] nbrTimeCalled = new int[]{0};
 
