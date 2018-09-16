@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>spincast-parent</artifactId>
-    <version>0.9.48-SNAPSHOT</version>
+    <version>0.9.48</version>
     <packaging>pom</packaging>
     
     <name>${project.groupId}:${project.artifactId}</name>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:spincast</connection>
         <developerConnection>scm:git:git@github.com:spincast</developerConnection>
         <url>git@github.com:spincast</url>
-        <tag>HEAD</tag>
+        <tag>0.9.48</tag>
     </scm>
     
     <dependencyManagement>
