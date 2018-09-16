@@ -13,7 +13,7 @@ import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -44,7 +44,7 @@ public class HttpClientTestSllSelfSignedAccepted extends NoAppStartHttpServerTes
         @Override
         public int getHttpsServerPort() {
             if (this.httpsServerPort < 0) {
-                this.httpsServerPort = SpincastTestUtils.findFreePort();
+                this.httpsServerPort = SpincastTestingUtils.findFreePort();
             }
             return this.httpsServerPort;
         }
@@ -77,7 +77,7 @@ public class HttpClientTestSllSelfSignedAccepted extends NoAppStartHttpServerTes
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -89,7 +89,7 @@ public class HttpClientTestSllSelfSignedAccepted extends NoAppStartHttpServerTes
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
     }
 

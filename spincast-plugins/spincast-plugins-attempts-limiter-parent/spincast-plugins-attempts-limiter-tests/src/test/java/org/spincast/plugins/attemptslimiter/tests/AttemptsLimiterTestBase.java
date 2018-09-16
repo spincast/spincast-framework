@@ -8,12 +8,10 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.h2.tools.Server;
 import org.quartz.Scheduler;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.attemptslimiter.AttemptCriteria;
 import org.spincast.plugins.attemptslimiter.AttemptFactory;
@@ -23,25 +21,27 @@ import org.spincast.plugins.attemptslimiter.SpincastAttemptsLimiterPlugin;
 import org.spincast.plugins.attemptslimiter.SpincastAttemptsLimiterPluginRepository;
 import org.spincast.plugins.attemptslimiter.tests.utils.SpincastAttemptsLimiterPluginRepositoryTesting;
 import org.spincast.plugins.attemptslimiter.tests.utils.TestAttemptsRepository2;
-import org.spincast.plugins.jdbc.SpincastDataSource;
-import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
 import org.spincast.plugins.jdbc.SpincastJdbcPlugin;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTask;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegister;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegistrerDefault;
+import org.spincast.testing.core.h2.SpincastTestingH2;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
-import com.google.inject.Singleton;
 import com.google.inject.util.Modules;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestingBase {
 
     protected static boolean isActivateScheduledTasks = false;
+
+    @Inject
+    protected SpincastTestingH2 spincastTestingH2;
+
+    protected SpincastTestingH2 getH2() {
+        return this.spincastTestingH2;
+    }
 
     @Inject
     protected AttemptsManager attemptsManager;
@@ -71,8 +71,6 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
         return this.testAttemptsRepository2;
     }
 
-    protected Server h2Server = null;
-
     @Override
     protected List<SpincastPlugin> getExtraPlugins() {
         List<SpincastPlugin> extraPlugins = super.getExtraPlugins();
@@ -88,7 +86,10 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
             @Override
             protected void configure() {
 
-                bind(DataSource.class).toProvider(TestDataSourceProvider.class);
+                //==========================================
+                // Enable Spincast H2
+                //==========================================
+                bind(DataSource.class).toProvider(SpincastTestingH2.class).in(Scopes.SINGLETON);
 
                 bind(SpincastAttemptsLimiterPluginRepository.class).to(SpincastAttemptsLimiterPluginRepositoryTesting.class)
                                                                    .in(Scopes.SINGLETON);
@@ -103,17 +104,9 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
 
         isActivateScheduledTasks = isActivateScheduledTasks();
 
-        //==========================================
-        // We must start H2 before the context is created
-        //==========================================
-        try {
-            this.h2Server = Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers")
-                                  .start();
-        } catch (Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
-
         super.beforeClass();
+
+        getH2().clearDatabase();
 
         assertFalse(getTestAttemptsRepository2().isAttemptTableExists());
         getTestAttemptsRepository().createAttemptTable();
@@ -136,13 +129,7 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
         super.afterClass();
         getTestAttemptsRepository2().dropAttemptsTable();
 
-        if (this.h2Server != null) {
-            try {
-                this.h2Server.stop();
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        }
+        getH2().stopServer();
     }
 
     @Override
@@ -166,33 +153,6 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
             // We need to activate the scheduled tasks even in testing mode
             //==========================================
             return isActivateScheduledTasks;
-        }
-    }
-
-    @Singleton
-    protected static class TestDataSourceProvider implements Provider<SpincastDataSource> {
-
-        private final SpincastDataSourceFactory spincastDataSourceFactory;
-
-        @Inject
-        public TestDataSourceProvider(SpincastDataSourceFactory spincastDataSourceFactory) {
-            this.spincastDataSourceFactory = spincastDataSourceFactory;
-        }
-
-        @Override
-        public SpincastDataSource get() {
-
-
-            HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:h2:tcp://localhost:9092/mem:" +
-                              this.getClass().getSimpleName() +
-                              ";MODE=PostgreSQL;DATABASE_TO_UPPER=false");
-            config.setUsername("");
-            config.setPassword("");
-            config.setMaximumPoolSize(10);
-
-            DataSource ds = new HikariDataSource(config);
-            return this.spincastDataSourceFactory.create(ds);
         }
     }
 

@@ -1,35 +1,23 @@
 package org.spincast.plugins.flywayutils.tests;
 
-import java.sql.Connection;
 import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.h2.tools.Server;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.flywayutils.SpincastFlywayFactory;
-import org.spincast.plugins.flywayutils.SpincastFlywayMigration;
 import org.spincast.plugins.flywayutils.SpincastFlywayUtilsPlugin;
-import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.JdbcUtils;
-import org.spincast.plugins.jdbc.SpincastDataSource;
-import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
-import org.spincast.plugins.jdbc.statements.UpdateStatement;
+import org.spincast.testing.core.h2.SpincastTestingH2;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.inject.util.Modules;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 public abstract class TestBase extends NoAppTestingBase {
-
-    protected Server h2Server = null;
 
     @Override
     protected Module getExtraOverridingModule() {
@@ -37,7 +25,10 @@ public abstract class TestBase extends NoAppTestingBase {
 
             @Override
             protected void configure() {
-                bind(DataSource.class).toProvider(TestDataSourceProvider.class).in(Scopes.SINGLETON);
+                //==========================================
+                // Enable Spincast H2
+                //==========================================
+                bind(DataSource.class).toProvider(SpincastTestingH2.class).in(Scopes.SINGLETON);
             }
         });
     }
@@ -51,27 +42,15 @@ public abstract class TestBase extends NoAppTestingBase {
 
     @Override
     public void beforeClass() {
-
-        //==========================================
-        // We must start H2 before the context is created
-        //==========================================
-        try {
-            this.h2Server = Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers")
-                                  .start();
-        } catch (Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
-
         super.beforeClass();
-
-        clearDatabase();
+        getH2().clearDatabase();
     }
 
     @Override
     public void beforeTest() {
         super.beforeTest();
         if (isClearDatabaseBeforeTest()) {
-            clearDatabase();
+            getH2().clearDatabase();
         }
     }
 
@@ -82,35 +61,14 @@ public abstract class TestBase extends NoAppTestingBase {
     @Override
     public void afterClass() {
         super.afterClass();
-
-        if (this.h2Server != null) {
-            try {
-                this.h2Server.stop();
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        }
-    }
-
-    protected void clearDatabase() {
-        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
-
-            @Override
-            public Void run(Connection connection) {
-
-                UpdateStatement stm = getJdbcUtils().statements().createUpdateStatement(connection);
-                stm.sql("DROP ALL OBJECTS DELETE FILES ");
-                stm.update();
-                return null;
-            }
-        });
+        getH2().stopServer();
     }
 
     @Inject
-    private SpincastFlywayFactory spincastFlywayFactory;
+    protected SpincastTestingH2 spincastTestingH2;
 
-    protected SpincastFlywayFactory getSpincastFlywayFactory() {
-        return this.spincastFlywayFactory;
+    protected SpincastTestingH2 getH2() {
+        return this.spincastTestingH2;
     }
 
     @Inject
@@ -127,40 +85,11 @@ public abstract class TestBase extends NoAppTestingBase {
         return this.testDataSource;
     }
 
-    protected static class TestDataSourceProvider implements Provider<SpincastDataSource> {
+    @Inject
+    private SpincastFlywayFactory spincastFlywayFactory;
 
-        private final SpincastDataSourceFactory spincastDataSourceFactory;
-
-        @Inject
-        public TestDataSourceProvider(SpincastDataSourceFactory spincastDataSourceFactory) {
-            this.spincastDataSourceFactory = spincastDataSourceFactory;
-        }
-
-        @Override
-        public SpincastDataSource get() {
-
-            HikariConfig config = new HikariConfig();
-            String connectionString =
-                    "jdbc:h2:tcp://localhost:9092/mem:" + this.getClass().getSimpleName() +
-                                      ";MODE=PostgreSQL;DATABASE_TO_UPPER=false";
-            config.setJdbcUrl(connectionString);
-            config.setUsername("");
-            config.setPassword("");
-            config.setMaximumPoolSize(10);
-
-            DataSource ds = new HikariDataSource(config);
-            return this.spincastDataSourceFactory.create(ds);
-        }
+    protected SpincastFlywayFactory getSpincastFlywayFactory() {
+        return this.spincastFlywayFactory;
     }
-
-
-    public static class Base implements SpincastFlywayMigration {
-
-        @Override
-        public void migrate(Connection connection) throws Exception {
-            // ok
-        }
-    }
-
 
 }

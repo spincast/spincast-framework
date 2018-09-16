@@ -22,7 +22,7 @@ import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.request.SpincastRequestPluginDictionaryEntries;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -81,7 +81,7 @@ public class PluginDictionaryMessageOverridenTest extends NoAppStartHttpServerTe
                     assertEquals("my custom override", ex.getMessage());
                 }
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -89,7 +89,7 @@ public class PluginDictionaryMessageOverridenTest extends NoAppStartHttpServerTe
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

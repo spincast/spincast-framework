@@ -15,7 +15,7 @@ import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
@@ -58,7 +58,7 @@ public class ValidCustomFilterPositionTest extends NoAppStartHttpServerTestingBa
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -89,7 +89,7 @@ public class ValidCustomFilterPositionTest extends NoAppStartHttpServerTestingBa
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

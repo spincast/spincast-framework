@@ -38,7 +38,7 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
@@ -135,7 +135,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     public void toJsonStringBytes() throws Exception {
 
         JsonObject jsonObj = getJsonManager().create();
-        byte[] bytes = SpincastTestUtils.TEST_STRING.getBytes("UTF-8");
+        byte[] bytes = SpincastTestingUtils.TEST_STRING.getBytes("UTF-8");
         jsonObj.set("someBytes", bytes);
 
         String jsonStr = getJsonManager().toJsonString(jsonObj);
@@ -942,7 +942,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         JsonObject jsonObjInner = getJsonManager().create();
 
-        String base64String = Base64.encodeBase64String(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+        String base64String = Base64.encodeBase64String(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
 
         JsonObject jsonObj = getJsonManager().create();
         jsonObj.set("key1", "val1");
@@ -986,7 +986,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         result = jsonObj.getBytesFromBase64String("key8");
         assertNotNull(result);
-        byte[] bytes = SpincastTestUtils.TEST_STRING.getBytes("UTF-8");
+        byte[] bytes = SpincastTestingUtils.TEST_STRING.getBytes("UTF-8");
         for (int i = 0; i < bytes.length; i++) {
             assertEquals(bytes[i], result[i]);
         }

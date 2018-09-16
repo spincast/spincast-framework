@@ -10,7 +10,7 @@ import org.spincast.quickstart.exchange.AppRequestContext;
 import org.spincast.quickstart.exchange.AppWebsocketContext;
 import org.spincast.testing.core.AppBasedTestingBase;
 import org.spincast.testing.core.AppTestingConfigs;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -96,7 +96,7 @@ public abstract class AppTestBase extends AppBasedTestingBase<AppRequestContext,
                 // We reserve 44419 for the default configuration.
                 //==========================================
                 do {
-                    this.serverPort = SpincastTestUtils.findFreePort();
+                    this.serverPort = SpincastTestingUtils.findFreePort();
                 } while (this.serverPort == 44419);
             }
             return this.serverPort;

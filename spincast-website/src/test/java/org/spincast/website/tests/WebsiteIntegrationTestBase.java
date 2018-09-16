@@ -11,7 +11,7 @@ import org.spincast.shaded.org.apache.commons.lang3.tuple.ImmutablePair;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 import org.spincast.testing.core.AppBasedTestingBase;
 import org.spincast.testing.core.AppTestingConfigs;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.website.App;
 import org.spincast.website.AppConfig;
 import org.spincast.website.AppConfigDefault;
@@ -80,7 +80,7 @@ public abstract class WebsiteIntegrationTestBase extends AppBasedTestingBase<App
                 // Starts the application to test on a
                 // free port.
                 //==========================================
-                this.port = SpincastTestUtils.findFreePort();
+                this.port = SpincastTestingUtils.findFreePort();
             }
 
             return this.port;

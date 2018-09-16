@@ -14,7 +14,7 @@ import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -45,7 +45,7 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
         @Override
         public int getHttpsServerPort() {
             if (this.httpsServerPort < 0) {
-                this.httpsServerPort = SpincastTestUtils.findFreePort();
+                this.httpsServerPort = SpincastTestingUtils.findFreePort();
             }
             return this.httpsServerPort;
         }

@@ -13,7 +13,7 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class GzipTest extends NoAppStartHttpServerTestingBase {
 
@@ -24,7 +24,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING_LONG);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING_LONG);
             }
         });
 
@@ -142,7 +142,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
                 context.response().setGzipOption(GzipOption.DISABLE);
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING_LONG);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING_LONG);
             }
         });
 
@@ -166,7 +166,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -222,7 +222,7 @@ public class GzipTest extends NoAppStartHttpServerTestingBase {
                 context.response().setGzipOption(GzipOption.DISABLE);
                 assertEquals(GzipOption.DISABLE, context.response().getGzipOption());
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING, true);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING, true);
 
                 context.response().setGzipOption(GzipOption.FORCE);
                 assertEquals(GzipOption.DISABLE, context.response().getGzipOption());

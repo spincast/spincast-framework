@@ -22,7 +22,7 @@ import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilde
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
 import org.spincast.testing.core.AppBasedTestingBase;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 
 import com.google.common.net.HttpHeaders;
@@ -105,7 +105,7 @@ public abstract class AppBasedWebsocketTestingBase<R extends RequestContext<?>, 
         for (WebsocketEndpointManager manager : websocketEndpointManagers) {
             manager.closeEndpoint(false);
         }
-        assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
+        assertTrue(SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {

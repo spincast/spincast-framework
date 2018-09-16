@@ -19,9 +19,9 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
 /**
- * Spincast tests utilities.
+ * Spincast testing utilities.
  */
-public class SpincastTestUtils {
+public class SpincastTestingUtils {
 
     public static final String TEST_STRING = "‛'ïœ𣎴𠀋ᚡŠšÈÆæÐð𝅘𝅥𝅯’";
     public static final String TEST_STRING_LONG =
@@ -38,13 +38,13 @@ public class SpincastTestUtils {
     };
 
     protected static InputStream getThisClassFileInputStream() {
-        String s = SpincastTestUtils.class.getName();
+        String s = SpincastTestingUtils.class.getName();
         int i = s.lastIndexOf(".");
         if (i > -1) {
             s = s.substring(i + 1);
         }
         s = s + ".class";
-        return SpincastTestUtils.class.getResourceAsStream(s);
+        return SpincastTestingUtils.class.getResourceAsStream(s);
     }
 
     public static File generateTempClassFile(File writableDir) {

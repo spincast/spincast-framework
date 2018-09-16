@@ -14,7 +14,7 @@ import org.spincast.plugins.crypto.SpincastCryptoPlugin;
 import org.spincast.plugins.crypto.SpincastCryptoUtils;
 import org.spincast.plugins.crypto.SpincastCryptoUtilsDefault;
 import org.spincast.plugins.crypto.config.SpincastCryptoConfig;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -75,7 +75,7 @@ public class CryptoTest extends NoAppStartHttpServerTestingBase {
         System.out.println(encrypted2);
 
         String key = "Stromgol123";
-        String str = SpincastTestUtils.TEST_STRING;
+        String str = SpincastTestingUtils.TEST_STRING;
 
         String encrypted = getSpincastCryptoUtils().encrypt(str, key);
         assertNotEquals(str, encrypted);

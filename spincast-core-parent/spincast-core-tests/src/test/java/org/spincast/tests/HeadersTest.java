@@ -20,7 +20,7 @@ import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class HeadersTest extends NoAppStartHttpServerTestingBase {
 
@@ -42,14 +42,14 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
 
                     vals = requestHeaders.get("header2");
                     assertEquals(1, vals.size());
-                    assertEquals(SpincastTestUtils.TEST_STRING, URLDecoder.decode(vals.get(0), "UTF-8"));
+                    assertEquals(SpincastTestingUtils.TEST_STRING, URLDecoder.decode(vals.get(0), "UTF-8"));
 
                     vals = context.request().getHeader("header1");
                     assertEquals(1, vals.size());
                     assertEquals("val1 val2", vals.get(0));
 
                     String headerFirstValue = context.request().getHeaderFirst("header2");
-                    assertEquals(SpincastTestUtils.TEST_STRING, URLDecoder.decode(headerFirstValue, "UTF-8"));
+                    assertEquals(SpincastTestingUtils.TEST_STRING, URLDecoder.decode(headerFirstValue, "UTF-8"));
 
                     String insensitive = context.request().getHeaderFirst("HEADer1");
                     assertEquals("val1 val2", insensitive);
@@ -85,7 +85,7 @@ public class HeadersTest extends NoAppStartHttpServerTestingBase {
 
         HttpResponse response = GET("/one").addHeaderValue("header1", "val1 val2")
                                            .addHeaderValue("header2",
-                                                           URLEncoder.encode(SpincastTestUtils.TEST_STRING, "UTF-8"))
+                                                           URLEncoder.encode(SpincastTestingUtils.TEST_STRING, "UTF-8"))
                                            .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());

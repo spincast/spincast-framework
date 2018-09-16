@@ -1,7 +1,6 @@
 package org.spincast.plugins.jdbc.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
@@ -9,34 +8,33 @@ import java.sql.ResultSet;
 
 import javax.sql.DataSource;
 
-import org.h2.tools.Server;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.JdbcUtils;
-import org.spincast.plugins.jdbc.SpincastDataSource;
-import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
 import org.spincast.plugins.jdbc.SpincastJdbcPlugin;
 import org.spincast.plugins.jdbc.SpincastResultSet;
 import org.spincast.plugins.jdbc.statements.ResultSetHandler;
 import org.spincast.plugins.jdbc.statements.SelectStatement;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
+import org.spincast.testing.core.h2.SpincastTestingH2;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 public abstract class JdbcTestBase extends NoAppTestingBase {
 
-    protected Server h2Server = null;
+    @Inject
+    protected SpincastTestingH2 spincastTestingH2;
+
+    protected SpincastTestingH2 getH2() {
+        return this.spincastTestingH2;
+    }
 
     @Inject
-    @TestDataSource
     private DataSource testDataSource;
 
     @Inject
@@ -59,14 +57,12 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
                        .plugin(new SpincastJdbcPlugin())
                        .module(new SpincastGuiceModuleBase() {
 
-                           //==========================================
-                           // Binds out test DataSource
-                           //==========================================
                            @Override
                            protected void configure() {
-                               bind(DataSource.class).annotatedWith(TestDataSource.class)
-                                                     .toProvider(TestDataSourceProvider.class)
-                                                     .in(Scopes.SINGLETON);
+                               //==========================================
+                               // Enable Spincast H2
+                               //==========================================
+                               bind(DataSource.class).toProvider(SpincastTestingH2.class).in(Scopes.SINGLETON);
                            }
                        })
                        .init(new String[]{});
@@ -75,32 +71,9 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     @Override
     public void beforeClass() {
 
-        //==========================================
-        // We must start H2 before the context is created
-        //==========================================
-        try {
-            this.h2Server = Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers")
-                                  .start();
-        } catch (Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
-
         super.beforeClass();
 
-        boolean tableExists = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
-
-            @Override
-            public Boolean run(Connection connection) {
-
-                try {
-                    ResultSet rset = connection.getMetaData().getTables(null, null, "test", null);
-                    return rset.next();
-                } catch (Exception ex) {
-                    throw SpincastStatics.runtimize(ex);
-                }
-            }
-        });
-        assertFalse(tableExists);
+        getH2().clearDatabase();
 
         getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
@@ -127,7 +100,7 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
             }
         });
 
-        tableExists = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
+        boolean tableExists = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
 
             @Override
             public Boolean run(Connection connection) {
@@ -146,38 +119,7 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     @Override
     public void afterClass() {
         super.afterClass();
-
-        if (this.h2Server != null) {
-            try {
-                this.h2Server.stop();
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        }
-    }
-
-    protected static class TestDataSourceProvider implements Provider<SpincastDataSource> {
-
-        private final SpincastDataSourceFactory spincastDataSourceFactory;
-
-        @Inject
-        public TestDataSourceProvider(SpincastDataSourceFactory spincastDataSourceFactory) {
-            this.spincastDataSourceFactory = spincastDataSourceFactory;
-        }
-
-        @Override
-        public SpincastDataSource get() {
-
-            HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:h2:tcp://localhost:9092/mem:" + this.getClass().getSimpleName() +
-                              ";MODE=PostgreSQL;DATABASE_TO_UPPER=false");
-            config.setUsername("");
-            config.setPassword("");
-            config.setMaximumPoolSize(10);
-
-            DataSource ds = new HikariDataSource(config);
-            return this.spincastDataSourceFactory.create(ds);
-        }
+        getH2().stopServer();
     }
 
     @Override

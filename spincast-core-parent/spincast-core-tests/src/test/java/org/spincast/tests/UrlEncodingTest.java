@@ -11,7 +11,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
 
@@ -25,12 +25,12 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
 
                 String param = context.request().getPathParam("param");
                 assertNotNull(param);
-                assertEquals("one two" + SpincastTestUtils.TEST_STRING, param);
+                assertEquals("one two" + SpincastTestingUtils.TEST_STRING, param);
             }
         });
 
         HttpResponse response = GET("/" +
-                                    URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                    URLEncoder.encode("one two" + SpincastTestingUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -44,12 +44,12 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
 
                 String queryString = context.request().getQueryString(false);
                 assertNotNull(queryString);
-                assertEquals("test=one two" + SpincastTestUtils.TEST_STRING, queryString);
+                assertEquals("test=one two" + SpincastTestingUtils.TEST_STRING, queryString);
             }
         });
 
         HttpResponse response = GET("/one?test=" +
-                                    URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                    URLEncoder.encode("one two" + SpincastTestingUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -63,12 +63,12 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
 
                 String param = context.request().getQueryStringParamFirst("test");
                 assertNotNull(param);
-                assertEquals("one two" + SpincastTestUtils.TEST_STRING, param);
+                assertEquals("one two" + SpincastTestingUtils.TEST_STRING, param);
             }
         });
 
         HttpResponse response = GET("/one?test=" +
-                                    URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                    URLEncoder.encode("one two" + SpincastTestingUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
@@ -85,16 +85,16 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
 
                 String expected = "http://" + getSpincastConfig().getServerHost() + ":" +
                                   getSpincastConfig().getHttpServerPort();
-                expected += "/one two" + SpincastTestUtils.TEST_STRING + "?test=" + "one two" +
-                            SpincastTestUtils.TEST_STRING;
+                expected += "/one two" + SpincastTestingUtils.TEST_STRING + "?test=" + "one two" +
+                            SpincastTestingUtils.TEST_STRING;
                 assertEquals(expected, url);
             }
         });
 
         HttpResponse response = GET("/" +
-                                    URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8") +
+                                    URLEncoder.encode("one two" + SpincastTestingUtils.TEST_STRING, "UTF-8") +
                                     "?test=" +
-                                    URLEncoder.encode("one two" + SpincastTestUtils.TEST_STRING, "UTF-8")).send();
+                                    URLEncoder.encode("one two" + SpincastTestingUtils.TEST_STRING, "UTF-8")).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

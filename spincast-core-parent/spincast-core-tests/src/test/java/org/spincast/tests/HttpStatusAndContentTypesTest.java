@@ -22,7 +22,7 @@ import org.spincast.core.xml.XmlManager;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -450,14 +450,14 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -467,14 +467,14 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendCharacters(SpincastTestUtils.TEST_STRING, "application/custom; charset=utf-8");
+                context.response().sendCharacters(SpincastTestingUtils.TEST_STRING, "application/custom; charset=utf-8");
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/custom; charset=utf-8", response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -484,14 +484,14 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendHtml(SpincastTestUtils.TEST_STRING);
+                context.response().sendHtml(SpincastTestingUtils.TEST_STRING);
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -502,7 +502,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                map.put("key1", SpincastTestUtils.TEST_STRING);
+                map.put("key1", SpincastTestingUtils.TEST_STRING);
                 map.put("key2", "val2");
 
                 String jsonString = context.json().toJsonString(map);
@@ -517,7 +517,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
 
         Map<String, Object> map = getJsonManager().fromStringToMap(response.getContentAsString());
         assertNotNull(map);
-        assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
+        assertEquals(SpincastTestingUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
     }
 
@@ -529,7 +529,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
                 Map<String, Object> json = new HashMap<String, Object>();
-                json.put("key1", SpincastTestUtils.TEST_STRING);
+                json.put("key1", SpincastTestingUtils.TEST_STRING);
                 json.put("key2", "val2");
                 context.response().sendJson(json);
             }
@@ -544,7 +544,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
         @SuppressWarnings("unchecked")
         Map<String, Object> map = mapper.readValue(response.getContentAsString(), Map.class);
         assertNotNull(map);
-        assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
+        assertEquals(SpincastTestingUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
     }
 
@@ -556,7 +556,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                map.put("key1", SpincastTestUtils.TEST_STRING);
+                map.put("key1", SpincastTestingUtils.TEST_STRING);
                 map.put("key2", "val2");
 
                 String xml = context.xml().toXml(map);
@@ -572,7 +572,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
         @SuppressWarnings("unchecked")
         Map<String, Object> map = getXmlManager().fromXml(response.getContentAsString(), Map.class);
         assertNotNull(map);
-        assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
+        assertEquals(SpincastTestingUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
     }
 
@@ -584,7 +584,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                map.put("key1", SpincastTestUtils.TEST_STRING);
+                map.put("key1", SpincastTestingUtils.TEST_STRING);
                 map.put("key2", "val2");
                 context.response().sendXml(map);
             }
@@ -599,7 +599,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
         @SuppressWarnings("unchecked")
         Map<String, Object> map = mapper.readValue(response.getContentAsString(), Map.class);
         assertNotNull(map);
-        assertEquals(SpincastTestUtils.TEST_STRING, map.get("key1"));
+        assertEquals(SpincastTestingUtils.TEST_STRING, map.get("key1"));
         assertEquals("val2", map.get("key2"));
     }
 
@@ -611,14 +611,14 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
                 context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED);
-                context.response().sendHtml(SpincastTestUtils.TEST_STRING);
+                context.response().sendHtml(SpincastTestingUtils.TEST_STRING);
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_EXPECTATION_FAILED, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -629,9 +629,9 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             @Override
             public void handle(DefaultRequestContext context) {
                 context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED);
-                context.response().sendHtml(SpincastTestUtils.TEST_STRING);
+                context.response().sendHtml(SpincastTestingUtils.TEST_STRING);
 
-                throw new RuntimeException(SpincastTestUtils.TEST_STRING);
+                throw new RuntimeException(SpincastTestingUtils.TEST_STRING);
 
             }
         });
@@ -667,9 +667,9 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
-                    context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
-                    context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+                    context.response().sendBytes(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
+                    context.response().sendBytes(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
+                    context.response().sendBytes(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -680,7 +680,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/test", response.getContentType());
         assertNotNull(response.getContentAsString());
-        assertEquals(SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING,
+        assertEquals(SpincastTestingUtils.TEST_STRING + SpincastTestingUtils.TEST_STRING + SpincastTestingUtils.TEST_STRING,
                      response.getContentAsString());
     }
 
@@ -711,7 +711,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
                 assertNotNull(contentType);
                 assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), contentType);
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -721,7 +721,7 @@ public class HttpStatusAndContentTypesTest extends NoAppStartHttpServerTestingBa
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

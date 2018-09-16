@@ -49,7 +49,8 @@ Routing
             pool when it is not needed anymore.
         </p> 
         <p>
-            There is two kinds of scopes: <code><strong>autoCommit</strong></code> and <code><strong>transactional</strong></code>.
+            There is three kinds of scopes: <code><strong>autoCommit</strong></code>, <code><strong>transactional</strong></code>
+            and <code><strong>specificConnection</strong></code>.
             You start a JDBC scope by calling the 
             <code>JdbcUtils</code>'s <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcUtils.html#scopes--">scopes()</a> method.
         </p> 
@@ -146,10 +147,39 @@ getJdbcUtils().scopes().transactional(new TransactionalScope&lt;Void&gt;() {
                 </p> 
             </div>
         </p> 
+        
         <p>
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            In both situations, any SQL queries performed in the scope,
+            directly or indirectly, and targetting a common <code>DataSource</code>,
+            will be part of the same transaction.
+        </p>  
+        
+        <p> 
             <img class="inlineIcon" src="/public/images/icons/para.png" />
-            In both situations, a scope is created and any SQL queries performed in it,
-            directly or indirectly, will be part of the same transaction.
+            The final type of scope is <code>specificConnection</code>. In such scope,
+            all queries (directly or indirectly) are going to be ran using <em>the same connection</em>, the one
+            provided when creating the scope.
+            
+            <div>
+                <p>
+                    <pre class="ace ace-java" data-ace-hi="1,23,1,53"
+>
+
+getJdbcUtils().scopes().specificConnection(connection, getMainDataSource(), new JdbcQueries&lt;Void&gt;() {
+    @Override
+    public Void run(Connection connection) {
+
+        // SQL query #1...
+
+        // SQL query #2...
+        
+        return null;
+    }
+});
+</pre>
+                </p> 
+            </div>
         </p> 
   
     </div>

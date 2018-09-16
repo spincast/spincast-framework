@@ -17,7 +17,7 @@ import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.tests.HttpClientRequestContextAddonTest.CustomRequestContext;
 import org.spincast.plugins.httpclient.websocket.HttpClient;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -73,7 +73,7 @@ public class HttpClientRequestContextAddonTest extends
                 assertEquals("test-value", value);
 
                 context.response().addHeaderValue("test-header2", "test-value2");
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -92,7 +92,7 @@ public class HttpClientRequestContextAddonTest extends
                                                .send();
 
                 assertEquals(HttpStatus.SC_OK, response.getStatus());
-                assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+                assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
                 String value = response.getHeaderFirst("test-header2");
                 assertNotNull(value);
                 assertEquals("test-value2", value);
@@ -105,7 +105,7 @@ public class HttpClientRequestContextAddonTest extends
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -107,10 +107,10 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         assertTrue(testDir.isDirectory());
 
         File testFile = new File(testDir.getAbsolutePath() + "/test.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING, "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING, "UTF-8");
 
         testFile = new File(testDir.getAbsolutePath() + "/test2.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING + "2", "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING + "2", "UTF-8");
 
         File testSubDir = new File(testDir.getAbsolutePath() + "/someDir");
         result = testSubDir.mkdirs();
@@ -118,10 +118,10 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         assertTrue(testSubDir.isDirectory());
 
         testFile = new File(testSubDir.getAbsolutePath() + "/test3.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING + "3", "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING + "3", "UTF-8");
 
         testFile = new File(testSubDir.getAbsolutePath() + "/test4.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING + "4", "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING + "4", "UTF-8");
 
         File targetDir = new File(createTestingFilePath());
         assertFalse(targetDir.isDirectory());
@@ -147,12 +147,12 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         File unzippedFile = new File(targetDir2 + "/test.txt");
         assertTrue(unzippedFile.isFile());
         String content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING, content);
+        assertEquals(SpincastTestingUtils.TEST_STRING, content);
 
         unzippedFile = new File(targetDir2.getAbsolutePath() + "/test2.txt");
         assertTrue(unzippedFile.isFile());
         content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING + "2", content);
+        assertEquals(SpincastTestingUtils.TEST_STRING + "2", content);
 
         File unzippedSubDir = new File(targetDir2.getAbsolutePath() + "/someDir");
         assertTrue(unzippedSubDir.isDirectory());
@@ -160,12 +160,12 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         unzippedFile = new File(unzippedSubDir.getAbsolutePath() + "/test3.txt");
         assertTrue(unzippedFile.isFile());
         content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING + "3", content);
+        assertEquals(SpincastTestingUtils.TEST_STRING + "3", content);
 
         unzippedFile = new File(unzippedSubDir.getAbsolutePath() + "/test4.txt");
         assertTrue(unzippedFile.isFile());
         content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING + "4", content);
+        assertEquals(SpincastTestingUtils.TEST_STRING + "4", content);
     }
 
     @Test
@@ -179,10 +179,10 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         assertTrue(testDir.isDirectory());
 
         File testFile = new File(testDir.getAbsolutePath() + "/test.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING, "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING, "UTF-8");
 
         testFile = new File(testDir.getAbsolutePath() + "/test2.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING + "2", "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING + "2", "UTF-8");
 
         File testSubDir = new File(testDir.getAbsolutePath() + "/someDir");
         result = testSubDir.mkdirs();
@@ -190,10 +190,10 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         assertTrue(testSubDir.isDirectory());
 
         testFile = new File(testSubDir.getAbsolutePath() + "/test3.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING + "3", "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING + "3", "UTF-8");
 
         testFile = new File(testSubDir.getAbsolutePath() + "/test4.txt");
-        FileUtils.writeStringToFile(testFile, SpincastTestUtils.TEST_STRING + "4", "UTF-8");
+        FileUtils.writeStringToFile(testFile, SpincastTestingUtils.TEST_STRING + "4", "UTF-8");
 
         File targetDir = new File(createTestingFilePath());
         assertFalse(targetDir.isDirectory());
@@ -223,12 +223,12 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         File unzippedFile = new File(unzippedDir.getAbsolutePath() + "/test.txt");
         assertTrue(unzippedFile.isFile());
         String content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING, content);
+        assertEquals(SpincastTestingUtils.TEST_STRING, content);
 
         unzippedFile = new File(unzippedDir.getAbsolutePath() + "/test2.txt");
         assertTrue(unzippedFile.isFile());
         content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING + "2", content);
+        assertEquals(SpincastTestingUtils.TEST_STRING + "2", content);
 
         File unzippedSubDir = new File(unzippedDir.getAbsolutePath() + "/someDir");
         assertTrue(unzippedSubDir.isDirectory());
@@ -236,12 +236,12 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         unzippedFile = new File(unzippedSubDir.getAbsolutePath() + "/test3.txt");
         assertTrue(unzippedFile.isFile());
         content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING + "3", content);
+        assertEquals(SpincastTestingUtils.TEST_STRING + "3", content);
 
         unzippedFile = new File(unzippedSubDir.getAbsolutePath() + "/test4.txt");
         assertTrue(unzippedFile.isFile());
         content = FileUtils.readFileToString(unzippedFile, "UTF-8");
-        assertEquals(SpincastTestUtils.TEST_STRING + "4", content);
+        assertEquals(SpincastTestingUtils.TEST_STRING + "4", content);
 
     }
 

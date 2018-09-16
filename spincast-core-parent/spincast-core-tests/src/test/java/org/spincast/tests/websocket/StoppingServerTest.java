@@ -13,7 +13,7 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
@@ -109,7 +109,7 @@ public class StoppingServerTest extends NoAppWebsocketTestingBase {
             assertEquals(1, client.getConnectionClosedEvents().size());
         }
 
-        assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
+        assertTrue(SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -170,7 +170,7 @@ public class StoppingServerTest extends NoAppWebsocketTestingBase {
         //==========================================
         getServer().stop(false);
 
-        assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
+        assertTrue(SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {

@@ -17,7 +17,7 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -186,7 +186,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
                 // Let's say we look at the "param" path param and
                 // find it is not valid...
-                throw new NotFoundException(SpincastTestUtils.TEST_STRING);
+                throw new NotFoundException(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -194,7 +194,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                throw new NotFoundException(SpincastTestUtils.TEST_STRING);
+                throw new NotFoundException(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -230,7 +230,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("A" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals("A" + SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -253,7 +253,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
                 // Let's say we look at the "param" path param and
                 // find it is not valid...
-                throw new NotFoundException(SpincastTestUtils.TEST_STRING);
+                throw new NotFoundException(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -284,7 +284,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
                 // Let's say we look at the "param" path param and
                 // find it is not valid...
-                throw new NotFoundException(SpincastTestUtils.TEST_STRING, false);
+                throw new NotFoundException(SpincastTestingUtils.TEST_STRING, false);
             }
         });
 
@@ -340,7 +340,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
                        public void handle(DefaultRequestContext context) {
 
                            // true => reset!
-                           throw new NotFoundException(SpincastTestUtils.TEST_STRING, true);
+                           throw new NotFoundException(SpincastTestingUtils.TEST_STRING, true);
                        }
                    });
 
@@ -367,7 +367,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
 
-        assertEquals("AB" + SpincastTestUtils.TEST_STRING + "EF", response.getContentAsString());
+        assertEquals("AB" + SpincastTestingUtils.TEST_STRING + "EF", response.getContentAsString());
     }
 
     @Test
@@ -414,7 +414,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
-                           throw new NotFoundException(SpincastTestUtils.TEST_STRING, false);
+                           throw new NotFoundException(SpincastTestingUtils.TEST_STRING, false);
                        }
                    });
 
@@ -450,7 +450,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         // not part of the Not Found handler. But the "C" before filter
         // was already applied.
         //==========================================
-        assertEquals("ABCAB" + SpincastTestUtils.TEST_STRING + "EF", response.getContentAsString());
+        assertEquals("ABCAB" + SpincastTestingUtils.TEST_STRING + "EF", response.getContentAsString());
     }
 
     @Test
@@ -504,7 +504,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
-                           throw new NotFoundException(SpincastTestUtils.TEST_STRING, false);
+                           throw new NotFoundException(SpincastTestingUtils.TEST_STRING, false);
                        }
                    });
 
@@ -535,7 +535,7 @@ public class NotFoundHandlerTest extends NoAppStartHttpServerTestingBase {
         // The "A" before filter doesn't run when the current 
         // route is a Not Found one.
         //==========================================
-        assertEquals("ABCB" + SpincastTestUtils.TEST_STRING + "EF", response.getContentAsString());
+        assertEquals("ABCB" + SpincastTestingUtils.TEST_STRING + "EF", response.getContentAsString());
     }
 
 }

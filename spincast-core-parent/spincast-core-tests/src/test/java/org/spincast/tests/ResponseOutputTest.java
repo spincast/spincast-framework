@@ -18,7 +18,7 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -57,7 +57,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
                 context.response().flush();
                 context.response().sendPlainText("123");
             }
@@ -66,7 +66,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "123", response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING + "123", response.getContentAsString());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
 
                 try {
                     context.response().end();
@@ -89,7 +89,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
     }
 
@@ -109,7 +109,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
                 try {
-                    context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+                    context.response().sendBytes(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -119,7 +119,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("first" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals("first" + SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
                 try {
-                    context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
+                    context.response().sendBytes(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), "application/test");
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -148,7 +148,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("application/test", response.getContentType());
-        assertEquals("first" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals("first" + SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING, true);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING, true);
             }
         });
 
@@ -167,7 +167,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
                 try {
-                    context.response().sendBytes(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+                    context.response().sendBytes(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -177,7 +177,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING + SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -187,7 +187,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -213,7 +213,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
                 context.response().flush();
             }
         });
@@ -230,7 +230,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "<b>hello</b>", response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING + "<b>hello</b>", response.getContentAsString());
     }
 
     @Test
@@ -240,7 +240,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING, true);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING, true);
             }
         });
 
@@ -256,7 +256,7 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "<b>hello</b>", response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING + "<b>hello</b>", response.getContentAsString());
     }
 
     @Test
@@ -293,14 +293,14 @@ public class ResponseOutputTest extends NoAppStartHttpServerTestingBase {
                 context.response()
                        .setStatusCode(HttpStatus.SC_LOCKED)
                        .addHeaderValue("titi", "toto")
-                       .sendPlainText(SpincastTestUtils.TEST_STRING);
+                       .sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_LOCKED, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
         assertEquals("toto", response.getHeaderFirst("titi"));
     }
 

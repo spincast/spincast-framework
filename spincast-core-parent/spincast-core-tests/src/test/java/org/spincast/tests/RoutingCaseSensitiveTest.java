@@ -20,7 +20,7 @@ import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -103,7 +103,7 @@ public class RoutingCaseSensitiveTest extends NoAppStartHttpServerTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/one").handle(SpincastTestUtils.dummyRouteHandler);
+        router.GET("/one").handle(SpincastTestingUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/one"));

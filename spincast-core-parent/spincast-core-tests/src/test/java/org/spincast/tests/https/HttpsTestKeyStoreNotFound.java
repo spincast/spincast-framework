@@ -5,7 +5,7 @@ import org.spincast.core.guice.TestingMode;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.utils.ExpectingBeforeClassException;
 
 import com.google.inject.Inject;
@@ -38,7 +38,7 @@ public class HttpsTestKeyStoreNotFound extends NoAppStartHttpServerTestingBase {
         @Override
         public int getHttpsServerPort() {
             if (this.httpsServerPort < 0) {
-                this.httpsServerPort = SpincastTestUtils.findFreePort();
+                this.httpsServerPort = SpincastTestingUtils.findFreePort();
             }
             return this.httpsServerPort;
         }

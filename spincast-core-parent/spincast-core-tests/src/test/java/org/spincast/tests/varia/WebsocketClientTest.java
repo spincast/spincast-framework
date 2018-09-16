@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.spincast.plugins.httpclient.websocket.WebsocketClientHandler;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 
 public class WebsocketClientTest implements WebsocketClientHandler {
@@ -60,7 +60,7 @@ public class WebsocketClientTest implements WebsocketClientHandler {
     }
 
     public boolean waitForStringMessageReceived(final int nbrExpected, int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -75,7 +75,7 @@ public class WebsocketClientTest implements WebsocketClientHandler {
     }
 
     public boolean waitForStringMessageReceived(final String messageExpected, int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -99,7 +99,7 @@ public class WebsocketClientTest implements WebsocketClientHandler {
     }
 
     public boolean waitForBytesMessageReceived(final int nbrExpected, int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -115,7 +115,7 @@ public class WebsocketClientTest implements WebsocketClientHandler {
 
     public boolean waitForConnectionClosed(int maxMillisecToWait) {
 
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {

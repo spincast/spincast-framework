@@ -23,7 +23,7 @@ import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -937,7 +937,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void lastModifiedNotModified() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -964,7 +964,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void lastModifiedModified() throws Exception {
 
-        final Date oldDate = SpincastTestUtils.getTestDateNoTime();
+        final Date oldDate = SpincastTestingUtils.getTestDateNoTime();
         final Date newDate = DateUtils.addSeconds(oldDate, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -994,7 +994,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void lastModifiedInRequestOnly() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1022,7 +1022,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void lastModifiedNotInRequest() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1051,7 +1051,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void lastModifiedInvalidFormat() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1080,7 +1080,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifUnmodifiedSinceAndResourceDoesntExist() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1107,7 +1107,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifUnmodifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1136,7 +1136,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifUnmodifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1165,7 +1165,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchMatchesAndIfUnmodifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1204,7 +1204,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchNoMatchesAndIfUnmodifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1243,7 +1243,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchMatchesAndifUnmodifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1282,7 +1282,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchNoMatchesAndifUnmodifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1321,7 +1321,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchMatchesAndifUnmodifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1360,7 +1360,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchNoMatchesAndifUnmodifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1398,7 +1398,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchMatchesAndifUnmodifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1437,7 +1437,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchNoMatchesAndifUnmodifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1476,7 +1476,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchMatchesAndifModifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1513,7 +1513,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchNoMatchesAndifModifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1552,7 +1552,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchMatchesAndifModifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1592,7 +1592,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifNoneMatchNoMatchesAndifModifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1632,7 +1632,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchMatchesAndifModifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1671,7 +1671,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchNoMatchesAndifModifiedMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -1709,7 +1709,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchMatchesAndifModifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
@@ -1749,7 +1749,7 @@ public class CacheHeadersTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void ifMatchNoMatchesAndifModifiedNoMatches() throws Exception {
 
-        final Date date = SpincastTestUtils.getTestDateNoTime();
+        final Date date = SpincastTestingUtils.getTestDateNoTime();
         final Date date2 = DateUtils.addSeconds(date, 2);
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {

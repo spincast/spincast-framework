@@ -23,7 +23,7 @@ import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
@@ -418,17 +418,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 3));
 
         // The endpoint sends a message
-        controller.getEndpointManager("endpoint1").sendMessage(SpincastTestUtils.TEST_STRING);
+        controller.getEndpointManager("endpoint1").sendMessage(SpincastTestingUtils.TEST_STRING);
 
         // All peers receive it
         assertTrue(client1.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
 
         assertTrue(client2.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client2.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client2.getStringMessageReceived().get(0));
 
         assertTrue(client3.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client3.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client3.getStringMessageReceived().get(0));
 
         // The endpoint sends a message to a specific peer only
         controller.getEndpointManager("endpoint1").sendMessage("peer2", "Hi peer2!");
@@ -498,22 +498,22 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING);
 
         // The endpoint receives it
         assertTrue(controller.waitForStringMessageReceived("endpoint1", 1));
-        assertEquals(SpincastTestUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
 
         // All peers receive it as an echo, even Peer #2 which is the 
         // original sender.
         assertTrue(client1.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
 
         assertTrue(client2.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client2.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client2.getStringMessageReceived().get(0));
 
         assertTrue(client3.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client3.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client3.getStringMessageReceived().get(0));
     }
 
     @Test
@@ -574,21 +574,21 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING);
 
         // The endpoint receives it
         assertTrue(controller.waitForStringMessageReceived("endpoint1", 1));
-        assertEquals(SpincastTestUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
 
         // All peers receive it as an echo, except peer #2 which is the
         // original sender.
         assertTrue(client1.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
 
         assertTrue(client2.waitForStringMessageReceived(0));
 
         assertTrue(client3.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client3.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client3.getStringMessageReceived().get(0));
     }
 
     @Test
@@ -648,18 +648,18 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING);
 
         // The endpoint receives it
         assertTrue(controller.waitForStringMessageReceived("endpoint1", 1));
-        assertEquals(SpincastTestUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
 
         // Only peer #2 receives it as an echo
 
         assertTrue(client1.waitForStringMessageReceived(0));
 
         assertTrue(client2.waitForStringMessageReceived(1));
-        assertEquals(SpincastTestUtils.TEST_STRING, client2.getStringMessageReceived().get(0));
+        assertEquals(SpincastTestingUtils.TEST_STRING, client2.getStringMessageReceived().get(0));
 
         assertTrue(client3.waitForStringMessageReceived(0));
     }
@@ -712,22 +712,22 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // The endpoint sends a message
-        controller.getEndpointManager("endpoint1").sendMessage(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+        controller.getEndpointManager("endpoint1").sendMessage(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
 
         // All peers receive it
         assertTrue(client1.waitForBytesMessageReceived(1));
         assertArrayEquals("Received bytes: " + client1.getBytesMessageReceived().get(0).toString(),
-                          SpincastTestUtils.TEST_STRING.getBytes("UTF-8"),
+                          SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           client1.getBytesMessageReceived().get(0));
 
         assertTrue(client2.waitForBytesMessageReceived(1));
         assertArrayEquals("Received bytes: " + client1.getBytesMessageReceived().get(0).toString(),
-                          SpincastTestUtils.TEST_STRING.getBytes("UTF-8"),
+                          SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           client2.getBytesMessageReceived().get(0));
 
         assertTrue(client3.waitForBytesMessageReceived(1));
         assertArrayEquals("Received bytes: " + client1.getBytesMessageReceived().get(0).toString(),
-                          SpincastTestUtils.TEST_STRING.getBytes("UTF-8"),
+                          SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           client3.getBytesMessageReceived().get(0));
 
         // The endpoint sends a message to a specific peer only
@@ -798,23 +798,23 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
 
         // The endpoint receives it
         assertTrue(controller.waitForBytesMessageReceived("endpoint1", 1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"),
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           controller.getBytesMessageReceived("endpoint1").get(0));
 
         // All peers receive it as an echo, even Peer #2 which is the 
         // original sender.
         assertTrue(client1.waitForBytesMessageReceived(1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), client1.getBytesMessageReceived().get(0));
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client1.getBytesMessageReceived().get(0));
 
         assertTrue(client2.waitForBytesMessageReceived(1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), client2.getBytesMessageReceived().get(0));
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client2.getBytesMessageReceived().get(0));
 
         assertTrue(client3.waitForBytesMessageReceived(1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), client3.getBytesMessageReceived().get(0));
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client3.getBytesMessageReceived().get(0));
     }
 
     @Test
@@ -873,22 +873,22 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
 
         // The endpoint receives it
         assertTrue(controller.waitForBytesMessageReceived("endpoint1", 1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"),
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           controller.getBytesMessageReceived("endpoint1").get(0));
 
         // All peers receive it as an echo, except peer #2 which is the
         // original sender.
         assertTrue(client1.waitForBytesMessageReceived(1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), client1.getBytesMessageReceived().get(0));
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client1.getBytesMessageReceived().get(0));
 
         assertTrue(client2.waitForBytesMessageReceived(0));
 
         assertTrue(client3.waitForBytesMessageReceived(1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), client3.getBytesMessageReceived().get(0));
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client3.getBytesMessageReceived().get(0));
     }
 
     @Test
@@ -948,18 +948,18 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals(3, controller.getEndpointManager("endpoint1").getPeersIds().size());
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"));
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"));
 
         // The endpoint receives it
         assertTrue(controller.waitForBytesMessageReceived("endpoint1", 1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"),
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           controller.getBytesMessageReceived("endpoint1").get(0));
 
         // Only peer #2 receives it as an echo
         assertTrue(client1.waitForBytesMessageReceived(0));
 
         assertTrue(client2.waitForBytesMessageReceived(1));
-        assertArrayEquals(SpincastTestUtils.TEST_STRING.getBytes("UTF-8"), client2.getBytesMessageReceived().get(0));
+        assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client2.getBytesMessageReceived().get(0));
 
         assertTrue(client3.waitForBytesMessageReceived(0));
     }
@@ -1030,7 +1030,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         controller.getEndpointManager("endpoint1").closePeer("peer1");
 
         //assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
-        SpincastTestUtils.waitForTrue(new TrueChecker() {
+        SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -1094,25 +1094,25 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
         // Peer #2 sends a message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING);
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer1", 0));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer2", 1));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer3", 0));
 
         // Peer #2 sends another message
-        writer2.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer2.sendMessage(SpincastTestingUtils.TEST_STRING);
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer1", 0));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer2", 2));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer3", 0));
 
         // Peer #1 sends a message
-        writer1.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer1.sendMessage(SpincastTestingUtils.TEST_STRING);
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer1", 1));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer2", 2));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer3", 0));
 
         // Peer #3 sends a message
-        writer3.sendMessage(SpincastTestUtils.TEST_STRING);
+        writer3.sendMessage(SpincastTestingUtils.TEST_STRING);
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer1", 1));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer2", 2));
         assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer3", 1));

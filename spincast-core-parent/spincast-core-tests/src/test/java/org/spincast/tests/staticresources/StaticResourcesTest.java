@@ -23,7 +23,7 @@ import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -245,7 +245,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void fileFileSystemAbsolute() throws Exception {
 
-        File fileTarget = SpincastTestUtils.generateTempClassFile(getTestingWritableTempDir());
+        File fileTarget = SpincastTestingUtils.generateTempClassFile(getTestingWritableTempDir());
         assertTrue(fileTarget.isFile());
 
         getRouter().file("/file").pathAbsolute(fileTarget.getAbsolutePath()).handle();
@@ -261,7 +261,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
         File dir = new File(getTestingWritableTempDir() + "/dirFileSystem");
         assertTrue(dir.mkdirs());
 
-        File fileTemp = SpincastTestUtils.generateTempClassFile(getTestingWritableTempDir());
+        File fileTemp = SpincastTestingUtils.generateTempClassFile(getTestingWritableTempDir());
         assertTrue(fileTemp.isFile());
 
         File fileTarget = new File(dir.getAbsolutePath() + "/" + fileTemp.getName());
@@ -351,7 +351,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     public void generatorsOnlyForFileSystemPaths() throws Exception {
 
         try {
-            getRouter().file("/").classpath("/").handle(SpincastTestUtils.dummyRouteHandler);
+            getRouter().file("/").classpath("/").handle(SpincastTestingUtils.dummyRouteHandler);
             fail();
         } catch (Exception ex) {
         }
@@ -570,7 +570,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
     @Test
     public void lastOneAddedWins1() throws Exception {
 
-        getRouter().file("/one").pathAbsolute("/someFile.txt").handle(SpincastTestUtils.dummyRouteHandler);
+        getRouter().file("/one").pathAbsolute("/someFile.txt").handle(SpincastTestingUtils.dummyRouteHandler);
 
         getRouter().file("/one").classpath("/someFile.txt").handle();
 

@@ -19,7 +19,7 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -97,14 +97,14 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                throw new PublicExceptionDefault(SpincastTestUtils.TEST_STRING);
+                throw new PublicExceptionDefault(SpincastTestingUtils.TEST_STRING);
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -114,14 +114,14 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                throw new PublicExceptionDefault(SpincastTestUtils.TEST_STRING, HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
+                throw new PublicExceptionDefault(SpincastTestingUtils.TEST_STRING, HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
             }
         });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                throw new CustomStatusCodeExceptionDefault(SpincastTestUtils.TEST_STRING,
+                throw new CustomStatusCodeExceptionDefault(SpincastTestingUtils.TEST_STRING,
                                                            HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE);
             }
         });
@@ -141,7 +141,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
 
         // Not equals
-        assertFalse(response.getContentAsString().contains(SpincastTestUtils.TEST_STRING));
+        assertFalse(response.getContentAsString().contains(SpincastTestingUtils.TEST_STRING));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
                 assertEquals("this is a private message", exception.getMessage());
 
                 context.response().setStatusCode(HttpStatus.SC_CONFLICT);
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -174,7 +174,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -199,7 +199,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
                 assertEquals("this is a private message", exception.getMessage());
 
                 context.response().setStatusCode(HttpStatus.SC_CONFLICT);
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -207,7 +207,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -232,14 +232,14 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
                        @Override
                        public void handle(DefaultRequestContext context) {
-                           context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                           context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
                        }
                    });
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("before" + SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals("before" + SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -265,7 +265,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
                        @Override
                        public void handle(DefaultRequestContext context) {
                            context.response().setStatusCode(HttpStatus.SC_CONFLICT);
-                           context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                           context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
                        }
                    });
 
@@ -273,7 +273,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING + "after", response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING + "after", response.getContentAsString());
     }
 
     @Test
@@ -305,7 +305,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
                        @Override
                        public void handle(DefaultRequestContext context) {
                            context.response().setStatusCode(HttpStatus.SC_CONFLICT);
-                           context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                           context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
                        }
                    });
 
@@ -329,7 +329,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_CONFLICT, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("111before" + SpincastTestUtils.TEST_STRING + "after222", response.getContentAsString());
+        assertEquals("111before" + SpincastTestingUtils.TEST_STRING + "after222", response.getContentAsString());
     }
 
     @Test
@@ -424,7 +424,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
                 assertEquals("aaa", originalRouteHandlerMatch.getPathParams().get("first"));
                 assertEquals("bbb", originalRouteHandlerMatch.getPathParams().get("second"));
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -433,7 +433,7 @@ public class ExceptionHandlerTest extends NoAppStartHttpServerTestingBase {
         // Should have fallback to the default expcetion handler...
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test

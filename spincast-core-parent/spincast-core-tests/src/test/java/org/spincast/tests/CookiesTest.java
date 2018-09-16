@@ -18,7 +18,7 @@ import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.time.DateUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
@@ -32,8 +32,8 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Cookie cookie = getCookieFactory().createCookie(SpincastTestUtils.TEST_STRING + "name");
-                cookie.setValue(SpincastTestUtils.TEST_STRING + random);
+                Cookie cookie = getCookieFactory().createCookie(SpincastTestingUtils.TEST_STRING + "name");
+                cookie.setValue(SpincastTestingUtils.TEST_STRING + random);
                 context.response().setCookie(cookie);
 
                 context.response().sendPlainText("test");
@@ -48,10 +48,10 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
 
         Map<String, Cookie> cookies = response.getCookies();
         assertEquals(1, cookies.size());
-        Cookie cookie = cookies.get(SpincastTestUtils.TEST_STRING + "name");
+        Cookie cookie = cookies.get(SpincastTestingUtils.TEST_STRING + "name");
         assertNotNull(cookie);
-        assertEquals(SpincastTestUtils.TEST_STRING + "name", cookie.getName());
-        assertEquals(SpincastTestUtils.TEST_STRING + random, cookie.getValue());
+        assertEquals(SpincastTestingUtils.TEST_STRING + "name", cookie.getName());
+        assertEquals(SpincastTestingUtils.TEST_STRING + random, cookie.getValue());
     }
 
     @Test

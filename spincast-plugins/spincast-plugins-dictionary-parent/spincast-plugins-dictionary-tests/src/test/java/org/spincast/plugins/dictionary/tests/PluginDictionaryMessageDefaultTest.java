@@ -10,7 +10,7 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class PluginDictionaryMessageDefaultTest extends NoAppStartHttpServerTestingBase {
 
@@ -29,7 +29,7 @@ public class PluginDictionaryMessageDefaultTest extends NoAppStartHttpServerTest
                     assertEquals("The name can't be empty.", ex.getMessage());
                 }
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -37,7 +37,7 @@ public class PluginDictionaryMessageDefaultTest extends NoAppStartHttpServerTest
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

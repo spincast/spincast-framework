@@ -9,7 +9,7 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -19,7 +19,7 @@ public class MethodReferenceAsHandlersOrLambdasTest extends NoAppStartHttpServer
     public static class MyController {
 
         public void test(DefaultRequestContext context) {
-            context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+            context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
         }
     }
 
@@ -47,19 +47,19 @@ public class MethodReferenceAsHandlersOrLambdasTest extends NoAppStartHttpServer
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
     public void lambda() throws Exception {
 
-        getRouter().GET("/one").handle(context -> context.response().sendPlainText(SpincastTestUtils.TEST_STRING));
+        getRouter().GET("/one").handle(context -> context.response().sendPlainText(SpincastTestingUtils.TEST_STRING));
 
         HttpResponse response = GET("/one").send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

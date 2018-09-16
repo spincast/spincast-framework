@@ -18,7 +18,7 @@ import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
@@ -36,7 +36,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
         for (WebsocketEndpointManager manager : websocketEndpointManagers) {
             manager.closeEndpoint();
         }
-        assertTrue(SpincastTestUtils.waitForTrue(new TrueChecker() {
+        assertTrue(SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {

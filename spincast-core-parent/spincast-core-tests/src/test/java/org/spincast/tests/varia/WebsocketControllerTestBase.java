@@ -12,7 +12,7 @@ import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketController;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 
 public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
@@ -228,7 +228,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
     public boolean waitForEndpointClosed(final String endpointId,
                                          int maxMillisecToWait) {
 
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -246,7 +246,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
                                      final String peerId,
                                      int maxMillisecToWait) {
 
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -266,7 +266,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
                                         final int nbrPeers,
                                         int maxMillisecToWait) {
 
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -288,7 +288,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
                                            final int nbrPeersMax,
                                            int maxMillisecToWait) {
 
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -304,7 +304,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
     }
 
     public boolean waitForStringMessageReceived(final String endpointId, final int nbrExpected, int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -322,7 +322,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
                                                 final String peerId,
                                                 final int nbrExpected,
                                                 int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -342,7 +342,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
                                                 final String peerId,
                                                 final String messageExpected,
                                                 int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -368,7 +368,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
     }
 
     public boolean waitForBytesMessageReceived(final String endpointId, final int nbrExpected, int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {
@@ -386,7 +386,7 @@ public abstract class WebsocketControllerTestBase<R extends RequestContext<?>, W
                                                final String peerId,
                                                final int nbrExpected,
                                                int maxMillisecToWait) {
-        return SpincastTestUtils.waitForTrue(new TrueChecker() {
+        return SpincastTestingUtils.waitForTrue(new TrueChecker() {
 
             @Override
             public boolean check() {

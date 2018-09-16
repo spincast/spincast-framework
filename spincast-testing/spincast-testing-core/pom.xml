@@ -51,6 +51,33 @@
             <artifactId>spincast-testing-junit-runner</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <!--=================================== 
+        Spincast JDBC
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
+        H2 database
+        ====================================-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+        </dependency>
+        
+        <!--=================================== 
+        HikariCP - connection pool
+        ====================================-->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.2.0</version>
+        </dependency>
 
 	</dependencies>
 

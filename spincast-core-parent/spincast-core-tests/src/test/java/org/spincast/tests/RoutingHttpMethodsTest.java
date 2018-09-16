@@ -14,7 +14,7 @@ import org.spincast.core.routing.Router;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.defaults.testing.NoAppTestingBase;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -50,7 +50,7 @@ public class RoutingHttpMethodsTest extends NoAppTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.GET("/").handle(SpincastTestUtils.dummyRouteHandler);
+        router.GET("/").handle(SpincastTestingUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
@@ -88,7 +88,7 @@ public class RoutingHttpMethodsTest extends NoAppTestingBase {
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
         try {
-            router.methods("/").handle(SpincastTestUtils.dummyRouteHandler);
+            router.methods("/").handle(SpincastTestingUtils.dummyRouteHandler);
             fail();
         } catch (Exception ex) {
         }
@@ -99,7 +99,7 @@ public class RoutingHttpMethodsTest extends NoAppTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.methods("/", HttpMethod.GET).handle(SpincastTestUtils.dummyRouteHandler);
+        router.methods("/", HttpMethod.GET).handle(SpincastTestingUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
@@ -136,7 +136,7 @@ public class RoutingHttpMethodsTest extends NoAppTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.methods("/", HttpMethod.GET, HttpMethod.CONNECT).handle(SpincastTestUtils.dummyRouteHandler);
+        router.methods("/", HttpMethod.GET, HttpMethod.CONNECT).handle(SpincastTestingUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));
@@ -172,7 +172,7 @@ public class RoutingHttpMethodsTest extends NoAppTestingBase {
 
         Router<DefaultRequestContext, DefaultWebsocketContext> router = getRouter();
 
-        router.ALL("/").handle(SpincastTestUtils.dummyRouteHandler);
+        router.ALL("/").handle(SpincastTestingUtils.dummyRouteHandler);
 
         RoutingResult<DefaultRequestContext> routingResult =
                 router.route(getRequestContextMock(HttpMethod.GET, "http://localhost/"));

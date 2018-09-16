@@ -19,7 +19,7 @@ import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
 
@@ -67,14 +67,14 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
 
                     String content = new String(bodyBytes, "UTF-8");
                     assertNotNull(content);
-                    assertEquals("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", content);
+                    assertEquals("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}", content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
         });
 
-        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}",
                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -91,14 +91,14 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
                 try {
                     String utf8String = context.request().getBodyAsString();
                     assertNotNull(utf8String);
-                    assertEquals("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}", utf8String);
+                    assertEquals("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}", utf8String);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
         });
 
-        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}",
                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -177,7 +177,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
 
                     String name = json.getString("name");
                     assertNotNull(name);
-                    assertEquals(SpincastTestUtils.TEST_STRING, name);
+                    assertEquals(SpincastTestingUtils.TEST_STRING, name);
 
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -185,7 +185,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}",
                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -206,7 +206,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
                     Object name = map.get("name");
                     assertNotNull(name);
                     assertTrue(name instanceof String);
-                    assertEquals(SpincastTestUtils.TEST_STRING, name);
+                    assertEquals(SpincastTestingUtils.TEST_STRING, name);
 
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -214,7 +214,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}",
                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -237,14 +237,14 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
                     UserTest user = context.request().getJsonBody(UserTest.class);
                     assertNotNull(user);
                     assertNotNull(user.name);
-                    assertEquals(SpincastTestUtils.TEST_STRING, user.name);
+                    assertEquals(SpincastTestingUtils.TEST_STRING, user.name);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
             }
         });
 
-        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestUtils.TEST_STRING + "\"}",
+        HttpResponse response = POST("/one").setStringBody("{\"name\":\"" + SpincastTestingUtils.TEST_STRING + "\"}",
                                                              ContentTypeDefaults.JSON.getMainVariationWithUtf8Charset())
                                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -264,7 +264,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
 
                     String name = json.getString("name");
                     assertNotNull(name);
-                    assertEquals(SpincastTestUtils.TEST_STRING, name);
+                    assertEquals(SpincastTestingUtils.TEST_STRING, name);
 
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -273,7 +273,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/one").setStringBody("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
+                POST("/one").setStringBody("<user><name>" + SpincastTestingUtils.TEST_STRING + "</name></user>",
                                              ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -294,7 +294,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
                     Object name = map.get("name");
                     assertNotNull(name);
                     assertTrue(name instanceof String);
-                    assertEquals(SpincastTestUtils.TEST_STRING, name);
+                    assertEquals(SpincastTestingUtils.TEST_STRING, name);
 
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
@@ -303,7 +303,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/one").setStringBody("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
+                POST("/one").setStringBody("<user><name>" + SpincastTestingUtils.TEST_STRING + "</name></user>",
                                              ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -321,7 +321,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
                     UserTest user = context.request().getXmlBody(UserTest.class);
                     assertNotNull(user);
                     assertNotNull(user.name);
-                    assertEquals(SpincastTestUtils.TEST_STRING, user.name);
+                    assertEquals(SpincastTestingUtils.TEST_STRING, user.name);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -329,7 +329,7 @@ public class RequestBodyTest extends NoAppStartHttpServerTestingBase {
         });
 
         HttpResponse response =
-                POST("/one").setStringBody("<user><name>" + SpincastTestUtils.TEST_STRING + "</name></user>",
+                POST("/one").setStringBody("<user><name>" + SpincastTestingUtils.TEST_STRING + "</name></user>",
                                              ContentTypeDefaults.XML.getMainVariationWithUtf8Charset())
                             .send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());

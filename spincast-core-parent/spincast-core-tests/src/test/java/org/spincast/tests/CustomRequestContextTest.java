@@ -14,7 +14,7 @@ import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.defaults.testing.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.tests.CustomRequestContextTest.CustomRequestContext;
 
 import com.google.inject.assistedinject.Assisted;
@@ -50,7 +50,7 @@ public class CustomRequestContextTest extends
 
         @Override
         public void customMethod() {
-            response().sendPlainText(SpincastTestUtils.TEST_STRING);
+            response().sendPlainText(SpincastTestingUtils.TEST_STRING);
         }
     }
 
@@ -69,7 +69,7 @@ public class CustomRequestContextTest extends
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

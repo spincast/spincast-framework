@@ -101,7 +101,7 @@
                     Writing migration classes
                 </h4>
                 <p>
-                    You use standard Java classes to define the migrations to be executed. By doing classes,
+                    You use standard Java classes to define the migrations to be executed. By doing do,
                     you use Java code and you have access to any libraries you need.
                 </p>
                 
@@ -200,7 +200,7 @@
                                 <li>
                                     <strong><em>Date based</em></strong>: for example "<code>2017_04_01_01</code>". Here, the date 
                                     is "2017-04-01" and it would be the first migration of the day. Another
-                                    migration executed on the same day would be named "2017_04_01_02".
+                                    migration executed on the same day would be named "<code>2017_04_01_02</code>".
                                 </li>
                                 <li>
                                     <strong><em>Semantic versioning</em></strong>: for example "<code>12_0_3</code>"
@@ -234,17 +234,19 @@
                     provided by the <a href="/plugins/spincast-jdbc">Spincast JDBC plugin</a>.
                 </p>
                 <p>
-                    For example, let's say one of the steps in your migration is to create a 
-                    new default user. In your application, you may already have a <code>UserService</code> providing a
-                    <code>createUser(...)</code> method... It would be nice to be able to reuse
-                    the logic provided by that service! But Since the <code>createUser(...)</code> method
+                    For example, let's say one of the steps in your migration is to 
+                    add a new column to your <code>users</code> table. You may already 
+                    have a <code>UserService</code> providing a
+                    <code>updateUsers(...)</code> method... It would be nice to be able to reuse
+                    the logic provided by that service to update your existing users with a custom
+                    value, once the new column is added! But Since the <code>createUser(...)</code> method
                     doesn't accept any <code>Connection</code> parameter, and may itself call a 
                     <code>UserRepository</code> component, how could the SQL request being performed in the end
-                    use the connection provided by Flyway?
+                    use the proper connection provided by Flyway?
                 </p>
                 <p>
-                    It works because a 
-                    "<a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcScope.html#specificConnection-java.sql.Connection-javax.sql.DataSource-org.spincast.plugins.jdbc.ConnectionScope-"><em>specificConnection</em></a>"
+                    The answer is that a
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcScope.html#specificConnection-java.sql.Connection-javax.sql.DataSource-org.spincast.plugins.jdbc.ConnectionScope-"><em>specificConnection</em></a>
                     scope has been created in the base class, and your migration code (direct and indirect) is all ran inside of it!
                 </p>
                 
@@ -254,7 +256,7 @@
                 </h4>
 	            <p>
                     The second step to set up your migrations is to create a <code>migration context</code>, the
-                    component in which a migration is actually started. In this context, you specify the <code>DataSource</code> to be migrated and where to find the
+                    component by which a migration is actually started. In this context, you specify the <code>DataSource</code> to be migrated and where to find the
                     <code>migration classes</code> to execute.
                 </p>
                 <p>

@@ -9,7 +9,7 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class ResponseContentModificationTest extends NoAppStartHttpServerTestingBase {
 
@@ -59,7 +59,7 @@ public class ResponseContentModificationTest extends NoAppStartHttpServerTesting
                 context.response().sendPlainText("2", true);
 
                 // no flush
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
         getRouter().ALL("/*{path}").pos(1).handle(new Handler<DefaultRequestContext>() {
@@ -68,7 +68,7 @@ public class ResponseContentModificationTest extends NoAppStartHttpServerTesting
             public void handle(DefaultRequestContext context) {
 
                 String unsentCharacters = context.response().getUnsentCharacters();
-                assertEquals(SpincastTestUtils.TEST_STRING, unsentCharacters);
+                assertEquals(SpincastTestingUtils.TEST_STRING, unsentCharacters);
 
                 context.response().resetEverything();
                 context.response().sendHtml("4");

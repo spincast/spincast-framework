@@ -20,7 +20,7 @@ import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.client.config.RequestConfig;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
@@ -89,7 +89,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
             @Override
             public void handle(DefaultRequestContext spincast) {
-                spincast.response().sendHtml(SpincastTestUtils.TEST_STRING);
+                spincast.response().sendHtml(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -108,7 +108,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         response = GET("/permanently/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the permanent redirect
@@ -123,7 +123,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         response = GET("/temporary/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the custom redirect
@@ -138,7 +138,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         response = GET("/custom/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
     }
 
@@ -263,7 +263,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
             @Override
             public void handle(DefaultRequestContext spincast) {
-                spincast.response().sendHtml(SpincastTestUtils.TEST_STRING);
+                spincast.response().sendHtml(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -306,7 +306,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         response = GET("/permanently/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the permanent redirect
@@ -321,7 +321,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         response = GET("/temporary/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
         //==========================================
         // Without following the custom redirect
@@ -336,7 +336,7 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         response = GET("/custom/one/two").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
     }
 

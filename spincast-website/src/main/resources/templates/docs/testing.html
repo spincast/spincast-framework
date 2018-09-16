@@ -832,6 +832,115 @@ saveResponseCookies(response);
     
 </section>
     
+{#==========================================
+Spincast Testing H2
+==========================================#}         
+<section id="testing_h2">
+    <h4>
+        <a class="anchor_small" href="#testing_h2" title="permanent link"></a>
+        H2 test database
+    </h4>
     
+    <p>
+        An integration with the <a href="http://www.h2database.com/html/main.html">H2</a> database is provided as a testing tool.
+        It allows you to run your tests using an in-memory SQL database.
+    </p>
+    <p>
+        You enable the Spincast Testing H2 database simply by binding <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/h2/SpincastTestingH2.html">SpincastTestingH2</a> 
+        as a Provider for your <code>DataSource</code>:
+    
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="6,12,6,91" 
+>@Override
+protected Module getExtraOverridingModule() {
+    return Modules.override(super.getExtraOverridingModule()).with(new SpincastGuiceModuleBase() {
+
+        @Override
+        protected void configure() {
+            bind(DataSource.class).toProvider(SpincastTestingH2.class).in(Scopes.SINGLETON);
+            // ...
+        }
+    });
+}</pre> 
+            </p>
+        </div>     
+    </p>
+    <p>
+        You then inject <code>SpincastTestingH2</code> and the
+        <code>DataSource</code> in your test file (or a base class):
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>@Inject
+protected SpincastTestingH2 spincastTestingH2;
+
+@Inject
+private DataSource testDataSource;</pre> 
+            </p>
+        </div>    
+        
+    </p>
+    <p>
+        In <code>beforeClass()</code>, you can make sure the database starts in a clean state:
+    
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,4,3,37" 
+>@Override
+public void beforeClass() {
+    super.beforeClass();
+    spincastTestingH2.clearDatabase();
+}</pre> 
+            </p>
+        </div>     
+    </p>
+    <p>
+        ... you can also do this before each <em>test</em>, if required:
+    
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,4,3,37" 
+>@Override
+public void beforeTest() {
+    super.beforeTest();
+    spincastTestingH2.clearDatabase();
+}</pre> 
+            </p>
+        </div>     
+    </p>
+    
+    <p>
+        When the tests are over, you stop the server:
+    
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,4,3,24" 
+>@Override
+public void afterClass() {
+    super.afterClass();
+    getH2().stopServer();
+}</pre> 
+            </p>
+        </div>     
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+        The way the H2 server is started, you are able to connect to your database using
+        an <em>external</em> tool. For example, you can set a breakpoint and open the database using
+        <a href="https://dbeaver.io/">DBeaver</a> (or another tool) using the 
+        proper connection string ("<code><em>jdbc:h2:tcp://localhost:9092/mem:test;MODE=PostgreSQL;DATABASE_TO_UPPER=false</em></code>" for example).
+        This allows you to easily debug your tests.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+        You can change some configurations used by Spincast Testing H2 (the server <code>port</code> for example) by binding a custom implementation
+        of the <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/h2/SpincastTestingH2Config.html">SpincastTestingH2Config</a> interface. 
+        If you don't, the <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-testing/spincast-testing-core/src/main/java/org/spincast/testing/core/h2/SpincastTestingH2ConfigDefault.java">default configurations</a> 
+        will be used.
+    </p>
+    
+</section>
     
     

@@ -24,7 +24,7 @@ import org.spincast.shaded.org.apache.http.HttpEntity;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.entity.ContentType;
 import org.spincast.shaded.org.apache.http.entity.InputStreamEntity;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -46,7 +46,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 assertEquals("", context.request().getBodyAsString());
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -54,7 +54,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
                 assertNotNull(value);
                 assertEquals("value2", value);
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -82,7 +82,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
                 assertEquals("value1", values.getString(0));
                 assertEquals("value2", values.getString(1));
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -110,7 +110,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
                 assertNotNull(contentType);
                 assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), contentType);
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -139,7 +139,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
                 assertNotNull(contentType);
                 assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), contentType);
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -172,7 +172,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
             assertEquals(HttpStatus.SC_OK, response.getStatus());
             assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-            assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+            assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
         } finally {
             SpincastStatics.closeQuietly(stream);
@@ -199,7 +199,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
                 assertNotNull(contentType);
                 assertEquals("image/jpeg", contentType);
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -213,7 +213,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
             assertEquals(HttpStatus.SC_OK, response.getStatus());
             assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-            assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+            assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
 
         } finally {
             SpincastStatics.closeQuietly(stream);
@@ -238,7 +238,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
                 assertEquals(HttpMethod.POST, context.request().getHttpMethod());
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -248,7 +248,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -269,7 +269,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
                 assertEquals(HttpMethod.PUT, context.request().getHttpMethod());
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -280,7 +280,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -301,7 +301,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
                 assertEquals(HttpMethod.PATCH, context.request().getHttpMethod());
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -311,7 +311,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -382,7 +382,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
                 assertEquals(HttpMethod.POST, context.request().getHttpMethod());
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -393,7 +393,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
     @Test
@@ -414,7 +414,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
                 assertEquals(HttpMethod.POST, context.request().getHttpMethod());
 
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
@@ -425,7 +425,7 @@ public class HttpClientWithEntityTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals(SpincastTestUtils.TEST_STRING, response.getContentAsString());
+        assertEquals(SpincastTestingUtils.TEST_STRING, response.getContentAsString());
     }
 
 }

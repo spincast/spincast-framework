@@ -15,7 +15,7 @@ import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
@@ -51,7 +51,7 @@ public class SSLTest extends NoAppWebsocketTestingBase {
         @Override
         public int getHttpsServerPort() {
             if (this.httpsServerPort < 0) {
-                this.httpsServerPort = SpincastTestUtils.findFreePort();
+                this.httpsServerPort = SpincastTestingUtils.findFreePort();
             }
             return this.httpsServerPort;
         }

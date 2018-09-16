@@ -6,7 +6,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.routing.SpincastRouter;
 import org.spincast.plugins.routing.SpincastRouterDeps;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
@@ -24,7 +24,7 @@ public class CustomRouter2 extends SpincastRouter<DefaultRequestContext, Default
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().sendPlainText(SpincastTestUtils.TEST_STRING);
+                context.response().sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
     }

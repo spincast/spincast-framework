@@ -13,7 +13,7 @@ import org.spincast.core.websocket.WebsocketContextBaseDeps;
 import org.spincast.core.websocket.WebsocketPeerManager;
 import org.spincast.defaults.testing.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.tests.varia.WebsocketClientTest;
 import org.spincast.tests.varia.WebsocketControllerTestBase;
 import org.spincast.tests.websocket.CustomWebsocketContextTest.AppWebsocketContext;
@@ -86,14 +86,14 @@ public class CustomWebsocketContextTest extends
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
-        writer.sendMessage(SpincastTestUtils.TEST_STRING);
-        assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer1", SpincastTestUtils.TEST_STRING));
+        writer.sendMessage(SpincastTestingUtils.TEST_STRING);
+        assertTrue(controller.waitForStringMessageReceived("endpoint1", "peer1", SpincastTestingUtils.TEST_STRING));
 
         //==========================================
         // Ous custom method echoes the message to
         // the peer.
         //==========================================
-        assertTrue(client.waitForStringMessageReceived("customMethod: " + SpincastTestUtils.TEST_STRING));
+        assertTrue(client.waitForStringMessageReceived("customMethod: " + SpincastTestingUtils.TEST_STRING));
 
     }
 

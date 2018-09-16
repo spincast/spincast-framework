@@ -49,7 +49,7 @@ public class SpincastConfigTestingDefault extends SpincastConfigDefault {
             // We reserve 44419 for the default configuration.
             //==========================================
             do {
-                this.serverPort = SpincastTestUtils.findFreePort();
+                this.serverPort = SpincastTestingUtils.findFreePort();
             } while (this.serverPort == 44419);
         }
         return this.serverPort;

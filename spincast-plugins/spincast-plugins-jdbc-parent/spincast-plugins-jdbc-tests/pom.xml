@@ -37,26 +37,6 @@
         </dependency>
         
         <!--=================================== 
-        HikariCP - connection pool
-        ====================================-->
-	    <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>3.2.0</version>
-            <scope>test</scope>
-	    </dependency>
-	    
-        <!--=================================== 
-        H2 database
-        ====================================-->
-		<dependency>
-		    <groupId>com.h2database</groupId>
-		    <artifactId>h2</artifactId>
-		    <version>1.4.197</version>
-		    <scope>test</scope>
-		</dependency>
-        
-        <!--=================================== 
         Logs to the console
         ====================================-->
 		<dependency>

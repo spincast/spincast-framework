@@ -14,7 +14,7 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.testing.core.utils.SpincastTestUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 public class SpincastStaticsTest {
 
@@ -22,12 +22,12 @@ public class SpincastStaticsTest {
     public void testGetStackTrace() throws Exception {
 
         try {
-            throw new Exception(SpincastTestUtils.TEST_STRING);
+            throw new Exception(SpincastTestingUtils.TEST_STRING);
         } catch(Exception ex) {
 
             String stackTrace = SpincastStatics.getStackTrace(ex);
             assertNotNull(stackTrace);
-            assertTrue(stackTrace.startsWith("java.lang.Exception: " + SpincastTestUtils.TEST_STRING));
+            assertTrue(stackTrace.startsWith("java.lang.Exception: " + SpincastTestingUtils.TEST_STRING));
         }
     }
 
@@ -43,7 +43,7 @@ public class SpincastStaticsTest {
             }
         });
         try {
-            Exception theException = new Exception(SpincastTestUtils.TEST_STRING);
+            Exception theException = new Exception(SpincastTestingUtils.TEST_STRING);
             try {
                 throw theException;
             } catch(Exception ex) {
@@ -60,7 +60,7 @@ public class SpincastStaticsTest {
     @Test
     public void testRuntimize() throws Exception {
 
-        Exception theException = new Exception(SpincastTestUtils.TEST_STRING);
+        Exception theException = new Exception(SpincastTestingUtils.TEST_STRING);
         try {
             throw theException;
         } catch(Exception ex) {
@@ -71,7 +71,7 @@ public class SpincastStaticsTest {
             Exception runtimized = SpincastStatics.runtimize(ex);
             assertNotNull(runtimized);
             assertTrue(runtimized instanceof RuntimeException);
-            assertEquals(SpincastTestUtils.TEST_STRING, runtimized.getMessage());
+            assertEquals(SpincastTestingUtils.TEST_STRING, runtimized.getMessage());
             assertTrue(theException != runtimized);
             Throwable cause = runtimized.getCause();
             assertTrue(cause == theException);
@@ -82,7 +82,7 @@ public class SpincastStaticsTest {
     @Test
     public void testRuntimizeInvocationTargetException() throws Exception {
 
-        Exception theException = new Exception(SpincastTestUtils.TEST_STRING);
+        Exception theException = new Exception(SpincastTestingUtils.TEST_STRING);
         InvocationTargetException invocationTargetException = new InvocationTargetException(theException);
 
         try {
@@ -96,7 +96,7 @@ public class SpincastStaticsTest {
             Exception runtimized = SpincastStatics.runtimize(ex);
             assertNotNull(runtimized);
             assertTrue(runtimized instanceof RuntimeException);
-            assertEquals(SpincastTestUtils.TEST_STRING, runtimized.getMessage());
+            assertEquals(SpincastTestingUtils.TEST_STRING, runtimized.getMessage());
             assertTrue(theException != runtimized);
             Throwable cause = runtimized.getCause();
             assertTrue(cause == theException);
@@ -107,7 +107,7 @@ public class SpincastStaticsTest {
     @Test
     public void testRuntimizeRuntimeException() throws Exception {
 
-        RuntimeException theException = new RuntimeException(SpincastTestUtils.TEST_STRING);
+        RuntimeException theException = new RuntimeException(SpincastTestingUtils.TEST_STRING);
         try {
             throw theException;
         } catch(Exception ex) {
@@ -117,7 +117,7 @@ public class SpincastStaticsTest {
             Exception runtimized = SpincastStatics.runtimize(ex);
             assertNotNull(runtimized);
             assertTrue(runtimized instanceof RuntimeException);
-            assertEquals(SpincastTestUtils.TEST_STRING, runtimized.getMessage());
+            assertEquals(SpincastTestingUtils.TEST_STRING, runtimized.getMessage());
             assertTrue(theException == runtimized);
             Throwable cause = runtimized.getCause();
             assertNull(cause);
@@ -133,7 +133,7 @@ public class SpincastStaticsTest {
     @Test
     public void testRuntimizeInterruptedException() throws Exception {
 
-        InterruptedException theException = new InterruptedException(SpincastTestUtils.TEST_STRING);
+        InterruptedException theException = new InterruptedException(SpincastTestingUtils.TEST_STRING);
         try {
             throw theException;
         } catch(Exception ex) {
@@ -146,7 +146,7 @@ public class SpincastStaticsTest {
 
             assertNotNull(runtimized);
             assertTrue(runtimized instanceof RuntimeException);
-            assertEquals(SpincastTestUtils.TEST_STRING, runtimized.getMessage());
+            assertEquals(SpincastTestingUtils.TEST_STRING, runtimized.getMessage());
             assertTrue(theException != runtimized);
             Throwable cause = runtimized.getCause();
             assertTrue(cause == theException);
