@@ -326,6 +326,10 @@ a.love:hover::after {
     background-color: #DCEBF4;
 }
 
+ul ul {
+    margin-top:10px;
+}
+
 /************************************************************
 * Header
 /************************************************************/
@@ -1056,6 +1060,10 @@ ul.apiList li.first {
 
 a.pluginLink {
     text-decoration:none;
+}
+
+a.noOutline {
+    outline: 0;
 }
 
 .plugins .niceWell:hover {

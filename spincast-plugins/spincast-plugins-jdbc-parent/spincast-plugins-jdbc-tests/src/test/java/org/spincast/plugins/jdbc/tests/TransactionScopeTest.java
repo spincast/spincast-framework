@@ -16,7 +16,7 @@ public class TransactionScopeTest extends JdbcTestBase {
     @Test
     public void testSimple() throws Exception {
 
-        getJdbcScope().transactional(new TransactionalScope<Void>() {
+        getJdbcUtils().scopes().transactional(new TransactionalScope<Void>() {
 
             @Override
             public Void run() throws Exception {
@@ -24,12 +24,12 @@ public class TransactionScopeTest extends JdbcTestBase {
                 //==========================================
                 // First inner Scope
                 //==========================================
-                getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+                getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
                     @Override
                     public Void run(Connection connection) throws Exception {
 
-                        InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                        InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Titi', 'titi@example.com')");
 
@@ -43,12 +43,12 @@ public class TransactionScopeTest extends JdbcTestBase {
                 //==========================================
                 // Second inner Scope
                 //==========================================
-                getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+                getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
                     @Override
                     public Void run(Connection connection) throws Exception {
 
-                        InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                        InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Titi2', 'titi2@example.com')");
 
@@ -70,7 +70,7 @@ public class TransactionScopeTest extends JdbcTestBase {
     public void testExceptionInSecondScope() throws Exception {
 
         try {
-            getJdbcScope().transactional(new TransactionalScope<Void>() {
+            getJdbcUtils().scopes().transactional(new TransactionalScope<Void>() {
 
                 @Override
                 public Void run() throws Exception {
@@ -78,12 +78,12 @@ public class TransactionScopeTest extends JdbcTestBase {
                     //==========================================
                     // First inner Scope
                     //==========================================
-                    getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+                    getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
                         @Override
                         public Void run(Connection connection) throws Exception {
 
-                            InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                            InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                             stm.sql("INSERT INTO test(name, email) " +
                                     "VALUES('Titi', 'titi@example.com')");
 
@@ -97,12 +97,12 @@ public class TransactionScopeTest extends JdbcTestBase {
                     //==========================================
                     // Second inner Scope
                     //==========================================
-                    getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+                    getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
                         @Override
                         public Void run(Connection connection) throws Exception {
 
-                            InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                            InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                             stm.sql("INSERT INTO nope(name, email) " +
                                     "VALUES('nope', 'nope@example.com')");
 

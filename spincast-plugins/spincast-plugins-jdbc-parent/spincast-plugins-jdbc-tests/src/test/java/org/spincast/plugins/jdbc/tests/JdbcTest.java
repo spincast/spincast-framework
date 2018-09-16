@@ -21,12 +21,12 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void insertSimple() throws Exception {
 
-        String name = getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<String>() {
+        String name = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<String>() {
 
             @Override
             public String run(Connection connection) {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
 
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
@@ -35,7 +35,7 @@ public class JdbcTest extends JdbcTestBase {
                 assertEquals(1, result.getQueryResult());
 
 
-                SelectStatement stmSel = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stmSel = getJdbcUtils().statements().createSelectStatement(connection);
 
                 stmSel.sql("SELECT name " +
                            "FROM test " +
@@ -66,19 +66,19 @@ public class JdbcTest extends JdbcTestBase {
     public void regularScopeSecondInsertFails() throws Exception {
 
         try {
-            getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+            getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
                 @Override
                 public Void run(Connection connection) {
 
-                    InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                    InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
                     QueryResult result = stm.insert();
                     assertEquals(1, result.getQueryResult());
 
-                    stm = getJdbcFactory().createInsertStatement(connection);
+                    stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
@@ -90,12 +90,12 @@ public class JdbcTest extends JdbcTestBase {
         } catch (Exception ex) {
         }
 
-        String name = getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<String>() {
+        String name = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<String>() {
 
             @Override
             public String run(Connection connection) {
 
-                SelectStatement stm = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
                 stm.sql("SELECT name " +
                         "FROM test " +
                         "WHERE " +
@@ -121,19 +121,19 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void transactionScopeValid() throws Exception {
 
-        getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
                 QueryResult result = stm.insert();
                 assertEquals(1, result.getQueryResult());
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
@@ -151,19 +151,19 @@ public class JdbcTest extends JdbcTestBase {
     public void transactionScopeSecondInsertFails() throws Exception {
 
         try {
-            getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+            getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
                 @Override
                 public Void run(Connection connection) {
 
-                    InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                    InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
                     QueryResult result = stm.insert();
                     assertEquals(1, result.getQueryResult());
 
-                    stm = getJdbcFactory().createInsertStatement(connection);
+                    stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
@@ -181,12 +181,12 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void connectionCantBeClosedInScopeAutoCommit() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
@@ -197,7 +197,7 @@ public class JdbcTest extends JdbcTestBase {
                 connection.close();
                 connection.rollback();
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
@@ -214,12 +214,12 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void connectionCantBeClosedInScopeTransaction() throws Exception {
 
-        getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
@@ -229,7 +229,7 @@ public class JdbcTest extends JdbcTestBase {
                 // Try to close the connection!
                 connection.close();
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
@@ -247,12 +247,12 @@ public class JdbcTest extends JdbcTestBase {
     public void connectionCantBeCommitedManuallyInScopeTransaction() throws Exception {
 
         try {
-            getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+            getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
                 @Override
                 public Void run(Connection connection) throws Exception {
 
-                    InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                    InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
@@ -262,7 +262,7 @@ public class JdbcTest extends JdbcTestBase {
                     // Try to commit the connection!
                     connection.commit();
 
-                    stm = getJdbcFactory().createInsertStatement(connection);
+                    stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
@@ -282,12 +282,12 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void manualRollbackInScopeTransaction() throws Exception {
 
-        getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
@@ -299,14 +299,14 @@ public class JdbcTest extends JdbcTestBase {
 
                 // The next queries will works though...
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
                 result = stm.insert();
                 assertEquals(1, result.getQueryResult());
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol3', 'yo3@example.com')");
 
@@ -324,12 +324,12 @@ public class JdbcTest extends JdbcTestBase {
     public void manualRollbackInScopeTransactionThirdInsertFails() throws Exception {
 
         try {
-            getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+            getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
                 @Override
                 public Void run(Connection connection) throws Exception {
 
-                    InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                    InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
@@ -339,14 +339,14 @@ public class JdbcTest extends JdbcTestBase {
                     // Rollback!
                     connection.rollback();
 
-                    stm = getJdbcFactory().createInsertStatement(connection);
+                    stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol2', 'yo2@example.com')");
 
                     result = stm.insert();
                     assertEquals(1, result.getQueryResult());
 
-                    stm = getJdbcFactory().createInsertStatement(connection);
+                    stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
@@ -366,12 +366,12 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void rollbackUpToTheCurrentRootSavepointOnly() throws Exception {
 
-        getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Titi', 'titi@example.com')");
 
@@ -380,14 +380,14 @@ public class JdbcTest extends JdbcTestBase {
 
                 assertEquals(1, getTestTableCount());
 
-                getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+                getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
                     @Override
                     public Void run(Connection connection) throws Exception {
 
                         assertEquals(1, getTestTableCount());
 
-                        InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                        InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol', 'yo@example.com')");
 
@@ -403,7 +403,7 @@ public class JdbcTest extends JdbcTestBase {
 
                         // The next queries will works though...
 
-                        stm = getJdbcFactory().createInsertStatement(connection);
+                        stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol2', 'yo2@example.com')");
 
@@ -412,7 +412,7 @@ public class JdbcTest extends JdbcTestBase {
 
                         assertEquals(2, getTestTableCount());
 
-                        stm = getJdbcFactory().createInsertStatement(connection);
+                        stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol3', 'yo3@example.com')");
 
@@ -435,12 +435,12 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void localSavepointsAreValid() throws Exception {
 
-        getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
@@ -449,7 +449,7 @@ public class JdbcTest extends JdbcTestBase {
 
                 Savepoint localSavepoint = connection.setSavepoint();
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
@@ -459,7 +459,7 @@ public class JdbcTest extends JdbcTestBase {
                 // Rollback!
                 connection.rollback(localSavepoint);
 
-                stm = getJdbcFactory().createInsertStatement(connection);
+                stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol3', 'yo3@example.com')");
 
@@ -476,24 +476,24 @@ public class JdbcTest extends JdbcTestBase {
     @Test
     public void localSavepointsCalledFromAnotherScope() throws Exception {
 
-        getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) throws Exception {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Titi', 'titi@example.com')");
 
                 QueryResult result = stm.insert();
                 assertEquals(1, result.getQueryResult());
 
-                getJdbcScope().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+                getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
                     @Override
                     public Void run(Connection connection) throws Exception {
 
-                        InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                        InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol', 'yo@example.com')");
 
@@ -502,7 +502,7 @@ public class JdbcTest extends JdbcTestBase {
 
                         Savepoint localSavepoint = connection.setSavepoint();
 
-                        stm = getJdbcFactory().createInsertStatement(connection);
+                        stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol2', 'yo2@example.com')");
 
@@ -512,7 +512,7 @@ public class JdbcTest extends JdbcTestBase {
                         // Rollback!
                         connection.rollback(localSavepoint);
 
-                        stm = getJdbcFactory().createInsertStatement(connection);
+                        stm = getJdbcUtils().statements().createInsertStatement(connection);
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol3', 'yo3@example.com')");
 

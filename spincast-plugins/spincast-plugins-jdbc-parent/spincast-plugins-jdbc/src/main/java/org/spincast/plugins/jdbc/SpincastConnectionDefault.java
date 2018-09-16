@@ -395,9 +395,4 @@ public class SpincastConnectionDefault implements SpincastConnection {
         return this.wrappedConnection.getNetworkTimeout();
     }
 
-
-
-
-
-
 }

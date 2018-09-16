@@ -1,0 +1,372 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-flyway-utils{% endblock %}
+{% block meta_title %}Plugins - Spincast Flyway Utils{% endblock %}
+{% block meta_description %}Spincast Flyway Utils plugin - SQL Database migration / evolution{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Flyway Utils plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Flyway Utils <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/flywayutils/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Flyway Utils <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin provides an <em>opinionated</em> way of using <a href="https://flywaydb.org/">Flyway</a>,
+                    for your SQL database migrations. 
+                </p>
+                <p>
+                    Database migration (also known as database <em>evolution</em>) is the process
+                    of upgrading the schema of a database in a predictable and replayable way.
+                </p>
+                <p>
+                    The migration approach this plugin provides:
+                    <ul>
+                        <li>
+                            Is based on <em>plain Java classes</em> (no "<code>.sql</code>" text files). 
+                        </li>
+                        <li>
+                            Allows full dependency injection support in those migration classes. 
+                        </li> 
+                        <li>
+                            Makes sure the connection
+                            provided by Flyway, to run the migration, is going to be used by any direct or 
+                            <a href="#usage_migration_classes_requests"><em>indirect</em></a> requests made to 
+                            the database.
+                        </li> 
+                    </ul>
+                </p>
+                
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_migration_classes" href="#usage_migration_classes" title="permanent link"></a>
+                    Writing migration classes
+                </h4>
+                <p>
+                    You use standard Java classes to define the migrations to be executed. By doing classes,
+                    you use Java code and you have access to any libraries you need.
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="usage_migration_classes_location" href="#usage_migration_classes_location" title="permanent link"></a>
+                    Location
+                </h5>
+                
+                <p>
+                    The migrations classes targetting a specific <code>DataSource</code> must
+                    all be located under the same <em>package</em>, and their names must follow some rules. Here's an
+                    example of some migration classes for a "<em>mainDb</em>" DataSource:
+                    
+                    <div class="center">
+                        <img src="/public/images/plugins/flyway-utils/classes.png" />
+                    </div>   
+                </p>
+                <p>
+                    As you can see in this example, all the migrations classes for the main database are
+                    located in the same package ("<code>com.widgets.app.migrations.maindb</code>").
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="usage_migration_classes_class" href="#usage_migration_classes_class" title="permanent link"></a>
+                    Migration class
+                </h5> 
+                
+                <p>
+                    A migration class extends <a class="javadoc" href="/public/javadoc/org/spincast/plugins/flywayutils/SpincastFlywayMigrationBase.html">SpincastFlywayMigrationBase</a>.
+                    You simply have to implement the <code>runMigration(...)</code> method in order to specify the queries to run:
+
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>public class M_2017_04_01_01__Security_tables extends SpincastFlywayMigrationBase {
+
+    @Inject
+    public M_2017_04_01_01__Security_tables(@MainDataSource DataSource dataSource,
+                                            JdbcUtils jdbcUtils) {
+        super(dataSource, jdbcUtils);
+    }
+
+    @Override
+    protected void runMigration(Connection connection) {
+
+        createPermissionsTables(connection);
+        createRolesTables(connection);
+        //...  
+    }
+    
+    //...
+}</pre> 
+                        {% endverbatim %}
+                        </p>
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : The migration class extends
+                                    <code>SpincastFlywayMigrationBase</code> and follows the 
+                                    <a href="#usage_migration_classes_name">naming convention</a>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3-7</span> : In the constructor, you inject
+                                    anything you need to run this migration and you provide the base class with
+                                    its own dependencies. The most important one being the <code>DataSource</code> to
+                                    target.
+                                <li>
+                                    <span class="code-line-nbr">9-15</span> : You implement the <code>runMigration(...)</code>
+                                    method. This method receives the connection to use to run your SQL queries. In this method, you
+                                    can directly write and execute some SQL queries or you can call some existing repositories to do it.
+                                </li>  
+                            </ul>
+                        </p> 
+                    </div> 
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="usage_migration_classes_name" href="#usage_migration_classes_name" title="permanent link"></a>
+                    Naming convention
+                </h5>
+                <p>
+                    The name of a migration class must follow some rules:
+                </p>
+                <p>
+                    <ul>
+                        <li>
+                            It must start with "<code>M_</code>" ("<em>M</em>" is for "<em>migration</em>").
+                        </li>
+                        <li>
+                            The part after the "<code>M_</code>" represents the <em>version</em>
+                            of the migration. Here you can use different formats, but you must stay
+                            consistent! We suggest two kinds of formats:
+                            <ul>
+                                <li>
+                                    <strong><em>Date based</em></strong>: for example "<code>2017_04_01_01</code>". Here, the date 
+                                    is "2017-04-01" and it would be the first migration of the day. Another
+                                    migration executed on the same day would be named "2017_04_01_02".
+                                </li>
+                                <li>
+                                    <strong><em>Semantic versioning</em></strong>: for example "<code>12_0_3</code>"
+                                    or "<code>2_1_37_1</code>".
+                                    This would follow the standard <a href="https://semver.org/">Semantic Versioning</a>.
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Finally, you can add an optional third part to the name, by prefixing it with double backslashes:
+                            "<code>M_2017_04_01_01<strong><em>__Security_tables</em></strong></code>". The
+                            "<code>__</code>" and everything coming after it will be ignored. This allows you to add
+                            a description and make the name more meaningful.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The migrations classes are executed in order, based on the versions extracted
+                    from their names... Make sure you keep a consistent naming convention!
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="usage_migration_classes_requests" href="#usage_migration_classes_requests" title="permanent link"></a>
+                    Indirect requests work too!
+                </h5>
+                <p>
+                    By extending <a class="javadoc" href="/public/javadoc/org/spincast/plugins/flywayutils/SpincastFlywayMigrationBase.html">SpincastFlywayMigrationBase</a>,
+                    the connection provided by Flyway to run the migration is going to be used to run all SQL requests,
+                    both directly and <em>indirectly</em>, as long as you use the scopes 
+                    provided by the <a href="/plugins/spincast-jdbc">Spincast JDBC plugin</a>.
+                </p>
+                <p>
+                    For example, let's say one of the steps in your migration is to create a 
+                    new default user. In your application, you may already have a <code>UserService</code> providing a
+                    <code>createUser(...)</code> method... It would be nice to be able to reuse
+                    the logic provided by that service! But Since the <code>createUser(...)</code> method
+                    doesn't accept any <code>Connection</code> parameter, and may itself call a 
+                    <code>UserRepository</code> component, how could the SQL request being performed in the end
+                    use the connection provided by Flyway?
+                </p>
+                <p>
+                    It works because a 
+                    "<a class="javadoc" href="/public/javadoc/org/spincast/plugins/jdbc/JdbcScope.html#specificConnection-java.sql.Connection-javax.sql.DataSource-org.spincast.plugins.jdbc.ConnectionScope-"><em>specificConnection</em></a>"
+                    scope has been created in the base class, and your migration code (direct and indirect) is all ran inside of it!
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_context" href="#usage_context" title="permanent link"></a>
+                    Creating the migration context
+                </h4>
+	            <p>
+                    The second step to set up your migrations is to create a <code>migration context</code>, the
+                    component in which a migration is actually started. In this context, you specify the <code>DataSource</code> to be migrated and where to find the
+                    <code>migration classes</code> to execute.
+                </p>
+                <p>
+                    To create such context, you inject the
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/flywayutils/SpincastFlywayFactory.html">SpincastFlywayFactory</a>
+                    component and you call the <code>createMigrationContext()</code> method. Using the created context, you then execute the migration:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>@Inject
+SpincastFlywayFactory factory;
+
+SpincastFlywayMigrationContext migrationContext =
+                    factory().createMigrationContext(myMainDataSource,
+                                                     "public",
+                                                     M_2018_01_01_01.class.getPackage().getName());
+migrationContext.migrate();</pre> 
+                        {% endverbatim %}
+                        </p>
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : You specify the target <code>DataSource</code> to
+                                    be migrated.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">6</span> : The <em>schema</em> to target. This schema
+                                    is not always required if the default schema is used. But it depends
+                                    on the database you are using, and it is a good habit to specify it.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">7</span> : The <em>package</em> where
+                                    the migrations classes to execute are located. Note that, like in this example, you can use
+                                    one of the class from the package to get its name.
+                                </li>  
+                                <li>
+                                    <span class="code-line-nbr">8</span> : When the context is created, you execute it.
+                                    This starts the migration...
+                                </li>  
+                            </ul>
+                        </p> 
+                    </div>   
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Your migrations should probably be executed as soon as your
+                    application starts (using an <a href="/documentation#init_method">init method</a>, for example).
+                    The plugin will detect any migration classes which haven't been applied yet and will
+                    use them.
+                </p>
+            </section>
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    The Spincast Flyway Utils plugin depends on the <a href="/plugins/spincast-jdbc">Spincast JDBC plugin</a>, a plugin which is <em>not</em>
+                    provided by default by the <code>spincast-default</code> package. This dependency plugin <em>will be automatically installed</em>, 
+                    you don't need to install it by yourself in your application (but you can). 
+                </p> 
+                <p>
+                    Just don't be surprised if you see transitive dependencies being added to your application!
+                </p>
+            </section> 
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-flyway-utils&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/flywayutils/SpincastFlywayUtilsPlugin.html">SpincastFlywayUtilsPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,47"
+>
+
+Spincast.configure()
+        .plugin(new SpincastFlywayUtilsPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

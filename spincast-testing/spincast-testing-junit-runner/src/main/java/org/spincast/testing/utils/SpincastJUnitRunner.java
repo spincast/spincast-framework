@@ -369,11 +369,18 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             @Override
             public void testFailure(Failure failure) throws Exception {
                 SpincastJUnitRunner.this.atLeastOneTestFailed = true;
+
+                logTestFailure(failure);
+
                 if (SpincastJUnitRunner.this.testClassInstance instanceof TestFailureListener) {
                     ((TestFailureListener)SpincastJUnitRunner.this.testClassInstance).testFailure(failure);
                 }
             }
         });
+    }
+
+    protected void logTestFailure(Failure failure) {
+        System.err.println(getStackTrace(failure.getException()));
     }
 
     protected void runPreClassLoopsSpincastTests() {

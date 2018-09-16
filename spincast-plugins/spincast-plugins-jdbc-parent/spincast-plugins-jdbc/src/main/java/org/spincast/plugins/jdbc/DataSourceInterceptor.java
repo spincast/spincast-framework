@@ -29,7 +29,7 @@ public class DataSourceInterceptor implements MethodInterceptor {
             return invocation.proceed();
         }
 
-        return getJdbcScope().getConnection(invocation);
+        return getJdbcScope().getConnectionInterceptor(invocation);
     }
 
 }

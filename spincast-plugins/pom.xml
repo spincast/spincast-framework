@@ -40,6 +40,7 @@
         <module>spincast-plugins-session-parent</module>
         <module>spincast-plugins-attempts-limiter-parent</module>
         <module>spincast-plugins-hotswap-parent</module>
+        <module>spincast-plugins-flyway-utils-parent</module> 
     </modules>
 
 </project>

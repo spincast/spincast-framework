@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.sql.DataSource;
 
@@ -23,6 +24,10 @@ public class JdbcScope {
     private final static ThreadLocal<Boolean> insideTransactionScopeFlagThreadLocal = new ThreadLocal<Boolean>();
     protected final static ThreadLocal<Map<String, SpincastConnection>> spincastConnectionsThreadLocal =
             new ThreadLocal<Map<String, SpincastConnection>>();
+
+    private final static ThreadLocal<Boolean> insideSpecificConnectionScopeFlagThreadLocal = new ThreadLocal<Boolean>();
+    protected final static ThreadLocal<Map<String, Connection>> spincastSpecificConnectionsThreadLocal =
+            new ThreadLocal<Map<String, Connection>>();
 
     private final SpincastConnectionFactory spincastConnectionFactory;
 
@@ -59,13 +64,27 @@ public class JdbcScope {
 
         try {
 
+            //==========================================
+            // Do we have to use a specific connection?
+            // (ie: started with "withConnection(...)").
+            //==========================================
+            Map<String, Connection> specificConnectionByDataSourceKey = spincastSpecificConnectionsThreadLocal.get();
+            if (specificConnectionByDataSourceKey != null) {
+                Connection specificConnection = specificConnectionByDataSourceKey.get(getDataSourceKey(dataSource));
+                if (specificConnection != null) {
+                    this.logger.debug("Specific connection in ThreadLocal, using it.");
+                    T result = queries.run(specificConnection);
+                    return result;
+                }
+            }
+
             Connection connection = dataSource.getConnection();
             if (!(connection instanceof SpincastConnection)) {
                 connection = getSpincastConnectionFactory().create(connection);
             }
+            connection.setAutoCommit(true);
 
             try {
-                connection.setAutoCommit(true);
                 T result = queries.run(connection);
                 return result;
             } finally {
@@ -79,6 +98,71 @@ public class JdbcScope {
     }
 
     /**
+     * Starts a scope where only the specified connection
+     * will be used (as long as {@link #autoCommit(DataSource, JdbcQueries) autoCommit()},
+     * {@link #transactional(TransactionalScope) transactional()}, {@link #transactional(DataSource, JdbcQueries) transactional()},
+     * {@link #specificConnection(Connection, ConnectionScope) withSpecificConnection()} or {@link #specificConnection(Connection, JdbcQueries) withSpecificConnection()}
+     * are used... Not a connection taken <em>directly</em> from a DataSource.)
+     */
+    public <T> T specificConnection(Connection connection, DataSource dataSource, ConnectionScope<T> connectionScope) {
+        Objects.requireNonNull(connection, "The connection can't be NULL");
+        Objects.requireNonNull(connectionScope, "The connectionScope can't be NULL");
+        Objects.requireNonNull(dataSource, "The dataSource can't be NULL");
+
+        boolean isFirstSpecificTransactionScope = insideSpecificConnectionScopeFlagThreadLocal.get() == null;
+        if (isFirstSpecificTransactionScope) {
+            insideSpecificConnectionScopeFlagThreadLocal.set(true);
+        }
+
+        try {
+            Map<String, Connection> specificConnectionsByDataSourceKey = spincastSpecificConnectionsThreadLocal.get();
+            if (specificConnectionsByDataSourceKey == null) {
+                specificConnectionsByDataSourceKey = new HashMap<String, Connection>();
+                spincastSpecificConnectionsThreadLocal.set(specificConnectionsByDataSourceKey);
+            }
+
+            String dataSourceKey = getDataSourceKey(dataSource);
+            Connection connectionExisting = specificConnectionsByDataSourceKey.get(dataSourceKey);
+            if (connectionExisting == null) {
+                specificConnectionsByDataSourceKey.put(dataSourceKey, connection);
+            } else {
+                connection = connectionExisting;
+                this.logger.debug("Specific connection in thread locale, using it.");
+            }
+
+            return connectionScope.run(connection);
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        } finally {
+            if (isFirstSpecificTransactionScope) {
+                insideSpecificConnectionScopeFlagThreadLocal.remove();
+                spincastSpecificConnectionsThreadLocal.remove();
+            }
+        }
+    }
+
+    /**
+     * Starts a scope where only the specified connection.
+     * will be used (as long as {@link #autoCommit(DataSource, JdbcQueries) autoCommit()},
+     * {@link #transactional(TransactionalScope) transactional()}, {@link #transactional(DataSource, JdbcQueries) transactional()},
+     * {@link #specificConnection(Connection, ConnectionScope) withSpecificConnection()} or {@link #specificConnection(Connection, JdbcQueries) withSpecificConnection()}
+     * are used... Not a connection taken <em>directly</em> from a DataSource.)
+     */
+    public <T> T specificConnection(Connection connection, DataSource dataSource, final JdbcQueries<T> queries) {
+        Objects.requireNonNull(connection, "The connection can't be NULL");
+        Objects.requireNonNull(queries, "The queries can't be NULL");
+
+        return specificConnection(connection, dataSource, new ConnectionScope<T>() {
+
+            @Override
+            public T run(Connection connection) throws Exception {
+                T result = queries.run(connection);
+                return result;
+            }
+        });
+    }
+
+    /**
      * Executes the <code>queries</code> in a transaction
      * by setting the {@link Connection#setAutoCommit()} property
      * to <code>false</code>.
@@ -87,10 +171,32 @@ public class JdbcScope {
 
         try {
 
+            //==========================================
+            // Do we have to use a specific connection?
+            // (ie: started with "withConnection(...)").
+            //==========================================
+            Map<String, Connection> specificConnectionByDataSourceKey = spincastSpecificConnectionsThreadLocal.get();
+            if (specificConnectionByDataSourceKey != null) {
+                Connection specificConnection = specificConnectionByDataSourceKey.get(getDataSourceKey(dataSource));
+                if (specificConnection != null) {
+                    this.logger.debug("Specific connection in ThreadLocal, using it.");
+                    T result = queries.run(specificConnection);
+                    return result;
+                }
+            }
+
             return transactional(new TransactionalScope<T>() {
 
                 @Override
                 public T run() throws Exception {
+
+                    //==========================================
+                    // The correct connection will be return, a
+                    // new one or one saved in the associated ThreadLocal:
+                    // "getConnection()" is intercepted using AOP.
+                    // @see getConnectionInterceptor() below for more
+                    // details. "setAutoCommit(false);" is done there.
+                    //==========================================
                     Connection connection = dataSource.getConnection();
                     if (!(connection instanceof SpincastConnection)) {
                         throw new RuntimeException("Only a Datasource which has been wrapped in a " +
@@ -128,8 +234,8 @@ public class JdbcScope {
 
             for (Entry<String, SpincastConnection> entry : map.entrySet()) {
                 try {
-                    SpincastConnection connection = entry.getValue();
-                    connection.setNewRootSavePoint();
+                    SpincastConnection spincastConnection = entry.getValue();
+                    spincastConnection.setNewRootSavePoint();
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -148,8 +254,8 @@ public class JdbcScope {
                 if (map != null) {
                     for (Entry<String, SpincastConnection> entry : map.entrySet()) {
                         try {
-                            SpincastConnection connection = entry.getValue();
-                            connection.getWrappedConnection().commit();
+                            SpincastConnection spincastConnection = entry.getValue();
+                            spincastConnection.getWrappedConnection().commit();
                         } catch (Exception ex) {
                             throw SpincastStatics.runtimize(ex);
                         }
@@ -168,8 +274,8 @@ public class JdbcScope {
             if (map != null) {
                 for (Entry<String, SpincastConnection> entry : map.entrySet()) {
                     try {
-                        SpincastConnection connection = entry.getValue();
-                        connection.getWrappedConnection().rollback();
+                        SpincastConnection spincastConnection = entry.getValue();
+                        spincastConnection.getWrappedConnection().rollback();
                     } catch (Exception ex2) {
                         this.logger.error("Error rollbacking a connection...");
                     }
@@ -189,16 +295,16 @@ public class JdbcScope {
                 if (map != null) {
                     for (Entry<String, SpincastConnection> entry : map.entrySet()) {
 
-                        SpincastConnection connection = entry.getValue();
+                        SpincastConnection spincastConnection = entry.getValue();
 
                         try {
-                            connection.getWrappedConnection().setAutoCommit(true);
+                            spincastConnection.getWrappedConnection().setAutoCommit(true);
                         } catch (Exception ex) {
                             this.logger.error("Error setAutoCommit(true) on a connection...");
                         }
 
                         try {
-                            connection.getWrappedConnection().close();
+                            spincastConnection.getWrappedConnection().close();
                         } catch (Exception ex) {
                             this.logger.error("Error closing a connection...");
                         }
@@ -218,8 +324,11 @@ public class JdbcScope {
     /**
      * Gets a Connection from a DataSource, or from the ThreadLocal cache
      * if we're inside a transaction.
+     * 
+     * This method is called by AOP intercepting 
+     * {@link DataSource#getConnection()}.
      */
-    public Connection getConnection(MethodInvocation invocation) {
+    public Connection getConnectionInterceptor(MethodInvocation invocation) {
 
         try {
 
@@ -259,4 +368,6 @@ public class JdbcScope {
             throw new RuntimeException(ex);
         }
     }
+
+
 }

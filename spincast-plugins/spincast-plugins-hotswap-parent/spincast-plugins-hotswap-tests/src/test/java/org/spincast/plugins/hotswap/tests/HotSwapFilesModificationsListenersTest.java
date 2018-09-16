@@ -546,7 +546,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         assertEquals(1, getListenersByWatchKey().size());
 
         FileUtils.write(file, "x", "UTF-8", true);
-        Thread.sleep(300);
+        Thread.sleep(500);
         assertEquals(1, flag1[0]);
 
         //==========================================

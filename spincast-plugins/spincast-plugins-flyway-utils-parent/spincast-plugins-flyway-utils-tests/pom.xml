@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-plugins-flyway-utils-parent</artifactId>
+        <version>0.9.47-SNAPSHOT</version>
+    </parent>
+	
+	<artifactId>spincast-plugins-flyway-utils-tests</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Tests for the Spincast Flyway Utils plugin</description>
+    <url>https://www.spincast.org</url>
+
+	<dependencies>
+    
+        <!--=================================== 
+        Spincast Testing default
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-testing-default</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Spincast Flyway Utils plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-flyway-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        HikariCP - connection pool
+        ====================================-->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        H2 database
+        ====================================-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--=================================== 
+        Logs to the console
+        ====================================-->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-simple</artifactId>
+		    <version>1.7.25</version>
+		    <scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+        <plugins>
+        </plugins>
+	</build>
+</project>

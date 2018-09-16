@@ -182,8 +182,11 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
         @Override
         public SpincastDataSource get() {
 
+
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:h2:tcp://localhost:9092/mem:attempts;MODE=PostgreSQL;DATABASE_TO_UPPER=false");
+            config.setJdbcUrl("jdbc:h2:tcp://localhost:9092/mem:" +
+                              this.getClass().getSimpleName() +
+                              ";MODE=PostgreSQL;DATABASE_TO_UPPER=false");
             config.setUsername("");
             config.setPassword("");
             config.setMaximumPoolSize(10);

@@ -9,13 +9,13 @@ import java.sql.ResultSet;
 
 import javax.sql.DataSource;
 
+import org.h2.tools.Server;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jdbc.JdbcQueries;
-import org.spincast.plugins.jdbc.JdbcScope;
-import org.spincast.plugins.jdbc.JdbcStatementFactory;
+import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.plugins.jdbc.SpincastDataSource;
 import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
 import org.spincast.plugins.jdbc.SpincastJdbcPlugin;
@@ -27,33 +27,29 @@ import org.spincast.plugins.jdbc.statements.UpdateStatement;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
-import com.google.inject.Singleton;
+import com.google.inject.Scopes;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 public abstract class JdbcTestBase extends NoAppTestingBase {
+
+    protected Server h2Server = null;
 
     @Inject
     @TestDataSource
     private DataSource testDataSource;
 
     @Inject
-    private JdbcScope jdbcScope;
-
-    @Inject
-    private JdbcStatementFactory jdbcFactory;
-
-    protected JdbcScope getJdbcScope() {
-        return this.jdbcScope;
-    }
-
-    protected JdbcStatementFactory getJdbcFactory() {
-        return this.jdbcFactory;
-    }
+    private JdbcUtils jdbcUtils;
 
     protected DataSource getTestDataSource() {
         return this.testDataSource;
     }
+
+    protected JdbcUtils getJdbcUtils() {
+        return this.jdbcUtils;
+    }
+
 
     @Override
     protected Injector createInjector() {
@@ -69,7 +65,8 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
                            @Override
                            protected void configure() {
                                bind(DataSource.class).annotatedWith(TestDataSource.class)
-                                                     .toProvider(TestDataSourceProvider.class);
+                                                     .toProvider(TestDataSourceProvider.class)
+                                                     .in(Scopes.SINGLETON);
                            }
                        })
                        .init(new String[]{});
@@ -77,9 +74,20 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
 
     @Override
     public void beforeClass() {
+
+        //==========================================
+        // We must start H2 before the context is created
+        //==========================================
+        try {
+            this.h2Server = Server.createTcpServer("-tcpPort", "9092", "-tcpAllowOthers")
+                                  .start();
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+
         super.beforeClass();
 
-        boolean tableExists = getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
+        boolean tableExists = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
 
             @Override
             public Boolean run(Connection connection) {
@@ -94,12 +102,12 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
         });
         assertFalse(tableExists);
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                UpdateStatement stm = getJdbcFactory().createUpdateStatement(connection);
+                UpdateStatement stm = getJdbcUtils().statements().createUpdateStatement(connection);
                 stm.sql("CREATE TABLE test (" +
                         "   id SERIAL PRIMARY KEY, " +
                         "   name VARCHAR(255) NOT NULL, " +
@@ -119,7 +127,7 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
             }
         });
 
-        tableExists = getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
+        tableExists = getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Boolean>() {
 
             @Override
             public Boolean run(Connection connection) {
@@ -139,22 +147,15 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     public void afterClass() {
         super.afterClass();
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
-
-            @Override
-            public Void run(Connection connection) {
-
-                UpdateStatement stm = getJdbcFactory().createUpdateStatement(connection);
-                stm.sql("DROP TABLE IF EXISTS test");
-
-                stm.update();
-
-                return null;
+        if (this.h2Server != null) {
+            try {
+                this.h2Server.stop();
+            } catch (Exception ex) {
+                System.out.println(ex);
             }
-        });
+        }
     }
 
-    @Singleton
     protected static class TestDataSourceProvider implements Provider<SpincastDataSource> {
 
         private final SpincastDataSourceFactory spincastDataSourceFactory;
@@ -168,7 +169,8 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
         public SpincastDataSource get() {
 
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_UPPER=false");
+            config.setJdbcUrl("jdbc:h2:tcp://localhost:9092/mem:" + this.getClass().getSimpleName() +
+                              ";MODE=PostgreSQL;DATABASE_TO_UPPER=false");
             config.setUsername("");
             config.setPassword("");
             config.setMaximumPoolSize(10);
@@ -182,12 +184,12 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     public void beforeTest() {
         super.beforeTest();
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                UpdateStatement stm = getJdbcFactory().createUpdateStatement(connection);
+                UpdateStatement stm = getJdbcUtils().statements().createUpdateStatement(connection);
                 stm.sql("DELETE FROM test");
                 stm.update();
 
@@ -199,12 +201,12 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     }
 
     protected int getTestTableCount() {
-        return getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Integer>() {
+        return getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Integer>() {
 
             @Override
             public Integer run(Connection connection) {
 
-                SelectStatement stm = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
                 stm.sql("SELECT COUNT(*) as count FROM test");
 
                 Integer count = stm.selectOne(new ResultSetHandler<Integer>() {

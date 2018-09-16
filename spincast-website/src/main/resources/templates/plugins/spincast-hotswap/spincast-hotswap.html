@@ -2,7 +2,7 @@
 
 {% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-hotswap{% endblock %}
 {% block meta_title %}Plugins - Spincast HotSwap{% endblock %}
-{% block meta_description %}Spincast HotSwap plugin - class redefinitions and file modifications listeners.{% endblock %}
+{% block meta_description %}Spincast HotSwap plugin - classes redefinitions and files modifications listeners.{% endblock %}
 
 {% block scripts %}
 <script>
@@ -78,7 +78,7 @@
                     which is a very nice product but that is way, <em>way</em> too expensive. From the other available
                     solutions, the more mature is <a href="http://hotswapagent.org">HotswapAgent</a> + <a href="https://github.com/dcevm/dcevm">DCEVM</a>, 
                     which is <em>free</em> and works very well too! 
-                    It is the solution uses by this plugin...
+                    It is the solution used by this plugin...
                 </p>
                 
                 <p>
@@ -136,8 +136,8 @@
                     Note that if the application is <em>not</em> started with the HotswapAgent agent,
                     all features related to classes redefinitions and the associated listeners will be
                     automatically disabled. This is the behavior you want for an application running
-                    on any environment other than locally. Classes redefinitions are in general only
-                    done during <em>development</em>.
+                    on any environment other than locally. Classes redefinitions is something
+                    in general only done during <em>development</em>.
                 </p>
                 
                 <p>
@@ -154,10 +154,10 @@
                     <div>
                         <p>
                             <pre class="ace ace-java" data-ace-hi="10,18,10,80"
->@Injected
+>@Inject
 protected HotSwapManager hotSwapManager;
 
-@Injected
+@Inject
 protected Class123RedefinitionListener myListener;
 
 //...
@@ -274,12 +274,12 @@ protected void init() {
                                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/hotswap/classeswatcher/HotSwapClassesRedefinitionsListener.html">HotSwapClassesRedefinitionsListener</a>.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">14-17</span> : The listener will be always be enabled
-                                    (if the application is started with <code>HotswapAgent</code>).
+                                    <span class="code-line-nbr">14-17</span> : The listener is always enabled
+                                    (as long as the application was started with <code>HotswapAgent</code>!).
                                 </li>
                                 <li>
                                     <span class="code-line-nbr">19-22</span> : We are only interested in modifications
-                                    made to the <code>AppRoutes</code> class, which is responsible in this example for defining 
+                                    made to the <code>AppRoutes</code> class, which is responsible (in this example) for defining 
                                     the application's routes.
                                 </li>
                               <li>
@@ -331,10 +331,10 @@ protected void init() {
                     <div>
                         <p>
                             <pre class="ace ace-java" data-ace-hi="10,18,10,79"
->@Injected
+>@Inject
 protected HotSwapManager hotSwapManager;
 
-@Injected
+@Inject
 protected File123ModificationListener myListener;
 
 //...
@@ -361,7 +361,7 @@ protected void init() {
                     <ul class="apiList">
                         <li>
                             <a class="anchor_small" id="usage_files_listener_files" href="#usage_files_listener_files" title="permanent link"></a>
-                            <code class="apiItem">Set&lt;FileToWatch&lt;?&gt;&gt; <span>getFilesToWatch</span>()</code>
+                            <code class="apiItem">Set&lt;FileToWatch&gt; <span>getFilesToWatch</span>()</code>
                             <div class="well">
                                 <p>
                                     This is where you specify <em>which files you want to watch</em>. A listener can be interested in 
@@ -566,7 +566,7 @@ FileToWatch fileToWatch = FileToWatch.ofRegEx("/home/stromgol/news/",
                                         As you can see in this example, a <code>FileToWatch</code>
                                         may represent <em>more than one file</em>! Here, any files
                                         matching the provided regular expression (such as "<code>news-12.yaml</code>", 
-                                        "news-687.yaml", etc.) will be watched. In this situation, you may have to
+                                        "<code>news-687.yaml</code>", etc.) will be watched. In this situation, you may have to
                                         check what file actually changed by using the <code>modifiedFile</code>
                                         parameter provided when the <code>fileModified()</code> hook is
                                         called!
@@ -687,20 +687,21 @@ Spincast.configure()
                 </p>
                 <p>
                     When you start your application with this in place, any modification to a class will
-                    make this class being automatically <em>redefined</em>. And if you have <a href="#usage_add_listener">register some listeners</a>, 
+                    make this class being automatically <em>redefined</em>. And if you have <a href="#usage_add_listener">registered some listeners</a>, 
                     they will be called.
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    Make sure you read the HotswapAgent's <a href="http://hotswapagent.org">documentation</a>
+                    Make sure you read the HotswapAgent <a href="http://hotswapagent.org">documentation</a>
                     if you have issues.
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
                     Note that the steps required to use <code>DCEVM</code> and <code>HotswapAgent</code> are different
-                    starting with Java9+! You now have to use an already patched version of
-                    OpenJDK <a href="https://github.com/HotswapProjects/openjdk-jdk9/releases/tag/jdk9-b94-dcevm-beta">provided by them</a>.
-                    We'll make sure we update this plugin documentation as soon as Spincast supports Java 9+.
+                    starting with Java9+! With those versions, we'll have to use an 
+                    <a href="https://github.com/HotswapProjects/openjdk-jdk9/releases/tag/jdk9-b94-dcevm-beta">already patched distribution of
+                    OpenJDK</a>.
+                    We'll update this plugin documentation as soon as Spincast supports Java 9+.
                 </p>
             </section>
 

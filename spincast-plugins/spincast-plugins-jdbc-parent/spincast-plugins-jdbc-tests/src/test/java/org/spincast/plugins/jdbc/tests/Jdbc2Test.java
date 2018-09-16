@@ -22,12 +22,12 @@ public class Jdbc2Test extends JdbcTestBase {
     @Test
     public void setInString() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                SelectStatement stm = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
                 stm.sql("SELECT * FROM a WHERE id IN(:test)");
                 stm.setInString("test", Sets.newHashSet("a", "b", "c"));
 
@@ -42,12 +42,12 @@ public class Jdbc2Test extends JdbcTestBase {
     @Test
     public void setInInteger() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                SelectStatement stm = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
                 stm.sql("SELECT * FROM a WHERE id IN(:test)");
                 stm.setInInteger("test", Sets.newHashSet(1, 2, 3));
 
@@ -62,12 +62,12 @@ public class Jdbc2Test extends JdbcTestBase {
     @Test
     public void setInLong() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                SelectStatement stm = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
                 stm.sql("SELECT * FROM a WHERE id IN(:test)");
                 stm.setInLong("test", Sets.newHashSet(1L, 2L, 3L));
 
@@ -82,12 +82,12 @@ public class Jdbc2Test extends JdbcTestBase {
     @Test
     public void clearSql() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                SelectStatement stm = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
                 stm.sql("SELECT * FROM a");
                 String sql = stm.getSql(false);
                 assertEquals("SELECT * FROM a", sql);
@@ -108,12 +108,12 @@ public class Jdbc2Test extends JdbcTestBase {
     @Test
     public void orNull() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
 
                 stm.sql("INSERT INTO test(name, nbr2, nbr3, booo2, booo3) " +
                         "VALUES('Stromgol', 123, 0, true, false)");
@@ -121,7 +121,7 @@ public class Jdbc2Test extends JdbcTestBase {
                 QueryResult result = stm.insert();
                 assertEquals(1, result.getQueryResult());
 
-                SelectStatement stmSel = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stmSel = getJdbcUtils().statements().createSelectStatement(connection);
 
                 stmSel.sql("SELECT name, email, birthdate, nbr, nbr2, nbr3, booo, booo2, booo3 " +
                            "FROM test " +
@@ -215,12 +215,12 @@ public class Jdbc2Test extends JdbcTestBase {
     @Test
     public void instant() throws Exception {
 
-        getJdbcScope().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+        getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
             @Override
             public Void run(Connection connection) {
 
-                InsertStatement stm = getJdbcFactory().createInsertStatement(connection);
+                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
 
                 stm.sql("INSERT INTO test(name, birthdate) " +
                         "VALUES('Stromgol', :birthdate)");
@@ -231,7 +231,7 @@ public class Jdbc2Test extends JdbcTestBase {
                 QueryResult result = stm.insert();
                 assertEquals(1, result.getQueryResult());
 
-                SelectStatement stmSel = getJdbcFactory().createSelectStatement(connection);
+                SelectStatement stmSel = getJdbcUtils().statements().createSelectStatement(connection);
 
                 stmSel.sql("SELECT name, birthdate " +
                            "FROM test " +
