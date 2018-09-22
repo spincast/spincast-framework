@@ -10,10 +10,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.hotswap.fileswatcher.FileToWatch;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsListener;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.common.collect.Sets;
 
@@ -516,7 +516,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         final int[] flag1 = new int[]{0};
 
         String classpathFilePath = "spincast-plugins-hotswap-tests/test.txt";
-        File file = SpincastStatics.getClasspathFile(classpathFilePath);
+        File file = SpincastTestingUtils.getClasspathFileNotInJar(classpathFilePath);
         assertNotNull(file);
 
         HotSwapFilesModificationsListener listener = new HotSwapFilesModificationsListener() {
@@ -648,7 +648,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         final int[] flag1 = new int[]{0};
 
         String classpathFilePath = "spincast-plugins-hotswap-tests/test.txt";
-        File file = SpincastStatics.getClasspathFile(classpathFilePath);
+        File file = SpincastTestingUtils.getClasspathFileNotInJar(classpathFilePath);
         assertNotNull(file);
 
         HotSwapFilesModificationsListener listener = new HotSwapFilesModificationsListener() {

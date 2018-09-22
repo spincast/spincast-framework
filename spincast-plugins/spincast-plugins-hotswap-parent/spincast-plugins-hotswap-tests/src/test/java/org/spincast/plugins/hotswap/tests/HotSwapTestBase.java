@@ -18,7 +18,7 @@ import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatche
 
 import com.google.inject.Inject;
 
-public class HotSwapTestBase extends NoAppStartHttpServerTestingBase {
+public abstract class HotSwapTestBase extends NoAppStartHttpServerTestingBase {
 
     @Inject
     private HotSwapManager hotSwapManager;
@@ -59,5 +59,7 @@ public class HotSwapTestBase extends NoAppStartHttpServerTestingBase {
             throw SpincastStatics.runtimize(ex);
         }
     }
+
+
 
 }

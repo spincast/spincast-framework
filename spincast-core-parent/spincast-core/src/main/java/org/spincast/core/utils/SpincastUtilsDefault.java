@@ -421,6 +421,11 @@ public class SpincastUtilsDefault implements SpincastUtils {
     }
 
     @Override
+    public boolean isRunningFromExecutableJar() {
+        return getAppJarDirectory() != null;
+    }
+
+    @Override
     public File getAppRootDirectoryNoJar() {
 
         if (!this.appRootDirectoryNoJarChecked) {
@@ -455,10 +460,31 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
         String currentVersion = getClass().getPackage().getImplementationVersion();
 
-        //==========================================
-        // We're in an IDE...
-        //==========================================
         if (currentVersion == null) {
+
+            if (isRunningFromExecutableJar()) {
+                this.logger.error("Unable to get the Spincast version! Make sure you have this plugin " +
+                                  "in your pom.xml (with an up to date version!):\n\n" +
+                                  "<plugin>\n" +
+                                  "    <groupId>org.apache.maven.plugins</groupId>\n" +
+                                  "    <artifactId>maven-jar-plugin</artifactId>\n" +
+                                  "    <version>3.0.2</version>\n" +
+                                  "    <configuration>\n" +
+                                  "        <archive>  \n" +
+                                  "            <manifest>\n" +
+                                  "                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>\n" +
+                                  "                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>\n" +
+                                  "            </manifest>\n" +
+                                  "        </archive>\n" +
+                                  "    </configuration>\n" +
+                                  "</plugin>\n\n");
+
+                return null;
+            }
+
+            //==========================================
+            // We're in an IDE...
+            //==========================================
             currentVersion = getCurrentVersionFromPom();
         }
 
@@ -649,20 +675,13 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String readClasspathFile(String path, String encoding) {
 
-        if (path == null) {
+        InputStream in = getClasspathInputStream(path);
+        if (in == null) {
             return null;
-        }
-        if (!path.startsWith("/")) {
-            path = "/" + path;
         }
 
         if (encoding == null) {
             encoding = "UTF-8";
-        }
-
-        InputStream in = this.getClass().getResourceAsStream(path);
-        if (in == null) {
-            return null;
         }
 
         try {
@@ -672,6 +691,19 @@ public class SpincastUtilsDefault implements SpincastUtils {
         } finally {
             SpincastStatics.closeQuietly(in);
         }
+    }
+
+    @Override
+    public InputStream getClasspathInputStream(String classpathPath) {
+        if (classpathPath == null) {
+            return null;
+        }
+        if (!classpathPath.startsWith("/")) {
+            classpathPath = "/" + classpathPath;
+        }
+
+        InputStream in = this.getClass().getResourceAsStream(classpathPath);
+        return in;
     }
 
     @Override

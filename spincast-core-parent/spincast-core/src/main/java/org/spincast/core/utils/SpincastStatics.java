@@ -1,7 +1,6 @@
 package org.spincast.core.utils;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -10,8 +9,6 @@ import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +21,6 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
 /**
@@ -480,29 +476,5 @@ public class SpincastStatics {
         return Long.parseLong(obj.toString());
     }
 
-    /**
-     * Gets a file on the classpath.
-     * The file may not exist.
-     */
-    public static File getClasspathFile(String relativePath) {
-        return getInstance().getClasspathFileInstance(relativePath);
-    }
-
-    public File getClasspathFileInstance(String relativePath) {
-        if (relativePath == null) {
-            return null;
-        }
-
-        try {
-            relativePath = StringUtils.stripStart(relativePath, "/");
-            URL url = ClassLoader.getSystemResource(relativePath);
-            if (url == null) {
-                return null;
-            }
-            return Paths.get(url.toURI()).toFile();
-        } catch (Exception ex) {
-            throw runtimize(ex);
-        }
-    }
 
 }

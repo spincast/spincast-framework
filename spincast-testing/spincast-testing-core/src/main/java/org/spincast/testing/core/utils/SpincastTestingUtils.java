@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +19,7 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 /**
  * Spincast testing utilities.
@@ -293,5 +296,28 @@ public class SpincastTestingUtils {
             System.err.println("Error logging testing exception: " + ex2);
         }
     }
+
+    /**
+     * Gets a File from a classpath path (only works
+     * when the application si not running from an executable
+     * .jar).
+     */
+    public static File getClasspathFileNotInJar(String relativePath) {
+        if (relativePath == null) {
+            return null;
+        }
+
+        try {
+            relativePath = StringUtils.stripStart(relativePath, "/");
+            URL url = ClassLoader.getSystemResource(relativePath);
+            if (url == null) {
+                return null;
+            }
+            return Paths.get(url.toURI()).toFile();
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
 
 }

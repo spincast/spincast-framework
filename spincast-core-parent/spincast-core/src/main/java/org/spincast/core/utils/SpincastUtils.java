@@ -1,6 +1,7 @@
 package org.spincast.core.utils;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Locale;
 
 /**
@@ -70,6 +71,14 @@ public interface SpincastUtils {
      * Should the specified <code>Content-Type</code> be gzipped?
      */
     public boolean isContentTypeToSkipGziping(String contentType);
+
+    /**
+     * Is the application currently running from
+     * an executable .jar? An executable .jar is a
+     * jar with <code>Main-Class</code> in its 
+     * <code>META-INF/MANIFEST.MF</code>.
+     */
+    public boolean isRunningFromExecutableJar();
 
     /**
      * If the project is running from an executable
@@ -157,6 +166,22 @@ public interface SpincastUtils {
      */
     public String readClasspathFile(String path, String encoding);
 
+
+    /**
+     * Gets the {@link InputStream} from a resource on the classpath.
+     * <p>
+     * IMPORTANT : the code is responsible to close the
+     * inputstream!
+     * <p>
+     * Also note that when an application is running from an executable
+     * .jar, you must use this instead of trying to get a
+     * {@link File} from the resource!
+     * 
+     * @return the {@link InputStream} or <code>null</code> if the resource is
+     * not found.
+     */
+    public InputStream getClasspathInputStream(String classpathPath);
+
     /**
      * Valid of a String only contains characters over 31 (or
      * DEL (127).
@@ -182,6 +207,5 @@ public interface SpincastUtils {
      * <code>valueOf(value)</code> search on an enum.
      */
     public <T extends Enum<?>> T enumValueOfInsensitive(Class<T> enumClass, String str);
-
 
 }
