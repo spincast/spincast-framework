@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-pebble-parent</artifactId>
-        <version>0.9.50-SNAPSHOT</version>
+        <version>0.9.50</version>
     </parent>
     
 	<artifactId>spincast-plugins-pebble</artifactId>
