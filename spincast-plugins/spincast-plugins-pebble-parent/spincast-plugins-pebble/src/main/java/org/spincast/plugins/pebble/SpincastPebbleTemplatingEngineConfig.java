@@ -43,7 +43,6 @@ public interface SpincastPebbleTemplatingEngineConfig {
      * (or an attribute of a null variable). If set to false, 
      * your template will treat non-existing variables/attributes 
      * as null without ever skipping a beat."
-     * </p>
      */
     public boolean isStrictVariablesEnabled();
 

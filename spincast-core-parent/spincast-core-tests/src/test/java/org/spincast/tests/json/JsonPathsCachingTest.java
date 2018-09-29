@@ -245,7 +245,7 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         assertEquals(2, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
 
-        boolean elementExists = objImmutable.isElementExists("key1.key2");
+        boolean elementExists = objImmutable.contains("key1.key2");
         assertTrue(elementExists);
         assertEquals(3, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
@@ -278,7 +278,7 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         assertEquals(2, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
 
-        boolean elementExists = objImmutable.isElementExists("key1.nope");
+        boolean elementExists = objImmutable.contains("key1.nope");
         assertFalse(elementExists);
         assertEquals(3, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
@@ -318,7 +318,7 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         assertEquals(2, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
 
-        boolean elementExists = arrayImmutable.isElementExists("[0].key1[1].key2");
+        boolean elementExists = arrayImmutable.contains("[0].key1[1].key2");
         assertTrue(elementExists);
         assertEquals(3, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
@@ -358,7 +358,7 @@ public class JsonPathsCachingTest extends NoAppTestingBase {
         assertEquals(2, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());
 
-        boolean elementExists = arrayImmutable.isElementExists("[0].key1[1].nope");
+        boolean elementExists = arrayImmutable.contains("[0].key1[1].nope");
         assertFalse(elementExists);
         assertEquals(3, getRequestedJsonPaths().size());
         assertEquals(1, getJsonPathCachingMapGlobal().size());

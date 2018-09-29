@@ -1380,7 +1380,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
     }
 
     @Override
-    public boolean isElementExists(String jsonPath) {
+    public boolean contains(String jsonPath) {
 
         //==========================================
         // This will use the cache if the current object is

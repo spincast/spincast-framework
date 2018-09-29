@@ -16,6 +16,8 @@ public interface ValidationSet {
 
     /**
      * Creates and adds a new validation Message.
+     * <p>
+     * Escapes the message if displayed in HTML.
      */
     public void addMessage(String validationKey,
                            ValidationLevel messageLevel,
@@ -23,20 +25,61 @@ public interface ValidationSet {
                            String text);
 
     /**
-     * Creates and adds a new Error validation Message.
+     * Creates and adds a new validation Message.
      * 
+     * @param htmlEscape if this message if displayed using 
+     * <code>HTML</code>, should it be escaped?
+     */
+    public void addMessage(String validationKey,
+                           ValidationLevel messageLevel,
+                           String code,
+                           String text,
+                           boolean htmlEscape);
+
+    /**
+     * Creates and adds a new Error validation Message.
+     * <p>
+     * Escapes the message if displayed in HTML.
      */
     public void addError(String validationKey, String code, String text);
 
     /**
+     * Creates and adds a new Error validation Message.
+     * 
+     * @param htmlEscape if this message if displayed using 
+     * <code>HTML</code>, should it be escaped?
+     */
+    public void addError(String validationKey, String code, String text, boolean htmlEscape);
+
+    /**
      * Creates and adds a new Warning validation Message.)
+     * <p>
+     * Escapes the message if displayed in HTML.
      */
     public void addWarning(String validationKey, String code, String text);
 
     /**
+     * Creates and adds a new Warning validation Message.)
+     * 
+     * @param htmlEscape if this message if displayed using 
+     * <code>HTML</code>, should it be escaped?
+     */
+    public void addWarning(String validationKey, String code, String text, boolean htmlEscape);
+
+    /**
      * Creates and adds a new Success validation Message.
+     * <p>
+     * Escapes the message if displayed in HTML.
      */
     public void addSuccess(String validationKey, String code, String text);
+
+    /**
+     * Creates and adds a new Success validation Message.
+     * 
+     * @param htmlEscape if this message if displayed using 
+     * <code>HTML</code>, should it be escaped?
+     */
+    public void addSuccess(String validationKey, String code, String text, boolean htmlEscape);
 
 
     /**

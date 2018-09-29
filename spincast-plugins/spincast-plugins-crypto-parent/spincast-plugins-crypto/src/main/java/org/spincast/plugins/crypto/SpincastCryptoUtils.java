@@ -8,7 +8,7 @@ import org.spincast.plugins.crypto.config.SpincastCryptoConfig;
 public interface SpincastCryptoUtils {
 
     /**
-     * Encrypts a string, using the given secrte key and the 
+     * Encrypts a string, using the given secret key and the 
      * <code>AES</code> algorithm. 
      * <p>
      * The generated encrypted payload
@@ -42,6 +42,21 @@ public interface SpincastCryptoUtils {
      */
     public String decrypt(String payload, String secretKey);
 
+    /**
+     * Will hash a string using <code>BCrypt</code>. This is currently
+     * a good way to hash passwords so they can be stored in a database.
+     * <p>
+     * You can use {@link #generateNewHashSecureSalt()} to generate a
+     * new salt.
+     */
+    public String hashSecure(String toHash, String salt);
+
+    /**
+     * Will generate a new secure salt that can
+     * be used with
+     * {@link #hashSecure(String, String)}.
+     */
+    public String generateNewHashSecureSalt();
 
     /**
      * Tries to remove the Java cryptography restrictions.

@@ -356,7 +356,12 @@ public class JdbcScope {
             if (spincastConnection == null) {
                 Connection originalConnection = (Connection)invocation.proceed();
                 originalConnection.setAutoCommit(false);
-                spincastConnection = getSpincastConnectionFactory().create(originalConnection);
+
+                if (!(originalConnection instanceof SpincastConnection)) {
+                    spincastConnection = getSpincastConnectionFactory().create(originalConnection);
+                } else {
+                    spincastConnection = (SpincastConnection)originalConnection;
+                }
                 connectionsForThisThread.put(dataSourceKey, spincastConnection);
             }
 

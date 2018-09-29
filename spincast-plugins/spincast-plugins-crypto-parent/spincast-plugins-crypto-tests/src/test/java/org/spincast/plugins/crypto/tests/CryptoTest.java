@@ -2,6 +2,8 @@ package org.spincast.plugins.crypto.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
@@ -90,7 +92,22 @@ public class CryptoTest extends NoAppStartHttpServerTestingBase {
         }
     }
 
+    @Test
+    public void hash() throws Exception {
 
+        String salt1 = getSpincastCryptoUtils().generateNewHashSecureSalt();
+        assertNotNull(salt1);
+        assertTrue(salt1.length() > 3);
 
+        String hash1 = getSpincastCryptoUtils().hashSecure("my String to encrypt", salt1);
+        assertNotNull(hash1);
+        assertEquals(hash1, getSpincastCryptoUtils().hashSecure("my String to encrypt", salt1));
+
+        String salt2 = getSpincastCryptoUtils().generateNewHashSecureSalt();
+        String hash2 = getSpincastCryptoUtils().hashSecure("my String to encrypt", salt2);
+        assertNotNull(hash2);
+        assertEquals(hash2, getSpincastCryptoUtils().hashSecure("my String to encrypt", hash2));
+        assertNotEquals(hash1, hash2);
+    }
 
 }

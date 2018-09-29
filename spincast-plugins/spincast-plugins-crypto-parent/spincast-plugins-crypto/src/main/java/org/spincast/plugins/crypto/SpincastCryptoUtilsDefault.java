@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
@@ -96,6 +97,16 @@ public class SpincastCryptoUtilsDefault implements SpincastCryptoUtils {
         }
     }
 
+    @Override
+    public String hashSecure(String toHash, String salt) {
+        return BCrypt.hashpw(toHash, salt);
+    }
+
+    @Override
+    public String generateNewHashSecureSalt() {
+        return BCrypt.gensalt();
+    }
+
     /**
      * From https://stackoverflow.com/a/22492582/843699
      */
@@ -155,5 +166,7 @@ public class SpincastCryptoUtilsDefault implements SpincastCryptoUtils {
         return name != null && name.equals("Java(TM) SE Runtime Environment") && ver != null &&
                (ver.startsWith("1.7") || ver.startsWith("1.8"));
     }
+
+
 
 }

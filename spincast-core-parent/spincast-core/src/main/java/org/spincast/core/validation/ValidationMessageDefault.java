@@ -15,22 +15,30 @@ public class ValidationMessageDefault implements ValidationMessage {
     private final ValidationLevel validationLevel;
     private final String code;
     private final String text;
+    private final boolean htmlEscape;
     private JsonObject jsonObjectVersion;
 
     @AssistedInject
     public ValidationMessageDefault(@Assisted("validationLevel") ValidationLevel validationLevel,
                                     @Assisted("code") String code,
                                     @Assisted("text") String text,
+                                    @Assisted("htmlEscape") boolean htmlEscape,
                                     JsonManager jsonManager) {
         this.validationLevel = validationLevel;
         this.code = code;
         this.text = text;
+        this.htmlEscape = htmlEscape;
         this.jsonManager = jsonManager;
     }
 
     @Override
     public String getText() {
         return this.text;
+    }
+
+    @Override
+    public boolean isHtmlEscape() {
+        return this.htmlEscape;
     }
 
     @Override
@@ -65,12 +73,13 @@ public class ValidationMessageDefault implements ValidationMessage {
     @Override
     public JsonObject convertToJsonObject() {
 
-        if(this.jsonObjectVersion == null) {
+        if (this.jsonObjectVersion == null) {
 
             JsonObject obj = getJsonManager().create();
             obj.set("code", getCode());
             obj.set("level", getValidationLevel().toString());
             obj.set("text", getText());
+            obj.set("htmlEscape", isHtmlEscape());
 
             // Immutable
             this.jsonObjectVersion = obj.clone(false);

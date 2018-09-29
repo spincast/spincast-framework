@@ -43,6 +43,14 @@ public interface ValidationMessage extends ToJsonObjectConvertible {
     public String getText();
 
     /**
+     * Must the text be escaped when displayed in
+     * HTML?
+     * <p>
+     * Defaultsa to <code>true</code>.
+     */
+    public boolean isHtmlEscape();
+
+    /**
      * Converts the message to a <code>JsonObject</code> object.
      * <p>
      * The resulting <code>JsonObject</code> object 

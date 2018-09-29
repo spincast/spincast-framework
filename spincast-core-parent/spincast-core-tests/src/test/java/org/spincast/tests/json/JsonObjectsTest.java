@@ -1438,7 +1438,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         JsonObject jsonObj = getJsonManager().fromMap(map);
 
-        assertFalse(jsonObj.isElementExists("key1.key[2]"));
+        assertFalse(jsonObj.contains("key1.key[2]"));
         assertTrue(jsonObj.isElementExistsNoKeyParsing("key1.key[2]"));
     }
 
@@ -1450,7 +1450,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         JsonObject jsonObj = getJsonManager().fromMap(map, false);
 
-        assertFalse(jsonObj.isElementExists("key1.key[2]"));
+        assertFalse(jsonObj.contains("key1.key[2]"));
         assertTrue(jsonObj.isElementExistsNoKeyParsing("key1.key[2]"));
     }
 
@@ -2844,14 +2844,14 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObj = getJsonManager().create();
         jsonObj.set("inner", inner);
 
-        assertFalse(jsonObj.isElementExists(null));
-        assertFalse(jsonObj.isElementExists(""));
-        assertFalse(jsonObj.isElementExists("inner2"));
-        assertFalse(jsonObj.isElementExists("inner.key2"));
-        assertFalse(jsonObj.isElementExists("inner.nope.nope[2].key2"));
+        assertFalse(jsonObj.contains(null));
+        assertFalse(jsonObj.contains(""));
+        assertFalse(jsonObj.contains("inner2"));
+        assertFalse(jsonObj.contains("inner.key2"));
+        assertFalse(jsonObj.contains("inner.nope.nope[2].key2"));
 
-        assertTrue(jsonObj.isElementExists("inner"));
-        assertTrue(jsonObj.isElementExists("inner.key1"));
+        assertTrue(jsonObj.contains("inner"));
+        assertTrue(jsonObj.contains("inner.key1"));
     }
 
     @Test
@@ -2878,15 +2878,15 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonArray array = getJsonManager().createArray();
         array.set(1, inner);
 
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[1]"));
-        assertTrue(array.isElementExists("[1].key1"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[1]"));
+        assertTrue(array.contains("[1].key1"));
 
-        assertFalse(array.isElementExists("[2]"));
-        assertFalse(array.isElementExists("[0].key1"));
-        assertFalse(array.isElementExists("[1].key2"));
-        assertFalse(array.isElementExists("[0].nope.key1"));
-        assertFalse(array.isElementExists("inner.nope.nope[2].key2"));
+        assertFalse(array.contains("[2]"));
+        assertFalse(array.contains("[0].key1"));
+        assertFalse(array.contains("[1].key2"));
+        assertFalse(array.contains("[0].nope.key1"));
+        assertFalse(array.contains("inner.nope.nope[2].key2"));
     }
 
     @Test
@@ -2904,31 +2904,31 @@ public class JsonObjectsTest extends NoAppTestingBase {
         jsonObj.set("inner", inner);
         jsonObj.set("inner2", inner2);
 
-        assertTrue(jsonObj.isElementExists("inner"));
-        assertTrue(jsonObj.isElementExists("inner.key1"));
-        assertTrue(jsonObj.isElementExists("inner.key2"));
+        assertTrue(jsonObj.contains("inner"));
+        assertTrue(jsonObj.contains("inner.key1"));
+        assertTrue(jsonObj.contains("inner.key2"));
 
-        assertTrue(jsonObj.isElementExists("inner2"));
-        assertTrue(jsonObj.isElementExists("inner2.key3"));
-        assertTrue(jsonObj.isElementExists("inner2.key4"));
+        assertTrue(jsonObj.contains("inner2"));
+        assertTrue(jsonObj.contains("inner2.key3"));
+        assertTrue(jsonObj.contains("inner2.key4"));
 
         jsonObj.remove("inner.key1");
 
-        assertFalse(jsonObj.isElementExists("inner.key1"));
-        assertTrue(jsonObj.isElementExists("inner.key2"));
+        assertFalse(jsonObj.contains("inner.key1"));
+        assertTrue(jsonObj.contains("inner.key2"));
 
-        assertTrue(jsonObj.isElementExists("inner2"));
-        assertTrue(jsonObj.isElementExists("inner2.key3"));
-        assertTrue(jsonObj.isElementExists("inner2.key4"));
+        assertTrue(jsonObj.contains("inner2"));
+        assertTrue(jsonObj.contains("inner2.key3"));
+        assertTrue(jsonObj.contains("inner2.key4"));
 
         jsonObj.remove("inner2");
 
-        assertFalse(jsonObj.isElementExists("inner.key1"));
-        assertTrue(jsonObj.isElementExists("inner.key2"));
+        assertFalse(jsonObj.contains("inner.key1"));
+        assertTrue(jsonObj.contains("inner.key2"));
 
-        assertFalse(jsonObj.isElementExists("inner2"));
-        assertFalse(jsonObj.isElementExists("inner2.key3"));
-        assertFalse(jsonObj.isElementExists("inner2.key4"));
+        assertFalse(jsonObj.contains("inner2"));
+        assertFalse(jsonObj.contains("inner2.key3"));
+        assertFalse(jsonObj.contains("inner2.key4"));
 
         // Does nothing
         jsonObj.remove(null);
@@ -2950,33 +2950,33 @@ public class JsonObjectsTest extends NoAppTestingBase {
         jsonObj.set("inner", inner);
         jsonObj.set("inner2", inner2);
 
-        assertTrue(jsonObj.isElementExists("inner"));
-        assertTrue(jsonObj.isElementExists("inner.key1"));
-        assertTrue(jsonObj.isElementExists("inner.key2"));
+        assertTrue(jsonObj.contains("inner"));
+        assertTrue(jsonObj.contains("inner.key1"));
+        assertTrue(jsonObj.contains("inner.key2"));
 
-        assertTrue(jsonObj.isElementExists("inner2"));
-        assertTrue(jsonObj.isElementExists("inner2.key3"));
-        assertTrue(jsonObj.isElementExists("inner2.key4"));
+        assertTrue(jsonObj.contains("inner2"));
+        assertTrue(jsonObj.contains("inner2.key3"));
+        assertTrue(jsonObj.contains("inner2.key4"));
 
         jsonObj.removeNoKeyParsing("inner.key1");
 
-        assertTrue(jsonObj.isElementExists("inner"));
-        assertTrue(jsonObj.isElementExists("inner.key1"));
-        assertTrue(jsonObj.isElementExists("inner.key2"));
+        assertTrue(jsonObj.contains("inner"));
+        assertTrue(jsonObj.contains("inner.key1"));
+        assertTrue(jsonObj.contains("inner.key2"));
 
-        assertTrue(jsonObj.isElementExists("inner2"));
-        assertTrue(jsonObj.isElementExists("inner2.key3"));
-        assertTrue(jsonObj.isElementExists("inner2.key4"));
+        assertTrue(jsonObj.contains("inner2"));
+        assertTrue(jsonObj.contains("inner2.key3"));
+        assertTrue(jsonObj.contains("inner2.key4"));
 
         jsonObj.removeNoKeyParsing("inner2");
 
-        assertTrue(jsonObj.isElementExists("inner"));
-        assertTrue(jsonObj.isElementExists("inner.key1"));
-        assertTrue(jsonObj.isElementExists("inner.key2"));
+        assertTrue(jsonObj.contains("inner"));
+        assertTrue(jsonObj.contains("inner.key1"));
+        assertTrue(jsonObj.contains("inner.key2"));
 
-        assertFalse(jsonObj.isElementExists("inner2"));
-        assertFalse(jsonObj.isElementExists("inner2.key3"));
-        assertFalse(jsonObj.isElementExists("inner2.key4"));
+        assertFalse(jsonObj.contains("inner2"));
+        assertFalse(jsonObj.contains("inner2.key3"));
+        assertFalse(jsonObj.contains("inner2.key4"));
 
         // Does nothing
         jsonObj.removeNoKeyParsing(null);
@@ -2998,33 +2998,33 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.set(1, inner);
         array.set(2, inner2);
 
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[1]"));
-        assertTrue(array.isElementExists("[1].key1"));
-        assertTrue(array.isElementExists("[1].key2"));
-        assertTrue(array.isElementExists("[2]"));
-        assertTrue(array.isElementExists("[2].key3"));
-        assertTrue(array.isElementExists("[2].key4"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[1]"));
+        assertTrue(array.contains("[1].key1"));
+        assertTrue(array.contains("[1].key2"));
+        assertTrue(array.contains("[2]"));
+        assertTrue(array.contains("[2].key3"));
+        assertTrue(array.contains("[2].key4"));
 
         array.remove("[1].key1");
 
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[1]"));
-        assertFalse(array.isElementExists("[1].key1"));
-        assertTrue(array.isElementExists("[1].key2"));
-        assertTrue(array.isElementExists("[2]"));
-        assertTrue(array.isElementExists("[2].key3"));
-        assertTrue(array.isElementExists("[2].key4"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[1]"));
+        assertFalse(array.contains("[1].key1"));
+        assertTrue(array.contains("[1].key2"));
+        assertTrue(array.contains("[2]"));
+        assertTrue(array.contains("[2].key3"));
+        assertTrue(array.contains("[2].key4"));
 
         array.remove("[2]");
 
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[1]"));
-        assertFalse(array.isElementExists("[1].key1"));
-        assertTrue(array.isElementExists("[1].key2"));
-        assertFalse(array.isElementExists("[2]"));
-        assertFalse(array.isElementExists("[2].key3"));
-        assertFalse(array.isElementExists("[2].key4"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[1]"));
+        assertFalse(array.contains("[1].key1"));
+        assertTrue(array.contains("[1].key2"));
+        assertFalse(array.contains("[2]"));
+        assertFalse(array.contains("[2].key3"));
+        assertFalse(array.contains("[2].key4"));
     }
 
     @Test
@@ -3042,32 +3042,32 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.set(1, inner);
         array.set(2, inner2);
 
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[1]"));
-        assertTrue(array.isElementExists("[1].key1"));
-        assertTrue(array.isElementExists("[1].key2"));
-        assertTrue(array.isElementExists("[2]"));
-        assertTrue(array.isElementExists("[2].key3"));
-        assertTrue(array.isElementExists("[2].key4"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[1]"));
+        assertTrue(array.contains("[1].key1"));
+        assertTrue(array.contains("[1].key2"));
+        assertTrue(array.contains("[2]"));
+        assertTrue(array.contains("[2].key3"));
+        assertTrue(array.contains("[2].key4"));
 
         array.remove(2);
 
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[1]"));
-        assertTrue(array.isElementExists("[1].key1"));
-        assertTrue(array.isElementExists("[1].key2"));
-        assertFalse(array.isElementExists("[2]"));
-        assertFalse(array.isElementExists("[2].key3"));
-        assertFalse(array.isElementExists("[2].key4"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[1]"));
+        assertTrue(array.contains("[1].key1"));
+        assertTrue(array.contains("[1].key2"));
+        assertFalse(array.contains("[2]"));
+        assertFalse(array.contains("[2].key3"));
+        assertFalse(array.contains("[2].key4"));
 
         array.remove(0);
 
         // Last element to moved to the left.
-        assertTrue(array.isElementExists("[0]"));
-        assertTrue(array.isElementExists("[0].key1"));
-        assertTrue(array.isElementExists("[0].key2"));
-        assertFalse(array.isElementExists("[1]"));
-        assertFalse(array.isElementExists("[2]"));
+        assertTrue(array.contains("[0]"));
+        assertTrue(array.contains("[0].key1"));
+        assertTrue(array.contains("[0].key2"));
+        assertFalse(array.contains("[1]"));
+        assertFalse(array.contains("[2]"));
     }
 
     @Test

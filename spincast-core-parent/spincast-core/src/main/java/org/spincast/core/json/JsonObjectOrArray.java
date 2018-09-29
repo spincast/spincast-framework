@@ -100,7 +100,7 @@ public interface JsonObjectOrArray {
      * the <code>JsonPath</code> position (even if 
      * <code>null</code>)?
      */
-    public boolean isElementExists(String jsonPath);
+    public boolean contains(String jsonPath);
 
     /**
      * Removes an element at <code>JsonPath</code>.

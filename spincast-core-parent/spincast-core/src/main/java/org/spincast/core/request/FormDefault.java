@@ -252,6 +252,11 @@ public class FormDefault extends JsonObjectDefault implements Form {
 
     @Override
     public void addMessage(String validationKey, ValidationLevel level, String code, String text) {
+        addMessage(validationKey, level, code, text, true);
+    }
+
+    @Override
+    public void addMessage(String validationKey, ValidationLevel level, String code, String text, boolean htmlEscape) {
 
         Objects.requireNonNull(level, "The level can't be NULL");
         Objects.requireNonNull(validationKey, "The validation key can't be NULL");
@@ -264,23 +269,38 @@ public class FormDefault extends JsonObjectDefault implements Form {
             text = getDefaultErrorMessageText(validationKey);
         }
 
-        ValidationMessage message = getValidationFactory().createMessage(level, code, text);
+        ValidationMessage message = getValidationFactory().createMessage(level, code, text, htmlEscape);
         addMessage(validationKey, message);
     }
 
     @Override
     public void addError(String validationKey, String code, String text) {
-        addMessage(validationKey, ValidationLevel.ERROR, code, text);
+        addError(validationKey, code, text, true);
+    }
+
+    @Override
+    public void addError(String validationKey, String code, String text, boolean htmlEscape) {
+        addMessage(validationKey, ValidationLevel.ERROR, code, text, htmlEscape);
     }
 
     @Override
     public void addWarning(String validationKey, String code, String text) {
-        addMessage(validationKey, ValidationLevel.WARNING, code, text);
+        addWarning(validationKey, code, text, true);
+    }
+
+    @Override
+    public void addWarning(String validationKey, String code, String text, boolean htmlEscape) {
+        addMessage(validationKey, ValidationLevel.WARNING, code, text, htmlEscape);
     }
 
     @Override
     public void addSuccess(String validationKey, String code, String text) {
-        addMessage(validationKey, ValidationLevel.SUCCESS, code, text);
+        addSuccess(validationKey, code, text, true);
+    }
+
+    @Override
+    public void addSuccess(String validationKey, String code, String text, boolean htmlEscape) {
+        addMessage(validationKey, ValidationLevel.SUCCESS, code, text, htmlEscape);
     }
 
     @Override

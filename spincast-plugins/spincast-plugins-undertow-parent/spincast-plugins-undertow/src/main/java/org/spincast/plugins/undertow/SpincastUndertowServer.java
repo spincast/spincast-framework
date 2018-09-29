@@ -331,7 +331,7 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected int getServerStartTryNbr() {
-        return 5;
+        return 10;
     }
 
     protected long getStartServerSleepMilliseconds() {

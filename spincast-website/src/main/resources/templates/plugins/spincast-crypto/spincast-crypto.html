@@ -160,7 +160,7 @@ public void init() {
                         
                         <li>
                             <a class="anchor_small" id="usage_encrypt" href="#usage_encrypt" title="permanent link"></a>
-                            <code class="apiItem"><span>encrypt</span>(String toEncrypt, String secretKey)</code>
+                            <code class="apiItem">String <span>encrypt</span>(String toEncrypt, String secretKey)</code>
                             <div class="well">
                                 <p>
                                     Encrypts the "<code>toEncrypt</code>" string using the specified secret key. The resulting 
@@ -192,7 +192,7 @@ String encrypted = getCryptoUtils().encrypt("my String to encrypt", "my$ecretKey
                         </li>
                         <li>
                             <a class="anchor_small" id="usage_decrypt" href="#usage_decrypt" title="permanent link"></a>
-                            <code class="apiItem"><span>decrypt</span>(String payload, String secretKey)</code>
+                            <code class="apiItem">String <span>decrypt</span>(String payload, String secretKey)</code>
                             <div class="well">
                                 <p>
                                     Decrypts the encrypted "<code>payload</code>" using the specified secret key. The payload is first
@@ -222,7 +222,27 @@ String encrypted = getCryptoUtils().decrypt("PZWI78fsypZZOuQu3-pSxJ-xReQ7wTGRmqX
                                 </p> 
                             </div>
                         </li>
-                        
+                        <li>
+                            <a class="anchor_small" id="usage_hash" href="#usage_hash" title="permanent link"></a>
+                            <code class="apiItem">String <span>hashSecure</span>(String toHash, String salt)</code>
+                            <div class="well">
+                                <p>
+                                    Hashes the specified string using <a href="https://en.wikipedia.org/wiki/Bcrypt">Bcrypt</a> and the provided salt. 
+                                </p> 
+                                <p>
+                                    Bcrypt is known for generating hashes that are good to use for storing passwords.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="usage_hash_salt" href="#usage_hash_salt" title="permanent link"></a>
+                            <code class="apiItem">String <span>generateNewHashSecureSalt</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Generates a salt that can be used to hash a string using <code>hashSecure()</code>.
+                                </p> 
+                            </div>
+                        </li>
                     </ul>
 	            </p>
             </section>

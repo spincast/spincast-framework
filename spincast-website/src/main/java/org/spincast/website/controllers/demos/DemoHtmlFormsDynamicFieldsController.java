@@ -121,7 +121,7 @@ public class DemoHtmlFormsDynamicFieldsController {
         // Adds a new user (when javascript is disabled)
         //==========================================
         boolean actionDone = false;
-        if (context.request().getFormBodyAsJsonObject().isElementExists("addUserBtn")) {
+        if (context.request().getFormBodyAsJsonObject().contains("addUserBtn")) {
             actionDone = true;
 
             JsonArray users = form.getJsonArrayOrEmpty("users");
