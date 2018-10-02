@@ -233,13 +233,12 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     public Map<String, List<String>> getHeaders() {
         if (this.headers == null) {
 
-            //==========================================
-            // We make sure everything is immutable
-            //==========================================
             Map<String, List<String>> headersServer = getServer().getRequestHeaders(getExchange());
 
+            //==========================================
             // We use a TreeMap with String.CASE_INSENSITIVE_ORDER so the
-            // "get" is case insensitive!
+            // keys are case insensitive!
+            //==========================================
             Map<String, List<String>> headersFinal = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 
             if (headersServer == null) {
@@ -250,9 +249,16 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                     if (entry.getValue() == null) {
                         headersFinal.put(entry.getKey(), Collections.<String>emptyList());
                     } else {
+                        //==========================================
+                        // We make sure everything is immutable
+                        //==========================================
                         headersFinal.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
                     }
                 }
+
+                //==========================================
+                // We make sure everything is immutable
+                //==========================================
                 headersFinal = Collections.unmodifiableMap(headersFinal);
             }
             this.headers = headersFinal;

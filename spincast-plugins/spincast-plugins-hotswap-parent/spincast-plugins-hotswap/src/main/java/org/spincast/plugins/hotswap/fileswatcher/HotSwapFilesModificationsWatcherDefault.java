@@ -15,23 +15,40 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.plugins.hotswap.HotSwapManagerDefault;
+
+import com.google.inject.Inject;
 
 public class HotSwapFilesModificationsWatcherDefault implements HotSwapFilesModificationsWatcher {
 
-    protected final static Logger logger = LoggerFactory.getLogger(HotSwapManagerDefault.class);
+    protected final static Logger logger = LoggerFactory.getLogger(HotSwapFilesModificationsWatcherDefault.class);
 
+    private final Set<HotSwapFilesModificationsListener> boundListeners;
     private Map<String, Set<HotSwapFilesModificationsListener>> listenersByDirAbsolutePath;
     private Map<String, WatchKey> watchKeysByDirAbsolutePaths;
     private Map<WatchKey, String> dirAbsolutePathsByWatchKey;
     private Map<WatchKey, Set<HotSwapFilesModificationsListener>> listenersByWatchKey;
     private volatile boolean stopWatching = false;
     private Thread filesModificationsWatcherThread;
-
     private WatchService fileModificationsWatcherService;
+
+    @Inject
+    public HotSwapFilesModificationsWatcherDefault(@Nullable Set<HotSwapFilesModificationsListener> boundListeners) {
+        this.boundListeners = boundListeners;
+    }
+
+    @Inject
+    public void init() {
+        if (this.boundListeners != null) {
+            for (HotSwapFilesModificationsListener listener : this.boundListeners) {
+                registerListener(listener);
+            }
+        }
+    }
 
     /**
      * Starts watching registered files when

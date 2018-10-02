@@ -60,7 +60,7 @@ public class CorsHandlerDefault implements CorsHandler {
 
         do {
 
-            if(corsConfig == null) {
+            if (corsConfig == null) {
                 break;
             }
 
@@ -69,8 +69,8 @@ public class CorsHandlerDefault implements CorsHandler {
             // don't even call the cors filter is the "Origin"
             // header is not present.
             //==========================================
-            String origin = exchange.getRequestHeaders().getFirst(HttpHeaders.ORIGIN);
-            if(origin == null) {
+            String origin = exchange.getRequestHeaders().getFirst(HttpHeaders.ORIGIN.toLowerCase());
+            if (origin == null) {
                 break;
             }
 
@@ -80,9 +80,9 @@ public class CorsHandlerDefault implements CorsHandler {
             //==========================================
             HttpString httpString = exchange.getRequestMethod();
             HttpMethod httpMethod = HttpMethod.fromStringValue(httpString.toString());
-            if(httpMethod == null || (HttpMethod.OPTIONS != httpMethod &&
-                                      HttpMethod.GET != httpMethod &&
-                                      HttpMethod.HEAD != httpMethod)) {
+            if (httpMethod == null || (HttpMethod.OPTIONS != httpMethod &&
+                                       HttpMethod.GET != httpMethod &&
+                                       HttpMethod.HEAD != httpMethod)) {
                 break;
             }
 
@@ -90,7 +90,7 @@ public class CorsHandlerDefault implements CorsHandler {
 
             CorsFilterResponse corsResult = getCorsFilter().apply(corsFilterClient);
 
-            if(corsResult == CorsFilterResponse.NOT_CORS) {
+            if (corsResult == CorsFilterResponse.NOT_CORS) {
 
                 //==========================================
                 // Not a cors request, or same origin...
@@ -98,14 +98,14 @@ public class CorsHandlerDefault implements CorsHandler {
                 //==========================================
                 break;
 
-            } else if(corsResult == CorsFilterResponse.HEADERS_ALREADY_SENT) {
+            } else if (corsResult == CorsFilterResponse.HEADERS_ALREADY_SENT) {
 
                 //==========================================
                 // Headers already sent? There is nothing we can do...
                 //==========================================
                 break;
 
-            } else if(corsResult == CorsFilterResponse.INVALID_CORS_REQUEST) {
+            } else if (corsResult == CorsFilterResponse.INVALID_CORS_REQUEST) {
 
                 //==========================================
                 // Invalid request, we return OK but without any
@@ -113,7 +113,7 @@ public class CorsHandlerDefault implements CorsHandler {
                 //==========================================
                 return;
 
-            } else if(corsResult == CorsFilterResponse.SIMPLE) {
+            } else if (corsResult == CorsFilterResponse.SIMPLE) {
 
                 //==========================================
                 // Simple cors request (not a Preflight).
@@ -122,7 +122,7 @@ public class CorsHandlerDefault implements CorsHandler {
                 //==========================================
                 break;
 
-            } else if(corsResult == CorsFilterResponse.PREFLIGHT) {
+            } else if (corsResult == CorsFilterResponse.PREFLIGHT) {
 
                 //==========================================
                 // We always skip all any remaining process
@@ -135,7 +135,7 @@ public class CorsHandlerDefault implements CorsHandler {
                 throw new RuntimeException("Unmanaged cors result: " + corsResult);
             }
 
-        } while(false);
+        } while (false);
 
         //==========================================
         // Serves the resource!
@@ -193,7 +193,7 @@ public class CorsHandlerDefault implements CorsHandler {
             @Override
             public String getFullUrl() {
                 String queryString = exchange.getQueryString();
-                if(StringUtils.isBlank(queryString)) {
+                if (StringUtils.isBlank(queryString)) {
                     queryString = "";
                 } else {
                     queryString = "?" + queryString;

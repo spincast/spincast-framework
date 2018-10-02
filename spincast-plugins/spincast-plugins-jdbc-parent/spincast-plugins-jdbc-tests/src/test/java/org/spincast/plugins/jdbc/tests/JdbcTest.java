@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.Savepoint;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.spincast.plugins.jdbc.JdbcQueries;
@@ -528,6 +529,81 @@ public class JdbcTest extends JdbcTestBase {
         });
 
         assertEquals(3, getTestTableCount());
+    }
+
+    @Test
+    public void multipleNestedTransactions() throws Exception {
+
+        String uuid = UUID.randomUUID().toString();
+
+
+        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+
+            @Override
+            public Void run(Connection connection) throws Exception {
+
+
+                getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
+
+                    @Override
+                    public Void run(Connection connection) throws Exception {
+
+                        InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
+                        stm.sql("INSERT INTO test(name, email) " +
+                                "VALUES('Stromgol2', 'email2')");
+
+                        QueryResult result = stm.insert();
+                        assertEquals(1, result.getQueryResult());
+                        return null;
+                    }
+                });
+
+                getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+
+                    @Override
+                    public Void run(Connection connection) throws Exception {
+                        getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
+
+                            @Override
+                            public Void run(Connection connection) throws Exception {
+
+                                InsertStatement stm = getJdbcUtils().statements().createInsertStatement(connection);
+                                stm.sql("INSERT INTO test(name, email) " +
+                                        "VALUES('Stromgol', :email)");
+                                stm.setString("email", uuid);
+
+                                QueryResult result = stm.insert();
+                                assertEquals(1, result.getQueryResult());
+                                return null;
+                            }
+                        });
+                        return null;
+                    }
+                });
+                return null;
+            }
+        });
+
+        String email = getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<String>() {
+
+            @Override
+            public String run(Connection connection) throws Exception {
+                SelectStatement stm = getJdbcUtils().statements().createSelectStatement(connection);
+                stm.sql("SELECT email " +
+                        "FROM test " +
+                        "WHERE name = 'Stromgol' ");
+
+                String email = stm.selectOne(new ResultSetHandler<String>() {
+
+                    @Override
+                    public String handle(SpincastResultSet rs) throws Exception {
+                        return rs.getString("email");
+                    }
+                });
+                return email;
+            }
+        });
+        assertEquals(uuid, email);
     }
 
 }

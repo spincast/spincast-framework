@@ -50,7 +50,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
                 return Sets.newHashSet(FileToWatch.ofFileSystem(testFile.getAbsolutePath()));
             }
         };
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+        getHotSwapFilesModificationsWatcher().registerListener(listener);
         assertEquals(0, flag[0]);
 
         FileUtils.write(testFile, "2", "UTF-8", false);
@@ -76,7 +76,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         //==========================================
         // Removes the listener
         //==========================================
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener);
+        getHotSwapFilesModificationsWatcher().removeListener(listener);
 
         FileUtils.write(testFile, "5", "UTF-8", false);
         Thread.sleep(100);
@@ -122,7 +122,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
             }
 
         };
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+        getHotSwapFilesModificationsWatcher().registerListener(listener);
         assertEquals(0, flag1[0]);
         assertEquals(0, flag2[0]);
 
@@ -149,7 +149,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         //==========================================
         // Removes the listener
         //==========================================
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener);
+        getHotSwapFilesModificationsWatcher().removeListener(listener);
 
         FileUtils.write(testFile1, "b", "UTF-8", false);
         Thread.sleep(100);
@@ -223,14 +223,14 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
             }
         };
 
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener1);
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener2);
+        getHotSwapFilesModificationsWatcher().registerListener(listener1);
+        getHotSwapFilesModificationsWatcher().registerListener(listener2);
 
         //==========================================
         // Also register the listener1 again to make sure it doesn't 
         // change anything.
         //==========================================
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener1);
+        getHotSwapFilesModificationsWatcher().registerListener(listener1);
 
         assertEquals(0, flag1[0]);
         assertEquals(0, flag2[0]);
@@ -256,7 +256,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         //==========================================
         // Removes the first listener
         //==========================================
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener1);
+        getHotSwapFilesModificationsWatcher().removeListener(listener1);
 
         FileUtils.write(testFile1, "4", "UTF-8", false);
         Thread.sleep(300);
@@ -274,7 +274,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         //==========================================
         // Removes the second listener
         //==========================================
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener2);
+        getHotSwapFilesModificationsWatcher().removeListener(listener2);
 
         FileUtils.write(testFile1, "4", "UTF-8", false);
         Thread.sleep(300);
@@ -351,8 +351,8 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
             }
         };
 
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener1);
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener2);
+        getHotSwapFilesModificationsWatcher().registerListener(listener1);
+        getHotSwapFilesModificationsWatcher().registerListener(listener2);
 
         assertEquals(0, flag1[0]);
         assertEquals(0, flag2[0]);
@@ -377,7 +377,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         assertEquals(2, flag1[0]);
         assertEquals(2, flag2[0]);
 
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener1);
+        getHotSwapFilesModificationsWatcher().removeListener(listener1);
 
         FileUtils.write(testFile1, "x", "UTF-8", true);
         Thread.sleep(300);
@@ -389,7 +389,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         assertEquals(2, flag1[0]);
         assertEquals(3, flag2[0]);
 
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener2);
+        getHotSwapFilesModificationsWatcher().removeListener(listener2);
 
         FileUtils.write(testFile2, "x", "UTF-8", true);
         Thread.sleep(300);
@@ -451,7 +451,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
             }
         };
 
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener1);
+        getHotSwapFilesModificationsWatcher().registerListener(listener1);
 
         assertEquals(0, flag1[0]);
 
@@ -463,7 +463,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         Thread.sleep(300);
         assertEquals(2, flag1[0]);
 
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener2);
+        getHotSwapFilesModificationsWatcher().registerListener(listener2);
 
         FileUtils.write(testFile1, "x", "UTF-8", true);
         Thread.sleep(300);
@@ -473,7 +473,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         Thread.sleep(300);
         assertEquals(6, flag1[0]);
 
-        getHotSwapManager().getFilesModificationsWatcher().removeListener(listener1);
+        getHotSwapFilesModificationsWatcher().removeListener(listener1);
 
         FileUtils.write(testFile1, "x", "UTF-8", true);
         Thread.sleep(300);
@@ -504,7 +504,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         };
 
         try {
-            getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+            getHotSwapFilesModificationsWatcher().registerListener(listener);
             fail();
         } catch (Exception ex) {
         }
@@ -541,7 +541,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         };
         assertEquals(0, flag1[0]);
 
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+        getHotSwapFilesModificationsWatcher().registerListener(listener);
 
         assertEquals(1, getListenersByWatchKey().size());
 
@@ -607,7 +607,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
                 return Sets.newHashSet(FileToWatch.ofRegEx(testDir.getAbsolutePath(), "test[0-9]+\\.txt", false));
             }
         };
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+        getHotSwapFilesModificationsWatcher().registerListener(listener);
 
         FileUtils.write(file1, "x", "UTF-8", true);
         Thread.sleep(300);
@@ -673,7 +673,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         };
         assertEquals(0, flag1[0]);
 
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+        getHotSwapFilesModificationsWatcher().registerListener(listener);
 
         assertEquals(1, getListenersByWatchKey().size());
 
@@ -715,7 +715,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
                 return Sets.newHashSet(FileToWatch.ofFileSystem(testFile.getAbsolutePath()));
             }
         };
-        getHotSwapManager().getFilesModificationsWatcher().registerListener(listener);
+        getHotSwapFilesModificationsWatcher().registerListener(listener);
         assertEquals(0, flag[0]);
         assertEquals(0, getListenersByWatchKey().size());
 

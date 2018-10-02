@@ -65,6 +65,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * Find the best <code>Locale</code> to use for a response 
      * using the <code>"Accept-Language"</code> header of
      * the request.
+     * <p>
      * Returns the default <code>Locale</code> (taken from the configurations) 
      * if nothing more specific is found.
      */
@@ -80,14 +81,18 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     /**
      * Returns the values of the specified header from the current request or 
      * an empty list if not found. 
+     * <p>
      * The <code>name</code> is <i>case insensitive</i>. 
+     * <p>
      * The list is immutable.
      */
     public List<String> getHeader(String name);
 
     /**
      * The first value of the specified header from the current request. 
+     * <p>
      * The <code>name</code> is <i>case insensitive</i>. 
+     * <p>
      * Returns <code>null</code> if the header is not found.
      */
     public String getHeaderFirst(String name);

@@ -7,9 +7,11 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.server.ServerStartedListener;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.WebsocketContext;
+import org.spincast.plugins.hotswap.classeswatcher.HotSwapClassesRedefinitionsListener;
 import org.spincast.plugins.hotswap.classeswatcher.HotSwapClassesRedefinitionsWatcher;
 import org.spincast.plugins.hotswap.classeswatcher.HotSwapClassesRedefinitionsWatcherDefault;
 import org.spincast.plugins.hotswap.classeswatcher.HotSwapClassesRedefinitionsWatcherDummy;
+import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsListener;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatcher;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatcherDefault;
 
@@ -35,7 +37,6 @@ public class SpincastHotSwapPluginModule extends SpincastGuiceModuleBase {
     @Override
     protected void configure() {
 
-        bind(HotSwapManager.class).to(getHotSwapManagerDefaultImpl()).in(Scopes.SINGLETON);
         bind(HotSwapFilesModificationsWatcher.class).to(getHotSwapFilesModificationsWatcherImpl()).in(Scopes.SINGLETON);
         Multibinder<ServerStartedListener> serverStartedListenersMultibinder =
                 Multibinder.newSetBinder(binder(), ServerStartedListener.class);
@@ -54,6 +55,9 @@ public class SpincastHotSwapPluginModule extends SpincastGuiceModuleBase {
             bind(HotSwapClassesRedefinitionsWatcher.class).to(getHotSwapClassesRedefinitionsWatcherDummyImpl())
                                                           .in(Scopes.SINGLETON);
         }
+
+        Multibinder.newSetBinder(binder(), HotSwapFilesModificationsListener.class);
+        Multibinder.newSetBinder(binder(), HotSwapClassesRedefinitionsListener.class);
     }
 
     protected Class<? extends HotSwapClassesRedefinitionsWatcher> getHotSwapClassesRedefinitionsWatcherDummyImpl() {
@@ -67,10 +71,6 @@ public class SpincastHotSwapPluginModule extends SpincastGuiceModuleBase {
             return false;
         }
         return true;
-    }
-
-    protected Class<? extends HotSwapManager> getHotSwapManagerDefaultImpl() {
-        return HotSwapManagerDefault.class;
     }
 
     protected Class<? extends HotSwapFilesModificationsWatcher> getHotSwapFilesModificationsWatcherImpl() {

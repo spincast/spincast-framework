@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.hotswap.agent.annotation.Init;
 import org.hotswap.agent.annotation.LoadEvent;
 import org.hotswap.agent.annotation.OnClassLoadEvent;
@@ -70,6 +72,18 @@ public class HotSwapClassesRedefinitionsWatcherDefault implements HotSwapClasses
 
     protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
+    }
+
+    /**
+     * Guice injects the bound listeners
+     */
+    @Inject
+    public void setBoundListerns(@Nullable Set<HotSwapClassesRedefinitionsListener> boundListeners) {
+        if (boundListeners != null) {
+            for (HotSwapClassesRedefinitionsListener listener : boundListeners) {
+                registerListener(listener);
+            }
+        }
     }
 
     protected Map<Class<?>, Set<HotSwapClassesRedefinitionsListener>> getListenersByClassToWatch() {

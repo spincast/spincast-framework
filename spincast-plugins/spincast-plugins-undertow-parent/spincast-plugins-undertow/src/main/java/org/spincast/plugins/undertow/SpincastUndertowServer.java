@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -1320,11 +1321,17 @@ public class SpincastUndertowServer implements Server {
         return true;
     }
 
+    /**
+     * The names of the headers are <em>case insensitive</em>.
+     */
     @Override
     public Map<String, List<String>> getRequestHeaders(Object exchangeObj) {
         HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
 
-        Map<String, List<String>> headers = new HashMap<String, List<String>>();
+        //==========================================
+        // Map that guarantees case insensitivity...
+        //==========================================
+        TreeMap<String, List<String>> headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 
         HeaderMap requestHeaders = exchange.getRequestHeaders();
         if (requestHeaders != null) {
@@ -1334,17 +1341,11 @@ public class SpincastUndertowServer implements Server {
                     continue;
                 }
 
-                //==========================================
-                // All header names must be lowercased to respect the
-                // Server interface.
-                //==========================================
-                String headerNameLowercased = headerNameObj.toString().toLowerCase();
-
                 List<String> values = new ArrayList<String>();
                 for (String value : requestHeader) {
                     values.add(value);
                 }
-                headers.put(headerNameLowercased, values);
+                headers.put(headerNameObj.toString(), values);
             }
         }
 

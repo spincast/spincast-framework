@@ -249,7 +249,7 @@ public interface Server {
 
     /**
      * The headers from the request. 
-     * The names are all lowercased.
+     * The keys will be <em>case insensitive</em>.
      */
     public Map<String, List<String>> getRequestHeaders(Object exchange);
 

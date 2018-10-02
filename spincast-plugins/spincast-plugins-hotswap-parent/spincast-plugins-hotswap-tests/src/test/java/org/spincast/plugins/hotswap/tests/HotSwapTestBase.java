@@ -11,9 +11,9 @@ import java.util.Set;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
-import org.spincast.plugins.hotswap.HotSwapManager;
 import org.spincast.plugins.hotswap.SpincastHotSwapPlugin;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsListener;
+import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatcher;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatcherDefault;
 
 import com.google.inject.Inject;
@@ -21,10 +21,10 @@ import com.google.inject.Inject;
 public abstract class HotSwapTestBase extends NoAppStartHttpServerTestingBase {
 
     @Inject
-    private HotSwapManager hotSwapManager;
+    private HotSwapFilesModificationsWatcher hotSwapFilesModificationsWatcher;
 
-    protected HotSwapManager getHotSwapManager() {
-        return this.hotSwapManager;
+    protected HotSwapFilesModificationsWatcher getHotSwapFilesModificationsWatcher() {
+        return this.hotSwapFilesModificationsWatcher;
     }
 
     @Override
@@ -37,13 +37,13 @@ public abstract class HotSwapTestBase extends NoAppStartHttpServerTestingBase {
     @Override
     public void afterClass() {
         super.afterClass();
-        getHotSwapManager().getFilesModificationsWatcher().stopWatching();
+        getHotSwapFilesModificationsWatcher().stopWatching();
     }
 
     @Override
     public void beforeTest() {
         super.beforeTest();
-        getHotSwapManager().getFilesModificationsWatcher().removeAllListeners();
+        getHotSwapFilesModificationsWatcher().removeAllListeners();
     }
 
     @SuppressWarnings("unchecked")
@@ -52,7 +52,7 @@ public abstract class HotSwapTestBase extends NoAppStartHttpServerTestingBase {
             Method getListenersByWatchKey =
                     HotSwapFilesModificationsWatcherDefault.class.getDeclaredMethod("getListenersByWatchKey");
             getListenersByWatchKey.setAccessible(true);
-            Object resultObj = getListenersByWatchKey.invoke(getHotSwapManager().getFilesModificationsWatcher());
+            Object resultObj = getListenersByWatchKey.invoke(getHotSwapFilesModificationsWatcher());
             assertTrue(resultObj instanceof Map);
             return (Map<WatchKey, Set<HotSwapFilesModificationsListener>>)resultObj;
         } catch (Exception ex) {

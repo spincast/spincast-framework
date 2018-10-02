@@ -17,20 +17,20 @@ public class FlashMessageDefault implements FlashMessage {
 
     @AssistedInject
     public FlashMessageDefault(@Assisted FlashMessageLevel messageType,
-                               @Assisted String text,
+                               @Assisted @Nullable String text,
                                JsonManager jsonManager) {
         this(messageType, text, null, jsonManager);
     }
 
     @AssistedInject
     public FlashMessageDefault(@Assisted FlashMessageLevel messageType,
-                               @Assisted String text,
+                               @Assisted @Nullable String text,
                                @Assisted @Nullable JsonObject variables,
                                JsonManager jsonManager) {
         this.messageType = messageType;
         this.text = text;
 
-        if(variables == null) {
+        if (variables == null) {
             variables = jsonManager.create();
         }
         this.variables = variables;
