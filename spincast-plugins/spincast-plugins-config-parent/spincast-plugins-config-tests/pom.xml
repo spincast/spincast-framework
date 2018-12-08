@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-config-parent</artifactId>
-        <version>0.9.52-SNAPSHOT</version>
+        <version>0.9.52</version>
     </parent>
 	
 	<artifactId>spincast-plugins-config-tests</artifactId>
