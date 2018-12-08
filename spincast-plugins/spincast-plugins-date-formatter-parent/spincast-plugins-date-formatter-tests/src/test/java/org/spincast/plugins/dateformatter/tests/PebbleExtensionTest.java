@@ -20,7 +20,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "Monday, December 3, 2007 - 10:15 AM");
+        assertEquals(result, "2007-12-03 - 10:15:30");
     }
 
     @Test
@@ -141,6 +141,19 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
     }
 
     @Test
+    public void iso() throws Exception {
+
+        Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
+
+        JsonObject model = getJsonManager().create();
+        model.set("now", now);
+
+        String content = "{{now | dateFormat('iso', 'iso') }}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "2007-12-03 - 10:15:30");
+    }
+
+    @Test
     public void dateFormatUnderescopeMeansDefault() throws Exception {
 
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
@@ -150,11 +163,11 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat('_', 'full') }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "Monday, December 3, 2007 - 10:15:30 AM UTC");
+        assertEquals(result, "2007-12-03 - 10:15:30 AM UTC");
     }
 
     @Test
-    public void dateFormatUnderescopeMeansDefault2() throws Exception {
+    public void dateFormatUnderscoreMeansDefault2() throws Exception {
 
         Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
 
@@ -163,7 +176,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat('short', '_') }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "12/3/07 - 10:15 AM");
+        assertEquals(result, "12/3/07 - 10:15:30");
     }
 
     @Test
@@ -176,7 +189,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat('_', '_') }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "Monday, December 3, 2007 - 10:15 AM");
+        assertEquals(result, "2007-12-03 - 10:15:30");
     }
 
     @Test
@@ -189,7 +202,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat('_', '_', ' * ') }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "Monday, December 3, 2007 * 10:15 AM");
+        assertEquals(result, "2007-12-03 * 10:15:30");
     }
 
     @Test

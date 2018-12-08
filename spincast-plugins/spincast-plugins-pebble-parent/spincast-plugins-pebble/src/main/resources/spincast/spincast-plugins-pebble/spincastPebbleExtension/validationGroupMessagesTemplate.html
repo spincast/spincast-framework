@@ -8,7 +8,18 @@
             {% set msgClass = "msgWarning" %}
         {% endif %}
         
-        <span class='help-block {{msgClass}}'>{{message.text}}</span>
+        {% set escapeType = "ESCAPE" %}
+        {% if message.htmlEscapeType is not empty | default(false) %}
+            {% set escapeType = message.htmlEscapeType %}
+        {% endif %}
+        
+        {% if escapeType == "NO_ESCAPE" %}
+            <span class='help-block {{msgClass}}'>{{ message.text | raw }}</span>
+        {% elseif escapeType == "PRE" %} 
+            <pre class='help-block {{msgClass}}'>{{ message.text }}</pre>
+        {% else %}
+            <span class='help-block {{msgClass}}'>{{ message.text }}</span>
+        {% endif %}
         
     {% endfor %}
 </div>

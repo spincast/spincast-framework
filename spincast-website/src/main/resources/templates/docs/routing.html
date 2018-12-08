@@ -885,26 +885,6 @@ router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").handle();
         </p>
         <p>
         	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
-            Note that a <code>file(...)</code> resource has priority over of a <code>dir(...)</code> resource since
-            it is more precise. For example, let's examine those two Route definitions :
-        </p> 
-        <p>
-            <div>
-                <p>
-                    <pre class="ace ace-java"
->
-router.dir("/public").cache(3600).classpath("/public_files").handle();
-router.file("/public/test.txt").cache(60).classpath("/public_files/test.txt").handle();
-</pre> 
-                </p>
-            </div>
-        </p> 
-        <p>
-            Even if the <code>"test.txt"</code> file is under the <code>"/public"</code> directory,
-            a cache of <code>60</code> seconds will be applied, not <code>3600</code>.
-        </p> 
-        <p>
-        	<img class="inlineIcon" src="/public/images/icons/para.png" /> 
             Finally, note that the Static Resource route definitions have <em>precedence</em> over any other
             Routes, so if you declare <code>router.dir("/", "/public")</code> for example, then
             <em>no Route at all will ever reach the framework</em>, everything would be considered

@@ -1,15 +1,24 @@
 package org.spincast.plugins.jdbc.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemsAndTotalCountDefault<T> implements ItemsAndTotalCount<T> {
 
     private final List<T> items;
-    private final long total;
+    private final long totalCount;
 
-    public ItemsAndTotalCountDefault(List<T> items, long total) {
+    /**
+     * Empty result.
+     */
+    public ItemsAndTotalCountDefault() {
+        this.items = new ArrayList<T>();
+        this.totalCount = 0;
+    }
+
+    public ItemsAndTotalCountDefault(List<T> items, long totalCount) {
         this.items = items;
-        this.total = total;
+        this.totalCount = totalCount;
     }
 
     @Override
@@ -18,8 +27,8 @@ public class ItemsAndTotalCountDefault<T> implements ItemsAndTotalCount<T> {
     }
 
     @Override
-    public long getTotal() {
-        return this.total;
+    public long getTotalCount() {
+        return this.totalCount;
     }
 
 }

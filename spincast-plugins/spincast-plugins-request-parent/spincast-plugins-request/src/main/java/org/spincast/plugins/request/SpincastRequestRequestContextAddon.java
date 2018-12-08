@@ -794,9 +794,19 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public Form getFormWithRootKey(String scopeName) {
+    public Form getFormOrCreate(String rootKey) {
+        return getForm(rootKey, true);
+    }
 
-        if (StringUtils.isBlank(scopeName)) {
+    @Override
+    public Form getForm(String rootKey) {
+        return getForm(rootKey, false);
+    }
+
+    protected Form getForm(String rootKey, boolean createIfNotFound) {
+
+
+        if (StringUtils.isBlank(rootKey)) {
 
             //==========================================
             // This message doesn't have to be localized, but
@@ -812,13 +822,18 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             this.scopedForms = new HashMap<String, Form>();
         }
 
-        if (!this.scopedForms.containsKey(scopeName)) {
-            JsonObject formData = getFormBodyAsJsonObject().getJsonObjectOrEmpty(scopeName);
-            Form form = getFormFactory().createForm(scopeName, formData);
-            this.scopedForms.put(scopeName, form);
+        if (!this.scopedForms.containsKey(rootKey)) {
+
+            if (createIfNotFound) {
+                JsonObject formData = getFormBodyAsJsonObject().getJsonObjectOrEmpty(rootKey);
+                Form form = getFormFactory().createForm(rootKey, formData);
+                this.scopedForms.put(rootKey, form);
+            } else {
+                return null;
+            }
         }
 
-        Form form = this.scopedForms.get(scopeName);
+        Form form = this.scopedForms.get(rootKey);
         return form;
     }
 

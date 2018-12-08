@@ -318,6 +318,11 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
+    public void redirect(String newUrl, JsonObject flashMessageVariables) {
+        redirect(newUrl, getFlashMessageFactory().create(FlashMessageLevel.SUCCESS, null, flashMessageVariables));
+    }
+
+    @Override
     public void redirect(String newUrl, boolean permanently) {
         redirect(newUrl, permanently, null);
     }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
@@ -49,13 +50,15 @@ public class OverrideSpincastExtensionTest extends NoAppTestingBase {
                                                ObjectConverter objectConverter,
                                                SpincastUtils spincastUtils,
                                                Dictionary dictionary,
-                                               Provider<RequestContext<?>> requestContextProvider) {
+                                               Provider<RequestContext<?>> requestContextProvider,
+                                               SpincastConfig spincastConfig) {
             super(templatingEngineProvider,
                   spincastPebbleTemplatingEngineConfig,
                   objectConverter,
                   spincastUtils,
                   dictionary,
-                  requestContextProvider);
+                  requestContextProvider,
+                  spincastConfig);
         }
 
         //==========================================

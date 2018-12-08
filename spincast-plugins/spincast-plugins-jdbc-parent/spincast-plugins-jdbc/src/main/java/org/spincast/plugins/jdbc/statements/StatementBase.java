@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -34,7 +35,6 @@ public abstract class StatementBase implements Statement {
     private StringBuilder queryBuilder;
     private String parsedQuery;
     private final Connection connection;
-    private final QueryResultFactory queryResultFactory;
 
     private static final BasicFormatterImpl sqlFormmatter = new BasicFormatterImpl();
 
@@ -43,11 +43,9 @@ public abstract class StatementBase implements Statement {
     private Map<String, Object> params = new HashMap<>();
     private Map<String, String> staticTokens = new HashMap<>();
 
-    public StatementBase(Connection connection,
-                         QueryResultFactory queryResultFactory) {
+    public StatementBase(Connection connection) {
         this.queryBuilder = new StringBuilder();
         this.connection = connection;
-        this.queryResultFactory = queryResultFactory;
     }
 
     protected StringBuilder getQueryBuilder() {
@@ -176,8 +174,11 @@ public abstract class StatementBase implements Statement {
                     inSingleQuote = true;
                 } else if (c == '"') {
                     inDoubleQuote = true;
-                } else if (c == ':' && i + 1 < length &&
-                           Character.isJavaIdentifierStart(query.charAt(i + 1))) {
+                } else if (c == ':' &&
+                           i + 1 < length &&
+                           Character.isJavaIdentifierStart(query.charAt(i + 1)) &&
+                           query.charAt(i + 1) != ':' &&
+                           !(i - 1 >= 0 && query.charAt(i - 1) == ':')) {
                     int j = i + 2;
                     while (j < length && Character.isJavaIdentifierPart(query.charAt(j))) {
                         j++;
@@ -214,10 +215,6 @@ public abstract class StatementBase implements Statement {
         // used multiple params sets (ex : batch insert)
         //==========================================
         this.params = new HashMap<String, Object>();
-    }
-
-    protected QueryResultFactory getQueryResultFactory() {
-        return this.queryResultFactory;
     }
 
     protected Map<String, Set<Integer>> getIndexMap() {
@@ -389,7 +386,11 @@ public abstract class StatementBase implements Statement {
 
     @Override
     public void setInStringFromEnumNames(String paramName, Set<? extends Enum<?>> enumItems) {
+        setInStringFromEnumNames(paramName, SpincastStatics.toArray(enumItems, Enum.class));
+    }
 
+    @Override
+    public void setInStringFromEnumNames(String paramName, Enum<?>... enumItems) {
         Set<String> names = new HashSet<String>();
         if (enumItems != null) {
             for (Enum<?> enumItem : enumItems) {
@@ -399,6 +400,21 @@ public abstract class StatementBase implements Statement {
         setInString(paramName, names);
     }
 
+    @Override
+    public void setLongList(String paramName, List<Long> items) {
+        StringBuilder in = new StringBuilder();
+        if (items != null && items.size() > 0) {
+            for (Long item : items) {
+                if (item != null) {
+                    in.append(item).append(",");
+                }
+            }
+            if (in.length() > 0) {
+                in.deleteCharAt(in.length() - 1);
+            }
+        }
+        getStaticTokens().put(paramName, in.toString());
+    }
 
     @Override
     public String toString() {

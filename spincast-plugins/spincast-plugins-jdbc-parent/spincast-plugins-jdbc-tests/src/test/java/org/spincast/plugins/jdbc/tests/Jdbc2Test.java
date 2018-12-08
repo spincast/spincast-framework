@@ -11,13 +11,12 @@ import org.junit.Test;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.SpincastResultSet;
 import org.spincast.plugins.jdbc.statements.InsertStatement;
-import org.spincast.plugins.jdbc.statements.QueryResult;
 import org.spincast.plugins.jdbc.statements.ResultSetHandler;
 import org.spincast.plugins.jdbc.statements.SelectStatement;
 
 import com.google.common.collect.Sets;
 
-public class Jdbc2Test extends JdbcTestBase {
+public class Jdbc2Test extends JdbcH2TestBase {
 
     @Test
     public void setInString() throws Exception {
@@ -118,8 +117,8 @@ public class Jdbc2Test extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, nbr2, nbr3, booo2, booo3) " +
                         "VALUES('Stromgol', 123, 0, true, false)");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 SelectStatement stmSel = getJdbcUtils().statements().createSelectStatement(connection);
 
@@ -228,8 +227,8 @@ public class Jdbc2Test extends JdbcTestBase {
                 Instant now = Instant.now();
                 stm.setInstant("birthdate", now);
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 SelectStatement stmSel = getJdbcUtils().statements().createSelectStatement(connection);
 
@@ -256,5 +255,8 @@ public class Jdbc2Test extends JdbcTestBase {
             }
         });
     }
+
+
+
 
 }

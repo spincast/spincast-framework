@@ -65,10 +65,10 @@ Docs : "Forms"
 // GET handler
 public void myHandlerGet(AppRequestContext context) {
 
-    JsonObject form = context.response().getModel().getJsonObject("userForm");
+    Form form = context.request().getForm("userForm");
     if (form == null) {
-        form = context.json().create();
-        context.response().getModel().set("userForm", form);
+        form = context.request().getFormOrCreate("userForm");
+        context.response().addForm(form);
         
         User user = getUser(...);
         form.set("name", user.getName());
@@ -83,11 +83,13 @@ public void myHandlerGet(AppRequestContext context) {
                     <ul>
                         <li>
                             <span class="code-line-nbr">5</span> : We check if the form already exist
-                            in the response model.
+                            in the response model. This may be the case if this <code>GET</code>
+                            handler is called from an associated <code>POST</code> handler, because some validation
+                            failed.
                         </li>
                         <li>
                             <span class="code-line-nbr">7</span> : If the form doesn't exist yet, we create
-                            it as a simple <code>JsonObject</code>.
+                            an new one.
                         </li>
                         <li>
                             <span class="code-line-nbr">8</span> : We add the form to the response model, so it
@@ -117,7 +119,7 @@ public void myHandlerGet(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form form = context.request().getFormWithRootKey("userForm");
+    Form form = context.request().getFormOrCreate("userForm");
     context.response().addForm(form);
     
     validateForm(form);
@@ -204,12 +206,12 @@ public void myHandlerPost(AppRequestContext context) {
 // GET handler
 public void myHandlerGet(AppRequestContext context) {
 
-    JsonObject userForm = context.response().getModel().getJsonObject("userForm");
+    Form userForm = context.request().getForm("userForm");
     if (userForm == null) {
     
-        // Empty model! 
+        // Empty form! 
         // No username and no email elements are specified.
-        userForm = context.json().create();
+        userForm = context.request().getFormOrCreate("userForm");
         
         context.response().getModel().set("userForm", userForm);
     }
@@ -269,7 +271,7 @@ public void myHandlerGet(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getFormWithRootKey("userForm");
+    Form userForm = context.request().getFormOrCreate("userForm");
     context.response().addForm(userForm);
     
     // The "username" and "email" elements have been
@@ -385,7 +387,7 @@ public void myHandlerPost(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void manageArticle(AppRequestContext context) {
 
-    Form form = context.request().getFormWithRootKey("articleForm");
+    Form form = context.request().getFormOrCreate("articleForm");
     context.response().addForm(form);
 
     // Get all the tags of the article, as an array
@@ -465,6 +467,24 @@ public void myHandlerPost(AppRequestContext context) {
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
+        To select a default option, you can specify <code>null</code> as one of its accepted values:
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="3,59,3,75"
+>
+
+&lt;select name="userForm.favDrink" class="form-control"&gt;
+    &lt;option value="tea" {{userForm.favDrink | selected("tea")}}&gt;Tea&lt;/option&gt;
+    &lt;option value="coffee" {{userForm.favDrink | selected([null, "coffee"])}}&gt;Coffee&lt;/option&gt;
+    &lt;option value="beer" {{userForm.favDrink | selected("beer")}}&gt;WBeer&lt;/option&gt;
+&lt;/select&gt;</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
         Displaying a <em>multiple values</em> <code>select</code> field is similar, but :
         
         <ul>
@@ -498,7 +518,7 @@ public void myHandlerPost(AppRequestContext context) {
             {% endverbatim %}
         </div>
     </p>
-    
+
     <h4>
         <a class="anchor_small" href="#forms_display_field_radio" id="forms_display_field_radio" title="permanent link"></a>
         Radio Buttons
@@ -629,6 +649,27 @@ public void myHandlerPost(AppRequestContext context) {
     <p>
         This feature is mainly useful when the radio buttons are dynamically generated.
     </p>
+    <p>
+        <img src="/public/images/icons/tipy.png" />
+        If you need a default radio button to be checked, without providing this information
+        in the initial form model, you simply have to add "<code>null</code>" as an accepted
+        element for the checkbox:
+        <div>
+            {% verbatim %}
+            <p>
+                <pre class="ace ace-pebble" data-ace-hi="4,41,4,54"
+>&lt;label for="drinkTea"&gt;
+    &lt;input type="radio" 
+           id="drinkTea" 
+           name="userForm.favDrink"
+           {{userForm.favDrink | checked(["tea", null])}}
+           value="tea"/&gt; Tea&lt;/label&gt;
+</pre> 
+            </p>
+            {% endverbatim %}
+        </div>
+    </p> 
+    
     <p>
         <img class="inlineIcon" src="/public/images/icons/para.png" />
         Speaking of dynamically generated radio buttons, let's see an example of those! The creation
@@ -781,7 +822,7 @@ public void myHandlerPost(AppRequestContext context) {
                 <pre class="ace ace-java"
 >public void myRouteHandler(AppRequestContext context) {
 
-    Form form = context.request().getFormWithRootKey("myForm");
+    Form form = context.request().getFormOrCreate("myForm");
     context.response().addForm(form);
 
     boolean tosAccepted = form.getBoolean("tosAccepted");
@@ -948,17 +989,17 @@ public void myHandlerPost(AppRequestContext context) {
     </p>
     <p>
         You access that <code>Form</code> representing the submitted data by using the
-        <code>getForm(...)</code> method of the <code>request()</code> add-on:
+        <code>getFormOrCreate(...)</code> method of the <code>request()</code> add-on:
         
         <div>
             <p>
-                <pre class="ace ace-java" data-ace-hi="4,38,4,68"
+                <pre class="ace ace-java" data-ace-hi="4,38,4,65"
 >
 
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getFormWithRootKey("userForm");
+    Form userForm = context.request().getFormOrCreate("userForm");
     context.response().addForm(userForm);
     
     //...
@@ -980,14 +1021,14 @@ public void myHandlerPost(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getFormWithRootKey("userForm");
+    Form userForm = context.request().getFormOrCreate("userForm");
     if(userForm.getString("userFormBtn") != null) {
         context.response().addForm(userForm);
         processUserForm(context, userForm);
         return;
     }
     
-    Form bookForm = context.request().getFormWithRootKey("bookForm");
+    Form bookForm = context.request().getFormOrCreate("bookForm");
     if(bookForm.getString("bookFormBtn") != null) {
         context.response().addForm(bookForm);
         processBookForm(context, bookForm);
@@ -1021,7 +1062,7 @@ public void myHandlerPost(AppRequestContext context) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form form = context.request().getFormWithRootKey("userForm");
+    Form form = context.request().getFormOrCreate("userForm");
     context.response().addForm(form);
     
     String email = form.getString("email");
@@ -1088,7 +1129,7 @@ public void myHandlerPost(AppRequestContext context) {
                 <pre class="ace ace-java" data-ace-hi="4,0,4,29"
 >
 
-Form form = context.request().getFormWithRootKey("userForm");
+Form form = context.request().getFormOrCreate("userForm");
 
 String name = form.getString("name");
 if(StringUtils.isBlank(name)) {
@@ -1136,7 +1177,7 @@ if(StringUtils.isBlank(name)) {
 // POST handler
 public void myHandlerPost(AppRequestContext context) {
 
-    Form userForm = context.request().getFormWithRootKey("userForm");
+    Form userForm = context.request().getFormOrCreate("userForm");
     
     // Uses "userFormValidation" as the name for the
     // validation element.
@@ -1274,6 +1315,40 @@ public void myHandlerPost(AppRequestContext context) {
         </p>
         {% endverbatim %}
     </p> 
+    <p> 
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Note that when you add a validation message, you can specify some options on how to
+        render the message. You do this by passing a 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/validation/ValidationHtmlEscapeType.html">ValidationHtmlEscapeType</a> 
+        parameter:
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="4,14,4,48"
+>
+
+form.addError("email",
+              "email_invalid",
+              "Invalid email: &lt;em&gt;" + email + "&lt;/em&gt;",
+              ValidationHtmlEscapeType.NO_ESCAPE);
+</pre> 
+            </p>
+        </div>
+    </p> 
+    <p> 
+        The possible values of <code>ValidationHtmlEscapeType</code> are:
+        <ul>
+            <li>
+                <code>ESCAPE</code>: escapes the message to display. This is the default value.
+            </li>
+            <li>
+                <code>NO_ESCAPE</code>: does not escape the message to display. Any HTML will be rendered.
+            </li>
+            <li>
+                <code>PRE</code>: displays the message inside "<code>&lt;pre&gt;&lt;/pre&gt;</code>" tags.
+            </li>
+        </ul>
+    <p>
     
 
     <h5>
@@ -1706,7 +1781,7 @@ public void myHandlerPost(AppRequestContext context) {
 
     // Back to a typed version of the form model!
     UserCreationForm userForm = context.request()
-                                       .getFormWithRootKey("userForm")
+                                       .getFormOrCreate("userForm")
                                        .convert(UserCreationForm.class);
                                        
    // ...

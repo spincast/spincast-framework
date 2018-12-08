@@ -45,7 +45,9 @@ public class HotSwapFilesModificationsWatcherDefault implements HotSwapFilesModi
     public void init() {
         if (this.boundListeners != null) {
             for (HotSwapFilesModificationsListener listener : this.boundListeners) {
-                registerListener(listener);
+                if (listener.isEnabled()) {
+                    registerListener(listener);
+                }
             }
         }
     }

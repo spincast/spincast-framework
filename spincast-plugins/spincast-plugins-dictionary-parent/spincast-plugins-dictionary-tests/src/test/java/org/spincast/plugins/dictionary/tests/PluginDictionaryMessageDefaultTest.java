@@ -23,7 +23,7 @@ public class PluginDictionaryMessageDefaultTest extends NoAppStartHttpServerTest
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    context.request().getFormWithRootKey("");
+                    context.request().getFormOrCreate("");
                     fail();
                 } catch (Exception ex) {
                     assertEquals("The name can't be empty.", ex.getMessage());

@@ -81,7 +81,9 @@ public class HotSwapClassesRedefinitionsWatcherDefault implements HotSwapClasses
     public void setBoundListerns(@Nullable Set<HotSwapClassesRedefinitionsListener> boundListeners) {
         if (boundListeners != null) {
             for (HotSwapClassesRedefinitionsListener listener : boundListeners) {
-                registerListener(listener);
+                if (listener.isEnabled()) {
+                    registerListener(listener);
+                }
             }
         }
     }

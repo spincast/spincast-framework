@@ -10,13 +10,8 @@ import org.spincast.plugins.jdbc.statements.BatchInsertStatement;
 import org.spincast.plugins.jdbc.statements.BatchInsertStatementDefault;
 import org.spincast.plugins.jdbc.statements.DeleteStatement;
 import org.spincast.plugins.jdbc.statements.DeleteStatementDefault;
-import org.spincast.plugins.jdbc.statements.InsertResultWithGeneratedKey;
-import org.spincast.plugins.jdbc.statements.InsertResultWithGeneratedKeyDefault;
 import org.spincast.plugins.jdbc.statements.InsertStatement;
 import org.spincast.plugins.jdbc.statements.InsertStatementDefault;
-import org.spincast.plugins.jdbc.statements.QueryResult;
-import org.spincast.plugins.jdbc.statements.QueryResultDefault;
-import org.spincast.plugins.jdbc.statements.QueryResultFactory;
 import org.spincast.plugins.jdbc.statements.SelectStatement;
 import org.spincast.plugins.jdbc.statements.SelectStatementDefault;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
@@ -46,11 +41,6 @@ public class SpincastJdbcPluginModule extends SpincastGuiceModuleBase {
                                           .implement(UpdateStatement.class, getUpdateJdbcStatementImpl())
                                           .implement(DeleteStatement.class, getDeleteJdbcStatementImpl())
                                           .build(JdbcStatementFactory.class));
-
-        install(new FactoryModuleBuilder().implement(QueryResult.class, getQueryResultImpl())
-                                          .implement(InsertResultWithGeneratedKey.class,
-                                                     getInsertResultWithGeneratedKeyImpl())
-                                          .build(QueryResultFactory.class));
 
         install(new FactoryModuleBuilder().implement(SpincastDataSource.class, getSpincastDataSourceImpl())
                                           .build(SpincastDataSourceFactory.class));
@@ -84,14 +74,6 @@ public class SpincastJdbcPluginModule extends SpincastGuiceModuleBase {
 
     protected Class<? extends DeleteStatement> getDeleteJdbcStatementImpl() {
         return DeleteStatementDefault.class;
-    }
-
-    protected Class<? extends QueryResult> getQueryResultImpl() {
-        return QueryResultDefault.class;
-    }
-
-    protected Class<? extends InsertResultWithGeneratedKey> getInsertResultWithGeneratedKeyImpl() {
-        return InsertResultWithGeneratedKeyDefault.class;
     }
 
     protected Class<? extends SpincastDataSource> getSpincastDataSourceImpl() {

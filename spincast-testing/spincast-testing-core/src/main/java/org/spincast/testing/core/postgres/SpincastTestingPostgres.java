@@ -1,50 +1,48 @@
-package org.spincast.testing.core.h2;
+package org.spincast.testing.core.postgres;
 
 import java.sql.Connection;
 
 import javax.sql.DataSource;
 
-import org.h2.tools.Server;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.plugins.jdbc.SpincastDataSource;
 import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
-import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.opentable.db.postgres.embedded.EmbeddedPostgres;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Singleton
-public class SpincastTestingH2 implements Provider<SpincastDataSource> {
+public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
 
-    private final SpincastTestingH2Config spincastTestingH2Config;
+    private final SpincastTestingPostgresConfig spincastTestingPostgresConfig;
     private final JdbcUtils jdbcUtils;
     private final SpincastDataSourceFactory spincastDataSourceFactory;
-    private Server h2Server = null;
-    private Integer serverPort;
+    private EmbeddedPostgres pg = null;
     private SpincastDataSource dataSource;
 
     @Inject
-    public SpincastTestingH2(SpincastTestingH2Config spincastTestingH2Config,
-                             JdbcUtils jdbcUtils,
-                             SpincastDataSourceFactory spincastDataSourceFactory) {
-        this.spincastTestingH2Config = spincastTestingH2Config;
+    public SpincastTestingPostgres(SpincastTestingPostgresConfig spincastTestingPostgresConfig,
+                                   JdbcUtils jdbcUtils,
+                                   SpincastDataSourceFactory spincastDataSourceFactory) {
+        this.spincastTestingPostgresConfig = spincastTestingPostgresConfig;
         this.jdbcUtils = jdbcUtils;
         this.spincastDataSourceFactory = spincastDataSourceFactory;
     }
 
-    protected Server getH2Server() {
-        return this.h2Server;
+    protected EmbeddedPostgres getPg() {
+        return this.pg;
     }
 
-    protected SpincastTestingH2Config getSpincastTestingH2Config() {
-        return this.spincastTestingH2Config;
+    protected SpincastTestingPostgresConfig getSpincastTestingPostgresConfig() {
+        return this.spincastTestingPostgresConfig;
     }
 
     protected JdbcUtils getJdbcUtils() {
@@ -55,40 +53,18 @@ public class SpincastTestingH2 implements Provider<SpincastDataSource> {
         return this.spincastDataSourceFactory;
     }
 
-    protected int getServerPort() {
-        if (this.serverPort == null) {
-            Integer port = getSpincastTestingH2Config().getServerPort();
-            if (port == null) {
-                port = SpincastTestingUtils.findFreePort();
-            }
-            this.serverPort = port;
-        }
-        return this.serverPort;
-    }
-
     @Inject
     public void init() {
         try {
-            this.h2Server =
-                    Server.createTcpServer("-tcpPort", getServerPort() + "", "-tcpAllowOthers").start();
+            this.pg = EmbeddedPostgres.builder()
+                                      .setPort(SpincastTestingUtils.findFreePort())
+                                      .setDataDirectory(getSpincastTestingPostgresConfig().getDataTempDir())
+                                      .setCleanDataDirectory(true)
+                                      .start();
+
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
-    }
-
-    protected String createConnectionString() {
-        StringBuilder b = new StringBuilder();
-        b.append("jdbc:h2:tcp://");
-        b.append(getSpincastTestingH2Config().getServerHost()).append(":").append(getServerPort());
-        b.append("/mem:").append(getSpincastTestingH2Config().getDatabaseName());
-        b.append(";DATABASE_TO_UPPER=" + Boolean.toString(getSpincastTestingH2Config().isDatabaseToUpper()));
-
-        String compatibilityMode = getSpincastTestingH2Config().getCompatibilityMode();
-        if (!StringUtils.isBlank(compatibilityMode)) {
-            b.append(";MODE=").append(compatibilityMode);
-        }
-
-        return b.toString();
     }
 
     @Override
@@ -96,25 +72,28 @@ public class SpincastTestingH2 implements Provider<SpincastDataSource> {
         if (this.dataSource == null) {
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(createConnectionString());
-            config.setUsername("");
-            config.setPassword("");
+            config.setUsername("postgres");
+            config.setPassword("postgres");
             config.setMaximumPoolSize(10);
-
             DataSource ds = new HikariDataSource(config);
             this.dataSource = getSpincastDataSourceFactory().create(ds);
         }
         return this.dataSource;
     }
 
+    protected String createConnectionString() {
+        StringBuilder b = new StringBuilder();
+        b.append("jdbc:postgresql://localhost:").append(getPg().getPort()).append("/postgres");
+        return b.toString();
+    }
+
     /**
-     * Stops H2
+     * Stops Postgres.
      */
-    public void stopH2() {
-        if (this.h2Server != null) {
+    public void stopPostgres() {
+        if (this.pg != null) {
             try {
-                if (this.h2Server.isRunning(false)) {
-                    this.h2Server.stop();
-                }
+                this.pg.close();
             } catch (Exception ex) {
                 System.err.println(ex);
             }
@@ -131,7 +110,7 @@ public class SpincastTestingH2 implements Provider<SpincastDataSource> {
             public Void run(Connection connection) {
 
                 UpdateStatement stm = getJdbcUtils().statements().createUpdateStatement(connection);
-                stm.sql("DROP ALL OBJECTS DELETE FILES ");
+                stm.sql("DROP SCHEMA public CASCADE ");
                 stm.update();
                 return null;
             }

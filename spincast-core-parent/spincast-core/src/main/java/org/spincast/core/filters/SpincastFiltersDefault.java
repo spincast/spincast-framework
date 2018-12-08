@@ -545,43 +545,61 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             // the Flash message and delete it (since it is deleted
             // as soon as it is used).
             //==========================================
-            alerts.add(new Alert() {
-
-                private FlashMessage flashMessage;
-                private boolean flashMessageGot;
-
-                protected FlashMessage getFlashMessage() {
-                    if (!this.flashMessageGot) {
-                        this.flashMessageGot = true;
-                        this.flashMessage = context.request().getFlashMessage();
-                    }
-                    return this.flashMessage;
+            boolean lazyLoadedAlertAlreadyAdded = false;
+            for (Alert alert : alerts) {
+                if (alert instanceof SpincastFiltersDefault.LazyLoadedFlashMessageAlert) {
+                    lazyLoadedAlertAlreadyAdded = true;
+                    break;
                 }
-
-                @Override
-                public String getText() {
-                    return getFlashMessage() != null ? getFlashMessage().getText() : null;
-                }
-
-                @Override
-                public AlertLevel getAlertType() {
-
-                    if (getFlashMessage() == null) {
-                        return null;
-                    }
-
-                    FlashMessageLevel flashType = getFlashMessage().getFlashType();
-                    if (flashType == FlashMessageLevel.SUCCESS) {
-                        return AlertLevel.SUCCESS;
-                    } else if (flashType == FlashMessageLevel.WARNING) {
-                        return AlertLevel.WARNING;
-                    } else if (flashType == FlashMessageLevel.ERROR) {
-                        return AlertLevel.ERROR;
-                    } else {
-                        throw new RuntimeException("Flash type not managed here : " + flashType);
-                    }
-                }
-            });
+            }
+            if (!lazyLoadedAlertAlreadyAdded) {
+                alerts.add(new LazyLoadedFlashMessageAlert(context));
+            }
         }
     }
+
+    protected class LazyLoadedFlashMessageAlert implements Alert {
+
+        private FlashMessage flashMessage;
+        private boolean flashMessageGot;
+        private R context;
+
+        public LazyLoadedFlashMessageAlert(R context) {
+            this.context = context;
+        }
+
+        protected FlashMessage getFlashMessage() {
+            if (!this.flashMessageGot) {
+                this.flashMessageGot = true;
+                this.flashMessage = this.context.request().getFlashMessage();
+            }
+            return this.flashMessage;
+        }
+
+        @Override
+        public String getText() {
+            return getFlashMessage() != null ? getFlashMessage().getText() : null;
+        }
+
+        @Override
+        public AlertLevel getAlertType() {
+
+            if (getFlashMessage() == null) {
+                return null;
+            }
+
+            FlashMessageLevel flashType = getFlashMessage().getFlashType();
+            if (flashType == FlashMessageLevel.SUCCESS) {
+                return AlertLevel.SUCCESS;
+            } else if (flashType == FlashMessageLevel.WARNING) {
+                return AlertLevel.WARNING;
+            } else if (flashType == FlashMessageLevel.ERROR) {
+                return AlertLevel.ERROR;
+            } else {
+                throw new RuntimeException("Flash type not managed here : " + flashType);
+            }
+        }
+    }
+
+
 }

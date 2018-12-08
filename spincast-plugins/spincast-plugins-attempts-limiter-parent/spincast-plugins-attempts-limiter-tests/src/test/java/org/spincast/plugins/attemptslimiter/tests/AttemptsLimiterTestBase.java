@@ -129,7 +129,7 @@ public abstract class AttemptsLimiterTestBase extends NoAppStartHttpServerTestin
         super.afterClass();
         getTestAttemptsRepository2().dropAttemptsTable();
 
-        getH2().stopServer();
+        getH2().stopH2();
     }
 
     @Override

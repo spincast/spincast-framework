@@ -386,7 +386,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * When an HTML form is submitted, there may be utility fields
      * (such as a CSRF token, etc.) in addition to
      * business logic fields. 
-     * By using this {@link #getFormWithRootKey(String)}
+     * By using this {@link #getFormOrCreate(String)}
      * you only get the fields which names start with the specified
      * <code>root key</code>. For example, if this HTML form was submitted:
      * <pre>
@@ -415,7 +415,45 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * <p>
      * The key are <em>case sensitive</em>.
      */
-    public Form getFormWithRootKey(String rootKey);
+    public Form getFormOrCreate(String rootKey);
+
+    /**
+     * Gets the part of the submitted <code>FORM</code> body 
+     * that is scoped by the specified <code>root key</code>.
+     * <p>
+     * When an HTML form is submitted, there may be utility fields
+     * (such as a CSRF token, etc.) in addition to
+     * business logic fields. 
+     * By using this {@link #getFormOrCreate(String)}
+     * you only get the fields which names start with the specified
+     * <code>root key</code>. For example, if this HTML form was submitted:
+     * <pre>
+     * &lt;form&gt;
+     *  &lt;input type="text" name="csrfToken" value="12345" /&gt;
+     *  &lt;input type="text" name="myUser.userName" value="Stromgol" /&gt;
+     *  &lt;input type="text" name="myUser.lastNameName" value="LaPierre" /&gt;
+     * ...
+     * </pre>
+     * <p>
+     * ... then calling <code>getFormWithRootKey("myUser")</code> would
+     * return a {@link Form} object containing the "userName" and the "userName"
+     * fields, but not the "csrfToken".
+     * </p>
+     * <p>
+     * A {@link Form} object is in fact a {@link JsonObject} containing the submitted
+     * fields and a {@link ValidationSet} to store validations performed on it.
+     * <p>
+     * The same field is returned, everytime this method is called
+     * with the same <code>name</code>.
+     * <p>
+     * If the root key is not found in the POSTed data, an empty 
+     * form will be created.
+     * <p>
+     * The key are <em>case sensitive</em>.
+     * 
+     * @return the form if it exists or <code>null</code> otherwise.
+     */
+    public Form getForm(String rootKey);
 
     /**
      * The key of the map if the HTML's <code>name</code> attribute. 

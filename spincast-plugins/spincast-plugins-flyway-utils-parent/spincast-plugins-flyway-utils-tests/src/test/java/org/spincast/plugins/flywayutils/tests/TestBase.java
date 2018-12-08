@@ -61,7 +61,7 @@ public abstract class TestBase extends NoAppTestingBase {
     @Override
     public void afterClass() {
         super.afterClass();
-        getH2().stopServer();
+        getH2().stopH2();
     }
 
     @Inject

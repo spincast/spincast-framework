@@ -11,10 +11,17 @@
             {% set symbol = "<span class='validationSymbolWarning'>!</span>" %}
         {% endif %}
         
-        {% if message.htmlEscape | default(true) %}
-            <span class='help-block {{msgClass}}'>{{symbol | raw}}{{message.text}}</span>
+        {% set escapeType = "ESCAPE" %}
+        {% if message.htmlEscapeType is not empty | default(false) %}
+            {% set escapeType = message.htmlEscapeType %}
+        {% endif %}
+        
+        {% if escapeType == "NO_ESCAPE" %}
+            <span class='help-block {{msgClass}}'>{{ symbol | raw }}{{ message.text | raw }}</span>
+        {% elseif escapeType == "PRE" %} 
+            <pre class='help-block {{msgClass}}'>{{ symbol | raw }}{{ message.text }}</pre>
         {% else %}
-            <span class='help-block {{msgClass}}'>{{symbol | raw}}{{message.text | raw}}</span>
+            <span class='help-block {{msgClass}}'>{{ symbol | raw }}{{ message.text }}</span>
         {% endif %}
         
     {% endfor %}

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.plugins.attemptslimiter.Attempt;
 import org.spincast.plugins.attemptslimiter.AttemptCriteria;
@@ -18,6 +19,7 @@ import org.spincast.plugins.attemptslimiter.AttemptsAutoIncrementType;
 import org.spincast.plugins.attemptslimiter.config.SpincastAttemptsLimiterPluginConfig;
 import org.spincast.plugins.attemptslimiter.config.SpincastAttemptsLimiterPluginConfigDefault;
 
+import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.google.inject.util.Modules;
@@ -45,12 +47,16 @@ public class AttemptsChangeDefaultAutoIncrementTest extends AttemptsLimiterTestB
 
     public static class TestAttemptsLimiterPluginConfig extends SpincastAttemptsLimiterPluginConfigDefault {
 
+        @Inject
+        public TestAttemptsLimiterPluginConfig(SpincastConfig spincastConfig) {
+            super(spincastConfig);
+        }
+
         @Override
         public AttemptsAutoIncrementType getDefaultAttemptAutoIncrementType() {
             return AttemptsAutoIncrementType.NEVER;
         }
     }
-
 
     @Override
     protected Set<AttemptRule> getTestSpincastAttemptRules() {

@@ -124,14 +124,16 @@ public class DateFormatterDefault implements DateFormatter {
         //==========================================
         if (dateParts == DateParts.BOTH || dateParts == DateParts.DATE) {
 
+            DatePattern datePattern = this.datePattern;
+            if (datePattern == null) {
+                datePattern = DatePattern.ISO;
+            }
+
             FastDateFormat formatter = null;
-            if (this.datePatternCustom != null) {
-                formatter = FastDateFormat.getInstance(this.datePatternCustom, timeZone, locale);
+            if (this.datePatternCustom != null || datePattern == DatePattern.ISO) {
+                String pattern = this.datePatternCustom != null ? this.datePatternCustom : "yyyy-MM-dd";
+                formatter = FastDateFormat.getInstance(pattern, timeZone, locale);
             } else {
-                DatePattern datePattern = this.datePattern;
-                if (datePattern == null) {
-                    datePattern = DatePattern.FULL;
-                }
                 formatter = FastDateFormat.getDateInstance(datePattern.getPatternNbr(), timeZone, locale);
             }
 
@@ -151,14 +153,16 @@ public class DateFormatterDefault implements DateFormatter {
                 formatted.append(this.separator != null ? this.separator : getDefaultSeparator());
             }
 
+            DatePattern timePattern = this.timePattern;
+            if (timePattern == null) {
+                timePattern = DatePattern.ISO;
+            }
+
             FastDateFormat formatter = null;
-            if (this.timePatternCustom != null) {
-                formatter = FastDateFormat.getInstance(this.timePatternCustom, timeZone, locale);
+            if (this.timePatternCustom != null || timePattern == DatePattern.ISO) {
+                String pattern = this.timePatternCustom != null ? this.timePatternCustom : "HH:mm:ss";
+                formatter = FastDateFormat.getInstance(pattern, timeZone, locale);
             } else {
-                DatePattern timePattern = this.timePattern;
-                if (timePattern == null) {
-                    timePattern = DatePattern.SHORT;
-                }
                 formatter = FastDateFormat.getTimeInstance(timePattern.getPatternNbr(), timeZone, locale);
             }
 

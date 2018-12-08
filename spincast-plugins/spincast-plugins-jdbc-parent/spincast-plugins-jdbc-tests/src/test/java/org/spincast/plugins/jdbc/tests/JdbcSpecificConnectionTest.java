@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.TransactionalScope;
 
-public class JdbcSpecificConnectionTest extends JdbcTestBase {
+public class JdbcSpecificConnectionTest extends JdbcH2TestBase {
 
     @Test
     public void specificConnection() throws Exception {

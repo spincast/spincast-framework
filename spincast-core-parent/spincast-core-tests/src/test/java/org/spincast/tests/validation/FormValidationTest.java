@@ -44,7 +44,7 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form);
 
                 assertEquals("Slomo", form.getString("name"));
@@ -74,7 +74,7 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form);
 
                 context.response().sendParseHtml("{% if validation['myForm._'] | validationHasErrors() %}yes{% endif %}");
@@ -101,7 +101,7 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form);
 
                 form.addError("name", "name_invalid", "The name is invalid");
@@ -130,7 +130,7 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form);
 
                 form.addError("name", "name_invalid", "The name is invalid");
@@ -161,7 +161,7 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form, "myFormValidation");
 
                 form.addError("name", "name_invalid", "The name is invalid");
@@ -192,11 +192,11 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form);
                 form.addError("name", "name_invalid", "The name is invalid");
 
-                Form form2 = context.request().getFormWithRootKey("myForm2");
+                Form form2 = context.request().getFormOrCreate("myForm2");
                 context.response().addForm(form2);
                 form2.addError("name2", "name2_invalid", "The name2 is invalid");
 
@@ -230,11 +230,11 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form, "myFormVal");
                 form.addError("name", "name_invalid", "The name is invalid");
 
-                Form form2 = context.request().getFormWithRootKey("myForm2");
+                Form form2 = context.request().getFormOrCreate("myForm2");
                 context.response().addForm(form2);
                 form2.addError("name2", "name2_invalid", "The name2 is invalid");
 
@@ -268,11 +268,11 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
             @Override
             public void handle(DefaultRequestContext context) {
 
-                Form form = context.request().getFormWithRootKey("myForm");
+                Form form = context.request().getFormOrCreate("myForm");
                 context.response().addForm(form, "myFormVal");
                 form.addError("name", "name_invalid", "The name is invalid");
 
-                Form form2 = context.request().getFormWithRootKey("myForm2");
+                Form form2 = context.request().getFormOrCreate("myForm2");
                 context.response().addForm(form2, "myFormVal");
                 form2.addError("name2", "name2_invalid", "The name2 is invalid");
 

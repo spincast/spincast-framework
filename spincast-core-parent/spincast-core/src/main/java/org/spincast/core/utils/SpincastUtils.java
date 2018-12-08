@@ -3,6 +3,7 @@ package org.spincast.core.utils;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Spincast utilities.
@@ -207,5 +208,34 @@ public interface SpincastUtils {
      * <code>valueOf(value)</code> search on an enum.
      */
     public <T extends Enum<?>> T enumValueOfInsensitive(Class<T> enumClass, String str);
+
+    public long[] convertLongSetToLongPrimitiveArray(Set<Long> longSet);
+
+    /**
+     * Creates a randomly named temp file path targetting the
+     * writable directory.
+     */
+    public String createTempFilePath();
+
+    /**
+     * Cleans HTML, only allowing basic elements.
+     * <p>
+     * Elements from https://jsoup.org/apidocs/org/jsoup/safety/Whitelist.html#basic--
+     * are allowed + "center" tags. Relative paths are allowed in links.
+     * <p>
+     * Images tags are not allowed.
+     */
+    public String basicHtml(boolean newlineToBrFirst, String html);
+
+    /**
+     * Cleans HTML, only allowing basic elements.
+     * <p>
+     * Elements from https://jsoup.org/apidocs/org/jsoup/safety/Whitelist.html#basic--
+     * are allowed + "center" tags. Relative paths are allowed in links.
+     * 
+     * @param allowImages if <code>true</code> image tags will also be allowed.
+     */
+    public String basicHtml(boolean newlineToBrFirst, String html, boolean allowImages);
+
 
 }

@@ -21,7 +21,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         DateFormatter formatter = getDateFormatterFactory().createFormatter(date);
 
         String result = formatter.format();
-        assertEquals("Monday, December 3, 2007 - 10:15 AM", result);
+        assertEquals("2007-12-03 - 10:15:30", result);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         formatter.separator("~~~");
 
         String result = formatter.format();
-        assertEquals("Monday, December 3, 2007~~~10:15 AM", result);
+        assertEquals("2007-12-03~~~10:15:30", result);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         formatter.parts(DateParts.BOTH);
 
         String result = formatter.format();
-        assertEquals("Monday, December 3, 2007 - 10:15 AM", result);
+        assertEquals("2007-12-03 - 10:15:30", result);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         formatter.parts(DateParts.DATE);
 
         String result = formatter.format();
-        assertEquals("Monday, December 3, 2007", result);
+        assertEquals("2007-12-03", result);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         formatter.parts(DateParts.TIME);
 
         String result = formatter.format();
-        assertEquals("10:15 AM", result);
+        assertEquals("10:15:30", result);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         formatter.locale(Locale.CANADA_FRENCH);
 
         String result = formatter.format();
-        assertEquals("lundi 3 décembre 2007 - 10:15", result);
+        assertEquals("2007-12-03 - 10:15:30", result);
     }
 
     @Test
@@ -170,7 +170,7 @@ public class DateFormatterTest extends DateFormatterTestBase {
         formatter.timeZone(TimeZone.getTimeZone("GMT-1:00"));
 
         String result = formatter.format();
-        assertEquals("Monday, December 3, 2007 - 9:15 AM", result);
+        assertEquals("2007-12-03 - 09:15:30", result);
     }
 
 

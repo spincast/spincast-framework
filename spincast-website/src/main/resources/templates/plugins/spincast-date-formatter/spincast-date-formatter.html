@@ -183,6 +183,9 @@ String dateFormatted = formatter.formatType(RelativeDateFormatType.DURATION)
                             <p>
                                 <ul>
                                     <li>
+                                        DatePattern.ISO (Date: "<code>2017-12-03</code>", Time: "<code>10:15:46</code>")
+                                    </li>
+                                    <li>
                                         DatePattern.SHORT (Date: "<code>12/3/07</code>", Time: "<code>10:15 AM</code>")
                                     </li>
                                     <li>
@@ -201,8 +204,7 @@ String dateFormatted = formatter.formatType(RelativeDateFormatType.DURATION)
                                 </ul>
                             </p>
                             <p>
-                                The default pattern for the <em>date</em> part is "<code>DatePattern.FULL</code>" and the 
-                                default pattern for the <em>time</em> part is "<code>DatePattern.SHORT</code>" 
+                                The default pattern is "<code>DatePattern.ISO</code>".
                             </p>
                         </li>
                        <li>
@@ -388,7 +390,7 @@ String dateFormatted = formatter.formatType(RelativeDateFormatType.DURATION)
                         <li>
                             The "<strong>datePattern</strong>" : 
                             <br />
-                            - Can be a standard format : "<code>short</code>", "<code>medium</code>", "<code>long</code>" or "<code>full</code>". 
+                            - Can be a standard format : "<code>iso</code>", "<code>short</code>", "<code>medium</code>", "<code>long</code>" or "<code>full</code>". 
                             <br />
                             - If it is an underscore "<code>_</code>", the <em>default pattern</em> will be used.
                             <br />
@@ -400,7 +402,7 @@ String dateFormatted = formatter.formatType(RelativeDateFormatType.DURATION)
                         <li>
                             The "<strong>timePattern</strong>" : 
                             <br />
-                            - Can be a standard format : "<code>short</code>", "<code>medium</code>", "<code>long</code>" or "<code>full</code>". 
+                            - Can be a standard format : "<code>iso</code>", "<code>short</code>", "<code>medium</code>", "<code>long</code>" or "<code>full</code>". 
                             <br />
                             - If it is an underscore "<code>_</code>", the <em>default pattern</em> will be used.
                             <br />
@@ -424,19 +426,19 @@ String dateFormatted = formatter.formatType(RelativeDateFormatType.DURATION)
 >// "12/3/07 , 10:15:30 AM UTC"
 &lt;div class="date"&gt;{{someDate | dateFormat('short', 'full', ' , ') }}&lt;/div&gt;
 
-// "Monday, December 3, 2007 - 10:15:30 AM UTC"
+// "2007-12-03 - 10:15:30 AM UTC"
 &lt;div class="date"&gt;{{someDate | dateFormat('_', 'full') }}&lt;/div&gt;
 
-// "Monday, December 3, 2007 ~ 10:15 AM"
+// "2007-12-03 ~ 10:15:30"
 &lt;div class="date"&gt;{{someDate | dateFormat('_', '_', ' ~ ') }}&lt;/div&gt;
 
-// "10:15 AM"
+// "10:15:30"
 &lt;div class="date"&gt;{{someDate | dateFormat('', '_') }}&lt;/div&gt;
 
 // "12/3/07"
 &lt;div class="date"&gt;{{someDate | dateFormat('short', '') }}&lt;/div&gt;
 
-// "2007 - 10:15 AM"
+// "2007 - 10:15:30"
 &lt;div class="date"&gt;{{someDate | dateFormat('YYYY', '_') }}&lt;/div&gt;
 </pre>
                             </p>

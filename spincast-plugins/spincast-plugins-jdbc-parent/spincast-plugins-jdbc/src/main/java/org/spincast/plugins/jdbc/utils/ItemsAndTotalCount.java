@@ -6,6 +6,6 @@ public interface ItemsAndTotalCount<T> {
 
     public List<T> getItems();
 
-    public long getTotal();
+    public long getTotalCount();
 
 }

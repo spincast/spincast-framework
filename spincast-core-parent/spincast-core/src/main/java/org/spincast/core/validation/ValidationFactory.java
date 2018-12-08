@@ -9,5 +9,5 @@ public interface ValidationFactory {
     public ValidationMessage createMessage(@Assisted("validationLevel") ValidationLevel level,
                                            @Assisted("code") String code,
                                            @Assisted("text") String text,
-                                           @Assisted("htmlEscape") boolean htmlEscape);
+                                           @Assisted("htmlEscapeType") ValidationHtmlEscapeType htmlEscapeType);
 }

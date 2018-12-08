@@ -2,6 +2,7 @@ package org.spincast.core.json;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,11 @@ public interface JsonManager {
      * Creates an empty <code>JsonArray</code>.
      */
     public JsonArray createArray();
+
+    /**
+     * Creates a <code>JsonObject</code> from a random object..
+     */
+    public JsonObject fromObject(Object object);
 
     /**
      * Creates a <code>JsonObject</code> from a <code>Json</code>
@@ -141,6 +147,11 @@ public interface JsonManager {
      * <code>null</code>.
      */
     public <T> T fromInputStream(InputStream inputStream, Class<T> clazz);
+
+    /**
+     * Creates a <code>JsonArray</code> from a random collection.
+     */
+    public JsonArray fromCollectionToJsonArray(Collection<?> collection);
 
     /**
      * Creates a <code>JsonArray</code> from a <code>Json</code>

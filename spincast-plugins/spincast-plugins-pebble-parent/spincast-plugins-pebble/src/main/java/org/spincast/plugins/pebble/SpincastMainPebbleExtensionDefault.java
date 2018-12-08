@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
@@ -68,6 +69,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
     public static final String FUNCTION_NAME_VALIDATION_JS_ONE_LINE = "jsOneLine";
     public static final String FUNCTION_NAME_MESSAGE = "msg";
     public static final String FUNCTION_NAME_QUERYSTRING_APPEND = "querystring";
+    public static final String FUNCTION_NAME_QUERYSTRING_TO_HIDDEN_FIELDS = "querystringToHiddenFields";
     public static final String FUNCTION_NAME_ROUTE = "isRoute";
     public static final String FUNCTION_NAME_ROUTE_ID = "isRouteId";
 
@@ -78,6 +80,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
     private final SpincastUtils spincastUtils;
     private final Dictionary dictionary;
     private final Provider<RequestContext<?>> requestContextProvider;
+    private final SpincastConfig spincastConfig;
 
     /**
      * Constructor
@@ -88,13 +91,15 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                                               ObjectConverter objectConverter,
                                               SpincastUtils spincastUtils,
                                               Dictionary dictionary,
-                                              Provider<RequestContext<?>> requestContextProvider) {
+                                              Provider<RequestContext<?>> requestContextProvider,
+                                              SpincastConfig spincastConfig) {
         this.templatingEngineProvider = templatingEngineProvider;
         this.spincastPebbleTemplatingEngineConfig = spincastPebbleTemplatingEngineConfig;
         this.objectConverter = objectConverter;
         this.spincastUtils = spincastUtils;
         this.dictionary = dictionary;
         this.requestContextProvider = requestContextProvider;
+        this.spincastConfig = spincastConfig;
     }
 
     public TemplatingEngine getTemplatingEngine() {
@@ -114,6 +119,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
 
     protected Dictionary getDictionary() {
         return this.dictionary;
+    }
+
+    protected SpincastConfig getSpincastConfig() {
+        return this.spincastConfig;
     }
 
     protected Provider<RequestContext<?>> getRequestContextProvider() {
@@ -211,6 +220,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
         functions.put(getJsOneLinerOutputFunctionName(), getJsOneLinerOutputFunction());
         functions.put(getMessageFunctionName(), getMessageFunction());
         functions.put(getQuerystringAppendFunctionName(), getQuerystringAppendFunction());
+        functions.put(getQuerystringToHiddenFieldsFunctionName(), getQuerystringToHiddenFieldsFunction());
         functions.put(getRouteFunctionName(), getRouteFunction());
         functions.put(getRouteIdFunctionName(), getRouteIdFunction());
 
@@ -925,6 +935,16 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                     // ok, not in the scope a a request
                 }
 
+                //==========================================
+                // anchor to keep?
+                //==========================================
+                String anchor = "";
+                int pos = querystring.indexOf("#");
+                if (pos > -1) {
+                    anchor = querystring.substring(pos);
+                    querystring = querystring.substring(0, pos);
+                }
+
                 LinkedHashMap<String, List<String>> newQueryStringParams = new LinkedHashMap<String, List<String>>();
                 String[] querystringTokens = querystring.split("&");
                 for (String qsToken : querystringTokens) {
@@ -983,10 +1003,85 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                 }
                 builder = builder.deleteCharAt(builder.length() - 1);
 
+                if (!StringUtils.isBlank(anchor)) {
+                    builder.append(anchor);
+                }
+
                 return new SafeString(builder.toString());
             }
         };
     }
+
+    protected String getQuerystringToHiddenFieldsFunctionName() {
+        return FUNCTION_NAME_QUERYSTRING_TO_HIDDEN_FIELDS;
+    }
+
+    protected Function getQuerystringToHiddenFieldsFunction() {
+
+        return new Function() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return Lists.newArrayList("ignoreFieldNames");
+            }
+
+            @Override
+            public Object execute(Map<String, Object> args) {
+
+                StringBuilder builder = new StringBuilder();
+
+                //==========================================
+                // This can be called outside of a Request scope, for
+                // example by a scheduled task.
+                //==========================================
+                try {
+                    RequestContext<?> context = getRequestContextProvider().get();
+
+                    Map<String, List<String>> queryStringParams = context.request().getQueryStringParams();
+                    if (queryStringParams != null && queryStringParams.size() > 0) {
+
+                        //==========================================
+                        // Fields to ignore?
+                        //==========================================
+                        Set<String> ignoreFieldNames = new HashSet<String>();
+                        Object ignoreFieldNamesObj = args.get("ignoreFieldNames");
+                        if (ignoreFieldNamesObj != null && ignoreFieldNamesObj instanceof List) {
+                            @SuppressWarnings({"rawtypes", "unchecked"})
+                            List<String> ignoreFieldNamesList = (List)ignoreFieldNamesObj;
+                            ignoreFieldNames.addAll(ignoreFieldNamesList);
+                        }
+
+                        for (Entry<String, List<String>> entry : queryStringParams.entrySet()) {
+                            List<String> values = entry.getValue();
+                            if (values != null && values.size() > 0) {
+                                String fieldName = entry.getKey();
+                                if (ignoreFieldNames.contains(fieldName)) {
+                                    continue;
+                                }
+
+                                if (values.size() > 1) {
+                                    fieldName += "[]";
+                                }
+                                for (String value : values) {
+                                    builder.append("<input type='hidden' name='")
+                                           .append(fieldName)
+                                           .append("' value='")
+                                           .append(value).append("' />\n");
+                                }
+                            }
+                        }
+                    }
+
+                } catch (OutOfScopeException | ProvisionException ex) {
+                    // ok, not in the scope a a request
+                }
+
+                return new SafeString(builder.toString());
+            }
+        };
+    }
+
+
 
     protected String encodeQuerystringValue(String value) {
         if (value == null) {

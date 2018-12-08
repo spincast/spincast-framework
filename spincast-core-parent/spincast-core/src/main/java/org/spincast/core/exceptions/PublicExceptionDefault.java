@@ -24,4 +24,9 @@ public class PublicExceptionDefault extends CustomStatusCodeExceptionDefault imp
         super(message, statusCode, resetResponse);
     }
 
+    @Override
+    public boolean isLogTheException() {
+        return true;
+    }
+
 }

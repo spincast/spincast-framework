@@ -13,11 +13,10 @@ import org.junit.Test;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.SpincastResultSet;
 import org.spincast.plugins.jdbc.statements.InsertStatement;
-import org.spincast.plugins.jdbc.statements.QueryResult;
 import org.spincast.plugins.jdbc.statements.ResultSetHandler;
 import org.spincast.plugins.jdbc.statements.SelectStatement;
 
-public class JdbcTest extends JdbcTestBase {
+public class JdbcTest extends JdbcH2TestBase {
 
     @Test
     public void insertSimple() throws Exception {
@@ -32,9 +31,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
-
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 SelectStatement stmSel = getJdbcUtils().statements().createSelectStatement(connection);
 
@@ -76,14 +74,14 @@ public class JdbcTest extends JdbcTestBase {
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
-                    QueryResult result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    int affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
-                    result = stm.insert();
+                    affectedRowsNbr = stm.insert();
                     return null;
                 }
             });
@@ -131,15 +129,15 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 return null;
             }
@@ -161,14 +159,14 @@ public class JdbcTest extends JdbcTestBase {
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
-                    QueryResult result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    int affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
-                    result = stm.insert();
+                    affectedRowsNbr = stm.insert();
                     return null;
                 }
             });
@@ -191,8 +189,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 // Try to close the connection!
                 connection.close();
@@ -202,8 +200,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 return null;
             }
@@ -224,8 +222,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 // Try to close the connection!
                 connection.close();
@@ -234,8 +232,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 return null;
             }
@@ -257,8 +255,8 @@ public class JdbcTest extends JdbcTestBase {
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
-                    QueryResult result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    int affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     // Try to commit the connection!
                     connection.commit();
@@ -267,8 +265,8 @@ public class JdbcTest extends JdbcTestBase {
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
-                    result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     return null;
                 }
@@ -292,8 +290,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 // Rollback!
                 connection.rollback();
@@ -304,15 +302,15 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 stm = getJdbcUtils().statements().createInsertStatement(connection);
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol3', 'yo3@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 return null;
             }
@@ -334,8 +332,8 @@ public class JdbcTest extends JdbcTestBase {
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol', 'yo@example.com')");
 
-                    QueryResult result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    int affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     // Rollback!
                     connection.rollback();
@@ -344,15 +342,15 @@ public class JdbcTest extends JdbcTestBase {
                     stm.sql("INSERT INTO test(name, email) " +
                             "VALUES('Stromgol2', 'yo2@example.com')");
 
-                    result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     stm = getJdbcUtils().statements().createInsertStatement(connection);
                     stm.sql("INSERT INTO nope(name, email) " +
                             "VALUES('nope', 'nope')");
 
-                    result = stm.insert();
-                    assertEquals(1, result.getQueryResult());
+                    affectedRowsNbr = stm.insert();
+                    assertEquals(1, affectedRowsNbr);
 
                     return null;
                 }
@@ -376,8 +374,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Titi', 'titi@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 assertEquals(1, getTestTableCount());
 
@@ -392,8 +390,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol', 'yo@example.com')");
 
-                        QueryResult result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        int affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         assertEquals(2, getTestTableCount());
 
@@ -408,8 +406,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol2', 'yo2@example.com')");
 
-                        result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         assertEquals(2, getTestTableCount());
 
@@ -417,8 +415,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol3', 'yo3@example.com')");
 
-                        result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         assertEquals(3, getTestTableCount());
 
@@ -445,8 +443,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol', 'yo@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 Savepoint localSavepoint = connection.setSavepoint();
 
@@ -454,8 +452,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol2', 'yo2@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 // Rollback!
                 connection.rollback(localSavepoint);
@@ -464,8 +462,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Stromgol3', 'yo3@example.com')");
 
-                result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 return null;
             }
@@ -486,8 +484,8 @@ public class JdbcTest extends JdbcTestBase {
                 stm.sql("INSERT INTO test(name, email) " +
                         "VALUES('Titi', 'titi@example.com')");
 
-                QueryResult result = stm.insert();
-                assertEquals(1, result.getQueryResult());
+                int affectedRowsNbr = stm.insert();
+                assertEquals(1, affectedRowsNbr);
 
                 getJdbcUtils().scopes().transactional(getTestDataSource(), new JdbcQueries<Void>() {
 
@@ -498,8 +496,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol', 'yo@example.com')");
 
-                        QueryResult result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        int affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         Savepoint localSavepoint = connection.setSavepoint();
 
@@ -507,8 +505,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol2', 'yo2@example.com')");
 
-                        result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         // Rollback!
                         connection.rollback(localSavepoint);
@@ -517,8 +515,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol3', 'yo3@example.com')");
 
-                        result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         return null;
                     }
@@ -552,8 +550,8 @@ public class JdbcTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Stromgol2', 'email2')");
 
-                        QueryResult result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        int affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
                         return null;
                     }
                 });
@@ -572,8 +570,8 @@ public class JdbcTest extends JdbcTestBase {
                                         "VALUES('Stromgol', :email)");
                                 stm.setString("email", uuid);
 
-                                QueryResult result = stm.insert();
-                                assertEquals(1, result.getQueryResult());
+                                int affectedRowsNbr = stm.insert();
+                                assertEquals(1, affectedRowsNbr);
                                 return null;
                             }
                         });

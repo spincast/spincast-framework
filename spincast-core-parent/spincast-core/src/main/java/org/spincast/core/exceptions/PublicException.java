@@ -5,5 +5,9 @@ package org.spincast.core.exceptions;
  * their "message" can be displayed to the end user.
  */
 public interface PublicException extends CustomStatusCodeException {
-    // nothing required
+
+    /**
+     * Should the exception be logged?
+     */
+    public boolean isLogTheException();
 }

@@ -496,6 +496,41 @@ let js='{{jsOneLine(code, true)}}';
             </li>
             
             <li>
+                <a class="anchor_small" id="templating_functions_querystringToHiddenFields" href="#templating_functions_querystringToHiddenFields" title="permanent link"></a>
+                <code class="apiItem"><span>querystringToHiddenFields</span>(String querystring)</code>
+                <div class="well">
+                    <p>
+                        This function takes all the parameters of the current querystring and converts
+                        them to hidden fields (ie: <code>&lt;input type="hidden" name="xxx" value="yyy" /&gt;</code>).
+                    </p>
+                    <p>
+                        This mainly allows a <code>GET</code> form to keep current parameters when it is submitted. 
+                        For example:
+
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,7,1,34"
+>
+&lt;form class="resultsCtrlWrap" method="get"&gt;
+    {{ querystringToHiddenFields() }}
+    
+    &lt;input type="submit" value="Submit!" /&gt;
+&lt;/form&gt;
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    <p>
+                        If this form was displayed on a <code>/myPage?someKey=someValue</code> url,"<code>someKey=someValue</code>" would
+                        be on the url the form would be submitted to.
+                    </p>
+                </div>
+            </li>
+            
+            
+            <li>
                 <a class="anchor_small" id="templating_functions_isroute" href="#templating_functions_isroute" title="permanent link"></a>
                 <code class="apiItem"><span>isRoute</span>(String path, [boolean isRegEx, boolean allowSubPaths])</code>
                 <div class="well">

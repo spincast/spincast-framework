@@ -230,7 +230,7 @@ New tag template
     <div>
         <p>
             <pre class="ace ace-java"
->Form form = context.request().getFormWithRootKey("demoForm");
+>Form form = context.request().getFormOrCreate("demoForm");
 context.response().addForm(form);</pre>       
         </p>
     </div>  

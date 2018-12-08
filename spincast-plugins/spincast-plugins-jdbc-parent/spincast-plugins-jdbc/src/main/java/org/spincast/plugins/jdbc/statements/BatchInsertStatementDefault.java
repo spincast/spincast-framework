@@ -22,10 +22,8 @@ public class BatchInsertStatementDefault extends StatementBase implements BatchI
 
 
     @AssistedInject
-    public BatchInsertStatementDefault(@Assisted Connection connection,
-                                       QueryResultFactory queryResultFactory) {
-        super(connection,
-              queryResultFactory);
+    public BatchInsertStatementDefault(@Assisted Connection connection) {
+        super(connection);
     }
 
     protected List<Map<String, Object>> getBatchParams() {
@@ -47,24 +45,32 @@ public class BatchInsertStatementDefault extends StatementBase implements BatchI
     }
 
     @Override
-    public List<? extends QueryResult> batchInsert() {
-        return batchInsertPrivate(null);
+    public int[] batchInsert() {
+        Connection connection = getConnection();
+        try {
+            PreparedStatement realStatement = connection.prepareStatement(getParsedQuery());
+
+            try {
+                for (Map<String, Object> params : getBatchParams()) {
+                    addParamsToStatement(realStatement, params);
+                    realStatement.addBatch();
+                }
+
+                int[] queryResults = realStatement.executeBatch();
+                return queryResults;
+            } finally {
+                close(realStatement);
+            }
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
     }
 
     @Override
-    public List<InsertResultWithGeneratedKey> batchInsertGetGeneratedKeys(String primaryKeyName) {
-        return batchInsertPrivate(primaryKeyName);
-    }
-
-    protected List<InsertResultWithGeneratedKey> batchInsertPrivate(String primaryKeyName) {
+    public List<Long> batchInsert(String primaryKeyName) {
         Connection connection = getConnection();
         try {
-            PreparedStatement realStatement;
-            if (primaryKeyName != null) {
-                realStatement = connection.prepareStatement(getParsedQuery(), new String[]{primaryKeyName});
-            } else {
-                realStatement = connection.prepareStatement(getParsedQuery());
-            }
+            PreparedStatement realStatement = connection.prepareStatement(getParsedQuery(), new String[]{primaryKeyName});
 
             try {
                 for (Map<String, Object> params : getBatchParams()) {
@@ -74,34 +80,23 @@ public class BatchInsertStatementDefault extends StatementBase implements BatchI
 
                 int[] queryResults = realStatement.executeBatch();
 
-                Long[] generatedKeys = new Long[queryResults.length];
-                if (primaryKeyName != null) {
-                    ResultSet resultSet = realStatement.getGeneratedKeys();
-                    if (resultSet != null && resultSet.next()) {
-                        int pos = 0;
-                        do {
-                            generatedKeys[pos] = resultSet.getLong(1);
-                            pos++;
-                        } while (resultSet.next());
+                List<Long> generatedKeys = new ArrayList<Long>();
+                ResultSet resultSet = realStatement.getGeneratedKeys();
+                if (resultSet != null && resultSet.next()) {
+                    int pos = 0;
+                    do {
+                        generatedKeys.add(resultSet.getLong(1));
+                        pos++;
+                    } while (resultSet.next());
 
-                        if (pos != queryResults.length) {
-                            throw new RuntimeException("Unable to get all the generated ids!");
-                        }
-                    } else {
-                        throw new RuntimeException("Unable to get the generated ids!");
+                    if (pos != queryResults.length) {
+                        throw new RuntimeException("Unable to get all the generated ids!");
                     }
+                } else {
+                    throw new RuntimeException("Unable to get the generated ids!");
                 }
 
-                List<InsertResultWithGeneratedKey> insertResultsWithGeneratedKey = new ArrayList<>();
-                for (int i = 0; i < queryResults.length; i++) {
-                    int queryResult = queryResults[i];
-                    Long generatedKey = generatedKeys[i];
-                    InsertResultWithGeneratedKey insertResultWithGeneratedKey =
-                            getQueryResultFactory().create(queryResult, generatedKey);
-                    insertResultsWithGeneratedKey.add(insertResultWithGeneratedKey);
-                }
-
-                return insertResultsWithGeneratedKey;
+                return generatedKeys;
             } finally {
                 close(realStatement);
             }

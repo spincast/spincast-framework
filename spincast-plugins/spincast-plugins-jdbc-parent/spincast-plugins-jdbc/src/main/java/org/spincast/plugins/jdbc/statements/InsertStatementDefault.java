@@ -12,49 +12,52 @@ import com.google.inject.assistedinject.AssistedInject;
 public class InsertStatementDefault extends StatementBase implements InsertStatement {
 
     @AssistedInject
-    public InsertStatementDefault(@Assisted Connection connection,
-                                  QueryResultFactory queryResultFactory) {
-        super(connection,
-              queryResultFactory);
+    public InsertStatementDefault(@Assisted Connection connection) {
+        super(connection);
     }
 
     @Override
-    public QueryResult insert() {
-        return insertPrivate(null);
+    public int insert() {
+        Long affectedRowsNbr = insertPrivate(null);
+        return affectedRowsNbr.intValue();
     }
 
     @Override
-    public InsertResultWithGeneratedKey insertGetGeneratedKey(String primaryKeyName) {
-        return insertPrivate(primaryKeyName);
+    public Long insertGetGeneratedId(String primaryKeyColumnName) {
+        return insertPrivate(primaryKeyColumnName);
     }
 
-    protected InsertResultWithGeneratedKey insertPrivate(String primaryKeyName) {
+    /**
+     * If <code>primaryKeyColumnName</code> is null, returns the
+     * affected rows number. Otherwise returns the generated id.
+     */
+    protected Long insertPrivate(String primaryKeyColumnName) {
         Connection connection = getConnection();
         try {
             PreparedStatement realStatement;
-            if (primaryKeyName != null) {
+            if (primaryKeyColumnName != null) {
 
                 //==========================================
                 // Statement.RETURN_GENERATED_KEYS will not work witht Oracle.
                 // This method will.
                 //==========================================
-                realStatement = connection.prepareStatement(getParsedQuery(), new String[]{primaryKeyName});
+                realStatement = connection.prepareStatement(getParsedQuery(), new String[]{primaryKeyColumnName});
             } else {
                 realStatement = connection.prepareStatement(getParsedQuery());
             }
             addCurrentParamsToStatement(realStatement);
 
             try {
-                int queryResult = realStatement.executeUpdate();
+                int affectedRowsNbr = realStatement.executeUpdate();
 
-                if (primaryKeyName == null) {
-                    return getQueryResultFactory().create(queryResult, null);
+                if (primaryKeyColumnName == null) {
+                    return new Long(affectedRowsNbr);
                 }
 
                 ResultSet resultSet = realStatement.getGeneratedKeys();
                 if (resultSet != null && resultSet.next()) {
                     Long id = resultSet.getLong(1);
-                    return getQueryResultFactory().create(queryResult, id);
+                    return id;
                 }
 
                 throw new RuntimeException("Unable to get the generated id!");

@@ -490,8 +490,22 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * @param flashMessageText The text of a Flash Message to pass to the target page.
      * @param flashMessageVariables The variables of a Flash Message to pass to the target page.
      */
-    public void redirect(String newUrl, FlashMessageLevel flashMessageType, String flashMessageText,
+    public void redirect(String newUrl,
+                         FlashMessageLevel flashMessageType,
+                         String flashMessageText,
                          JsonObject flashMessageVariables);
+
+    /**
+     * Sets a temporarily redirection header (302), 
+     * with a Flash variables.
+     * <p>
+     * This will NOT close the response and will NOT skip the remaining handlers!
+     * Throw a <code>RedirectException</code> instead if you want to redirect the user
+     * immediately.
+     * 
+     * @param flashMessageVariables The variables of a Flash Message to pass to the target page.
+     */
+    public void redirect(String newUrl, JsonObject flashMessageVariables);
 
     /**
      * Sets a redirection header. 
@@ -940,5 +954,6 @@ public interface ResponseRequestContextAddon<R extends RequestContext<?>> {
      * </ul>
      */
     public void addForm(Form form, String validationElementName);
+
 
 }

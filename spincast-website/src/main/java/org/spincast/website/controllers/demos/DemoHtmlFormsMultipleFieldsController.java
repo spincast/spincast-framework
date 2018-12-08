@@ -62,7 +62,7 @@ public class DemoHtmlFormsMultipleFieldsController {
         // The validation message will be added to the
         // default "validation" model element.
         //==========================================
-        Form form = context.request().getFormWithRootKey("demoForm");
+        Form form = context.request().getFormOrCreate("demoForm");
         context.response().addForm(form);
 
         //==========================================

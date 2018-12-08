@@ -27,10 +27,8 @@ public class SelectStatementDefault extends StatementBase implements SelectState
 
     @AssistedInject
     public SelectStatementDefault(@Assisted Connection connection,
-                                  QueryResultFactory queryResultFactory,
                                   JdbcUtils jdbcUtils) {
-        super(connection,
-              queryResultFactory);
+        super(connection);
         this.jdbcUtils = jdbcUtils;
     }
 
@@ -115,8 +113,8 @@ public class SelectStatementDefault extends StatementBase implements SelectState
                     if (getTotal) {
                         total = getTotalFromSelectQuery(connection);
                         if (total == -1) {
-                            logger.info("No generated 'total' query will be launch for this query, we'll return the number of " +
-                                        "fetched items as the 'total' : " + getOriginalQuery());
+                            logger.debug("No generated 'total' query will be launch for this query, we'll return the number of " +
+                                         "fetched items as the 'total' : " + getOriginalQuery());
                             total = items.size();
                         }
                     }
@@ -150,25 +148,21 @@ public class SelectStatementDefault extends StatementBase implements SelectState
                 throw new RuntimeException("To use this method, your query HAS to start with 'select' : " + originalQuery);
             }
 
-            int posFrom = originalQueryLower.indexOf(" from ");
-            if (posFrom < 0) {
-                throw new RuntimeException("To use this method, your query has to contain a 'from' part : " + originalQuery);
-            }
-
             int posLast = originalQueryLower.lastIndexOf(" limit ");
             if (posLast < 0) {
-                // No limit? No neec to run a 'total' query...
+                // No limit? No need to run a 'total' query...
                 return -1;
             }
 
-            // remove "oreder by" if there is one
+            // remove "order by" if there is one
             int posLastOrderBy = originalQueryLower.lastIndexOf(" order by ");
             if (posLastOrderBy > 0 && posLastOrderBy < posLast) {
                 posLast = posLastOrderBy;
             }
 
-            String originalQueryBody = originalQuery.substring(posFrom, posLast);
-            String totalQuery = "SELECT COUNT(*) AS total " + originalQueryBody;
+            String originalQueryBody = originalQuery.substring(0, posLast);
+            String totalQuery =
+                    "SELECT COUNT(*) AS spincast_total FROM ( " + originalQueryBody + ") as spincast_total_table";
 
             logger.debug("Generated 'Total' query : " + totalQuery);
 
@@ -181,7 +175,7 @@ public class SelectStatementDefault extends StatementBase implements SelectState
                 @Override
                 public Long handle(SpincastResultSet rs) throws Exception {
 
-                    Long total = rs.getLongOrNull("total");
+                    Long total = rs.getLongOrNull("spincast_total");
                     if (total == null) {
                         total = 0L;
                     }

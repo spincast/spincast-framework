@@ -567,6 +567,12 @@ public class SpincastJsonManager implements JsonManager {
     }
 
     @Override
+    public JsonObject fromObject(Object object) {
+        JsonObject jsonObj = getObjectMapper().convertValue(object, JsonObject.class);
+        return jsonObj;
+    }
+
+    @Override
     public <T> T fromString(String jsonString, Class<T> clazz) {
         if (jsonString == null) {
             return null;
@@ -717,6 +723,12 @@ public class SpincastJsonManager implements JsonManager {
 
         String content = getSpincastUtils().readClasspathFile(path);
         return fromString(content);
+    }
+
+    @Override
+    public JsonArray fromCollectionToJsonArray(Collection<?> collection) {
+        JsonArray jsonArray = getObjectMapper().convertValue(collection, JsonArray.class);
+        return jsonArray;
     }
 
     @Override

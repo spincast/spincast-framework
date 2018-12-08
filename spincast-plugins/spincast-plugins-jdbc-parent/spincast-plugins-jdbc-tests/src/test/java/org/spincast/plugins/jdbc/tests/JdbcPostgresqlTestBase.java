@@ -3,6 +3,7 @@ package org.spincast.plugins.jdbc.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
@@ -19,35 +20,35 @@ import org.spincast.plugins.jdbc.SpincastResultSet;
 import org.spincast.plugins.jdbc.statements.ResultSetHandler;
 import org.spincast.plugins.jdbc.statements.SelectStatement;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
-import org.spincast.testing.core.h2.SpincastTestingH2;
+import org.spincast.testing.core.postgres.PostgresDataDir;
+import org.spincast.testing.core.postgres.SpincastTestingPostgres;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Scopes;
 
-public abstract class JdbcTestBase extends NoAppTestingBase {
-
-    @Inject
-    protected SpincastTestingH2 spincastTestingH2;
-
-    protected SpincastTestingH2 getH2() {
-        return this.spincastTestingH2;
-    }
-
-    @Inject
-    private DataSource testDataSource;
+public abstract class JdbcPostgresqlTestBase extends NoAppTestingBase {
 
     @Inject
     private JdbcUtils jdbcUtils;
+
+    @Inject
+    protected SpincastTestingPostgres spincastTestingPostgres;
+
+    @Inject
+    private DataSource testDataSource;
 
     protected DataSource getTestDataSource() {
         return this.testDataSource;
     }
 
+    protected SpincastTestingPostgres getPg() {
+        return this.spincastTestingPostgres;
+    }
+
     protected JdbcUtils getJdbcUtils() {
         return this.jdbcUtils;
     }
-
 
     @Override
     protected Injector createInjector() {
@@ -60,9 +61,10 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
                            @Override
                            protected void configure() {
                                //==========================================
-                               // Enable Spincast H2
+                               // Configure Spincast Postgres
                                //==========================================
-                               bind(DataSource.class).toProvider(SpincastTestingH2.class).in(Scopes.SINGLETON);
+                               bind(File.class).annotatedWith(PostgresDataDir.class).toInstance(createTestingDir());
+                               bind(DataSource.class).toProvider(SpincastTestingPostgres.class).in(Scopes.SINGLETON);
                            }
                        })
                        .init(new String[]{});
@@ -72,8 +74,6 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     public void beforeClass() {
 
         super.beforeClass();
-
-        getH2().clearDatabase();
 
         getJdbcUtils().scopes().autoCommit(getTestDataSource(), new JdbcQueries<Void>() {
 
@@ -119,7 +119,12 @@ public abstract class JdbcTestBase extends NoAppTestingBase {
     @Override
     public void afterClass() {
         super.afterClass();
-        getH2().stopServer();
+
+        try {
+            getPg().stopPostgres();
+        } catch (Exception ex) {
+            this.logger.error("Eror stopping embedded Postgres", ex);
+        }
     }
 
     @Override

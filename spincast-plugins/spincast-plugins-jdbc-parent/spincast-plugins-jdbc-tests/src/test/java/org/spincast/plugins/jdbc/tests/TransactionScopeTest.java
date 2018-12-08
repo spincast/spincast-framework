@@ -9,9 +9,8 @@ import org.junit.Test;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.TransactionalScope;
 import org.spincast.plugins.jdbc.statements.InsertStatement;
-import org.spincast.plugins.jdbc.statements.QueryResult;
 
-public class TransactionScopeTest extends JdbcTestBase {
+public class TransactionScopeTest extends JdbcH2TestBase {
 
     @Test
     public void testSimple() throws Exception {
@@ -33,8 +32,8 @@ public class TransactionScopeTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Titi', 'titi@example.com')");
 
-                        QueryResult result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        int affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         return null;
                     }
@@ -52,8 +51,8 @@ public class TransactionScopeTest extends JdbcTestBase {
                         stm.sql("INSERT INTO test(name, email) " +
                                 "VALUES('Titi2', 'titi2@example.com')");
 
-                        QueryResult result = stm.insert();
-                        assertEquals(1, result.getQueryResult());
+                        int affectedRowsNbr = stm.insert();
+                        assertEquals(1, affectedRowsNbr);
 
                         return null;
                     }
@@ -87,8 +86,8 @@ public class TransactionScopeTest extends JdbcTestBase {
                             stm.sql("INSERT INTO test(name, email) " +
                                     "VALUES('Titi', 'titi@example.com')");
 
-                            QueryResult result = stm.insert();
-                            assertEquals(1, result.getQueryResult());
+                            int affectedRowsNbr = stm.insert();
+                            assertEquals(1, affectedRowsNbr);
 
                             return null;
                         }
@@ -106,8 +105,8 @@ public class TransactionScopeTest extends JdbcTestBase {
                             stm.sql("INSERT INTO nope(name, email) " +
                                     "VALUES('nope', 'nope@example.com')");
 
-                            QueryResult result = stm.insert();
-                            assertEquals(1, result.getQueryResult());
+                            int affectedRowsNbr = stm.insert();
+                            assertEquals(1, affectedRowsNbr);
 
                             return null;
                         }

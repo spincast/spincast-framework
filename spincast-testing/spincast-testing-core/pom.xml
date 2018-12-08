@@ -71,6 +71,15 @@
         </dependency>
         
         <!--=================================== 
+        Standalone PostgreSQL
+        ====================================-->
+        <dependency>
+            <groupId>com.opentable.components</groupId>
+            <artifactId>otj-pg-embedded</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        
+        <!--=================================== 
         HikariCP - connection pool
         ====================================-->
         <dependency>

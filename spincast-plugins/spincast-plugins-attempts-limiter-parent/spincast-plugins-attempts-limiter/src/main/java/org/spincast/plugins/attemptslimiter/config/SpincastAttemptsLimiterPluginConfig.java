@@ -1,5 +1,6 @@
 package org.spincast.plugins.attemptslimiter.config;
 
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.plugins.attemptslimiter.Attempt;
 import org.spincast.plugins.attemptslimiter.AttemptsAutoIncrementType;
 import org.spincast.plugins.attemptslimiter.AttemptsManager;
@@ -8,6 +9,16 @@ import org.spincast.plugins.attemptslimiter.AttemptsManager;
  * Configurations for the Spincast Attempts Limiter plugin.
  */
 public interface SpincastAttemptsLimiterPluginConfig {
+
+    /**
+     * Is attempts validation enabled?
+     * <p>
+     * You can set this to <code>true</code> when developing
+     * locally.
+     * <p>
+     * Defaults to the negation of {@link SpincastConfig#isDevelopmentMode()}.
+     */
+    public boolean isValidationEnabled();
 
     /**
      * Should the scheduled task to delete old attempts in the database

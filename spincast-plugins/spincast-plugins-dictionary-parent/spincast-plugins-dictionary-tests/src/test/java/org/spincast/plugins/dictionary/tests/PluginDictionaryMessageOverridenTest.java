@@ -75,7 +75,7 @@ public class PluginDictionaryMessageOverridenTest extends NoAppStartHttpServerTe
             public void handle(DefaultRequestContext context) {
 
                 try {
-                    context.request().getFormWithRootKey("");
+                    context.request().getFormOrCreate("");
                     fail();
                 } catch (Exception ex) {
                     assertEquals("my custom override", ex.getMessage());

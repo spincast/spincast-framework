@@ -20,6 +20,7 @@ import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.validation.ValidationFactory;
+import org.spincast.core.validation.ValidationHtmlEscapeType;
 import org.spincast.core.validation.ValidationLevel;
 import org.spincast.core.validation.ValidationMessage;
 import org.spincast.core.validation.ValidationMessageFormatType;
@@ -252,11 +253,12 @@ public class FormDefault extends JsonObjectDefault implements Form {
 
     @Override
     public void addMessage(String validationKey, ValidationLevel level, String code, String text) {
-        addMessage(validationKey, level, code, text, true);
+        addMessage(validationKey, level, code, text, ValidationHtmlEscapeType.PRE);
     }
 
     @Override
-    public void addMessage(String validationKey, ValidationLevel level, String code, String text, boolean htmlEscape) {
+    public void addMessage(String validationKey, ValidationLevel level, String code, String text,
+                           ValidationHtmlEscapeType htmlEscapeType) {
 
         Objects.requireNonNull(level, "The level can't be NULL");
         Objects.requireNonNull(validationKey, "The validation key can't be NULL");
@@ -269,38 +271,38 @@ public class FormDefault extends JsonObjectDefault implements Form {
             text = getDefaultErrorMessageText(validationKey);
         }
 
-        ValidationMessage message = getValidationFactory().createMessage(level, code, text, htmlEscape);
+        ValidationMessage message = getValidationFactory().createMessage(level, code, text, htmlEscapeType);
         addMessage(validationKey, message);
     }
 
     @Override
     public void addError(String validationKey, String code, String text) {
-        addError(validationKey, code, text, true);
+        addError(validationKey, code, text, ValidationHtmlEscapeType.PRE);
     }
 
     @Override
-    public void addError(String validationKey, String code, String text, boolean htmlEscape) {
-        addMessage(validationKey, ValidationLevel.ERROR, code, text, htmlEscape);
+    public void addError(String validationKey, String code, String text, ValidationHtmlEscapeType htmlEscapeType) {
+        addMessage(validationKey, ValidationLevel.ERROR, code, text, htmlEscapeType);
     }
 
     @Override
     public void addWarning(String validationKey, String code, String text) {
-        addWarning(validationKey, code, text, true);
+        addWarning(validationKey, code, text, ValidationHtmlEscapeType.PRE);
     }
 
     @Override
-    public void addWarning(String validationKey, String code, String text, boolean htmlEscape) {
-        addMessage(validationKey, ValidationLevel.WARNING, code, text, htmlEscape);
+    public void addWarning(String validationKey, String code, String text, ValidationHtmlEscapeType htmlEscapeType) {
+        addMessage(validationKey, ValidationLevel.WARNING, code, text, htmlEscapeType);
     }
 
     @Override
     public void addSuccess(String validationKey, String code, String text) {
-        addSuccess(validationKey, code, text, true);
+        addSuccess(validationKey, code, text, ValidationHtmlEscapeType.PRE);
     }
 
     @Override
-    public void addSuccess(String validationKey, String code, String text, boolean htmlEscape) {
-        addMessage(validationKey, ValidationLevel.SUCCESS, code, text, htmlEscape);
+    public void addSuccess(String validationKey, String code, String text, ValidationHtmlEscapeType htmlEscapeType) {
+        addMessage(validationKey, ValidationLevel.SUCCESS, code, text, htmlEscapeType);
     }
 
     @Override
@@ -644,6 +646,11 @@ public class FormDefault extends JsonObjectDefault implements Form {
     @Override
     public int size() {
         return getMessages().size();
+    }
+
+    @Override
+    public String toString() {
+        return toJsonString(true);
     }
 
 }

@@ -833,18 +833,35 @@ saveResponseCookies(response);
 </section>
     
 {#==========================================
-Spincast Testing H2
+Spincast Testing databases
 ==========================================#}         
-<section id="testing_h2">
+<section id="testing_databases">
     <h4>
-        <a class="anchor_small" href="#testing_h2" title="permanent link"></a>
-        H2 test database
+        <a class="anchor_small" href="#testing_databases" title="permanent link"></a>
+        Testings/embedded databases
     </h4>
     
     <p>
-        An integration with the <a href="http://www.h2database.com/html/main.html">H2</a> database is provided as a testing tool.
-        It allows you to run your tests using an in-memory SQL database.
+        Two embedded databases are provided for testing: <a href="http://www.h2database.com/html/main.html">H2</a>
+        and a <a href="https://www.postgresql.org">PostgreSQL</a>.
     </p>
+    <p>
+        Those two allow you to run your tests on a real but ephemeral database.
+    </p>
+    <p>
+        Use the <a href="#testing_databases_h2">H2</a> database if your queries are simple and you want fast tests. Use <a href="#testing_databases_postgres">PostgreSQL</a>
+        when you need "<em>the real thing</em>", even if it's slower to bootstrap.
+    </p>
+
+    <h5>
+        <a class="anchor_small" id="testing_databases_h2" href="#testing_databases_h2" title="permanent link"></a>
+        H2
+    </h5>
+    <p>
+        H2 is a very <em>fast</em> database to use to run tests. Its drawback is that is may not always support all
+        real-world kind of queries, but other than that it does its job very well...
+    <p>
+    
     <p>
         You enable the Spincast Testing H2 database simply by binding <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/h2/SpincastTestingH2.html">SpincastTestingH2</a> 
         as a Provider for your <code>DataSource</code>:
@@ -938,6 +955,84 @@ public void afterClass() {
         You can change some configurations used by Spincast Testing H2 (the server <code>port</code> for example) by binding a custom implementation
         of the <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/h2/SpincastTestingH2Config.html">SpincastTestingH2Config</a> interface. 
         If you don't, the <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-testing/spincast-testing-core/src/main/java/org/spincast/testing/core/h2/SpincastTestingH2ConfigDefault.java">default configurations</a> 
+        will be used.
+    </p>
+    
+    <h5>
+        <a class="anchor_small" id="testing_databases_postgres" href="#testing_databases_postgres" title="permanent link"></a>
+        PostgreSQL
+    </h5>
+    <p>
+        The PostgreSQL (or simply <em>Postgres</em>) database provided by Spincast is based on 
+        <a href="https://github.com/opentable/otj-pg-embedded">otj-pg-embedded</a>. It is a
+        <em>standalone</em> version of PostgreSQL (no installation required) that can be used to run your tests. 
+        It is slower to start than <a href="#testing_databases_h2">H2</a> to run a tests file, but it is a <em>real</em> PostgreSQL database, 
+        so you can run any real-world SQL on it!  
+    <p>
+    
+    <p>
+        You enable it simply by binding 
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/postgres/SpincastTestingPostgres.html">SpincastTestingPostgres</a> 
+        as a Provider for your <code>DataSource</code>:
+    
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="6,12,6,97" 
+>@Override
+protected Module getExtraOverridingModule() {
+    return Modules.override(super.getExtraOverridingModule()).with(new SpincastGuiceModuleBase() {
+
+        @Override
+        protected void configure() {
+            bind(DataSource.class).toProvider(SpincastTestingPostgres.class).in(Scopes.SINGLETON);
+            // ...
+        }
+    });
+}</pre> 
+            </p>
+        </div>     
+    </p>
+    <p>
+        You then inject <code>SpincastTestingPostgres</code> and the
+        <code>DataSource</code> in your test file (or a base class):
+        
+        <div>
+            <p>
+                <pre class="ace ace-java"
+>@Inject
+protected SpincastTestingPostgres spincastTestingPostgres;
+
+@Inject
+private DataSource testDataSource;</pre> 
+            </p>
+        </div>    
+        
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        The standalone Postgres database will then be started automtically when your tests are started.
+    </p>
+    
+    
+    <p>
+        When the tests are over, you can stop Postgres:
+    
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="3,4,3,42" 
+>@Override
+public void afterClass() {
+    super.afterClass();
+    spincastTestingPostgres.stopPostgres();
+}</pre> 
+            </p>
+        </div>     
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+        You can change some configurations used the database by binding a custom implementation
+        of the <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/postgres/SpincastTestingPostgresConfig.html">SpincastTestingPostgresConfig</a> interface. 
+        If you don't, the <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-testing/spincast-testing-core/src/main/java/org/spincast/testing/core/postgres/SpincastTestingPostgresConfigDefault.java">default configurations</a> 
         will be used.
     </p>
     

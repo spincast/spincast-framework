@@ -2,6 +2,7 @@ package org.spincast.plugins.jdbc.statements;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import org.spincast.plugins.jdbc.JdbcScope;
@@ -64,27 +65,43 @@ public interface Statement {
     /**
      * Explodes a collection of Long and replaces the specified param with them, 
      * so it can be used inside a
-     * IN(:ids) section
+     * <codeIN(:ids)</code section
      */
     public void setInLong(String paramName, Set<Long> items);
 
     /**
      * Explodes a collection of Integer and replaces the specified param with them, 
      * so it can be used inside a
-     * IN(:ids) section
+     * <codeIN(:ids)</code section
      */
     public void setInInteger(String paramName, Set<Integer> items);
 
     /**
      * Explodes a collection of String and replaces the specified param with them, 
-     * so it can be used inside a IN(:ids) section.
+     * so it can be used inside a <code>IN(:ids)</code> section.
      */
     public void setInString(String paramName, Set<String> items);
 
     /**
      * Explodes a collection of enum names and replaces the specified param with them, 
-     * so it can be used inside a IN(:ids) section.
+     * so it can be used inside a <code>IN(:ids)</code> section.
      */
     public void setInStringFromEnumNames(String paramName, Set<? extends Enum<?>> enumItems);
+
+    /**
+     * Uses a list of enum names so it can be used inside a <code>IN(:ids)</code> section.
+     */
+    public void setInStringFromEnumNames(String paramName, Enum<?>... enumItems);
+
+    /**
+     * Explodes a list of Long and replaces the specified param with them, 
+     * so it can be used to replace a "<em>ids list</em>" inside a (PostgreSQL example):
+     * <code>INNER JOIN UNNEST('{:idsList}'::int[]) WITH ORDINALITY o(id, ord) ON o.id = myMainTable.id</code>
+     * <p>
+     * This allows to retrieve a list of rows, using ids, *in the
+     * order the ids are specified*.
+     */
+    public void setLongList(String paramName, List<Long> items);
+
 
 }

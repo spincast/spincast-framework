@@ -63,7 +63,7 @@ public class FileToWatch {
         }
 
         File file = getFileFromNotInJarClasspath(classpathFilePath);
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             throw new RuntimeException("The classpath '" + classpathFilePath + "' file doesn't exist. It can't be watched.");
         }
 

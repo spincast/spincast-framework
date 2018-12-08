@@ -35,7 +35,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         try {
             FileUtils.cleanDirectory(getTestingWritableTempDir());
         } catch (Exception ex) {
-            throw SpincastStatics.runtimize(ex);
+            // throw SpincastStatics.runtimize(ex);
         }
     }
 

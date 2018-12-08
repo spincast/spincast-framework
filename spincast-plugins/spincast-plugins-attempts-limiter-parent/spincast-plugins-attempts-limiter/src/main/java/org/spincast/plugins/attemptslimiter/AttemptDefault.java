@@ -1,5 +1,7 @@
 package org.spincast.plugins.attemptslimiter;
 
+import org.spincast.plugins.attemptslimiter.config.SpincastAttemptsLimiterPluginConfig;
+
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
@@ -9,14 +11,18 @@ public class AttemptDefault implements Attempt {
     private final String actionName;
     private final AttemptCriteria[] criterias;
     private final SpincastAttemptsLimiterPluginRepository spincastAttemptsLimiterPlguinRepository;
+    private final SpincastAttemptsLimiterPluginConfig spincastAttemptsLimiterPluginConfig;
+
     private boolean attemptsCountIncremented = false;
 
     @AssistedInject
     public AttemptDefault(SpincastAttemptsLimiterPluginRepository spincastAttemptsLimiterPlguinRepository,
+                          SpincastAttemptsLimiterPluginConfig spincastAttemptsLimiterPluginConfig,
                           @Assisted boolean maxReached,
                           @Assisted String actionName,
                           @Assisted AttemptCriteria... criterias) {
         this.spincastAttemptsLimiterPlguinRepository = spincastAttemptsLimiterPlguinRepository;
+        this.spincastAttemptsLimiterPluginConfig = spincastAttemptsLimiterPluginConfig;
         this.maxReached = maxReached;
         this.actionName = actionName;
         this.criterias = criterias;
@@ -24,6 +30,10 @@ public class AttemptDefault implements Attempt {
 
     protected SpincastAttemptsLimiterPluginRepository getSpincastAttemptsLimiterPluginRepository() {
         return this.spincastAttemptsLimiterPlguinRepository;
+    }
+
+    protected SpincastAttemptsLimiterPluginConfig getSpincastAttemptsLimiterPluginConfig() {
+        return this.spincastAttemptsLimiterPluginConfig;
     }
 
     public String getActionName() {
@@ -36,7 +46,7 @@ public class AttemptDefault implements Attempt {
 
     @Override
     public boolean isMaxReached() {
-        return this.maxReached;
+        return getSpincastAttemptsLimiterPluginConfig().isValidationEnabled() && this.maxReached;
     }
 
     @Override

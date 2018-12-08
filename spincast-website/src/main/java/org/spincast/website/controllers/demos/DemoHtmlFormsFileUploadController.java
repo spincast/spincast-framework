@@ -81,7 +81,7 @@ public class DemoHtmlFormsFileUploadController {
         // The validation message will be added to the
         // default "validation" element of the model.
         //==========================================
-        Form form = context.request().getFormWithRootKey("demoForm");
+        Form form = context.request().getFormOrCreate("demoForm");
         context.response().addForm(form);
 
         //==========================================

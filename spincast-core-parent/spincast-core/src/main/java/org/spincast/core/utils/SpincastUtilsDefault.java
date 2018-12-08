@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -31,6 +33,8 @@ import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
+import org.spincast.shaded.org.jsoup.Jsoup;
+import org.spincast.shaded.org.jsoup.safety.Whitelist;
 
 import com.google.inject.Inject;
 
@@ -55,6 +59,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
     private File appRootDirectoryNoJar;
     private boolean appRootDirectoryNoJarChecked;
     private final Object appRootDirectoryNoJarLock = new Object();
+    private File generatedTempFilesDir;
 
     @Inject
     public SpincastUtilsDefault(SpincastConfig spincastConfig) {
@@ -63,6 +68,20 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
     protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
+    }
+
+    protected File getGeneratedTempFilesDir() {
+        if (this.generatedTempFilesDir == null || !this.generatedTempFilesDir.isDirectory()) {
+            this.generatedTempFilesDir = new File(getSpincastConfig().getTempDir().getAbsolutePath() + "/random_temp_files/");
+            if (!this.generatedTempFilesDir.isDirectory()) {
+                boolean result = this.generatedTempFilesDir.mkdirs();
+                if (!result) {
+                    throw new RuntimeException("Unable to create the directory to create temp files: " +
+                                               this.generatedTempFilesDir.getAbsolutePath());
+                }
+            }
+        }
+        return this.generatedTempFilesDir;
     }
 
     @Override
@@ -750,6 +769,70 @@ public class SpincastUtilsDefault implements SpincastUtils {
             }
         }
         return null;
+    }
+
+    @Override
+    public long[] convertLongSetToLongPrimitiveArray(Set<Long> longSet) {
+        if (longSet == null) {
+            return null;
+        }
+
+        long[] arr = new long[longSet.size()];
+        int pos = 0;
+        for (Long oneLong : longSet) {
+            arr[pos++] = oneLong.longValue();
+        }
+        return arr;
+    }
+
+    @Override
+    public String createTempFilePath() {
+        String path = getGeneratedTempFilesDir() + "/" + UUID.randomUUID().toString();
+        return path;
+    }
+
+
+
+
+    @Override
+    public String basicHtml(boolean newlineToBrFirst, String html) {
+        return basicHtml(newlineToBrFirst, html, false);
+    }
+
+    @Override
+    public String basicHtml(boolean newlineToBrFirst, String html, boolean allowImages) {
+
+        if (StringUtils.isBlank(html)) {
+            return "";
+        }
+
+        if (newlineToBrFirst) {
+            html = html.replaceAll("\\r?\\n", "\n<br>");
+        }
+
+        Whitelist whitelist = null;
+        if (allowImages) {
+            whitelist = Whitelist.basicWithImages();
+        } else {
+            whitelist = Whitelist.basic();
+        }
+
+        //==========================================
+        // Passing the url base + "preserveRelativeLinks"
+        // will allow relative links.
+        //
+        // Also allows "center" tags.
+        //==========================================
+        html = Jsoup.clean(html,
+                           getSpincastConfig().getPublicUrlBase(),
+                           whitelist.preserveRelativeLinks(true).addTags("center"));
+
+        //==========================================
+        // JSoup addds some unwanted whitespaces
+        //==========================================
+        html = html.replace(" \n<br>", "\n<br>");
+
+        return html;
     }
 
 }

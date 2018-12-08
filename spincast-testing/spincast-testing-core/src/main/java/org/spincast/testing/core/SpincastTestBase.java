@@ -375,7 +375,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
      * This directory will be deleted when the tests are done.
      */
     protected File getTestingWritableTempDir() {
-        if (this.testingWritableTempDir == null) {
+        if (this.testingWritableTempDir == null || !this.testingWritableTempDir.exists()) {
 
             //==========================================
             // We don't use the configurations to find a writable
@@ -405,10 +405,6 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     }
 
     /**
-     * Create a temporary test file, using the given relative path.
-     */
-
-    /**
      * Returns the absolute path to use, given the relative one,
      * to create a temporary test file.
      * <p>
@@ -425,6 +421,22 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
      */
     protected String createTestingFilePath() {
         return createTestingFilePath(UUID.randomUUID().toString());
+    }
+
+    /**
+     * Create a temp directory.
+     * <p>
+     * This directory will be deleted when the tests are done.
+     */
+    protected File createTestingDir() {
+
+        String path = createTestingFilePath();
+        File dir = new File(path);
+        boolean result = dir.mkdirs();
+        if (!result) {
+            throw new RuntimeException("Unable to create testing temp dir at: " + path);
+        }
+        return dir;
     }
 
     /**

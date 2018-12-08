@@ -306,7 +306,7 @@
             <pre class="ace ace-java" data-ace-hi="2,34,2,86"
 >public void singleFieldSubmit(AppRequestContext context) {
 
-    Form form = context.request().getFormWithRootKey("demoForm");
+    Form form = context.request().getFormOrCreate("demoForm");
     context.response().addForm(form);
 
 //...</pre>       
