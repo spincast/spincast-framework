@@ -80,7 +80,7 @@ public class CustomWebsocketContextTest extends
         getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
-        WebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
         assertTrue(client.isConnectionOpen());
 

@@ -146,7 +146,7 @@ public abstract class AppBasedWebsocketTestingBase<R extends RequestContext<?>, 
 
         String locationHeader = response.getHeaderFirst(HttpHeadersExtra.SEC_WEBSOCKET_LOCATION);
         assertNotNull(locationHeader);
-        assertEquals("ws://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() + path,
+        assertEquals("wss://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() + path,
                      locationHeader);
 
         String connectionHeader = response.getHeaderFirst(HttpHeaders.CONNECTION);

@@ -318,14 +318,26 @@ public class SpincastStatics {
     }
 
     /**
-     * Gets *all* the methods of a clazz, for all visibilities
-     * and for all the parents hierarchy.
+     * Gets *all* the methods of a class for all visibilities
+     * and for all the parents hierarchy, even those from
+     * {@link Object}.
      */
     public static Set<Method> getAllMethods(Class<?> clazz) {
-        return getInstance().getAllMethodsInstance(clazz);
+        return getAllMethods(clazz, true);
     }
 
-    protected Set<Method> getAllMethodsInstance(Class<?> clazz) {
+    /**
+     * Gets all the methods of a class, for all visibilities
+     * and for all the parents hierarchy.
+     * 
+     * @param includeJavaLangObjectMethods if <code>false</code>,
+     * methods from {@link Object} will be excluded.
+     */
+    public static Set<Method> getAllMethods(Class<?> clazz, boolean includeJavaLangObjectMethods) {
+        return getInstance().getAllMethodsInstance(clazz, includeJavaLangObjectMethods);
+    }
+
+    protected Set<Method> getAllMethodsInstance(Class<?> clazz, boolean includeJavaLangObjectMethods) {
 
         Objects.requireNonNull(clazz, "The class can't be NULL");
 
@@ -335,8 +347,10 @@ public class SpincastStatics {
 
         if (clazz.getSuperclass() != null) {
             Class<?> superClass = clazz.getSuperclass();
-            Set<Method> superClassMethods = getAllMethods(superClass);
-            allMethods.addAll(superClassMethods);
+            if (!(superClass.equals(Object.class)) || includeJavaLangObjectMethods) {
+                Set<Method> superClassMethods = getAllMethods(superClass, includeJavaLangObjectMethods);
+                allMethods.addAll(superClassMethods);
+            }
         }
 
         allMethods.addAll(Arrays.asList(declaredMethods));

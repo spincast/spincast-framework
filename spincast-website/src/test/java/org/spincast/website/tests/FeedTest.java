@@ -100,7 +100,7 @@ public class FeedTest extends WebsiteIntegrationTestBase {
     @Test
     public void rssFeed() throws Exception {
 
-        HttpResponse response = GET("/rss").send();
+        HttpResponse response = GET("/rss", false, false).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.XML.getMainVariationWithUtf8Charset(), response.getContentType());

@@ -13,6 +13,8 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.guice.GuiceModuleUtils;
+import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.routing.Router;
@@ -33,6 +35,7 @@ import org.spincast.plugins.httpclient.websocket.SpincastHttpClientWithWebsocket
 import org.spincast.plugins.httpclient.websocket.builders.WebsocketRequestBuilder;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
+import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -114,7 +117,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
         //
         // Anyway, all the "getExtraOverridingModule()"
         // are bound again *after* the plugins are applied,
-        // so the configurations bindings will there be
+        // so the configurations bindings will still be
         // overriden properly.
         //==========================================
 
@@ -200,6 +203,53 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
         }
 
         return Modules.override(localModule).with(extraModuleUserSpecified);
+    }
+
+    /**
+     * Since an App is used, it will probably use it own
+     * AppConfig interface for the config. Often, this interface will
+     * extends {@link SpincastConfig} so all configs are available from
+     * the same instance: those for the application and the default
+     *  ones required by Spincast.
+     * <p>
+     * But, during tests, we also want to easily reuse the testing configs values defined
+     * in {@link SpincastConfigTestingDefault} (for example for a free port
+     * to be used to start the HTTPS server)... Without having to extends
+     * AppConfig and add a binding that redefine all those testing values available in
+     * {@link SpincastConfigTestingDefault}.
+     * <p>
+     * But that means that two bound interfaces must use those testing configs,
+     * AppConfig and SpincastConfig. To be able to defined testing configs 
+     * *once*, we add an AOP interceptor: all methods on AppConfig inherited from
+     * SpincastConfig (such as "getHttpsServerPort()") will be intercepted
+     * and the ones from the testing impl bound to SpincastConfig will be used
+     * instead!
+     */
+    @Override
+    protected void tweakConfigurations(GuiceTweaker guiceTweaker) {
+        super.tweakConfigurations(guiceTweaker);
+
+        AppTestingConfigs testingConfigs = getAppTestingConfigs();
+        Class<?> appConfigInterface = testingConfigs.getAppConfigInterface();
+
+        //==========================================
+        // This interception only makes sense if the 
+        // AppTestingConfigs ultimately extends SpincastConfig!
+        //==========================================
+        if (appConfigInterface != null && SpincastConfig.class.isAssignableFrom(appConfigInterface)) {
+            Class<?> spincastConfigTestingImplementationClass =
+                    testingConfigs.getSpincastConfigTestingImplementationClass();
+
+            SpincastGuiceModuleBase interceptModule =
+                    GuiceModuleUtils.createInterceptorModule(appConfigInterface,
+                                                             spincastConfigTestingImplementationClass,
+                                                             isIgnoreMethodsAnnotatedWithInjectDuringConfigurationsTweaking());
+            guiceTweaker.overridingModule(interceptModule);
+        }
+    }
+
+    protected boolean isIgnoreMethodsAnnotatedWithInjectDuringConfigurationsTweaking() {
+        return true;
     }
 
     /**
@@ -315,30 +365,30 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Creates an URL to the started HTTP server.
+     * Creates an URL to the started HTTPS server.
      * 
      * @param path the relative path to be appended to the
      * base test URL.
      */
     protected String createTestUrl(String path) {
-        return createTestUrl(path, false, false);
+        return createTestUrl(path, false, true);
     }
 
     /**
-     * Creates an URL to the started HTTP server.
+     * Creates an URL to the started HTTP(S) server.
      * 
      * @param path the relative path to be appended to the
      * base test URL.
      * 
-     * @param https if <code>true</code>, "https:" will be used
+     * @param isHttps if <code>true</code>, "https:" will be used
      * instead of "http:".
      */
-    protected String createTestUrl(String path, boolean https) {
-        return createTestUrl(path, false, https);
+    protected String createTestUrl(String path, boolean isHttps) {
+        return createTestUrl(path, false, isHttps);
     }
 
     /**
-     * Creates an URL to the started HTTP server.
+     * Creates an URL to the started HTTP(S) server.
      * 
      * @param pathOrUrl a relative path OR a full URL.
      * 
@@ -371,11 +421,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     protected WebsocketRequestBuilder websocket(String path) {
-        return websocket(path, false, false);
+        return websocket(path, false, true);
     }
 
     protected WebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl) {
-        return websocket(pathOrUrl, isFullUrl, false);
+        return websocket(pathOrUrl, isFullUrl, true);
     }
 
     protected WebsocketRequestBuilder websocket(String pathOrUrl, boolean isFullUrl, boolean isHttps) {
@@ -385,7 +435,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a GET method.
+     * Starts an Https Client builder for a GET method.
      * 
      * A cookie store is automatically added.
      * 
@@ -393,11 +443,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected GetRequestBuilder GET(String path) {
-        return GET(path, false, false);
+        return GET(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a GET method.
+     * Starts an Https Client builder for a GET method.
      * 
      * A cookie store is automatically added.
      * 
@@ -408,11 +458,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected GetRequestBuilder GET(String pathOrUrl, boolean isFullUrl) {
-        return GET(pathOrUrl, isFullUrl, false);
+        return GET(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a GET method.
+     * Starts an Http(s) Client builder for a GET method.
      * 
      * A cookie store is automatically added.
      * 
@@ -443,7 +493,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a POST method.
+     * Starts an Https Client builder for a POST method.
      * 
      * A cookie store is automatically added.
      * 
@@ -451,11 +501,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected PostRequestBuilder POST(String path) {
-        return POST(path, false, false);
+        return POST(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a POST method.
+     * Starts an Https Client builder for a POST method.
      * 
      * A cookie store is automatically added.
      * 
@@ -466,11 +516,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected PostRequestBuilder POST(String pathOrUrl, boolean isFullUrl) {
-        return POST(pathOrUrl, isFullUrl, false);
+        return POST(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a POST method.
+     * Starts an Http(s) Client builder for a POST method.
      * 
      * A cookie store is automatically added.
      * 
@@ -492,7 +542,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a PUT method.
+     * Starts an Https Client builder for a PUT method.
      * 
      * A cookie store is automatically added.
      * 
@@ -500,11 +550,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected PutRequestBuilder PUT(String path) {
-        return PUT(path, false, false);
+        return PUT(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a PUT method.
+     * Starts an Https Client builder for a PUT method.
      * 
      * A cookie store is automatically added.
      * 
@@ -515,11 +565,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected PutRequestBuilder PUT(String pathOrUrl, boolean isFullUrl) {
-        return PUT(pathOrUrl, isFullUrl, false);
+        return PUT(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a PUT method.
+     * Starts an Http(s) Client builder for a PUT method.
      * 
      * A cookie store is automatically added.
      * 
@@ -541,7 +591,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a DELETE method.
+     * Starts an Https Client builder for a DELETE method.
      * 
      * A cookie store is automatically added.
      * 
@@ -549,11 +599,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected DeleteRequestBuilder DELETE(String path) {
-        return DELETE(path, false, false);
+        return DELETE(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a DELETE method.
+     * Starts an Https Client builder for a DELETE method.
      * 
      * A cookie store is automatically added.
      * 
@@ -564,11 +614,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected DeleteRequestBuilder DELETE(String pathOrUrl, boolean isFullUrl) {
-        return DELETE(pathOrUrl, isFullUrl, false);
+        return DELETE(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a DELETE method.
+     * Starts an Http(s) Client builder for a DELETE method.
      * 
      * A cookie store is automatically added.
      * 
@@ -590,7 +640,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a OPTIONS method.
+     * Starts an Https Client builder for a OPTIONS method.
      * 
      * A cookie store is automatically added.
      * 
@@ -598,11 +648,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected OptionsRequestBuilder OPTIONS(String path) {
-        return OPTIONS(path, false, false);
+        return OPTIONS(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a OPTIONS method.
+     * Starts an Https Client builder for a OPTIONS method.
      * 
      * A cookie store is automatically added.
      * 
@@ -613,11 +663,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected OptionsRequestBuilder OPTIONS(String pathOrUrl, boolean isFullUrl) {
-        return OPTIONS(pathOrUrl, isFullUrl, false);
+        return OPTIONS(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a OPTIONS method.
+     * Starts an Http(s) Client builder for a OPTIONS method.
      * 
      * A cookie store is automatically added.
      * 
@@ -639,7 +689,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a TRACE method.
+     * Starts an Https Client builder for a TRACE method.
      * 
      * A cookie store is automatically added.
      * 
@@ -647,11 +697,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected TraceRequestBuilder TRACE(String path) {
-        return TRACE(path, false, false);
+        return TRACE(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a TRACE method.
+     * Starts an Https Client builder for a TRACE method.
      * 
      * A cookie store is automatically added.
      * 
@@ -662,11 +712,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected TraceRequestBuilder TRACE(String pathOrUrl, boolean isFullUrl) {
-        return TRACE(pathOrUrl, isFullUrl, false);
+        return TRACE(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a TRACE method.
+     * Starts an Http(s) Client builder for a TRACE method.
      * 
      * A cookie store is automatically added.
      * 
@@ -688,7 +738,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a CONNECT method.
+     * Starts an Https Client builder for a CONNECT method.
      * 
      * A cookie store is automatically added.
      * 
@@ -696,11 +746,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected ConnectRequestBuilder CONNECT(String path) {
-        return CONNECT(path, false, false);
+        return CONNECT(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a CONNECT method.
+     * Starts an Https Client builder for a CONNECT method.
      * 
      * A cookie store is automatically added.
      * 
@@ -711,11 +761,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected ConnectRequestBuilder CONNECT(String pathOrUrl, boolean isFullUrl) {
-        return CONNECT(pathOrUrl, isFullUrl, false);
+        return CONNECT(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a CONNECT method.
+     * Starts an Http(s) Client builder for a CONNECT method.
      * 
      * A cookie store is automatically added.
      * 
@@ -737,7 +787,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a PATCH method.
+     * Starts an Https Client builder for a PATCH method.
      * 
      * A cookie store is automatically added.
      * 
@@ -745,11 +795,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected PatchRequestBuilder PATCH(String path) {
-        return PATCH(path, false, false);
+        return PATCH(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a PATCH method.
+     * Starts an Https Client builder for a PATCH method.
      * 
      * A cookie store is automatically added.
      * 
@@ -760,11 +810,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected PatchRequestBuilder PATCH(String pathOrUrl, boolean isFullUrl) {
-        return PATCH(pathOrUrl, isFullUrl, false);
+        return PATCH(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a PATCH method.
+     * Starts an Http(s) Client builder for a PATCH method.
      * 
      * A cookie store is automatically added.
      * 
@@ -786,7 +836,7 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
     }
 
     /**
-     * Starts an Http Client builder for a HEAD method.
+     * Starts an Https Client builder for a HEAD method.
      * 
      * A cookie store is automatically added.
      * 
@@ -794,11 +844,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL.
      */
     protected HeadRequestBuilder HEAD(String path) {
-        return HEAD(path, false, false);
+        return HEAD(path, false, true);
     }
 
     /**
-     * Starts an Http Client builder for a HEAD method.
+     * Starts an Https Client builder for a HEAD method.
      * 
      * A cookie store is automatically added.
      * 
@@ -809,11 +859,11 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
      * base test URL. 
      */
     protected HeadRequestBuilder HEAD(String pathOrUrl, boolean isFullUrl) {
-        return HEAD(pathOrUrl, isFullUrl, false);
+        return HEAD(pathOrUrl, isFullUrl, true);
     }
 
     /**
-     * Starts an Http Client builder for a HEAD method.
+     * Starts an Http(s) Client builder for a HEAD method.
      * 
      * A cookie store is automatically added.
      * 

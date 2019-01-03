@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.plugins.httpclient.HttpResponseFactory;
 import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.plugins.httpclient.HttpResponseFactory;
 import org.spincast.plugins.httpclient.builders.HttpRequestBuilderBase;
 import org.spincast.plugins.httpclient.websocket.SpincastHttpClientWithWebsocketConfig;
 import org.spincast.plugins.httpclient.websocket.SpincastWebsocketClientWriter;
@@ -43,7 +43,6 @@ import org.xnio.OptionMap.Builder;
 import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
-import org.xnio.http.RedirectException;
 import org.xnio.ssl.JsseXnioSsl;
 import org.xnio.ssl.XnioSsl;
 
@@ -121,7 +120,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
     protected int getPingsIntervalSeconds() {
 
-        if(this.pingsIntervalSeconds == null) {
+        if (this.pingsIntervalSeconds == null) {
             return getSpincastHttpClientWithWebsocketConfig().getWebsocketAutomaticPingIntervalSeconds();
         }
         return this.pingsIntervalSeconds;
@@ -158,7 +157,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
         // if none was specified.
         //==========================================
         List<String> keys = getHeaders().get(HttpHeadersExtra.SEC_WEBSOCKET_KEY);
-        if(keys == null || keys.size() == 0) {
+        if (keys == null || keys.size() == 0) {
             keys = new ArrayList<String>();
             keys.add(UUID.randomUUID().toString());
             getHeaders().put(HttpHeadersExtra.SEC_WEBSOCKET_KEY, keys);
@@ -206,11 +205,11 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 protected void onCloseMessage(CloseMessage cm, WebSocketChannel channel) {
                     try {
                         WebsocketRequestBuilderDefault.this.connectionIsClosed = true;
-                        if(channel.isOpen()) {
+                        if (channel.isOpen()) {
                             channel.close();
                         }
 
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         WebsocketRequestBuilderDefault.this.logger.warn("Error closing Websocket connection: " + ex.getMessage());
                     }
 
@@ -230,7 +229,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 @Override
                 public void sendMessage(byte[] message) {
 
-                    if(WebsocketRequestBuilderDefault.this.connectionIsClosed) {
+                    if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
                         WebsocketRequestBuilderDefault.this.logger.warn("Connection is closed...");
                         return;
                     }
@@ -242,7 +241,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 @Override
                 public void sendMessage(String message) {
 
-                    if(WebsocketRequestBuilderDefault.this.connectionIsClosed) {
+                    if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
                         WebsocketRequestBuilderDefault.this.logger.warn("Connection is closed...");
                         return;
                     }
@@ -253,17 +252,17 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 @Override
                 public void closeConnection() {
 
-                    if(WebsocketRequestBuilderDefault.this.connectionIsClosed) {
+                    if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
                         WebsocketRequestBuilderDefault.this.logger.info("Connection is already closed...");
                         return;
                     }
                     WebsocketRequestBuilderDefault.this.connectionIsClosed = true;
 
                     try {
-                        if(channel.isOpen()) {
+                        if (channel.isOpen()) {
                             channel.close();
                         }
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         WebsocketRequestBuilderDefault.this.logger.error("Erreur closing the connection: " + ex.getMessage());
                     }
                 }
@@ -271,7 +270,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 @Override
                 public void sendPing() {
 
-                    if(WebsocketRequestBuilderDefault.this.connectionIsClosed) {
+                    if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
                         return;
                     }
 
@@ -279,7 +278,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                     try {
                         buffer = ByteBuffer.wrap(getSpincastHttpClientWithWebsocketConfig().getWebsocketPingMessageString()
                                                                                            .getBytes("UTF-8"));
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         throw SpincastStatics.runtimize(ex);
                     }
 
@@ -294,19 +293,19 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
             return writer;
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
 
     }
 
     protected WebSocketCallback<Void> getWebsocketWriteCallback(final WebsocketClientHandler reader) {
-        if(this.websocketWriteHandler == null) {
+        if (this.websocketWriteHandler == null) {
             this.websocketWriteHandler = new WebSocketCallback<Void>() {
 
                 @Override
                 public void onError(WebSocketChannel channel, Void context, Throwable throwable) {
-                    if(throwable instanceof IOException || !channel.isOpen()) {
+                    if (throwable instanceof IOException || !channel.isOpen()) {
                         WebsocketRequestBuilderDefault.this.connectionIsClosed = true;
                         sendConnectionClosedAppEvent(reader);
                     } else {
@@ -327,7 +326,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
     protected void startSendingPings(final SpincastWebsocketClientWriter writer) {
 
         final int pingsIntervalSeconds = getPingsIntervalSeconds();
-        if(pingsIntervalSeconds <= 0) {
+        if (pingsIntervalSeconds <= 0) {
             return;
         }
 
@@ -336,18 +335,18 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
             @Override
             public void run() {
 
-                while(true) {
+                while (true) {
 
                     try {
                         Thread.sleep(pingsIntervalSeconds * 1000);
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         WebsocketRequestBuilderDefault.this.logger.warn("Exception sleeping the thread: " +
                                                                         ex.getMessage());
                     }
 
-                    if(WebsocketRequestBuilderDefault.this.connectionIsClosed ||
-                       WebsocketRequestBuilderDefault.this.pingSenderThread == null ||
-                       WebsocketRequestBuilderDefault.this.pingSenderThread != Thread.currentThread()) {
+                    if (WebsocketRequestBuilderDefault.this.connectionIsClosed ||
+                        WebsocketRequestBuilderDefault.this.pingSenderThread == null ||
+                        WebsocketRequestBuilderDefault.this.pingSenderThread != Thread.currentThread()) {
                         break;
                     }
 
@@ -381,23 +380,23 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
             return xnio.createWorker(builder.getMap());
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
 
     protected SSLContext getSslContext() {
 
-        if(this.sslContext == null) {
+        if (this.sslContext == null) {
 
             try {
-                if(isDisableSslCertificateErrors()) {
+                if (isDisableSslCertificateErrors()) {
                     this.sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
                 } else {
                     this.sslContext = SSLContexts.createSystemDefault();
                 }
 
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
         }
@@ -420,49 +419,13 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                                                       DefaultByteBufferPool bufferPool,
                                                       String url,
                                                       int redirectionNbr) {
-
         try {
-
             ConnectionBuilder connectionBuilder = createConnectionBuilder(worker, bufferPool, url);
-
-            WebSocketChannel webSocketChannel = null;
-            try {
-                webSocketChannel = connectionBuilder.connect().get();
-            } catch(RedirectException ex) {
-
-                redirectionNbr++;
-
-                //==========================================
-                // Undertow 1.2.X doesn't follow redirects on
-                // WebSocket requests. This won't be fixed in 
-                // an Undertow version compatible with Java 7,
-                // so we manage the redirection by ourself.
-                //
-                // https://issues.jboss.org/browse/UNDERTOW-760
-                //==========================================
-
-                if(redirectionNbr > getMaxRedirectionNbr()) {
-                    throw new RuntimeException("Maximum number of redirections reached " +
-                                               "(" + getMaxRedirectionNbr() + "). The redirection URL is: " +
-                                               ex.getLocation());
-                }
-
-                String newUrl = ex.getLocation();
-                return createWebSocketChannel(worker, bufferPool, newUrl, redirectionNbr);
-            }
-
+            WebSocketChannel webSocketChannel = connectionBuilder.connect().get();
             return webSocketChannel;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
-    }
-
-    /**
-     * The maximum number of allowed redirections.
-     */
-    protected int getMaxRedirectionNbr() {
-        // @see https://tools.ietf.org/html/rfc2068#section-10.3
-        return 5;
     }
 
     protected ConnectionBuilder createConnectionBuilder(XnioWorker worker,
@@ -519,11 +482,11 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
         //==========================================
         try {
             url = url.trim();
-            if(url.toLowerCase().startsWith("https://")) {
+            if (url.toLowerCase().startsWith("https://")) {
                 url = "wss://" + url.substring("https://".length());
             }
             return new URI(url);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -531,11 +494,11 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
     protected void addCustomHeaders(Map<String, List<String>> headers) {
 
         Map<String, List<String>> headersToAdd = getHeaders();
-        if(headersToAdd != null) {
-            for(Entry<String, List<String>> entry : headersToAdd.entrySet()) {
+        if (headersToAdd != null) {
+            for (Entry<String, List<String>> entry : headersToAdd.entrySet()) {
 
                 List<String> values = headers.get(entry.getKey());
-                if(values == null) {
+                if (values == null) {
                     values = new ArrayList<String>();
                     headers.put(entry.getKey(), values);
                 }
@@ -547,17 +510,17 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
     protected void addCustomCookies(Map<String, List<String>> headers) {
 
         List<Cookie> cookiesToAdd = getCookieStore().getCookies();
-        if(cookiesToAdd == null || cookiesToAdd.size() == 0) {
+        if (cookiesToAdd == null || cookiesToAdd.size() == 0) {
             return;
         }
 
         List<String> cookies = headers.get(HttpHeaders.COOKIE);
-        if(cookies == null) {
+        if (cookies == null) {
             cookies = new ArrayList<String>();
             headers.put(HttpHeaders.COOKIE, cookies);
         }
 
-        for(Cookie cookie : cookiesToAdd) {
+        for (Cookie cookie : cookiesToAdd) {
             String cookieHeaderValue = getSpincastHttpClientUtils().apacheCookieToHttpHeaderValue(cookie);
             cookies.add(cookieHeaderValue);
         }
@@ -565,14 +528,14 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
     protected void addHttpAuthHeaders(Map<String, List<String>> headers) {
 
-        if(getHttpAuthUsername() == null) {
+        if (getHttpAuthUsername() == null) {
             return;
         }
 
         String value = getHttpAuthUsername() + ":" + getHttpAuthPassword();
         try {
             value = "Basic " + Base64.encodeBase64String(value.getBytes("UTF-8"));
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
 
@@ -592,9 +555,9 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
     protected void sendConnectionClosedAppEvent(final WebsocketClientHandler reader) {
 
-        if(!this.onConnectionClosedEventCalled) {
-            synchronized(this.onConnectionClosedEventCalledLock) {
-                if(!this.onConnectionClosedEventCalled) {
+        if (!this.onConnectionClosedEventCalled) {
+            synchronized (this.onConnectionClosedEventCalledLock) {
+                if (!this.onConnectionClosedEventCalled) {
 
                     this.onConnectionClosedEventCalled = true;
 
@@ -618,7 +581,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
      */
     protected void sendOnStringMessageClientEvent(final String message) {
 
-        if(this.connectionIsClosed) {
+        if (this.connectionIsClosed) {
             return;
         }
 
@@ -637,7 +600,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
      */
     protected void sendOnBytesMessageClientEvent(final byte[] message) {
 
-        if(this.connectionIsClosed) {
+        if (this.connectionIsClosed) {
             return;
         }
 
@@ -688,11 +651,11 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
             getThreadExecutorForClientEvents().invokeAll(callables,
                                                          getThreadExecutorForClientEventsTimeoutAmount(),
                                                          getThreadExecutorForClientEventsTimeoutTimeUnit());
-        } catch(InterruptedException ex) {
+        } catch (InterruptedException ex) {
             this.logger.error("A Thread used for sending a Websocket event to the client took too long " +
                               "(max " + getThreadExecutorForClientEventsTimeoutAmount() + " " +
                               getThreadExecutorForClientEventsTimeoutTimeUnit().toString() + "): " + ex.getMessage());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             this.logger.error("A Thread used for sending a Websocket event to the application thrown an exception: " +
                               "" + ex.getMessage());
         }
@@ -720,9 +683,9 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
      */
     protected ExecutorService getThreadExecutorForClientEvents() {
 
-        if(this.threadExecutorForClientEvents == null) {
+        if (this.threadExecutorForClientEvents == null) {
             ThreadFactory threadFactory = getThreadExecutorForClientEventsThreadThreadFactory();
-            if(threadFactory != null) {
+            if (threadFactory != null) {
                 this.threadExecutorForClientEvents =
                         Executors.newFixedThreadPool(getThreadExecutorForClientEventsThreadNumber(), threadFactory);
             } else {

@@ -1,7 +1,6 @@
 package org.spincast.tests.appbasedtesting;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -123,9 +122,9 @@ public class AppBasedTest extends AppBasedTestingBase<AppRequestContext, Default
 
     @Test
     public void testinSpincastConfigsUsed() throws Exception {
-        assertNotNull(getAppConfigs().getHttpServerPort());
-        assertNotNull(getSpincastConfig().getHttpServerPort());
-        assertNotEquals(getAppConfigs().getHttpServerPort(), getSpincastConfig().getHttpServerPort());
+        assertNotNull(getAppConfigs().getHttpsServerPort());
+        assertNotNull(getSpincastConfig().getHttpsServerPort());
+        assertEquals(getAppConfigs().getHttpsServerPort(), getSpincastConfig().getHttpsServerPort());
     }
 
     @Test

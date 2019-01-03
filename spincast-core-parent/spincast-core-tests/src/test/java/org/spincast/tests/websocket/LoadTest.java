@@ -246,7 +246,8 @@ public class LoadTest extends NoAppWebsocketTestingBase {
 
                     Peer peer = new Peer(controllerId, endpointId, peerId);
                     WebsocketClientWriter writer =
-                            websocket("/ws" + controllerPos).setCookie("endpointId", endpointId)
+                            websocket("/ws" + controllerPos).disableSslCertificateErrors()
+                                                            .setCookie("endpointId", endpointId)
                                                             .setCookie("peerId", peerId)
                                                             .connect(peer);
                     assertNotNull(writer);
@@ -559,11 +560,12 @@ public class LoadTest extends NoAppWebsocketTestingBase {
             //==========================================
             // All other endpoints' controllers and peers - not received
             //==========================================
-            validateMessageNotReceivedByEndpointsAndPeersExcept(endpointId, Sets.newHashSet(message1,
-                                                                                            message2Echo,
-                                                                                            message3Echo,
-                                                                                            message4Echo,
-                                                                                            message5));
+            validateMessageNotReceivedByEndpointsAndPeersExcept(endpointId,
+                                                                Sets.newHashSet(message1,
+                                                                                message2Echo,
+                                                                                message3Echo,
+                                                                                message4Echo,
+                                                                                message5));
             //==========================================
             // Controller - not received
             //==========================================

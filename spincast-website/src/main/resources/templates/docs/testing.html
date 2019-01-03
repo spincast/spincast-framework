@@ -533,7 +533,7 @@ Testing configurations
         The testing configurations (<code>getAppTestingConfigs()</code>)
     </h4>
     <p>
-    	When running integration tests, you don't want to use the same configurations then the ones
+    	When running integration tests, you don't want to use the same configurations than the ones
     	you would when running the application directly. For example, you may want to provide a 
     	different <code>connection string</code> to use a mocked database instead of the real one.
     </p>
@@ -556,8 +556,9 @@ Testing configurations
     			the <code>SpincastConfig</code> binding. In other words, this hook allows you to easily mock the
     			configurations used by Spincast core components. The default testing implementation is the provided
     			<a class="javadoc" href="/public/javadoc/org/spincast/testing/core/utils/SpincastConfigTestingDefault.html">SpincastConfigTestingDefault</a> 
-    			class. You may want to have a look at this class when wrting your own since it shows how
-    			to implement some useful things, such as finding a free port to use when starting the HTTP server.
+    			class. You can use this provided class directly, or at least you may want to have a look at it when writing 
+                your own since it shows how to implement some useful things, such as finding a free port to use when starting the HTTP server
+                during tests.
     		</li>
     		<li>
     			<strong><em>getAppConfigInterface()</em></strong> : The interface of your custom app configurations
@@ -592,8 +593,22 @@ Testing configurations
     	custom configurations interface will be the same! Indeed, if you follow
     	the <a href="#config_strategy_components">suggested way</a> of configuring your application, then your custom
     	configurations interface <code>AppConfig</code> extends <code>SpincastConfig</code>. 
-    	
     </p>
+    <p>
+        In that case, Spincast will automatically intercept calls to methods made on the 
+        <code>AppConfig</code> instance, but that are defined
+        in the parent <code>SpincastConfig</code> interface, and will route them to the 
+        <em>SpincastConfig testing implementation</em> (as
+        returned by <code>getSpincastConfigTestingImplementationClass()</code>. Doing so, you can specify a config
+        in the testing implementation (the <em>HTTPS port</em> to use, for example), and that config
+        will be used in your app.
+    </p>
+    <p>
+        Note that you can annotate a method with 
+        <a class="javadoc" href="/public/javadoc/org/spincast/core/guice/DontIntercept.html"><code>@DontIntercept</code></a> if you don't want it to
+        be intercepted.
+    </p>
+    
     <p>
     	<img class="inlineIcon" src="/public/images/icons/tipy.png" />
     	Your testing configurations can often be shared between multiple tests classes.

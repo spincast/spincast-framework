@@ -14,7 +14,7 @@ public class QuickStartTest extends AppTestBase {
     @Test
     public void testIndex() throws Exception {
 
-        HttpResponse response = GET("/").send();
+        HttpResponse response = GET("/", false, false).send();
         assertNotNull(response);
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -24,7 +24,7 @@ public class QuickStartTest extends AppTestBase {
     @Test
     public void test404() throws Exception {
 
-        HttpResponse response = GET("/nope").send();
+        HttpResponse response = GET("/nope", false, false).send();
         assertNotNull(response);
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -34,7 +34,7 @@ public class QuickStartTest extends AppTestBase {
     @Test
     public void testException() throws Exception {
 
-        HttpResponse response = GET("/exception-example").send();
+        HttpResponse response = GET("/exception-example", false, false).send();
         assertNotNull(response);
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());

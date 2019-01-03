@@ -214,9 +214,7 @@ public class SpincastDateFormatterPebbleExtensionDefault extends AbstractExtensi
         Object separatorObj = args.get("thirdParam");
         if (separatorObj != null) {
             String separator = separatorObj.toString();
-            if (!StringUtils.isBlank(separator)) {
-                formatter.separator(separator);
-            }
+            formatter.separator(separator);
         }
 
         //==========================================

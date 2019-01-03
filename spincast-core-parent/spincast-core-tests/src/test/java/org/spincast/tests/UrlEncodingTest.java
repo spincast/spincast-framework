@@ -83,8 +83,8 @@ public class UrlEncodingTest extends NoAppStartHttpServerTestingBase {
                 String url = context.request().getFullUrl();
                 assertNotNull(url);
 
-                String expected = "http://" + getSpincastConfig().getServerHost() + ":" +
-                                  getSpincastConfig().getHttpServerPort();
+                String expected = "https://" + getSpincastConfig().getServerHost() + ":" +
+                                  getSpincastConfig().getHttpsServerPort();
                 expected += "/one two" + SpincastTestingUtils.TEST_STRING + "?test=" + "one two" +
                             SpincastTestingUtils.TEST_STRING;
                 assertEquals(expected, url);

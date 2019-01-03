@@ -89,7 +89,8 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
         WebsocketClientTest client = new WebsocketClientTest();
-        WebsocketClientWriter writer = websocket("/ws").setCookie("username", "Stromgol")
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors()
+                                                       .setCookie("username", "Stromgol")
                                                        .setCookie("cookie2", "val2")
                                                        .addHeaderValue("customHeader", "test1")
                                                        .addHeaderValue("customHeader2", "test2")
@@ -127,7 +128,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         getRouter().websocket("/ws").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
-        WebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitPeerConnected("endpoint1", "peer1"));
 
@@ -146,7 +147,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertFalse(controller.isEndpointOpen("endpoint1"));
 
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -204,7 +205,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        WebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -221,7 +222,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         getRouter().websocket("/ws").id("test").handle(controller);
 
         WebsocketClientTest client = new WebsocketClientTest();
-        WebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -235,7 +236,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         //==========================================
         try {
             @SuppressWarnings("unused")
-            WebsocketClientWriter writer2 = websocket("/ws").connect(client);
+            WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client);
             fail();
         } catch (Exception ex) {
         }
@@ -264,7 +265,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        WebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -288,7 +289,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        WebsocketClientWriter writer = websocket("/ws").connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -329,7 +330,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -338,7 +339,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -347,7 +348,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 
@@ -401,17 +402,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -480,17 +481,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -555,17 +556,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -630,17 +631,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -694,17 +695,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -780,17 +781,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -855,17 +856,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -930,17 +931,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -1003,12 +1004,12 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         //==========================================
@@ -1019,7 +1020,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         try {
             @SuppressWarnings("unused")
-            WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+            WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
             fail();
         } catch (Exception ex) {
         }
@@ -1043,7 +1044,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         //==========================================
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client4 = new WebsocketClientTest();
-        WebsocketClientWriter writer4 = websocket("/ws").connect(client4);
+        WebsocketClientWriter writer4 = websocket("/ws").disableSslCertificateErrors().connect(client4);
         assertNotNull(writer4);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 2));
     }
@@ -1078,17 +1079,17 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
 
         peerIdToUse[0] = "peer1";
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         peerIdToUse[0] = "peer2";
         WebsocketClientTest client2 = new WebsocketClientTest();
-        WebsocketClientWriter writer2 = websocket("/ws").connect(client2);
+        WebsocketClientWriter writer2 = websocket("/ws").disableSslCertificateErrors().connect(client2);
         assertNotNull(writer2);
 
         peerIdToUse[0] = "peer3";
         WebsocketClientTest client3 = new WebsocketClientTest();
-        WebsocketClientWriter writer3 = websocket("/ws").connect(client3);
+        WebsocketClientWriter writer3 = websocket("/ws").disableSslCertificateErrors().connect(client3);
         assertNotNull(writer3);
 
         assertTrue(controller.isEndpointOpen("endpoint1"));
@@ -1175,7 +1176,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertNull(controller.getEndpointManager("endpoint1"));
 
         WebsocketClientTest client1 = new WebsocketClientTest();
-        WebsocketClientWriter writer1 = websocket("/ws").connect(client1);
+        WebsocketClientWriter writer1 = websocket("/ws").disableSslCertificateErrors().connect(client1);
         assertNotNull(writer1);
 
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));

@@ -37,27 +37,49 @@ public class SpincastConfigTestingDefault extends SpincastConfigDefault {
         return "localhost";
     }
 
-    /**
-     * We use a free port.
-     */
     @Override
     public int getHttpServerPort() {
+        return -1;
+    }
 
+    @Override
+    public int getHttpsServerPort() {
         if (this.serverPort == -1) {
 
             //==========================================
-            // We reserve 44419 for the default configuration.
+            // We reserve 44440-44450 for applications
+            // that may be started during tests are running.
             //==========================================
             do {
                 this.serverPort = SpincastTestingUtils.findFreePort();
-            } while (this.serverPort == 44419);
+            } while (this.serverPort >= 44440 && this.serverPort <= 44450);
         }
         return this.serverPort;
     }
 
     @Override
     public String getPublicUrlBase() {
-        return "http://" + getServerHost() + ":" + getHttpServerPort();
+        return "https://" + getServerHost() + ":" + getHttpsServerPort();
+    }
+
+    @Override
+    public String getHttpsKeyStorePath() {
+        return "spincast/testing/certificates/devKeyStore.jks";
+    }
+
+    @Override
+    public String getHttpsKeyStoreType() {
+        return "JKS";
+    }
+
+    @Override
+    public String getHttpsKeyStoreStorePass() {
+        return "myStorePass";
+    }
+
+    @Override
+    public String getHttpsKeyStoreKeyPass() {
+        return "myKeyPass";
     }
 
     @Override

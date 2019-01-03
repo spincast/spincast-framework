@@ -2,6 +2,7 @@ package org.spincast.core.guice;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -250,19 +251,28 @@ public class GuiceModuleUtils {
      * defined on <code>toIntercept</code> but will use the implementation speficied
      * here for those that are.
      * <p>
+     * You can annotate a method with {@link DontIntercept} to prevent
+     * it to be intercepted.
+     * <p>
      * Note that the <code>implementationClass</code> binding must have been done in other
      * module.
+     * 
+     * @param ignoreMethodsAnnotatedWithInject if <code>true</code>, methods from the intercepted
+     * class annotated with {@link Inject} or with {@link javax.inject.Inject} will be ignored
+     * (they won't be intercepted).
      */
-    public static <T> SpincastGuiceModuleBase createInterceptorModule(final Class<T> toIntercept,
-                                                                      final Class<? extends T> implementationClass) {
+    public static SpincastGuiceModuleBase createInterceptorModule(final Class<?> toIntercept,
+                                                                  final Class<?> implementationClass,
+                                                                  final boolean ignoreMethodsAnnotatedWithInject) {
 
         Objects.requireNonNull(toIntercept, "The Class to intercept can't be NULL");
         Objects.requireNonNull(implementationClass, "The implementation class can't be NULL");
 
         final Map<String, Method> toInterceptMethodsMap = new HashMap<String, Method>();
-        Set<Method> toInterceptMethods = SpincastStatics.getAllMethods(implementationClass);
+        Set<Method> toInterceptMethods = SpincastStatics.getAllMethods(implementationClass, false);
         for (Method toInterceptMethod : toInterceptMethods) {
-            toInterceptMethodsMap.put(toInterceptMethod.getName(), toInterceptMethod);
+            String methodKey = createMethodeSignatureKey(toInterceptMethod);
+            toInterceptMethodsMap.put(methodKey, toInterceptMethod);
         }
 
         return new SpincastGuiceModuleBase() {
@@ -275,9 +285,9 @@ public class GuiceModuleUtils {
                     @Inject
                     protected Provider<Injector> injector;
 
-                    private T implementation;
+                    private Object implementation;
 
-                    public T getImplementation() {
+                    public Object getImplementation() {
                         if (this.implementation == null) {
                             this.implementation = this.injector.get().getInstance(implementationClass);
                         }
@@ -288,12 +298,23 @@ public class GuiceModuleUtils {
                     public Object invoke(MethodInvocation invocation) throws Throwable {
 
                         Method method = invocation.getMethod();
+                        String methodKey = createMethodeSignatureKey(method);
 
-                        if (!toInterceptMethodsMap.containsKey(method.getName())) {
+                        if (!toInterceptMethodsMap.containsKey(methodKey) ||
+                            method.isAnnotationPresent(DontIntercept.class)) {
                             return invocation.proceed();
                         }
 
-                        Method toInterceptMethod = toInterceptMethodsMap.get(method.getName());
+                        //==========================================
+                        // Should we also ignore methods annotated with
+                        // @Inject?
+                        //==========================================
+                        if (ignoreMethodsAnnotatedWithInject &&
+                            (method.isAnnotationPresent(Inject.class) || method.isAnnotationPresent(javax.inject.Inject.class))) {
+                            return invocation.proceed();
+                        }
+
+                        Method toInterceptMethod = toInterceptMethodsMap.get(methodKey);
 
                         //==========================================
                         // Required to be able to call non public methods
@@ -328,6 +349,15 @@ public class GuiceModuleUtils {
                                 interceptor);
             }
         };
+    }
+
+    protected static String createMethodeSignatureKey(Method method) {
+        if (method == null) {
+            return null;
+        }
+
+        String key = method.getName() + " " + Arrays.toString(method.getParameterTypes());
+        return key;
     }
 
     /**

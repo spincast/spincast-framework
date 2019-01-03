@@ -7,17 +7,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.jar.Attributes;
@@ -32,6 +35,8 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
+import org.spincast.shaded.org.apache.http.NameValuePair;
+import org.spincast.shaded.org.apache.http.client.utils.URLEncodedUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 import org.spincast.shaded.org.jsoup.Jsoup;
 import org.spincast.shaded.org.jsoup.safety.Whitelist;
@@ -833,6 +838,84 @@ public class SpincastUtilsDefault implements SpincastUtils {
         html = html.replace(" \n<br>", "\n<br>");
 
         return html;
+    }
+
+    @Override
+    public <T> T getRandomElement(Set<T> set) {
+        if (set != null && set.size() > 0) {
+            int pos = new Random().nextInt(set.size());
+            int i = 0;
+            for (T obj : set) {
+                if (i++ == pos) {
+                    return obj;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getQuerystringFromUrl(String url) {
+        try {
+            if (url == null) {
+                return "";
+            }
+
+            URL urlObj = new URL(url);
+            String qs = urlObj.getQuery();
+            if (qs == null) {
+                qs = "";
+            }
+            return qs;
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public Map<String, List<String>> getQuerystringParametersFromUrl(String url) {
+        String qs = getQuerystringFromUrl(url);
+        return getParametersFromQuerystring(qs, true);
+    }
+
+    @Override
+    public Map<String, List<String>> getParametersFromQuerystring(String qs, boolean decodeQueryStringFirst) {
+
+        try {
+            Map<String, List<String>> qsParams = new HashMap<String, List<String>>();
+            if (qs != null) {
+                qs = qs.trim();
+                if (qs.startsWith("?")) {
+                    qs = qs.substring(1);
+                }
+            }
+            if (StringUtils.isBlank(qs)) {
+                return qsParams;
+            }
+
+            if (decodeQueryStringFirst) {
+                qs = URLDecoder.decode(qs, "UTF-8");
+            }
+
+            List<NameValuePair> params = URLEncodedUtils.parse(qs, Charset.forName("UTF-8"));
+            if (params != null) {
+                for (NameValuePair nameValuePair : params) {
+                    String name = nameValuePair.getName();
+                    List<String> values = qsParams.get(name);
+                    if (values == null) {
+                        values = new ArrayList<String>();
+                        qsParams.put(name, values);
+                    }
+                    values.add(nameValuePair.getValue());
+                }
+            }
+
+            return qsParams;
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+
     }
 
 }

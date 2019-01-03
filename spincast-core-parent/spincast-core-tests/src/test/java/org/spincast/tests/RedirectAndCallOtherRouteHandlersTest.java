@@ -247,7 +247,6 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
         assertEquals("custom!", response.getContentAsString());
-
     }
 
     @Test
@@ -255,9 +254,9 @@ public class RedirectAndCallOtherRouteHandlersTest extends NoAppStartHttpServerT
 
         // @see http://stackoverflow.com/a/12840255/843699
         String urlDoubleSlash = createTestUrl("/test");
-        assertTrue(urlDoubleSlash.startsWith("http://"));
+        assertTrue(urlDoubleSlash.startsWith("https://"));
 
-        final String urlDoubleSlashFinal = urlDoubleSlash.substring("http:".length());
+        final String urlDoubleSlashFinal = urlDoubleSlash.substring("https:".length());
 
         getRouter().GET("/test").handle(new Handler<DefaultRequestContext>() {
 

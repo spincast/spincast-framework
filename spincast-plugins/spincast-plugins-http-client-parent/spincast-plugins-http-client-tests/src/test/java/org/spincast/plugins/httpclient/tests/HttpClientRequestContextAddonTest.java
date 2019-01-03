@@ -88,6 +88,7 @@ public class HttpClientRequestContextAddonTest extends
                 // Uses the addon!
                 //==========================================
                 HttpResponse response = context.http().GET(url2)
+                                               .disableSslCertificateErrors()
                                                .addHeaderValue("test-header", "test-value")
                                                .send();
 

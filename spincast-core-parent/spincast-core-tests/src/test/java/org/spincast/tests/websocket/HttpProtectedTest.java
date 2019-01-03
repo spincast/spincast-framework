@@ -40,7 +40,7 @@ public class HttpProtectedTest extends NoAppWebsocketTestingBase {
 
         try {
             @SuppressWarnings("unused")
-            WebsocketClientWriter writer = websocket("/ws").connect(client);
+            WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().connect(client);
             fail();
         } catch (Exception ex) {
 
@@ -68,6 +68,7 @@ public class HttpProtectedTest extends NoAppWebsocketTestingBase {
         try {
             @SuppressWarnings("unused")
             WebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "nope")
+                                                           .disableSslCertificateErrors()
                                                            .connect(client);
             fail();
         } catch (Exception ex) {
@@ -94,6 +95,7 @@ public class HttpProtectedTest extends NoAppWebsocketTestingBase {
         WebsocketClientTest client = new WebsocketClientTest();
 
         WebsocketClientWriter writer = websocket("/ws").setHttpAuthCredentials("Stromgol", "Laroche")
+                                                       .disableSslCertificateErrors()
                                                        .connect(client);
         assertNotNull(writer);
 

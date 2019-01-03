@@ -196,6 +196,26 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         //==========================================
         // Tweaks configurations
         //==========================================
+        tweakConfigurations(guiceTweaker);
+
+        //==========================================
+        // Extra Module to add?
+        //==========================================
+        if (getGuiceTweakerExtraOverridingModule() != null) {
+            guiceTweaker.overridingModule(getGuiceTweakerExtraOverridingModule());
+        }
+
+        //==========================================
+        // Disable bind current class?
+        //==========================================
+        if (isDisableBindCurrentClass()) {
+            guiceTweaker.disableBindCurrentClass();
+        }
+
+        return guiceTweaker;
+    }
+
+    protected void tweakConfigurations(GuiceTweaker guiceTweaker) {
         final Class<? extends SpincastConfig> configImplClass = getTestingConfigImplementationClass();
         if (configImplClass == null) {
             throw new RuntimeException("The 'getSpincastConfigTestingImplementationClass()' can't return null.");
@@ -225,22 +245,6 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
                 bind(SpincastConfig.class).to(configImplClass).in(Scopes.SINGLETON);
             }
         });
-
-        //==========================================
-        // Extra Module to add?
-        //==========================================
-        if (getGuiceTweakerExtraOverridingModule() != null) {
-            guiceTweaker.overridingModule(getGuiceTweakerExtraOverridingModule());
-        }
-
-        //==========================================
-        // Disable bind current class?
-        //==========================================
-        if (isDisableBindCurrentClass()) {
-            guiceTweaker.disableBindCurrentClass();
-        }
-
-        return guiceTweaker;
     }
 
     protected boolean isDisableBindCurrentClass() {

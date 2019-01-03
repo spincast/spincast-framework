@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
@@ -495,6 +496,7 @@ public class SpincastJsonManager implements JsonManager {
     protected void registerCustomModules(ObjectMapper objectMapper) {
         registerJsonObjectModule(objectMapper);
         registerCustomTypeSerializerModule(objectMapper);
+        registerJava8DatatypesModule(objectMapper);
     }
 
     /**
@@ -526,6 +528,10 @@ public class SpincastJsonManager implements JsonManager {
         module.addSerializer(Instant.class, getInstantSerializer());
         module.addSerializer(BigDecimal.class, getBigDecimalSerializer());
         objectMapper.registerModule(module);
+    }
+
+    protected void registerJava8DatatypesModule(ObjectMapper objectMapper) {
+        objectMapper.registerModule(new Jdk8Module());
     }
 
     @Override

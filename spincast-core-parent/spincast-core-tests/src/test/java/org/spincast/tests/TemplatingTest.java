@@ -244,11 +244,11 @@ public class TemplatingTest extends NoAppStartHttpServerTestingBase {
                 assertEquals("test",
                              vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_ROUTE_ID));
 
-                assertEquals("http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                assertEquals("https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                              "/one/test1?key1=val1",
                              vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_FULL_URL));
 
-                assertEquals(false,
+                assertEquals(true,
                              vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_IS_HTTPS));
 
                 assertNotNull(vars.get(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_KEY_PATH_PARAMS));

@@ -85,7 +85,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
         //==========================================
         // Pings every second
         //==========================================
-        WebsocketClientWriter writer = websocket("/ws").ping(1).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().ping(1).connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
 
@@ -106,7 +106,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
         //==========================================
         // No pings == no closed connection detection!
         //==========================================
-        WebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().ping(0).connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
 
@@ -123,7 +123,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        WebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().ping(0).connect(client);
         assertNotNull(writer);
         assertTrue(controller.waitNrbPeerConnected("endpoint1", 1));
 

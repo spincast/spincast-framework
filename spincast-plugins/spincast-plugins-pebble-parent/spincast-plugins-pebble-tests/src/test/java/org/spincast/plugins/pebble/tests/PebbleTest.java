@@ -215,7 +215,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = GET("/one/test1?key1=val1").setCookie("cookie1", "cookie1Val", false).send();
+        HttpResponse response = GET("/one/test1?key1=val1").setCookie("cookie1", "cookie1Val", true).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -223,7 +223,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
         String spincastCurrentVersion = getSpincastUtils().getSpincastCurrentVersion();
         boolean isSnapshot = spincastCurrentVersion.endsWith("-SNAPSHOT");
         String cacheBuster = getSpincastUtils().getCacheBusterCode();
-        String fullUrl = "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+        String fullUrl = "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                          "/one/test1?key1=val1";
 
         StringBuilder expected = new StringBuilder();
@@ -233,7 +233,7 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
         expected.append(cacheBuster).append("|");
         expected.append("test").append("|");
         expected.append(fullUrl).append("|");
-        expected.append("false").append("|");
+        expected.append("true").append("|"); // isHttps
         expected.append("test1").append("|");
         expected.append("val1").append("|");
         expected.append("cookie1Val").append("|");

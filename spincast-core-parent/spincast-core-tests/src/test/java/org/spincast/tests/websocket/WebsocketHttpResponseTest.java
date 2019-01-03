@@ -50,7 +50,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().send();
         validateIsWebsocketUpgradeHttpResponse(path, response);
     }
 
@@ -88,7 +88,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).setCookie("username", "nope", false).send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().setCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -136,7 +136,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).setCookie("username", "nope", false).send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().setCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -186,7 +186,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).setCookie("username", "nope", false).send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().setCookie("username", "nope", false).send();
         assertNotNull(response);
 
         assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
@@ -229,7 +229,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).setCookie("username", "Stromgol", false).send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().setCookie("username", "Stromgol", false).send();
         validateIsWebsocketUpgradeHttpResponse(path, response);
     }
 
@@ -248,7 +248,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         getRouter().websocket("/ws").handle(new DefaultWebsocketControllerTest(getServer()));
 
         String path = "/ws";
-        HttpResponse response = websocket(path).setCookie("username", "nope").send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().setCookie("username", "nope").send();
         assertNotNull(response);
 
         validateIsWebsocketUpgradeHttpResponse(path, response);
@@ -279,7 +279,7 @@ public class WebsocketHttpResponseTest extends NoAppWebsocketTestingBase {
         });
 
         String path = "/ws";
-        HttpResponse response = websocket(path).setCookie("username", "nope").send();
+        HttpResponse response = websocket(path).disableSslCertificateErrors().setCookie("username", "nope").send();
         assertNotNull(response);
 
         validateIsNotWebsocketUpgradeHttpResponse(response);

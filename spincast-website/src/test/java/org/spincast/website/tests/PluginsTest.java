@@ -22,7 +22,7 @@ public class PluginsTest extends WebsiteIntegrationTestBase {
     @Test
     public void pluginValid() throws Exception {
 
-        HttpResponse response = GET("/plugins/spincast-request").send();
+        HttpResponse response = GET("/plugins/spincast-request", false, false).send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -31,7 +31,7 @@ public class PluginsTest extends WebsiteIntegrationTestBase {
     @Test
     public void pluginInvalid() throws Exception {
 
-        HttpResponse response = GET("/plugins/nope").send();
+        HttpResponse response = GET("/plugins/nope", false, false).send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
@@ -40,7 +40,7 @@ public class PluginsTest extends WebsiteIntegrationTestBase {
     @Test
     public void pluginNameSanitization() throws Exception {
 
-        HttpResponse response = GET("/plugins/.").send();
+        HttpResponse response = GET("/plugins/.", false, false).send();
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());

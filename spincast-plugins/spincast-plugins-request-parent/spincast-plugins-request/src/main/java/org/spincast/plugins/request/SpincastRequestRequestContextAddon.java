@@ -3,7 +3,6 @@ package org.spincast.plugins.request;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -44,9 +43,7 @@ import org.spincast.core.xml.XmlManager;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpHeaders;
-import org.spincast.shaded.org.apache.http.NameValuePair;
 import org.spincast.shaded.org.apache.http.client.utils.DateUtils;
-import org.spincast.shaded.org.apache.http.client.utils.URLEncodedUtils;
 
 import com.google.inject.Inject;
 
@@ -416,13 +413,8 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     protected void parseQueryString() {
-
         try {
-            URL url = new URL(this.fullUrlWithCacheBustersNonDecoded);
-            String qs = url.getQuery();
-            if (qs == null) {
-                qs = "";
-            }
+            String qs = getSpincastUtils().getQuerystringFromUrl(this.fullUrlWithCacheBustersNonDecoded);
             this.queryStringNonDecoded = qs;
             this.queryStringDecoded = URLDecoder.decode(qs, "UTF-8");
 
@@ -433,41 +425,17 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
 
     public void parseQueryStringParams() {
 
-        try {
-            Map<String, List<String>> paramsFinal = new HashMap<String, List<String>>();
+        Map<String, List<String>> paramsFinal =
+                getSpincastUtils().getParametersFromQuerystring(this.queryStringNonDecoded, false);
 
-            String qs = this.queryStringNonDecoded;
-            if (qs == null) {
-                parseQueryString();
-                qs = this.queryStringNonDecoded;
-            }
-
-            List<NameValuePair> params = URLEncodedUtils.parse(qs, Charset.forName("UTF-8"));
-            if (params != null) {
-                for (NameValuePair nameValuePair : params) {
-                    String name = nameValuePair.getName();
-                    List<String> values = paramsFinal.get(name);
-                    if (values == null) {
-                        values = new ArrayList<String>();
-                        paramsFinal.put(name, values);
-                    }
-                    values.add(nameValuePair.getValue());
-                }
-            }
-
-            //==========================================
-            // Make sure everything is immutable.
-            //==========================================
-            Map<String, List<String>> mapWithInmutableLists = new HashMap<String, List<String>>();
-            for (Entry<String, List<String>> entry : paramsFinal.entrySet()) {
-                mapWithInmutableLists.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
-            }
-
-            this.queryStringParams = Collections.unmodifiableMap(mapWithInmutableLists);
-
-        } catch (Exception ex) {
-            throw SpincastStatics.runtimize(ex);
+        //==========================================
+        // Make sure everything is immutable.
+        //==========================================
+        Map<String, List<String>> mapWithInmutableLists = new HashMap<String, List<String>>();
+        for (Entry<String, List<String>> entry : paramsFinal.entrySet()) {
+            mapWithInmutableLists.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
         }
+        this.queryStringParams = paramsFinal;
     }
 
     @Override

@@ -11,7 +11,7 @@ public class AdminProtectionTest extends WebsiteIntegrationTestBase {
     @Test
     public void noCredentials() throws Exception {
 
-        HttpResponse response = GET("/admin").send();
+        HttpResponse response = GET("/admin", false, false).send();
         assertEquals(HttpStatus.SC_UNAUTHORIZED, response.getStatus());
     }
 

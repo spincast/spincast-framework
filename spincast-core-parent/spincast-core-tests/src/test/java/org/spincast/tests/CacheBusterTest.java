@@ -43,8 +43,9 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
 
                 String fullUrl = context.request().getFullUrl();
                 assertNotNull(fullUrl);
-                assertEquals("http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
-                             "/one.css?aaa=bbb", fullUrl);
+                assertEquals("https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
+                             "/one.css?aaa=bbb",
+                             fullUrl);
 
                 context.response().sendPlainText("ok");
             }
@@ -187,7 +188,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
-                        "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                        "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                                          "/one.css?aaa=bbb";
 
                 String fullUrl = context.request().getFullUrlProxied();
@@ -222,7 +223,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
-                        "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                        "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                                          "/one.css?aaa=bbb";
 
                 String fullUrl = context.request().getFullUrlProxied(false);
@@ -257,7 +258,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
-                        "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                        "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                                          "/one" + cacheBusterCode + ".css?aaa=bbb";
 
                 String fullUrl = context.request().getFullUrlProxied(true);
@@ -528,7 +529,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
-                        "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                        "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                                          "/one.css?aaa=bbb";
 
                 String fullUrl = context.request().getFullUrlProxied();
@@ -571,7 +572,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
-                        "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                        "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                                          "/one.css?aaa=bbb";
 
                 String fullUrl = context.request().getFullUrlProxied(false);
@@ -614,7 +615,7 @@ public class CacheBusterTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String fullUrlExpected =
-                        "http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+                        "https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                                          "/one" + cacheBusterCode + ".css?aaa=bbb";
 
                 String fullUrl = context.request().getFullUrlProxied(true);

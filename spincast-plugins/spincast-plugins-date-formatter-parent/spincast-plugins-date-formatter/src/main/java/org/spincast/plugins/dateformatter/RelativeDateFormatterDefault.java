@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.spincast.core.locale.LocaleResolver;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -89,6 +90,14 @@ public class RelativeDateFormatterDefault implements RelativeDateFormatter {
             formatted = getPrettyTime(locale).format(getDate());
         } else if (formatType == RelativeDateFormatType.DURATION) {
             formatted = getPrettyTime(locale).formatDuration(getDate());
+
+            //==========================================
+            // PrettyTime will return an empty string
+            // if the target date is very close to now!
+            //==========================================
+            if (StringUtils.isBlank(formatted)) {
+                formatted = getAFewSecondsLabel();
+            }
         } else if (formatType == RelativeDateFormatType.UNROUNDED) {
             formatted = getPrettyTime(locale).formatUnrounded(getDate());
         } else {
@@ -96,6 +105,10 @@ public class RelativeDateFormatterDefault implements RelativeDateFormatter {
         }
 
         return formatted;
+    }
+
+    protected String getAFewSecondsLabel() {
+        return "a few seconds";
     }
 
 }

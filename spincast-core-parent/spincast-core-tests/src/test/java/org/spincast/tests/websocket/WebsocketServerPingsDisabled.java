@@ -45,7 +45,7 @@ public class WebsocketServerPingsDisabled extends NoAppWebsocketTestingBase {
 
         WebsocketClientTest client = new WebsocketClientTest();
 
-        WebsocketClientWriter writer = websocket("/ws").ping(0).connect(client);
+        WebsocketClientWriter writer = websocket("/ws").disableSslCertificateErrors().ping(0).connect(client);
         assertNotNull(writer);
         assertTrue(controller.isEndpointOpen("endpoint1"));
 

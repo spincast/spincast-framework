@@ -35,7 +35,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+        assertEquals("https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                      "/one?titi=toto",
                      response.getContentAsString());
     }
@@ -55,12 +55,12 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "https")
+        HttpResponse response = GET("/one?titi=toto").addHeaderValue(HttpHeaders.X_FORWARDED_PROTO, "http")
                                                      .send();
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("https://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpServerPort() +
+        assertEquals("http://" + getSpincastConfig().getServerHost() + ":" + getSpincastConfig().getHttpsServerPort() +
                      "/one?titi=toto",
                      response.getContentAsString());
     }
@@ -86,7 +86,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("https://someHost:" + getSpincastConfig().getHttpServerPort() +
+        assertEquals("https://someHost:" + getSpincastConfig().getHttpsServerPort() +
                      "/one?titi=toto",
                      response.getContentAsString());
     }
@@ -137,7 +137,7 @@ public class ReverseProxyTest extends NoAppStartHttpServerTestingBase {
 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
-        assertEquals("http://someHost:12345/one?titi=toto", response.getContentAsString());
+        assertEquals("https://someHost:12345/one?titi=toto", response.getContentAsString());
     }
 
     @Test

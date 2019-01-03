@@ -358,27 +358,7 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
     }
 
     @Test
-    public void secureCookieViaHttp() throws Exception {
-
-        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
-
-            @Override
-            public void handle(DefaultRequestContext context) {
-
-                String cookie = context.request().getCookieValue("myKey");
-                assertNull(cookie);
-                context.response().sendPlainText("ok");
-            }
-        });
-
-        Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
-
-        HttpResponse response = GET("/").setCookie(cookie).send();
-        assertEquals(HttpStatus.SC_OK, response.getStatus());
-    }
-
-    @Test
-    public void unsecureCookieViaHttp() throws Exception {
+    public void secureCookieViaHttps() throws Exception {
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -393,6 +373,27 @@ public class CookiesTest extends NoAppStartHttpServerTestingBase {
         });
 
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
+
+        HttpResponse response = GET("/").setCookie(cookie).send();
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void unsecureCookieViaHttps() throws Exception {
+
+        getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+
+                String cookie = context.request().getCookieValue("myKey2");
+                assertNotNull(cookie);
+                assertEquals("titi", cookie);
+                context.response().sendPlainText("ok");
+            }
+        });
+
+        Cookie cookie = getCookieFactory().createCookie("myKey2", "titi");
         cookie.setSecure(false);
 
         HttpResponse response = GET("/").setCookie(cookie).send();

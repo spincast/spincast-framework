@@ -2,6 +2,7 @@ package org.spincast.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
@@ -18,61 +19,46 @@ import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 
-public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
+public class CookiesHttpTest extends NoAppStartHttpServerTestingBase {
 
     @Override
     protected Class<? extends SpincastConfig> getTestingConfigImplementationClass2() {
-        return HttpsTestConfig.class;
+        return HttpTestConfig.class;
     }
 
-    protected static class HttpsTestConfig extends SpincastConfigTestingDefault {
+    protected static class HttpTestConfig extends SpincastConfigTestingDefault {
 
-        private int httpsServerPort = -1;
+        private int httpServerPort = -1;
 
         /**
          * Constructor
          */
         @Inject
-        protected HttpsTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+        protected HttpTestConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
             super(spincastConfigPluginConfig, testingMode);
         }
 
         @Override
         public String getPublicUrlBase() {
-            return "https://" + getServerHost() + ":" + getHttpsServerPort();
+            return "http://" + getServerHost() + ":" + getHttpServerPort();
         }
+
+        @Override
+        public int getHttpServerPort() {
+            if (this.httpServerPort < 0) {
+                this.httpServerPort = SpincastTestingUtils.findFreePort();
+            }
+            return this.httpServerPort;
+        };
 
         @Override
         public int getHttpsServerPort() {
-            if (this.httpsServerPort < 0) {
-                this.httpsServerPort = SpincastTestingUtils.findFreePort();
-            }
-            return this.httpsServerPort;
-        }
-
-        @Override
-        public String getHttpsKeyStorePath() {
-            return "/self-signed-certificate.jks";
-        }
-
-        @Override
-        public String getHttpsKeyStoreType() {
-            return "JKS";
-        }
-
-        @Override
-        public String getHttpsKeyStoreStorePass() {
-            return "myStorePass";
-        }
-
-        @Override
-        public String getHttpsKeyStoreKeyPass() {
-            return "myKeyPass";
+            return -1;
         }
     }
 
     @Test
-    public void secureCookieViaHttps() throws Exception {
+    public void secureCookieViaHttp() throws Exception {
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -80,20 +66,19 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
             public void handle(DefaultRequestContext context) {
 
                 String cookie = context.request().getCookieValue("myKey");
-                assertNotNull(cookie);
-                assertEquals("titi", cookie);
+                assertNull(cookie);
                 context.response().sendPlainText("ok");
             }
         });
 
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
 
-        HttpResponse response = GET("/", false, true).setCookie(cookie).send();
+        HttpResponse response = GET("/", false, false).setCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 
     @Test
-    public void unsecureCookieViaHttps() throws Exception {
+    public void unsecureCookieViaHttp() throws Exception {
 
         getRouter().GET("/").handle(new Handler<DefaultRequestContext>() {
 
@@ -110,7 +95,7 @@ public class CookiesHttpsTest extends NoAppStartHttpServerTestingBase {
         Cookie cookie = getCookieFactory().createCookie("myKey", "titi");
         cookie.setSecure(false);
 
-        HttpResponse response = GET("/", false, true).setCookie(cookie).send();
+        HttpResponse response = GET("/", false, false).setCookie(cookie).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
     }
 

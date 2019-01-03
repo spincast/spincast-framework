@@ -526,6 +526,21 @@ let js='{{jsOneLine(code, true)}}';
                         If this form was displayed on a <code>/myPage?someKey=someValue</code> url,"<code>someKey=someValue</code>" would
                         be on the url the form would be submitted to.
                     </p>
+                    <p>
+                        The function takes an optional parameter which is a list of parameters to ignore. For example:
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-pebble" data-ace-hi="1,29,1,50"
+>
+
+{{ querystringToHiddenFields(['orderBy', 'filter']) }}
+</pre> 
+                            {% endverbatim %}
+                            </p> 
+                        </div> 
+                    </p>
+                    
                 </div>
             </li>
             

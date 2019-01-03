@@ -4,6 +4,8 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.JdbcUtils;
@@ -22,10 +24,13 @@ import com.zaxxer.hikari.HikariDataSource;
 @Singleton
 public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
 
+    protected final static Logger logger = LoggerFactory.getLogger(SpincastTestingPostgres.class);
+
     private final SpincastTestingPostgresConfig spincastTestingPostgresConfig;
     private final JdbcUtils jdbcUtils;
     private final SpincastDataSourceFactory spincastDataSourceFactory;
     private EmbeddedPostgres pg = null;
+    private int pgPort;
     private SpincastDataSource dataSource;
 
     @Inject
@@ -56,11 +61,17 @@ public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
     @Inject
     public void init() {
         try {
+            this.pgPort = SpincastTestingUtils.findFreePort();
+
+            logger.info("Starting embedded PostgreSQL on port " + this.pgPort + ". Please wait...");
+
             this.pg = EmbeddedPostgres.builder()
-                                      .setPort(SpincastTestingUtils.findFreePort())
+                                      .setPort(this.pgPort)
                                       .setDataDirectory(getSpincastTestingPostgresConfig().getDataTempDir())
                                       .setCleanDataDirectory(true)
                                       .start();
+
+            logger.info("Embedded PostgreSQL started.");
 
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
@@ -71,20 +82,40 @@ public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
     public SpincastDataSource get() {
         if (this.dataSource == null) {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl(createConnectionString());
-            config.setUsername("postgres");
-            config.setPassword("postgres");
-            config.setMaximumPoolSize(10);
+            config.setJdbcUrl(getDbConnectionString());
+            config.setUsername(getDbUsername());
+            config.setPassword(getDbPassword());
+            config.setMaximumPoolSize(getDbMaxPoolSize());
             DataSource ds = new HikariDataSource(config);
             this.dataSource = getSpincastDataSourceFactory().create(ds);
         }
         return this.dataSource;
     }
 
-    protected String createConnectionString() {
+    public String getDbConnectionString() {
         StringBuilder b = new StringBuilder();
-        b.append("jdbc:postgresql://localhost:").append(getPg().getPort()).append("/postgres");
+        b.append("jdbc:postgresql://localhost:").append(getPg().getPort()).append("/").append(getDbName());
         return b.toString();
+    }
+
+    public int getDbPort() {
+        return this.pgPort;
+    }
+
+    public String getDbName() {
+        return "postgres";
+    }
+
+    public String getDbUsername() {
+        return "postgres";
+    }
+
+    public String getDbPassword() {
+        return "postgres";
+    }
+
+    public int getDbMaxPoolSize() {
+        return 10;
     }
 
     /**
@@ -95,7 +126,7 @@ public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
             try {
                 this.pg.close();
             } catch (Exception ex) {
-                System.err.println(ex);
+                logger.warn("Error stopping the embedded PostgreSQL instance", ex);
             }
         }
     }

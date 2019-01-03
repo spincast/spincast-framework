@@ -2,7 +2,10 @@ package org.spincast.core.utils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -237,5 +240,37 @@ public interface SpincastUtils {
      */
     public String basicHtml(boolean newlineToBrFirst, String html, boolean allowImages);
 
+    /**
+     * Returns a random element from the set or
+     * <code>null</code> if the set is null or empty.
+     */
+    public <T> T getRandomElement(Set<T> set);
+
+    /**
+     * Return the querystring of an URL, without
+     * leading "?". Returns an empty string if there is
+     * no querystring.
+     * <p>
+     * The querystring returned is <em>NOT</em> decoded using
+     * {@link URLDecoder.decode}).
+     */
+    public String getQuerystringFromUrl(String url);
+
+    /**
+     * Parses an URL and returns the list of its querystring parameters,
+     * if any.
+     * <p>
+     * The querystring will be decoded using (using {@link URLDecoder.decode}).
+     */
+    public Map<String, List<String>> getQuerystringParametersFromUrl(String url);
+
+    /**
+     * Parses a querystring (starting with a "?" or not) and returns
+     * the list of parameters.
+     * 
+     * @param decodeQueryStringFirst if <code>true</code>, the querystring will be
+     * decoded (using {@link URLDecoder.decode}) prior to being parsed.
+     */
+    public Map<String, List<String>> getParametersFromQuerystring(String querystring, boolean decodeQueryStringFirst);
 
 }
