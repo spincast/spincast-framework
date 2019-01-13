@@ -6,6 +6,14 @@ package org.spincast.plugins.session.config;
 public interface SpincastSessionConfig {
 
     /**
+     * When a cookie is automatically added to a
+     * visitor, should it be permanent (10 years)?
+     * Otherwise, it will be browser-session long
+     * only (the default).
+     */
+    public boolean isSessionPermanentByDefault();
+
+    /**
      * The number of minutes before
      * an inactive session is deleted.
      * <p>

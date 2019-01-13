@@ -6,6 +6,11 @@ package org.spincast.plugins.session.config;
 public class SpincastSessionConfigDefault implements SpincastSessionConfig {
 
     @Override
+    public boolean isSessionPermanentByDefault() {
+        return false;
+    }
+
+    @Override
     public int getDeleteOldSessionsScheduledTaskRunEveryNbrMinutes() {
         return 30;
     }

@@ -111,7 +111,7 @@ Docs : "Quick Tutorial"
 // to target a controller method as the Route Handler :
 router.GET("/books/${bookId}").handle(bookController::booksGet);
        
-// For any HTTP request. Uses an inine Route Handler :
+// For any HTTP request. Uses an inline Route Handler :
 router.ALL("/hello").handle(context -> context.response().sendPlainText("Hello!"));
 </pre>
                 </p>

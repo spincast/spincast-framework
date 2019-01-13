@@ -124,14 +124,16 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
             getSpincastSessionManager().updateModificationDateAndSaveSession(session);
 
             //==========================================
-            // If the session id new, we save its id on 
+            // If the session is new, we save its id on 
             // the user.
             //
             // Be careful with an existing session: we don't want
-            // to replace a permanent cookie with a session one!
+            // to replace a permanent cookie with a browser-session
+            // one!
             //==========================================
             if (session.isNew()) {
-                getSpincastSessionManager().saveSessionIdOnUser(session.getId(), false);
+                getSpincastSessionManager().saveSessionIdOnUser(session.getId(),
+                                                                getSpincastSessionConfig().isSessionPermanentByDefault());
             }
         }
     }

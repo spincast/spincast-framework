@@ -230,7 +230,7 @@ Docs : "bootstrapping"
                 </li>
                 <li>
                     The bootstrapping process is all about creating a regular Guice context, so make sure
-                    you read <a href="https://github.com/google/guice/wiki/Motivation">Guice documentation</a>
+                    you read the <a href="https://github.com/google/guice/wiki/Motivation">Guice documentation</a>
                     if you didn't already!
                 </li>
                 <li>
@@ -249,7 +249,7 @@ Docs : "bootstrapping"
                 <li>
                     Don't forget to register your <em>implementation</em> classes if you
                     are using a <a href="#extending_request_context">custom Request Context</a> type or a 
-                    <a href="#websockets_extending_context">custom Request Context</a>. You do this using
+                    <a href="#websockets_extending_context">custom Websocket Context</a>. You do this using
                     the <a href="/public/javadoc/org/spincast/defaults/bootstrapping/SpincastBootstrapper.html#requestContextImplementationClass-java.lang.Class-">requestContextImplementationClass(...)</a>
                     method and the <a href="/public/javadoc/org/spincast/defaults/bootstrapping/SpincastBootstrapper.html#websocketContextImplementationClass-java.lang.Class-">websocketContextImplementationClass(...)</a>
                     method on the <a href="#boot_bootstrapper">Bootstrapper</a>.
@@ -257,7 +257,7 @@ Docs : "bootstrapping"
                 <li>
                     Remember that by using the <a href="#quick_start">Quick Start</a> application as a template,
                     pretty much everything discussed here <em>has already been implemented for you</em>!
-                    Simply load the code in your favorite IDE, and start adjusting the code to meet the needs of your
+                    Simply load the code in your favorite IDE, and start adjusting it to meet the needs of your
                     application.
                 </li> 
             </ul>

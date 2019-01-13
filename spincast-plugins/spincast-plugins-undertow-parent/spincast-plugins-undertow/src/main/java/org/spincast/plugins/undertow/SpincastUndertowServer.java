@@ -1243,7 +1243,8 @@ public class SpincastUndertowServer implements Server {
 
                     List<String> finalValues = new ArrayList<String>();
                     for (FormValue formValue : values) {
-                        if (formValue.isFile()) {
+                        boolean isFile = formValue.isFileItem();
+                        if (isFile) {
                             continue;
                         }
                         String value = formValue.getValue();
@@ -1276,10 +1277,11 @@ public class SpincastUndertowServer implements Server {
 
                     List<UploadedFile> finalFiles = new ArrayList<UploadedFile>();
                     for (FormValue formValue : values) {
-                        if (!formValue.isFile()) {
+                        boolean isFile = formValue.isFileItem();
+                        if (!isFile) {
                             continue;
                         }
-                        File file = formValue.getPath().toFile();
+                        File file = formValue.getFileItem().getFile().toFile();
                         if (file != null) {
                             String fileName = formValue.getFileName();
                             if (StringUtils.isBlank(fileName)) {

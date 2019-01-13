@@ -210,7 +210,7 @@
                             </ul>
                         </li>
                         <li>
-                            Finally, you can add an optional third part to the name, by prefixing it with double backslashes:
+                            Finally, you can add an optional third part to the name, by prefixing it with two underscores:
                             "<code>M_2017_04_01_01<strong><em>__Security_tables</em></strong></code>". The
                             "<code>__</code>" and everything coming after it will be ignored. This allows you to add
                             a description and make the name more meaningful.
@@ -239,7 +239,7 @@
                     have a <code>UserService</code> providing a
                     <code>updateUsers(...)</code> method... It would be nice to be able to reuse
                     the logic provided by that service to update your existing users with a custom
-                    value, once the new column is added! But Since the <code>createUser(...)</code> method
+                    value, once the new column is added! But Since the <code>updateUsers(...)</code> method
                     doesn't accept any <code>Connection</code> parameter, and may itself call a 
                     <code>UserRepository</code> component, how could the SQL request being performed in the end
                     use the proper connection provided by Flyway?

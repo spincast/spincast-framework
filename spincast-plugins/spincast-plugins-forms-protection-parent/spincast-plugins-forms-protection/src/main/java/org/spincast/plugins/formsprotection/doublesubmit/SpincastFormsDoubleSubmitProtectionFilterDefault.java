@@ -84,6 +84,13 @@ public class SpincastFormsDoubleSubmitProtectionFilterDefault implements Spincas
             return;
         }
 
+        //==========================================
+        // If the request has been forwarded
+        //==========================================
+        if (context.routing().isForwarded()) {
+            return;
+        }
+
         try {
 
             //==========================================

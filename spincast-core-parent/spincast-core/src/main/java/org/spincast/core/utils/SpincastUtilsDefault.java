@@ -666,6 +666,10 @@ public class SpincastUtilsDefault implements SpincastUtils {
     @Override
     public String getCacheBusterCode() {
 
+        if (getSpincastConfig().isDevelopmentMode() && isAlwaysChangeCacheBusterCodeInDevMode()) {
+            return generateCacheBusterCode();
+        }
+
         if (this.cacheBusterCode == null) {
             synchronized (this.cacheBusterCodeLock) {
                 if (this.cacheBusterCode == null) {
@@ -673,11 +677,19 @@ public class SpincastUtilsDefault implements SpincastUtils {
                     // By default, the cache buster code change
                     // everytime the application is restarted.
                     //==========================================
-                    this.cacheBusterCode = "spincastcb_" + new Date().getTime() + "_";
+                    this.cacheBusterCode = generateCacheBusterCode();
                 }
             }
         }
         return this.cacheBusterCode;
+    }
+
+    protected String generateCacheBusterCode() {
+        return "spincastcb_" + new Date().getTime() + "_";
+    }
+
+    protected boolean isAlwaysChangeCacheBusterCodeInDevMode() {
+        return true;
     }
 
     @Override
