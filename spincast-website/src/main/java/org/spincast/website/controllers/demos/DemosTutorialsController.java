@@ -24,12 +24,8 @@ public class DemosTutorialsController {
         context.response().sendTemplateHtml("/templates/demos/httpAuthProtectedPage.html");
     }
 
-    public void fullWebsite(AppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/demos/fullWebsite.html");
-    }
-
-    public void todoList(AppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/demos/todoList.html");
+    public void realApps(AppRequestContext context) {
+        context.response().sendTemplateHtml("/templates/demos/realApps.html");
     }
 
     public void helloWorldQuick(AppRequestContext context) {

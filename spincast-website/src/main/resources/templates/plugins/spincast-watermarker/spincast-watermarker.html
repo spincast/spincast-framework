@@ -1,0 +1,342 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-watermarker{% endblock %}
+{% block meta_title %}Plugins - Spincast Watermarker{% endblock %}
+{% block meta_description %}Spincast Watermarker plugin - Watermark images{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Watermarker plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Watermarker <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/watermarker/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Watermarker <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin provides a way to <a href="https://en.wikipedia.org/wiki/Digital_watermarking">watermark resources</a>.
+                    It allows you to modify a base resource to add a link to your site, a logo, etc.
+                </p>
+                <p>
+                    The initial goal of this plugin was to be able to watermark <em>images</em> when they are
+                    <a href="/documentation#hotlinking">hotlinked</a> from a foreign website, but may also 
+                    provide utilities to watermark other kinds of content in the future.
+                </p>
+                
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="usage_images" href="#usage_images" title="permanent link"></a>
+                    Watermarking images
+                </h4>
+                <p>
+                    You can use this plugin for many reasons, but one of them is to watermark resources
+                    protected using the <a href="/documentation#hotlinking">hotlinking protection</a> 
+                    provided by Spincast. You redirect hotlinked images to a specific <code>route handler</code> that uses 
+                    this plugin to generate watermarked versions of the base images.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The watermark this plugin creates can be based on some specified <em>text</em> or 
+                    on an <em>image</em> you provide (a logo, for example).
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="instance" href="#instance" title="permanent link"></a>
+                    Building a Watermarker instance
+                </h5>
+                
+                <p>
+                    The first thing to do is to use the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/watermarker/SpincastWatermarkerFactory.html">SpincastWatermarkerFactory</a> 
+                    factory to start the creation of a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/watermarker/SpincastImageWatermarker.html">SpincastImageWatermarker</a>
+                    instance:
+                </p>
+                <p>
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>@Inject
+protected SpincastWatermarkerFactory spincastWatermarkerFactory;
+
+SpincastImageWatermarker imgWatermarker = 
+    spincastWatermarkerFactory.imageWatermarkerBuilder()
+                              .text("My company name")
+                              .position(SpincastWatermarkPosition.BOTTOM_RIGHT)
+                              .build();</pre> 
+                        {% endverbatim %}
+                        </p>
+                    </div> 
+                </p>
+                <p>
+                    This watermarker would then be used to watermark images with a "<code>My company name</code>"
+                    text, at their bottom right.
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="watermark" href="#watermark" title="permanent link"></a>
+                    Watermarking the images
+                </h5>
+                
+                <p>
+                    Once you have created a <code>SpincastImageWatermarker</code> instance, you can
+                    watermark images using it:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>
+
+imgWatermarker.watermark("/cat.jpg", true, new File(tempDirectory + "/cat-watermarked.jpg"));
+</pre> 
+                        {% endverbatim %}
+                        </p>
+                    </div>   
+                </p>
+                <p>
+                    In this example, a new <em>"cat-watermarked.jpg"</em> image would be created
+                    and would contain a "<code>My company name</code>" text watermark.
+                </p>
+                
+                <h5>
+                    <a class="anchor_small" id="options" href="#options" title="permanent link"></a>
+                    Options
+                </h5> 
+                <p>
+                    By default, if you don't specify any options, the resulting watermarker will add
+                    <em>text</em> watermarks, at the bottom right of the base images, using the default
+                    system font and the color black. This text will be the base URL of your
+                    application ("<code>https://www.example.com</code>" for example.) The background 
+                    will be white and a small black border will be added around the text.
+                </p>
+                <p>
+                    Here are the options available when building a <code>Watermarker</code> using the 
+                    <code>SpincastWatermarkerFactory</code>:
+                </p>
+                <p>
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="options_text" href="#options_text" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>text</span>(...)</code>
+                            <div class="well">
+                                <p>
+                                    When calling one of the "<em>text(...)</em>" overloads, you create a watermarker
+                                    that will add some <em>text</em> to the base images. This method allows you to
+                                    specify:
+                                    <ul>
+                                        <li>
+                                            The <code>text</code> itself.
+                                        </li>
+                                        <li>
+                                            The <code>color</code> to use for the text.
+                                        </li>
+                                        <li>
+                                            The <code>font</code> to use when writing the text.
+                                        </li>      
+                                    </ul>
+                                </p> 
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="options_bg" href="#options_bg" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>backgroundColor</span>(Color color)</code>
+                            <div class="well">
+                                <p>
+                                    The color to use as the background for the watermark section. This option is only
+                                    used when a <em>text</em> watermark is created, not when an <em>image</em> is used.
+                                </p> 
+                            </div>
+                        </li> 
+                        
+                        <li>
+                            <a class="anchor_small" id="options_image" href="#options_image" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>image</span>(...)</code>
+                            <div class="well">
+                                <p>
+                                    When calling one of the "<em>image(...)</em>" overloads, you create a watermarker
+                                    that will be based on an <em>image</em> you provide (your logo, for example). 
+                                    This method requires the <code>path</code> to the image to use
+                                    and allows you to specify if this image is on the <em>classpath</em> or on the 
+                                    <em>file system</em>.
+                                </p> 
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="options_position" href="#options_position" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>position</span>(SpincastWatermarkPosition position, int margin)</code>
+                            <div class="well">
+                                <p>
+                                    The <code>position</code> of the watermark. It can be:
+                                    <ul>
+                                        <li>
+                                            <code>TOP_LEFT</code>
+                                        </li>
+                                        <li>
+                                            <code>TOP_CENTER</code>
+                                        </li>
+                                        <li>
+                                            <code>TOP_RIGHT</code>
+                                        </li>
+                                        <li>
+                                            <code>BOTTOM_LEFT</code>
+                                        </li>
+                                        <li>
+                                            <code>BOTTOM_CENTER</code>
+                                        </li>
+                                        <li>
+                                            <code>BOTTOM_RIGHT</code>
+                                        </li>     
+                                    </ul>
+                                </p> 
+                                <p>
+                                    This option also allows you to specify a <code>margin</code> between the
+                                    watermark and the edge of the base images.
+                                </p>
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="options_widthPercent" href="#options_widthPercent" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>widthPercent</span>(...)</code>
+                            <div class="well">
+                                <p>
+                                    The <code>width</code> of the watermark, relative to the width of the base image. It can
+                                    be between <code>1</code> and <code>100</code>.
+                                </p>
+                                <p>
+                                    Defaults to <code>50</code> (50% width of the base image).
+                                </p> 
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="options_border" href="#options_border" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>border</span>(int widthInPixels, Color color)</code>
+                            <div class="well">
+                                <p>
+                                    Allows you to add a <code>border</code> around the watermark. You can specify
+                                    the <em>width</em> of the border (in <em>pixels</em>) and its <em>color</em>. Use
+                                    <code>0</code> as the width for no border at all!
+                                </p> 
+                                <p>
+                                    Defaults to a 5 pixels black border.
+                                </p>  
+                            </div>
+                        </li>
+                        
+                        <li>
+                            <a class="anchor_small" id="options_opacity" href="#options_opacity" title="permanent link"></a>
+                            <code class="apiItem">SpincastImageWatermarkerBuilder <span>opacity</span>(...)</code>
+                            <div class="well">
+                                <p>
+                                    Allows you to control the opacity of the watermark. It can go from "<code>0.0F</code>"
+                                    (totally transparent) to "<code>1.0F</code>" (totally opaque).
+                                </p> 
+                            </div>
+                        </li>   
+                    </ul>
+                </p>
+
+            </section>
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-watermarker&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/watermarker/SpincastWatermarkerPlugin.html">SpincastWatermarkerPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,47"
+>
+
+Spincast.configure()
+        .plugin(new SpincastWatermarkerPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

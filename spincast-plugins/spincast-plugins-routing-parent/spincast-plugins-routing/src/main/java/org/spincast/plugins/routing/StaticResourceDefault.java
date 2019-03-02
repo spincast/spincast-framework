@@ -8,6 +8,9 @@ import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.routing.StaticResourceCorsConfig;
 import org.spincast.core.routing.StaticResourceType;
+import org.spincast.core.routing.hotlinking.HotlinkingManager;
+import org.spincast.core.routing.hotlinking.HotlinkingManagerDefault;
+import org.spincast.core.utils.SpincastUtils;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -25,6 +28,9 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
     private final StaticResourceCorsConfig corsConfig;
     private final StaticResourceCacheConfig cacheConfig;
     private final boolean ignoreQueryString;
+    private boolean hotlinkingProtected = false;
+    private HotlinkingManager hotlinkingManager;
+    private final SpincastUtils spincastUtils;
 
     @AssistedInject
     public StaticResourceDefault(@Assisted("isSpicastOrPluginAddedResource") boolean isSpicastOrPluginAddedResource,
@@ -34,7 +40,13 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
                                  @Assisted @Nullable Handler<R> generator,
                                  @Assisted @Nullable StaticResourceCorsConfig corsConfig,
                                  @Assisted @Nullable StaticResourceCacheConfig cacheConfig,
-                                 @Assisted("ignoreQueryString") boolean ignoreQueryString) {
+                                 @Assisted("ignoreQueryString") boolean ignoreQueryString,
+                                 @Assisted("hotlinkingProtected") boolean hotlinkingProtected,
+                                 @Assisted("hotlinkingManager") @Nullable HotlinkingManager hotlinkingManager,
+                                 SpincastUtils spincastUtils,
+                                 HotlinkingManagerDefault hotlinkingManagerDefault) {
+        this.spincastUtils = spincastUtils;
+
         this.isSpicastOrPluginAddedResource = isSpicastOrPluginAddedResource;
         this.staticResourceType = staticResourceType;
         this.urlPath = urlPath;
@@ -43,6 +55,16 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
         this.corsConfig = corsConfig;
         this.cacheConfig = cacheConfig;
         this.ignoreQueryString = ignoreQueryString;
+        this.hotlinkingProtected = hotlinkingProtected;
+
+        if (hotlinkingManager == null) {
+            hotlinkingManager = hotlinkingManagerDefault;
+        }
+        this.hotlinkingManager = hotlinkingManager;
+    }
+
+    protected SpincastUtils getSpincastUtils() {
+        return this.spincastUtils;
     }
 
     @Override
@@ -110,6 +132,16 @@ public class StaticResourceDefault<R extends RequestContext<?>> implements Stati
     @Override
     public boolean isIgnoreQueryString() {
         return this.ignoreQueryString;
+    }
+
+    @Override
+    public boolean isHotlinkingProtected() {
+        return this.hotlinkingProtected;
+    }
+
+    @Override
+    public HotlinkingManager getHotlinkingManager() {
+        return this.hotlinkingManager;
     }
 
     @Override

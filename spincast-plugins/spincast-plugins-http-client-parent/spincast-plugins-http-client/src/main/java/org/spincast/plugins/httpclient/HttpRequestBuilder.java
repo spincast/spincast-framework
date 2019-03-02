@@ -100,6 +100,15 @@ public interface HttpRequestBuilder<T extends HttpRequestBuilder<?>> {
     public T disableSslCertificateErrors();
 
     /**
+     * Disables automatic handling of redirects.
+     * <p>
+     * By default, the client will automatically follow a
+     * redirect response. Calling this will allow you to
+     * get the actual redirect HTTP status.
+     */
+    public T disableRedirectHandling();
+
+    /**
      * Set HTTP authentication credentials.
      */
     public T setHttpAuthCredentials(String username, String password);

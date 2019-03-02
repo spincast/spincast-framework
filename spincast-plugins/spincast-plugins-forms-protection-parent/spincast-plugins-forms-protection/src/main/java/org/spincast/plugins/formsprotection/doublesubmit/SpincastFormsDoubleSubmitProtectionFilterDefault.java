@@ -80,7 +80,7 @@ public class SpincastFormsDoubleSubmitProtectionFilterDefault implements Spincas
         // This filter should have been configured
         // to skip resources requests, but in case :
         //==========================================
-        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isResourceRoute()) {
+        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isStaticResourceRoute()) {
             return;
         }
 

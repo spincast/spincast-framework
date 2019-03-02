@@ -379,6 +379,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
         Route<R> route = getRouteFactory().createRoute(getId(),
                                                        false, // is not a resource route!
+                                                       null,
                                                        isSpicastCoreRouteOrPluginRoute(),
                                                        getHttpMethods(),
                                                        getPath(),

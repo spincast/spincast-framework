@@ -676,7 +676,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     protected boolean isMustSkipResourceRequest(Route<R> mainRoute, Route<R> filterRoute) {
-        if (mainRoute.isResourceRoute() && filterRoute.isSkipResourcesRequests()) {
+        if (mainRoute.isStaticResourceRoute() && filterRoute.isSkipResourcesRequests()) {
             return true;
         }
         return false;
@@ -1523,7 +1523,9 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                       staticResource.getGenerator(),
                                                       staticResource.getCorsConfig(),
                                                       staticResource.getCacheConfig(),
-                                                      staticResource.isIgnoreQueryString());
+                                                      staticResource.isIgnoreQueryString(),
+                                                      staticResource.isHotlinkingProtected(),
+                                                      staticResource.getHotlinkingManager());
             getServer().addStaticResourceToServe(staticResourceNoDynParams);
         } else if (!splatParamFound && !dynParamFound) {
             getServer().addStaticResourceToServe(staticResource);
@@ -1651,7 +1653,9 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                                           staticResource.getGenerator(),
                                                                           staticResource.getCorsConfig(),
                                                                           staticResource.getCacheConfig(),
-                                                                          staticResource.isIgnoreQueryString());
+                                                                          staticResource.isIgnoreQueryString(),
+                                                                          staticResource.isHotlinkingProtected(),
+                                                                          staticResource.getHotlinkingManager());
                                 getServer().addStaticResourceToServe(newStaticResource);
                             }
                         }
@@ -1673,6 +1677,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
             route = getRouteFactory().createRoute(null,
                                                   true, // is a resource route!
+                                                  staticResource,
                                                   staticResource.isSpicastOrPluginAddedResource(),
                                                   Sets.newHashSet(HttpMethod.GET),
                                                   staticResource.getUrlPath(),
@@ -1756,8 +1761,13 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             }
 
             @Override
-            public boolean isResourceRoute() {
+            public boolean isStaticResourceRoute() {
                 return false;
+            }
+
+            @Override
+            public StaticResource<R> getStaticResource() {
+                return null;
             }
 
             @Override

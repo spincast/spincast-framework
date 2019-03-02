@@ -23,7 +23,16 @@ public interface Route<R extends RequestContext<?>> {
      * On a resource route, we may want to skip some filters,
      * for example.
      */
-    public boolean isResourceRoute();
+    public boolean isStaticResourceRoute();
+
+    /**
+     * Returns the {@link StaticResource } to serve or
+     * <code>null</code> if this is not a
+     * route for a static resource (ie if 
+     * {@link #isStaticResourceRoute()}) doesn't return
+     * <code>true</code>.
+     */
+    public StaticResource<R> getStaticResource();
 
     /**
      * Is this a route added by Spincast itself

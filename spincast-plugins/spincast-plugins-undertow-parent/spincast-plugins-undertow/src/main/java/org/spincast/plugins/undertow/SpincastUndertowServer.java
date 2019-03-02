@@ -917,12 +917,13 @@ public class SpincastUndertowServer implements Server {
                 URL proxiedUrl = new URL(fullUrl);
                 StringBuilder builder = new StringBuilder();
 
+                String protocol;
                 if (protoHeader != null) {
-                    builder.append(protoHeader.getFirst());
+                    protocol = protoHeader.getFirst();
                 } else {
-                    builder.append(proxiedUrl.getProtocol());
+                    protocol = proxiedUrl.getProtocol();
                 }
-                builder.append("://");
+                builder.append(protocol).append("://");
 
                 if (hostHeader != null) {
                     builder.append(hostHeader.getFirst());
@@ -931,9 +932,18 @@ public class SpincastUndertowServer implements Server {
                 }
 
                 if (portHeader != null) {
-                    builder.append(":").append(portHeader.getFirst());
+                    String port = portHeader.getFirst();
+                    if (!(protocol.equalsIgnoreCase("http") && "80".equals(port)) &&
+                        !(protocol.equalsIgnoreCase("https") && "443".equals(port))) {
+                        builder.append(":").append(port);
+                    }
                 } else {
-                    builder.append(proxiedUrl.getPort() > -1 ? ":" + proxiedUrl.getPort() : "");
+                    int port = proxiedUrl.getPort();
+                    if (port > -1 &&
+                        !(protocol.equalsIgnoreCase("http") && port == 80) &&
+                        !(protocol.equalsIgnoreCase("https") && port == 443)) {
+                        builder.append(":").append(port);
+                    }
                 }
 
                 builder.append(proxiedUrl.getPath());

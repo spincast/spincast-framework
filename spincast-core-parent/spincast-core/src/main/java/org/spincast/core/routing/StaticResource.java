@@ -1,6 +1,7 @@
 package org.spincast.core.routing;
 
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.hotlinking.HotlinkingManager;
 
 /**
  * A static resource, from the classpath or the
@@ -41,7 +42,7 @@ public interface StaticResource<R extends RequestContext<?>> {
     /**
      * The generator to call to generate this resource if it
      * doesn't exist yet.
-     * 
+     * <p>
      * @return the generator or <code>null</code> if there are none.
      */
     public Handler<R> getGenerator();
@@ -55,8 +56,23 @@ public interface StaticResource<R extends RequestContext<?>> {
     public boolean isIgnoreQueryString();
 
     /**
+     * Is the resource hotlinking protected?
+     */
+    public boolean isHotlinkingProtected();
+
+    /**
+     * If a static resource is hotlinking protected
+     * ({@link #isHotlinkingProtected()}), then this is the
+     * component responsible to that protection.
+     * <p>
+     * Will be <code>null</code> if the resource
+     * is not hotlinking protected.
+     */
+    public HotlinkingManager getHotlinkingManager();
+
+    /**
      * The cors configurations for the static resource.
-     * 
+     * <p>
      * If <code>null</code>, cors won't be enabled for that
      * resource.
      */
@@ -64,7 +80,7 @@ public interface StaticResource<R extends RequestContext<?>> {
 
     /**
      * The cache configurations for the static resource.
-     * 
+     * <p>
      * If <code>null</code>, no caching headers will be sent,
      * but the last modification-date of the resource will be
      * validated and <code>304 - Not modified</code> will be

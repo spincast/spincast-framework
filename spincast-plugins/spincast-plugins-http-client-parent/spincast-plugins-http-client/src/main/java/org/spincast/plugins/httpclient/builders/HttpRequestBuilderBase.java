@@ -65,6 +65,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
     private CookieStore cookieStore;
     private HttpClientBuilder httpClientBuilder;
     private boolean disableSslCertificateErrors = false;
+    private boolean disableRedirectHandling = false;
 
     private String httpAuthUsername;
     private String httpAuthPassword;
@@ -90,6 +91,10 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
 
     protected boolean isDisableSslCertificateErrors() {
         return this.disableSslCertificateErrors;
+    }
+
+    protected boolean isDisableRedirectHandling() {
+        return this.disableRedirectHandling;
     }
 
     protected SpincastHttpClientUtils getSpincastHttpClientUtils() {
@@ -137,6 +142,13 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
             } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
             }
+        }
+
+        //==========================================
+        // Disable automatic redirects?
+        //==========================================
+        if (isDisableRedirectHandling()) {
+            this.httpClientBuilder.disableRedirectHandling();
         }
 
         //==========================================
@@ -210,6 +222,15 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
     public T disableSslCertificateErrors() {
 
         this.disableSslCertificateErrors = true;
+
+        @SuppressWarnings("unchecked")
+        T t = (T)this;
+        return t;
+    }
+
+    @Override
+    public T disableRedirectHandling() {
+        this.disableRedirectHandling = true;
 
         @SuppressWarnings("unchecked")
         T t = (T)this;

@@ -26,6 +26,15 @@
             <scope>provided</scope>
         </dependency>
         
+        <!--=================================== 
+        Spincast Routing plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-routing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <!--===================================
         Undertow server.
         ====================================-->

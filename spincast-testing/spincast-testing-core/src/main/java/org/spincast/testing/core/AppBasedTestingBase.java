@@ -416,8 +416,12 @@ public abstract class AppBasedTestingBase<R extends RequestContext<?>, W extends
             host = "127.0.0.1";
         }
 
+        return createTestUrl(host, pathOrUrl, isHttps);
+    }
+
+    protected String createTestUrl(String host, String path, boolean isHttps) {
         return "http" + (isHttps ? "s" : "") + "://" + host + ":" +
-               (isHttps ? getSpincastConfig().getHttpsServerPort() : getSpincastConfig().getHttpServerPort()) + pathOrUrl;
+               (isHttps ? getSpincastConfig().getHttpsServerPort() : getSpincastConfig().getHttpServerPort()) + path;
     }
 
     protected WebsocketRequestBuilder websocket(String path) {

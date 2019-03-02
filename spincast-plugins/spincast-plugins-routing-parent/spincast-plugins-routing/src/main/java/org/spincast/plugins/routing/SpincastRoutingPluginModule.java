@@ -24,6 +24,8 @@ import org.spincast.core.routing.StaticResourceBuilderFactory;
 import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.routing.StaticResourceCorsConfig;
 import org.spincast.core.routing.StaticResourceFactory;
+import org.spincast.core.routing.hotlinking.HotlinkingManager;
+import org.spincast.core.routing.hotlinking.HotlinkingManagerDefault;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketContext;
 import org.spincast.core.websocket.WebsocketRoute;
@@ -124,6 +126,11 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         // cache config
         //==========================================
         bindStaticResourceCacheConfigFactory();
+
+        //==========================================
+        // The HotlinkingManager to use.
+        //==========================================
+        bindStaticResourceHotlinkingManager();
 
         //==========================================
         // The request context add-on
@@ -431,6 +438,11 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
 
     protected Class<? extends StaticResourceCacheConfig> getStaticResourceCacheConfigImplClass() {
         return StaticResourceCacheConfigDefault.class;
+    }
+
+    protected void bindStaticResourceHotlinkingManager() {
+        bind(HotlinkingManagerDefault.class).in(Scopes.SINGLETON);
+        bind(HotlinkingManager.class).to(HotlinkingManagerDefault.class).in(Scopes.SINGLETON);
     }
 
     protected void bindRequestContextAddon() {

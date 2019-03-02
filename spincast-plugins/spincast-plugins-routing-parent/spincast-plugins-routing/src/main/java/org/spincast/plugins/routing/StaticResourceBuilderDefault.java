@@ -15,6 +15,7 @@ import org.spincast.core.routing.StaticResourceCacheConfig;
 import org.spincast.core.routing.StaticResourceCorsConfig;
 import org.spincast.core.routing.StaticResourceFactory;
 import org.spincast.core.routing.StaticResourceType;
+import org.spincast.core.routing.hotlinking.HotlinkingManager;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.websocket.WebsocketContext;
@@ -40,6 +41,9 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
     private StaticResourceCacheConfig cacheConfig;
     private Handler<R> generator;
     private boolean ignoreQueryString;
+    private boolean hotlinkingProtected = false;
+    private HotlinkingManager hotlinkingManager;
+
     private final StaticResourceFactory<R> staticResourceFactory;
     private final StaticResourceCorsConfigFactory staticResourceCorsConfigFactory;
     private final StaticResourceCacheConfigFactory staticResourceCacheConfigFactory;
@@ -125,6 +129,14 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
 
     public String getPath() {
         return this.path;
+    }
+
+    public boolean isHotlinkingProtected() {
+        return this.hotlinkingProtected;
+    }
+
+    public HotlinkingManager getHotlinkingManager() {
+        return this.hotlinkingManager;
     }
 
     public boolean isClasspath() {
@@ -351,6 +363,7 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
             throw new RuntimeException("A resource generator can only be specified when a file system " +
                                        "path is used, not a classpath path.");
         }
+
         this.generator = generator;
 
         if (getUrl() == null) {
@@ -397,7 +410,9 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
                                                                              getGenerator(),
                                                                              getCorsConfig(),
                                                                              cacheConfig,
-                                                                             isIgnoreQueryString());
+                                                                             isIgnoreQueryString(),
+                                                                             isHotlinkingProtected(),
+                                                                             getHotlinkingManager());
         return staticResource;
     }
 
@@ -415,4 +430,16 @@ public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends
         return getSpincastConfig().getDefaultStaticResourceCacheConfig(getGenerator() != null);
     }
 
+    @Override
+    public StaticResourceBuilder<R> hotlinkingProtected() {
+        this.hotlinkingProtected = true;
+        return this;
+    }
+
+    @Override
+    public StaticResourceBuilder<R> hotlinkingProtected(HotlinkingManager hotlinkingManager) {
+        this.hotlinkingProtected = true;
+        this.hotlinkingManager = hotlinkingManager;
+        return this;
+    }
 }

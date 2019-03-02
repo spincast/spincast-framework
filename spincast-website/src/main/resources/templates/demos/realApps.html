@@ -1,0 +1,112 @@
+{% extends "../demos.html" %}
+
+{% block subSectionClasses %}real_apps{% endblock %}
+{% block meta_title %}Demo - Real applications{% endblock %}
+{% block meta_description %}Real application developped using Spincast{% endblock %}
+
+{% block subBody %}
+
+<div class="container">
+
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12">
+            <h2 class="shortTop">
+               Applications developped using Spincast
+            </h2>
+        </div>
+    </div>
+    
+    <section id="big_bada_boom">
+        <div class="realAppTitle">
+            <a class="anchor_small" href="#big_bada_boom" title="permanent link"></a>
+            ✦ <a href="https://www.bigbadaboomcomics.com">Big Bada Boom comics</a>
+        </div>
+        
+        <p>
+            Big Bada Boom is a place to create and participate 
+            in <em>collaborative comics</em>, where multiple users draw together.
+        </p>
+        <p>
+            This full application has been built entirely with Spincast and uses many of the provided features:
+            
+            <ul>
+                <li>
+                    Templating
+                </li>
+                <li>
+                    Filters
+                </li> 
+                <li>
+                    Attempts limiter
+                </li> 
+                <li>
+                    Validation
+                </li>
+                <li>
+                    Scheduled tasks
+                </li> 
+                <li>
+                   HotSwapping (during development)
+                </li>
+                <li>
+                   Hotlinking protection and watermarking
+                </li>
+                <li>
+                   etc, etc, etc.
+                </li>
+            </ul>
+        </p>
+        <p class="center">
+            <a href="https://www.bigbadaboomcomics.com"><img id="todback" src="/public/images/bbb.png" /></a>
+        </p>
+    </section>
+    
+    <section id="realworld">
+        <div class="realAppTitle">
+            <a class="anchor_small" href="#realworld" title="permanent link"></a>
+             ✦ <a href="https://github.com/gothinkster/realworld">RealWorld.io</a> implementation
+        </div>
+
+        <p>
+            A RealWorld.io <a href="https://github.com/spincast/spincast-realworld">Spincast implementation</a> has been 
+            developed and passes all the tests with pride.
+        </p>
+        <p>
+            This is probably the best open source application available to learn how to use Spincast!
+        </p>
+        <p class="center">
+            <a href="https://github.com/spincast/spincast-realworld"><img id="todback" src="/public/images/realWorld.png" /></a>
+        </p>
+    </section>
+
+    <section id="todo">
+        <div class="realAppTitle">
+            <a class="anchor_small" href="#todo" title="permanent link"></a>
+             ✦ <a href="http://www.todobackend.com">Todo-Backend</a> implementation
+        </div>
+        <p>
+            Way simpler than the one for RealWorld.io, 
+            this <a href="https://github.com/spincast/spincast-todobackend/tree/master/spincast-todobackend-inmemory">Spincast implementation</a> 
+            is another useful open source example.
+        </p>
+        <p class="center">
+            <a href="http://www.todobackend.com"><img id="todback" src="/public/images/todoBackend.png" /></a>
+        </p>
+    </section>
+    
+    <section id="website">
+        <div class="realAppTitle">
+            <a class="anchor_small" href="#website" title="permanent link"></a>
+             ✦ <a href="/">This very website</a>
+        </div>
+        <p>
+            The very website you are looking at has been developed using Spincast, of course!
+        </p>
+        <p class="center">
+            <a href="/"><img src="/public/images/feed.png" /></a>
+        </p>
+    </section>
+
+</div>
+
+{% endblock %}

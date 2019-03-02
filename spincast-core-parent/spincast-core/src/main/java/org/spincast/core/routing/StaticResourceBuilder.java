@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.hotlinking.HotlinkingManager;
 
 /**
  * Builder to create static resources.
@@ -170,8 +171,28 @@ public interface StaticResourceBuilder<R extends RequestContext<?>> {
     public StaticResourceBuilder<R> cache(int seconds, boolean isPrivate, Integer secondsCdn);
 
     /**
+     * When a static resource is flagged as being
+     * *hotlinking protected*, the server will 
+     * validate the <code>origin</code> and <code>referer</code>
+     * of the request. If those don't matche the host of the
+     * application, a protection will be apply, the one provided
+     * by the default {@Link HotlinkingManager}.
+     */
+    public StaticResourceBuilder<R> hotlinkingProtected();
+
+    /**
+     * When a static resource is flagged as being
+     * *hotlinking protected*, the server will 
+     * validate the <code>origin</code> and <code>referer</code>
+     * of the request. If those don't matche the host of the
+     * application, a protection will be apply, the one provided
+     * by the specified <code>hotlinkingManager</code>.
+     */
+    public StaticResourceBuilder<R> hotlinkingProtected(HotlinkingManager hotlinkingManager);
+
+    /**
      * Saves the static resource route to the router.
-     * 
+     * <p>
      * If the creation of the resource was not started using
      * an <code>Router</code> object, an exception will be
      * thrown.

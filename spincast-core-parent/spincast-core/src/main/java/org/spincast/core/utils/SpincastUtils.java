@@ -2,11 +2,14 @@ package org.spincast.core.utils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import org.spincast.shaded.org.apache.commons.io.FilenameUtils;
 
 /**
  * Spincast utilities.
@@ -272,5 +275,39 @@ public interface SpincastUtils {
      * decoded (using {@link URLDecoder.decode}) prior to being parsed.
      */
     public Map<String, List<String>> getParametersFromQuerystring(String querystring, boolean decodeQueryStringFirst);
+
+    /**
+     * Returns <code>true</code> if the name of the requested
+     * resource ends with the specified suffix. The name is the part
+     * before the extension, if there is one.
+     * <p>
+     * Manage the fact that routing may be case sensitive
+     * or not.
+     * <p>
+     * Note that you should specify a "-" if your
+     * suffixe starts with this. 
+     */
+    public boolean isRequestedResourceNameEndsWithBeforeExtension(URI currentURI, String suffix);
+
+    /**
+     * Returns <code>true</code> if the name of the requested
+     * resource ends with the specified suffix. The name is the part
+     * before the extension, if there is one.
+     * <p>
+     * Manage the fact that routing may be case sensitive
+     * or not.
+     * <p>
+     * Note that you should specify a "-" if your
+     * suffixe starts with this. 
+     * 
+     * @param resourceBaseName the base name of the requested resource, as
+     * it would be returned by {@link FilenameUtils#getBaseName(String)},
+     * without the potential extension.
+     */
+    public boolean isRequestedResourceNameEndsWithBeforeExtension(String resourceBaseName, String suffix);
+
+
+
+
 
 }

@@ -3,11 +3,14 @@ package org.spincast.plugins.routing;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Route;
 import org.spincast.core.routing.RoutingType;
+import org.spincast.core.routing.StaticResource;
 
 import com.google.inject.assistedinject.Assisted;
 
@@ -15,6 +18,7 @@ public interface RouteFactory<R extends RequestContext<?>> {
 
     public Route<R> createRoute(@Assisted("id") String id,
                                 @Assisted("isResourceRoute") boolean isResourceRoute,
+                                @Assisted("staticResource") @Nullable StaticResource<R> staticResource,
                                 @Assisted("isSpicastCoreRouteOrPluginRoute") boolean isSpicastCoreRouteOrPluginRoute,
                                 @Assisted("httpMethods") Set<HttpMethod> httpMethods,
                                 @Assisted("path") String path,

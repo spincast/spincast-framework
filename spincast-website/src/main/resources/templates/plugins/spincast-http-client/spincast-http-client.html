@@ -181,9 +181,46 @@ JsonObject apiResponse = httpClient.GET(url).send().getContentAsJsonObject();
                         </li>
                     </ul>
 	            </p>
+                
+                <h4 id="features">
+                    <a class="anchor_small" href="#features" title="permanent link"></a>
+                    Some features
+                </h4>
+                <p>
+                    There are a lot of features provided by this client, and the best way to discover all of them
+                    is to read the <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/httpclient/package-summary.html">javadoc</a> of
+                    the various components involved.
+                </p>
+                <p>
+                    Here are some interesting ones:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <code class="apiItem">HttpRequestBuilder&lt;T&gt; <span>disableSslCertificateErrors</span>()</code>
+                            <p class="well">
+                                The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/HttpRequestBuilder.html#disableSslCertificateErrors--">disableSslCertificateErrors()</a>
+                                method lets you easily disable any <code>SSL certificates</code> validation. For example, this can be used to
+                                test a local API served using a <code>self-signed certificate</code>.
+                            </p>
+                        </li>
+                        <li>
+                            <code class="apiItem">HttpRequestBuilder&lt;T&gt; <span>disableRedirectHandling</span>()</code>
+                            <p class="well">
+                                The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/HttpRequestBuilder.html#disableRedirectHandling--">disableRedirectHandling()</a>
+                                method prevents the client to automatically follow redirects (which it does by default).
+                            </p>
+                        </li>
+                        <li>
+                            <code class="apiItem">HttpRequestBuilder&lt;T&gt; <span>setHttpAuthCredentials</span>()</code>
+                            <p class="well">
+                                The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/httpclient/HttpRequestBuilder.html#setHttpAuthCredentials-java.lang.String-java.lang.String-">setHttpAuthCredentials()</a>
+                                method lets you easily set <code>HTTP basic authentication</code> credentials.
+                            </p>
+                        </li> 
+                    </ul>
+                </p>   
             </section>
-            
-           
+ 
             <section id="installation">
                 <h3>
                     <a class="anchor" href="#installation" title="permanent link"></a>

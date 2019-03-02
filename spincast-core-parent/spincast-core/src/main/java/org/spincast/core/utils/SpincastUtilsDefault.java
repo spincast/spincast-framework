@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.shaded.org.apache.commons.io.FilenameUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.NameValuePair;
@@ -928,6 +930,38 @@ public class SpincastUtilsDefault implements SpincastUtils {
             throw SpincastStatics.runtimize(ex);
         }
 
+    }
+
+    @Override
+    public boolean isRequestedResourceNameEndsWithBeforeExtension(URI currentURI, String suffix) {
+
+        if (currentURI == null) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(suffix)) {
+            return true;
+        }
+
+        String baseName = FilenameUtils.getBaseName(currentURI.toString());
+        return isRequestedResourceNameEndsWithBeforeExtension(baseName, suffix);
+    }
+
+    @Override
+    public boolean isRequestedResourceNameEndsWithBeforeExtension(String resourceBaseName, String suffix) {
+        if (StringUtils.isBlank(resourceBaseName)) {
+            return false;
+        }
+
+        if (StringUtils.isBlank(suffix)) {
+            return true;
+        }
+
+        boolean endsWith =
+                getSpincastConfig().isRoutesCaseSensitive() ? StringUtils.endsWith(resourceBaseName, suffix)
+                                                            : StringUtils.endsWithIgnoreCase(resourceBaseName,
+                                                                                             suffix);
+        return endsWith;
     }
 
 }

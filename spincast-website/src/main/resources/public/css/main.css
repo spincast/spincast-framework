@@ -510,8 +510,7 @@ ul ul {
 .demo_hello_world #menu_demos_hello_world a, 
 .demo_websockets #menu_demos_websockets a, 
 .demo_http_auth #menu_demos_http_auth a,
-.demo_full_website #menu_demos_full_website a,
-.demo_todo_list #menu_demos_todo_list a,
+.real_apps #menu_demos_todo_list a,
 .demo_form_auth #menu_demos_form_auth a,
 .demo_html_forms #menu_demos_html_forms a
 {
@@ -522,8 +521,7 @@ ul ul {
 .demo_hello_world #menu_demos_hello_world a::before, 
 .demo_websockets #menu_demos_websockets a::before, 
 .demo_http_auth #menu_demos_http_auth a::before,
-.demo_full_website #menu_demos_full_website a::before,
-.demo_todo_list #menu_demos_todo_list a::before,
+.real_apps #menu_demos_todo_list a::before,
 .demo_form_auth #menu_demos_form_auth a::before,
 .demo_html_forms #menu_demos_html_forms a::before,
 .community #menu_community a:before, 
@@ -534,8 +532,7 @@ ul ul {
 .demo_hello_world #menu_demos_hello_world a::after, 
 .demo_websockets #menu_demos_websockets a::after, 
 .demo_http_auth #menu_demos_http_auth a::after,
-.demo_full_website #menu_demos_full_website a::after,
-.demo_todo_list #menu_demos_todo_list a::after,
+.real_apps #menu_demos_todo_list a::after,
 .demo_form_auth #menu_demos_form_auth a::after,
 .demo_html_forms #menu_demos_html_forms a::after,
 .community #menu_community a:after, 
@@ -1936,3 +1933,11 @@ input.has-no-message:focus, input.has-success:focus {
 .plugins-spincast-hotswap .dcevmWrap img {
     max-width: 50%;
 }
+
+.realAppTitle {
+    font-size: 30px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+

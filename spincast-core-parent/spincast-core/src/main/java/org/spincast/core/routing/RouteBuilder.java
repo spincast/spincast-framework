@@ -322,7 +322,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
      * Won't be applied if the request is for a resource
-     * ({@link Route#isResourceRoute()}). In the case
+     * ({@link Route#isStaticResourceRoute()}). In the case
      * of <a href="https://www.spincast.org/documentation#dynamic_resources">Dynamic Resources</a>,
      * the filters will indeed be called <em>when the generator is used</em>. By
      * calling this {@link #skipResourcesRequests()} method, the current filter

@@ -302,13 +302,9 @@ public class App {
         router.GET("/demos-tutorials/hello-world/better").handle(demoCtl::helloWorldBetter);
         router.GET("/demos-tutorials/hello-world/super").handle(demoCtl::helloWorldSuper);
 
-        router.file("/demos-tutorials/full-website")
-              .pathRelative("/pages/demos-tutorials/full-website.html")
-              .handle(demoCtl::fullWebsite);
-
-        router.file("/demos-tutorials/todo-list")
-              .pathRelative("/pages/demos-tutorials/todo-list.html")
-              .handle(demoCtl::todoList);
+        router.file("/demos-tutorials/real-apps")
+              .pathRelative("/pages/demos-tutorials/real-apps.html")
+              .handle(demoCtl::realApps);
 
         router.file("/demos-tutorials/http-authentication")
               .pathRelative("/pages/demos-tutorials/http-authentication.html")

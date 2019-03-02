@@ -35,7 +35,7 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
         // This filter should have been configured
         // to skip resources requests, but in case :
         //==========================================
-        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isResourceRoute()) {
+        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isStaticResourceRoute()) {
             return;
         }
 
@@ -96,7 +96,7 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
         // This filter should have been configured
         // to skip resources requests, but in case :
         //==========================================
-        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isResourceRoute()) {
+        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isStaticResourceRoute()) {
             return;
         }
 

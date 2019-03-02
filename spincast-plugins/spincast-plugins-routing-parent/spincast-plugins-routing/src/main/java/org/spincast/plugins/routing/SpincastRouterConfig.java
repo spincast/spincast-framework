@@ -7,7 +7,7 @@ import org.spincast.core.routing.RoutingType;
 import com.google.inject.ImplementedBy;
 
 /**
- * Configurations for the Spincast Router.
+ * Configurations for the Spincast Router/routing.
  * <p>
  * We use "@ImplementedBy" to specify the default configurations
  * to use if none is specified in a Guice module.

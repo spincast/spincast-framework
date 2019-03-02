@@ -12,6 +12,7 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Route;
 import org.spincast.core.routing.RoutingType;
+import org.spincast.core.routing.StaticResource;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -20,6 +21,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
 
     private final String id;
     private final boolean isResourceRoute;
+    private final StaticResource<R> staticResource;
     private final boolean spicastCoreRouteOrPluginRoute;
     private final String path;
     private final Set<HttpMethod> httpMethods;
@@ -38,6 +40,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     @AssistedInject
     public RouteDefault(@Assisted("id") @Nullable String id,
                         @Assisted("isResourceRoute") boolean isResourceRoute,
+                        @Assisted("staticResource") @Nullable StaticResource<R> staticResource,
                         @Assisted("isSpicastCoreRouteOrPluginRoute") boolean spicastCoreRouteOrPluginRoute,
                         @Assisted("httpMethods") Set<HttpMethod> httpMethods,
                         @Assisted("path") String path,
@@ -51,6 +54,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
                         @Assisted("skipResources") boolean skipResources) {
         this.id = id;
         this.isResourceRoute = isResourceRoute;
+        this.staticResource = staticResource;
         this.spicastCoreRouteOrPluginRoute = spicastCoreRouteOrPluginRoute;
         this.position = position;
         this.httpMethods = httpMethods;
@@ -102,8 +106,13 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     }
 
     @Override
-    public boolean isResourceRoute() {
+    public boolean isStaticResourceRoute() {
         return this.isResourceRoute;
+    }
+
+    @Override
+    public StaticResource<R> getStaticResource() {
+        return this.staticResource;
     }
 
     @Override

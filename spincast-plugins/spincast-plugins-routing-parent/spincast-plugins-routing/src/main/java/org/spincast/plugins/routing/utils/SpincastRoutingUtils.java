@@ -17,4 +17,5 @@ public interface SpincastRoutingUtils {
      * Does the specified path contain dynamic (or splat) parameters?
      */
     public boolean isPathContainDynamicParams(String resourcePath);
+
 }

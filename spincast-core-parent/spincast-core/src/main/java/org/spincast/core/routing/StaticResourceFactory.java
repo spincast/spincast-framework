@@ -1,6 +1,9 @@
 package org.spincast.core.routing;
 
+import javax.annotation.Nullable;
+
 import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.hotlinking.HotlinkingManager;
 
 import com.google.inject.assistedinject.Assisted;
 
@@ -13,5 +16,7 @@ public interface StaticResourceFactory<R extends RequestContext<?>> {
                                     @Assisted Handler<R> generator,
                                     @Assisted StaticResourceCorsConfig corsConfig,
                                     @Assisted StaticResourceCacheConfig cacheConfig,
-                                    @Assisted("ignoreQueryString") boolean ignoreQueryString);
+                                    @Assisted("ignoreQueryString") boolean ignoreQueryString,
+                                    @Assisted("hotlinkingProtected") boolean hotlinkingProtected,
+                                    @Assisted("hotlinkingManager") @Nullable HotlinkingManager hotlinkingManager);
 }
