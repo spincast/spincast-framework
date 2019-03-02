@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-testing-parent</artifactId>
-        <version>0.9.55</version>
+        <version>0.9.56-SNAPSHOT</version>
     </parent>
     
 	<artifactId>spincast-testing-junit-runner</artifactId>
