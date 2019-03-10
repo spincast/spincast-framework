@@ -22,9 +22,9 @@ import org.spincast.core.routing.Router;
 import org.spincast.core.server.Server;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

@@ -25,10 +25,10 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
-import org.spincast.testing.utils.BeforeAfterClassMethodsProvider;
-import org.spincast.testing.utils.RepeatedClassAfterMethodProvider;
-import org.spincast.testing.utils.SpincastJUnitRunner;
-import org.spincast.testing.utils.TestFailureListener;
+import org.spincast.testing.junitrunner.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.junitrunner.RepeatedClassAfterMethodProvider;
+import org.spincast.testing.junitrunner.SpincastJUnitRunner;
+import org.spincast.testing.junitrunner.TestFailureListener;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -41,7 +41,7 @@ import com.google.inject.Scopes;
  * 
  * <p>
  * Uses a custom Junit runner, 
- * {@link org.spincast.testing.utils.SpincastJUnitRunner SpincastJUnitRunner}.
+ * {@link org.spincast.testing.junitrunner.SpincastJUnitRunner SpincastJUnitRunner}.
  * <p>
  * This runner create a single instance of the test class for all of its tests,
  * instead of a new instance for each test. It also calls a <code>beforeClass()</code>

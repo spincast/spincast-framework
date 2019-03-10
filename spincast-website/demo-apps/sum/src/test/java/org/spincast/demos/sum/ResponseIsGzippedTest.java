@@ -9,11 +9,11 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.GuiceTweaker;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.AppBasedDefaultContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
+import org.spincast.testing.defaults.AppBasedDefaultContextTypesTestingBase;
 
 import com.google.inject.Module;
 import com.google.inject.Scopes;

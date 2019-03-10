@@ -11,7 +11,6 @@ import org.quartz.Scheduler;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.formsprotection.SpincastFormsProtectionPlugin;
 import org.spincast.plugins.formsprotection.config.SpincastFormsProtectionConfig;
 import org.spincast.plugins.formsprotection.csrf.SpincastFormsCsrfProtectionFilter;
@@ -27,6 +26,7 @@ import org.spincast.plugins.session.SpincastSessionManager;
 import org.spincast.plugins.session.SpincastSessionPlugin;
 import org.spincast.plugins.session.SpincastSessionRepository;
 import org.spincast.plugins.session.config.SpincastSessionConfig;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

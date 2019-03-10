@@ -64,10 +64,6 @@ public class MainPagesController {
         context.response().sendTemplateHtml("/templates/index.html");
     }
 
-    public void presentation(AppRequestContext context) {
-        context.response().sendTemplateHtml("/templates/presentation.html");
-    }
-
     public void documentation(AppRequestContext context) {
 
         if (context.request().getQueryStringParamFirst("alert") != null) {

@@ -11,7 +11,6 @@ import javax.sql.DataSource;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jdbc.JdbcQueries;
 import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.plugins.jdbc.SpincastJdbcPlugin;
@@ -20,6 +19,7 @@ import org.spincast.plugins.jdbc.statements.ResultSetHandler;
 import org.spincast.plugins.jdbc.statements.SelectStatement;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
 import org.spincast.testing.core.h2.SpincastTestingH2;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;

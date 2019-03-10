@@ -9,9 +9,9 @@ import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.hotlinking.HotlinkingManager;
 import org.spincast.core.routing.hotlinking.HotlinkingManagerDefault;
 import org.spincast.core.routing.hotlinking.HotlinkingStategy;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.common.net.HttpHeaders;
 

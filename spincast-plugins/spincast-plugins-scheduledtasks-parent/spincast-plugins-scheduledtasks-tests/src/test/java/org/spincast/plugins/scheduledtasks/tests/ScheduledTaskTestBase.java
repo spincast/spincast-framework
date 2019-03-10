@@ -7,11 +7,11 @@ import org.quartz.Scheduler;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTask;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegister;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegistrerDefault;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTasksPlugin;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Binder;
 import com.google.inject.Inject;

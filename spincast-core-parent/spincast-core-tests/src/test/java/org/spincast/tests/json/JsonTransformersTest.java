@@ -8,7 +8,7 @@ import org.spincast.core.json.ElementTransformer;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

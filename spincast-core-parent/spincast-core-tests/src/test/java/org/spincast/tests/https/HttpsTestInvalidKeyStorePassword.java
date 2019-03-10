@@ -2,11 +2,11 @@ package org.spincast.tests.https;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.TestingMode;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.junitrunner.ExpectingBeforeClassException;
 
 import com.google.inject.Inject;
 

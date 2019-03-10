@@ -8,7 +8,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

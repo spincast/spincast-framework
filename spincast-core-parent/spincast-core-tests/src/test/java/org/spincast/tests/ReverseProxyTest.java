@@ -8,9 +8,9 @@ import org.spincast.core.config.SpincastConstants.HttpHeadersExtra;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.common.net.HttpHeaders;
 

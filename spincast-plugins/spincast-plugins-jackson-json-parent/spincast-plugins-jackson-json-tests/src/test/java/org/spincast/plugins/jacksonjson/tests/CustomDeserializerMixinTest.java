@@ -8,9 +8,9 @@ import java.io.IOException;
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jacksonjson.JsonMixinInfo;
 import org.spincast.plugins.jacksonjson.JsonMixinInfoDefault;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

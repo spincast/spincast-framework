@@ -10,12 +10,12 @@ import org.junit.Test;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.watermarker.SpincastImageWatermarker;
 import org.spincast.plugins.watermarker.SpincastWatermarkPosition;
 import org.spincast.plugins.watermarker.SpincastWatermarkerFactory;
 import org.spincast.plugins.watermarker.SpincastWatermarkerPlugin;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

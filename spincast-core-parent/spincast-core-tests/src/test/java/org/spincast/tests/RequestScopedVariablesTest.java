@@ -15,9 +15,9 @@ import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.Router;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;

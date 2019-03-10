@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
-import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
+import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 

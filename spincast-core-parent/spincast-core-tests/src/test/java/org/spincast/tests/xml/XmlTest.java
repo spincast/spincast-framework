@@ -17,7 +17,7 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.inject.Inject;

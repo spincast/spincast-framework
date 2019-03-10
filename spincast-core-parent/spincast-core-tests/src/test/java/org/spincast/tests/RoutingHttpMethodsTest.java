@@ -13,8 +13,8 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.Router;
 import org.spincast.core.routing.RoutingResult;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

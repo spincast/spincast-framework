@@ -17,11 +17,11 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfigDefault;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

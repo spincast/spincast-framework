@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

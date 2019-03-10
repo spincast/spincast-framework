@@ -4,7 +4,7 @@ server:
     https: 44420
   
 api:
-  base: http://localhost:44420
+  base: https://www.spincast.loc:44420
 
 environment: 
     name: local

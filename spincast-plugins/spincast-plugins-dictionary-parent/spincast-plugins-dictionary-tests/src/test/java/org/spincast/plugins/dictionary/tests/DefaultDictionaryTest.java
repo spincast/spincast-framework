@@ -20,8 +20,8 @@ import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.templating.TemplatingEngine;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

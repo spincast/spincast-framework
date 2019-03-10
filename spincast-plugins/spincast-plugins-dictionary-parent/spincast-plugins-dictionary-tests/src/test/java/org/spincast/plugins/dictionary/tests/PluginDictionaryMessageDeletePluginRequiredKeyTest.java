@@ -13,10 +13,10 @@ import org.spincast.core.dictionary.DictionaryEntries;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.templating.TemplatingEngine;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
 import org.spincast.plugins.request.SpincastRequestPluginDictionaryEntries;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.junitrunner.ExpectingBeforeClassException;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

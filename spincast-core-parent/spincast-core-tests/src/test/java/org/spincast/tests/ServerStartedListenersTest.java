@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.server.ServerStartedListener;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Module;
 import com.google.inject.multibindings.Multibinder;

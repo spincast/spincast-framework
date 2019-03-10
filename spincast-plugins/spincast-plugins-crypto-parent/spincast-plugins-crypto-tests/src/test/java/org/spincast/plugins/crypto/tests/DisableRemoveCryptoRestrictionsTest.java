@@ -8,12 +8,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.crypto.SpincastCryptoPlugin;
 import org.spincast.plugins.crypto.SpincastCryptoUtils;
 import org.spincast.plugins.crypto.SpincastCryptoUtilsDefault;
 import org.spincast.plugins.crypto.config.SpincastCryptoConfig;
 import org.spincast.plugins.crypto.config.SpincastCryptoConfigDefault;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

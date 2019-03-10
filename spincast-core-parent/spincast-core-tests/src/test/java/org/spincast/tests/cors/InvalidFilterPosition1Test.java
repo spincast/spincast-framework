@@ -2,10 +2,10 @@ package org.spincast.tests.cors;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.plugins.routing.SpincastRouterConfigDefault;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.junitrunner.ExpectingBeforeClassException;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

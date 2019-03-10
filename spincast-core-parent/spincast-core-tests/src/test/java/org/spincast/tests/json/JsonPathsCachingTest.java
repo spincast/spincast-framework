@@ -22,7 +22,7 @@ import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.bootstrapping.Spincast;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;

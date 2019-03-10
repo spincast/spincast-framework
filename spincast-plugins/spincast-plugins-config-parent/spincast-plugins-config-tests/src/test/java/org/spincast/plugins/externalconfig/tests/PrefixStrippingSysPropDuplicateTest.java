@@ -11,7 +11,7 @@ import org.spincast.core.guice.TestingMode;
 import org.spincast.plugins.config.SpincastConfigDefault;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.config.SpincastConfigPluginConfigDefault;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
+import org.spincast.testing.junitrunner.ExpectingBeforeClassException;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

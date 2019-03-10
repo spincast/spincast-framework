@@ -11,11 +11,11 @@ import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.TestingMode;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 

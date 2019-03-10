@@ -9,11 +9,11 @@ import org.spincast.core.guice.TestingMode;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.timezone.TimeZoneResolver;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.timezoneresolver.config.SpincastTimeZoneResolverConfig;
 import org.spincast.plugins.timezoneresolver.config.SpincastTimeZoneResolverConfigDefault;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

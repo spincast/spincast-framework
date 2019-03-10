@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.session.SpincastSession;
 import org.spincast.plugins.session.SpincastSessionFilter;
 import org.spincast.plugins.session.SpincastSessionManager;
 import org.spincast.plugins.session.SpincastSessionPlugin;
 import org.spincast.plugins.session.SpincastSessionRepository;
 import org.spincast.plugins.session.config.SpincastSessionConfig;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

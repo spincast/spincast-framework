@@ -2,9 +2,9 @@ package org.spincast.tests;
 
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.defaults.bootstrapping.SpincastBootstrapper;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.routing.SpincastRoutingPluginModule;
-import org.spincast.testing.utils.ExpectingBeforeClassException;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.junitrunner.ExpectingBeforeClassException;
 
 import com.google.inject.Key;
 

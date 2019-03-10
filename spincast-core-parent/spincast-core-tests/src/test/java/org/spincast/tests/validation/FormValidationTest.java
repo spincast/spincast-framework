@@ -15,9 +15,9 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.validation.ValidationFactory;
 import org.spincast.core.validation.ValidationMessage;
 import org.spincast.core.validation.ValidationSet;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 

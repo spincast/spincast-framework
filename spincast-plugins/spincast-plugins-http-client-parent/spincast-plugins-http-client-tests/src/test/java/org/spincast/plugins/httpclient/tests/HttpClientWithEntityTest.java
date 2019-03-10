@@ -17,7 +17,6 @@ import org.spincast.core.server.UploadedFile;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.xml.XmlManager;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpEntity;
@@ -25,6 +24,7 @@ import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.shaded.org.apache.http.entity.ContentType;
 import org.spincast.shaded.org.apache.http.entity.InputStreamEntity;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;

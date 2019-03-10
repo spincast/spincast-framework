@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.timezone.TimeZoneResolver;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

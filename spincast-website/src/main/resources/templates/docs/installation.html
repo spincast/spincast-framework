@@ -26,7 +26,32 @@ Docs : "installation"
                 </li>
             </ul>
         </p>
-        
+    </div>
+    
+    {#==========================================
+    Section "installation / versions"
+    ==========================================#}
+    <div id="versions">
+        <h4>
+            <a class="anchor_small" href="#versions" title="permanent link"></a>
+            Spincast versions
+        </h4>
+        <p>
+            Spincast ultimate goal is to follow the Java <a href="https://www.oracle.com/technetwork/java/java-se-support-roadmap.html">LTS</a> (Long Term Support) versions. 
+        </p>
+        <p>
+            The LTS is
+            currently <code>Java 11</code> but we believe the Java 9+ ecosystem is still wobbly
+            because of the new modular system brought by Java 9 (called "<code>JPMS</code>" - <em>Java Platform Module System</em> - or
+            "<code>Jigsaw</code>"). It is still hard to develop a Java 11 application using one of the three main
+            IDEs, where annoying errors such <a href="https://stackoverflow.com/questions/54993710/the-package-com-google-inject-is-accessible-from-more-than-one-module">as this one</a>
+            are still encountered.
+        </p>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+            For this reason, Spincast <code>1.X.X</code> is still based on the very solid Java 8. Spincast <code>2.X.X</code>
+            will be based on Java 11, when we feel the tools are ready.
+        </p>
     </div>
 
     {#==========================================

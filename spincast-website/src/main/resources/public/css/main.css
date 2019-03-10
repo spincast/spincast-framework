@@ -2,7 +2,7 @@
 
 body {
     background-color: #FFFFFF; 
-    font-family:arial;
+    font-family: arial;
     font-size:17px;
 }
 
@@ -18,6 +18,9 @@ body {
 }
 .right {
     float: right;
+}
+.rightText {
+    text-align: right;	
 }
 
 a {
@@ -261,9 +264,10 @@ code, code.block, .code-line-nbr {
     color: #000000;
     font-family:'Courier New';
     font-size:15px;
-    background-color: #F9F9F9;
+    background-color: #FFFFFF;
     padding:1px 3px 1px 3px;
-    border-bottom:solid 1px #D3D3D3;
+    border:solid 1px #D3D3D3;
+    margin: 0 3px;
 }
 code.language-pebble {
     border:0 !important;
@@ -403,7 +407,6 @@ ul ul {
 }
 .subMenu {
     z-index:100;
-    background-color: #DCEBF4;
     color: #000000;
     width:100%;
     border-top: solid 1px #4C4C4C;
@@ -1239,8 +1242,10 @@ pre {
 .breadcrumb {
     margin-bottom: 0;
     padding:4px;
-    background-color: #DCEBF4;
     color: #000000;
+}
+.breadcrumb, .subMenu {
+    background-color: #D2DBC5;
 }
 
 .breadcrumb > li + li::before, .breadcrumb a, .breadcrumb > .active {
@@ -1505,6 +1510,11 @@ ul.tutoBullets li {
     margin-top:0;
     margin-bottom:7px;
 }
+#version .learnMore {
+    text-align: right;
+    margin: 0;
+    padding: 0;
+}
 
 @media only screen and (max-width: 1000px) {
     #right-sidebar {
@@ -1549,6 +1559,11 @@ ul.tutoBullets li {
 #noPresentation ul li {
 	margin-bottom:4px;
 }
+
+#spincastIntro {
+	margin-top: 0 !important;
+}
+
 
 #noPresentation ul a:hover {
 	text-decoration: none;
@@ -1798,6 +1813,7 @@ a.tryItFixed {
 .demoTabs {
     font-size:1em;
     font-weight: bold;
+    margin-top: 20px;
 }
 
 .validationMessages .help-block {

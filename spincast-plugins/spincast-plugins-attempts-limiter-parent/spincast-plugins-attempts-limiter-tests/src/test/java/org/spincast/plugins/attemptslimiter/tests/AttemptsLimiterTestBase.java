@@ -12,7 +12,6 @@ import org.quartz.Scheduler;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.attemptslimiter.AttemptCriteria;
 import org.spincast.plugins.attemptslimiter.AttemptFactory;
 import org.spincast.plugins.attemptslimiter.AttemptRule;
@@ -26,6 +25,7 @@ import org.spincast.plugins.scheduledtasks.SpincastScheduledTask;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegister;
 import org.spincast.plugins.scheduledtasks.SpincastScheduledTaskRegistrerDefault;
 import org.spincast.testing.core.h2.SpincastTestingH2;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

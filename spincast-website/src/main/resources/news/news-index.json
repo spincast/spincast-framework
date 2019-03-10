@@ -125,7 +125,14 @@
             "date" : "2019-03-02T16:00:00Z",
             "title" : "Hotlinking protection and images watermarking",
             "path" : "/news/2019-03-02.html"
+        },
+        {
+            "id" : "23",
+            "date" : "2019-03-10T16:00:00Z",
+            "title" : "Spincast 1.0.0",
+            "path" : "/news/2019-03-10.html"
         }
+        
         
         
 		

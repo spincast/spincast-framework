@@ -35,10 +35,10 @@ import org.spincast.core.json.JsonObjectArrayBase;
 import org.spincast.core.json.JsonObjectDefault;
 import org.spincast.core.json.JsonObjectFactory;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.shaded.org.apache.commons.codec.binary.Base64;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;

@@ -5,48 +5,6 @@
 {% block meta_description %}Highly Flexible Java Web Framework Based On Guice{% endblock %}
 
 {% block scripts %}
-
-<script src="/public/js/impress.js"></script>
-
-<script>
-
-    $(function() {  
-		if(window.impress.supported) {
-			$("#presentationIframe").css("display", "block");
-			$("#presentationControls").css("display", "inline");
-
-			$("#previousBtn").on("click", function(event) {
-				event.preventDefault();
-				document.getElementById("presentationIframe").contentWindow.impress.api.prev();
-			});	
-			
-			$("#nextBtn").on("click", function(event) {
-				event.preventDefault();
-				document.getElementById("presentationIframe").contentWindow.impress.api.next();
-			});	
-			
-		    $("#previousBtn img")
-	        .mouseover(function() { 
-	            $(this).attr("src", "/public/images/presentation/previous_over.png");
-	        })
-	        .mouseout(function() {
-	        	$(this).attr("src", "/public/images/presentation/previous.png");
-	        });
-		    
-		    $("#nextBtn img")
-	        .mouseover(function() { 
-	            $(this).attr("src", "/public/images/presentation/next_over.png");
-	        })
-	        .mouseout(function() {
-	        	$(this).attr("src", "/public/images/presentation/next.png");
-	        });
-			
-		} else {
-			$("#noPresentation").css("display", "block");	
-		}
-    }); 
-
-</script>
 {% endblock %}
 
 
@@ -57,7 +15,7 @@
     <div class="row"> 
         <div class="col-xs-12">
 		    <div id="jumb" class="jumbotron">
-		        <h1>Propulsion for your web backend</h1>
+		        <h1>Power to the developers!</h1>
 		        <p><span class="orange spincast">Spincast</span> is an highly flexible 
                 and <a href="https://github.com/spincast/spincast-framework"><span>open source</span></a> Java web framework, based on Guice.</p>
 		    </div>
@@ -73,20 +31,21 @@
             <div id="indexContent" class="row">
             	<div class="col-xs-12">
             	
-			        {#==========================================
-			        Impress presentation
-			        ==========================================#}
-					<iframe id="presentationIframe" style="display:none;" src="/presentation"></iframe> 
+            	   <div id="spincastIntro" class="codeExample">
+            	       <h4>Why Spincast framework?</h4>
+            	       <p>
+            	           We live in a crazy world where the <em>New Best Thing™</em> is always changing. Javascript, 
+            	           that sucky language, is everywhere. Everybody thinks they are Netflix and that they need reactive not blocking
+            	           serverless functional GraphQL web scaled microservices on Kubernetes.
+            	       </p>
+                       <p>
+                           Stop this madness, please. What most of us really need are tools made for the real world. Tools that don't try to look cool,
+                           but that work well and provide <em>control</em> and <em>flexibility</em>.
+                           Spincast tries to be that framework that won't get you nerd points during a discussion, but 
+                           that actually gets the job done very well.
+                       </p>
+            	   </div>
 
-					<div id="presentationControls" class="pointerCursor col-sm-12" style="display:none;">
-						<span id="previousBtn" class="hint--bottom-left hint--bounce" data-hint="Previous slide">
-							<img src="/public/images/presentation/previous.png" />
-						</span>
-						<span id="nextBtn" class="pointerCursor hint--bottom-right hint--bounce" data-hint="Next slide">
-							<img src="/public/images/presentation/next.png" />
-						</span>
-				    </div>
-                    
                     <div class="codeExample">
                         <h4>A simple but fully working application:</h4>
                         
@@ -339,10 +298,12 @@
                     Current version
                 </h4>
 	            <p>
-	                The current version is <code>{{spincast.spincastCurrrentVersion}}</code>. 
-                    Spincast is considered as being in <em><b>beta</b></em> as long as
-	                <code>1.0.0</code> is not reached.
+	                The current version is <code>{{spincast.spincastCurrrentVersion}}</code> and
+                    is based on <strong>Java 8</strong>.
 	            </p>
+                <p class="learnMore">
+                    <a href="/documentation#versions">Learn more</a>
+                </p>
             </div>
             
 	        {#==========================================

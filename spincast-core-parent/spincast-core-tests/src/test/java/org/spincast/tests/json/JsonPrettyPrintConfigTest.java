@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.jacksonjson.SpincastJsonManagerConfig;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

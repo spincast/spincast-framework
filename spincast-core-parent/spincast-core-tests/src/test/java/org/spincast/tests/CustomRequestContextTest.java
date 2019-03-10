@@ -11,10 +11,10 @@ import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.DefaultWebsocketContextDefault;
 import org.spincast.core.websocket.WebsocketContext;
-import org.spincast.defaults.testing.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.defaults.NoAppStartHttpServerCustomContextTypesTestingBase;
 import org.spincast.tests.CustomRequestContextTest.CustomRequestContext;
 
 import com.google.inject.assistedinject.Assisted;

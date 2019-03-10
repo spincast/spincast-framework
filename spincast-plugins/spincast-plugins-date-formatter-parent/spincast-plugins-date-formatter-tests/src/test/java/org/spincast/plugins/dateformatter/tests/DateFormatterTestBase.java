@@ -5,9 +5,9 @@ import java.util.List;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.templating.TemplatingEngine;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.dateformatter.DateFormatterFactory;
 import org.spincast.plugins.dateformatter.SpincastDateFormatterPlugin;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

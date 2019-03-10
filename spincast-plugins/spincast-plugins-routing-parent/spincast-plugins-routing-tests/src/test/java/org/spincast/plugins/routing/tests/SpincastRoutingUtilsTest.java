@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.routing.utils.ReplaceDynamicParamsResult;
 import org.spincast.plugins.routing.utils.SpincastRoutingUtils;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

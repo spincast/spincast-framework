@@ -6,11 +6,11 @@ import javax.sql.DataSource;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.flywayutils.SpincastFlywayFactory;
 import org.spincast.plugins.flywayutils.SpincastFlywayUtilsPlugin;
 import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.testing.core.h2.SpincastTestingH2;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

@@ -273,7 +273,6 @@ public class App {
         // Static Pages
         //==========================================
         router.file("/").pathRelative("/pages/index.html").handle(appCtl::index);
-        router.file("/presentation").pathRelative("/pages/presentation.html").handle(appCtl::presentation);
 
         // Can't be a static resource since it accepts a "page"
         // querystring parameter which changes the content.

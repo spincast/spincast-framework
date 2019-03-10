@@ -12,7 +12,7 @@ import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.defaults.bootstrapping.SpincastBootstrapper;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 import org.spincast.tests.varia.CustomExchange;
 import org.spincast.tests.varia.CustomServer;
 

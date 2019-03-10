@@ -10,11 +10,11 @@ import java.util.Set;
 
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.hotswap.SpincastHotSwapPlugin;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsListener;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatcher;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsWatcherDefault;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
 

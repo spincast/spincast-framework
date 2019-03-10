@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.dictionary.SpincastCoreDictionaryEntries;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

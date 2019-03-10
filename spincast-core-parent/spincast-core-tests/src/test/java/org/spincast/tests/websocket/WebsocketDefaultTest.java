@@ -21,10 +21,10 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
-import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
+import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 

@@ -15,10 +15,10 @@ import org.spincast.core.guice.TestingMode;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 

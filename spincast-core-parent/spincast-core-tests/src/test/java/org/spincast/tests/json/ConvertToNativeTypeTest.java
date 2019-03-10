@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
-import org.spincast.defaults.testing.NoAppTestingBase;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

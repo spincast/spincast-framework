@@ -16,10 +16,10 @@ import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ObjectConverter;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.defaults.testing.NoAppTestingBase;
 import org.spincast.plugins.pebble.SpincastMainPebbleExtension;
 import org.spincast.plugins.pebble.SpincastMainPebbleExtensionDefault;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
+import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 import com.google.inject.Module;

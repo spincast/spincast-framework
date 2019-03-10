@@ -16,8 +16,8 @@ import org.spincast.core.routing.RouteHandlerMatch;
 import org.spincast.core.routing.Router;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.websocket.DefaultWebsocketContext;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 public class RoutingFiltersTest extends NoAppStartHttpServerTestingBase {
 

@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.spincast.core.utils.SpincastStatics;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 public abstract class ConfigTestingBase extends NoAppStartHttpServerTestingBase {
 

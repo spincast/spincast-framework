@@ -20,9 +20,9 @@ import org.spincast.core.server.Server;
 import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.core.websocket.WebsocketEndpointManager;
-import org.spincast.defaults.testing.NoAppWebsocketTestingBase;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.RandomUtils;
+import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 

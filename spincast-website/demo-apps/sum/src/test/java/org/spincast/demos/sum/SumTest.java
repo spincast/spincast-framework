@@ -9,11 +9,11 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.AppBasedDefaultContextTypesTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.AppTestingConfigs;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
+import org.spincast.testing.defaults.AppBasedDefaultContextTypesTestingBase;
 
 import com.google.inject.Inject;
 

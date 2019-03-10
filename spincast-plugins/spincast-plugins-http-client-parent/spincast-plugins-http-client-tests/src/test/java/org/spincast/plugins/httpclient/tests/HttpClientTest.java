@@ -19,7 +19,6 @@ import org.spincast.core.exceptions.RedirectException;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
-import org.spincast.defaults.testing.NoAppStartHttpServerTestingBase;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpException;
@@ -31,6 +30,7 @@ import org.spincast.shaded.org.apache.http.impl.client.BasicCookieStore;
 import org.spincast.shaded.org.apache.http.impl.client.HttpClientBuilder;
 import org.spincast.shaded.org.apache.http.protocol.HttpContext;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.common.collect.Lists;
 
