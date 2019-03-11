@@ -12,7 +12,7 @@ Bootstrap - http://getbootstrap.com/
 Logback - http://logback.qos.ch/
 SLF4J - http://www.slf4j.org/
 JUnit - http://junit.org/
-Pebble - http://www.mitchellbosecke.com/pebble/home
+Pebble - https://pebbletemplates.io
 Ace editor - https://ace.c9.io
 Hover.css - http://ianlunn.github.io/Hover/
 LetterFX - https://github.com/tuxsudo/letterfx

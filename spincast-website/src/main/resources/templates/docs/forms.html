@@ -223,7 +223,7 @@ public void myHandlerGet(AppRequestContext context) {
     </p>
     <p>
         Here's what the <code>HTML</code> for that form may look like (we are using the syntax for
-        the default <code>Templating Engine</code>, <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>):
+        the default <code>Templating Engine</code>, <a href="https://pebbletemplates.io">Pebble</a>):
         <div>
             {% verbatim %}
             <p>
@@ -249,7 +249,7 @@ public void myHandlerGet(AppRequestContext context) {
             Notice that even if the form model doesn't contain any <code>"username"</code> or
             <code>"email"</code> elements, we still bind them to the HTML elements using their
             <code>JsonPaths</code> [<span class="code-line-nbr">6</span>] and here [<span class="code-line-nbr">12</span>].   
-            This is possible in part because we use the <a href="http://www.mitchellbosecke.com/pebble/documentation/filter/default"><code>default('')</code></a> 
+            This is possible in part because we use the <a href="https://pebbletemplates.io/wiki/filter/default/"><code>default('')</code></a> 
             filter : this filter tells Pebble to use an empty string if the element doesn't exist.
         </div>
     </p>
@@ -1357,7 +1357,7 @@ form.addError("email",
     </h5>
     <p>
         Spincast provides utilities to display the validation messages with the default <code>Templating Engine</code>,
-        <a href="http://www.mitchellbosecke.com/pebble/home">Pebble</a>. But, as we saw, the template model is a 
+        <a href="https://pebbletemplates.io">Pebble</a>. But, as we saw, the template model is a 
         simple <code>Map&lt;String, Object&gt;</code> so no magic is involved and any other <code>Templating Engine</code> 
         can be used.
     </p>
