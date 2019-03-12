@@ -2,9 +2,11 @@ package org.spincast.website.guice;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
+import org.spincast.plugins.logbackutils.config.SpincastLogbackConfigurerConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.website.AppConfig;
 import org.spincast.website.AppConfigDefault;
+import org.spincast.website.AppLogbackConfigurerConfig;
 import org.spincast.website.AppPebbleTemplatingEngineConfig;
 import org.spincast.website.AppSpincastConfigPluginConfig;
 import org.spincast.website.HttpAuthInit;
@@ -70,6 +72,12 @@ public class AppModule extends SpincastGuiceModuleBase {
         // and already parameterized "AppRouter" interface.
         //==========================================
         bind(AppRouter.class).to(AppRouterDefault.class).in(Scopes.SINGLETON);
+
+        //==========================================
+        // Logback configurations
+        //==========================================
+        bind(SpincastLogbackConfigurerConfig.class).to(AppLogbackConfigurerConfig.class).in(Scopes.SINGLETON);
+
     }
 
 }

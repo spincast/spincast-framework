@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-plugins-logback-utils-parent</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+    
+	<artifactId>spincast-plugins-logback-utils</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>The Spincast Logback Utils plugin</description>
+    <url>https://www.spincast.org</url>
+
+	<dependencies>
+    
+        <!--=================================== 
+        Spincast core - provided
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Logback
+        ====================================-->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            
+            <!--=================================== 
+            SLF4J is provided by spincast-parent
+            ====================================-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+	</dependencies>
+
+	<build>
+        <plugins>
+        </plugins>
+	</build>
+</project>

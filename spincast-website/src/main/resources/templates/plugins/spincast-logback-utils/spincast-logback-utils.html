@@ -1,0 +1,285 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-logback-utils{% endblock %}
+{% block meta_title %}Plugins - Spincast Logback Utils{% endblock %}
+{% block meta_description %}Spincast Logback Utils plugin - Logback easy configuration{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Logback Utils plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Logback Utils <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/logbackutils/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Logback Utils <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                <a href="https://logback.qos.ch/">Logback</a> is one of the most popular logger implementations
+	                for Java. It works very well with the <a href="https://www.slf4j.org/">SLF4J</a> logging facade
+	                which is used by Spincast itself.
+                </p>
+                <p>
+                    A challenge with a regular installation of Logback is to <a href="https://logback.qos.ch/manual/configuration.html">configure it</a> 
+                    <em>differently on each environment</em>. For example to specify a 
+                    <code>DEBUG</code> level for logs during <em>development</em> but a <code>WARN</code> level in production.
+                    Logback does provide a way to do some kind of <a href="https://logback.qos.ch/manual/configuration.html#conditional">conditional processing of configuration files</a>
+                    but this involves an untyped syntax using a third-party library and requires
+                    passing extra command line arguments or setting extra environment variables.
+                </p>
+                <p>
+                    This plugin provides an easy way to configure Logback, fully integrated
+                    with Spincast: you use Java code, with dependency injection support,
+                    and you can:
+                    <ul>
+                        <li>
+                            Specify the path to the configuration file Logback should use. For example
+                             "<code>logback-dev.xml</code>", "<code>logback-acc.xml</code>" or "<code>logback-prod.xml</code>",
+                             depending on some logic.
+                        </li>
+                        <li>
+                            Tweak the content of the <code>XML</code> configuration file, for example by replacing some
+                            <em>placeholders</em> before Logback is configured.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Finally, if required, this plugin also allows you to <em>dynamically</em> generate the
+                    configurations to be used by Logback, without even requiring a configuration
+                    file at all!
+                </p>
+                
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="default" href="#default" title="permanent link"></a>
+                    Default behavior
+                </h4>
+                <p>
+                    When you add this plugin to your application, the default behavior is similar to
+                    including Logback as a regular dependency: a <code>logback.xml</code> file will be
+                    looked for on the classpath and its content will be used as is.
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="configurer" href="#configurer" title="permanent link"></a>
+                    Logback Configurer
+                </h4>
+                <p>
+                    To get control over how Logback is configured, you need to bind a custom implementation
+                    of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/logbackutils/config/SpincastLogbackConfigurerConfig.html">SpincastLogbackConfigurerConfig</a>.
+                    You can extends <a class="javadoc" href="/public/javadoc/org/spincast/plugins/logbackutils/config/SpincastLogbackConfigurerConfigDefault.html">SpincastLogbackConfigurerConfigDefault</a>
+                    as a base for your implementation.
+                </p>
+                <p>
+                    In this implementation, you can specify:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="options_getResourceInfo" href="#options_getResourceInfo" title="permanent link"></a>
+                            <code class="apiItem">ResourceInfo <span>getResourceInfo</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The path to the <code>XML</code> Logback configuration file to use.
+                                </p> 
+                                <p>
+                                    You can use any logic you need to pick the correct file. For example,
+                                    you may choose a <code>logback-dev.xml</code> file during development and
+                                    a <code>logback-prod.xml</code> file otherwise:
+                                    
+			                        {% verbatim %}
+			                        <div>
+			                            <p>
+			                            <pre class="ace ace-java"
+>
+@Override
+public ResourceInfo getResourceInfo() {
+    String path = getAppConfig().isDevelopmentMode() ? "/config/logback-dev.xml" : 
+                                                       "/config/logback-prod.xml";
+    return new ResourceInfo(path, true);
+}
+</pre>
+			                            </p>
+			                        </div> 
+			                        {% endverbatim %} 
+                                </p> 
+                                <p>
+                                    By returning an instance of <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/ResourceInfo.html">ResourceInfo</a>, you
+                                    specify if the path you provide refers to a file on the <em>classpath</em> or on the <em>file system</em>.
+                                </p>
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Note that you can also return <code>null</code> here! By doing so, you are responsible to
+                                    provide the <em>full</em> <code>XML</code> configuration, as a String, in the <a href="#options_tweakContent">tweakContent(content)</a>
+                                    method.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="options_tweakContent" href="#options_tweakContent" title="permanent link"></a>
+                            <code class="apiItem">String <span>tweakContent</span>(String logbackContent)</code>
+                            <div class="well">
+                                <p>
+                                    This method allows you to modify the content of the configurations as loaded using
+                                    the <a href="#options_getResourceInfo">getResourceInfo()</a> method.
+                                </p>
+                                <p>
+                                    If you return <code>null</code> from <a href="#options_getResourceInfo">getResourceInfo()</a>,
+                                    you will receive an <em>empty String</em> and you are responsible to build the entire
+                                    <code>XML</code> configurations for Logback.
+                                </p>
+                                <p>
+                                    A common usage of this method is to replace some <em>placeholders</em> in the 
+                                    base <code>XML</code> content. For example, let's say the content of the file is:
+                                    
+                                    {% verbatim %}
+                                    <div>
+                                        <p>
+                                        <pre class="ace ace-xml" data-ace-hi="8,17,8,26"
+>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;configuration&gt;
+    &lt;appender name="stdout" class="ch.qos.logback.core.ConsoleAppender"&gt;
+        &lt;encoder&gt;
+            &lt;charset&gt;UTF-8&lt;/charset&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss} [%level] %msg ~ %caller{1}&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+    &lt;root level="{{LEVEL}}"&gt;
+        &lt;appender-ref ref="stdout"/&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;</pre>
+                                        </p>
+                                    </div> 
+                                </p>
+                                
+                                <p>
+                                    You could use <code>tweakContent(...)</code> to replace the <code>{{LEVEL}}</code> placeholder using logic such as:
+
+                                    <div>
+                                        <p>
+                                        <pre class="ace ace-java"
+>
+@Override
+public String tweakContent(String logbackContent) {
+    String level = getAppConfig().isDevelopmentMode() ? "debug" : "warn";
+    return logbackContent.replace("{{LEVEL}}", level);
+}</pre>
+                                        </p>
+                                    </div> 
+                                    {% endverbatim %} 
+                                    
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Note that you could also use the <a href="/documentation#templating_engine">Templating Engine</a>
+                                    here to replace such placeholders!
+                                </p> 
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    Your <code>SpincastLogbackConfigurerConfig</code> implementation will be automatically used by
+                    the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/logbackutils/SpincastLogbackConfigurer.html">SpincastLogbackConfigurer</a>
+                    component that the plugin will bind using <a href="https://github.com/google/guice/wiki/Scopes#eager-singletons">asEagerSingleton()</a>.
+                    Because of this, Logback is going to be configured very early during the application startup.
+                </p>
+
+            </section>
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-logback-utils&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/logbackutils/SpincastLogbackUtilsPlugin.html">SpincastLogbackUtilsPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,48"
+>
+
+Spincast.configure()
+        .plugin(new SpincastLogbackUtilsPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

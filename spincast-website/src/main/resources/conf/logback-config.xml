@@ -50,7 +50,7 @@
     <!--===================================
     Appender Level, for the application
     ====================================-->
-    <logger name="org.spincast" level="warn" additivity="false">
+    <logger name="org.spincast" level="{{SPINCAST_LEVEL}}" additivity="false">
         <appender-ref ref="stdout" />
         <appender-ref ref="fileAsync"/>
     </logger>

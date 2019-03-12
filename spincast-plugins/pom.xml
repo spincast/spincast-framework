@@ -42,6 +42,7 @@
         <module>spincast-plugins-hotswap-parent</module>
         <module>spincast-plugins-flyway-utils-parent</module> 
         <module>spincast-plugins-watermarker-parent</module> 
+        <module>spincast-plugins-logback-utils-parent</module>
     </modules>
 
 </project>

@@ -45,21 +45,21 @@
         </dependency>
         
         <!--=================================== 
+        Spincast Logback Utils plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-logback-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
         Rome - For the RSS feed
         ====================================-->
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
             <version>1.11.0</version>
-        </dependency>
-        
-        <!--=================================== 
-        Logback - Logging implementation.
-        ====================================-->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
         </dependency>
         
         <!--=================================== 

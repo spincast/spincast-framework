@@ -1,14 +1,12 @@
 package org.spincast.website;
 
-import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.server.Server;
-import org.spincast.core.utils.SpincastStatics;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.dateformatter.SpincastDateFormatterPlugin;
+import org.spincast.plugins.logbackutils.SpincastLogbackUtilsPlugin;
 import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
@@ -27,9 +25,6 @@ import org.spincast.website.guice.AppModule;
 
 import com.google.inject.Inject;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-
 public class App {
 
     protected final Logger logger = LoggerFactory.getLogger(App.class);
@@ -40,8 +35,9 @@ public class App {
     public static void main(String[] args) {
 
         Spincast.configure()
-                .plugin(new SpincastDateFormatterPlugin())
                 .module(new AppModule())
+                .plugin(new SpincastDateFormatterPlugin())
+                .plugin(new SpincastLogbackUtilsPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
                 .init(args);
     }
@@ -165,41 +161,9 @@ public class App {
      */
     @Inject
     public void start() {
-        configureLogback();
         addRoutes();
         getServer().start();
         displayStartedMessage();
-    }
-
-    /**
-     * Configure Logback programatically. This is
-     * the easiest way to have different logging
-     * behavior depending on the environment and
-     * using injected config!
-     */
-    protected void configureLogback() {
-
-        try {
-
-            String logbackFilePath = "conf/logback.prod.xml";
-            if (getConfig().isDevelopmentMode()) {
-                logbackFilePath = "conf/logback.debug.xml";
-            }
-
-            InputStream logbackFileIn = this.getClass().getClassLoader().getResourceAsStream(logbackFilePath);
-            if (logbackFileIn == null) {
-                throw new RuntimeException("Logback file not found on the classpath : " + logbackFilePath);
-            }
-
-            LoggerContext context = (LoggerContext)LoggerFactory.getILoggerFactory();
-
-            JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(context);
-            context.reset();
-            configurator.doConfigure(logbackFileIn);
-        } catch (Exception ex) {
-            throw SpincastStatics.runtimize(ex);
-        }
     }
 
     protected void displayStartedMessage() {

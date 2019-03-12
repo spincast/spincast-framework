@@ -940,7 +940,7 @@ router.file("/favicon.ico").pathRelative("/public_files/favicon.ico").handle();
                     <code class="apiItem">boolean <span>mustHotlinkingProtect</span>(...)</code>
                     <div class="well">
                         To determine if the resource needs to be protected or not. By default, the protection will be triggered
-                        if one of those:
+                        if at least one of those is true:
                         <ul>
                             <li>
                                 There is an "<code>origin</code>" header in the request and its value does not match the <em>host</em> of the application
