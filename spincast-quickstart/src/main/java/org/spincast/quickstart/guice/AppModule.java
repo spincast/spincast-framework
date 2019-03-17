@@ -1,8 +1,10 @@
 package org.spincast.quickstart.guice;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.plugins.logbackutils.config.SpincastLogbackConfigurerConfig;
 import org.spincast.quickstart.config.AppConfig;
 import org.spincast.quickstart.config.AppConfigDefault;
+import org.spincast.quickstart.config.AppLogbackConfigurerConfig;
 import org.spincast.quickstart.controller.AppController;
 import org.spincast.quickstart.exchange.AppRouter;
 import org.spincast.quickstart.exchange.AppRouterDefault;
@@ -37,6 +39,12 @@ public class AppModule extends SpincastGuiceModuleBase {
         // Bind our controller.
         //==========================================
         bind(AppController.class).in(Scopes.SINGLETON);
+
+        //==========================================
+        // Logback custom configurations
+        //==========================================
+        bind(SpincastLogbackConfigurerConfig.class).to(AppLogbackConfigurerConfig.class).in(Scopes.SINGLETON);
+
     }
 
 }

@@ -56,33 +56,33 @@ public class SpincastLogbackConfigurer {
             //==========================================
             // Get the initial Logback file content
             //==========================================
-            ResourceInfo lobackFileInfo = getSpincastLogbackConfigurerConfig().getResourceInfo();
+            ResourceInfo logbackFileInfo = getSpincastLogbackConfigurerConfig().getResourceInfo();
 
             String content;
-            if (lobackFileInfo == null) {
+            if (logbackFileInfo == null) {
                 content = "";
             } else {
-                if (lobackFileInfo.isClasspathResource()) {
-                    InputStream is = getSpincastUtils().getClasspathInputStream(lobackFileInfo.getPath());
+                if (logbackFileInfo.isClasspathResource()) {
+                    InputStream is = getSpincastUtils().getClasspathInputStream(logbackFileInfo.getPath());
                     try {
                         if (is == null) {
-                            throw new RuntimeException("The Logback file \"" + lobackFileInfo.getPath() +
+                            throw new RuntimeException("The Logback file \"" + logbackFileInfo.getPath() +
                                                        "\" was not found on the classpath!");
                         }
 
-                        content = IOUtils.toString(is, getLobackFileEncoding());
+                        content = IOUtils.toString(is, getLogbackFileEncoding());
 
                     } finally {
                         SpincastStatics.closeQuietly(is);
                     }
                 } else {
-                    File file = new File(lobackFileInfo.getPath());
+                    File file = new File(logbackFileInfo.getPath());
                     if (!file.isFile()) {
-                        throw new RuntimeException("The Logback file \"" + lobackFileInfo.getPath() +
+                        throw new RuntimeException("The Logback file \"" + logbackFileInfo.getPath() +
                                                    "\" was not found on the file system!");
                     }
 
-                    content = FileUtils.readFileToString(file, getLobackFileEncoding());
+                    content = FileUtils.readFileToString(file, getLogbackFileEncoding());
                 }
             }
 
@@ -94,9 +94,9 @@ public class SpincastLogbackConfigurer {
             //==========================================
             // Configure Logback
             //==========================================
-            if (lobackFileInfo != null) {
-                logger.info("Logback logger configurations changed to those provided in file \"" + lobackFileInfo.getPath() +
-                            (lobackFileInfo.isClasspathResource() ? "\" on the classpath." : " on the file system."));
+            if (logbackFileInfo != null) {
+                logger.info("Logback logger configurations changed to those provided in file \"" + logbackFileInfo.getPath() +
+                            (logbackFileInfo.isClasspathResource() ? "\" on the classpath." : " on the file system."));
             }
             if (!content.equals(contentFinal)) {
                 logger.info("Logback logger configurations tweaked using SpincastLogbackConfigurerConfig#tweakContent(...)");
@@ -107,7 +107,7 @@ public class SpincastLogbackConfigurer {
             configurator.setContext(context);
             context.reset();
 
-            InputStream stringInputStream = IOUtils.toInputStream(contentFinal, getLobackFileEncoding());
+            InputStream stringInputStream = IOUtils.toInputStream(contentFinal, getLogbackFileEncoding());
             try {
 
                 configurator.doConfigure(stringInputStream);
@@ -119,7 +119,7 @@ public class SpincastLogbackConfigurer {
         }
     }
 
-    protected Charset getLobackFileEncoding() {
+    protected Charset getLogbackFileEncoding() {
         return StandardCharsets.UTF_8;
     }
 }

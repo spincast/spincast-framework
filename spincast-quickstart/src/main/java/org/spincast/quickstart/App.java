@@ -6,6 +6,7 @@ import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.server.Server;
 import org.spincast.defaults.bootstrapping.Spincast;
 import org.spincast.plugins.httpclient.SpincastHttpClientPlugin;
+import org.spincast.plugins.logbackutils.SpincastLogbackUtilsPlugin;
 import org.spincast.quickstart.config.AppConfig;
 import org.spincast.quickstart.controller.AppController;
 import org.spincast.quickstart.exchange.AppRequestContext;
@@ -35,6 +36,7 @@ public class App {
         Spincast.configure()
                 .module(new AppModule())
                 .plugin(new SpincastHttpClientPlugin())
+                .plugin(new SpincastLogbackUtilsPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
                 .websocketContextImplementationClass(AppWebsocketContextDefault.class)
                 .init(args);
@@ -66,22 +68,23 @@ public class App {
                              final SpincastFilters<AppRequestContext> spincastFilters) {
 
         //==========================================
-        // Serves everything under "/public" as 
-        // Static Resources.
+        // Serves everything under "/quick-start/public"
+        // classpath as static resources with root
+        // URL path "/public".
         //==========================================
-        router.dir("/public").classpath("/public").handle();
+        router.dir("/public").classpath("/quick-start/public").handle();
 
         //==========================================
         // Some common files which are not expected to
-        // be under a "/public" URL.
+        // be under a "/public" URL path.
         //==========================================
-        router.file("/favicon.ico").classpath("/public/favicon.ico").handle();
-        router.file("/robots.txt").classpath("/public/robots.txt").handle();
-        router.file("/humans.txt").classpath("/public/humans.txt").handle();
-        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").handle();
-        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").handle();
-        router.file("/tile-wide.png").classpath("/public/tile-wide.png").handle();
-        router.file("/tile.png").classpath("/public/tile.png").handle();
+        router.file("/favicon.ico").classpath("/quick-start/public/favicon.ico").handle();
+        router.file("/robots.txt").classpath("/quick-start/public/robots.txt").handle();
+        router.file("/humans.txt").classpath("/quick-start/public/humans.txt").handle();
+        router.file("/browserconfig.xml").classpath("/quick-start/public/browserconfig.xml").handle();
+        router.file("/apple-touch-icon.png").classpath("/quick-start/public/apple-touch-icon.png").handle();
+        router.file("/tile-wide.png").classpath("/quick-start/public/tile-wide.png").handle();
+        router.file("/tile.png").classpath("/quick-start/public/tile.png").handle();
 
         //==========================================
         // Add some security headers on every route

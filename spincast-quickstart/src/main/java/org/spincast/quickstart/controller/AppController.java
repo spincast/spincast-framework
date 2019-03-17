@@ -41,9 +41,10 @@ public class AppController {
      * Index page handler
      */
     public void index(AppRequestContext context) {
+        this.logger.debug("In the 'index' handler");
 
         addCommonModelElements(context);
-        context.response().sendTemplateHtml("/templates/index.html");
+        context.response().sendTemplateHtml("/quick-start/templates/index.html");
     }
 
     /**
@@ -61,14 +62,13 @@ public class AppController {
 
         addCommonModelElements(context);
 
-        context.response().sendTemplateHtml("/templates/form.html");
+        context.response().sendTemplateHtml("/quick-start/templates/form.html");
     }
 
     /**
      * "Exception example" handler
      */
     public void exceptionExample(AppRequestContext context) {
-
         throw new RuntimeException("This simulates an exception in the application!");
     }
 
@@ -101,7 +101,7 @@ public class AppController {
         } else {
             context.response().getModel().set("notFoundMessage", notFoundMessage);
             addCommonModelElements(context);
-            context.response().sendTemplateHtml("/templates/notFound.html");
+            context.response().sendTemplateHtml("/quick-start/templates/notFound.html");
         }
     }
 
@@ -121,7 +121,7 @@ public class AppController {
         this.logger.error("An exception occured : " + originalException);
 
         //==========================================
-        // If the exception that was threw is an instance of 
+        // If the exception that was threw is an instance of
         // PublicException, it means we should display its
         // message to the user.
         //==========================================
@@ -140,7 +140,7 @@ public class AppController {
         } else {
             context.response().getModel().set("errorMessage", errorMessage);
             addCommonModelElements(context);
-            context.response().sendTemplateHtml("/templates/exception.html");
+            context.response().sendTemplateHtml("/quick-start/templates/exception.html");
         }
     }
 }

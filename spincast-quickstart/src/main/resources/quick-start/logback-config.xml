@@ -31,7 +31,7 @@
     <!--===================================
     Appender Level, default
     ====================================-->
-    <root level="warn">
+    <root level="{{DEFAULT_LEVEL}}">
         <appender-ref ref="stdout"/>
         <appender-ref ref="file"/>
     </root>
@@ -39,7 +39,7 @@
     <!--===================================
     Appender Level, for the application
     ====================================-->
-    <logger name="org.spincast" level="debug" additivity="false">
+    <logger name="{{APP_ROOT_PACKAGE}}" level="{{APP_LEVEL}}" additivity="false">
         <appender-ref ref="stdout" />
         <appender-ref ref="file"/>
     </logger>

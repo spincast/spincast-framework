@@ -11,6 +11,8 @@ import com.google.inject.Inject;
  */
 public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
 
+    private String thisRootPackageName = null;
+
     /**
      * Constructor
      */
@@ -22,6 +24,28 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
     @Override
     public String getAppName() {
         return getString("app.name");
+    }
+
+    @Override
+    public String getAppRootPackage() {
+        if (this.thisRootPackageName == null) {
+
+            //==========================================
+            // By default, we use the first two package
+            // parts of this very class as the root package
+            // of the app.
+            //==========================================
+            String rootPackageName = AppConfigDefault.class.getPackage().getName();
+            int dotPos = rootPackageName.indexOf(".");
+            if (dotPos > 0) {
+                int dotPos2 = rootPackageName.indexOf(".", dotPos + 1);
+                if (dotPos2 > 0) {
+                    rootPackageName = rootPackageName.substring(0, dotPos2);
+                }
+            }
+            this.thisRootPackageName = rootPackageName;
+        }
+        return this.thisRootPackageName;
     }
 
     @Override

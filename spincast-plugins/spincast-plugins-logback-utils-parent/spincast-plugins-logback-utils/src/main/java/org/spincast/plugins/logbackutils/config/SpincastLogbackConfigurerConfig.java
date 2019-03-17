@@ -5,7 +5,7 @@ import org.spincast.core.utils.ResourceInfo;
 public interface SpincastLogbackConfigurerConfig {
 
     /**
-     * The path about the Loback XML file to load.
+     * The path about the Logback XML file to load.
      * <p>
      * The file can be on the classpath or on the file
      * system.

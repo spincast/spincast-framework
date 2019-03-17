@@ -77,12 +77,12 @@
         </dependency>
         
         <!--=================================== 
-        Logback - logging implementation for Slf4j
+        Spincast Logback Utils plugin
         ====================================-->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-logback-utils</artifactId>
+            <version>${project.version}</version>
         </dependency>
         
         <!--=================================== 
