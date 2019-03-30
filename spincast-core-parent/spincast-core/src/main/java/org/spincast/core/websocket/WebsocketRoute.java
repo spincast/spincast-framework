@@ -43,4 +43,5 @@ public interface WebsocketRoute<R extends RequestContext<?>, W extends Websocket
      * route.
      */
     public Set<String> getFilterIdsToSkip();
+
 }

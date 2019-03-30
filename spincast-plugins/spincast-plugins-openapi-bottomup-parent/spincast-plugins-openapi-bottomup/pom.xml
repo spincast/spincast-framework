@@ -4,14 +4,14 @@
 	
     <parent>
         <groupId>org.spincast</groupId>
-        <artifactId>spincast-plugins-config-parent</artifactId>
+        <artifactId>spincast-plugins-openapi-bottomup-parent</artifactId>
         <version>1.1.2-SNAPSHOT</version>
     </parent>
     
-	<artifactId>spincast-plugins-config</artifactId>
+	<artifactId>spincast-plugins-openapi-bottomup</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Spincast Configurations plugin</description>
+    <description>The Spincast OpenAPI Bottom Up plugin</description>
     <url>https://www.spincast.org</url>
 
 	<dependencies>
@@ -27,13 +27,33 @@
         </dependency>
         
         <!--=================================== 
-        Snakeyaml - YAML parsing
+        Swagger
         ====================================-->
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.23</version>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>2.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+        
+        <!--=================================== 
+        Byte Buddy
+        ====================================-->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.9.10</version>
+        </dependency>
+
 
 	</dependencies>
 

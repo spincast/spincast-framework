@@ -32,7 +32,7 @@ public interface WebsocketRouteBuilder<R extends RequestContext<?>, W extends We
      * This is useful during development, when an hotreload mecanism
      * is used to reload the Router without
      * restarting the application, when the application routes changed.
-     * By default only the routes for which the 
+     * By default only the routes for which the
      * {@link #isSpicastCoreRouteOrPluginRoute()}
      * method has been called would then be reloaded.
      */
@@ -50,7 +50,7 @@ public interface WebsocketRouteBuilder<R extends RequestContext<?>, W extends We
     public WebsocketRouteBuilder<R, W> before(Handler<R> beforeFilter);
 
     /**
-     * Skip a "before" filter for this WebSocket route 
+     * Skip a "before" filter for this WebSocket route
      * ("after" filters are never run).
      * <p>
      * This is useful when you set a global filter but want to skip
@@ -67,10 +67,12 @@ public interface WebsocketRouteBuilder<R extends RequestContext<?>, W extends We
     /**
      * Creates and returns the WebSocket route without adding it to
      * the router.
-     * 
-     * NOTE : use <code>save(...)</code> instead to save the route 
+     *
+     * NOTE : use <code>save(...)</code> instead to save the route
      * to the router at the end of the build process!
      */
     public WebsocketRoute<R, W> create(WebsocketController<R, W> websocketController);
+
+
 
 }

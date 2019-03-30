@@ -17,6 +17,7 @@ import com.google.inject.assistedinject.Assisted;
 public interface RouteFactory<R extends RequestContext<?>> {
 
     public Route<R> createRoute(@Assisted("id") String id,
+                                @Assisted("isWebsocketRoute") boolean isWebsocketRoute,
                                 @Assisted("isResourceRoute") boolean isResourceRoute,
                                 @Assisted("staticResource") @Nullable StaticResource<R> staticResource,
                                 @Assisted("isSpicastCoreRouteOrPluginRoute") boolean isSpicastCoreRouteOrPluginRoute,
@@ -29,5 +30,8 @@ public interface RouteFactory<R extends RequestContext<?>> {
                                 @Assisted("position") int position,
                                 @Assisted("acceptedContentTypes") Set<String> acceptedContentTypes,
                                 @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip,
-                                @Assisted("skipResources") boolean skipResources);
+                                @Assisted("skipResources") boolean skipResources,
+                                @Assisted("specs") @Nullable Object specs,
+                                @Assisted("specsParameters") @Nullable Object[] specsParameters,
+                                @Assisted("specsIgnore") boolean specsIgnore);
 }

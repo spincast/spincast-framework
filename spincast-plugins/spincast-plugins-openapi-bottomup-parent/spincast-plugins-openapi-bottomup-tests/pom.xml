@@ -4,35 +4,46 @@
 	
     <parent>
         <groupId>org.spincast</groupId>
-        <artifactId>spincast-plugins-config-parent</artifactId>
+        <artifactId>spincast-plugins-openapi-bottomup-parent</artifactId>
         <version>1.1.2-SNAPSHOT</version>
     </parent>
-    
-	<artifactId>spincast-plugins-config</artifactId>
+	
+	<artifactId>spincast-plugins-openapi-bottomup-tests</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Spincast Configurations plugin</description>
+    <description>Tests for the Spincast OpenAPI Bottom Up plugin</description>
     <url>https://www.spincast.org</url>
 
 	<dependencies>
     
         <!--=================================== 
-        Spincast core - provided
+        Spincast Testing default
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-core</artifactId>
+            <artifactId>spincast-testing-default</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         
         <!--=================================== 
-        Snakeyaml - YAML parsing
+        Spincast OpenAPI Bottom Up plugin
         ====================================-->
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.23</version>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-openapi-bottomup</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Logs to the console
+        ====================================-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
         </dependency>
 
 	</dependencies>

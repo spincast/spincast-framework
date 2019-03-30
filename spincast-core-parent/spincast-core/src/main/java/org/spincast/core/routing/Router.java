@@ -122,7 +122,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
 
     /**
      * Starts the creation of a route matching the specified
-     * HTTP methods and on any path. Same as 
+     * HTTP methods and on any path. Same as
      * <code>methods("/*{path}", httpMethods)</code>.
      */
     public RouteBuilder<R> methods(Set<HttpMethod> httpMethods);
@@ -135,7 +135,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
 
     /**
      * Starts the creation of a route matching the specified
-     * HTTP methods and on any path. Same as 
+     * HTTP methods and on any path. Same as
      * <code>methods("/*{path}", httpMethods)</code>.
      */
     public RouteBuilder<R> methods(HttpMethod... httpMethods);
@@ -149,7 +149,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Creates a route considered during an "Exception" routing process.
      * <p>
-     * Synonym of : 
+     * Synonym of :
      * <p>
      * <code>ALL("/*{path}").exception().handle(handler)</code>
      */
@@ -158,7 +158,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Creates a route considered during an "Exception" routing process.
      * <p>
-     * Synonym of : 
+     * Synonym of :
      * <p>
      * <code>ALL(path).exception().handle(handler)</code>
      */
@@ -167,7 +167,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Creates a route considered during an "Not Found" routing process.
      * <p>
-     * Synonym of : 
+     * Synonym of :
      * <p>
      * <code>ALL("/*{path}").notFound().handle(handler)</code>
      */
@@ -176,7 +176,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Creates a route considered during an "Not Found" routing process.
      * <p>
-     * Synonym of : 
+     * Synonym of :
      * <p>
      * <code>ALL(path).notFound().handle(handler)</code>
      */
@@ -213,65 +213,65 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public StaticResourceBuilder<R> dir(String url);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on all 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on all
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R) 
-     *                                          SpincastFilters#cors(R context)    
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R)
+     *                                          SpincastFilters#cors(R context)
      */
     public void cors();
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set) 
-     *                                          SpincastFilters#cors(R context, 
-     *                                          Set&lt;String&gt; allowedOrigins)  
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set)
+     *                                          SpincastFilters#cors(R context,
+     *                                          Set&lt;String&gt; allowedOrigins)
      */
     public void cors(Set<String> allowedOrigins);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
-     *                                          Set&lt;String&gt; extraHeadersAllowedToBeReadt)   
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeReadt)
      */
     public void cors(Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
-     *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent)  
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent)
      */
     public void cors(Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
                      Set<String> extraHeadersAllowedToBeSent);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
-     *                                          boolean allowCookies) 
+     *                                          boolean allowCookies)
      */
     public void cors(Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
@@ -279,17 +279,17 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
                      boolean allowCookies);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
      *                                          boolean allowCookies,
-     *                                          Set&lt;HttpMethod&gt; allowedMethods) 
+     *                                          Set&lt;HttpMethod&gt; allowedMethods)
      */
     public void cors(Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
@@ -298,18 +298,18 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
                      Set<HttpMethod> allowedMethods);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * matching requests (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * matching requests (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set, int) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set, int)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
      *                                          boolean allowCookies,
      *                                          Set&lt;HttpMethod&gt; allowedMethods,
-     *                                          int maxAgeInSeconds) 
+     *                                          int maxAgeInSeconds)
      */
     public void cors(Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead,
@@ -319,51 +319,51 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
                      int maxAgeInSeconds);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on all 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on all
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R) 
-     *                                          SpincastFilters#cors(R context)    
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R)
+     *                                          SpincastFilters#cors(R context)
      */
     public void cors(String path);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set) 
-     *                                          SpincastFilters#cors(R context, 
-     *                                          Set&lt;String&gt; allowedOrigins)  
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set)
+     *                                          SpincastFilters#cors(R context,
+     *                                          Set&lt;String&gt; allowedOrigins)
      */
     public void cors(String path,
                      Set<String> allowedOrigins);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
-     *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead)  
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead)
      */
     public void cors(String path,
                      Set<String> allowedOrigins,
                      Set<String> extraHeadersAllowedToBeRead);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
-     *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent)  
+     *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent)
      */
     public void cors(String path,
                      Set<String> allowedOrigins,
@@ -371,16 +371,16 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
                      Set<String> extraHeadersAllowedToBeSent);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
-     *                                          boolean allowCookies) 
+     *                                          boolean allowCookies)
      */
     public void cors(String path,
                      Set<String> allowedOrigins,
@@ -389,17 +389,17 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
                      boolean allowCookies);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
      *                                          boolean allowCookies,
-     *                                          Set&lt;HttpMethod&gt; allowedMethods) 
+     *                                          Set&lt;HttpMethod&gt; allowedMethods)
      */
     public void cors(String path,
                      Set<String> allowedOrigins,
@@ -409,18 +409,18 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
                      Set<HttpMethod> allowedMethods);
 
     /**
-     * Enables Cross-Origin Resource Sharing (Cors) on 
-     * requests matching the specified path (except the static resources, 
+     * Enables Cross-Origin Resource Sharing (Cors) on
+     * requests matching the specified path (except the static resources,
      * for whom cors has to be activated directly!)
-     * 
-     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set, int) 
-     *                                          SpincastFilters#cors(R context, 
+     *
+     * @see org.spincast.core.filters.SpincastFilters#cors(R, Set, Set, Set, boolean, Set, int)
+     *                                          SpincastFilters#cors(R context,
      *                                          Set&lt;String&gt; allowedOrigins,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeRead,
      *                                          Set&lt;String&gt; extraHeadersAllowedToBeSent,
      *                                          boolean allowCookies,
      *                                          Set&lt;HttpMethod&gt; allowedMethods,
-     *                                          int maxAgeInSeconds)  
+     *                                          int maxAgeInSeconds)
      */
     public void cors(String path,
                      Set<String> allowedOrigins,
@@ -438,7 +438,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Find the route to use to handle the current request. The result
      * contains all handlers to use.
-     * 
+     *
      * @return the routing result or <code>null</code> if no route matches.
      */
     public RoutingResult<R> route(R requestContext);
@@ -446,7 +446,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     /**
      * Find the route to use to handle the current request, given the
      * specified routing type. The result contains all handlers to use.
-     * 
+     *
      * @return the routing result or <code>null</code> if no route matches.
      */
     public RoutingResult<R> route(R requestContext, RoutingType routingType);
@@ -457,15 +457,15 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
     public void addRoute(Route<R> route);
 
     /**
-     * Removes all application routes (not the 
+     * Removes all application routes (not the
      * ones added by Spincast and plugins).
      */
     public void removeAllRoutes();
 
     /**
      * Removes all routes.
-     * 
-     * @param removeSpincastAndPluginsRoutesToo Should the routes added by 
+     *
+     * @param removeSpincastAndPluginsRoutesToo Should the routes added by
      * Spincast and plugins be removed too?
      */
     public void removeAllRoutes(boolean removeSpincastAndPluginsRoutesToo);
@@ -504,7 +504,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
 
     /**
      * The path patterns' aliases.
-     * Themap is mutable.
+     * The map is mutable.
      */
     public Map<String, String> getRouteParamPatternAliases();
 
@@ -526,7 +526,7 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
 
     /**
      * Starts the creation of a redirection rule.
-     * 
+     *
      * @param oldPath The old path that needs to be redirected.
      */
     public RedirectRuleBuilder redirect(String oldPath);

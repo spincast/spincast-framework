@@ -47,6 +47,9 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     private Set<String> acceptedContentTypes;
     private Set<String> filterIdsToSkip;
     private boolean isSpicastCoreRouteOrPluginRoute = false;
+    private Object specs;
+    private Object[] specsParameters;
+    private boolean specsIgnore;
 
     @AssistedInject
     public RouteBuilderDefault(RouteFactory<R> routeFactory,
@@ -155,7 +158,20 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         return this.filterIdsToSkip;
     }
 
+    /**
+     * May be <code>null</code>.
+     */
+    public Object getSpecs() {
+        return this.specs;
+    }
 
+    public boolean isSpecsIgnore() {
+        return this.specsIgnore;
+    }
+
+    public Object[] getSpecsParameters() {
+        return this.specsParameters;
+    }
 
     @Override
     public RouteBuilder<R> id(String id) {
@@ -378,7 +394,8 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         }
 
         Route<R> route = getRouteFactory().createRoute(getId(),
-                                                       false, // is not a resource route!
+                                                       false, // is not a Websocket route
+                                                       false, // is not a resource route
                                                        null,
                                                        isSpicastCoreRouteOrPluginRoute(),
                                                        getHttpMethods(),
@@ -390,7 +407,10 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
                                                        getPosition(),
                                                        getAcceptedContentTypes(),
                                                        getFilterIdsToSkip(),
-                                                       isSkipResources());
+                                                       isSkipResources(),
+                                                       getSpecs(),
+                                                       getSpecsParameters(),
+                                                       isSpecsIgnore());
         return route;
     }
 
@@ -465,6 +485,19 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     @Override
     public RouteBuilder<R> skipResourcesRequests() {
         this.skipResources = true;
+        return this;
+    }
+
+    @Override
+    public RouteBuilder<R> specs(Object specs, Object... parameters) {
+        this.specs = specs;
+        this.specsParameters = parameters;
+        return this;
+    }
+
+    @Override
+    public RouteBuilder<R> specsIgnore() {
+        this.specsIgnore = true;
         return this;
     }
 

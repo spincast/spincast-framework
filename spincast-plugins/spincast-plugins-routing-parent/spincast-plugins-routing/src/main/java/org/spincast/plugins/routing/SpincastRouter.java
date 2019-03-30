@@ -55,7 +55,7 @@ import com.google.common.net.HttpHeaders;
 import com.google.inject.Inject;
 
 /**
- * Spincast router 
+ * Spincast router
  */
 public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketContext<?>> implements Router<R, W> {
 
@@ -736,7 +736,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         matches.add(routeHandlerMatch);
 
         //==========================================
-        // If the main handler has inline "before" filters, 
+        // If the main handler has inline "before" filters,
         // we add them with the same configurations as it.
         //==========================================
         List<Handler<R>> beforeFilters = route.getBeforeFilters();
@@ -753,7 +753,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         }
 
         //==========================================
-        // If the main handler has inline "after" filters, 
+        // If the main handler has inline "after" filters,
         // we add them with the same configurations as it.
         //==========================================
         List<Handler<R>> afterFilters = route.getAfterFilters();
@@ -833,7 +833,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     /**
      * Validate if url matches the path of the route and if so, returns the
      * parsed parameters, if any.
-     * 
+     *
      * Returns NULL if there is no match.
      */
     protected Map<String, String> validatePath(String routePath, URL url) {
@@ -911,7 +911,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
             //==========================================
             // The position of the url's tokens may increase
-            // faster than the one of the route path because 
+            // faster than the one of the route path because
             // of splat tokens!
             //==========================================
             urlTokenPos++;
@@ -1532,8 +1532,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         }
 
         //==========================================
-        // If the resource is dynamic, we add its generator 
-        // as a route for the same path! 
+        // If the resource is dynamic, we add its generator
+        // as a route for the same path!
         // We also add an "after" filter which will try to
         // automatically save the generated resource. The headers
         // shouln't have been sent for that to work!
@@ -1676,6 +1676,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             }
 
             route = getRouteFactory().createRoute(null,
+                                                  false, // not a Websocket route
                                                   true, // is a resource route!
                                                   staticResource,
                                                   staticResource.isSpicastOrPluginAddedResource(),
@@ -1688,7 +1689,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                   0,
                                                   null,
                                                   null,
-                                                  false);
+                                                  false,
+                                                  null,
+                                                  null,
+                                                  true);
 
             addRoute(route);
         }
@@ -1748,12 +1752,17 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
         //==========================================
         // We create the "main" route handler for this
-        // route: its job will be to convert the HTTP request 
+        // route: its job will be to convert the HTTP request
         // to a Websocket connection.
         //==========================================
         final Handler<R> routeHandler = getWebsocketRouteHandlerFactory().createWebsocketRouteHandler(websocketRoute);
 
         Route<R> httpRoute = new Route<R>() {
+
+            @Override
+            public boolean isWebsocketRoute() {
+                return true;
+            }
 
             @Override
             public String getId() {
@@ -1789,7 +1798,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             public Set<HttpMethod> getHttpMethods() {
 
                 //==========================================
-                // Websocket connection request only valid using a 
+                // Websocket connection request only valid using a
                 // GET method.
                 //==========================================
                 return Sets.newHashSet(HttpMethod.GET);
@@ -1827,7 +1836,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             public List<Handler<R>> getAfterFilters() {
                 //==========================================
                 // No "after" filter for a Websocket route:
-                // if the Websocket connection is established, 
+                // if the Websocket connection is established,
                 // the HTTP request is not anymore.
                 //==========================================
                 return null;
@@ -1847,6 +1856,20 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 return websocketRoute.getFilterIdsToSkip();
             }
 
+            @Override
+            public Object getSpecs() {
+                return null;
+            }
+
+            @Override
+            public List<Object> getSpecsParameters() {
+                return new ArrayList<Object>();
+            }
+
+            @Override
+            public boolean isSpecsIgnore() {
+                return false;
+            }
         };
 
         return httpRoute;

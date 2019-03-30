@@ -1,0 +1,638 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-openapi-bottomup{% endblock %}
+{% block meta_title %}Plugins - Spincast OpenAPI bottom up{% endblock %}
+{% block meta_description %}Spincast OpenAPI bottom up plugin - OpenAPI / Swagger specifications file generation from the applicatin code{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast OpenAPI bottom up plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast OpenAPI bottom up <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/openapi/bottomup/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast OpenAPI bottom up <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#intro">Introduction</a></li>
+                <li class="openable"><a href="#how">How it works</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#configurations">Configurations</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin allows you to generate
+	                <a href="https://www.openapis.org/">OpenAPI</a> / <a href="https://swagger.io/docs/specification/about/">Swagger</a> specifications 
+	                (currently <em>3.0</em> compatible) for your Spincast REST API, as <code>JSON</code> or <code>YAML</code>.
+                </p>
+                <p>
+                    It automatically uses information from your routes and provides tools for you to complete/tweak the
+                    specifications to expose as the documentation for your API.
+                </p>
+
+            </section>
+            
+            <section id="intro">
+                <h3>
+                    <a class="anchor" href="#intro" title="permanent link"></a>
+                    Introduction
+                </h3>
+                <p>
+                    <a href="https://www.openapis.org/">OpenAPI</a> is one of the most popular ways of documenting a
+                    <code>REST API</code>. It is a <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md"><em>specification</em></a> 
+                    around which many tools and libraries have been created. The 
+                    most known of those tools are probably the <a href="https://swagger.io/tools/swagger-editor/">Swagger Editor</a> and
+                    the <a href="https://swagger.io/tools/swagger-ui/">Swagger UI</a>.
+                </p>
+                <p>
+                    The OpenAPI ecosystem may be a little bit confusing at first because there are a lot of different ways
+                    of using the specification. Some libraries will
+                    provide a way of generating application code (controllers, validators, etc.) given <em>an existing
+                    specifications file</em>... This is called the "<em>top-down</em>" approach (or "<em>API first</em>" approach). 
+                    Others libraries will do the opposite: they will generate the specifications
+                    file <em>from your application code</em>... This is called the "<em>bottom-up</em>" approach (or "<em>code first</em>" approach) 
+                    and is the one used by this plugin.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Whatever approach you use, the most important part of an OpenAPI implementation
+                    is to be able to provide the specifications to the consumers of your API, as <code>JSON</code> 
+                    or as <code>YAML</code>.
+                    You could send those specifications by email to developers in charge of developing a client using your API 
+                    (for example as a "<code>specs.yaml</code>" file), but most of the time you expose 
+                    the specifications as an <code>HTTP endpoint</code> so they can be easily consumed!
+                </p> 
+            </section>
+            
+            <section id="how">
+                <h3>
+                    <a class="anchor" href="#how" title="permanent link"></a>
+                    How this plugin works
+                </h3>
+                <p>
+                    Some frameworks try to develop an OpenAPI implementation using a <em>custom</em>
+                    parser and <em>custom</em> code to generate the final specifications. This is not 
+                    a trivial task as the OpenAPI specification contains many details! It can be easy to forget something
+                    or to generate something invalid. Also, keeping up-to-date with new versions of the
+                    specification may be challenging...
+                </p>
+                <p>
+                    This is why we decided to develop this plugin in a way that code from the 
+                    <a href="https://github.com/swagger-api/swagger-core/">official reference implementation</a>
+                    can be reused as much as possible.
+                    By doing so, we make sure we use battle tested and well-maintained code. We also make sure it is super easy to
+                    upgrade to a new version of the specification in the future.
+                    
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    The problem with the official Java implementation is that it is made
+                    specifically for <code>JAX-RS</code> based applications and Spincast is not!
+                    Spincast is indeed more flexible: it allows you to define your routes as you want (inline if required), 
+                    without any annotations. Also, routes can be dynamically added to the <a href="/documentation#adding_route">Router</a>, they don't
+                    necessarily have to be defined in controllers using special annotations. 
+                </p>
+                <p>
+                    So, how can we reuse the official code?
+                </p>
+                    This plugin <em>automagically generate JAX-RS classes</em> from the Spincast code.
+                    It does this using <a href="https://bytebuddy.net/#">Byte Buddy</a>. With those generated
+                    dummy classes, it is possible to reuse the code from the official <code>swagger-jaxrs2</code> library,
+                    without any change. 
+                    In other words, the job of this plugin is only to generate pseudo <code>JAX-RS</code> classes... Everything else
+                    is done by the official library: the parsing and the specifications generation.
+                </p>
+                </p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    To help you specify the information to include in the resulting specifications, this plugin
+                    also provides a way to reuse another official part of OpenAPI/Swagger: the
+                    <a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations">Swagger annotations</a>.
+                    As you'll see in the <a href="#documenting">Documenting the routes</a> section, the most important annotation
+                    you can use is <a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#operation-annotations">@Operation</a>.
+                </p>
+
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    If you don't provide any explicit information about your routes, using annotations
+                    or <a href="#yaml">using plain YAML</a>, the plugin will still be able to generate basic specifications.
+                    You manually add the extra pieces of information required for the final specifications to be completed.
+                </p>
+                
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="accessing" href="#accessing" title="permanent link"></a>
+                    Accessing the generated specifications
+                </h4>
+                <p>
+                    First of all, the specifications resulting from collected the various pieces of information about your API
+                    are accessible <em>as an 
+                    <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#oasObject">OpenAPI</a> Java object</em>. You access this
+                    object via the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#getOpenApi--">SpincastOpenApiManager#getOpenApi()</a>
+                    method.
+                    It is this object that will be converted to generate the final specifications as <code>JSON</code> or as <code>YAML</code>!
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    You generate the specifications: 
+                    <ul>
+                        <li>
+                            As <code>JSON</code>, using the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#getOpenApiAsJson--">getOpenApiAsJson()</a> method
+                        </li>
+                        <li>
+                            As <code>YAML</code>, using the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#getOpenApiAsYaml--">getOpenApiAsYaml()</a> method
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    As you can see, the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html">SpincastOpenApiManager</a>
+                    component is at the very core of this plugin. You can inject it anywhere to need to interact with it.
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="serving" href="#serving" title="permanent link"></a>
+                    Serving the specifications as an HTTP endpoint
+                </h4>
+                <p>
+                    When your application is properly documented (we'll learn how to do this in the next section), it is often
+                    desirable to serve the resulting specifications as an <code>HTTP endpoint</code> so it can be consumed
+                    easily.
+                </p>
+                <p>
+                    You create such endpoint as any other one. If your specifications won't
+                    <a href="#dynamic">changed dynamically</a>, using a <a href="/documentation#dynamic_resources">Dynamic Resource</a>
+                    is the way to go! Let's see how you can do this:
+                </p>
+                <p>
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+@Inject
+protected SpincastOpenApiManager spincastOpenApiManager;
+
+// As JSON
+router.file("/specifications.json")
+      .pathRelative("/generated/specifications.json")
+      .handle((context) -&gt; {
+    context.response().sendJson(spincastOpenApiManager.getOpenApiAsJson());
+});
+
+// As YAML
+router.file("/specifications.yaml")
+      .pathRelative("/generated/specifications.yaml")
+      .handle((context) -&gt; {
+    context.response().sendCharacters(spincastOpenApiManager.getOpenApiAsYaml(), "text/yaml");
+});</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="documenting" href="#documenting" title="permanent link"></a>
+                    Documenting the routes
+                </h4>
+                <p>
+                    If you don't add any explicit information, the generated specifications will still be available but
+                    will be basic. They will contain information about your routes:
+                    their HTTP methods, their paths, their consumes content-types and their path parameters.
+                </p>
+                <p>
+                    To add more information, you can use the 
+                    <a href="/public/javadoc/org/spincast/core/routing/RouteBuilder.html#specs-java.lang.Object-java.lang.Object...-">.specs(...)</a>
+                    method available when you define the routes. You pass to this method the extra information 
+                    using the <a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations">official annotations</a>.
+                    Read the <a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations">official documentation</a> to learn more about those annotations.
+                </p>
+                <p>
+                    Here's a step-by-step guide on how to add the annotation(s)... You first start by using the <code>.specs(...)</code> method:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="1,6,1,16"
+>
+router.POST("/books/${bookId:&lt;AN+&gt;}")
+      .specs(...)
+      .handle(booksController::get);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    In that method, you create an anonymous class based on the <code>SpecsObject</code> interface. This
+                    is act as a container for the annotations so they can later be retrieved by Spincast:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="1,13,1,32"
+>
+router.POST("/books/${bookId:&lt;AN+&gt;}")
+      .specs(new SpecsObject() {})
+      .handle(booksController::get);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    You annotate this anonymous class with <code>@Specs</code>:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="1,13,1,23"
+>
+router.POST("/books/${bookId:&lt;AN+&gt;}")
+      .specs(@Specs(...) new SpecsObject() {})
+      .handle(booksController::get);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    And you can finally add a <a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#operation-annotations">@Operation</a>,
+                    <a href="https://docs.oracle.com/cd/E19798-01/821-1841/gipzh/index.html#6nmq2cp2i">@Consumes</a>,
+                    and/or <a href="https://docs.oracle.com/cd/E19798-01/821-1841/gipzh/index.html#6nmq2cp2g">@Produces</a>
+                    annotations inside <code>@Specs</code>:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="1,24,1,66|2,24,2,66|3,24,3,65|4,24,4,72|5,24,5,25"
+>
+router.POST("/books/${bookId:&lt;AN+&gt;}")
+      .specs(new @Specs(consumes = @Consumes({"application/xml"}),
+                        produces = @Produces({"application/json"}),
+                        value = @Operation(summary = "My summary",
+                                           description = "My description"
+                        )) SpecsObject() {})
+      .handle(booksController::get);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    This may seem a little bit complicated at first but this is what allows 
+                    the reuse of the
+                    <em>official</em>, <em>well supported</em>, Swagger reference implementation code!
+                </p>
+                <p>
+                    Here's another example:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+router.POST("/users")
+      .specs(new @Specs(@Operation(
+             parameters = {
+                 @Parameter(name = "full",
+                            in = ParameterIn.QUERY,
+                            schema = @Schema(description = "Return all informations?")),
+           })) SpecsObject() {})
+      .handle(booksController::get);
+</pre>
+                        </p>
+			            <p>
+			                <span class="explanation">Explanation :</span>
+			                <ul>
+			                    <li>
+			                        <span class="code-line-nbr">2</span> : We use the 
+			                        <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/RouteBuilder.html#specs-java.lang.Object-java.lang.Object...-">.specs(...)</a>
+			                        method to start adding specifications to the route. The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/Specs.html">@Specs</a>
+			                        annotation is only a wrapper allowing us to use the official <a href="https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#operation-annotations">@Operation</a> annotation.
+			                    </li>
+                                <li>
+                                    <span class="code-line-nbr">3-6</span> : The extra OpenAPI specifications to associate with the route. 
+                                    In this simple example, we only document a "<code>full</code>" querystring parameter.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">7</span> : The annotations need to be added <em>on something</em> for Spincast
+                                    to be able to retrieve them. You create an 
+                                    anonymous class from the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpecsObject.html">SpecsObject</a> interface
+                                    to store them.
+                                </li>
+			                </ul>
+			            </p>  
+ 
+                    </div> 
+                    {% endverbatim %} 
+                </p>
+
+                <h4>
+                    <a class="anchor_small" id="yaml" href="#yaml" title="permanent link"></a>
+                    Using YAML instead of annotations
+                </h4>
+                <p>
+                    If you prefer that to annotations, you can also document a route using plain YAML:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+router.POST("/books/${bookId:&lt;AN+&gt;}")
+      .specs("post:\n" +
+             "  operationId: getBook\n" +
+             "  responses:\n" +
+             "    default:\n" +
+             "      description: default response\n" +
+             "      content:\n" +
+             "        application/json: {}\n")
+      .handle(booksController::get);</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}   
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The YAML specifications you provide must start by the HTTP methods (you can provide more than one!).
+                    And you must follow the syntax required by the <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md">OpenAPI specification</a>.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that the indentation in your YAML content <em>IS</em> important and an exception will be thrown if
+                    it is invalid.
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="ignoring" href="#ignoring" title="permanent link"></a>
+                    Ignoring some routes
+                </h4>
+                <p>
+                    You may want to prevent some of your routes to be added to the final specifications.
+                    To do so, you can call <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/RouteBuilder.html#specsIgnore--">specsIgnore()</a>
+                    on those routes:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="1,6,1,19"
+>
+router.POST("/books/${bookId:&lt;AN+&gt;}")
+      .specsIgnore()
+      .handle(booksController::get);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}     
+                </p>
+                <p>
+                    If you need to ignore routes that have been added <em>by a third-party plugin</em>, you can do so
+                    by using their id (if they have one), or their HTTP method and path otherwise:
+
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" 
+>
+@Inject
+protected SpincastOpenApiManager spincastOpenApiManager;
+
+// Ignoring a route by its id:
+spincastOpenApiManager.ignoreRoutesByIds("someRouteId");
+
+// Ignoring a route by its HTTP method and path:
+spincastOpenApiManager.ignoreRouteUsingHttpMethodAndPath(HttpMethod.POST, "/some-path");</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}     
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="global" href="#global" title="permanent link"></a>
+                    Global OpenAPI information
+                </h4>
+                <p>
+                    Using <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#setOpenApiBase-io.swagger.v3.oas.models.OpenAPI-">setOpenApiBase(...)</a>
+                    on the <code>SpincastOpenApiManager</code> component, you can provide any OpenAPI information you want to be part of
+                    the generated specifications. You do this by creating a custom 
+                    <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#oasObject">OpenAPI</a> object:
+  
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="6,27,6,55"
+>
+OpenAPI openApiBase = new OpenAPI();
+Info info = new Info().title("The name of your REST API")
+                      .description("A description of your API...")
+                      .termsOfService("https://example.com/tos");
+openApiBase.info(info);
+
+getSpincastOpenApiManager().setOpenApiBase(openApiBase);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}     
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that you can use that base OpenAPI object to <em>fully</em> define the specifications
+                    of your API, without using any information from the routes themselves!
+                    You do so by <a href="#configs_disable">disabling the automatic specifications</a> via the plugin configurations, 
+                    and then specify everything (<code>paths</code> included) using this base OpenAPI object.
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="dynamic" href="#dynamic" title="permanent link"></a>
+                    Dynamic specifications
+                </h4>
+                <p>
+                    If your specifications may change at runtime (for example if a new route may be added at some point),
+                    there are some things to know:
+                    
+                    <ul>
+                        <li>
+                            You shouldn't use a <a href="/documentation#dynamic_resources">Dynamic Resource</a> route to serve the
+                            specifications since the first generated version would be cached forever. You need to use a standard route.
+                        </li>
+                        <li>
+                            The code adding new information to the specifications (or simply adding a new route)
+                            needs to call <a class="javadoc" href="https://www.spincast.loc:44420/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#clearCache--">clearCache()</a>.
+                            This is required since Spincast caches the specifications for performance reasons.
+                        </li>
+                        <li>
+                            If, at some point, you want to reset <em>everything</em> in the <code>SpincastOpenApiManager</code> instance (the cache, the
+                            ignored routes, the base OpenAPI object, etc.), you can call
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#resetAll--">resetAll()</a>.
+                        </li>
+                    </ul>
+                </p>
+            </section> 
+            
+            <section id="configurations">
+                <h3>
+                    <a class="anchor" href="#configurations" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    To tweak the configurations used by this plugin, you need to bind a custom
+                    implementation of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/config/SpincastOpenApiBottomUpPluginConfig.html">SpincastOpenApiBottomUpPluginConfig</a>
+                    interface. You can also extend the default <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/config/SpincastOpenApiBottomUpPluginConfigDefault.html">SpincastOpenApiBottomUpPluginConfigDefault</a> 
+                    implementation as a base class.
+                </p>
+                <p>
+                    The available configurations are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="configs_disable" href="#configs_disable" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isDisableAutoSpecs</span>()</code>
+                            <div class="well">
+                                <p>
+                                    If this method returns <code>true</code> no automatic specifications are going to 
+                                    be created. You are then responsible to add <em>all</em> the information about your API using
+                                    the <a href="#global">base OpenAPI object</a>.
+                                </p> 
+                                <p>
+                                    The default is to return <code>false</code>.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_consumes" href="#configs_consumes" title="permanent link"></a>
+                            <code class="apiItem">String[] <span>getDefaultConsumesContentTypes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The default <code>content-types</code> that are going to be used as the
+                                    <a href="https://docs.oracle.com/cd/E19798-01/821-1841/gipzh/index.html#6nmq2cp2i">@Consumes</a>
+                                    information of a route if not explicitly defined otherwise.
+                                </p> 
+                                <p>
+                                    The default is <code>application/json</code>.
+                                </p>
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Note that specifying a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/Specs.html#consumes--">@Consumes</a>
+                                    annotation inside <code>.specs(...)</code> will overwrite that default, but also using
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/RouteBuilder.html#accept-org.spincast.core.utils.ContentTypeDefaults...-">.accept(...)</a>
+                                    on the route definition!
+                                </p>   
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_produces" href="#configs_produces" title="permanent link"></a>
+                            <code class="apiItem">String[] <span>getDefaultProducesContentTypes</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The default <code>content-types</code> that are going to be used as the
+                                    <a href="https://docs.oracle.com/cd/E19798-01/821-1841/gipzh/index.html#6nmq2cp2g">@Produces</a>
+                                    information of a route if not explicitly defined otherwise.
+                                </p> 
+                                <p>
+                                    The default is <code>application/json</code>.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+                
+                
+            </section> 
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-openapi-bottomup&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiBottomUpPlugin.html">SpincastOpenApiBottomUpPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,51"
+>
+
+Spincast.configure()
+        .plugin(new SpincastOpenApiBottomUpPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

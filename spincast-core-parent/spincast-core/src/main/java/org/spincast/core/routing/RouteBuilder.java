@@ -23,7 +23,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * This is useful during development, when an hotreload mecanism
      * is used to reload the Router without
      * restarting the application, when the application routes changed.
-     * By default only the routes for which the 
+     * By default only the routes for which the
      * {@link #isSpicastCoreRouteOrPluginRoute()}
      * method has been called would then be reloaded.
      */
@@ -41,9 +41,9 @@ public interface RouteBuilder<R extends RequestContext<?>> {
     public RouteBuilder<R> path(String path);
 
     /**
-     * The position of the handler. 
+     * The position of the handler.
      * <p>
-     * If "0", the handler is considered as the *main* handler. 
+     * If "0", the handler is considered as the *main* handler.
      * Only one main handler per request
      * is run (the first one found)! The main handler is usually where
      * the body of the response is created.
@@ -87,142 +87,142 @@ public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
      * Adds a "before" filter which will only be applied to this particular route.
-     * If more than one filter is added, they will be run in order they have been 
+     * If more than one filter is added, they will be run in order they have been
      * added.
      */
     public RouteBuilder<R> before(Handler<R> beforeFilter);
 
     /**
      * Adds an "after" filter which will only be applied to this particular route.
-     * If more than one filter is added, they will be run in order they have been 
+     * If more than one filter is added, they will be run in order they have been
      * added.
      */
     public RouteBuilder<R> after(Handler<R> afterFilter);
 
     /**
-     * Sets the accepted <code>Content-Types</code>. 
+     * Sets the accepted <code>Content-Types</code>.
      * This route will only be considered for requests specifying those
-     * <code>Content-Types</code> as being accepted 
+     * <code>Content-Types</code> as being accepted
      * (using the <code>Accept</code> header).
      */
     public RouteBuilder<R> acceptAsString(String... acceptedContentTypes);
 
     /**
-     * Sets the accepted <code>Content-Types</code>. 
+     * Sets the accepted <code>Content-Types</code>.
      * This route will only be considered for requests specifying those
-     * <code>Content-Types</code> as being accepted 
+     * <code>Content-Types</code> as being accepted
      * (using the <code>Accept</code> header).
      */
     public RouteBuilder<R> acceptAsString(Set<String> acceptedContentTypes);
 
     /**
-     * Sets the accepted <code>Content-Types</code>. 
+     * Sets the accepted <code>Content-Types</code>.
      * This route will only be considered for requests specifying those
-     * <code>Content-Types</code> as being accepted 
+     * <code>Content-Types</code> as being accepted
      * (using the <code>Accept</code> header).
      */
     public RouteBuilder<R> accept(ContentTypeDefaults... acceptedContentTypes);
 
     /**
-     * Sets the accepted <code>Content-Types</code>. 
+     * Sets the accepted <code>Content-Types</code>.
      * This route will only be considered for requests specifying those
-     * <code>Content-Types</code> as being accepted 
+     * <code>Content-Types</code> as being accepted
      * (using the <code>Accept</code> header).
      */
     public RouteBuilder<R> accept(Set<ContentTypeDefaults> acceptedContentTypes);
 
     /**
-     * Adds <code>application/html</code> as an accepted <code>Content-Type</code>. 
+     * Adds <code>application/html</code> as an accepted <code>Content-Type</code>.
      */
     public RouteBuilder<R> html();
 
     /**
-     * Adds <code>application/json</code> as an accepted <code>Content-Type</code>. 
+     * Adds <code>application/json</code> as an accepted <code>Content-Type</code>.
      */
     public RouteBuilder<R> json();
 
     /**
-     * Adds <code>application/xml</code> as an accepted <code>Content-Type</code>. 
+     * Adds <code>application/xml</code> as an accepted <code>Content-Type</code>.
      */
     public RouteBuilder<R> xml();
 
     /**
-     * Addss <code>GET</code> as a supported HTTP method. 
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     * Addss <code>GET</code> as a supported HTTP method.
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> GET();
 
     /**
      * Adds <code>POST</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> POST();
 
     /**
      * Adds <code>PUT</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> PUT();
 
     /**
      * Adds <code>DELETE</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> DELETE();
 
     /**
      * Adds <code>OPTIONS</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> OPTIONS();
 
     /**
      * Adds <code>TRACE</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> TRACE();
 
     /**
      * Adds <code>HEAD</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> HEAD();
 
     /**
      * Adds <code>PATCH</code> as a supported HTTP method.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. This one will simply be added.
      */
     public RouteBuilder<R> PATCH();
 
     /**
      * Adds all HTTP methods as being supported.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. By calling this method, all
      * methods will now be suported.
      */
@@ -230,18 +230,18 @@ public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
      * Adds the specified HTTP methods as being supported.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. Those new ones will simply be added.
      */
     public RouteBuilder<R> methods(Set<HttpMethod> httpMethods);
 
     /**
      * Adds the specified HTTP methods as being supported.
-     * 
-     * If you started the creation of the route from an 
-     * <code>Router</code> object, you already specified some 
+     *
+     * If you started the creation of the route from an
+     * <code>Router</code> object, you already specified some
      * supported HTTP methods. Those new ones will simply be added.
      */
     public RouteBuilder<R> methods(HttpMethod... httpMethods);
@@ -257,8 +257,8 @@ public interface RouteBuilder<R extends RequestContext<?>> {
     /**
      * Creates and returns the route without adding it to
      * the router.
-     * 
-     * NOTE : use <code>save(...)</code> instead to save the route 
+     *
+     * NOTE : use <code>save(...)</code> instead to save the route
      * to the router at the end of the build process!
      */
     public Route<R> create(Handler<R> mainHandler);
@@ -279,7 +279,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
      * Adds public cache headers.
-     * 
+     *
      * @param seconds The number of seconds the resource associated with
      * this route should be cached.
      */
@@ -287,10 +287,10 @@ public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
      * Adds cache headers.
-     * 
+     *
      * @param seconds The number of seconds the resource associated with
      * this route should be cached.
-     * 
+     *
      * @param isPrivate should the cache be private?
      * (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
      */
@@ -298,13 +298,13 @@ public interface RouteBuilder<R extends RequestContext<?>> {
 
     /**
      * Adds cache headers.
-     * 
+     *
      * @param seconds The number of seconds the resource associated with
      * this route should be cached.
-     * 
+     *
      * @param isPrivate should the cache be private?
      * (<a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en#public-vs-private">help</a>)
-     * 
+     *
      * @param secondsCdn The number of seconds the resource associated with
      * this route should be cached by a CDN/proxy. If <code>null</code>, it
      * won't be used.
@@ -328,10 +328,25 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * calling this {@link #skipResourcesRequests()} method, the current filter
      * will never be called for such resources.
      * <p>
-     * This feature only makes sense if the current route 
+     * This feature only makes sense if the current route
      * <em>if a filter</em>. Otherwise, it won't be used.
      */
     public RouteBuilder<R> skipResourcesRequests();
 
+    /**
+     * Generic method to provide specifications
+     * for an endpoint.
+     * <p>
+     * Does nothing by default. Requires a plugin
+     * that knows how to parse the provided
+     * object.
+     */
+    public RouteBuilder<R> specs(Object specs, Object... options);
+
+    /**
+     * When calling this method, the associated route won't
+     * be part of the generated specs.
+     */
+    public RouteBuilder<R> specsIgnore();
 
 }

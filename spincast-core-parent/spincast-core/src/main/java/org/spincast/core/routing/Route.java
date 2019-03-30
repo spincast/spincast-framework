@@ -16,6 +16,11 @@ public interface Route<R extends RequestContext<?>> {
     public String getId();
 
     /**
+     * Is this a Websocket route?
+     */
+    public boolean isWebsocketRoute();
+
+    /**
      * Is this a route for a resource? It is
      * if it was was started using
      * {@link Router#dir(String)} or {@link Router#file(String)}.
@@ -28,7 +33,7 @@ public interface Route<R extends RequestContext<?>> {
     /**
      * Returns the {@link StaticResource } to serve or
      * <code>null</code> if this is not a
-     * route for a static resource (ie if 
+     * route for a static resource (ie if
      * {@link #isStaticResourceRoute()}) doesn't return
      * <code>true</code>.
      */
@@ -95,5 +100,21 @@ public interface Route<R extends RequestContext<?>> {
      * route.
      */
     public Set<String> getFilterIdsToSkip();
+
+    /**
+     * The optional specs for the route.
+     */
+    public Object getSpecs();
+
+    /**
+     * Optional specs parameters.
+     */
+    public List<Object> getSpecsParameters();
+
+    /**
+     * Is this route ignored when specs are
+     * generated?
+     */
+    public boolean isSpecsIgnore();
 
 }
