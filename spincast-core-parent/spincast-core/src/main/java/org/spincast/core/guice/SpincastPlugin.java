@@ -18,7 +18,7 @@ public interface SpincastPlugin extends SpincastContextTypesInterested {
      * The plugin can add bindings to the current Guice module,
      * can modify it and can inspect it in order to decide what to
      * bind or not.
-     * 
+     *
      * @return an ajusted Guice module.
      */
     public Module apply(Module currentModule);
@@ -28,8 +28,8 @@ public interface SpincastPlugin extends SpincastContextTypesInterested {
      * be installed.
      * <p>
      * This plugin is repsonsible to bind any components
-     * that won't be bound because it mark some plugins
-     * as to be ignored.
+     * that won't be bound because it marks some plugins
+     * as "to be ignored".
      */
     public Set<String> getPluginsToDisable();
 

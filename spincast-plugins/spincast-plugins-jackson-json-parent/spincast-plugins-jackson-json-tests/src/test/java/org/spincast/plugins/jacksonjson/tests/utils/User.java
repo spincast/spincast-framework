@@ -1,4 +1,4 @@
-package org.spincast.plugins.jacksonjson.tests;
+package org.spincast.plugins.jacksonjson.tests.utils;
 
 public interface User {
 

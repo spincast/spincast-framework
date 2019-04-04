@@ -58,7 +58,7 @@ import com.google.inject.Provider;
  */
 public class SpincastJsonManager implements JsonManager {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastJsonManager.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastJsonManager.class);
 
     public static final String ENUM_SERIALIZER_FIELD_NAME_NAME = "name";
     public static final String ENUM_SERIALIZER_FIELD_NAME_LABEL = "label";
@@ -923,7 +923,7 @@ public class SpincastJsonManager implements JsonManager {
         }
 
         //==========================================
-        // Converts to a JsonObject or returns as 
+        // Converts to a JsonObject or returns as
         // a string
         //==========================================
         String jsonStr = toJsonString(originalObject);
@@ -1039,8 +1039,8 @@ public class SpincastJsonManager implements JsonManager {
             return null;
         }
         JsonObject obj = create();
-        obj.set("name", enumValue.name());
-        obj.set("label", enumValue.toString());
+        obj.set(ENUM_SERIALIZER_FIELD_NAME_NAME, enumValue.name());
+        obj.set(ENUM_SERIALIZER_FIELD_NAME_LABEL, enumValue.toString());
 
         return obj;
     }

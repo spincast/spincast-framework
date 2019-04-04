@@ -14,7 +14,7 @@ import com.google.inject.assistedinject.AssistedInject;
 public class WebsocketEndpointHandlerDefault<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                             implements WebsocketEndpointHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(WebsocketEndpointHandlerDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(WebsocketEndpointHandlerDefault.class);
 
     private final Server server;
     private final String endpointId;
@@ -95,7 +95,7 @@ public class WebsocketEndpointHandlerDefault<R extends RequestContext<?>, W exte
     public void onPeerMessage(String peerId, String message) {
 
         if(getEndpointManager() == null) {
-            this.logger.error("The Websocket manager is null! Skipping message from peer '" + peerId + "': " + message);
+            logger.error("The Websocket manager is null! Skipping message from peer '" + peerId + "': " + message);
             return;
         }
 
@@ -106,7 +106,7 @@ public class WebsocketEndpointHandlerDefault<R extends RequestContext<?>, W exte
     public void onPeerMessage(String peerId, byte[] message) {
 
         if(getEndpointManager() == null) {
-            this.logger.error("The Websocket manager is null! Skipping bytes message from peer '" + peerId);
+            logger.error("The Websocket manager is null! Skipping bytes message from peer '" + peerId);
             return;
         }
 

@@ -30,6 +30,7 @@ import org.spincast.testing.junitrunner.RepeatedClassAfterMethodProvider;
 import org.spincast.testing.junitrunner.SpincastJUnitRunner;
 import org.spincast.testing.junitrunner.TestFailureListener;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -38,9 +39,9 @@ import com.google.inject.Scopes;
 
 /**
  * Base class for Spincast test classes.
- * 
+ *
  * <p>
- * Uses a custom Junit runner, 
+ * Uses a custom Junit runner,
  * {@link org.spincast.testing.junitrunner.SpincastJUnitRunner SpincastJUnitRunner}.
  * <p>
  * This runner create a single instance of the test class for all of its tests,
@@ -48,8 +49,8 @@ import com.google.inject.Scopes;
  * method before the tests are run and an <code>afterClass()</code> method after
  * they are run.
  * <p>
- * A class extending this will be part of a Guice context 
- * (created using the {@link #createInjector() createInjector} method) and 
+ * A class extending this will be part of a Guice context
+ * (created using the {@link #createInjector() createInjector} method) and
  * the required dependencies will be injected into it.
  * <p>
  * A {@link GuiceTweaker} instance is used to
@@ -70,7 +71,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
                                        TestFailureListener,
                                        RepeatedClassAfterMethodProvider {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastTestBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastTestBase.class);
 
     private Injector guice;
     private File testingWritableTempDir;
@@ -90,8 +91,8 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         addExtraSystemProperties();
 
         //==========================================
-        // Creates a GuiceTweaker 
-        // as a ThreadLocal variable to tweak some 
+        // Creates a GuiceTweaker
+        // as a ThreadLocal variable to tweak some
         // bindings during the Injector creation, if
         // "Spincast.configure()" if used to create that
         // Injector.
@@ -172,7 +173,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     }
 
     /**
-     * Validates the created Injector, before the 
+     * Validates the created Injector, before the
      * dependencies are injected in the test class.
      */
     protected void validateCreatedInjector(Injector guice) {
@@ -212,7 +213,32 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
             guiceTweaker.disableBindCurrentClass();
         }
 
+        //==========================================
+        // Plugins to disable?
+        //==========================================
+        Set<String> pluginIdsToDisable = getGuiceTweakerPluginsToDisable();
+        if (pluginIdsToDisable != null && pluginIdsToDisable.size() > 0) {
+            for (String pluginId : getGuiceTweakerPluginsToDisable()) {
+                guiceTweaker.pluginToDisable(pluginId);
+            }
+        }
+
         return guiceTweaker;
+    }
+
+    /**
+     * Ids of plugins to disable.
+     * <p>
+     * Example:
+     * <p>
+     * <pre>
+     * Set<String> pluginIdsToIgnore = super.getGuiceTweakerPluginsToDisable();
+     * pluginIdsToIgnore.add(XXXXXX);
+     * return pluginIdsToIgnore;
+     * </pre>
+     */
+    protected Set<String> getGuiceTweakerPluginsToDisable() {
+        return Sets.newHashSet();
     }
 
     protected void tweakConfigurations(GuiceTweaker guiceTweaker) {
@@ -263,9 +289,9 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
      * If an overriding Module is to be added using the
      * Guice tweaker.
      * <p>
-     * 
+     *
      * Can be overriden with something like :
-     * 
+     *
      * <pre>
      * return Modules.override(super.getGuiceTweakerExtraOverridingModule()).with(new SpincastGuiceModuleBase() {
      *     protected void configure() {
@@ -323,7 +349,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
         try {
             resetSystemProperties();
         } catch (Exception ex) {
-            this.logger.warn(ex.getMessage());
+            logger.warn(ex.getMessage());
         }
 
         deleteTestingWritableTempDir();
@@ -344,7 +370,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     }
 
     /**
-     * You can override this method to be 
+     * You can override this method to be
      * informed when a test fails.
      */
     @Override
@@ -446,7 +472,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     /**
      * The test class must implement this method to create
      * the Guice injector. It can be done by starting a real
-     * application (with a <code>main(...)</code> method) or by 
+     * application (with a <code>main(...)</code> method) or by
      * creating a custom Injector.
      */
     protected abstract Injector createInjector();

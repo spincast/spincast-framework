@@ -24,7 +24,7 @@ import com.google.inject.Inject;
  */
 public class DemoHtmlFormsDynamicFieldsController {
 
-    protected final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsDynamicFieldsController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsDynamicFieldsController.class);
 
     private final FlashMessageFactory flashMessageFactory;
     private final JsonManager jsonManager;

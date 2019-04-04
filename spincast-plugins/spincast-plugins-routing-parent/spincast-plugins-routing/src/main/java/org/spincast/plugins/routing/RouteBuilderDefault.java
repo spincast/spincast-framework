@@ -27,7 +27,7 @@ import com.google.inject.assistedinject.AssistedInject;
 
 public class RouteBuilderDefault<R extends RequestContext<?>, W extends WebsocketContext<?>> implements RouteBuilder<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(RouteBuilderDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(RouteBuilderDefault.class);
 
     private final Router<R, W> router;
     private final RouteFactory<R> routeFactory;

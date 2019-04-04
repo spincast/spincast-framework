@@ -22,7 +22,7 @@ import com.google.inject.Inject;
 
 public class MainPagesController {
 
-    protected final Logger logger = LoggerFactory.getLogger(MainPagesController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(MainPagesController.class);
 
     private final String[] mainArgs;
     private final JsonManager jsonManager;
@@ -131,7 +131,7 @@ public class MainPagesController {
         // Sanitization
         // ==========================================
         if (!Pattern.matches("[-_0-9a-z]+", pluginName)) {
-            this.logger.info("Invalid plugin name tried : " + pluginName);
+            logger.info("Invalid plugin name tried : " + pluginName);
             return null;
         }
 

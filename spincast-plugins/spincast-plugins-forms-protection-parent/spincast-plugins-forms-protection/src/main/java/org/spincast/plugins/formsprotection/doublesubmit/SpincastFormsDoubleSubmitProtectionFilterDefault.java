@@ -28,7 +28,7 @@ import com.google.inject.Inject;
 
 public class SpincastFormsDoubleSubmitProtectionFilterDefault implements SpincastFormsDoubleSubmitProtectionFilter {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastFormsDoubleSubmitProtectionFilterDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastFormsDoubleSubmitProtectionFilterDefault.class);
 
     private final SpincastFormsProtectionConfig spincastFormsProtectionConfig;
     private final FlashMessageFactory flashMessageFactory;
@@ -128,13 +128,13 @@ public class SpincastFormsDoubleSubmitProtectionFilterDefault implements Spincas
                     context.request().getFormBodyAsJsonObject()
                            .getString(getSpincastFormsProtectionConfig().getFormDoubleSubmitProtectionIdFieldName());
             if (payload == null) {
-                this.logger.warn("Submitted form without a protection id: " + context.request().getFullUrl());
+                logger.warn("Submitted form without a protection id: " + context.request().getFullUrl());
                 throw new RedirectException("/");
             }
 
             Pair<Instant, String> info = getSubmittedFormInfo(payload);
             if (info == null) {
-                this.logger.warn("Submitted form with an invalid form info payload'" + payload + "' : " +
+                logger.warn("Submitted form with an invalid form info payload'" + payload + "' : " +
                                  context.request().getFullUrl());
                 invalidFormMatchAction(context,
                                        getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_PROTECTION_ID));
@@ -144,13 +144,13 @@ public class SpincastFormsDoubleSubmitProtectionFilterDefault implements Spincas
             if (info.getKey()
                     .isBefore(Instant.now().minus(getSpincastFormsProtectionConfig().getFormDoubleSubmitFormValidForNbrMinutes(),
                                                   ChronoUnit.MINUTES))) {
-                this.logger.warn("Form too old '" + info.getKey() + "' : " + context.request().getFullUrl());
+                logger.warn("Form too old '" + info.getKey() + "' : " + context.request().getFullUrl());
                 invalidFormMatchAction(context,
                                        getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_TOO_OLD));
             }
 
             if (getSpincastFormsDoubleSubmitProtectionRepository().isFormAlreadySubmitted(info.getValue())) {
-                this.logger.debug("Form submitted with an already used protection id : " + context.request().getFullUrl() +
+                logger.debug("Form submitted with an already used protection id : " + context.request().getFullUrl() +
                                   " => " + info.getValue());
                 invalidFormMatchAction(context,
                                        getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_ALREADY_SUBMITTED));

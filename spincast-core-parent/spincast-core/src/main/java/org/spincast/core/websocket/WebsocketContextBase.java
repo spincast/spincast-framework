@@ -28,7 +28,7 @@ import com.google.inject.Singleton;
  */
 public abstract class WebsocketContextBase<W extends WebsocketContext<?>> {
 
-    protected final Logger logger = LoggerFactory.getLogger(WebsocketContextBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(WebsocketContextBase.class);
 
     private final String endpointId;
     private final String peerId;

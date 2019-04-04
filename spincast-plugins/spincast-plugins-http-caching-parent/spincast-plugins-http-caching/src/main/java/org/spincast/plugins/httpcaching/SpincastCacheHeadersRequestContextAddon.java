@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 public class SpincastCacheHeadersRequestContextAddon<R extends RequestContext<?>>
                                                     implements CacheHeadersRequestContextAddon<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastCacheHeadersRequestContextAddon.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastCacheHeadersRequestContextAddon.class);
 
     private final R requestContext;
     private final ETagFactory etagFactory;
@@ -99,7 +99,7 @@ public class SpincastCacheHeadersRequestContextAddon<R extends RequestContext<?>
         HttpMethod httpMethod = getRequestContext().request().getHttpMethod();
         if(weakComparison && (httpMethod != HttpMethod.GET && httpMethod != HttpMethod.HEAD)) {
             weakComparison = false;
-            this.logger.warn("ETag weak comparison is only allowed for GET and HEAD methods. Current " +
+            logger.warn("ETag weak comparison is only allowed for GET and HEAD methods. Current " +
                              "HTTP method is " + httpMethod + ". " +
                              "See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26");
         }

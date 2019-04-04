@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastJUnitRunner.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastJUnitRunner.class);
 
     public final static String SPINCAST_TEST_NAME_BEFORE_CLASS_ANNOTATIONS_VALIDATION =
             "[Spincast] @BeforeClass annotations validation";
@@ -200,7 +200,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                     setCurrentClassLoopPosition(i + 1);
 
                     if (loopsNbr > 1) {
-                        this.logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopsNbr + " of " +
+                        logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopsNbr + " of " +
                                          "test class " + getTestClass().getJavaClass().getName());
                     }
 
@@ -237,7 +237,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                             try {
                                 ((BeforeAfterClassMethodsProvider)getTestClassInstance()).beforeClassException(ex);
                             } catch (Exception ex2) {
-                                this.logger.error("Error managing the 'beforeClass' exception : ", ex2);
+                                logger.error("Error managing the 'beforeClass' exception : ", ex2);
                             }
                         }
                     } else {
@@ -293,7 +293,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                             spincastTestError(SPINCAST_TEST_NAME_AFTER_CLASS_LOOPS_EXCEPTION, ex);
                         }
                     } else {
-                        this.logger.info("An exception occured in the 'beforeClass()' method, " +
+                        logger.info("An exception occured in the 'beforeClass()' method, " +
                                          "so the 'afterClassLoops()' method won't be called.");
                     }
                 }
@@ -305,7 +305,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
             int classLoopsNbr = getTestClassLoopsNbr();
             if (this.atLeastOneTestFailed && classLoopsNbr > 1) {
-                this.logger.error("The test failure occured during the class loop #" + getCurrentClassLoopPosition());
+                logger.error("The test failure occured during the class loop #" + getCurrentClassLoopPosition());
             }
         }
     }
@@ -337,7 +337,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         for (int i = 0; i < loopsNbr; i++) {
 
             if (loopsNbr > 1) {
-                this.logger.info("Execution " + (i + 1) + "/" + loopsNbr + " of " +
+                logger.info("Execution " + (i + 1) + "/" + loopsNbr + " of " +
                                  "test " + method.getMethod().getName() + " from " +
                                  "test class " + getTestClass().getJavaClass().getName());
             }
@@ -345,7 +345,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             super.runChild(method, notifier);
 
             if (loopsNbr > 1 && this.atLeastOneTestFailed) {
-                this.logger.error("The test \"" + method.getMethod().getName() + "\" failed during the loop #" + (i + 1));
+                logger.error("The test \"" + method.getMethod().getName() + "\" failed during the loop #" + (i + 1));
                 break;
             }
 
@@ -429,7 +429,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
     protected void spincastTestError(String testName, Throwable exception) {
 
-        this.logger.error("Test error", exception);
+        logger.error("Test error", exception);
 
         Description description = Description.createTestDescription(getTestClass().getJavaClass(),
                                                                     testName);

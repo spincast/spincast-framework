@@ -22,7 +22,7 @@ import com.google.inject.Inject;
 
 public class SpincastCryptoUtilsDefault implements SpincastCryptoUtils {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastCryptoUtilsDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastCryptoUtilsDefault.class);
 
     private final SpincastCryptoConfig spincastCryptoConfig;
 
@@ -114,7 +114,7 @@ public class SpincastCryptoUtilsDefault implements SpincastCryptoUtils {
     public void removeCryptographyRestrictions() {
 
         if (!isRestrictedCryptographyJavaVersion()) {
-            this.logger.info("Cryptography restrictions removal not needed");
+            logger.info("Cryptography restrictions removal not needed");
             return;
         }
         try {
@@ -150,7 +150,7 @@ public class SpincastCryptoUtilsDefault implements SpincastCryptoUtils {
             instance.setAccessible(true);
             defaultPolicy.add((Permission)instance.get(null));
 
-            this.logger.info("Successfully removed cryptography restrictions");
+            logger.info("Successfully removed cryptography restrictions");
 
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);

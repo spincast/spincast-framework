@@ -59,7 +59,7 @@ import com.google.inject.Inject;
  */
 public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketContext<?>> implements Router<R, W> {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastRouter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastRouter.class);
 
     private final RouteHandlerMatchFactory<R> routeHandlerMatchFactory;
     private final RouteBuilderFactory<R, W> routeBuilderFactory;
@@ -965,7 +965,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                     }
 
                     if (pattern != null && !getPattern(pattern).matcher(urlPathToken).matches()) {
-                        this.logger.debug("Url token '" + urlPathToken + "' doesn't match pattern '" + pattern + "'.");
+                        logger.debug("Url token '" + urlPathToken + "' doesn't match pattern '" + pattern + "'.");
                         return null;
                     }
 
@@ -1560,7 +1560,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                     public void handle(R context) {
 
                         if (HttpStatus.SC_OK != context.response().getStatusCode()) {
-                            SpincastRouter.this.logger.info("Nothing will be saved since the response code is not " +
+                            SpincastRouter.logger.info("Nothing will be saved since the response code is not " +
                                                             HttpStatus.SC_OK);
                             return;
                         }
@@ -1568,14 +1568,14 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                         if (!staticResource.isIgnoreQueryString() &&
                             context.request().getQueryStringParams() != null &&
                             context.request().getQueryStringParams().size() > 0) {
-                            SpincastRouter.this.logger.info("Nothing will be saved since the queryString contains parameters and " +
+                            SpincastRouter.logger.info("Nothing will be saved since the queryString contains parameters and " +
                                                             "'isIgnoreQueryString' is false  : " +
                                                             context.request().getQueryString(false));
                             return;
                         }
 
                         if (context.response().isHeadersSent()) {
-                            SpincastRouter.this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
+                            SpincastRouter.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
                                                             "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
                                                             "request!");
                             return;

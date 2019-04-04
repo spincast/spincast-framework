@@ -6,7 +6,7 @@ Guice - https://github.com/google/guice
 Maven - https://maven.apache.org/
 Undertow - http://undertow.io/
 Apache Commons - https://commons.apache.org/
-Jackson - http://wiki.fasterxml.com/JacksonHome
+Jackson - https://github.com/FasterXML/jackson
 jQuery - https://jquery.com/
 Bootstrap - http://getbootstrap.com/
 Logback - http://logback.qos.ch/

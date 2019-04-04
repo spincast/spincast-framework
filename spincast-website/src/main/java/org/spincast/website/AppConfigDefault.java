@@ -19,7 +19,7 @@ import com.google.inject.Inject;
  */
 public class AppConfigDefault extends SpincastConfigDefault implements AppConfig {
 
-    protected final Logger logger = LoggerFactory.getLogger(AppConfigDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AppConfigDefault.class);
 
     private List<Pair<String, String>> adminUsernamesPasswords;
 
@@ -110,7 +110,7 @@ public class AppConfigDefault extends SpincastConfigDefault implements AppConfig
 
                         String pass = (String)administratorInfo.get("password");
                         if (StringUtils.isBlank(pass)) {
-                            this.logger.error("The password can't be empty for user '" + name + "'");
+                            logger.error("The password can't be empty for user '" + name + "'");
                         } else {
                             Pair<String, String> userPassPair = Pair.of(name, pass);
                             usernamesPasswords.add(userPassPair);

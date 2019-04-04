@@ -37,7 +37,7 @@ public abstract class AppBasedWebsocketTestingBase<R extends RequestContext<?>, 
                                                   extends
                                                   AppBasedTestingBase<DefaultRequestContext, W> {
 
-    protected final Logger logger = LoggerFactory.getLogger(AppBasedWebsocketTestingBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AppBasedWebsocketTestingBase.class);
 
     @Inject
     protected SpincastHttpClientUtils spincastHttpClientUtils;

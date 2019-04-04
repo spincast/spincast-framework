@@ -123,7 +123,7 @@ public abstract class JdbcPostgresqlTestBase extends NoAppTestingBase {
         try {
             getPg().stopPostgres();
         } catch (Exception ex) {
-            this.logger.error("Eror stopping embedded Postgres", ex);
+            logger.error("Eror stopping embedded Postgres", ex);
         }
     }
 

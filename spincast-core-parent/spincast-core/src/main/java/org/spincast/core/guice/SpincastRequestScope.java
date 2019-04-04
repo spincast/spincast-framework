@@ -52,7 +52,7 @@ import com.google.inject.Scopes;
  */
 public class SpincastRequestScope implements Scope {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastRequestScope.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastRequestScope.class);
 
     private final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>();
 
@@ -72,7 +72,7 @@ public class SpincastRequestScope implements Scope {
         Map<Key<?>, Object> scopedObjects = getScopedObjectMap(key);
 
         if(scopedObjects.containsKey(key)) {
-            this.logger.warn("Replacing key '" + key + "' in our custom " + SpincastRequestScope.class.getSimpleName() + "!");
+            logger.warn("Replacing key '" + key + "' in our custom " + SpincastRequestScope.class.getSimpleName() + "!");
         }
 
         scopedObjects.put(key, value);

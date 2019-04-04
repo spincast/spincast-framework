@@ -35,7 +35,7 @@ import com.google.inject.Inject;
  */
 public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCsrfProtectionFilter {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastFormsCsrfProtectionFilterDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastFormsCsrfProtectionFilterDefault.class);
 
     private final SpincastFormsProtectionConfig spincastFormsProtectionConfig;
     private final SpincastCryptoUtils spincastCryptoUtils;
@@ -129,7 +129,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
             // token...
             //==========================================
             if (userCsrfToken == null) {
-                this.logger.debug("No CSRF token found in the user's session...");
+                logger.debug("No CSRF token found in the user's session...");
                 csrfDoesntMatchAction(context,
                                       getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_CSRF_TOKEN_NOT_FOUND_IN_SESSION));
             }
@@ -147,7 +147,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
                 //==========================================
                 csrfTokenSubmitted = context.request().getQueryStringParamFirst(csrfTokenName);
                 if (csrfTokenSubmitted == null) {
-                    this.logger.warn(context.request().getHttpMethod() + " without a CSRF \"" + csrfTokenName + "\" token : " +
+                    logger.warn(context.request().getHttpMethod() + " without a CSRF \"" + csrfTokenName + "\" token : " +
                                      context.request().getFullUrl());
                     csrfDoesntMatchAction(context,
                                           getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_NO_CSRF_TOKEN_PROVIDED));
@@ -156,7 +156,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
             }
 
             if (!csrfTokenSubmitted.equals(userCsrfToken.getId())) {
-                this.logger.warn("Request with an invalid CSRF token : " + context.request().getFullUrl() + " => " +
+                logger.warn("Request with an invalid CSRF token : " + context.request().getFullUrl() + " => " +
                                  userCsrfToken);
                 csrfDoesntMatchAction(context,
                                       getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_CSRF_TOKEN));
@@ -169,7 +169,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
             String origin = context.request().getHeaderFirst(HttpHeaders.ORIGIN);
             String referer = context.request().getHeaderFirst(HttpHeaders.REFERER);
             if (origin == null && referer == null) {
-                this.logger.warn("Request without origin or referer header : " + context.request().getFullUrl());
+                logger.warn("Request without origin or referer header : " + context.request().getFullUrl());
                 csrfDoesntMatchAction(context,
                                       getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_ORGIN));
                 return;
@@ -178,7 +178,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
             if (origin != null) {
                 URI uri = new URI(origin);
                 if (!getSpincastConfig().getPublicServerHost().equalsIgnoreCase(uri.getHost())) {
-                    this.logger.warn("Request with origin header '" + uri.getHost() + "' that doesn't contain the right host : " +
+                    logger.warn("Request with origin header '" + uri.getHost() + "' that doesn't contain the right host : " +
                                      getSpincastConfig().getPublicServerHost());
                     csrfDoesntMatchAction(context,
                                           getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_ORGIN));
@@ -187,7 +187,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
             } else if (referer != null) {
                 URI uri = new URI(referer);
                 if (!getSpincastConfig().getPublicServerHost().equalsIgnoreCase(uri.getHost())) {
-                    this.logger.warn("Request with referer header '" + uri.getHost() +
+                    logger.warn("Request with referer header '" + uri.getHost() +
                                      "' that doesn't contain the right host : " +
                                      getSpincastConfig().getPublicServerHost());
                     csrfDoesntMatchAction(context,

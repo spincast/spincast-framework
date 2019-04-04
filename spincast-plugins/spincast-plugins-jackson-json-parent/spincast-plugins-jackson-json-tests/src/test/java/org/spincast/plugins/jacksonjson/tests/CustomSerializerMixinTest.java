@@ -10,6 +10,8 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.json.JsonManager;
 import org.spincast.plugins.jacksonjson.JsonMixinInfo;
 import org.spincast.plugins.jacksonjson.JsonMixinInfoDefault;
+import org.spincast.plugins.jacksonjson.tests.utils.User;
+import org.spincast.plugins.jacksonjson.tests.utils.UserDefault;
 import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.fasterxml.jackson.core.JsonGenerator;

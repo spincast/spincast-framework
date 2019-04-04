@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class SpincastScheduledTaskBase implements SpincastScheduledTask {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastScheduledTaskBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastScheduledTaskBase.class);
 
     private volatile boolean running = false;
 
@@ -16,19 +16,19 @@ public abstract class SpincastScheduledTaskBase implements SpincastScheduledTask
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
         if (this.running) {
-            this.logger.debug("Scheduled Task " + this.getClass().getSimpleName() + " is still running, returning...");
+            logger.debug("Scheduled Task " + this.getClass().getSimpleName() + " is still running, returning...");
             return;
         }
         this.running = true;
 
         try {
-            this.logger.debug("Scheduled Task " + this.getClass().getSimpleName() + " starting...");
+            logger.debug("Scheduled Task " + this.getClass().getSimpleName() + " starting...");
 
             executeSafe(context);
 
         } finally {
             this.running = false;
-            this.logger.trace("Scheduled Task " + this.getClass().getSimpleName() + " done.");
+            logger.trace("Scheduled Task " + this.getClass().getSimpleName() + " done.");
         }
     }
 

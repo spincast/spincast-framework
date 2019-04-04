@@ -12,7 +12,7 @@ import org.spincast.website.exchange.AppRequestContext;
  */
 public class DemoHtmlFormsSingleFieldController {
 
-    protected final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsSingleFieldController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsSingleFieldController.class);
 
     /**
      * Single Field demo - GET

@@ -21,7 +21,7 @@ import com.google.inject.assistedinject.AssistedInject;
 public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                        implements RedirectRuleBuilder {
 
-    protected final Logger logger = LoggerFactory.getLogger(RedirectRuleBuilderDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(RedirectRuleBuilderDefault.class);
 
     private final Router<R, W> router;
     private final String oldPath;

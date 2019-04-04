@@ -19,7 +19,7 @@ import com.google.common.net.HttpHeaders;
  */
 public class CorsFilterDefault implements CorsFilter {
 
-    protected final Logger logger = LoggerFactory.getLogger(CorsFilterDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(CorsFilterDefault.class);
 
     @Override
     public CorsFilterResponse apply(CorsFilterClient corsFilterClient) {
@@ -64,9 +64,9 @@ public class CorsFilterDefault implements CorsFilter {
             String message = "Headers already sent: if this is a cors request, it will fail. " +
                              "The request URL is: " + corsFilterClient.getFullUrl();
             if(corsFilterClient.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD) != null) {
-                this.logger.error(message);
+                logger.error(message);
             } else {
-                this.logger.info(message);
+                logger.info(message);
             }
             return CorsFilterResponse.HEADERS_ALREADY_SENT;
         }
@@ -119,7 +119,7 @@ public class CorsFilterDefault implements CorsFilter {
         if(!isCorsOriginValid(corsFilterClient, allowedOriginsLowercased)) {
             corsFilterClient.resetEverything();
             corsFilterClient.setStatusCode(HttpStatus.SC_OK);
-            this.logger.info("Invalid origin for a cors request : " + origin);
+            logger.info("Invalid origin for a cors request : " + origin);
             return CorsFilterResponse.INVALID_CORS_REQUEST;
         }
 
@@ -145,7 +145,7 @@ public class CorsFilterDefault implements CorsFilter {
         //==========================================
         boolean preflightRequestValid = true;
         if(!isCorsRequestMethodHeaderValid(corsFilterClient, allowedMethods)) {
-            this.logger.info("Invalid 'Access-Control-Allow-Methods' cors header received : " +
+            logger.info("Invalid 'Access-Control-Allow-Methods' cors header received : " +
                              corsFilterClient.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD));
             preflightRequestValid = false;
         }
@@ -155,7 +155,7 @@ public class CorsFilterDefault implements CorsFilter {
         //==========================================
         if(preflightRequestValid) {
             if(!isCorsRequestedHeadersToBeSentValid(corsFilterClient, extraHeadersAllowedToBeSentLowercased)) {
-                this.logger.info("Invalid 'Access-Control-Request-Headers' cors header received : " +
+                logger.info("Invalid 'Access-Control-Request-Headers' cors header received : " +
                                  corsFilterClient.getHeaderFirst(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS));
                 preflightRequestValid = false;
             }

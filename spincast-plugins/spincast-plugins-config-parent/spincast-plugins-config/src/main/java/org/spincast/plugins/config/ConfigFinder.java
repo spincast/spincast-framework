@@ -28,7 +28,7 @@ import org.yaml.snakeyaml.Yaml;
 
 public class ConfigFinder {
 
-    protected final Logger logger = LoggerFactory.getLogger(ConfigFinder.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ConfigFinder.class);
 
     protected Map<String, Object> rawConfigs;
     protected Map<String, Object> configs;
@@ -323,14 +323,14 @@ public class ConfigFinder {
                                            "'throwExceptionIfSpecifiedClasspathConfigFileIsNotFound()' method.";
                                     throw new RuntimeException(msg);
                                 } else {
-                                    this.logger.info(msg);
+                                    logger.info(msg);
                                 }
                             } else {
                                 try {
 
                                     Object data = yaml.load(configFileStream);
                                     if (data == null) {
-                                        this.logger.warn("Empty config file : " + getClasspathFilePath());
+                                        logger.warn("Empty config file : " + getClasspathFilePath());
                                     } else {
                                         if (!(data instanceof Map)) {
                                             throw new RuntimeException("Unable to convert the Yaml config file to a Map  : " +
@@ -341,7 +341,7 @@ public class ConfigFinder {
 
                                         this.rawConfigs = mergeMaps(this.rawConfigs, mapTemp);
 
-                                        this.logger.info("Configurations - classpath config file applied : " +
+                                        logger.info("Configurations - classpath config file applied : " +
                                                          getClasspathFilePath());
                                     }
                                 } finally {
@@ -385,7 +385,7 @@ public class ConfigFinder {
                                                "'throwExceptionIfSpecifiedExternalConfigFileIsNotFound()' method.";
                                         throw new RuntimeException(msg);
                                     } else {
-                                        this.logger.info(msg);
+                                        logger.info(msg);
                                     }
                                 } else {
                                     Reader reader = new FileReader(externalFile);
@@ -394,7 +394,7 @@ public class ConfigFinder {
                                         Object data = yaml.load(reader);
 
                                         if (data == null) {
-                                            this.logger.warn("Empty config file : " + getClasspathFilePath());
+                                            logger.warn("Empty config file : " + getClasspathFilePath());
                                         } else {
                                             if (!(data instanceof Map)) {
                                                 throw new RuntimeException("Unable to convert the Yaml config file to a Map  : " +
@@ -405,7 +405,7 @@ public class ConfigFinder {
                                             Map<String, Object> mapTemp = (Map<String, Object>)data;
                                             this.rawConfigs = mergeMaps(this.rawConfigs, mapTemp);
 
-                                            this.logger.info("Configurations - External config file applied : " +
+                                            logger.info("Configurations - External config file applied : " +
                                                              externalFile.getAbsolutePath());
                                         }
                                     } finally {
@@ -440,13 +440,13 @@ public class ConfigFinder {
                                                    "'throwExceptionIfSpecifiedExternalConfigFileIsNotFound()' method.";
                                             throw new RuntimeException(msg);
                                         } else {
-                                            this.logger.info(msg);
+                                            logger.info(msg);
                                         }
 
                                     } else {
                                         loadYamlFileConfigs(configFile, yaml);
 
-                                        this.logger.info("Configurations - Config file next to the executable .jar applied : " +
+                                        logger.info("Configurations - Config file next to the executable .jar applied : " +
                                                          configFile.getAbsolutePath());
                                     }
                                 } else {
@@ -470,12 +470,12 @@ public class ConfigFinder {
                                                        "'throwExceptionIfSpecifiedExternalConfigFileIsNotFound()' method.";
                                                 throw new RuntimeException(msg);
                                             } else {
-                                                this.logger.info(msg);
+                                                logger.info(msg);
                                             }
                                         } else {
                                             loadYamlFileConfigs(configFile, yaml);
 
-                                            this.logger.info("Configurations - Config file applied : " +
+                                            logger.info("Configurations - Config file applied : " +
                                                              configFile.getAbsolutePath());
                                         }
                                     }
@@ -1208,7 +1208,7 @@ public class ConfigFinder {
                             jar2Path = URLDecoder.decode(jar2Path, "UTF-8");
 
                             if (!jarPath.equals(jar2Path)) {
-                                this.logger.warn("Not inside a single executable jar.");
+                                logger.warn("Not inside a single executable jar.");
                             } else {
 
                                 String manifestPath = "jar:file:" + jarPath + "!/META-INF/MANIFEST.MF";
@@ -1216,7 +1216,7 @@ public class ConfigFinder {
                                 Attributes attr = manifest.getMainAttributes();
                                 String mainClass = attr.getValue("Main-Class");
                                 if (mainClass == null) {
-                                    this.logger.warn("Not inside an executable jar : " + jarFile.getAbsolutePath());
+                                    logger.warn("Not inside an executable jar : " + jarFile.getAbsolutePath());
                                 } else {
                                     File appJarDir = jarFile.getParentFile();
                                     if (!appJarDir.isDirectory()) {

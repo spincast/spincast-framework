@@ -38,7 +38,7 @@ import com.google.inject.Singleton;
  */
 public abstract class RequestContextBase<R extends RequestContext<R>> {
 
-    protected final Logger logger = LoggerFactory.getLogger(RequestContextBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(RequestContextBase.class);
 
     private final Object exchange;
     private final Provider<Injector> injectorProvider;

@@ -92,7 +92,7 @@ public class GuiceTweaker implements SpincastPlugin {
     /**
      * Ran before the plugins are applied in
      * SpincastBootstrapper.
-     * 
+     *
      * @param combinedModule the combinaison of all the
      * Guice modules just before the plugins are applied.
      */
@@ -166,7 +166,7 @@ public class GuiceTweaker implements SpincastPlugin {
     /**
      * Ran after the plugins are applied in
      * SpincastBootstrapper.
-     * 
+     *
      * @param combinedModule the combinaison of all the
      * Guice modules just after the plugins have been applied.
      */
@@ -185,7 +185,7 @@ public class GuiceTweaker implements SpincastPlugin {
 
     /**
      * Those overriding modules will be added
-     * both *before* and then, again, *after* 
+     * both *before* and then, again, *after*
      * the plugins are applied.
      */
     protected Module addOverridingModules(Module combinedModule) {
@@ -242,7 +242,7 @@ public class GuiceTweaker implements SpincastPlugin {
 
     /**
      * An exact binding to remove from the combined modules.
-     * This will be done  before the plugins run 
+     * This will be done  before the plugins run
      * in SpincastBootstrapper.
      */
     public void exactBindingToRemove(Key<?> key) {
@@ -254,8 +254,8 @@ public class GuiceTweaker implements SpincastPlugin {
      * An binding hierarchy to remove from the combined modules. All
      * bindings implementing or extending the specified parent
      * class, directly or indirectly, will be removed.
-     * 
-     * This will be done  before the plugins run 
+     *
+     * This will be done  before the plugins run
      * in SpincastBootstrapper.
      */
     public void bindingHierarchyToRemove(Class<?> parentClass) {

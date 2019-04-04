@@ -33,7 +33,7 @@ import com.google.inject.assistedinject.AssistedInject;
  */
 public class SpincastConnectionDefault implements SpincastConnection {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastConnectionDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastConnectionDefault.class);
 
     private final Connection wrappedConnection;
     private final List<Savepoint> rootSavePoints;
@@ -76,14 +76,14 @@ public class SpincastConnectionDefault implements SpincastConnection {
             this.rootSavePoints.remove(this.rootSavePoints.size() - 1);
         }
 
-        this.logger.debug("close() was prevented by the " + SpincastConnectionDefault.class.getSimpleName() + " wrapper");
+        logger.debug("close() was prevented by the " + SpincastConnectionDefault.class.getSimpleName() + " wrapper");
     }
 
     @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
 
         if (isInTransactionnalScope()) {
-            this.logger.debug("setAutoCommit() was prevented by the " + SpincastConnectionDefault.class.getSimpleName() +
+            logger.debug("setAutoCommit() was prevented by the " + SpincastConnectionDefault.class.getSimpleName() +
                               " wrapper");
         } else {
             this.wrappedConnection.setAutoCommit(autoCommit);
@@ -94,7 +94,7 @@ public class SpincastConnectionDefault implements SpincastConnection {
     public void commit() throws SQLException {
 
         if (isInTransactionnalScope()) {
-            this.logger.debug("commit() was prevented by the " + SpincastConnectionDefault.class.getSimpleName() + " wrapper");
+            logger.debug("commit() was prevented by the " + SpincastConnectionDefault.class.getSimpleName() + " wrapper");
         } else {
             this.wrappedConnection.commit();
         }

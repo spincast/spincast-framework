@@ -15,7 +15,7 @@ import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 public abstract class NoAppWebsocketTestingBase extends
                                                 AppBasedWebsocketTestingBase<DefaultRequestContext, DefaultWebsocketContext> {
 
-    protected final Logger logger = LoggerFactory.getLogger(NoAppWebsocketTestingBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(NoAppWebsocketTestingBase.class);
 
     @Override
     protected final AppTestingConfigs getAppTestingConfigs() {

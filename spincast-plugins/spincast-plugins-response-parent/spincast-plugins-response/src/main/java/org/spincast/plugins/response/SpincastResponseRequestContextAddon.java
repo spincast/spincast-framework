@@ -56,7 +56,7 @@ import com.google.inject.Inject;
 public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                                                 implements ResponseRequestContextAddon<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastResponseRequestContextAddon.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastResponseRequestContextAddon.class);
 
     protected static final boolean IS_RESPONSE_CHARACTERS_BASED_BY_DEFAULT = false;
 
@@ -197,7 +197,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         }
 
         if (isHeadersSent() && gzipOption != getGzipOption()) {
-            this.logger.warn("The headers are sent, you can't change the gzip options.");
+            logger.warn("The headers are sent, you can't change the gzip options.");
             return this;
         }
 
@@ -221,7 +221,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
         if (isHeadersSent()) {
             if (responseStatusCode != getStatusCode()) {
-                this.logger.warn("Response headers already sent, the http status code can't be changed...");
+                logger.warn("Response headers already sent, the http status code can't be changed...");
             }
         } else {
             this.responseStatusCode = responseStatusCode;
@@ -240,7 +240,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
         if (isHeadersSent()) {
             if (responseContentType != null && !responseContentType.equals(getContentType())) {
-                this.logger.warn("Response headers already sent, the content-type can't be changed...");
+                logger.warn("Response headers already sent, the content-type can't be changed...");
             }
         } else {
 
@@ -516,18 +516,18 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     protected void send(byte[] bytes, String contentType, boolean flush) {
 
         if (isClosed()) {
-            this.logger.debug("The response is closed, nothing more can be sent!");
+            logger.debug("The response is closed, nothing more can be sent!");
             return;
         }
 
         if (isHeadersSent()) {
             if (contentType != null && !contentType.equals(getContentType())) {
-                this.logger.warn("Response headers are already sent, the content-type won't be changed...");
+                logger.warn("Response headers are already sent, the content-type won't be changed...");
             }
         } else {
             if (contentType != null) {
                 if (getContentType() != null && !contentType.equals(getContentType())) {
-                    this.logger.warn("The content-type is changed from " + getContentType() + " to " + contentType);
+                    logger.warn("The content-type is changed from " + getContentType() + " to " + contentType);
                 }
                 setContentType(contentType);
             }
@@ -584,7 +584,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         Objects.requireNonNull(charactersCharsetName, "charactersCharsetName can't be NULL");
 
         if (isHeadersSent() && !charactersCharsetName.equalsIgnoreCase(getCharactersCharsetName())) {
-            this.logger.warn("Some data have already been send, it may not be a good idea to change the Charset now.");
+            logger.warn("Some data have already been send, it may not be a good idea to change the Charset now.");
         }
         this.charactersCharsetName = charactersCharsetName;
 
@@ -630,7 +630,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public void sendParse(String content, String contentType, boolean flush) {
 
         if (StringUtils.isBlank(contentType)) {
-            this.logger.warn("The Content-Type was not specified : 'text/html' will be used");
+            logger.warn("The Content-Type was not specified : 'text/html' will be used");
             contentType = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
         }
 
@@ -679,7 +679,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
             contentType = getSpincastUtils().getMimeTypeFromPath(templatePath);
             if (contentType == null) {
-                this.logger.warn("The Content-Type was not specified and can't be determined from the template path '" +
+                logger.warn("The Content-Type was not specified and can't be determined from the template path '" +
                                  templatePath +
                                  "': 'text/html' will be used");
                 contentType = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
@@ -835,7 +835,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         resetBuffer();
 
         if (isHeadersSent()) {
-            this.logger.warn("Response headers are already sent, the cookies, headers and status code won't be reset...");
+            logger.warn("Response headers are already sent, the cookies, headers and status code won't be reset...");
         } else {
             if (resetCookies) {
                 getCookiesAdded().clear();
@@ -873,7 +873,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public ResponseRequestContextAddon<R> removeHeader(String name) {
 
         if (isHeadersSent()) {
-            this.logger.warn("Response headers are already sent, can't change them...");
+            logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
@@ -886,7 +886,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public ResponseRequestContextAddon<R> setHeader(String name, String value) {
 
         if (isHeadersSent()) {
-            this.logger.warn("Response headers are already sent, can't change them...");
+            logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
@@ -903,7 +903,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public ResponseRequestContextAddon<R> setHeader(String name, List<String> values) {
 
         if (isHeadersSent()) {
-            this.logger.warn("Response headers are already sent, can't change them...");
+            logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
@@ -920,7 +920,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public ResponseRequestContextAddon<R> addHeaderValue(String name, String value) {
 
         if (isHeadersSent()) {
-            this.logger.warn("Response headers are already sent, can't change them...");
+            logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
@@ -936,7 +936,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public ResponseRequestContextAddon<R> addHeaderValues(String name, List<String> values) {
 
         if (isHeadersSent()) {
-            this.logger.warn("Response headers are already sent, can't change them...");
+            logger.warn("Response headers are already sent, can't change them...");
             return this;
         }
 
@@ -1001,14 +1001,14 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
         GzipOption gzipOption = getGzipOption();
         if (gzipOption != GzipOption.DEFAULT) {
-            this.logger.warn("Can't turn on/off the gzip feature since the GzipOption is " + gzipOption);
+            logger.warn("Can't turn on/off the gzip feature since the GzipOption is " + gzipOption);
             return;
         }
 
         try {
             if (isHeadersSent()) {
                 if (this.isShouldGzip != null && this.isShouldGzip.getBoolean() != isShouldGzip) {
-                    this.logger.warn("Can't turn on/off the gzip feature since headers are already sent.");
+                    logger.warn("Can't turn on/off the gzip feature since headers are already sent.");
                 }
                 return;
             }
@@ -1087,7 +1087,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             if (responseContentType != null) {
                 if (!getSpincastUtils().isContentTypeToSkipGziping(responseContentType)) {
                     if (!hasGzipAcceptHeader) {
-                        this.logger.debug("No gzip 'Accept-Encoding' header, we won't gzip the response.");
+                        logger.debug("No gzip 'Accept-Encoding' header, we won't gzip the response.");
                         setIsShouldGzip(false);
                     } else {
                         setIsShouldGzip(true);
@@ -1235,7 +1235,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             getServer().flushBytes(getExchange(), bytesToFlush, close);
 
         } catch (Exception ex) {
-            this.logger.error("error with request " + getRequestContext().request().getFullUrl());
+            logger.error("error with request " + getRequestContext().request().getFullUrl());
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -1258,12 +1258,12 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     public ResponseRequestContextAddon<R> setCacheSeconds(int cacheSeconds, boolean isPrivateCache) {
 
         if (cacheSeconds <= 0) {
-            this.logger.warn("A number of seconds below 1 doesn't send any cache headers: " + cacheSeconds);
+            logger.warn("A number of seconds below 1 doesn't send any cache headers: " + cacheSeconds);
             return this;
         }
 
         if (isHeadersSent()) {
-            this.logger.error("The headers are sent, you can't add cache headers.");
+            logger.error("The headers are sent, you can't add cache headers.");
             return this;
         }
 

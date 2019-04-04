@@ -66,7 +66,7 @@ import io.undertow.websockets.core.WebSockets;
 public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<WebsocketRequestBuilder>
                                             implements WebsocketRequestBuilder {
 
-    protected final Logger logger = LoggerFactory.getLogger(WebsocketRequestBuilderDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(WebsocketRequestBuilderDefault.class);
 
     private final SpincastHttpClientWithWebsocketUtils spincastHttpClientWithWebsocketUtils;
     private final SpincastHttpClientWithWebsocketConfig spincastHttpClientWithWebsocketConfig;
@@ -210,7 +210,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                         }
 
                     } catch (Exception ex) {
-                        WebsocketRequestBuilderDefault.this.logger.warn("Error closing Websocket connection: " + ex.getMessage());
+                        WebsocketRequestBuilderDefault.logger.warn("Error closing Websocket connection: " + ex.getMessage());
                     }
 
                     //==========================================
@@ -230,7 +230,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 public void sendMessage(byte[] message) {
 
                     if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
-                        WebsocketRequestBuilderDefault.this.logger.warn("Connection is closed...");
+                        WebsocketRequestBuilderDefault.logger.warn("Connection is closed...");
                         return;
                     }
 
@@ -242,7 +242,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 public void sendMessage(String message) {
 
                     if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
-                        WebsocketRequestBuilderDefault.this.logger.warn("Connection is closed...");
+                        WebsocketRequestBuilderDefault.logger.warn("Connection is closed...");
                         return;
                     }
 
@@ -253,7 +253,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 public void closeConnection() {
 
                     if (WebsocketRequestBuilderDefault.this.connectionIsClosed) {
-                        WebsocketRequestBuilderDefault.this.logger.info("Connection is already closed...");
+                        WebsocketRequestBuilderDefault.logger.info("Connection is already closed...");
                         return;
                     }
                     WebsocketRequestBuilderDefault.this.connectionIsClosed = true;
@@ -263,7 +263,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                             channel.close();
                         }
                     } catch (Exception ex) {
-                        WebsocketRequestBuilderDefault.this.logger.error("Erreur closing the connection: " + ex.getMessage());
+                        WebsocketRequestBuilderDefault.logger.error("Erreur closing the connection: " + ex.getMessage());
                     }
                 }
 
@@ -309,7 +309,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                         WebsocketRequestBuilderDefault.this.connectionIsClosed = true;
                         sendConnectionClosedAppEvent(reader);
                     } else {
-                        WebsocketRequestBuilderDefault.this.logger.error("None IOException when trying to write to Websocket endpoint: " +
+                        WebsocketRequestBuilderDefault.logger.error("None IOException when trying to write to Websocket endpoint: " +
                                                                          throwable);
                     }
                 }
@@ -340,7 +340,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                     try {
                         Thread.sleep(pingsIntervalSeconds * 1000);
                     } catch (Exception ex) {
-                        WebsocketRequestBuilderDefault.this.logger.warn("Exception sleeping the thread: " +
+                        WebsocketRequestBuilderDefault.logger.warn("Exception sleeping the thread: " +
                                                                         ex.getMessage());
                     }
 
@@ -652,11 +652,11 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                                                          getThreadExecutorForClientEventsTimeoutAmount(),
                                                          getThreadExecutorForClientEventsTimeoutTimeUnit());
         } catch (InterruptedException ex) {
-            this.logger.error("A Thread used for sending a Websocket event to the client took too long " +
+            logger.error("A Thread used for sending a Websocket event to the client took too long " +
                               "(max " + getThreadExecutorForClientEventsTimeoutAmount() + " " +
                               getThreadExecutorForClientEventsTimeoutTimeUnit().toString() + "): " + ex.getMessage());
         } catch (Exception ex) {
-            this.logger.error("A Thread used for sending a Websocket event to the application thrown an exception: " +
+            logger.error("A Thread used for sending a Websocket event to the application thrown an exception: " +
                               "" + ex.getMessage());
         }
     }

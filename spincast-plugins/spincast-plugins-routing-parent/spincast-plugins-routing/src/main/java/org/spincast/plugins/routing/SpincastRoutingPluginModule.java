@@ -43,7 +43,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastRoutingPluginModule.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastRoutingPluginModule.class);
 
     private Class<? extends Router<?, ?>> specificRouterImplementationClass;
 

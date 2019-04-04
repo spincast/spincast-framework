@@ -50,7 +50,7 @@ import com.google.inject.Inject;
  */
 public class SpincastUtilsDefault implements SpincastUtils {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastUtilsDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastUtilsDefault.class);
 
     private String cacheBusterCode;
     private final Object cacheBusterCodeLock = new Object();
@@ -377,7 +377,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
             return bestLocale;
         } catch (Exception ex) {
-            this.logger.warn("Unable to parse the \"Accept-Language\" HTTP header : " + header);
+            logger.warn("Unable to parse the \"Accept-Language\" HTTP header : " + header);
             return null;
         }
     }
@@ -417,7 +417,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                             jar2Path = URLDecoder.decode(jar2Path, "UTF-8");
 
                             if (!jarPath.equals(jar2Path)) {
-                                this.logger.warn("Not inside a single executable jar.");
+                                logger.warn("Not inside a single executable jar.");
                             } else {
 
                                 String manifestPath = "jar:file:" + jarPath + "!/META-INF/MANIFEST.MF";
@@ -425,7 +425,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                                 Attributes attr = manifest.getMainAttributes();
                                 String mainClass = attr.getValue("Main-Class");
                                 if (mainClass == null) {
-                                    this.logger.warn("Not inside an executable jar : " + jarFile.getAbsolutePath());
+                                    logger.warn("Not inside an executable jar : " + jarFile.getAbsolutePath());
                                 } else {
                                     File appJarDir = jarFile.getParentFile();
                                     if (!appJarDir.isDirectory()) {
@@ -489,7 +489,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
         if (currentVersion == null) {
 
             if (isRunningFromExecutableJar()) {
-                this.logger.error("Unable to get the Spincast version! Make sure you have this plugin " +
+                logger.error("Unable to get the Spincast version! Make sure you have this plugin " +
                                   "in your pom.xml (with an up to date version!):\n\n" +
                                   "<plugin>\n" +
                                   "    <groupId>org.apache.maven.plugins</groupId>\n" +

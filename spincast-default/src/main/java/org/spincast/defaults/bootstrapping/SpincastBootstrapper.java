@@ -53,7 +53,7 @@ import com.google.inject.util.Modules;
  */
 public class SpincastBootstrapper {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastBootstrapper.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastBootstrapper.class);
 
     private static Map<String, Module> defaultModulesMap = null;
 
@@ -557,9 +557,9 @@ public class SpincastBootstrapper {
             for (SpincastPlugin plugin : getPlugins()) {
                 if (!getPluginsToDisable().contains(plugin.getId())) {
                     combinedModule = plugin.apply(combinedModule);
-                    this.logger.info("Plugin '" + plugin.getId() + "' applied.");
+                    logger.info("Plugin '" + plugin.getId() + "' applied.");
                 } else {
-                    this.logger.info("Plugin '" + plugin.getId() + "' ignored.");
+                    logger.info("Plugin '" + plugin.getId() + "' ignored.");
                 }
             }
 

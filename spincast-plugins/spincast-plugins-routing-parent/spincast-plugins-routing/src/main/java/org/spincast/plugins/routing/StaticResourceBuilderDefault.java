@@ -27,7 +27,7 @@ import com.google.inject.assistedinject.AssistedInject;
 public class StaticResourceBuilderDefault<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                          implements StaticResourceBuilder<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(StaticResourceBuilderDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(StaticResourceBuilderDefault.class);
 
     private final SpincastConfig spincastConfig;
     private final SpincastUtils spincastUtils;

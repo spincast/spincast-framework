@@ -14,7 +14,7 @@ import io.undertow.server.HttpServerExchange;
 
 public class SkipResourceOnQueryStringHandlerDefault implements SkipResourceOnQueryStringHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(SkipResourceOnQueryStringHandlerDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SkipResourceOnQueryStringHandlerDefault.class);
 
     private final HttpHandler runHandler;
     private final HttpHandler skipHandler;

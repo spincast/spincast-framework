@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.spincast.core.json.JsonManager;
+import org.spincast.plugins.jacksonjson.tests.utils.User;
+import org.spincast.plugins.jacksonjson.tests.utils.UserDefault;
 import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;

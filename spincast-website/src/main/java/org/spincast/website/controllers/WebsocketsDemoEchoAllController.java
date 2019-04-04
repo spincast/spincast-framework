@@ -25,7 +25,7 @@ import com.google.inject.Inject;
  */
 public class WebsocketsDemoEchoAllController implements WebsocketController<AppRequestContext, DefaultWebsocketContext> {
 
-    protected final Logger logger = LoggerFactory.getLogger(WebsocketsDemoEchoAllController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(WebsocketsDemoEchoAllController.class);
 
     private WebsocketEndpointManager endpointManager;
 
@@ -125,13 +125,13 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
 
     @Override
     public void onPeerConnected(DefaultWebsocketContext context) {
-        this.logger.debug("Peer connected : " + context.getPeerId());
+        logger.debug("Peer connected : " + context.getPeerId());
         context.sendMessageToCurrentPeer("Your generated peer id is " + context.getPeerId());
     }
 
     @Override
     public void onPeerMessage(DefaultWebsocketContext context, String message) {
-        this.logger.debug("message received from peer '" + context.getPeerId() + "': " + message);
+        logger.debug("message received from peer '" + context.getPeerId() + "': " + message);
 
         //==========================================
         // Echoes the message back to all peers.
@@ -142,7 +142,7 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
     @Override
     public void onPeerMessage(DefaultWebsocketContext context, byte[] message) {
         try {
-            this.logger.debug("message received from peer '" + context.getPeerId() + "': " + new String(message, "UTF-8"));
+            logger.debug("message received from peer '" + context.getPeerId() + "': " + new String(message, "UTF-8"));
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
@@ -150,12 +150,12 @@ public class WebsocketsDemoEchoAllController implements WebsocketController<AppR
 
     @Override
     public void onPeerClosed(DefaultWebsocketContext context) {
-        this.logger.debug("Peer '" + context.getPeerId() + "' closed the connection.");
+        logger.debug("Peer '" + context.getPeerId() + "' closed the connection.");
     }
 
     @Override
     public void onEndpointClosed(String endpointId) {
-        this.logger.debug("Endpoint closed.");
+        logger.debug("Endpoint closed.");
     }
 
 }

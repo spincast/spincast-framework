@@ -33,7 +33,7 @@ import com.google.inject.Inject;
  */
 public class SpincastDictionaryDefault extends DictionaryBase implements Dictionary {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastDictionaryDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastDictionaryDefault.class);
 
     private final LocaleResolver localeResolver;
     private final TemplatingEngine templatingEngine;
@@ -188,7 +188,7 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
         DictionaryEntryNotFoundBehavior notFoundResult = getSpincastConfig().getDictionaryEntryNotFoundBehavior();
 
         if (!getSpincastConfig().isDevelopmentMode() && notFoundResult != DictionaryEntryNotFoundBehavior.EXCEPTION) {
-            this.logger.error("A dictionary key is missing! Key \"" + key + "\" for Locale \"" + originalLocale + "\".");
+            logger.error("A dictionary key is missing! Key \"" + key + "\" for Locale \"" + originalLocale + "\".");
         }
 
         if (notFoundResult == DictionaryEntryNotFoundBehavior.EXCEPTION) {

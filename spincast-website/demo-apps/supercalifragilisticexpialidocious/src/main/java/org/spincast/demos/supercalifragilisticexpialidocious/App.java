@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 
 public class App {
 
-    protected final Logger logger = LoggerFactory.getLogger(App.class);
+    protected static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
         Spincast.configure()
@@ -24,7 +24,7 @@ public class App {
     @Inject
     protected void init(Server server, SpincastConfig spincastConfig) {
         server.start();
-        this.logger.info("Application started on port " + spincastConfig.getHttpServerPort() + "!");
-        this.logger.info("Try this route : http://localhost:" + spincastConfig.getHttpServerPort() + "/github-source/spincast");
+        logger.info("Application started on port " + spincastConfig.getHttpServerPort() + "!");
+        logger.info("Try this route : http://localhost:" + spincastConfig.getHttpServerPort() + "/github-source/spincast");
     }
 }
