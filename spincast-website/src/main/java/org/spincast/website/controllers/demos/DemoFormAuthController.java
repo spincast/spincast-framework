@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DemoFormAuthController {
 
-    protected final Logger logger = LoggerFactory.getLogger(DemoFormAuthController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DemoFormAuthController.class);
 
     /**
      * Index

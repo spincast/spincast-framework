@@ -31,7 +31,7 @@ import com.google.inject.Inject;
  */
 public class SpincastFiltersDefault<R extends RequestContext<?>> implements SpincastFilters<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastFiltersDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastFiltersDefault.class);
 
     private final CorsFilter corsFilter;
     private final SpincastConfig spincastConfig;
@@ -80,17 +80,17 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             // generated resource by itself...
             //==========================================
             if (resourceFile.exists()) {
-                this.logger.info("The resource already exists. We don't save it here.");
+                logger.info("The resource already exists. We don't save it here.");
                 return true;
             }
 
             if (HttpStatus.SC_OK != context.response().getStatusCode()) {
-                this.logger.info("Nothing will be saved since the response code is not " + HttpStatus.SC_OK);
+                logger.info("Nothing will be saved since the response code is not " + HttpStatus.SC_OK);
                 return false;
             }
 
             if (context.response().isHeadersSent()) {
-                this.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
+                logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
                                  "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
                                  "request!");
                 return false;
@@ -103,7 +103,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             return true;
 
         } catch (Exception ex) {
-            this.logger.error("Unable to save the generated resource '" + pathForGeneratedResource + "' :\n" +
+            logger.error("Unable to save the generated resource '" + pathForGeneratedResource + "' :\n" +
                               SpincastStatics.getStackTrace(ex));
 
             // We still let the reponse being sent...

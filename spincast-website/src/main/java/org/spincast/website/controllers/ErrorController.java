@@ -18,7 +18,7 @@ import com.google.inject.TypeLiteral;
 
 public class ErrorController {
 
-    protected final Logger logger = LoggerFactory.getLogger(ErrorController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ErrorController.class);
 
     /**
      * Not Found (404) handler
@@ -60,7 +60,7 @@ public class ErrorController {
                                                       Exception.class);
 
         if(!(exception instanceof PublicException)) {
-            this.logger.error(SpincastStatics.getStackTrace(exception));
+            logger.error(SpincastStatics.getStackTrace(exception));
         }
 
         //==========================================

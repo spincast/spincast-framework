@@ -44,6 +44,7 @@
         <module>spincast-plugins-watermarker-parent</module> 
         <module>spincast-plugins-logback-utils-parent</module>
         <module>spincast-plugins-openapi-bottomup-parent</module>
+        <module>spincast-plugins-gson-parent</module>
     </modules>
 
 </project>

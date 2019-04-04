@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 
 public class SpincastSessionDeleteOldSessionsScheduledTask extends SpincastScheduledTaskBase {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastSessionDeleteOldSessionsScheduledTask.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastSessionDeleteOldSessionsScheduledTask.class);
 
     private final SpincastSessionConfig spincastSessionConfig;
     private final SpincastSessionManager spincastSessionManager;

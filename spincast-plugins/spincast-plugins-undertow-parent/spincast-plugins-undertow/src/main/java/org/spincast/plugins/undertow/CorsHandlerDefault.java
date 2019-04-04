@@ -26,7 +26,7 @@ import io.undertow.util.HttpString;
 
 public class CorsHandlerDefault implements CorsHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(CorsHandlerDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(CorsHandlerDefault.class);
 
     private final HttpHandler nextHandler;
     private final StaticResourceCorsConfig corsConfig;

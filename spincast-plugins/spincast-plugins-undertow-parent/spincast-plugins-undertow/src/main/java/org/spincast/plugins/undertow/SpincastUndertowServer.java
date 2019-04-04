@@ -91,7 +91,7 @@ import io.undertow.util.HttpString;
  */
 public class SpincastUndertowServer implements Server {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastUndertowServer.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastUndertowServer.class);
 
     public static final String UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE = "UT000020";
 
@@ -290,7 +290,7 @@ public class SpincastUndertowServer implements Server {
     public synchronized void start() {
 
         if (this.undertowServer != null) {
-            this.logger.warn("Server already started.");
+            logger.warn("Server already started.");
             return;
         }
 
@@ -305,7 +305,7 @@ public class SpincastUndertowServer implements Server {
             } catch (Exception ex) {
 
                 if ((ex instanceof BindException) || (ex.getCause() != null && ex.getCause() instanceof BindException)) {
-                    this.logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
+                    logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
                                      "...");
 
                     if (i < serverStartTryNbr) {
@@ -322,11 +322,11 @@ public class SpincastUndertowServer implements Server {
         }
 
         if (getConfig().getHttpServerPort() > 0) {
-            this.logger.info("HTTP server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
+            logger.info("HTTP server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
                              getConfig().getHttpServerPort());
         }
         if (getConfig().getHttpsServerPort() > 0) {
-            this.logger.info("HTTPS server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
+            logger.info("HTTPS server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
                              getConfig().getHttpsServerPort());
         }
     }
@@ -542,7 +542,7 @@ public class SpincastUndertowServer implements Server {
                     this.undertowServer.stop();
                     this.undertowServer = null;
                 } catch (Exception ex) {
-                    this.logger.error("Error stopping the Undertow server :\n" + SpincastStatics.getStackTrace(ex));
+                    logger.error("Error stopping the Undertow server :\n" + SpincastStatics.getStackTrace(ex));
                 }
             }
         }
@@ -563,14 +563,14 @@ public class SpincastUndertowServer implements Server {
 
         Set<String> unclosedEndpoints = new HashSet<String>(getWebsocketEndpointsMap().keySet());
 
-        this.logger.debug("We wait for those endpoints to be finished closing : " +
+        logger.debug("We wait for those endpoints to be finished closing : " +
                           Arrays.toString(unclosedEndpoints.toArray()));
 
         for (WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
             try {
                 websocketEndpoint.closeEndpoint(true);
             } catch (Exception ex) {
-                this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
+                logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
                                  ex.getMessage());
             }
         }
@@ -592,24 +592,24 @@ public class SpincastUndertowServer implements Server {
                     try {
                         if (unclosedEndpoints.contains(websocketEndpoint.getEndpointId()) &&
                             websocketEndpoint.isClosed()) {
-                            this.logger.debug("Endpoint '" + websocketEndpoint.getEndpointId() +
+                            logger.debug("Endpoint '" + websocketEndpoint.getEndpointId() +
                                               "' finished closing!");
                             unclosedEndpoints.remove(websocketEndpoint.getEndpointId());
                             if (unclosedEndpoints.size() == 0) {
-                                this.logger.debug("All endpoints finished closing!");
+                                logger.debug("All endpoints finished closing!");
                                 break outer;
                             }
                         }
                     } catch (Exception ex) {
-                        this.logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
+                        logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
                                          ex.getMessage());
                     }
                 }
             } catch (Exception ex) {
-                this.logger.warn("Error while checking if all endpoints are closed : " + ex.getMessage());
+                logger.warn("Error while checking if all endpoints are closed : " + ex.getMessage());
             }
 
-            this.logger.debug("Some endpoints are not finished closing. Remaining : " +
+            logger.debug("Some endpoints are not finished closing. Remaining : " +
                               Arrays.toString(unclosedEndpoints.toArray()));
 
             try {
@@ -619,7 +619,7 @@ public class SpincastUndertowServer implements Server {
             millisecondsWaited += incrementsMilliseconds;
 
             if (millisecondsWaited >= millisecondsToWait) {
-                this.logger.debug("Some endpoints are still not finished closing, even after waiting for " +
+                logger.debug("Some endpoints are still not finished closing, even after waiting for " +
                                   millisecondsWaited + " milliseconds. We'll stop the server as is. Remaining : " +
                                   Arrays.toString(unclosedEndpoints.toArray()));
             }
@@ -850,7 +850,7 @@ public class SpincastUndertowServer implements Server {
                 if (!StringUtils.isBlank(bestMatch)) {
                     type = ContentTypeDefaults.fromString(bestMatch);
                     if (type == null) {
-                        this.logger.error("Not supposed : " + bestMatch);
+                        logger.error("Not supposed : " + bestMatch);
                         type = ContentTypeDefaults.TEXT;
                     }
                 }
@@ -1457,7 +1457,7 @@ public class SpincastUndertowServer implements Server {
         synchronized (lock) {
             WebsocketEndpoint websocketEndpoint = getWebsocketEndpointsMap().get(endpointId);
             if (websocketEndpoint == null) {
-                this.logger.warn("No Websocket endpoint with id '" + endpointId + "' exists...");
+                logger.warn("No Websocket endpoint with id '" + endpointId + "' exists...");
                 return;
             }
 

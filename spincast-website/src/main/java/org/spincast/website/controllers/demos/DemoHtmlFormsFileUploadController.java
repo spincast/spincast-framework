@@ -27,7 +27,7 @@ import com.google.inject.Inject;
  */
 public class DemoHtmlFormsFileUploadController {
 
-    protected final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsFileUploadController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsFileUploadController.class);
 
     private final FlashMessageFactory flashMessageFactory;
 
@@ -57,7 +57,7 @@ public class DemoHtmlFormsFileUploadController {
 
             String uploadFileBase64ImageSrc = flashMessage.getVariables().getString("uploadFileBase64ImageSrc");
             if (uploadFileBase64ImageSrc == null) {
-                this.logger.error("The uploadFileBase64ImageSrc was expected...");
+                logger.error("The uploadFileBase64ImageSrc was expected...");
             } else {
                 context.response().getModel().set("uploadFileBase64ImageSrc", uploadFileBase64ImageSrc);
             }
@@ -148,7 +148,7 @@ public class DemoHtmlFormsFileUploadController {
                 }
 
             } catch (Exception ex) {
-                this.logger.error("Error converting the image to base 64.", ex);
+                logger.error("Error converting the image to base 64.", ex);
             } finally {
                 SpincastStatics.closeQuietly(iis);
             }

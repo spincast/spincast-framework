@@ -22,7 +22,7 @@ import com.google.inject.Inject;
  */
 public class App {
 
-    protected final Logger logger = LoggerFactory.getLogger(App.class);
+    protected static final Logger logger = LoggerFactory.getLogger(App.class);
 
     /**
      * Main method
@@ -55,7 +55,7 @@ public class App {
         addRoutes(router, appController, spincastFilters);
 
         server.start();
-        this.logger.info("Server started...");
+        logger.info("Server started...");
 
         displayStartedMessage(config);
     }

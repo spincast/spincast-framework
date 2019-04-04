@@ -18,7 +18,7 @@ import org.spincast.core.utils.SpincastStatics;
 
 public class SSLContextFactoryDefault implements SSLContextFactory {
 
-    protected final Logger logger = LoggerFactory.getLogger(SSLContextFactoryDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SSLContextFactoryDefault.class);
 
     @Override
     public SSLContext createSSLContext(String keyStorePath,
@@ -85,7 +85,7 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             }
             InputStream keyStoreStream = this.getClass().getClassLoader().getResourceAsStream(keyStoreClassPath);
             if (keyStoreStream != null) {
-                this.logger.info("KeyStore found in classpath : " + keyStoreClassPath);
+                logger.info("KeyStore found in classpath : " + keyStoreClassPath);
                 return keyStoreStream;
             }
 
@@ -94,7 +94,7 @@ public class SSLContextFactoryDefault implements SSLContextFactory {
             //==========================================
             File keyStoreFile = new File(keyStorePath);
             if (keyStoreFile.isFile()) {
-                this.logger.info("KeyStore found in file system : " + keyStorePath);
+                logger.info("KeyStore found in file system : " + keyStorePath);
                 return new FileInputStream(keyStoreFile);
             }
 

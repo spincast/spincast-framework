@@ -27,7 +27,7 @@ import com.google.inject.Inject;
 
 public class App {
 
-    protected final Logger logger = LoggerFactory.getLogger(App.class);
+    protected static final Logger logger = LoggerFactory.getLogger(App.class);
 
     /**
      * The entry point for the application.

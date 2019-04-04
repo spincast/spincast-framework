@@ -30,7 +30,7 @@ import com.google.inject.assistedinject.AssistedInject;
 public class DefaultRequestContextDefault extends RequestContextBase<DefaultRequestContext>
                                           implements DefaultRequestContext {
 
-    protected final Logger logger = LoggerFactory.getLogger(DefaultRequestContextDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DefaultRequestContextDefault.class);
 
     @AssistedInject
     public DefaultRequestContextDefault(@Assisted Object exchange,

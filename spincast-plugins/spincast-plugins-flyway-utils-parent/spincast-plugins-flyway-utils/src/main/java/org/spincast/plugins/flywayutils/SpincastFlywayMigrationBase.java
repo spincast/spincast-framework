@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 
 public abstract class SpincastFlywayMigrationBase implements SpincastFlywayMigration {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastFlywayMigrationBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastFlywayMigrationBase.class);
 
     private final DataSource dataSource;
     private final JdbcUtils jdbcUtils;
@@ -57,7 +57,7 @@ public abstract class SpincastFlywayMigrationBase implements SpincastFlywayMigra
             public Void run(Connection connection) throws Exception {
                 runMigration(connection);
 
-                SpincastFlywayMigrationBase.this.logger.info("Migration \"" +
+                SpincastFlywayMigrationBase.logger.info("Migration \"" +
                                                              SpincastFlywayMigrationBase.this.getClass().getSimpleName() +
                                                              "\" applied.");
                 return null;

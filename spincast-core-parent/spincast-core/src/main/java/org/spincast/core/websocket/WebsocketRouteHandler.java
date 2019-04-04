@@ -24,7 +24,7 @@ import com.google.inject.assistedinject.AssistedInject;
  */
 public class WebsocketRouteHandler<R extends RequestContext<?>, W extends WebsocketContext<?>> implements Handler<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(WebsocketRouteHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(WebsocketRouteHandler.class);
 
     private final WebsocketRoute<R, W> websocketRoute;
     private final Server server;

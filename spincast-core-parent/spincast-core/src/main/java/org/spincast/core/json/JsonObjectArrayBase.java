@@ -19,7 +19,7 @@ import org.spincast.core.utils.SpincastUtils;
  */
 public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
-    protected final Logger logger = LoggerFactory.getLogger(JsonObjectArrayBase.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JsonObjectArrayBase.class);
 
     public static class JsonPathCachingItem {
 

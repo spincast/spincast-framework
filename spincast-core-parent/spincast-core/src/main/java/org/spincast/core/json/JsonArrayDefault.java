@@ -27,7 +27,7 @@ import com.google.inject.assistedinject.AssistedInject;
  */
 public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
 
-    protected final Logger logger = LoggerFactory.getLogger(JsonArrayDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JsonArrayDefault.class);
 
     private final List<Object> elements;
 

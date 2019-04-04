@@ -143,11 +143,14 @@
             "date" : "2019-03-30T20:00:00Z",
             "title" : "OpenAPI support",
             "path" : "/news/2019-03-30.html"
+        },
+        {
+            "id" : "26",
+            "date" : "2019-04-04T17:00:00Z",
+            "title" : "Spincast Gson plugin",
+            "path" : "/news/2019-04-04.html"
         }
-        
-        
-        
-        
+          
 		
 	]
 }

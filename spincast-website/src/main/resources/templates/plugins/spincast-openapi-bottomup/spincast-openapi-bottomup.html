@@ -104,7 +104,7 @@
                     or as <code>YAML</code>.
                     You could send those specifications by email to developers in charge of developing a client using your API 
                     (for example as a "<code>specs.yaml</code>" file), but most of the time you expose 
-                    the specifications as an <code>HTTP endpoint</code> so they can be easily consumed!
+                    the specifications as an <code>HTTP endpoint</code> so they can be easily accessed!
                 </p> 
             </section>
             
@@ -175,7 +175,7 @@
                     Accessing the generated specifications
                 </h4>
                 <p>
-                    First of all, the specifications resulting from collected the various pieces of information about your API
+                    First of all, the specifications resulting from collecting the various pieces of information about your API
                     are accessible <em>as an 
                     <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#oasObject">OpenAPI</a> Java object</em>. You access this
                     object via the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#getOpenApi--">SpincastOpenApiManager#getOpenApi()</a>
@@ -198,7 +198,7 @@
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
                     As you can see, the 
                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html">SpincastOpenApiManager</a>
-                    component is at the very core of this plugin. You can inject it anywhere to need to interact with it.
+                    component is at the very core of this plugin. You can inject it anywhere you need to interact with it.
                 </p>
                 
                 <h4>
@@ -207,12 +207,12 @@
                 </h4>
                 <p>
                     When your application is properly documented (we'll learn how to do this in the next section), it is often
-                    desirable to serve the resulting specifications as an <code>HTTP endpoint</code> so it can be consumed
+                    desirable to serve the resulting specifications as an <code>HTTP endpoint</code> so they can be accessed
                     easily.
                 </p>
                 <p>
                     You create such endpoint as any other one. If your specifications won't
-                    <a href="#dynamic">changed dynamically</a>, using a <a href="/documentation#dynamic_resources">Dynamic Resource</a>
+                    <a href="#dynamic">change at runtime</a>, using a <a href="/documentation#dynamic_resources">Dynamic Resource</a>
                     is the way to go! Let's see how you can do this:
                 </p>
                 <p>
@@ -292,7 +292,7 @@ router.POST("/books/${bookId:&lt;AN+&gt;}")
                     {% endverbatim %}  
                 </p>
                 <p>
-                    You annotate this anonymous class with <code>@Specs</code>:
+                    You annotate this anonymous class with <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/Specs.html">@Specs</a>:
                     
                     {% verbatim %}
                     <div>
@@ -510,7 +510,7 @@ getSpincastOpenApiManager().setOpenApiBase(openApiBase);
                         </li>
                         <li>
                             The code adding new information to the specifications (or simply adding a new route)
-                            needs to call <a class="javadoc" href="https://www.spincast.loc:44420/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#clearCache--">clearCache()</a>.
+                            needs to call <a class="javadoc" href="/public/javadoc/org/spincast/plugins/openapi/bottomup/SpincastOpenApiManager.html#clearCache--">clearCache()</a>.
                             This is required since Spincast caches the specifications for performance reasons.
                         </li>
                         <li>

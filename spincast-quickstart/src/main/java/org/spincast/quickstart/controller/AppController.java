@@ -16,7 +16,7 @@ import com.google.inject.Inject;
  */
 public class AppController {
 
-    protected final Logger logger = LoggerFactory.getLogger(AppController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
     private final AppConfig appConfig;
 
@@ -41,7 +41,7 @@ public class AppController {
      * Index page handler
      */
     public void index(AppRequestContext context) {
-        this.logger.debug("In the 'index' handler");
+        logger.debug("In the 'index' handler");
 
         addCommonModelElements(context);
         context.response().sendTemplateHtml("/quick-start/templates/index.html");
@@ -118,7 +118,7 @@ public class AppController {
         Throwable originalException =
                 context.variables().get(RequestScopedVariables.EXCEPTION, Throwable.class);
 
-        this.logger.error("An exception occured : " + originalException);
+        logger.error("An exception occured : " + originalException);
 
         //==========================================
         // If the exception that was threw is an instance of

@@ -9,7 +9,7 @@ import org.spincast.website.exchange.AppRequestContext;
  */
 public class DemosTutorialsController {
 
-    protected final Logger logger = LoggerFactory.getLogger(DemosTutorialsController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DemosTutorialsController.class);
 
     public void webSockets(AppRequestContext context) {
         context.response().getModel().set("isHttps", context.request().isHttps());

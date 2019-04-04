@@ -32,9 +32,9 @@ public interface JsonManager {
     /**
      * Creates a <code>JsonObject</code> from a <code>Json</code>
      * String.
-     * 
+     *
      * @return the <code>JsonObject</code> version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public JsonObject fromString(String jsonString);
@@ -45,9 +45,9 @@ public interface JsonManager {
      * a modification won't affect any external references and vice-versa.
      * <p>
      * The keys will be used <em>as is</em>, not parsed as JsonPaths.
-     * 
+     *
      * @return the <code>JsonObject</code> version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public JsonObject fromMap(Map<String, ?> params);
@@ -56,31 +56,31 @@ public interface JsonManager {
      * Creates a <code>JsonObject</code> based on the specified Map.
      * An attempt will be made to create a deep copy of every elements so
      * a modification won't affect any external references and vice-versa.
-     * 
+     *
      * @param parseKeysAsJsonPaths if <code>true</code>, the keys will
      * be parsed as <code>JsonPaths</code>, otherwise they will ne used
      * as is.
-     * 
+     *
      * @return the <code>JsonObject</code> version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public JsonObject fromMap(Map<String, ?> params, boolean parseKeysAsJsonPaths);
 
     /**
      * Creates a <code>JsonObject</code> from an inputStream.
-     * 
+     *
      * @return the <code>JsonObject</code> version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public JsonObject fromInputStream(InputStream inputStream);
 
     /**
      * Creates a <code>JsonObject</code> from a Json file.
-     * 
-     * @return the deserialized <code>JsonObject</code> 
-     * or <code>null</code> if the file is 
+     *
+     * @return the deserialized <code>JsonObject</code>
+     * or <code>null</code> if the file is
      * <code>null</code> or doesn't exist.
      */
     public JsonObject fromFile(File jsonFile);
@@ -88,9 +88,9 @@ public interface JsonManager {
     /**
      * Creates a <code>JsonObject</code> from the path of
      * a file, on the file system.
-     * 
+     *
      * @return the deserialized <code>JsonObject</code>
-     * or <code>null</code> if the file is 
+     * or <code>null</code> if the file is
      * <code>null</code> or doesn't exist.
      */
     public JsonObject fromFile(String jsonFilePath);
@@ -98,13 +98,13 @@ public interface JsonManager {
     /**
      * Creates a <code>JsonObject</code> from a classpath
      * Json file.
-     * 
+     *
      * @param the path to the classpath file. This path always
      * starts from the root of the classpath.
-     * 
+     *
      * @return the deserialized <code>JsonObject</code>
      * or <code>null</code> if the file doesn't exist.
-     * 
+     *
      * @throws Exception if the path is <code>null</code>
      */
     public JsonObject fromClasspathFile(String path);
@@ -112,28 +112,28 @@ public interface JsonManager {
     /**
      * Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code>
      * String.
-     * 
+     *
      * @return the <code>Map</code> version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public Map<String, Object> fromStringToMap(String jsonString);
 
     /**
      * Creates a <code>Map&lt;String, Object&gt;</code> from a <code>Json</code> inputStream.
-     * 
+     *
      * @return the <code>Map</code> version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public Map<String, Object> fromInputStreamToMap(InputStream inputStream);
 
     /**
      * Creates an instance of the specified <code>T</code> type
-     * from a <code>Json</code> String. 
-     * 
+     * from a <code>Json</code> String.
+     *
      * @return the deserialized version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public <T> T fromString(String jsonString, Class<T> clazz);
@@ -141,9 +141,9 @@ public interface JsonManager {
     /**
      * Creates an instance of the specified <code>T</code> type
      * from a <code>Json</code> inputStream.
-     * 
+     *
      * @return the deserialized version of the
-     * parameter or <code>null</code> if the parameter is 
+     * parameter or <code>null</code> if the parameter is
      * <code>null</code>.
      */
     public <T> T fromInputStream(InputStream inputStream, Class<T> clazz);
@@ -156,9 +156,9 @@ public interface JsonManager {
     /**
      * Creates a <code>JsonArray</code> from a <code>Json</code>
      * String.
-     * 
+     *
      * @return the <code>JsonArray</code> version of the
-     * parameter or <code>null</code> if the parameter 
+     * parameter or <code>null</code> if the parameter
      * is <code>null</code>.
      */
     public JsonArray fromStringArray(String jsonString);
@@ -166,18 +166,18 @@ public interface JsonManager {
     /**
      * Creates a <code>JsonArray</code> from a <code>List</code>
      * of elements.
-     * 
+     *
      * @return the <code>JsonArray</code> version of the
-     * parameter or <code>null</code> if the parameter 
+     * parameter or <code>null</code> if the parameter
      * is <code>null</code>.
      */
     public JsonArray fromListArray(List<?> elements);
 
     /**
      * Creates a <code>JsonArray</code> from an inputStream.
-     * 
+     *
      * @return the <code>JsonArray</code> version of the
-     * parameter or <code>null</code> if the parameter 
+     * parameter or <code>null</code> if the parameter
      * is <code>null</code>.
      */
     public JsonArray fromInputStreamArray(InputStream inputStream);
@@ -189,27 +189,27 @@ public interface JsonManager {
     public Form createForm(String formName);
 
     /**
-     * Gets the <code>Json</code> String representation of 
+     * Gets the <code>Json</code> String representation of
      * the specified object.
      */
     public String toJsonString(Object obj);
 
     /**
-     * Gets the <code>Json</code> String representation of the 
+     * Gets the <code>Json</code> String representation of the
      * specified object.
-     * @param pretty if <code>true</code>, the generated 
+     * @param pretty if <code>true</code>, the generated
      * String will be formatted.
      */
     public String toJsonString(Object obj, boolean pretty);
 
     /**
-     * Converts a <code>Json</code> date (ISO-8601) to a 
-     * Java <code>UTC</code> date. 
+     * Converts a <code>Json</code> date (ISO-8601) to a
+     * Java <code>UTC</code> date.
      */
     public Date parseDateFromJson(String str);
 
     /**
-     * Converts a Date to a <code>Json</code> date format.  
+     * Converts a Date to a <code>Json</code> date format.
      */
     public String convertToJsonDate(Date date);
 
@@ -270,9 +270,9 @@ public interface JsonManager {
      * </li>
      * </ul>
      * </p>
-     * 
+     *
      * @param mutable if <code>false</code>, the resulting
-     * Object and all its potential children 
+     * Object and all its potential children
      * will be immutable.
      */
     public Object clone(Object originalObject, boolean mutable);
@@ -286,7 +286,7 @@ public interface JsonManager {
      * the <code>mutable</code> parameter is set to <code>false</code>,
      * then the current object will be returned as is, since no cloning
      * is required.
-     * 
+     *
      * @param mutable if <code>true</code> the resulting
      * array and all its children will be mutable, otherwise
      * they will all be immutable.
@@ -302,7 +302,7 @@ public interface JsonManager {
      * the <code>mutable</code> parameter is set to <code>false</code>,
      * then the current array will be returned as is, since no cloning
      * is required.
-     * 
+     *
      * @param mutable if <code>true</code> the resulting
      * array and all its children will be mutable, otherwise
      * they will all be immutable.
@@ -310,33 +310,33 @@ public interface JsonManager {
     public JsonArray cloneJsonArray(JsonArray jsonArray, boolean mutable);
 
     /**
-     * Gets an element from the <code>JsonObject</code> 
+     * Gets an element from the <code>JsonObject</code>
      * at the specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
      */
     public Object getElementAtJsonPath(JsonObject obj, String jsonPath);
 
     /**
-     * Gets an element from the <code>JsonObject</code> 
+     * Gets an element from the <code>JsonObject</code>
      * at the specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
      */
     public Object getElementAtJsonPath(JsonObject obj, String jsonPath, Object defaultElement);
 
     /**
-     * Gets an element from the <code>JsonArray</code> at the 
+     * Gets an element from the <code>JsonArray</code> at the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
      */
     public Object getElementAtJsonPath(JsonArray array, String jsonPath);
 
     /**
-     * Gets an element from the <code>JsonArray</code> at the 
+     * Gets an element from the <code>JsonArray</code> at the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
      */
     public Object getElementAtJsonPath(JsonArray array, String jsonPath, Object defaultElement);
@@ -344,16 +344,16 @@ public interface JsonManager {
     /**
      * Puts an element in the object at the specified <code>JsonPath</code>.
      * <p>
-     * All the hierarchy to the end of the <code>JsonPath</code> 
+     * All the hierarchy to the end of the <code>JsonPath</code>
      * is created if required.
      */
     public void putElementAtJsonPath(JsonObjectOrArray obj, String jsonPath, Object element);
 
     /**
-     * Puts a clone of the element in the object at the 
+     * Puts a clone of the element in the object at the
      * specified <code>JsonPath</code>.
      * <p>
-     * All the hierarchy to the end of the <code>JsonPath</code> 
+     * All the hierarchy to the end of the <code>JsonPath</code>
      * is created if required.
      */
     public void putElementAtJsonPath(JsonObjectOrArray obj, String jsonPath, Object element, boolean clone);
@@ -372,14 +372,14 @@ public interface JsonManager {
 
     /**
      * Does the object contain an element at
-     * the specified <code>JsonPath</code> (even if 
+     * the specified <code>JsonPath</code> (even if
      * <code>null</code>)?
      */
     public boolean isElementExists(JsonObject obj, String jsonPath);
 
     /**
      * Does the array contain an element at
-     * the specified <code>JsonPath</code> (even if 
+     * the specified <code>JsonPath</code> (even if
      * <code>null</code>)?
      */
     public boolean isElementExists(JsonArray array, String jsonPath);

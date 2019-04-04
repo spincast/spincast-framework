@@ -13,7 +13,7 @@ import com.google.inject.assistedinject.AssistedInject;
 public class DefaultWebsocketContextDefault extends WebsocketContextBase<DefaultWebsocketContext>
                                             implements DefaultWebsocketContext {
 
-    protected final Logger logger = LoggerFactory.getLogger(DefaultWebsocketContextDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DefaultWebsocketContextDefault.class);
 
     @AssistedInject
     public DefaultWebsocketContextDefault(@Assisted("endpointId") String endpointId,

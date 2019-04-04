@@ -13,7 +13,7 @@ import com.google.inject.util.Modules;
 
 public class SpincastRoutingPlugin extends SpincastPluginBase {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastRoutingPlugin.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastRoutingPlugin.class);
 
     public static final String PLUGIN_ID = SpincastRoutingPlugin.class.getName();
 

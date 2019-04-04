@@ -50,7 +50,7 @@ import com.google.inject.Inject;
 public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                                                implements RequestRequestContextAddon<R> {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastRequestRequestContextAddon.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastRequestRequestContextAddon.class);
 
     private String fullUrlOriginalWithCacheBustersNonDecoded = null;
     private String fullUrlOriginalNoCacheBustersNonDecoded = null;
@@ -663,7 +663,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                 if (matcher.matches()) {
 
                     if (values.size() > 1) {
-                        this.logger.error("More than one Form Data received with the array " +
+                        logger.error("More than one Form Data received with the array " +
                                           "index name \"" + key + "\", " +
                                           "we'll only keep the last element.");
 
@@ -920,7 +920,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
                         ETag eTag = getEtagFactory().deserializeHeaderValue(eTagStr);
                         etags.add(eTag);
                     } catch (Exception ex) {
-                        this.logger.info("Invalid " + headerName + " ETag header value received: " + eTagStr);
+                        logger.info("Invalid " + headerName + " ETag header value received: " + eTagStr);
                     }
                 }
             }
@@ -967,7 +967,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
             Date date = DateUtils.parseDate(value);
             return date;
         } catch (Exception ex) {
-            this.logger.info("Invalid '" + headerName + "' date received: " + value);
+            logger.info("Invalid '" + headerName + "' date received: " + value);
         }
         return null;
     }

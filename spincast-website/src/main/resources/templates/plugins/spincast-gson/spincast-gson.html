@@ -1,0 +1,497 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-gson{% endblock %}
+{% block meta_title %}Plugins - Spincast Gson{% endblock %}
+{% block meta_description %}Spincast Gson plugin - JSON Serialization / Deserialization{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Gson plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Gson <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/gson/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Gson <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#intro">Introduction</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#serializers">Serializers</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin allows you to use Google's <a href="https://github.com/google/gson">Gson</a> to
+	                convert Java Objects into JSON and back.
+                </p>
+                <p>
+                    It provides an implementation of <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>
+                    which is a component required in any Spincast application. The default implementation uses
+                    <a href="/plugins/spincast-jackson-json">Jackson</a>... The Gson implementation
+                    provided by this plugin is a replacement.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/warning.png" /> <em>Please note that this Gson implementation is not 
+                    as well tested as the default Jackson one. We do recommend you stick with the default Jackson plugin if you want the 
+                    easiest solution. But if you do use this Gson plugin, we are very open to comments/suggestions to improve it!</em>
+                </p>
+            </section>
+            
+            <section id="intro">
+                <h3>
+                    <a class="anchor" href="#intro" title="permanent link"></a>
+                    Introduction
+                </h3>
+                <p>
+                    <a href="https://github.com/google/gson">Gson</a> is a library developed by Google and allows the
+                    conversion of Java Objects into JSON and back.
+                </p>
+                <p>
+                    Some people prefer Gson to Jackson for such a task. Gson documentation is indeed good, its performances are good
+                    and creating custom (de)serializers is easy.
+                </p>
+                <p>
+                    But, in our opinion, working with Gson is sometimes harder than with Jackson. For example,
+                    you can't use <code>getters</code> to specify values to serialize. Also, there is an
+                    annoying <a href="https://stackoverflow.com/questions/16476513/class-a-declares-multiple-json-fields">issue</a>
+                    when a child class declares a field with the same name as a field in its base class.
+                </p>
+                <p>
+                    Finally, you will probably have to use the <code>transient</code> keyword (or use the <a href="https://static.javadoc.io/com.google.code.gson/gson/2.6.2/com/google/gson/annotations/Expose.html">@Expose</a>
+                    annotation provided by Gson) often... Otherwise, you can easily get a <code>StackOverflowError</code> exception when
+                    Gson encounters circular references. 
+                </p>
+                <p>
+                    It seems to us Jackson deals better with those situations.
+                </p>
+                
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                
+                <h4>
+                    <a class="anchor_small" id="manager" href="#manager" title="permanent link"></a>
+                    Extending <em>SpincastGsonManager</em>
+                </h4>
+                <p>
+                    As you will see in the <a href="#installation">installation</a> section, the first step
+                    to use Gson in a Spincast application is to replace the default Jackson plugin.
+                </p>
+                <p>
+                    When this is done, you extend <a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/SpincastGsonManager.html">SpincastGsonManager</a>
+                    to get control over how Gson is configured:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+public class AppGsonManager extends SpincastGsonManager {
+    // ...
+}</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    In your Guice module, you then bind this class as the <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a>
+                    implementation to use:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+
+bind(JsonManager.class).to(AppGsonManager.class).in(Scopes.SINGLETON);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    You now can override all the methods this plugin uses to 
+                    configure Gson...
+                </p>
+                <p>
+                     The most interesting of those methods is probably 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/SpincastGsonManager.html#configureGsonBuilder-com.google.gson.GsonBuilder-">configureGsonBuilder(...)</a>.
+                    By overriding this method, you get access to the 
+                    <a href="https://google.github.io/gson/apidocs/com/google/gson/GsonBuilder.html">GsonBuilder</a> and you can tweak or add anything you need:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+@Override
+protected void configureGsonBuilder(GsonBuilder gsonBuilder) {
+    super.configureGsonBuilder(gsonBuilder);
+    
+    // Add your custom configurations
+    gsonBuilder.registerTypeHierarchyAdapter(MyClass.class, new MyClassSerializer());
+}</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    You can also override some methods to prevent default behaviors. For example, if you
+                    don't want the plugin to automatically add one of its <a href="#serializers">custom serializers</a>, you can simply override the method
+                    that adds it:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+@Override
+protected void registerDateSerializer(GsonBuilder gsonBuilder) {
+    // Disable the custom Date serializer
+    // *do nothing here*
+}</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="interface" href="#interface" title="permanent link"></a>
+                    Using a custom <em>JsonManager</em> interface
+                </h4>
+                
+                <p>
+                   If you need to use methods provided by Gson but not available through the
+                   <a class="javadoc" href="/public/javadoc/org/spincast/core/json/JsonManager.html">JsonManager</a> interface, 
+                   you can also create a custom interface and add those methods to it.
+                </p>
+                <p>
+                   You first create a custom interface by extending <code>JsonManager</code> and by adding the extra methods to it:
+                   
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+public interface AppJsonManager extends JsonManager {
+
+    // Return the Gson instance
+    public Gson getGson();
+
+    // Convert a typed object to a JsonObject
+    public JsonObject fromObject(Object object, Type typeOfSrc);
+}</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                   You then make your <code>AppGsonManager</code> implementation extend this custom interface, and still extend the base
+                   <a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/SpincastGsonManager.html">SpincastGsonManager</a>
+                   class provided by this plugin:
+                   
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java" data-ace-hi="0,28,0,81|40,48,40,62|45,47,45,56"
+>
+public class AppGsonManager extends SpincastGsonManager implements AppJsonManager {
+
+    @Inject
+    public AppJsonManagerDefault(JsonDeserializer&lt;JsonObject&gt; jsonObjectDeserializer,
+                                 JsonDeserializer&lt;JsonArray&gt; jsonArrayDeserializer,
+                                 JsonSerializer&lt;JsonObject&gt; jsonObjectSerializer,
+                                 JsonSerializer&lt;JsonArray&gt; jsonArraySerializer,
+                                 JsonSerializer&lt;Date&gt; dateSerializer,
+                                 JsonSerializer&lt;Instant&gt; instantSerializer,
+                                 JsonSerializer&lt;BigDecimal&gt; bigDecimalSerializer,
+                                 JsonSerializer&lt;Enum&lt;?&gt;&gt; enumSerializer,
+                                 JsonSerializer&lt;Class&lt;?&gt;&gt; classSerializer,
+                                 JsonPathUtils jsonPathUtils,
+                                 JsonObjectFactory jsonObjectFactory,
+                                 SpincastConfig spincastConfig,
+                                 SpincastUtils spincastUtils,
+                                 FormFactory formFactory,
+                                 Provider&lt;Injector&gt; guiceProvider) {
+        super(jsonObjectDeserializer,
+              jsonArrayDeserializer,
+              jsonObjectSerializer,
+              jsonArraySerializer,
+              dateSerializer,
+              instantSerializer,
+              bigDecimalSerializer,
+              enumSerializer,
+              classSerializer,
+              jsonPathUtils,
+              jsonObjectFactory,
+              spincastConfig,
+              spincastUtils,
+              formFactory,
+              guiceProvider);
+    }
+    
+    // The "getGson()" method is already provided by the base class!
+    // public Gson getGson();
+
+    // Typed version for "fromObject()"
+    @Override
+    public JsonObject fromObject(Object object, Type typeOfSrc) {
+        if (object == null) {
+            return null;
+        }
+
+        String json = getGson().toJson(object, typeOfSrc);
+        JsonObject jsonObject = fromString(json);
+        return jsonObject;
+    }</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}  
+                </p>
+                <p>
+                    Finally, you bind all the required components to your Guice module:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                        <pre class="ace ace-java"
+>
+
+bind(AppGsonManager.class).in(Scopes.SINGLETON);
+bind(JsonManager.class).to(AppGsonManager.class).in(Scopes.SINGLETON);
+bind(AppJsonManager.class).to(AppGsonManager.class).in(Scopes.SINGLETON);
+</pre>
+                        </p>
+                    </div> 
+                    {% endverbatim %}   
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Remember that Spincast <em>requires</em> the <code><em>JsonManager</em></code> interface to be
+                    bound to an implementation! So you need to bind both <code>JsonManager</code>
+                    and <code>AppJsonManager</code> interfaces to the same instance. Then, in <em>your</em> application code, you inject 
+                    <code>AppJsonManager</code> instead of <code>JsonManager</code> to get access to
+                    the extra methods.
+                </p>
+                
+            </section>
+            <section id="serializers">
+                <h3>
+                    <a class="anchor" href="#serializers" title="permanent link"></a>
+                    Custom serializers
+                </h3>
+                <p>
+                    This plugin provides some custom serializers and deserializers for Gson to use. As
+                    we showed previously, you can disable/change them if required.
+                </p>
+                <p>
+                    They are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="serializers_jsonobjects" href="#serializers_jsonobjects" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/JsonObjectSerializer.html">JsonObjectSerializer</a></span> 
+                            and <span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/JsonObjectDeserializer.html">JsonObjectDeserializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    Those are for (de)serializing Spincast's <a href="https://www.spincast.loc:44420/documentation#jsonobject">JsonObjects</a>.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="serializers_jsonarrays" href="#serializers_jsonarrays" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/JsonArraytSerializer.html">JsonArraytSerializer</a></span> 
+                            and <span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/JsonArrayDeserializer.html">JsonArrayDeserializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    Those are for (de)serializing Spincast's <a href="https://www.spincast.loc:44420/documentation#jsonobject">JsonArrays</a>.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="serializers_bigdecimal" href="#serializers_bigdecimal" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/BigDecimalSerializer.html">BigDecimalSerializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    This serializes <code>BigDecimal</code> objects by calling their <a href="https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#toPlainString--">.toPlainString()</a> method.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="serializers_class" href="#serializers_class" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/ClassSerializer.html">ClassSerializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    This serializes <code>Class</code> objects by calling their <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html#getName--">.getName()</a> method.
+                                </p> 
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="serializers_date" href="#serializers_date" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/DateSerializer.html">DateSerializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    This serializes <code>Date</code> objects by converting them to the <code>ISO-8601</code> format using
+                                    a <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/SpincastStatics.html#getIso8601DateParserDefault--">SpincastStatics utility</a>.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="serializers_enum" href="#serializers_enum" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/EnumSerializer.html">EnumSerializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    This serializes <code>Enumeration values</code> to a <code>JsonObject</code> containing their
+                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html#name--">name()</a> (as a
+                                    "<em>name</em>" field) and
+                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html#toString--">toString()</a> (as a
+                                    "<em>label</em>" field).
+                                </p>
+                                <p>
+                                    Here's an example of what a serialized enum could look like, given it provides an human readable <code>toString()</code>
+                                    value:
+                                    
+				                    {% verbatim %}
+				                    <div>
+				                        <p>
+				                        <pre class="ace ace-json"
+>{
+  "name": "BLUE",
+  "label": "The color blue"
+}</pre>
+				                        </p>
+				                    </div> 
+				                    {% endverbatim %}  
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="serializers_instant" href="#serializers_instant" title="permanent link"></a>
+                            <code class="apiItem"><span><a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/serializers/InstantSerializer.html">InstantSerializer</a></span></code>
+                            <div class="well">
+                                <p>
+                                    This serializes <code>Instant</code> objects by calling their <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html#toString--">.toString()</a> method.
+                                </p> 
+                            </div>
+                        </li>
+                        
+                    </ul>
+                </p>
+
+            </section> 
+            
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that since this plugin <em>replaces</em> a default one, you must
+                    first disable the default before adding it.
+                </p>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-openapi-bottomup&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Disable the default Jackson Json plugin from your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>
+                    by calling <a class="javadoc" href="/public/javadoc/org/spincast/defaults/bootstrapping/SpincastBootstrapper.html#disableDefaultJsonPlugin--">disableDefaultJsonPlugin()</a>:
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,8,2,35"
+>
+
+Spincast.configure()
+        .disableDefaultJsonPlugin()
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %}   
+                    
+                </p>
+                <p>
+                    3. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/gson/SpincastGsonPlugin.html">SpincastGsonPlugin</a> 
+                    plugin :
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="3,16,3,40"
+>
+
+Spincast.configure()
+        .disableDefaultJsonPlugin()
+        .plugin(new SpincastGsonPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

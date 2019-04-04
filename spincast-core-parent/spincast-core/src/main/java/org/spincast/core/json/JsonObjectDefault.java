@@ -23,7 +23,7 @@ import com.google.inject.assistedinject.AssistedInject;
  */
 public class JsonObjectDefault extends JsonObjectArrayBase implements JsonObject {
 
-    protected final Logger logger = LoggerFactory.getLogger(JsonObjectDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JsonObjectDefault.class);
 
     protected static interface IFirstElementGetter<T> {
 

@@ -26,7 +26,7 @@ import com.rometools.rome.io.SyndFeedOutput;
 
 public class FeedController {
 
-    protected final Logger logger = LoggerFactory.getLogger(FeedController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(FeedController.class);
 
     private final NewsService newsService;
     private final AppConfig appConfig;

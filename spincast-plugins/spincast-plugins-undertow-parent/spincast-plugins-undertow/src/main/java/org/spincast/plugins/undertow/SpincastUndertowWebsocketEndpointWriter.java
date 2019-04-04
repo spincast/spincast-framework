@@ -20,7 +20,7 @@ import io.undertow.websockets.core.WebSockets;
 
 public class SpincastUndertowWebsocketEndpointWriter implements UndertowWebsocketEndpointWriter {
 
-    protected final Logger logger = LoggerFactory.getLogger(SpincastUndertowWebsocketEndpointWriter.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastUndertowWebsocketEndpointWriter.class);
 
     private final SpincastUndertowConfig spincastUndertowConfig;
     private final Map<String, WebSocketChannel> channels;
@@ -148,7 +148,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements UndertowWebsocke
                 @Override
                 public void writeErrors(Set<String> peerIds) {
                     if(peerIds != null && peerIds.size() > 0) {
-                        SpincastUndertowWebsocketEndpointWriter.this.logger.debug("Error sending 'Closed' messages to " +
+                        SpincastUndertowWebsocketEndpointWriter.logger.debug("Error sending 'Closed' messages to " +
                                                                                   peerIds.size() +
                                                                                   " peers.");
                     }
@@ -157,7 +157,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements UndertowWebsocke
                 }
             });
         } catch(Exception ex) {
-            this.logger.error("Exception trying to send 'Closed' messages to peers : " + ex.getMessage());
+            logger.error("Exception trying to send 'Closed' messages to peers : " + ex.getMessage());
             callback.done();
             return;
         }
@@ -207,7 +207,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements UndertowWebsocke
                         if(throwable instanceof IOException || !channel.isOpen()) {
                             peerIdsWriteErrors.add(peerId);
                         } else {
-                            SpincastUndertowWebsocketEndpointWriter.this.logger.error("An exception which is not a IOException occured while trying to write to a " +
+                            SpincastUndertowWebsocketEndpointWriter.logger.error("An exception which is not a IOException occured while trying to write to a " +
                                                                                       "Websocket peer: " + throwable);
                         }
 
@@ -229,7 +229,7 @@ public class SpincastUndertowWebsocketEndpointWriter implements UndertowWebsocke
 
             } catch(Exception ex) {
 
-                this.logger.debug("Unable to send 'closing Websocket connection' to peer '" + peerId + "' : " + ex.getMessage());
+                logger.debug("Unable to send 'closing Websocket connection' to peer '" + peerId + "' : " + ex.getMessage());
 
                 peerIdsRemaining.remove(peerId);
                 if(peerIdsRemaining.size() == 0) {

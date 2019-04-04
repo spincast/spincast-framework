@@ -19,7 +19,7 @@ import com.google.inject.Singleton;
 @Singleton
 public class JdbcScope {
 
-    protected final Logger logger = LoggerFactory.getLogger(JdbcScope.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JdbcScope.class);
 
     private final static ThreadLocal<Boolean> insideTransactionScopeFlagThreadLocal = new ThreadLocal<Boolean>();
     protected final static ThreadLocal<Map<String, SpincastConnection>> spincastConnectionsThreadLocal =
@@ -72,7 +72,7 @@ public class JdbcScope {
             if (specificConnectionByDataSourceKey != null) {
                 Connection specificConnection = specificConnectionByDataSourceKey.get(getDataSourceKey(dataSource));
                 if (specificConnection != null) {
-                    this.logger.debug("Specific connection in ThreadLocal, using it.");
+                    logger.debug("Specific connection in ThreadLocal, using it.");
                     T result = queries.run(specificConnection);
                     return result;
                 }
@@ -127,7 +127,7 @@ public class JdbcScope {
                 specificConnectionsByDataSourceKey.put(dataSourceKey, connection);
             } else {
                 connection = connectionExisting;
-                this.logger.debug("Specific connection in thread locale, using it.");
+                logger.debug("Specific connection in thread locale, using it.");
             }
 
             return connectionScope.run(connection);
@@ -179,7 +179,7 @@ public class JdbcScope {
             if (specificConnectionByDataSourceKey != null) {
                 Connection specificConnection = specificConnectionByDataSourceKey.get(getDataSourceKey(dataSource));
                 if (specificConnection != null) {
-                    this.logger.debug("Specific connection in ThreadLocal, using it.");
+                    logger.debug("Specific connection in ThreadLocal, using it.");
                     T result = queries.run(specificConnection);
                     return result;
                 }
@@ -277,7 +277,7 @@ public class JdbcScope {
                         SpincastConnection spincastConnection = entry.getValue();
                         spincastConnection.getWrappedConnection().rollback();
                     } catch (Exception ex2) {
-                        this.logger.error("Error rollbacking a connection...");
+                        logger.error("Error rollbacking a connection...");
                     }
                 }
             }
@@ -300,13 +300,13 @@ public class JdbcScope {
                         try {
                             spincastConnection.getWrappedConnection().setAutoCommit(true);
                         } catch (Exception ex) {
-                            this.logger.error("Error setAutoCommit(true) on a connection...");
+                            logger.error("Error setAutoCommit(true) on a connection...");
                         }
 
                         try {
                             spincastConnection.getWrappedConnection().close();
                         } catch (Exception ex) {
-                            this.logger.error("Error closing a connection...");
+                            logger.error("Error closing a connection...");
                         }
                     }
                 }

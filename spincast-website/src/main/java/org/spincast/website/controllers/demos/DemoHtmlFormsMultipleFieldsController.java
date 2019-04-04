@@ -20,7 +20,7 @@ import com.google.inject.Inject;
  */
 public class DemoHtmlFormsMultipleFieldsController {
 
-    protected final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsMultipleFieldsController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DemoHtmlFormsMultipleFieldsController.class);
 
     private final FormFactory formFactory;
     private final JsonManager jsonManager;

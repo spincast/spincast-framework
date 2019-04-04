@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+    <parent>
+        <groupId>org.spincast</groupId>
+        <artifactId>spincast-plugins-gson-parent</artifactId>
+        <version>1.2.1-SNAPSHOT</version>
+    </parent>
+	
+	<artifactId>spincast-plugins-gson-tests</artifactId>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Tests for the Spincast Gson plugin</description>
+    <url>https://www.spincast.org</url>
+
+	<dependencies>
+    
+        <!--=================================== 
+        Spincast Testing default
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-testing-default</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Spincast Gson plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-gson</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Spincast Jackson Json plugin (to get the
+        id of the plugin and disable it)
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-jackson-json</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!--=================================== 
+        Logs to the console
+        ====================================-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
+
+	</dependencies>
+
+	<build>
+        <plugins>
+        </plugins>
+	</build>
+</project>

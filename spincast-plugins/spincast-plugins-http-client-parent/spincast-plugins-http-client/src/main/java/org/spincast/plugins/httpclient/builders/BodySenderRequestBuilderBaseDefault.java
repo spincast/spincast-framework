@@ -36,7 +36,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
                                                          extends HttpRequestBuilderBase<T>
                                                          implements BodySenderRequestBuilderBase<T> {
 
-    protected final Logger logger = LoggerFactory.getLogger(BodySenderRequestBuilderBaseDefault.class);
+    protected static final Logger logger = LoggerFactory.getLogger(BodySenderRequestBuilderBaseDefault.class);
 
     protected enum BodyType {
         STANDARD,
@@ -112,7 +112,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
         Objects.requireNonNull(name, "The name can't be NULL");
 
         if (getBodyType() != null && getBodyType() != BodyType.FORM) {
-            this.logger.warn("There was already a body of a different type set ('" + getBodyType() + "'). It will be replaced.");
+            logger.warn("There was already a body of a different type set ('" + getBodyType() + "'). It will be replaced.");
         }
         this.filesToUpload = null;
         this.standardBody = null;
@@ -138,7 +138,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
         Objects.requireNonNull(fieldName, "The name can't be NULL");
 
         if (getBodyType() != null && getBodyType() != BodyType.FORM) {
-            this.logger.warn("There was already a body of a different type set ('" + getBodyType() + "'). It will be replaced.");
+            logger.warn("There was already a body of a different type set ('" + getBodyType() + "'). It will be replaced.");
         }
         this.filesToUpload = null;
         this.standardBody = null;
@@ -155,7 +155,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
     public T setFormBodyFields(Map<String, List<String>> formFields) {
 
         if (getBodyType() != null && getBodyType() != BodyType.FORM) {
-            this.logger.warn("There was already a body of a different type set ('" + getBodyType() + "'). It will be replaced.");
+            logger.warn("There was already a body of a different type set ('" + getBodyType() + "'). It will be replaced.");
         }
         this.filesToUpload = null;
         this.standardBody = null;
@@ -177,7 +177,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
         Objects.requireNonNull(contentType, "The contentType can't be NULL");
 
         if (getStandardBody() != null || (getBodyType() != null && getBodyType() != BodyType.STANDARD)) {
-            this.logger.warn("There was already a body set ('" + getBodyType() + "'). It will be replaced.");
+            logger.warn("There was already a body set ('" + getBodyType() + "'). It will be replaced.");
         }
 
         StringEntity stringEntity = new StringEntity(stringBody, getStringBodyEncoding());
@@ -215,7 +215,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
     public T setBody(HttpEntity body) {
 
         if (getStandardBody() != null || (getBodyType() != null && getBodyType() != BodyType.STANDARD)) {
-            this.logger.warn("There was already a body set ('" + getBodyType() + "'). It will be replaced.");
+            logger.warn("There was already a body set ('" + getBodyType() + "'). It will be replaced.");
         }
 
         this.formBodyFields = null;
@@ -239,7 +239,7 @@ public abstract class BodySenderRequestBuilderBaseDefault<T extends BodySenderRe
         Objects.requireNonNull(path, "The path can't be NULL");
 
         if (getBodyType() != null && getBodyType() != BodyType.FILES_TO_UPLOAD) {
-            this.logger.warn("There was already a body set ('" + getBodyType() + "'). It will be replaced.");
+            logger.warn("There was already a body set ('" + getBodyType() + "'). It will be replaced.");
         }
 
         this.formBodyFields = null;

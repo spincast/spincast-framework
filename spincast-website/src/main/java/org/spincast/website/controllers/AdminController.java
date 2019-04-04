@@ -16,7 +16,7 @@ import com.google.inject.Inject;
  */
 public class AdminController {
 
-    protected final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     private final String[] mainArgs;
     private final JsonManager jsonManager;
