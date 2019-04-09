@@ -1,0 +1,41 @@
+
+<p>
+    The new <a href="{{appUrlPrefix}}/plugins/spincast-process-utils">Spincast Process Utils</a> plugin
+    provides utilities to manipulate processes and external programs.
+</p>
+<p>
+    The main features are:
+    <ul>
+		<li>
+		    "<a href="{{appUrlPrefix}}/plugins/spincast-process-utils#maven_project">Running a goal on an external Maven project</a>" - 
+		    Allows you to programmatically compile/package/install an <em>external</em> Maven project.
+		    The Maven project can be on your classpath: it will first be extracted to the file system before the
+		    goal is executed.
+		</li>
+        <li>
+            "<a href="{{appUrlPrefix}}/plugins/spincast-process-utils#jar">Running an external executable .jar file</a>" - 
+            Allows you to easily run an executable <code>.jar</code> file.
+        </li>
+    </ul>
+</p>
+<p>
+    By combining those utilities, it is now possible to
+    <a href="{{appUrlPrefix}}/documentation#testing_jar">test code inside a .jar file</a>!
+    Indeed, running tests from an <code>IDE</code> (or using the command line) doesn't always represent the 
+    production environment, where everything is bundled in an executable <code>.jar</code> file.
+</p>
+<p>
+    Finally, two new utility methods are provided by the <a href="{{appUrlPrefix}}/public/javadoc/org/spincast/core/utils/SpincastUtils.html">SpincastUtils</a>
+    component:
+    <ul>
+        <li>
+            <a href="{{appUrlPrefix}}/documentation#utils_copyClasspathFileToFileSystem">copyClasspathFileToFileSystem(...)</a>,
+            to copy a single file from the classpath to the file system.
+            
+        </li>
+        <li>
+            <a href="{{appUrlPrefix}}/documentation#utils_copyClasspathDirToFileSystem">copyClasspathDirToFileSystem(...)</a>,
+            to copy a full directory from the classpath to the file system.
+        </li>
+    </ul>
+</p>

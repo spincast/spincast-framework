@@ -12,6 +12,12 @@ import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 /**
  * Base class for testing without an App but when an HTTP
  * server is required.
+ * <p>
+ * <strong>Note</strong> that, by default, all routes are cleared
+ * before each test! Even routes added by plugins...
+ * To change this behavior, override the
+ * {@link NoAppStartHttpServerCustomContextTypesTestingBase#clearRoutes() clearRoutes()}
+ * method.
  */
 public abstract class NoAppStartHttpServerCustomContextTypesTestingBase<R extends RequestContext<?>, W extends WebsocketContext<?>>
                                                                        extends AppBasedTestingBase<R, W> {

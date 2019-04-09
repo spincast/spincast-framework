@@ -10,11 +10,6 @@
 {% block scripts %}
 <script>
 
-	$(function() {
-	    let $el = $('#super');
-	    $el.letterfx({"fx":"swirl", "fx_duration":"1s"});	
-	});
-	
 	var img = new Image();
     img.src = "/public/images/marypoppins.gif";
 	$(".appFooter img").hover(function() {
@@ -380,8 +375,8 @@
 >public class AppConfig extends SpincastConfigDefault {
 
     @Inject
-    protected AppConfig(SpincastConfigPluginConfig spincastConfigPluginConfig) {
-        super(spincastConfigPluginConfig);
+    protected AppConfig(SpincastConfigPluginConfig spincastConfigPluginConfig, @TestingMode boolean testingMode) {
+        super(spincastConfigPluginConfig, testingMode);
     }
 
     /**

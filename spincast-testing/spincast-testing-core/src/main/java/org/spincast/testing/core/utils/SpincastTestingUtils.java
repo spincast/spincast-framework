@@ -89,7 +89,7 @@ public class SpincastTestingUtils {
 
     /**
      * Is the specified port available?
-     * 
+     *
      * Note that this will be true at the time the method run,
      * but may be false a couple of milliseconds after...
      */
@@ -106,7 +106,7 @@ public class SpincastTestingUtils {
      * Since Websockets are async, it's hard to wait for a
      * specific period of time before validating if an event
      * occured.
-     * 
+     *
      * This method checks frequently if the TrueChecker returns true
      * and when it does, it returns too. Il also waits
      * for a maximum of 5 seconds.
@@ -119,7 +119,7 @@ public class SpincastTestingUtils {
      * Since Websockets are async, it's hard to wait for a
      * specific period of time before validating if an event
      * occured.
-     * 
+     *
      * This method checks frequently if the TrueChecker returns true
      * and when it does, it returns too. Il also waits
      * for the maximum number of milliseconds specified.
@@ -252,7 +252,7 @@ public class SpincastTestingUtils {
     }
 
     /**
-     * Get a test date without time. 
+     * Get a test date without time.
      */
     public static Date getTestDateNoTime() {
 

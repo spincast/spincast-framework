@@ -45,6 +45,8 @@
         <module>spincast-plugins-logback-utils-parent</module>
         <module>spincast-plugins-openapi-bottomup-parent</module>
         <module>spincast-plugins-gson-parent</module>
+        <module>spincast-plugins-swagger-ui-parent</module>
+        <module>spincast-plugins-process-utils-parent</module>
     </modules>
 
 </project>

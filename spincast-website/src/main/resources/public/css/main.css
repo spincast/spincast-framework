@@ -2,8 +2,8 @@
 
 body {
     background-color: #FFFFFF; 
-    font-family: arial;
-    font-size:17px;
+    font-family: verdana, arial;
+    font-size:16px;
 }
 
 .clear {
@@ -29,7 +29,8 @@ a {
     outline: none;
 }
 a:hover {
-    color: #000000;
+    text-decoration: none;
+    border-bottom: dotted 2px #23527C;
 }
 
 .orange {
@@ -68,14 +69,16 @@ blockquote code {
 }
 
 .well, #pluginsWrapper .thumbnail {
-    background: #ffffff;
-    background: -moz-linear-gradient(top, #ffffff 0%, #f6f6f6 47%, #ededed 100%);
-    background: -webkit-linear-gradient(top, #ffffff 0%,#f6f6f6 47%,#ededed 100%);
-    background: linear-gradient(to bottom, #ffffff 0%,#f6f6f6 47%,#ededed 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed',GradientType=0 );
+    background-color: #FFFFFF;
     margin-bottom:15px;
-    border-color:#808080;
+    border: solid 1px #8F9682;
     margin-bottom:30px;
+}
+
+#right-sidebar .well {
+    border: solid 1px #797E91;
+    background-color: #FFFFFF;
+    box-shadow: 3px 3px 2px #C0C0C0;
 }
 
 #pluginsWrapper h4 {
@@ -175,6 +178,7 @@ a.anchor_xsmall {
 }
 a.anchor:hover, a.anchor_small:hover, a.anchor_xsmall:hover {
     opacity: 1;
+    border-bottom: 0 !important;
 }
 
 h2 {
@@ -265,8 +269,8 @@ code, code.block, .code-line-nbr {
     font-family:'Courier New';
     font-size:15px;
     background-color: #FFFFFF;
-    padding:1px 3px 1px 3px;
-    border:solid 1px #D3D3D3;
+    padding: 1px 3px 1px 3px;
+    border: solid 1px #D3D3D3;
     margin: 0 3px;
 }
 code.language-pebble {
@@ -283,13 +287,13 @@ code.block {
     padding:0px 3px 0px 3px;
 }
 .code-line-nbr {
-    border-right:solid 1px #D3D3D3;
-    border-left:solid 1px transparent;
-    padding:1px 3px 0px 3px;
-    text-decoration:underline;
+    background-color: #F9F9F9;
+    padding:1px 6px 0px 6px;
+    text-decoration: none;
 }
 .code-line-nbr:hover {
     cursor : pointer;
+    border-color: #000000;
 }
 
 h3 code {
@@ -327,7 +331,7 @@ a.love:hover::after {
 }
 
 .btn-default:hover {
-    background-color: #DCEBF4;
+    background-color: #E8F2D2;
 }
 
 ul ul {
@@ -418,9 +422,6 @@ ul ul {
     font-size:19px; 
     color:#000000 !important;
 }
-.subMenu a:hover {
-    border-bottom: solid 2px #323F1C;
-}
 
 .subMenu .subMenuIcon {
 	float:left;
@@ -443,6 +444,10 @@ ul ul {
 }
 .menu a:hover {
     color: #002;
+    border-bottom: 0 !important;
+}
+.menu.subMenu a:hover {
+    border-bottom: solid 2px #323F1C !important;
 }
 
 .menu ul {
@@ -482,7 +487,7 @@ ul ul {
 .more #menu_more a
 {
     color: #222222;
-    border-bottom: 2px solid #4993CB; 
+    border-bottom: 2px solid #8F9682; 
 }
 
 .hasSubMenu .menu, .hasBreadCrumb .menu {
@@ -505,6 +510,11 @@ ul ul {
     letter-spacing: 2px;
 }
 
+.nav > li > a:hover {
+	background-color: #E8F2D2;
+	color: #1E1E1E;
+}
+
 .nav-tabs li.active a, .nav-tabs li.active a:hover {
     color: #4C4C4C;
     text-decoration: none;
@@ -517,31 +527,9 @@ ul ul {
 .demo_form_auth #menu_demos_form_auth a,
 .demo_html_forms #menu_demos_html_forms a
 {
-    border-bottom: 2px solid #000000; 
+    border-bottom: 3px solid #000000; 
     color:#000000 !important;
-}
-
-.demo_hello_world #menu_demos_hello_world a::before, 
-.demo_websockets #menu_demos_websockets a::before, 
-.demo_http_auth #menu_demos_http_auth a::before,
-.real_apps #menu_demos_todo_list a::before,
-.demo_form_auth #menu_demos_form_auth a::before,
-.demo_html_forms #menu_demos_html_forms a::before,
-.community #menu_community a:before, 
-.about #menu_about a:before
-{
-    content: "[ ";
-}
-.demo_hello_world #menu_demos_hello_world a::after, 
-.demo_websockets #menu_demos_websockets a::after, 
-.demo_http_auth #menu_demos_http_auth a::after,
-.real_apps #menu_demos_todo_list a::after,
-.demo_form_auth #menu_demos_form_auth a::after,
-.demo_html_forms #menu_demos_html_forms a::after,
-.community #menu_community a:after, 
-.about #menu_about a:after
-{
-    content: " ]";
+    font-style: italic;
 }
 
 .admin #sectionTitle h2 {
@@ -660,17 +648,18 @@ ul ul {
 .quickStartWrapper a, .quickStartWrapper a:active, .quickStartWrapper a:visited
 {
     width:100%;
-    background-color: #D2DBC5;
+    background-color: #E8F2D2;
     color:#000000;
     border:solid 2px #000000;
     padding:20px 0px;
-    font-size:20px;
+    font-size: 18px;
     text-decoration:none;
     margin-right:px;
 }
 
 .quickStartWrapper a:hover {
-	color:#000000;
+	text-decoration: none !important;
+	border-color: #779943;
 }
 .quickStartWrapper > a:hover i {
 	color:#FFFFFF;
@@ -774,6 +763,9 @@ ul ul {
     padding-top:30px;
     padding-bottom:30px;
 }
+#jumb h1 {
+    font-family: arial;
+}
 
 #jumb span {
     font-weight:bold;
@@ -804,11 +796,12 @@ ul ul {
 .apiItem {
     display:inline-block;
     font-weight: normal;
-    border:solid 1px #000000;
-    background-color: #DCEBF4;
+    border:solid 1px #404040;
+    background-color: #E8F2D2;
     color:#6B0049;
-    padding:1px 16px;
+    padding:1px 6px;
     font-size:15px;
+    margin: 0px 10px;
 }
 .apiItem span {
     font-weight: bold;
@@ -847,6 +840,9 @@ ul.apiList li {
 ul.apiList li.first {
     padding-top:0px;
 }
+ul.apiList li:hover {
+    list-style: none;
+}
 
 .methodsSection {
     margin-top:10px;
@@ -858,6 +854,9 @@ ul.apiList li.first {
     margin-bottom: 20px;
     padding-right:0px;
     font-family: verdana;
+}
+#toc > ul {
+    background-color: #FFFFFF;
 }
 
 #toc ul.affix {
@@ -916,6 +915,7 @@ ul.apiList li.first {
 #toc .nav .nav>li>a:hover {
     text-decoration:underline;
     padding-left:29px;
+    border-bottom: 0 !important;
 }
 
 #toc .nav li.openable>a:before {
@@ -941,13 +941,15 @@ ul.apiList li.first {
 #toc .nav>li>a:focus {
     color: #000000;                         
     background-color: transparent;  
-    border-left: solid 3px #4993CB; 
+    border-left: solid 3px #ADB59D; 
     padding-left:19px;
+    border-bottom: 0 !important;
 }
 
 #toc .nav>li>a:hover {
-    background-color: #DCEBF4; 
+    background-color: #E8F2D2; 
     color: #000000;
+    border-bottom: 0 !important;
 }
 
 /* all active links */
@@ -1070,71 +1072,15 @@ a.noOutline {
     box-shadow: 3px 3px 2px gray;
 }
 
-
 #quickLink {
     font-weight:bold;
 }
 
-/*!
- * Hover.css (http://ianlunn.github.io/Hover/)
- * Version: 2.0.2
- * Author: Ian Lunn @IanLunn
- * Author URL: http://ianlunn.co.uk/
- * Github: https://github.com/IanLunn/Hover
-
- * Made available under a MIT License:
- * http://www.opensource.org/licenses/mit-license.php
-
- * Hover.css Copyright Ian Lunn 2014. Generated with Sass.
- */
-/* Radial Out */
-.hvr-radial-out {
-  display: inline-block;
-  vertical-align: middle;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -moz-osx-font-smoothing: grayscale;
-  position: relative;
-  overflow: hidden;
-  background: #DB9013;
-  -webkit-transition-property: color;
-  transition-property: color;
-  -webkit-transition-duration: 0.3s;
-  transition-duration: 0.3s;
-}
-.hvr-radial-out:before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #DB9013;
-  border-radius: 100%;
-  -webkit-transform: scale(0);
-  transform: scale(0);
-  -webkit-transition-property: transform;
-  transition-property: transform;
-  -webkit-transition-duration: 0.3s;
-  transition-duration: 0.3s;
-  -webkit-transition-timing-function: ease-out;
-  transition-timing-function: ease-out;
-}
-.hvr-radial-out:hover, .hvr-radial-out:focus, .hvr-radial-out:active {
-  color: #000000;
-}
-.hvr-radial-out:hover:before, .hvr-radial-out:focus:before, .hvr-radial-out:active:before {
-  -webkit-transform: scale(2);
-  transform: scale(2);
-}
-
 .ace_active-line, .code-line-nbr:hover, .stayHi {
-    background: #DCEBF4 !important;  
-    xborder: 1px solid #4993CB;
+    background: #E8F2D2 !important;
+}
+.code-line-nbr.stayHi {
+    border: 1px solid #000000;
 }
 
 .ace-pebble .ace_active-line, .ace-pebble .code-line-nbr:hover, .ace-pebble .stayHi,
@@ -1245,7 +1191,7 @@ pre {
     color: #000000;
 }
 .breadcrumb, .subMenu {
-    background-color: #D2DBC5;
+    background-color: #E8F2D2;
 }
 
 .breadcrumb > li + li::before, .breadcrumb a, .breadcrumb > .active {
@@ -1275,7 +1221,9 @@ pre {
     text-decoration:none;
     color:inherit;
 }
-   
+#sectionTitle a:hover {
+    border-bottom: 0;
+}
 
 #sectionTitleFixed {
     position:fixed;
@@ -1395,7 +1343,7 @@ pre {
     color:#4C4C4C;
     margin:0;
     margin-bottom:10px;
-    font-size:0.7em;
+    font-size:0.8em;
     clear:both;
     font-family: Verdana;
     font-weight: bold;
@@ -1550,6 +1498,7 @@ ul.tutoBullets li {
 #noPresentation h4 {
 	margin-top:0px;
 	text-align:center;
+	font-size: 20px;
 }
 
 #noPresentation ul {
@@ -1811,7 +1760,8 @@ a.tryItFixed {
 }
 
 .demoTabs {
-    font-size:1em;
+    font-size: 1.1em;
+    font-family: arial;
     font-weight: bold;
     margin-top: 20px;
 }

@@ -149,6 +149,18 @@
             "date" : "2019-04-04T17:00:00Z",
             "title" : "Spincast Gson plugin",
             "path" : "/news/2019-04-04.html"
+        },
+        {
+            "id" : "27",
+            "date" : "2019-04-09T10:00:00Z",
+            "title" : "Spincast Swagger UI plugin",
+            "path" : "/news/2019-04-09-1.html"
+        },
+        {
+            "id" : "28",
+            "date" : "2019-04-09T10:00:00Z",
+            "title" : "Spincast Process Utils plugin + other utilities",
+            "path" : "/news/2019-04-09-2.html"
         }
           
 		

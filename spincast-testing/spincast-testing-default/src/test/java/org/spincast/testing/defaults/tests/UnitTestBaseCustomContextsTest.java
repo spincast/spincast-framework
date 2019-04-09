@@ -19,6 +19,13 @@ import com.google.inject.Module;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
+/**
+ * <strong>Note</strong> that, by default, all routes are cleared
+ * before each test! Even routes added by plugins...
+ * To change this behavior, override the
+ * {@link NoAppStartHttpServerCustomContextTypesTestingBase#clearRoutes() clearRoutes()}
+ * method.
+ */
 public class UnitTestBaseCustomContextsTest extends
                                             NoAppStartHttpServerCustomContextTypesTestingBase<RequestContextTesting, WebsocketContextTesting> {
 

@@ -1,0 +1,415 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-process-utils{% endblock %}
+{% block meta_title %}Plugins - Spincast Process Utils{% endblock %}
+{% block meta_description %}Spincast Process Utils plugin - utilities related to processes and external programs manipulation{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast Process Utils plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast Process Utils <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/processutils/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast Process Utils <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="longTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin contains utilities to help manipulate processes and external programs.
+	                It allows you to easily compile/package/install a <code>Maven</code> project 
+	                located outside your application. It also provides a way to programmatically launch and 
+	                control an executable <code>.jar</code> file.
+                </p>
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                <p>
+                    The utilities provided by this plugin are available through the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html">SpincastProcessUtils</a>
+                    interface, which you can inject wherever you want.
+                </p>
+
+                <h4>
+                    <a class="anchor_small" id="maven_project" href="#maven_project" title="permanent link"></a>
+                    Running a goal on an external Maven project
+                </h4>
+                
+                <p>
+                    The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeGoalOnExternalMavenProject-java.lang.String-boolean-org.spincast.plugins.processutils.MavenProjectGoal-java.util.Map-">executeGoalOnExternalMavenProject(...)</a> 
+                    method allows you to programmatically compile, package or install a Maven project located outside of your application. 
+                </p>
+                <p>
+                    This feature can be useful for example to run tests that need to 
+                    validate code <a href="/documentation#testing_jar">from inside a .jar file</a>.
+                </p>
+                <p>   
+                    The signature of this method is:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" 
+>public File executeGoalOnExternalMavenProject(ResourceInfo projectRootInfo,
+                                              MavenProjectGoal mavenGoal,
+                                              Map&lt;String,Object&gt; pomParams);</pre> 
+                            {% endverbatim %}
+                        </p> 
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Using this method you can:
+                    
+                    <ul>
+                        <li>
+                            Run the <code>compile</code>, <code>package</code> or <code>install</code> goal on a Maven
+                            project located:
+                            <ul>
+                                <li>
+                                    On the file system
+                                </li>
+                                <li>
+                                    On the classpath (it will first be extracted to a temporary directory on the file system).
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Specify parameters to be used to replace some <em>placeholders</em> in the project's <code>pom.xml</code>, before
+                            executing the Maven goal. The replacement is done using the <a href="/documentation#templating_engine">Templating Engine</a>.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that this method returns the root directory of the Maven project. If the project is extracted from
+                    the classpath, this directory is going to be created under the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getTempDir--">Temporary Directory</a>.
+                    If the project is already on the file system, it will return its root directory, as is.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Let's look at an example where we run the <code>package</code> goal on a Maven project located
+                    on the classpath (the project would be provided by your application at "<em>src/main/resources/myMavenProject</em>"):
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" 
+>
+String spincastVersion = getSpincastUtils().getSpincastCurrentVersion();
+
+File projectDir = getSpincastProcessUtils()
+        .executeGoalOnExternalMavenProject(new ResourceInfo("/myMavenProject", true),
+                                           MavenProjectGoal.PACKAGE,
+                                           SpincastStatics.map("spincastVersion",
+                                                               spincastVersion));
+
+File jarFile = new File(projectDir, 
+                        "target/project-artifact-name-" + spincastVersion + ".jar");
+assertTrue(jarFile.isFile());</pre> 
+                            {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : We get the current Spincast version. We will use replace
+                                    a placeholder in the project's <code>pom.xml</code> file with this version.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">4</span> : We call the <code>executeGoalOnExternalMavenProject()</code> method.
+                                    The first parameter is the path to the Maven project. Here, the project is on the classpath ("<code>true</code>").
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : We specify the Maven <code>goal</code> to run. In this example, we will call
+                                    the "<em>package</em>" goal so the <code>.jar</code> associated with this project is generated.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">6-7</span> : The parameters to be used 
+                                    to replace placeholders in the project's <code>pom.xml</code> file (the <a href="/documentation#templating_engine">Templating Engine</a> is used
+                                    to do so).
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">9-11</span>: A simple assertion to show that the project has been packaged successfully and that the
+                                    associated <code>.jar</code> file has been successfully generated!
+                                </li>
+                            </ul>
+                        </p>  
+                    </div>    
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Have a look at <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-process-utils-parent/spincast-plugins-process-utils-tests/src/test/java/org/spincast/plugins/processutils/tests/ExternalMavenProjectTest.java?at=feature%2Fswagger-ui">this test</a> 
+                    for a real example of running a goal on an external Maven project.
+                </p>
+                
+                <h4>
+                    <a class="anchor_small" id="jar" href="#jar" title="permanent link"></a>
+                    Running an external executable .jar file
+                </h4>
+	            <p>
+                  The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeJar-java.lang.String-java.util.List-org.spincast.plugins.processutils.JarExecutionHandler-">executeJar(...)</a> 
+                  method allows you to run an external executable <code>.jar</code> file and to keep control over the process.
+                  It starts the target .jar file using <code><em>java -jar yourJar.jar arg1 arg2 arg3 ...</em></code>
+                </p>
+                <p>
+                    Here is the signature of the method:
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" 
+>public void executeJar(String jarFilePath,
+                       List&lt;String&gt; args,
+                       JarExecutionHandler handler)</pre> 
+                            {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : The absolute path to the executable <code>.jar</code>
+                                    file to run, on the file system.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">2</span> : Arguments to be passed to the <code>.jar</code>
+                                    when executing it.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : An <em>handler</em> allowing you to keep control over the
+                                    started process.
+                                </li>
+                            </ul>
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandler.html">JarExecutionHandler</a>
+                    instance you pass to the method allows you to control the process that is going to be started to run the .jar file. 
+                    The default
+                    implementation is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>
+                    and you can, of course, extend it.
+                </p>
+                <p>
+                    The main methods of the handler are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="jar_getJarProcess" href="#jar_getJarProcess" title="permanent link"></a>
+                            <code class="apiItem">Process <span>getJarProcess</span>()</code>
+                            <div class="well">
+                                <p>
+                                    To get direct access to the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html">Process</a>
+                                    started to execute the .jar file.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="jar_onException" href="#jar_onException" title="permanent link"></a>
+                            <code class="apiItem">void <span>onException</span>(Exception ex)</code>
+                            <div class="well">
+                                <p>
+                                    This method is going to be called if an exception occurs during the launch of the
+                                    executable .jar file. The default method, in
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>,
+                                    will catch the exception, will make sure the process is killed properly, 
+                                    and will then rethrow the exception.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="jar_onExit" href="#jar_onExit" title="permanent link"></a>
+                            <code class="apiItem">void <span>onExit</span>(int exitVal)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called when the process exits. If it exits by itself, without any error,
+                                    <code>exitVal</code> will in general be "<code>0</code>". 
+                                </p>
+                                <p>
+                                    Note that if you execute a .jar file that doesn't exit by
+                                    itself (for example an HTTP server is started by the .jar file), you have
+                                    to explicitly <a href="#jar_killJarProcess">kill the process</a>.
+                                </p>
+                                <p>
+                                    The default implementation for this method simply logs the exit value.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="jar_killJarProcess" href="#jar_killJarProcess" title="permanent link"></a>
+                            <code class="apiItem">void <span>killJarProcess</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Kills the .jar process. 
+                                </p>
+                                <p>
+                                    If it is not able to kill it, for any reason, an exception is thrown.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="jar_waitForPortOpen" href="#jar_waitForPortOpen" title="permanent link"></a>
+                            <code class="apiItem">void <span>waitForPortOpen</span>(String host, int port, int nbrTry, int sleepMilliseconds)</code>
+                            <div class="well">
+                                <p>
+                                    This method, provided by <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>,
+                                    allows you to wait for a <code>port</code> to be available. This is useful when the
+                                    executable .jar file starts an HTTP server and you need to wait for it to be ready.
+                                </p> 
+                                <p>
+                                    If the port is still not available after <code>nbrTry * sleepMilliseconds</code>, a
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/exceptions/PortNotOpenException.html">PortNotOpenException</a>
+                                    exception is thrown.
+                                </p> 
+                            </div>
+                        </li>
+                        
+                    </ul>
+                </p>
+                <p> 
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    You can create a custom implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandler.html">JarExecutionHandler</a>
+                    to be used as the handler. This gives you control over how errors and exit codes are dealt with.
+                    Your implementation can extend the default 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>
+                    implementation.
+                </p>
+                <p> 
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    If you need to specify the <em>full path</em> to the <code>java</code> binary to be used to execute the
+                    .jar file ("<em>/usr/bin/java</em>" for example), you can do so using 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeJar-java.lang.String-java.lang.String-java.util.List-org.spincast.plugins.processutils.JarExecutionHandler-">this overload</a>.
+                    Otherwise, "<em>java</em>" is used, as is, and must be on your <code>PATH</code>.
+                </p>
+                <p> 
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Finally, note that if you run an executable .jar file that doesn't exit by itself (for example
+                    it starts an HTTP server that listens forever for requests), <em>you are responsible</em>
+                    to kill the process when you are done with it, by calling <a href="#jar_killJarProcess">killJarProcess()</a>. 
+                    This can be done using a <code>try/finally</code> block:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java" data-ace-hi="16,4,16,28"
+>JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
+
+// Start an executable jar on port 12345
+getSpincastProcessUtils().executeJar("/some/path.jar", 
+                                     Lists.newArrayList("12345")),
+                                     handler);
+try {
+    // Wait for the port 12345 to be open
+    handler.waitForPortOpen("localhost", 12345, 5, 1000);
+
+    // Make a request to the HTTP server started by the .jar file
+    HttpResponse response = getHttpClient().GET("http://localhost:12345").send();
+    assertEquals(HttpStatus.SC_OK, response.getStatus());
+    // ...
+} finally {
+    // Kill the process when we are done with it!
+    handler.killJarProcess();
+}</pre> 
+                            {% endverbatim %}
+                        </p> 
+                    </div> 
+                </p> 
+                
+                
+            </section>
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-process-utils&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtilsPlugin.html">SpincastProcessUtilsPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,47"
+>
+
+Spincast.configure()
+        .plugin(new SpincastProcessUtilsPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

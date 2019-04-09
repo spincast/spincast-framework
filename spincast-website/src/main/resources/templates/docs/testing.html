@@ -853,7 +853,7 @@ Spincast Testing databases
 <section id="testing_databases">
     <h4>
         <a class="anchor_small" href="#testing_databases" title="permanent link"></a>
-        Testings/embedded databases
+        Testing/embedded databases
     </h4>
     
     <p>
@@ -1053,4 +1053,143 @@ public void afterClass() {
     
 </section>
     
+{#==========================================
+Testing a real .jar
+==========================================#}         
+<section id="testing_jar">
+    <h4>
+        <a class="anchor_small" href="#testing_jar" title="permanent link"></a>
+        Testing code inside a .jar file
+    </h4>
     
+    <p>
+        Sometimes, you need to test code <em>exactly as it will be run in production</em>, which means
+        <span class="underline">from within an executable .jar file</span>. Your Spincast application would indeed run from a 
+        standalone Fat Jar when deployed to production... And tests executed from an IDE don't always have the 
+        same behavior than code running from a .jar file.
+    </p>
+    <p>
+        Indeed, if you run your tests from an IDE (or using the command line), all the classpath resources
+        would be located <em>on the file system</em>, as regular files. But, in production, those resources
+        will be embedded in your .jar file. Accessing and using those resources, from the file system
+        or from inside a .jar file, may be very different. So how can you run tests in a way that
+        the code to validate is located inside a .jar file?
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+        The answer is that Spincast provides utilities to extract a <em>test Maven project</em> from the classpath to the file system, 
+        to programmatically run the "<em>package</em>" Maven goal on this extracted project and then to run 
+        the .jar file generated from this process in order to test the code located inside it!
+    </p>
+    <p>
+        In more details:
+        <ol class="normal">
+            <li>
+                You need to install the <a href="/plugins/spincast-process-utils">Spincast Process Utils</a> plugin.
+            </li>
+            <li>
+                You create a Maven project containing the code you want to test from within a .jar file. You save this project
+                in your application's resources folder ("<em>src/main/resources/testMavenProject</em>" for example).
+                Here's <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-process-utils-parent/spincast-plugins-process-utils-tests/src/test/resources/externalMavenProject/">an example</a>
+                of such Maven project.
+            </li>
+            <li>
+                In one of your @Test, you use the "<a href="/plugins/spincast-process-utils#maven_project">Running a goal on an external Maven project</a>"
+                feature provided by the <code>Spincast Process Utils plugin</code> to programmatically <em>package</em> this project:
+		        <div>
+		            <p>
+		                <pre class="ace ace-java" 
+>File extractedProjectDir = 
+    getSpincastProcessUtils()
+        .executeGoalOnExternalMavenProject(new ResourceInfo("/testMavenProject", true),
+                                                            MavenProjectGoal.PACKAGE);</pre>
+		            </p>
+		        </div>  
+		        <p>
+			        This will automatically extract the project from the classpath to the file system and will
+			        generate the <code>.jar</code> containing the code to test! This .jar file will be generated at
+			        "<em>${extractedProjectDir}/target/my-test-project-1.0.0.jar</em>" for example,
+			        depending on the name and version of the project's artifact. 
+		        </p>
+		        <p>
+		            <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+			        Note that the temporary directory where the
+			        project is extracted on the file system is returned by the <code>executeGoalOnExternalMavenProject(...)</code>
+			        method.
+		        </p>
+            </li>
+            <li>
+                You use another feature provided by the <code>Spincast Process Utils plugin</code>, 
+                "<a href="/plugins/spincast-process-utils#jar">Running an external executable .jar file</a>"
+                to execute the generated .jar file. For example:
+                <div>
+                    <p>
+                        <pre class="ace ace-java" data-ace-hi="1,25,1,37"
+>JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
+getSpincastProcessUtils().executeJar(generatedJarFilePath,
+                                     Lists.newArrayList("12345"),
+                                     handler);
+try {
+    // Wait for the HTTP port to be open
+    handler.waitForPortOpen("localhost", 12345, 10, 1000);
+
+    HttpResponse response = getHttpClient().GET("http://localhost:12345/test")
+                                           .send();
+    assertEquals(HttpStatus.SC_OK, response.getStatus());
+} finally {
+    handler.killJarProcess();
+}</pre>
+                    </p>
+                </div> 
+                <p>
+	                In this example, the generated .jar file containing the code we want to test starts an <em>HTTP server</em>
+	                (the test Maven project is, in fact, a standalone Spincast application!)...
+	                We wait for the port this server is started on to be available and we then send a request
+	                to it.
+                </p>
+                <p>
+                   For your @Test to know if the executed code worked successfully or not inside the .jar file, you can 
+                   make the code return a <code>200</code> status code, for example. You could also return
+                   a <code>JSON</code> object containing more details about the result of the execution.
+                </p>
+            </li>
+            <li>
+                Finally, when your test is done, you kill the .jar process ("<code>handler.killJarProcess()</code>").
+            </li>
+        </ol>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+        If you need to tweak the code of the test project before packaging it, or if you want to specify <em>where</em> 
+        on the file system the project should be extracted, you can:
+        <ul>
+            <li>
+                Extract the project from the classpath to the file system by yourself using
+                <a class="javadoc" href="/public/javadoc/org/spincast/core/utils/SpincastUtils.html#copyClasspathDirToFileSystem-java.lang.String-java.io.File-">SpincastUtils#copyClasspathDirToFileSystem(...)</a>.
+            </li>
+            <li>
+                Tweak the content of the extracted project, as you wish.
+            </li>
+            <li>
+               And <em>then</em> call <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeGoalOnExternalMavenProject-org.spincast.core.utils.ResourceInfo-org.spincast.plugins.processutils.MavenProjectGoal-java.util.Map-">SpincastProcessUtils#executeGoalOnExternalMavenProject(...)</a>
+               to compile/package/install it.
+            </li>
+        </ul>
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+            Note that if you simply need to replace some placeholders
+            in the <code>pom.xml</code> file of the project, the 
+            (<a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeGoalOnExternalMavenProject-org.spincast.core.utils.ResourceInfo-org.spincast.plugins.processutils.MavenProjectGoal-java.util.Map-">executeGoalOnExternalMavenProject(...)</a>
+            method already provides a way of doing it. 
+        </p>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+        Here's 
+        <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-process-utils-parent/spincast-plugins-process-utils-tests/src/test/java/org/spincast/plugins/processutils/tests/ExecuteJarNoAutoExitTest.java">a real test</a>
+        validating code located inside a .jar file.
+    </p>
+    
+</section>
+
+

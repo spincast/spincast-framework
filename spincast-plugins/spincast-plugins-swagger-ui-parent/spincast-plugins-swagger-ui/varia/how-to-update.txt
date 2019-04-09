@@ -1,0 +1,5 @@
+1. Clone latest Swagger UI version: https://github.com/swagger-api/swagger-ui
+2. Copy the "dist" folder from the clones project to "spincast-plugins/spincast-plugins-swagger-ui-parent/spincast-plugins-swagger-ui/src/main/resources/spincast/plugins/swagger-ui"
+3. Make sure those two lines are still in the "index.html" file, since the plugin modifies them!
+    - url: "https://petstore.swagger.io/v2/swagger.json",
+    - layout: "StandaloneLayout"

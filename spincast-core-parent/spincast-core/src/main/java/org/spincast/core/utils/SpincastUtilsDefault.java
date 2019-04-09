@@ -9,10 +9,14 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -67,6 +72,8 @@ public class SpincastUtilsDefault implements SpincastUtils {
     private boolean appRootDirectoryNoJarChecked;
     private final Object appRootDirectoryNoJarLock = new Object();
     private File generatedTempFilesDir;
+    private Map<String, Object> fileSystemsLocks;
+
 
     @Inject
     public SpincastUtilsDefault(SpincastConfig spincastConfig) {
@@ -75,6 +82,30 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
     protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
+    }
+
+    protected Map<String, Object> getFileSystemsLocks() {
+        if (this.fileSystemsLocks == null) {
+            this.fileSystemsLocks = new HashMap<String, Object>();
+        }
+        return this.fileSystemsLocks;
+    }
+
+    protected Object getFileSystemLock(URI jarDirUri) {
+        Objects.requireNonNull(jarDirUri, "The jarDirUri can't be NULL");
+        String key = jarDirUri.toString();
+
+        Object fileSystemLock = getFileSystemsLocks().get(key);
+        if (fileSystemLock == null) {
+            synchronized (this) {
+                fileSystemLock = getFileSystemsLocks().get(key);
+                if (fileSystemLock == null) {
+                    fileSystemLock = new Object();
+                    getFileSystemsLocks().put(key, fileSystemLock);
+                }
+            }
+        }
+        return fileSystemLock;
     }
 
     protected File getGeneratedTempFilesDir() {
@@ -383,6 +414,24 @@ public class SpincastUtilsDefault implements SpincastUtils {
     }
 
     @Override
+    public boolean isClasspathResourceInJar(String resourcePath) {
+        Objects.requireNonNull(resourcePath, "The resourcePath can't be NULL");
+
+        try {
+            URL resource = getClass().getResource(resourcePath);
+            if (resource == null) {
+                throw new RuntimeException("Resource not found on the classpath: " + resourcePath);
+            }
+
+            URI uri = resource.toURI();
+            return uri.toString().toLowerCase().startsWith("jar:");
+
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
     public File getAppJarDirectory() {
 
         if (!this.appJarDirectoryChecked) {
@@ -399,6 +448,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
                         jarPath = URLDecoder.decode(jarPath, "UTF-8");
                         if (jarPath.toLowerCase().endsWith(".jar")) {
+
                             File jarFile = new File(jarPath);
                             if (!jarFile.isFile()) {
                                 throw new RuntimeException("This is supposed to be a file : " + jarFile.getAbsolutePath());
@@ -411,6 +461,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                             // "MIMEParse" is from "spincast-shaded-dependencies".
                             //==========================================
                             String jar2Path = MIMEParse.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+
                             if (jar2Path == null) {
                                 throw new RuntimeException("Unable to get the path of " + MIMEParse.class.getName() + "!");
                             }
@@ -490,20 +541,20 @@ public class SpincastUtilsDefault implements SpincastUtils {
 
             if (isRunningFromExecutableJar()) {
                 logger.error("Unable to get the Spincast version! Make sure you have this plugin " +
-                                  "in your pom.xml (with an up to date version!):\n\n" +
-                                  "<plugin>\n" +
-                                  "    <groupId>org.apache.maven.plugins</groupId>\n" +
-                                  "    <artifactId>maven-jar-plugin</artifactId>\n" +
-                                  "    <version>3.0.2</version>\n" +
-                                  "    <configuration>\n" +
-                                  "        <archive>  \n" +
-                                  "            <manifest>\n" +
-                                  "                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>\n" +
-                                  "                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>\n" +
-                                  "            </manifest>\n" +
-                                  "        </archive>\n" +
-                                  "    </configuration>\n" +
-                                  "</plugin>\n\n");
+                             "in your pom.xml (with an up to date version!):\n\n" +
+                             "<plugin>\n" +
+                             "    <groupId>org.apache.maven.plugins</groupId>\n" +
+                             "    <artifactId>maven-jar-plugin</artifactId>\n" +
+                             "    <version>3.0.2</version>\n" +
+                             "    <configuration>\n" +
+                             "        <archive>  \n" +
+                             "            <manifest>\n" +
+                             "                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>\n" +
+                             "                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>\n" +
+                             "            </manifest>\n" +
+                             "        </archive>\n" +
+                             "    </configuration>\n" +
+                             "</plugin>\n\n");
 
                 return null;
             }
@@ -740,8 +791,163 @@ public class SpincastUtilsDefault implements SpincastUtils {
             classpathPath = "/" + classpathPath;
         }
 
-        InputStream in = this.getClass().getResourceAsStream(classpathPath);
+        InputStream in = getClass().getResourceAsStream(classpathPath);
         return in;
+    }
+
+    @Override
+    public void copyClasspathFileToFileSystem(String classpathFilePath, File fileSystemFile) {
+        try {
+
+            if (classpathFilePath == null) {
+                throw new RuntimeException("The classpathFilePath is null.");
+            }
+            if (fileSystemFile == null) {
+                throw new RuntimeException("The fileSystemFile is null.");
+            }
+
+            File targetParentDir = fileSystemFile.getParentFile();
+            if (!targetParentDir.isDirectory()) {
+                boolean result = targetParentDir.mkdirs();
+                if (!result) {
+                    throw new RuntimeException("Unable to create the parent target directory " +
+                                               targetParentDir.getAbsolutePath());
+                }
+            }
+
+            boolean isInJar = isClasspathResourceInJar(classpathFilePath);
+            if (isInJar) {
+                //==========================================
+                // In a jar
+                //==========================================
+                copyJarFileToFileSystem(classpathFilePath, fileSystemFile);
+            } else {
+                //==========================================
+                // Not in a jar
+                //==========================================
+                InputStream is = getClasspathInputStream(classpathFilePath);
+                try {
+                    if (is == null) {
+                        throw new RuntimeException("Resource not found on the classpath: " + classpathFilePath);
+                    }
+                    FileUtils.copyInputStreamToFile(is, fileSystemFile);
+                } finally {
+                    SpincastStatics.closeQuietly(is);
+                }
+            }
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public void copyClasspathDirToFileSystem(String classpathDirPath, File targetDir) {
+        try {
+
+            if (classpathDirPath == null) {
+                throw new RuntimeException("The classpathDirPath is null.");
+            }
+            if (targetDir == null) {
+                throw new RuntimeException("The fileSystemDir is null.");
+            }
+
+            if (!targetDir.isDirectory()) {
+                boolean result = targetDir.mkdirs();
+                if (!result) {
+                    throw new RuntimeException("Unable to create the parent directory " + targetDir.getAbsolutePath());
+                }
+            } else {
+                FileUtils.cleanDirectory(targetDir);
+            }
+
+            boolean isInJar = isClasspathResourceInJar(classpathDirPath);
+            if (isInJar) {
+                //==========================================
+                // In a jar
+                //==========================================
+                copyJarDirToFileSystem(classpathDirPath, targetDir);
+            } else {
+
+                URL resource = getClass().getResource(classpathDirPath);
+                if (resource == null) {
+                    throw new RuntimeException("Resource not found on the classpath: " + classpathDirPath);
+                }
+
+                File sourceDir = Paths.get(resource.toURI()).toFile();
+                if (!sourceDir.isDirectory()) {
+                    throw new RuntimeException("The classpathDirPath is not a directory: " + sourceDir.getAbsolutePath());
+                } else {
+                    logger.info("Classpath directory to copy: " + sourceDir.getAbsolutePath());
+                }
+
+                FileUtils.copyDirectory(sourceDir, targetDir);
+            }
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    protected void copyJarDirToFileSystem(String jarDirPath, File targetDir) {
+        try {
+
+            if (!jarDirPath.startsWith("/")) {
+                jarDirPath = "/" + jarDirPath;
+            }
+            URL resource = getClass().getResource(jarDirPath);
+            if (resource == null) {
+                throw new RuntimeException("Resource not found on the classpath: " + jarDirPath);
+            }
+
+            URI jarDirUri = getClass().getResource(jarDirPath).toURI();
+
+            //==========================================
+            // Get a lock so the same FileSystem is only
+            // open once at the time.
+            //==========================================
+            Object fileSystemLock = getFileSystemLock(jarDirUri);
+
+            //==========================================
+            // Copy the directory
+            //==========================================
+            synchronized (fileSystemLock) {
+                try (FileSystem jarFs = FileSystems.newFileSystem(jarDirUri, new HashMap<>())) {
+                    Path path = jarFs.getPath(jarDirPath);
+
+                    if (path == null || !Files.exists(path)) {
+                        throw new RuntimeException("Resource not found on the classpath: " + jarDirPath);
+                    }
+                    try (Stream<Path> pathsStream = Files.walk(path)) {
+                        Path[] paths = pathsStream.toArray(Path[]::new);
+                        for (Path elPath : paths) {
+                            String relativePath = elPath.toString().substring(jarDirPath.length());
+                            Path targetPath = Paths.get(targetDir.getAbsolutePath(), relativePath);
+                            Files.copy(elPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    protected void copyJarFileToFileSystem(String jarDirPath, File targetFile) {
+        try {
+
+            if (!jarDirPath.startsWith("/")) {
+                jarDirPath = "/" + jarDirPath;
+            }
+
+            InputStream inputStream = getClass().getResourceAsStream(jarDirPath);
+            if (inputStream == null) {
+                throw new RuntimeException("Resource not found on the classpath: " + jarDirPath);
+            }
+            FileUtils.copyInputStreamToFile(inputStream, targetFile);
+
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
     }
 
     @Override

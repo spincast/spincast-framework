@@ -532,6 +532,7 @@ Spincast Utilities
         <ul class="apiList">
 
             <li>
+                <a class="anchor_small" id="utils_zipDirectory" href="#utils_zipDirectory" title="permanent link"></a>
                 <code class="apiItem">void <span>zipDirectory</span>(File directoryToZip, File targetZipFile, boolean includeDirItself)</code>
                 <div class="well">
                      Zips a directory.
@@ -547,6 +548,7 @@ Spincast Utilities
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_zipExtract" href="#utils_zipExtract" title="permanent link"></a>
                 <code class="apiItem">void <span>zipExtract</span>(File zipFile, File targetDir)</code>
                 <div class="well">
                      Extracts a .zip file to the specified directory.
@@ -560,7 +562,8 @@ Spincast Utilities
             </li>
             
             <li>
-                <code class="apiItem">String <span>getMimeTypeFromMultipleSources</span>(String responseContentTypeHeader,                                                  String resourcePath,                                                  String requestPath)</code>
+                <a class="anchor_small" id="utils_getMimeTypeFromMultipleSources" href="#utils_getMimeTypeFromMultipleSources" title="permanent link"></a>
+                <code class="apiItem">String <span>getMimeTypeFromMultipleSources</span>(String responseContentTypeHeader, String resourcePath, String requestPath)</code>
                 <div class="well">
                      Gets the <code>mime type</code> using multiple sources of information.
             
@@ -577,114 +580,114 @@ Spincast Utilities
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_getMimeTypeFromPath" href="#utils_getMimeTypeFromPath" title="permanent link"></a>
                 <code class="apiItem">String <span>getMimeTypeFromPath</span>(String path)</code>
                 <div class="well">
                      Gets the <code>mime type</code> from a path, using its extension.
             
                     <div class="apiItemFooter">
                         @return the <code>mime type</code> or <code>null</code> if it can't be
-             decided.
-            
+                        decided.
                     </div>
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_getMimeTypeFromExtension" href="#utils_getMimeTypeFromExtension" title="permanent link"></a>
                 <code class="apiItem">String <span>getMimeTypeFromExtension</span>(String extension)</code>
                 <div class="well">
                      Gets the <code>mime type</code> from the extension.
             
                     <div class="apiItemFooter">
                         @return the <code>mime type</code> or <code>null</code> if it can't be
-             decided.
-            
+                        decided.
                     </div>
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_getLocaleBestMatchFromAcceptLanguageHeader" href="#utils_getLocaleBestMatchFromAcceptLanguageHeader" title="permanent link"></a>
                 <code class="apiItem">Locale <span>getLocaleBestMatchFromAcceptLanguageHeader</span>(String acceptLanguageHeader)</code>
                 <div class="well">
                      Gets the best Locale to use given a "Accept-Language" HTTP header.
             
                     <div class="apiItemFooter">
                         @return the best Locale to use or <code>null</code>
-             if the given header can't be parsed.
-            
+                        if the given header can't be parsed.
                     </div>
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_isContentTypeToSkipGziping" href="#utils_isContentTypeToSkipGziping" title="permanent link"></a>
                 <code class="apiItem">boolean <span>isContentTypeToSkipGziping</span>(String contentType)</code>
                 <div class="well">
                      Should the specified <code>Content-Type</code> be gzipped?
-            
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_getAppJarDirectory" href="#utils_getAppJarDirectory" title="permanent link"></a>
                 <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
                 <div class="well">
                      Returns the working directory: the directory
-             in which the executable .jar is located.
-            
+                     in which the executable .jar is located.
                     <div class="apiItemFooter">
                         @return the working directory or <code>null</code> if the application is
-             running inside an IDE.
-            
+                        running inside an IDE.
                     </div>
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_getSpincastCurrentVersion" href="#utils_getSpincastCurrentVersion" title="permanent link"></a>
                 <code class="apiItem">String <span>getSpincastCurrentVersion</span>()</code>
                 <div class="well">
                      Gets the current Spincast version.
-            
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_getCacheBusterCode" href="#utils_getCacheBusterCode" title="permanent link"></a>
                 <code class="apiItem">String <span>getCacheBusterCode</span>()</code>
                 <div class="well">
                      The cache buster to use.
-             <p>
-             This should probably change each time
-             the application is restarted or at least redeployed.
-             </p>
-             <p>
-             It should also be in such a format that it's possible to
-             remove it from a given text.
-             </p>
-             <p>
-             This must be kept in sync with
-             <code>removeCacheBusterCode</code>!
-             </p>
-            
+		             <p>
+		             This should probably change each time
+		             the application is restarted or at least redeployed.
+		             </p>
+		             <p>
+		             It should also be in such a format that it's possible to
+		             remove it from a given text.
+		             </p>
+		             <p>
+		             This must be kept in sync with
+		             <code>removeCacheBusterCode</code>!
+		             </p>
                 </div>
             </li>
             
             <li>
+                <a class="anchor_small" id="utils_removeCacheBusterCodes" href="#utils_removeCacheBusterCodes" title="permanent link"></a>
                 <code class="apiItem">String <span>removeCacheBusterCodes</span>(String text)</code>
                 <div class="well">
                      Removes the cache buster code occurences from the
-             given text.
-             <p>
-             Note that this won't simply remove the <em>current</em>
-             cache busting code, it will remove <em>any</em> valid cache busting code...
-             This is what we want since we don't want a client sending a request
-             containing an old cache busting code to break!
-             </p>
-             <p>
-             This must be kept in sync with
-             <code>getCacheBusterCode</code>!
-             </p>
-            
+		             given text.
+		             <p>
+			             Note that this won't simply remove the <em>current</em>
+			             cache busting code, it will remove <em>any</em> valid cache busting code...
+			             This is what we want since we don't want a client sending a request
+			             containing an old cache busting code to break!
+			             </p>
+			             <p>
+			             This must be kept in sync with
+			             <code>getCacheBusterCode</code>!
+		             </p>
                 </div>
             </li> 
             
             <li>
+                <a class="anchor_small" id="utils_readClasspathFile" href="#utils_readClasspathFile" title="permanent link"></a>
                 <code class="apiItem">String <span>readClasspathFile</span>(String path)</code>
                 <div class="well">
                     <p>
@@ -704,6 +707,55 @@ Spincast Utilities
                     </p>
                 </div>
             </li> 
+            
+            <li>
+                <a class="anchor_small" id="utils_getClasspathInputStream" href="#utils_getClasspathInputStream" title="permanent link"></a>
+                <code class="apiItem">InputStream <span>getClasspathInputStream</span>(String path)</code>
+                <div class="well">
+                    <p>
+                        Reads a file on the classpath and returns it as an <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html">InputStream</a>.
+                    </p>
+                    <p>
+                        Paths are always considered from the root at the classpath.
+                        You can start the path with a "/" or not, it makes no difference.
+                    </p>
+					<p>
+					    <strong>Important</strong> : the calling code is the one
+					    responsible to close the inputstream!
+                    </p>
+                    <p class="apiItemFooter">
+                        @return the inputstream of the file or <code>null</code>
+                        if the resource is not found.
+                    </p>
+                </div>
+            </li> 
+            
+            <li>
+                <a class="anchor_small" id="utils_copyClasspathFileToFileSystem" href="#utils_copyClasspathFileToFileSystem" title="permanent link"></a>
+                <code class="apiItem">void <span>copyClasspathFileToFileSystem</span>(String classpathFilePath, File targetFile)</code>
+                <div class="well">
+                    <p>
+                        Copy a file from the classpath to the system file.
+                    </p>
+                    <p>
+                        If the target file already exists, it is overwritten.
+                    </p>
+                </div>
+            </li> 
+            
+            <li>
+                <a class="anchor_small" id="utils_copyClasspathDirToFileSystem" href="#utils_copyClasspathDirToFileSystem" title="permanent link"></a>
+                <code class="apiItem">void <span>copyClasspathDirToFileSystem</span>(String classpathDirPath, File targetDir)</code>
+                <div class="well">
+                    <p>
+                        Recursively copy a directory from the classpath to the file system.
+                    </p>
+                    <p>
+                        If the target directory already exists, it is overwritten.
+                    </p>
+                </div>
+            </li> 
+            
         </ul>
     </p> 
 

@@ -258,7 +258,7 @@ public interface RouteBuilder<R extends RequestContext<?>> {
      * Creates and returns the route without adding it to
      * the router.
      *
-     * NOTE : use <code>save(...)</code> instead to save the route
+     * NOTE : use <code>handle(...)</code> instead to save the route
      * to the router at the end of the build process!
      */
     public Route<R> create(Handler<R> mainHandler);
