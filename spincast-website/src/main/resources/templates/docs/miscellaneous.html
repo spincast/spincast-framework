@@ -625,20 +625,7 @@ Spincast Utilities
                      Should the specified <code>Content-Type</code> be gzipped?
                 </div>
             </li>
-            
-            <li>
-                <a class="anchor_small" id="utils_getAppJarDirectory" href="#utils_getAppJarDirectory" title="permanent link"></a>
-                <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
-                <div class="well">
-                     Returns the working directory: the directory
-                     in which the executable .jar is located.
-                    <div class="apiItemFooter">
-                        @return the working directory or <code>null</code> if the application is
-                        running inside an IDE.
-                    </div>
-                </div>
-            </li>
-            
+
             <li>
                 <a class="anchor_small" id="utils_getSpincastCurrentVersion" href="#utils_getSpincastCurrentVersion" title="permanent link"></a>
                 <code class="apiItem">String <span>getSpincastCurrentVersion</span>()</code>
@@ -755,6 +742,63 @@ Spincast Utilities
                     </p>
                 </div>
             </li> 
+            
+            <li>
+                <a class="anchor_small" id="utils_isRunningFromExecutableJar" href="#utils_isRunningFromExecutableJar" title="permanent link"></a>
+                <code class="apiItem">boolean <span>isRunningFromExecutableJar</span>()</code>
+                <div class="well">
+                    <p>
+                        Return <code>true</code> if the application is currently running from an
+                        executable Fat Jar. Returns <code>false</code> otherwise, for example when the
+                        application is started from an IDE.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="utils_getAppJarDirectory" href="#utils_getAppJarDirectory" title="permanent link"></a>
+                <code class="apiItem">File <span>getAppJarDirectory</span>()</code>
+                <div class="well">
+                    <p>
+	                    Returns the directory where the executable .jar from which the application is running
+	                    is located.
+                    </p>
+                    <p>
+                        @Returns <code>null</code> if the application is currently not
+                        running  from an executable .jar file (for example if it was started from an IDE).
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="utils_getAppRootDirectoryNoJar" href="#utils_getAppRootDirectoryNoJar" title="permanent link"></a>
+                <code class="apiItem">File <span>getAppRootDirectoryNoJar</span>()</code>
+                <div class="well">
+                    <p>
+                        Returns the root directory where the application is running, when the application
+                        is <em>not</em> running from an executable .jar file.
+                    </p>
+                    <p>
+                        @Returns <code>null</code> if the application is running from
+                        an executable .jar file.
+                    </p>
+                </div>
+            </li>
+ 
+            <li>
+                <a class="anchor_small" id="utils_isClasspathResourceInJar" href="#utils_isClasspathResourceInJar" title="permanent link"></a>
+                <code class="apiItem">boolean <span>isClasspathResourceInJar</span>(String resourcePath)</code>
+                <div class="well">
+                    <p>
+                        Return <code>true</code> if the classpath resource at the specified path
+                        is located inside a .jar file. If it is located on the file system, <code>false</code> is
+                        returned.
+                    </p>
+                    <p>
+                        Throws an exception if the resource is not found.
+                    </p>
+                </div>
+            </li>
             
         </ul>
     </p> 

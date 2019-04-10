@@ -51,7 +51,7 @@ public class SpincastUtilsTest extends NoAppTestingBase {
     private File testMavenProjectDir;
 
     protected String getSpincastVersionToUse() {
-        return "1.3.1-SNAPSHOT";
+        return "1.4.0";
     }
 
     protected void packageTestmavenProject() {

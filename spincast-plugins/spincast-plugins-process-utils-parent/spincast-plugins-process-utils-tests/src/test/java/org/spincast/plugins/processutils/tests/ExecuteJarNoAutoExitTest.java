@@ -74,9 +74,8 @@ public class ExecuteJarNoAutoExitTest extends NoAppTestingBase {
     }
 
     protected String getSpincastVersionToUse() {
-        return "1.3.1-SNAPSHOT";
+        return "1.4.0";
     }
-
 
     protected File getMavenProjectJarFile() {
         File jarFile = new File(getMavenProjectDir(), "target/spincast-test-" + getSpincastVersionToUse() + ".jar");

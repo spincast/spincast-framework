@@ -44,7 +44,7 @@ public class ExternalMavenProjectTest extends NoAppTestingBase {
     }
 
     protected String getSpincastVersionToUse() {
-        return "1.3.1-SNAPSHOT";
+        return "1.4.0";
     }
 
     @Test

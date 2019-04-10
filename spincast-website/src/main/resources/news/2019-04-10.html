@@ -1,0 +1,94 @@
+
+<p>
+    <a href="https://spring.io">Spring Framework</a> / <a href="https://spring.io/projects/spring-boot">Spring Boot</a> is by far 
+    the most popular Java framework. If you are looking for a framework with a very large community
+    and for which paid support is available, look no further, you will not find anything better! 
+    We used Spring <em>a lot</em> before starting Spincast.
+</p>
+<p>
+    The problem we had with Spring, is that we found ourself asking those questions too often:
+    <ul>
+        <li>
+            "<em>How can I modify that default behavior?</em>"
+        </li>
+        <li>
+            "<em>How do I configure this component?</em>"
+        </li>
+        <li>
+            "<em>How can this work since I didn't even configure it?</em>"
+        </li>
+        <li>
+            "<em>What does this annotation actually do? Can I tweak its behavior?</em>"
+        </li>
+    </ul>
+</p>
+<p>
+    <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/para.png" />
+    Our experience with Spring Framework is that it tends to be a little bit too
+    <em>magical</em>, it tends to hide implementation details too much 
+    so your application is harder to configure and tweak. In the name of "<em>Defaults that are good enough 80% of the time</em>", 
+    Spring sometimes seems to favor <em>simplicity</em> over <em>providing full control</em>.
+</p>
+<p>
+    <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/tipy.png" />
+    Any real-world application <em>will</em> be part of that
+    20% requiring a lot of manual tweaking, so why not base it on a framework that favors
+    flexibility and control from the ground up?
+</p>
+<p>
+    Yes, it is very easy to start a new Spring Boot application using their
+    pretty <a href="https://start.spring.io/">Initializr</a>! But as long as you
+    have developed at least one real application in your life, you know that this kind of
+    simple bootstrapping is smoke and mirrors: you <em>will</em> have to
+    modify/change/replace components at some points or another. You <em>will</em>
+    have to manually control what is actually happening behind the scene.
+</p>
+<p>
+    Also, Spring relies a lot on annotations: that contributes to the
+    "easy to use" aura. But, as <a href="{{appUrlPrefix}}/about#annotations">we explain here</a>, we are
+    not big fans of annotations.
+</p>
+<p>
+    <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/para.png" />
+    In the other hand, the very first goal of Spincast is to make modifying anything a <em>borderline trivial task</em>. If 
+    you find something that is not easily modifiable and should be, it will be considered as <em>a bug</em> and 
+    will be fixed. 
+</p>
+<p>
+    Here is how you tweak almost <em>anything</em> in a Spincast application:
+    
+    <ol class="normal">
+        <li>
+            You identify the class containing the code you want to tweak and the interfaces this
+            class is bound to in the Guice context.
+        </li>
+        <li>
+            You extend this class to override/tweak/add anything you need. There are
+            <a href="{{appUrlPrefix}}/about#private_methods">no private methods</a> so sky is the limit here.
+        </li>
+        <li>
+            In your application's Guice module, you bind your custom implementation.
+        </li>
+        <li>
+            Done. No magic. No components hard to extend.
+        </li>
+    </ol>
+</p>
+<p>
+    <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/tipy.png" />
+    Even Spincast's <em>core components</em> can be modified using those simple steps.
+</p>
+<p>
+    <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/para.png" />
+    In other words, we would say that the main difference between Spring and Spincast
+    is that Spincast favors long term flexibility and control from the ground up, while Spring
+    seems more preoccupied with providing something that is easy to start with.
+</p>
+<p>
+    <hr />
+</p>
+<p>
+    <em>(this news is taken from the <a href="{{appUrlPrefix}}/about#spring">About</a> section of the site)</em>
+</p>
+
+
