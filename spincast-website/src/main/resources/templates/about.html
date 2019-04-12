@@ -49,6 +49,7 @@
                         <li><a href="#dependency_injection">Dependency injection</a></li>
                         <li><a href="#configuration_over_convention">Configuration over convention</a></li>
                         <li><a href="#annotations">Plain Java code over annotations</a></li>
+                        <li><a href="#orm">No ORM</a></li>
                         <li><a href="#not_asynchronous">Not asynchronous</a></li>
                         <li><a href="#private_methods">No private methods</a></li>
                     </ul>
@@ -333,7 +334,35 @@
                         it is purely based
                         on Java code, not on annotations such as <a href="http://hibernate.org/validator/">Hibernate validator</a>.
                     </p> 
- 
+                </div>
+                
+                {#==========================================
+                The choices we made / Not fans of ORMs
+                ==========================================#}
+                <div id="orm">
+                    <h4><a class="anchor_small" href="#orm" title="permanent link"></a> No ORM</h4>
+                    <p>
+                        We are definitively not fans of ORMs such as JPA/Hibernate. Our experience is that an ORM 
+                        may seem easy to use with a simple CRUD application, but as soon as you deal with a real-world application, 
+                        you discover its ugly hidden complexity...
+                    </p>
+                    <p>
+                        We suggest you carefully read <a href="https://www.apress.com/gp/book/9781430219569">Pro JPA 2</a>
+                        to get an idea of the details you need to know to deal with JPA properly! It is not trivial. There
+                        are <em>a lot</em> of edge cases.
+                    </p>
+                    <p>
+                        Plain SQL is what we suggest, with the help of <a href="/documentation#jdbc">JDBC utilities</a>. We are not
+                        saying plain SQL is always easy, but at least you keep <em>full</em> control over what is going on.
+                    </p>
+                    <p>
+                        For those reasons, you will probably never see an official Spincast JPA/Hibernate plugin.
+                        The community may create one and we will link to it, but we will not support it.
+                    </p>
+                    <p>
+                        We may consider developing official plugins for sane solutions such as <a href="https://www.jooq.org">JOOQ</a> or
+                        <a href="http://www.mybatis.org/mybatis-3/">MyBatis</a> at one point, though.
+                    </p>
                 </div>
 
                 {#==========================================

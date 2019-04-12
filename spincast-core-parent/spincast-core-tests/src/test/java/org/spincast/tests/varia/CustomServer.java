@@ -11,6 +11,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.controllers.FrontController;
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.routing.ResourceToPush;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.Server;
@@ -263,6 +264,10 @@ public class CustomServer implements Server {
     @Override
     public String getIp(Object exchange) {
         return "127.0.0.1";
+    }
+
+    @Override
+    public void push(Object exchange, Set<ResourceToPush> resourcesToPush) {
     }
 
 }

@@ -8,6 +8,7 @@ import java.util.TimeZone;
 import org.spincast.core.dictionary.DictionaryEntryNotFoundBehavior;
 import org.spincast.core.request.Form;
 import org.spincast.core.routing.StaticResourceCacheConfig;
+import org.spincast.core.server.Server;
 
 /**
  * The configurations required by Spincast.
@@ -186,6 +187,16 @@ public interface SpincastConfig {
      * @return the maximum number of bytes
      */
     public long getServerMaxRequestBodyBytes();
+
+    /**
+     * Should <code>HTTP/2</code> be enabled on the
+     * embedded {@link Server}, if its supports it?
+     * Note that Undertow, the default server provided with
+     * Spincast, does support it.
+     * <p>
+     * Defaults to <code>true</code>.
+     */
+    public boolean isEnableHttp2();
 
     /**
      * Even if gziping of the response is enabled, those Content-Types

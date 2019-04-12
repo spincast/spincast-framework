@@ -38,6 +38,7 @@ import org.spincast.core.cookies.Cookie;
 import org.spincast.core.cookies.CookieFactory;
 import org.spincast.core.cookies.CookieSameSite;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.routing.ResourceToPush;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.Server;
@@ -71,7 +72,9 @@ import io.undertow.security.handlers.SecurityInitialHandler;
 import io.undertow.security.impl.BasicAuthenticationMechanism;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.ServerConnection;
 import io.undertow.server.handlers.CookieImpl;
+import io.undertow.server.handlers.LearningPushHandler;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.ResponseCodeHandler;
 import io.undertow.server.handlers.form.FormData;
@@ -87,7 +90,8 @@ import io.undertow.util.HeaderValues;
 import io.undertow.util.HttpString;
 
 /**
- * Server implementation for Undertow.
+ * {@link Server} implementation using
+ * <a href="http://undertow.io">Undertow</a>.
  */
 public class SpincastUndertowServer implements Server {
 
@@ -132,6 +136,7 @@ public class SpincastUndertowServer implements Server {
     private PathHandler staticResourcesPathHandler;
     private PathHandler httpAuthenticationHandler;
     private CacheBusterRemovalHandler cacheBusterRemovalHandler;
+    private LearningPushHandler learningPushHandler;
 
     private FormParserFactory formParserFactory;
 
@@ -306,7 +311,7 @@ public class SpincastUndertowServer implements Server {
 
                 if ((ex instanceof BindException) || (ex.getCause() != null && ex.getCause() instanceof BindException)) {
                     logger.warn("BindException while trying to start the server. Try " + i + " of " + serverStartTryNbr +
-                                     "...");
+                                "...");
 
                     if (i < serverStartTryNbr) {
                         try {
@@ -323,11 +328,11 @@ public class SpincastUndertowServer implements Server {
 
         if (getConfig().getHttpServerPort() > 0) {
             logger.info("HTTP server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
-                             getConfig().getHttpServerPort());
+                        getConfig().getHttpServerPort());
         }
         if (getConfig().getHttpsServerPort() > 0) {
             logger.info("HTTPS server started on host/ip \"" + getConfig().getServerHost() + "\", port " +
-                             getConfig().getHttpsServerPort());
+                        getConfig().getHttpsServerPort());
         }
     }
 
@@ -389,8 +394,21 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected Builder addBuilderOptions(Builder builder) {
-        builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, getConfig().getServerMaxRequestBodyBytes());
+        addMaxEntitySize(builder);
+        enableHttp2(builder);
         return builder;
+    }
+
+    protected void addMaxEntitySize(Builder builder) {
+        builder.setServerOption(UndertowOptions.MAX_ENTITY_SIZE, getConfig().getServerMaxRequestBodyBytes());
+    }
+
+    protected void enableHttp2(Builder builder) {
+
+        if (!getConfig().isEnableHttp2()) {
+            return;
+        }
+        builder.setServerOption(UndertowOptions.ENABLE_HTTP2, true);
     }
 
     /**
@@ -421,7 +439,26 @@ public class SpincastUndertowServer implements Server {
     }
 
     protected HttpHandler getHttpAuthHandlerNextHandler() {
-        return getStaticResourcesPathHandler();
+
+        //==========================================
+        // Is LearningPushHandler enabled?
+        //==========================================
+        if (getSpincastUndertowConfig().isEnableLearningPushHandler()) {
+            return getLearningPushHandler();
+        } else {
+            return getStaticResourcesPathHandler();
+        }
+    }
+
+    protected HttpHandler getLearningPushHandler() {
+        if (this.learningPushHandler == null) {
+            this.learningPushHandler = createLearningPushHandler();
+        }
+        return this.learningPushHandler;
+    }
+
+    protected LearningPushHandler createLearningPushHandler() {
+        return new LearningPushHandler(getStaticResourcesPathHandler());
     }
 
     @Override
@@ -564,14 +601,14 @@ public class SpincastUndertowServer implements Server {
         Set<String> unclosedEndpoints = new HashSet<String>(getWebsocketEndpointsMap().keySet());
 
         logger.debug("We wait for those endpoints to be finished closing : " +
-                          Arrays.toString(unclosedEndpoints.toArray()));
+                     Arrays.toString(unclosedEndpoints.toArray()));
 
         for (WebsocketEndpoint websocketEndpoint : websocketEndpoints) {
             try {
                 websocketEndpoint.closeEndpoint(true);
             } catch (Exception ex) {
                 logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
-                                 ex.getMessage());
+                            ex.getMessage());
             }
         }
 
@@ -593,7 +630,7 @@ public class SpincastUndertowServer implements Server {
                         if (unclosedEndpoints.contains(websocketEndpoint.getEndpointId()) &&
                             websocketEndpoint.isClosed()) {
                             logger.debug("Endpoint '" + websocketEndpoint.getEndpointId() +
-                                              "' finished closing!");
+                                         "' finished closing!");
                             unclosedEndpoints.remove(websocketEndpoint.getEndpointId());
                             if (unclosedEndpoints.size() == 0) {
                                 logger.debug("All endpoints finished closing!");
@@ -602,7 +639,7 @@ public class SpincastUndertowServer implements Server {
                         }
                     } catch (Exception ex) {
                         logger.warn("Error closing Websocket '" + websocketEndpoint.getEndpointId() + "': " +
-                                         ex.getMessage());
+                                    ex.getMessage());
                     }
                 }
             } catch (Exception ex) {
@@ -610,7 +647,7 @@ public class SpincastUndertowServer implements Server {
             }
 
             logger.debug("Some endpoints are not finished closing. Remaining : " +
-                              Arrays.toString(unclosedEndpoints.toArray()));
+                         Arrays.toString(unclosedEndpoints.toArray()));
 
             try {
                 Thread.sleep(incrementsMilliseconds);
@@ -620,8 +657,8 @@ public class SpincastUndertowServer implements Server {
 
             if (millisecondsWaited >= millisecondsToWait) {
                 logger.debug("Some endpoints are still not finished closing, even after waiting for " +
-                                  millisecondsWaited + " milliseconds. We'll stop the server as is. Remaining : " +
-                                  Arrays.toString(unclosedEndpoints.toArray()));
+                             millisecondsWaited + " milliseconds. We'll stop the server as is. Remaining : " +
+                             Arrays.toString(unclosedEndpoints.toArray()));
             }
         }
     }
@@ -662,7 +699,7 @@ public class SpincastUndertowServer implements Server {
             }
 
             //==========================================
-            // If the resource can be generated and is not found 
+            // If the resource can be generated and is not found
             // we call the framework instead of returning 404.
             //==========================================
             HttpHandler next = staticResource.isCanBeGenerated() ? getSpincastFrontControllerHandler()
@@ -722,7 +759,7 @@ public class SpincastUndertowServer implements Server {
             }
 
             //==========================================
-            // If the resource can be generated and is not found 
+            // If the resource can be generated and is not found
             // we call the framework instead of returning 404.
             //==========================================
             HttpHandler next = staticResource.isCanBeGenerated() ? getSpincastFrontControllerHandler()
@@ -876,9 +913,9 @@ public class SpincastUndertowServer implements Server {
             }
 
             //==========================================
-            // Cache buster are removed by the CacheBusterRemovalHandler. 
+            // Cache buster are removed by the CacheBusterRemovalHandler.
             // To return the original URL, potentially containing cache
-            // busters, we should call 
+            // busters, we should call
             // CacheBusterRemovalHandler#getOrigninalRequestUrlWithPotentialCacheBusters(...)
             //==========================================
             if (keepCacheBusters) {
@@ -1462,7 +1499,7 @@ public class SpincastUndertowServer implements Server {
             }
 
             //==========================================
-            // This will close the endpoint and call the 
+            // This will close the endpoint and call the
             // "onEndpointClosed" event for which we have
             // a listener: it's this listener that will remove the
             // endpoint from the local Map.
@@ -1527,4 +1564,95 @@ public class SpincastUndertowServer implements Server {
         return new StringTokenizer(exchange.getSourceAddress().getAddress().toString(), "/").nextToken().trim();
     }
 
+    public HttpString convertHttpMethodToUndertowHttpString(HttpMethod httpMethod) {
+        return new HttpString(httpMethod.name());
+    }
+
+    public HeaderMap convertHeadersToUndertowHeaderMap(Map<String, List<String>> headers) {
+
+        HeaderMap headerMap = new HeaderMap();
+
+        if (headers != null) {
+            for (Entry<String, List<String>> entry : headers.entrySet()) {
+                headerMap.addAll(new HttpString(entry.getKey()), entry.getValue());
+            }
+        }
+
+        return headerMap;
+    }
+
+    @Override
+    public void push(Object exchangeObj, Set<ResourceToPush> resourcesToPush) {
+
+        if (resourcesToPush == null || resourcesToPush.size() == 0) {
+            return;
+        }
+
+        HttpServerExchange exchange = ((HttpServerExchange)exchangeObj);
+
+        ServerConnection connection = exchange.getConnection();
+
+        for (ResourceToPush resourceToPush : resourcesToPush) {
+
+            if (isPushSupported(connection)) {
+                pushResource(connection,
+                             resourceToPush.getPath(),
+                             convertHttpMethodToUndertowHttpString(resourceToPush.getHttpMethod()),
+                             convertHeadersToUndertowHeaderMap(resourceToPush.getRequestHeaders()));
+            } else {
+                sendPushHeaders(exchange, resourceToPush);
+            }
+        }
+    }
+
+    protected boolean isPushSupported(ServerConnection connection) {
+        return getConfig().isEnableHttp2() && connection.isPushSupported();
+    }
+
+    protected void pushResource(ServerConnection connection, String path, HttpString httpMethod, HeaderMap headerMap) {
+        connection.pushResource(path, httpMethod, headerMap);
+    }
+
+    /**
+     * In case the server is behind a reverse-proxy such as Nginx:
+     * it is this proxy that will do the actual push of the resource. We
+     * tell it to do so using special response headers.
+     *
+     * @see https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/#automatic-push
+     * @see https://httpd.apache.org/docs/2.4/howto/http2.html#push
+     * @see https://w3c.github.io/preload/#server-push-http-2
+     */
+    protected void sendPushHeaders(HttpServerExchange exchange, ResourceToPush resourceToPush) {
+
+        StringBuilder linkHeaderBuilder = new StringBuilder();
+        linkHeaderBuilder.append("<" + resourceToPush.getPath() + ">;");
+
+        //==========================================
+        // The "as" attribute.
+        // https://www.w3.org/TR/preload/#as-attribute
+        //==========================================
+        String path = resourceToPush.getPath();
+        int pos = path.indexOf("?");
+        String pathNoQueryString = pos > -1 ? path.substring(0, pos) : path;
+
+        String mimeType = getSpincastUtils().getMimeTypeFromPath(pathNoQueryString);
+        if (mimeType != null) {
+            if (mimeType.startsWith("image/")) {
+                linkHeaderBuilder.append(" as=image;");
+            } else if (mimeType.startsWith("video/")) {
+                linkHeaderBuilder.append(" as=video;");
+            } else if (mimeType.startsWith("audio")) {
+                linkHeaderBuilder.append(" as=audio;");
+            } else if (mimeType.equals("application/javascript")) {
+                linkHeaderBuilder.append(" as=script;");
+            } else if (mimeType.equals("text/css")) {
+                linkHeaderBuilder.append(" as=style;");
+            }
+        }
+        linkHeaderBuilder.append(" rel=preload");
+
+        exchange.getResponseHeaders().add(new HttpString(HttpHeaders.LINK), linkHeaderBuilder.toString());
+    }
+
 }
+

@@ -18,7 +18,7 @@ import com.google.inject.Inject;
 
 /**
  * If you extend this class (which is recommended to implement your
- * configuration), beware that causing circular dependencies is very 
+ * configuration), beware that causing circular dependencies is very
  * easy if you inject more dependencies than SpincastConfigPluginConfig!
  * Indeed, most components depend on the config components.
  * <p>
@@ -195,6 +195,11 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
     }
 
     @Override
+    public boolean isEnableHttp2() {
+        return true;
+    }
+
+    @Override
     public List<String> getContentTypesToSkipGziping() {
 
         List<String> prefixes = new ArrayList<String>();
@@ -285,7 +290,7 @@ public class SpincastConfigDefault extends ConfigFinder implements SpincastConfi
      * The path to the writable directory.
      * <p>
      * The path can be relative or absolute.
-     * 
+     *
      * @return the path or <code>null</code> to use the
      * default location (using the "java.io.tmpdir" folder).
      */

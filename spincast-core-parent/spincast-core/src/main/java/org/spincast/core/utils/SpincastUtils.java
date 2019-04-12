@@ -121,7 +121,7 @@ public interface SpincastUtils {
     public String getSpincastCurrentVersion();
 
     /**
-     * The cache buster to use.
+     * The current cache buster to use.
      * <p>
      * This should probably change each time
      * the application is restarted or at least redeployed.

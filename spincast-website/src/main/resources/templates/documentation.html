@@ -192,6 +192,14 @@
                     </ul>
                 </li>
                 <li class="openable">
+                    <a href="#http2">HTTP/2</a>
+                    <ul class="nav nav-stacked">
+                        <li><a href="#http2_support">Support in Spincast</a></li>
+                        <li><a href="#http2_push">Server push</a></li>
+                        <li><a href="#http2_nginx">Nginx as a reverse proxy</a></li>
+                    </ul>
+                </li>
+                <li class="openable">
                     <a href="#websockets">WebSockets</a>
                     <ul class="nav nav-stacked">
                         <li><a href="#websockets_quick_example">Quick Example</a></li>
@@ -313,6 +321,11 @@
             Section "HTTP Caching"
             ==========================================#}
             {% include "./docs/httpCaching.html" %}
+
+            {#==========================================
+            Section "HTTP/2"
+            ==========================================#}
+            {% include "./docs/http2.html" %}
 
             {#==========================================
             Section "WebsSockets"

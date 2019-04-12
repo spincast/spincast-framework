@@ -33,6 +33,7 @@
             <groupId>org.spincast</groupId>
             <artifactId>spincast-plugins-undertow</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         
         <!--=================================== 

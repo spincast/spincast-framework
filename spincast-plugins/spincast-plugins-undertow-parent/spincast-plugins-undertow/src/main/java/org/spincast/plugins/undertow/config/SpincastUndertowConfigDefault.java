@@ -70,4 +70,9 @@ public class SpincastUndertowConfigDefault implements SpincastUndertowConfig {
         return "UTF-8";
     }
 
+    @Override
+    public boolean isEnableLearningPushHandler() {
+        return false;
+    }
+
 }

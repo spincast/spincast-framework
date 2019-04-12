@@ -165,8 +165,14 @@
         {
             "id" : "29",
             "date" : "2019-04-10T10:00:00Z",
-            "title" : "What about Spring Framework? ",
+            "title" : "What about Spring Framework?",
             "path" : "/news/2019-04-10.html"
+        },
+        {
+            "id" : "30",
+            "date" : "2019-04-12T23:00:00Z",
+            "title" : "HTTP/2 official support",
+            "path" : "/news/2019-04-12.html"
         }
           
 		

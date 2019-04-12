@@ -1,0 +1,242 @@
+{#==========================================
+Docs : "HTTP/2"
+==========================================#}
+
+<section id="http2">
+    <h3>
+        <a class="anchor" href="#http2" title="permanent link"></a>
+        HTTP/2
+    </h3>
+    
+    <p>
+        Spincast supports <a href="https://en.wikipedia.org/wiki/HTTP/2">HTTP/2</a> in two ways:
+        <ul>
+            <li>
+                <em>Natively</em> - the embedded server (for example the default <a href="http://undertow.io/">Undertow</a> server)
+                manages the HTTP/2 connections by itself.
+            </li>
+            <li>
+                <em>Behind a reverse proxy</em> - the Spincast application is behind a reverse proxy such 
+                as <a href="https://www.nginx.com">Nginx</a> or <a href="https://httpd.apache.org/">Apache</a>
+                which manages HTTP/2 requests before they even hit Spincast.
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        As you will learn in the next section, you can use <a href="#http2_push">server push</a> in both situations!
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        HTTP/2 is now enabled by default in Spincast (since version <code>1.5.0</code>). If you want
+        to <em>disable it</em>, you can set the <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isEnableHttp2--">SpincastConfig#isEnableHttp2</a>
+        configuration to <code>false</code>.
+    </p>
+    <p>
+        There is nothing more to do! Enabling HTTP/2 is very easy for an application developer as it is the <em>server</em>
+        that has to deal with all the details. You can validate that your application is actually served using HTTP/2 by 
+        using your browser's dev tools, or by using a browser add-on (<a href="https://edit.co.uk/blog/test-website-supports-http2-0/">information</a>).
+    </p>
+    
+</section>
+
+<section id="http2_push">
+    <h4>
+        <a class="anchor_small" href="#http2_push" id="" title="permanent link"></a>
+        Server Push
+    </h4>
+    <p>
+        <a href="https://en.wikipedia.org/wiki/HTTP/2_Server_Push">Server Push</a> is a feature of HTTP/2 allowing
+        you to send extra resources to the client <em>before</em> they are even requested! It can be used to send resources such
+        as <code>.js</code> or <code>.css</code> that you know will be required.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        You specify the extra resources you want to push during a request by using 
+        the <a class="javadoc" href="/public/javadoc/org/spincast/core/exchange/ResponseRequestContextAddon.html#push-org.spincast.core.routing.HttpMethod-java.lang.String-java.util.Map-">push(...)</a>
+        method of the <code>response()</code> addon, in your route handler.
+        
+        <div>
+            For example:
+            <p>
+                <pre class="ace ace-java"
+>// Handler for GET "/"
+public void handle(DefaultRequestContext context) {
+    context.response()
+           .push(HttpMethod.GET, 
+                 "/public/main.js", 
+                 SpincastStatics.map(HttpHeaders.ACCEPT_LANGUAGE,
+                                     Lists.newArrayList(ContentTypeDefaults.JSON.getMainVariation())))
+           .sendTemplateHtml("/templates/index.html");
+}</pre> 
+
+            </p>
+            <p>
+                <span class="explanation">Explanation :</span>
+                <ul>
+                    <li>
+                        <span class="code-line-nbr">4</span> : We call the <code>push(...)</code> method on the
+                        <code>response()</code> addon. The resource to push should be requested using a <code>GET</code>
+                        HTTP method.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">5</span> : The absolute path to the resource to push.
+                    </li>
+                    <li>
+                        <span class="code-line-nbr">6-7</span> : The headers to send to request the resource to push.
+                        Those can be <code>null</code>.
+                    </li>
+                </ul>
+            </p>   
+        </div>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        There are a couple of things to know when using the <code>push(...)</code> method:
+        
+        <ul>
+            <li>
+                The path of the resource must be absolute (it must start with "<code>/</code>". Otherwise one will be automatically added).
+            </li>
+            <li>
+                <p>
+	                The path may contain a querystring and may contain a special "<code>${cacheBuster}</code>"
+	                placeholder (see <a href="#http_caching_cache_busting">Cache Busting</a> for more information). The "<code>${cacheBuster}</code>" 
+	                placeholder will be automatically replaced with the current cache buster code of your application.
+                </p>
+                <p>
+                    For example, let's say you have a <code>.css</code> specified like this
+                    in your HTML:
+                    {% verbatim %}
+			        <div>
+			            <p>
+			                <pre class="ace ace-html"
+>
+
+&lt;link rel="stylesheet" href="/public/css/{{spincast.cacheBuster}}main.css?theme=blue"&gt;
+</pre>
+			            </p>  
+			        </div> 
+			        {% endverbatim %}
+			    </p> 
+                <p>
+                    You could specify this <code>.css</code> resource to be pushed using:
+                    <div>
+                        <p>
+                            <pre class="ace ace-java" data-ace-hi="1,37,1,51"
+>context.response().push(HttpMethod.GET, 
+                        "/public/css/${cacheBuster}main.css?theme=blue", 
+                        null)</pre>
+                        </p>  
+                    </div> 
+                </p>
+            </li>
+            <li>
+		        Server push works even if your application is running behind a reverse proxy managing the HTTP/2 connections! 
+		        In that case, Spincast will send some special <code>Link headers</code> to ask the proxy to push the extra resources
+		        (<a href="https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/#automatic-push">read more about this</a>).
+            </li>
+            <li>
+                <p>
+	                The <code>headers</code> you specify will only be used if it is the embedded server 
+	                that actually pushes the resources. If it's a reverse proxy in front of the application
+	                that manages the HTTP/2 connections, those headers won't be used... But Spincast will still 
+	                tell the reverse proxy about the <em>content-type</em> to use by adding a
+	                special "<a href="https://www.w3.org/TR/preload/#as-attribute">AS</a>"
+	                attribute in the <code>Link</code> header sent to the proxy!
+                </p>
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        If you use the default server, Undertow, you can enable an extra feature called <code>LearningPushHandler</code> by setting
+        the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/undertow/config/SpincastUndertowConfig.html#isEnableLearningPushHandler--">SpincastUndertowConfig#isEnableLearningPushHandler()</a>
+        configuration to <code>true</code>. More <a href="http://undertow.io/blog/2015/03/25/Server-Push.html#_the_learning_push_handler">information here</a>.
+        Note that this feature only works when Undertow manages the HTTP/2 connections by itself, not when it is behind
+        a reverse proxy managing HTTP/2.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+        Make sure you read about server pushing before using this feature since it will not always improve
+        performance and may lead to wasted bandwidth (the client may decide to not use the pushed resources)!
+    </p>
+    
+</section>
+
+<section id="http2_nginx">
+    <h4>
+        <a class="anchor_small" href="#http2_nginx" id="" title="permanent link"></a>
+        Nginx as a reverse proxy managing HTTP/2
+    </h4>
+    <p>
+    	Here are some useful information if you plan on running your Spincast application behind Nginx and you
+    	want to enable HTTP/2:
+    	
+    	<ul>
+    	   <li>
+    	       You need a version of Nginx equal or greater than <code>1.9.5</code> (the support for HTTP/2 was
+    	       introduced in that version).
+    	   </li>
+           <li>
+               You need to add "<code><em>http2</em></code>" on your <code>listen</code> rule. For example:
+               {% verbatim %}
+               <div>
+                   <p>
+                       <pre class="ace ace-text"
+>
+
+listen 443 ssl http2;
+</pre>
+                   </p>
+               </div> 
+               {% endverbatim %}
+           </li>
+           <li>
+               If you want to be able to use server push, you also have to add "<code><em>http2_push_preload on;</em></code>"
+               inside the "<code>location</code>" block where your application is configured. For example:
+               {% verbatim %}
+               <div>
+                   <p>
+                       <pre class="ace ace-text"
+>location / {
+    proxy_pass http://localhost:44444;
+    http2_push_preload on;
+    
+    //...</pre>
+                   </p>
+               </div> 
+               {% endverbatim %}
+           </li>
+    	</ul>
+    </p>
+    <p>
+        More information:
+        <ul>
+            <li>
+                <a href="https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/">https://www.nginx.com/blog/nginx-1-13-9-http2-server-push</a>
+            </li>
+        </ul>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" />
+        Finally, note that Nginx currently does not allow HTTP/2 traffic to reach your
+        application! It insists to manage the protocol by itself. That means you don't
+        need (or can) enable HTTP/2 on your embedded server if you are behind an HTTP/2 aware
+        Nginx reverse proxy. Server push will still work though, but the actual push will be done 
+        by Nginx itself!
+    </p>
+    <p>
+        More information:
+        <ul>
+            <li>
+                <a href="https://www.nginx.com/blog/http2-module-nginx/#QandA">https://www.nginx.com/blog/http2-module-nginx/#QandA</a>
+            </li>
+            <li>
+                <a href="https://trac.nginx.org/nginx/ticket/923">https://trac.nginx.org/nginx/ticket/923</a>
+            </li>
+        </ul>
+    </p>
+    
+</section>
+ 

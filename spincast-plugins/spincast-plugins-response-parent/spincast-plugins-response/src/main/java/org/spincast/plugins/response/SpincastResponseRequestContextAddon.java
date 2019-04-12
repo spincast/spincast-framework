@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -37,6 +39,8 @@ import org.spincast.core.response.Alert;
 import org.spincast.core.response.AlertDefault;
 import org.spincast.core.response.AlertLevel;
 import org.spincast.core.routing.ETagFactory;
+import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.routing.ResourceToPush;
 import org.spincast.core.server.Server;
 import org.spincast.core.utils.Bool;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -84,6 +88,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
     private Map<String, List<String>> headers;
     private GzipOption gzipOption = GzipOption.DEFAULT;
     private Map<String, Cookie> cookies;
+    private Set<ResourceToPush> resourcesToPush;
 
     private JsonObject responseModel;
 
@@ -414,7 +419,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                     path = currentUri.getPath();
                 }
                 //==========================================
-                // Relative path? 
+                // Relative path?
                 // We happen it to the current path.
                 //==========================================
                 else if (!newUrl.startsWith("/")) {
@@ -457,7 +462,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
 
     /**
      * Saves a Flash message.
-     * 
+     *
      * Returned a modified version of the final URL to redirect to,
      * if required.
      */
@@ -476,7 +481,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             getRequestContext().response().setCookieSession(getSpincastConfig().getCookieNameFlashMessage(), flashMessageId);
             return url;
 
-        //==========================================@formatter:off 
+        //==========================================@formatter:off
         // We add the id of the flash message to the
         // redirected URL since we don't know if cookies
         // are enabled or not.
@@ -680,8 +685,8 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             contentType = getSpincastUtils().getMimeTypeFromPath(templatePath);
             if (contentType == null) {
                 logger.warn("The Content-Type was not specified and can't be determined from the template path '" +
-                                 templatePath +
-                                 "': 'text/html' will be used");
+                            templatePath +
+                            "': 'text/html' will be used");
                 contentType = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
             }
         }
@@ -1054,7 +1059,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         if (this.isShouldGzip == null) {
 
             //==========================================
-            // Check if there is a gzip 'Accept-Encoding' header 
+            // Check if there is a gzip 'Accept-Encoding' header
             //==========================================
             boolean hasGzipAcceptHeader = false;
             List<String> acceptEncodings = getRequestContext().request().getHeader(HttpHeaders.ACCEPT_ENCODING);
@@ -1125,7 +1130,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             //==========================================
             // If we haven't read the request body yet, the
             // request size may not have been checked. So we
-            // read it now to be able to send a 
+            // read it now to be able to send a
             // "413 - Request entity too large" status if
             // required.
             //==========================================
@@ -1136,6 +1141,13 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
                     resetEverything();
                     setStatusCode(HttpStatus.SC_REQUEST_TOO_LONG);
                 }
+            }
+
+            //==========================================
+            // Are there any extra resources to push (HTTP/2)?
+            //==========================================
+            if (getResourcesToPush().size() > 0) {
+                getServer().push(getExchange(), getResourcesToPush());
             }
 
             ByteArrayOutputStream buffer = getBuffer();
@@ -1235,7 +1247,7 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
             getServer().flushBytes(getExchange(), bytesToFlush, close);
 
         } catch (Exception ex) {
-            logger.error("error with request " + getRequestContext().request().getFullUrl());
+            logger.error("Error with request " + getRequestContext().request().getFullUrl());
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -1471,8 +1483,38 @@ public class SpincastResponseRequestContextAddon<R extends RequestContext<?>>
         // to strore validation messages.
         //==========================================
         form.setValidationObject(validationElement);
-
     }
 
+    public Set<ResourceToPush> getResourcesToPush() {
+        if (this.resourcesToPush == null) {
+            this.resourcesToPush = new HashSet<ResourceToPush>();
+        }
+        return this.resourcesToPush;
+    }
+
+    @Override
+    public ResponseRequestContextAddon<R> push(HttpMethod httpMethod, String path, Map<String, List<String>> requestHeaders) {
+        Objects.requireNonNull(httpMethod, "The httpMethod can't be NULL");
+        if (StringUtils.isBlank(path)) {
+            throw new RuntimeException("The path to the resource to push can't be empty.");
+        }
+
+        path = path.startsWith("/") ? path : "/" + path;
+        path = tweakResourceToPushPath(path);
+
+        getResourcesToPush().add(new ResourceToPush(httpMethod, path, requestHeaders));
+
+        return this;
+    }
+
+    protected String tweakResourceToPushPath(String path) {
+
+        //==========================================
+        // Replace any cache buster placeholders.
+        //==========================================
+        path = path.replace(RESOURCE_TO_PUSH_PLACEHOLDERS_CACHE_BUSTER, getSpincastUtils().getCacheBusterCode());
+
+        return path;
+    }
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.spincast.core.cookies.Cookie;
 import org.spincast.core.routing.HttpMethod;
+import org.spincast.core.routing.ResourceToPush;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -47,9 +48,9 @@ public interface Server {
 
     /**
      * Stops the server
-     * 
+     *
      * @param sendClosingMessageToPeers if <code>true</code>,
-     * Spincast will try to send a "closing" message to any 
+     * Spincast will try to send a "closing" message to any
      * WebSocket peer before closing their connections.
      */
     public void stop(boolean sendClosingMessageToPeers);
@@ -90,10 +91,10 @@ public interface Server {
     public HttpMethod getHttpMethod(Object exchange);
 
     /**
-     * The full encoded URL of the original, non proxied, request, including the queryString. 
+     * The full encoded URL of the original, non proxied, request, including the queryString.
      * Cache buster codes are removed, if there were any.
      * <p>
-     * This is going to be the *original* URL, as seen by the user, even if 
+     * This is going to be the *original* URL, as seen by the user, even if
      * a reverse proxy is used (such as Nginx or Apache).
      * </p>
      * <p>
@@ -104,24 +105,24 @@ public interface Server {
     public String getFullUrlOriginal(Object exchange);
 
     /**
-     * The full encoded URL of the original, non proxied, request, including the queryString. 
+     * The full encoded URL of the original, non proxied, request, including the queryString.
      * <p>
-     * This is going to be the *original* URL, as seen by the user, even if 
+     * This is going to be the *original* URL, as seen by the user, even if
      * a reverse proxy is used (such as Nginx or Apache).
      * </p>
      * <p>
      * Even if the request is forwarded elsewhere in the framework, this
      * URL won't change, it will still be the original one.
      * </p>
-     * 
+     *
      * @param keepCacheBusters if <code>true</code>, the returned URL will contain
-     * the cache buster codes, if there were any. The default behavior is to 
+     * the cache buster codes, if there were any. The default behavior is to
      * automatically remove them.
      */
     public String getFullUrlOriginal(Object exchange, boolean keepCacheBusters);
 
     /**
-     * The full encoded URL of the potentially proxied request, including the queryString. 
+     * The full encoded URL of the potentially proxied request, including the queryString.
      * Cache buster codes are removed, if there were any.
      * <p>
      * Is a reverse proxy is used (such as Nginx or Apache), this is going to be the
@@ -136,7 +137,7 @@ public interface Server {
     public String getFullUrlProxied(Object exchange);
 
     /**
-     * The full encoded URL of the potentially proxied request, including the queryString. 
+     * The full encoded URL of the potentially proxied request, including the queryString.
      * <p>
      * Is a reverse proxy is used (such as Nginx or Apache), this is going to be the
      * proxied URL, as forwarded by the reverse proxy. If no reverse proxy is used,
@@ -146,9 +147,9 @@ public interface Server {
      * Even if the request is forwarded elsewhere in the framework, this
      * URL won't change, it will still be the original one.
      * </p>
-     * 
+     *
      * @param keepCacheBusters if <code>true</code>, the returned URL will contain
-     * the cache buster codes, if there were any. The default behavior is to 
+     * the cache buster codes, if there were any. The default behavior is to
      * automatically remove them.
      */
     public String getFullUrlProxied(Object exchange, boolean keepCacheBusters);
@@ -200,7 +201,7 @@ public interface Server {
 
     /**
      * Flushes some bytes to the response.
-     * 
+     *
      * @param end if <code>true</code>, the exchange will be closed
      * and nothing more can be send.
      */
@@ -238,7 +239,7 @@ public interface Server {
 
     /**
      * The uploaded files, if any.
-     * The key of the map if the HTML's <code>name</code> attribute. 
+     * The key of the map if the HTML's <code>name</code> attribute.
      */
     public Map<String, List<UploadedFile>> getUploadedFiles(Object exchange);
 
@@ -248,7 +249,7 @@ public interface Server {
     public boolean forceRequestSizeValidation(Object exchange);
 
     /**
-     * The headers from the request. 
+     * The headers from the request.
      * The keys will be <em>case insensitive</em>.
      */
     public Map<String, List<String>> getRequestHeaders(Object exchange);
@@ -256,7 +257,7 @@ public interface Server {
     /**
      * Creates HTTP authentication protection (realm) for the
      * specified path prefix.
-     * 
+     *
      * @param realmName The name of the realm. Must be unique on this server,
      * otherwise an exception is thrown. This allows the application to add
      * user to the realm using its name.
@@ -290,7 +291,7 @@ public interface Server {
 
     /**
      * Creates a new Websocket endpoint.
-     * 
+     *
      * @return the manager for this endpoint.
      */
     public WebsocketEndpointManager websocketCreateEndpoint(String endpointId, WebsocketEndpointHandler endpointHandler);
@@ -302,10 +303,10 @@ public interface Server {
     public void websocketCloseEndpoint(String endpointId);
 
     /**
-     * Closes the entire Websocket endpoint. 
+     * Closes the entire Websocket endpoint.
      * All peer connections of this endpoint will be
      * closed.
-     * 
+     *
      * @param closingCode The closing code.
      * @param closingReason The closing reason.
      */
@@ -313,20 +314,20 @@ public interface Server {
 
     /**
      * Transforms the request to a peer Websocket connection
-     * on the endpoint 'endpointId'. 
+     * on the endpoint 'endpointId'.
      */
     public void websocketConnection(Object exchange,
                                     String endpointId,
                                     String peerId);
 
     /**
-     * Returns the managers of the existing Websockets endpoints. 
+     * Returns the managers of the existing Websockets endpoints.
      */
     public List<WebsocketEndpointManager> getWebsocketEndpointManagers();
 
     /**
-     * Returns the manager for a Websockets endpoint. 
-     * 
+     * Returns the manager for a Websockets endpoint.
+     *
      * @return the manager or <code>null</code> if not found.
      */
     public WebsocketEndpointManager getWebsocketEndpointManager(String endpointId);
@@ -335,5 +336,22 @@ public interface Server {
      * Gets the IP of the current request.
      */
     public String getIp(Object exchange);
+
+    /**
+     * If <code>HTTP/2</code> is used, you can <a href="https://en.wikipedia.org/wiki/HTTP/2_Server_Push">push extra resources</a>
+     * at the same time you response to a request.
+     * <p>
+     * If the embedded server deals with a HTTTP/2 request,
+     * it will push the extra resources by itself. If it
+     * deals with an HTTP/1.X request (for example if it
+     * is behind a reverse-proxy) it will send <code>Link</code>
+     * headers to the potential proxy in front of it and it
+     * is the proxy that will be in charge of doing the actual push.
+     * <p>
+     * Beware that pushing resources does not always result in
+     * an increase of performance and may lead to wasted bandwidth
+     * (the client may decide to not use the pushed resources).
+     */
+    public void push(Object exchange, Set<ResourceToPush> resourcesToPush);
 
 }
