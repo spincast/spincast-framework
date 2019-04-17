@@ -307,7 +307,7 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
             }
         });
 
-        getRouter().redirect("/one").to(null);
+        getRouter().redirect("/one").to((String)null);
 
         HttpResponse response = GET("/one").send();
 
@@ -414,14 +414,34 @@ public class RedirectRulesTest extends NoAppStartHttpServerTestingBase {
         assertEquals(HttpStatus.SC_MOVED_TEMPORARILY, response.getStatus());
     }
 
+    @Test
+    public void redirectHandler() throws Exception {
+
+        getRouter().GET("/one/${token}").handle(new Handler<DefaultRequestContext>() {
+
+            @Override
+            public void handle(DefaultRequestContext context) {
+                context.response().sendPlainText(context.request().getPathParam("token"));
+            }
+        });
+
+        getRouter().redirect("/one").to((context, originalPath) -> originalPath + "/titi");
+
+        HttpResponse response = GET("/one").send();
+
+        assertEquals(HttpStatus.SC_OK, response.getStatus());
+        assertEquals(ContentTypeDefaults.TEXT.getMainVariationWithUtf8Charset(), response.getContentType());
+        assertEquals("titi", response.getContentAsString());
+    }
+
     /*
-     
+    
      TODO
      There is currently a bug with the Websocket client provided by Undertow:
      https://issues.jboss.org/browse/UNDERTOW-1471
-     
+    
      Redirection tests will only work when this is fixed.
-     
+    
     @Test
     public void webSocketRedirect() throws Exception {
     

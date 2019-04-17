@@ -1561,7 +1561,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
                         if (HttpStatus.SC_OK != context.response().getStatusCode()) {
                             SpincastRouter.logger.info("Nothing will be saved since the response code is not " +
-                                                            HttpStatus.SC_OK);
+                                                       HttpStatus.SC_OK);
                             return;
                         }
 
@@ -1569,15 +1569,15 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                             context.request().getQueryStringParams() != null &&
                             context.request().getQueryStringParams().size() > 0) {
                             SpincastRouter.logger.info("Nothing will be saved since the queryString contains parameters and " +
-                                                            "'isIgnoreQueryString' is false  : " +
-                                                            context.request().getQueryString(false));
+                                                       "'isIgnoreQueryString' is false  : " +
+                                                       context.request().getQueryString(false));
                             return;
                         }
 
                         if (context.response().isHeadersSent()) {
                             SpincastRouter.logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
-                                                            "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
-                                                            "request!");
+                                                       "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
+                                                       "request!");
                             return;
                         }
 
@@ -1876,8 +1876,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     }
 
     @Override
-    public RedirectRuleBuilder redirect(String oldPath) {
-        RedirectRuleBuilder builder = getRedirectRuleBuilderFactory().create(this, oldPath);
+    public RedirectRuleBuilder<R, W> redirect(String oldPath) {
+        RedirectRuleBuilder<R, W> builder = getRedirectRuleBuilderFactory().create(this, oldPath);
         return builder;
     }
 

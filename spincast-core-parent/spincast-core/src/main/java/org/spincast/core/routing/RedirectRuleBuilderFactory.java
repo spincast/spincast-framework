@@ -8,6 +8,6 @@ import org.spincast.core.websocket.WebsocketContext;
  */
 public interface RedirectRuleBuilderFactory<R extends RequestContext<?>, W extends WebsocketContext<?>> {
 
-    public RedirectRuleBuilder create(Router<R, W> router,
-                                       String oldPath);
+    public RedirectRuleBuilder<R, W> create(Router<R, W> router,
+                                            String oldPath);
 }

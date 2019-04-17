@@ -65,8 +65,7 @@ public void handle(DefaultRequestContext context) {
     context.response()
            .push(HttpMethod.GET, 
                  "/public/main.js", 
-                 SpincastStatics.map(HttpHeaders.ACCEPT_LANGUAGE,
-                                     Lists.newArrayList(ContentTypeDefaults.JSON.getMainVariation())))
+                 SpincastStatics.map("someHeader", "someHeaderValue"))
            .sendTemplateHtml("/templates/index.html");
 }</pre> 
 
@@ -83,7 +82,7 @@ public void handle(DefaultRequestContext context) {
                         <span class="code-line-nbr">5</span> : The absolute path to the resource to push.
                     </li>
                     <li>
-                        <span class="code-line-nbr">6-7</span> : The headers to send to request the resource to push.
+                        <span class="code-line-nbr">6</span> : Headers to send to request the resource.
                         Those can be <code>null</code>.
                     </li>
                 </ul>

@@ -342,7 +342,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
                 } else {
                     if (!context.request().isPlainTextShouldBeReturn()) {
                         SpincastFrontController.logger.error("Format not managed here!: " +
-                                                                  context.request().getContentTypeBestMatch());
+                                                             context.request().getContentTypeBestMatch());
                     }
                     context.response().sendPlainText(getNotFoundPlainTextContent(message));
                 }
@@ -420,9 +420,9 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
             try {
                 logger.error("An exception occured while using the custom exception handler. The original " +
-                                  "exception will be thrown again so it can be managed by the default exception " +
-                                  "handler. The exception which occured is : " +
-                                  SpincastStatics.getStackTrace(ex2));
+                             "exception will be thrown again so it can be managed by the default exception " +
+                             "handler. The exception which occured is : " +
+                             SpincastStatics.getStackTrace(ex2));
             } catch (Throwable ex3) {
                 // too bad
             }
@@ -686,7 +686,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
         if (getServer().isResponseHeadersSent(exchange)) {
             logger.info("Can't sent proper public error response, headers are already sent :\n" +
-                             SpincastStatics.getStackTrace((Throwable)publicException));
+                        SpincastStatics.getStackTrace((Throwable)publicException));
             return;
         }
 
@@ -714,7 +714,7 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
         if (getServer().isResponseHeadersSent(exchange)) {
             logger.info("Can't sent proper error response, headers are already sent :\n" +
-                             SpincastStatics.getStackTrace(exception));
+                        SpincastStatics.getStackTrace(exception));
             return;
         }
 
@@ -834,9 +834,9 @@ public class SpincastFrontController<R extends RequestContext<R>, W extends Webs
 
         try {
             logger.error("Error while trying to use the default exception " + "handling : " +
-                              defaultHandlingException.getMessage() +
-                              ".\n" + "The original exception was : " +
-                              SpincastStatics.getStackTrace(originalException));
+                         defaultHandlingException.getMessage() +
+                         ".\n" + "The original exception was : " +
+                         SpincastStatics.getStackTrace(originalException));
         } catch (Throwable ex3) {
             // too bad
         }

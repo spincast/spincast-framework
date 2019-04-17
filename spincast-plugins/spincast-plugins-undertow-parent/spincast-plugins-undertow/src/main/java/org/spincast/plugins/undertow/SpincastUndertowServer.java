@@ -98,7 +98,10 @@ public class SpincastUndertowServer implements Server {
     protected static final Logger logger = LoggerFactory.getLogger(SpincastUndertowServer.class);
 
     public static final String UNDERTOW_EXCEPTION_CODE_REQUEST_TOO_LARGE = "UT000020";
+    public static final String EXCHANGE_VARIABLE_EXCHANGE_COMPLETED =
+            SpincastUndertowServer.class.getName() + "_exchangeCompleted";
 
+    private final SpincastUndertowUtils spincastUndertowUtils;
     private final WebsocketEndpointFactory spincastWebsocketEndpointFactory;
     private final SpincastUtils spincastUtils;
     private final SpincastConfig config;
@@ -147,7 +150,8 @@ public class SpincastUndertowServer implements Server {
      * Constructor
      */
     @Inject
-    public SpincastUndertowServer(SpincastConfig config,
+    public SpincastUndertowServer(SpincastUndertowUtils spincastUndertowUtils,
+                                  SpincastConfig config,
                                   SpincastUndertowConfig spincastUndertowConfig,
                                   FrontController frontController,
                                   SpincastUtils spincastUtils,
@@ -162,6 +166,7 @@ public class SpincastUndertowServer implements Server {
                                   WebsocketEndpointFactory spincastWebsocketEndpointFactory,
                                   SSLContextFactory sslContextFactory,
                                   ServerUtils serverUtils) {
+        this.spincastUndertowUtils = spincastUndertowUtils;
         this.config = config;
         this.spincastUndertowConfig = spincastUndertowConfig;
         this.frontController = frontController;
@@ -177,6 +182,10 @@ public class SpincastUndertowServer implements Server {
         this.spincastWebsocketEndpointFactory = spincastWebsocketEndpointFactory;
         this.sslContextFactory = sslContextFactory;
         this.serverUtils = serverUtils;
+    }
+
+    protected SpincastUndertowUtils getSpincastUndertowUtils() {
+        return this.spincastUndertowUtils;
     }
 
     protected SpincastConfig getConfig() {
@@ -1118,6 +1127,9 @@ public class SpincastUndertowServer implements Server {
 
         try {
             ((HttpServerExchange)exchange).endExchange();
+            getSpincastUndertowUtils().getRequestCustomVariables((HttpServerExchange)exchange)
+                                      .put(EXCHANGE_VARIABLE_EXCHANGE_COMPLETED,
+                                           String.valueOf(true));
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
@@ -1125,7 +1137,12 @@ public class SpincastUndertowServer implements Server {
 
     @Override
     public boolean isResponseClosed(Object exchange) {
-        return ((HttpServerExchange)exchange).isResponseComplete();
+
+        String completedStr = getSpincastUndertowUtils().getRequestCustomVariables((HttpServerExchange)exchange)
+                                                        .get(EXCHANGE_VARIABLE_EXCHANGE_COMPLETED);
+        boolean completed = completedStr != null && String.valueOf(true).equals(completedStr);
+
+        return completed || ((HttpServerExchange)exchange).isResponseComplete();
     }
 
     @Override

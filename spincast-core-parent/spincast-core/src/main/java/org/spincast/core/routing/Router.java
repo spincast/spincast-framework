@@ -529,6 +529,6 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
      *
      * @param oldPath The old path that needs to be redirected.
      */
-    public RedirectRuleBuilder redirect(String oldPath);
+    public RedirectRuleBuilder<R, W> redirect(String oldPath);
 
 }

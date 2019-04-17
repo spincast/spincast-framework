@@ -222,41 +222,41 @@ Docs : "Templating Engine"
         The provided variables are :
         <ul>
         	<li>
-        		<strong><em>"pathParams"</em></strong> : The parameters parsed from the path of the request. To be used
+        		<strong><em>"spincast.pathParams"</em></strong> : The parameters parsed from the path of the request. To be used
         		like {% verbatim %}<code>{{pathParams.myParam}}</code>{% endverbatim %}.
         	</li>
         	<li>
-        		<strong><em>"qsParams"</em></strong> : The parameters parsed from the queryString of the request. Note that
+        		<strong><em>"spincast.qsParams"</em></strong> : The parameters parsed from the queryString of the request. Note that
         		a single queryString variable may contain more than one values. To access the first value, use something like :
         		 {% verbatim %}<code>{{qsParams.myParam[0]}}</code>{% endverbatim %}.
         	</li>
         	<li>
-        		<strong><em>"cookies"</em></strong> : The current 
+        		<strong><em>"spincast.cookies"</em></strong> : The current 
                 <a class="javadoc" href="/public/javadoc/org/spincast/core/cookies/Cookie.html">Cookies</a>. To be used
         		like {% verbatim %}<code>{{cookies.myCookie.value}}</code>{% endverbatim %}.
         	</li>
         	<li>
-        		<strong><em>"requestScopedVars"</em></strong> : The <em>request scoped</em> variables added by the 
+        		<strong><em>"spincast.requestScopedVars"</em></strong> : The <em>request scoped</em> variables added by the 
                 various Route Handlers. To be used
         		like {% verbatim %}<code>{{requestScopedVars.myVar}}</code>{% endverbatim %}.
         	</li>
         	<li>
-        		<strong><em>"langAbrv"</em></strong> : The abreviation of the current Locale to use. For example : <code>"en"</code>.
+        		<strong><em>"spincast.langAbrv"</em></strong> : The abreviation of the current Locale to use. For example : <code>"en"</code>.
         	</li>
         	<li>
-        		<strong><em>"cacheBuster"</em></strong> : The current <a href="#http_caching_cache_busting">cache buster</a> code.
+        		<strong><em>"spincast.cacheBuster"</em></strong> : The current <a href="#http_caching_cache_busting">cache buster</a> code.
         	</li>
         	<li>
-        		<strong><em>"routeId"</em></strong> : The id of the current route (of its main Route Handler).
+        		<strong><em>"spincast.routeId"</em></strong> : The id of the current route (of its main Route Handler).
         	</li>
         	<li>
-        		<strong><em>"fullUrl"</em></strong> : The full URL of the current request.
+        		<strong><em>"spincast.fullUrl"</em></strong> : The full URL of the current request.
         	</li>
         	<li>
-        		<strong><em>"isHttps"</em></strong> : Is the current URL secure (HTTPS)?
+        		<strong><em>"spincast.isHttps"</em></strong> : Is the current URL secure (HTTPS)?
         	</li>
         	<li>
-        		<strong><em>"alerts"</em></strong> : The <a href="#alert_messages">Alert messages</a>, if any. Those
+        		<strong><em>"spincast.alerts"</em></strong> : The <a href="#alert_messages">Alert messages</a>, if any. Those
                 also include <a href="#flash_messages">Flash messages</a> (Spincast automatically converts Flash messages
                 to Alert messages). They also contain Alert messages that you may have
                 explictly added using the <code>addAlert(...)</code> method of the <code>response()</code>

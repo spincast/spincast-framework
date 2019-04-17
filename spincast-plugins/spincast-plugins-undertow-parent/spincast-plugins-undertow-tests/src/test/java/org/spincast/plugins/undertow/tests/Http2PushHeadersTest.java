@@ -25,6 +25,7 @@ import org.spincast.plugins.undertow.SkipResourceOnQueryStringHandlerFactory;
 import org.spincast.plugins.undertow.SpincastHttpAuthIdentityManagerFactory;
 import org.spincast.plugins.undertow.SpincastResourceHandlerFactory;
 import org.spincast.plugins.undertow.SpincastUndertowServer;
+import org.spincast.plugins.undertow.SpincastUndertowUtils;
 import org.spincast.plugins.undertow.WebsocketEndpointFactory;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.shaded.org.apache.http.HttpStatus;
@@ -65,7 +66,8 @@ public class Http2PushHeadersTest extends NoAppStartHttpServerTestingBase {
     public static class TestingSpincastUndertowServer extends SpincastUndertowServer {
 
         @Inject
-        public TestingSpincastUndertowServer(SpincastConfig config, SpincastUndertowConfig spincastUndertowConfig,
+        public TestingSpincastUndertowServer(SpincastUndertowUtils spincastUndertowUtils,
+                                             SpincastConfig config, SpincastUndertowConfig spincastUndertowConfig,
                                              FrontController frontController, SpincastUtils spincastUtils,
                                              CookieFactory cookieFactory, CorsHandlerFactory corsHandlerFactory,
                                              GzipCheckerHandlerFactory gzipCheckerHandlerFactory,
@@ -76,7 +78,8 @@ public class Http2PushHeadersTest extends NoAppStartHttpServerTestingBase {
                                              SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                              WebsocketEndpointFactory spincastWebsocketEndpointFactory,
                                              SSLContextFactory sslContextFactory, ServerUtils serverUtils) {
-            super(config,
+            super(spincastUndertowUtils,
+                  config,
                   spincastUndertowConfig,
                   frontController,
                   spincastUtils,

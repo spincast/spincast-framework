@@ -148,7 +148,7 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
         bindWebsocketRouteBuilderFactory();
 
         //==========================================
-        // The assisted factory to create 
+        // The assisted factory to create
         // Websocket route handler.
         //==========================================
         bindWebsocketRouteHandlerFactory();
@@ -237,8 +237,8 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
 
         //==========================================
         // If the default request context class is used
-        // and the router extends DefaultRouter, we can bind the 
-        // "DefaultRouter" interface for easier access to the parameterized 
+        // and the router extends DefaultRouter, we can bind the
+        // "DefaultRouter" interface for easier access to the parameterized
         // router!
         //==========================================
         if (getRequestContextInterface().equals(DefaultRequestContext.class) &&
@@ -320,13 +320,15 @@ public class SpincastRoutingPluginModule extends SpincastGuiceModuleBase {
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void bindRedirectRuleBuilderFactory() {
 
+        Key interfaceKey = parameterizeWithContextInterfaces(RedirectRuleBuilder.class);
         Key implementationKey = parameterizeWithContextInterfaces(getRedirectRuleBuilderImplClass());
         Key factoryKey = parameterizeWithContextInterfaces(RedirectRuleBuilderFactory.class);
 
-        install(new FactoryModuleBuilder().implement(RedirectRuleBuilder.class, implementationKey.getTypeLiteral())
+        install(new FactoryModuleBuilder().implement(interfaceKey, implementationKey.getTypeLiteral())
                                           .build(factoryKey));
     }
 
+    @SuppressWarnings("rawtypes")
     protected Class<? extends RedirectRuleBuilder> getRedirectRuleBuilderImplClass() {
         return RedirectRuleBuilderDefault.class;
     }

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.exceptions.RedirectException;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.routing.Handler;
+import org.spincast.core.routing.RedirectHandler;
 import org.spincast.core.routing.RedirectRuleBuilder;
 import org.spincast.core.routing.Router;
 import org.spincast.core.websocket.WebsocketContext;
@@ -19,7 +20,7 @@ import com.google.inject.assistedinject.AssistedInject;
  * Default implementation for the RedirectRuleBuilder interface.
  */
 public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends WebsocketContext<?>>
-                                       implements RedirectRuleBuilder {
+                                       implements RedirectRuleBuilder<R, W> {
 
     protected static final Logger logger = LoggerFactory.getLogger(RedirectRuleBuilderDefault.class);
 
@@ -62,48 +63,66 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
     }
 
     @Override
-    public RedirectRuleBuilder permanently() {
+    public RedirectRuleBuilder<R, W> permanently() {
         this.permanently = true;
         return this;
     }
 
     @Override
-    public RedirectRuleBuilder temporarily() {
+    public RedirectRuleBuilder<R, W> temporarily() {
         this.permanently = false;
         return this;
     }
 
     @Override
     public void to(String newPathOrFullUrl) {
+        addRedirectHandler(new Handler<R>() {
 
-        if(StringUtils.isBlank(newPathOrFullUrl)) {
-            newPathOrFullUrl = "/";
-        }
+            @Override
+            public void handle(R context) {
+                throwRedirect(context, newPathOrFullUrl);
+            }
+        });
+    }
 
-        final String newPathOrFullUrlFinal = newPathOrFullUrl;
+    @Override
+    public void to(RedirectHandler<R, W> handler) {
+        addRedirectHandler(new Handler<R>() {
+
+            @Override
+            public void handle(R context) {
+                String newPathOrFullUrl = handler.handle(context, getOldPath());
+                throwRedirect(context, newPathOrFullUrl);
+            }
+        });
+    }
+
+    protected void addRedirectHandler(Handler<R> handler) {
         getRouter().ALL(getOldPath())
                    .pos(getSpincastRouterConfig().getRedirectFilterPosition())
                    .found().notFound()
-                   .handle(new Handler<R>() {
+                   .handle(handler);
+    }
 
-                       @Override
-                       public void handle(R context) {
+    protected void throwRedirect(R context, String newPathOrFullUrl) {
 
-                           //==========================================
-                           // If the current route contains dynamic parameters,
-                           // we may have to use them in the new URL!
-                           //==========================================
-                           ReplaceDynamicParamsResult result =
-                                   getSpincastRoutingUtils().replaceDynamicParamsInPath(newPathOrFullUrlFinal,
-                                                                                        context.request().getPathParams());
+        if (StringUtils.isBlank(newPathOrFullUrl)) {
+            newPathOrFullUrl = "/";
+        }
 
-                           //==========================================
-                           // Throwing a "RedirectException" make sure nothing
-                           // more is executed after this handler.
-                           //==========================================
-                           throw new RedirectException(result.getPath(), isPermanently());
-                       }
-                   });
+        //==========================================
+        // If the current route contains dynamic parameters,
+        // we may have to use them in the new URL!
+        //==========================================
+        ReplaceDynamicParamsResult result =
+                getSpincastRoutingUtils().replaceDynamicParamsInPath(newPathOrFullUrl,
+                                                                     context.request().getPathParams());
+
+        //==========================================
+        // Throwing a "RedirectException" make sure nothing
+        // more is executed after this handler.
+        //==========================================
+        throw new RedirectException(result.getPath(), isPermanently());
     }
 
 }
