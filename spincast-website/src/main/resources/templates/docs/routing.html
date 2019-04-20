@@ -1466,7 +1466,7 @@ router.redirect("/the-original-route").to("/the-new-route");
         <p>
         	Those dynamic parameters can be used <em>anywhere</em> in the new Route definition, not
         	just as "full" tokens. For example, this redirection rule will redirect
-            <code class="block">"/types/books/42"</code> to <code>"/catalog-books/42"</code> :
+            <code class="block">"/types/books/42"</code> to <code>"/catalog-books/42"</code>:
             
             <div>
                 <p>
@@ -1474,6 +1474,19 @@ router.redirect("/the-original-route").to("/the-new-route");
 >router.redirect("/types/${typeId}/${itemId}").to("/catalog-${typeId}/${itemId}");</pre> 
                 </p>
             </div>
+        </p> 
+        <p>
+            <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+            If you need more control over the URL to redirect to, you can also
+            specify a <a class="javadoc" href="/public/javadoc/org/spincast/core/routing/RedirectHandler.html">RedirectHandler</a>
+            in order to dynamically generate it:
+            <div>
+                <p>
+                    <pre class="ace ace-java"
+>router.redirect("/test").to(context, originalPath) -> originalPath + "/en";</pre> 
+                </p>
+            </div>
+            
         </p> 
         <p>
         	<img class="inlineIcon" src="/public/images/icons/para.png" /> 

@@ -17,7 +17,7 @@ import com.google.inject.Module;
 import com.google.inject.Scopes;
 import com.google.inject.util.Modules;
 
-public class DeleteOldSessionsScheduledTaskTest extends SessionTestBase {
+public class DeleteOldSessionsScheduledTaskTest extends TestRepoTestBase {
 
     @Override
     public void beforeClassException(Throwable ex) {

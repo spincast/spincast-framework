@@ -5,15 +5,15 @@ import java.time.Instant;
 public interface SpincastFormsDoubleSubmitProtectionRepository {
 
     /**
-     * Saves the protectedId associated with a submitted form.
+     * Saves the protectionId associated with a submitted form.
      */
-    public void saveSubmittedFormProtectionId(Instant date, String protectedId);
+    public void saveSubmittedFormProtectionId(Instant creationDate, String protectionId);
 
     /**
-     * Is the specified protectedId one of an already submitted
+     * Is the specified protectionId one of an already submitted
      * form?
      */
-    public boolean isFormAlreadySubmitted(String protectedId);
+    public boolean isFormAlreadySubmitted(String protectionId);
 
     /**
      * Deletes the saved protection ids that are older than the specified

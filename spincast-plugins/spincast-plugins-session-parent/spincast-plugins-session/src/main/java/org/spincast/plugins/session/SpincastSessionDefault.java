@@ -166,4 +166,9 @@ public class SpincastSessionDefault implements SpincastSession {
         return this.hasBeenInvalidated;
     }
 
+    @Override
+    public String toString() {
+        return getId() + ":\n" + getAttributes().toJsonString(true);
+    }
+
 }

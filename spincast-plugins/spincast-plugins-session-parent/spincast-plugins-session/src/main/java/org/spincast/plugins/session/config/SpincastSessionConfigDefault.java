@@ -35,6 +35,11 @@ public class SpincastSessionConfigDefault implements SpincastSessionConfig {
         return 300;
     }
 
+    @Override
+    public String getDefaultCookieRepositoryCookieName() {
+        return "spincast_srepo";
+    }
+
 }
 
 

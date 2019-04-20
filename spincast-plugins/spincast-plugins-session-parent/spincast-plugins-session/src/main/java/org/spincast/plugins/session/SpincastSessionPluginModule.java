@@ -8,6 +8,7 @@ import org.spincast.plugins.session.config.SpincastSessionConfig;
 import org.spincast.plugins.session.config.SpincastSessionConfigDefault;
 import org.spincast.plugins.session.config.SpincastSessionPluginScheduledTaskProvider;
 import org.spincast.plugins.session.config.SpincastSessionPluginScheduledTaskProviderDefault;
+import org.spincast.plugins.session.repositories.SpincastSessionRepositoryDefault;
 
 import com.google.inject.Key;
 import com.google.inject.Scopes;
@@ -22,12 +23,6 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
 
     @Override
     protected void configure() {
-
-        //==========================================
-        // An implementation for SpincastSessionManager
-        // must been bound in the application
-        //==========================================
-        requireBinding(SpincastSessionRepository.class);
 
         bind(SpincastSessionConfig.class).to(getSpincastSessionConfigImplClass())
                                          .in(Scopes.SINGLETON);
@@ -50,6 +45,9 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
         Multibinder<Set<SpincastScheduledTask>> scheduledTaskSetsMultibinder =
                 Multibinder.newSetBinder(binder(), Key.get(new TypeLiteral<Set<SpincastScheduledTask>>() {}));
         scheduledTaskSetsMultibinder.addBinding().toProvider(SpincastSessionPluginScheduledTaskProvider.class);
+
+        bind(SpincastSessionRepository.class).to(getSpincastSessionRepositoryImplClass())
+                                             .in(Scopes.SINGLETON);
     }
 
     protected Class<? extends SpincastSessionConfig> getSpincastSessionConfigImplClass() {
@@ -71,5 +69,10 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
     protected Class<? extends SpincastSessionManager> getSpincastSessionManagerImplClass() {
         return SpincastSessionManagerDefault.class;
     }
+
+    protected Class<? extends SpincastSessionRepository> getSpincastSessionRepositoryImplClass() {
+        return SpincastSessionRepositoryDefault.class;
+    }
+
 
 }

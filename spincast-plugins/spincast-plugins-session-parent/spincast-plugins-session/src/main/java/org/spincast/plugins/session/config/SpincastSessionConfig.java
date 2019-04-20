@@ -1,5 +1,7 @@
 package org.spincast.plugins.session.config;
 
+import org.spincast.plugins.session.SpincastSessionRepository;
+
 /**
  * Configurations for the Spincast Session plugin.
  */
@@ -22,7 +24,7 @@ public interface SpincastSessionConfig {
     public int getSessionMaxInactiveMinutes();
 
     /**
-     * The acheduled task to delete old sessions should run 
+     * The acheduled task to delete old sessions should run
      * every X minutes.
      */
     public int getDeleteOldSessionsScheduledTaskRunEveryNbrMinutes();
@@ -34,6 +36,13 @@ public interface SpincastSessionConfig {
     public String getSessionIdCookieName();
 
     /**
+     * When the default {@link SpincastSessionRepository} repository
+     * is used (we suggest you bind a custom one, based on a database though!),
+     * this will be the name of the cookie used to saved the session, on the client.
+     */
+    public String getDefaultCookieRepositoryCookieName();
+
+    /**
      * The number of seconds between two updates of the
      * modification date of a session, wheen the session
      * is not dirty.
@@ -42,10 +51,12 @@ public interface SpincastSessionConfig {
      * {@link #getSessionMaxInactiveMinutes()} or active
      * sessions will be deleted!
      * <p>
-     * Note that when something changes on the session 
-     * the session becomes dirty and is <em>always</em> 
+     * Note that when something changes on the session
+     * the session becomes dirty and is <em>always</em>
      * saved and an updated modification date.
      */
     public int getUpdateNotDirtySessionPeriodInSeconds();
+
+
 
 }

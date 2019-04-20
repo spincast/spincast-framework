@@ -271,7 +271,8 @@ code, code.block, .code-line-nbr {
     background-color: #FFFFFF;
     padding: 1px 3px 1px 3px;
     border: solid 1px #D3D3D3;
-    margin: 0 3px;
+    margin: 0;
+    white-space: nowrap;
 }
 code.language-pebble {
     border:0 !important;

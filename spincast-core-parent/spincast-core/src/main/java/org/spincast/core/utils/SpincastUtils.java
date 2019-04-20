@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.spincast.shaded.org.apache.commons.io.FilenameUtils;
 
@@ -326,6 +327,40 @@ public interface SpincastUtils {
      * without the potential extension.
      */
     public boolean isRequestedResourceNameEndsWithBeforeExtension(String resourceBaseName, String suffix);
+
+    /**
+     * Convert a string so it can be used in an URL without
+     * being escaped: remove accents, spaces, etc.
+     * <p>
+     * This can be used to create "friendly token" in an SEO
+     * optimized URL.
+     * <p>
+     * Be careful if you plan on using the result of this
+     * methos as an unique token since many strings may
+     * result in the same thing!
+     *
+     * @return the string with only A-Z, "-" and "_" characters. Or, if
+     * the resulting string is empty, a random {@link UUID} will be returned.
+     */
+    public String convertToUrlToken(String str);
+
+    /**
+     * Convert a string so it can be used in an URL without
+     * being escaped: remove accents, spaces, etc.
+     * <p>
+     * This can be used to create "friendly token" in an SEO
+     * optimized URL.
+     * <p>
+     * Be careful if you plan on using the result of this
+     * methos as an unique token since many strings may
+     * result in the same thing!
+     *
+     *
+     * @return the string with only A-Z, "-" and "_" characters. Or, if
+     * the resulting string is empty, the <code>resultIfEmpty</code> param
+     * is returned.
+     */
+    public String convertToUrlToken(String str, String resultIfEmpty);
 
 
 }

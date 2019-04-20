@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.spincast.core.flash.FlashMessage;
 import org.spincast.core.json.JsonObject;
+import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.request.Form;
 import org.spincast.core.routing.ETag;
 import org.spincast.core.routing.HttpMethod;
@@ -21,12 +22,12 @@ import org.spincast.core.validation.ValidationSet;
 public interface RequestRequestContextAddon<R extends RequestContext<?>> {
 
     /**
-     * Gets the request's <code>HTTP method</code>. 
+     * Gets the request's <code>HTTP method</code>.
      */
     public HttpMethod getHttpMethod();
 
     /**
-     * Finds the best <code>Content-Type</code> to use for a response 
+     * Finds the best <code>Content-Type</code> to use for a response
      * using the <code>"Accept"</code> header of the request. It will
      * fallback to <code>ContentTypeDefaults.TEXT</code> if nothing more specific
      * is found.
@@ -35,63 +36,72 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
 
     /**
      * Will return <code>true</code> if the request specifies
-     * that <code>Json</code> is the most appropriate format 
+     * that <code>Json</code> is the most appropriate format
      * to return.
      */
     public boolean isJsonShouldBeReturn();
 
     /**
      * Will return <code>true</code> if the request specifies
-     * that <code>HTML</code> is the most appropriate format 
+     * that <code>HTML</code> is the most appropriate format
      * to return.
      */
     public boolean isHTMLShouldBeReturn();
 
     /**
      * Will return <code>true</code> if the request specifies
-     * that <code>XML</code> is the most appropriate format 
+     * that <code>XML</code> is the most appropriate format
      * to return.
      */
     public boolean isXMLShouldBeReturn();
 
     /**
      * Will return <code>true</code> if the request specifies
-     * that <code>plain-text</code> is the most appropriate format 
+     * that <code>plain-text</code> is the most appropriate format
      * to return.
      */
     public boolean isPlainTextShouldBeReturn();
 
     /**
-     * Find the best <code>Locale</code> to use for a response 
-     * using the <code>"Accept-Language"</code> header of
-     * the request.
+     * Find what <strong>the request</strong> tells should be the best
+     * <code>Locale</code> to use for a response, by looking
+     * at the <code>"Accept-Language"</code> header.
      * <p>
-     * Returns the default <code>Locale</code> (taken from the configurations) 
-     * if nothing more specific is found.
+     * Note that this will <em>not</em> necessarily be the absolute best
+     * <code>Locale</code> to used for the user: it will not look at
+     * cookies or at any other ways the user may have specified its
+     * langague preference! It only look at the request itself.
+     * <p>
+     * Use {@link RequestContext#getLocaleToUse()} or
+     * {@link LocaleResolver#getLocaleToUse()} directly if you want
+     * to know the absolute best <code>Locale</code> to use for the user!
+     *
+     * @return the default <code>Locale</code> (taken from the configurations)
+     * if nothing more specific is found on the request.
      */
     public Locale getLocaleBestMatch();
 
     /**
-     * Returns all headers of the current request. A single header can have multiple values. 
-     * The implementation is a <code>TreeMap</code> which is<i>case insensitive</i> for the keys. 
+     * Returns all headers of the current request. A single header can have multiple values.
+     * The implementation is a <code>TreeMap</code> which is<i>case insensitive</i> for the keys.
      * The map is immutable.
      */
     public Map<String, List<String>> getHeaders();
 
     /**
-     * Returns the values of the specified header from the current request or 
-     * an empty list if not found. 
+     * Returns the values of the specified header from the current request or
+     * an empty list if not found.
      * <p>
-     * The <code>name</code> is <i>case insensitive</i>. 
+     * The <code>name</code> is <i>case insensitive</i>.
      * <p>
      * The list is immutable.
      */
     public List<String> getHeader(String name);
 
     /**
-     * The first value of the specified header from the current request. 
+     * The first value of the specified header from the current request.
      * <p>
-     * The <code>name</code> is <i>case insensitive</i>. 
+     * The <code>name</code> is <i>case insensitive</i>.
      * <p>
      * Returns <code>null</code> if the header is not found.
      */
@@ -99,7 +109,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
 
     /**
      * The Content-Type of the request, if any.
-     * 
+     *
      * @return the <code>Content-Type</code> of the request or <code>null</code>
      * if none was specified.
      */
@@ -114,9 +124,9 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * to get the original URL, before the request was forwarded.
      * </p>
      * <p>
-     * If a reverse proxy has been used, this URL will contain the 
-     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
-     * <em>original</em> URL, as seen by the user. 
+     * If a reverse proxy has been used, this URL will contain the
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the
+     * <em>original</em> URL, as seen by the user.
      * In general, this is what you want to use in your application.
      * </p>
      */
@@ -130,14 +140,14 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * to get the original URL, before the request was forwarded.
      * </p>
      * <p>
-     * If a reverse proxy has been used, this URL will contain the 
-     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
-     * <em>original</em> URL, as seen by the user. 
+     * If a reverse proxy has been used, this URL will contain the
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the
+     * <em>original</em> URL, as seen by the user.
      * In general, this is what you want to use in your application.
      * </p>
-     * 
+     *
      * @param keepCacheBusters if <code>true</code>, the returned URL will contain
-     * the cache buster codes, if there were any. The default behavior is to 
+     * the cache buster codes, if there were any. The default behavior is to
      * automatically remove them.
      */
     public String getFullUrl(boolean keepCacheBusters);
@@ -151,9 +161,9 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * forwarded URL.
      * </p>
      * <p>
-     * If a reverse proxy has been used, this URL will contain the 
-     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
-     * <em>original</em> URL, as seen by the user. 
+     * If a reverse proxy has been used, this URL will contain the
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the
+     * <em>original</em> URL, as seen by the user.
      * In general, this is what you want to use in your application.
      * </p>
      */
@@ -167,21 +177,21 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * forwarded URL.
      * </p>
      * <p>
-     * If a reverse proxy has been used, this URL will contain the 
-     * <code>scheme</code>, <code>host</code> and <code>port</code> from the 
-     * <em>original</em> URL, as seen by the user. 
+     * If a reverse proxy has been used, this URL will contain the
+     * <code>scheme</code>, <code>host</code> and <code>port</code> from the
+     * <em>original</em> URL, as seen by the user.
      * In general, this is what you want to use in your application.
      * </p>
-     * 
+     *
      * @param keepCacheBusters if <code>true</code>, the returned URL will contain
-     * the cache buster codes, if there were any. The default behavior is to 
+     * the cache buster codes, if there were any. The default behavior is to
      * automatically remove them.
      */
     public String getFullUrlOriginal(boolean keepCacheBusters);
 
     /**
-     * If a reverse proxy has been used, this URL will contain the 
-     * <code>scheme</code>, <code>host</code> and <code>port</code> 
+     * If a reverse proxy has been used, this URL will contain the
+     * <code>scheme</code>, <code>host</code> and <code>port</code>
      * as forwarded by the reserve proxy, <em>not as seen by the user</em>.
      * Cache buster codes are removed, if there were any.
      * <p>
@@ -197,8 +207,8 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public String getFullUrlProxied();
 
     /**
-     * If a reverse proxy has been used, this URL will contain the 
-     * <code>scheme</code>, <code>host</code> and <code>port</code> 
+     * If a reverse proxy has been used, this URL will contain the
+     * <code>scheme</code>, <code>host</code> and <code>port</code>
      * as forwarded by the reserve proxy, <em>not as seen by the user</em>.
      * Cache buster codes are removed, if there were any.
      * <p>
@@ -210,9 +220,9 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * or {@link #getFullUrlOriginal() getFullUrlOriginal()} instead of this
      * one.
      * </p>
-     * 
+     *
      * @param keepCacheBusters if <code>true</code>, the returned URL will contain
-     * the cache buster codes, if there were any. The default behavior is to 
+     * the cache buster codes, if there were any. The default behavior is to
      * automatically remove them.
      */
     public String getFullUrlProxied(boolean keepCacheBusters);
@@ -224,15 +234,15 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
 
     /**
      * The path of the request (no querystring).
-     * 
+     *
      * @param keepCacheBusters if <code>true</code>, the returned path will contain
-     * the cache buster codes, if there were any. The default behavior is to 
+     * the cache buster codes, if there were any. The default behavior is to
      * automatically remove them.
      */
     public String getRequestPath(boolean keepCacheBusters);
 
     /**
-     * The values parsed from the dynamic parameters of the route path. 
+     * The values parsed from the dynamic parameters of the route path.
      * The map is immutable.
      */
     public Map<String, String> getPathParams();
@@ -246,16 +256,16 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     /**
      * The queryString of the request.
      * Returns an empty String if there is no queryString.
-     * 
+     *
      * @param withQuestionMark if <code>true</code> and the queryString
      * is not empty, the result will be prefixed with "?".
      */
     public String getQueryString(boolean withQuestionMark);
 
     /**
-     * The parameters taken from the queryString of the request. 
+     * The parameters taken from the queryString of the request.
      * A queryString parameter may have multiple values.
-     * Returns an empty list if there is no queryString. 
+     * Returns an empty list if there is no queryString.
      * The map is immutable.
      */
     public Map<String, List<String>> getQueryStringParams();
@@ -269,7 +279,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public List<String> getQueryStringParam(String name);
 
     /**
-     * The first (and often only) value of a specific parameter taken from the 
+     * The first (and often only) value of a specific parameter taken from the
      * queryString of the request.
      * Returns <code>null</code> if the parameter doesn't exist.
      */
@@ -300,7 +310,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public String getStringBody(String encoding);
 
     /**
-     * The request's body deserialized to an immutable <code>JsonObject</code>. 
+     * The request's body deserialized to an immutable <code>JsonObject</code>.
      * A valid <code>Json</code> body
      * is expected.
      * Note that once part of the InputStream is read, it can't be read again!
@@ -322,7 +332,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public <T> T getJsonBody(Class<T> clazz);
 
     /**
-     * The request's body deserialized to an immutable <code>JsonObject</code>. 
+     * The request's body deserialized to an immutable <code>JsonObject</code>.
      * A valid <code>XML</code> body
      * is expected.
      * Note that once part of the InputStream is read, it can't be read again!
@@ -344,7 +354,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public <T> T getXmlBody(Class<T> clazz);
 
     /**
-     * The data submitted as a <code>FORM</code> body 
+     * The data submitted as a <code>FORM</code> body
      * (in general via a <code>POST</code> method),
      * as a <code>Map</code>.
      * <p>
@@ -361,7 +371,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public Map<String, List<String>> getFormBodyRaw();
 
     /**
-     * The data submitted as a <code>FORM</code> body 
+     * The data submitted as a <code>FORM</code> body
      * (in general via a <code>POST</code> method),
      * as an immutable <code>JsonObject</code>.
      * <p>
@@ -369,10 +379,10 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * <p>
      * The root keys will be parsed as <code>JsonPaths</code> to build the final
      * <code>JsonObject</code>. For example : <code>user.books[1].name</code>
-     * will be converted to a "user" <code>JsonObject</code> with a "books" arrays 
-     * with one book at index "1" and this book 
+     * will be converted to a "user" <code>JsonObject</code> with a "books" arrays
+     * with one book at index "1" and this book
      * has a "name" property.
-     * 
+     *
      * @return an <em>immutable</em> instance of <code>JsonObject</code>.
      * If you want to get a mutable instance, you can call <code>.clone(true)</code>
      * on this object.
@@ -380,12 +390,12 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public JsonObject getFormBodyAsJsonObject();
 
     /**
-     * Gets the part of the submitted <code>FORM</code> body 
+     * Gets the part of the submitted <code>FORM</code> body
      * that is scoped by the specified <code>root key</code>.
      * <p>
      * When an HTML form is submitted, there may be utility fields
      * (such as a CSRF token, etc.) in addition to
-     * business logic fields. 
+     * business logic fields.
      * By using this {@link #getFormOrCreate(String)}
      * you only get the fields which names start with the specified
      * <code>root key</code>. For example, if this HTML form was submitted:
@@ -408,7 +418,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * The same field is returned, everytime this method is called
      * with the same <code>name</code>.
      * <p>
-     * If the root key is not found in the POSTed data, an empty 
+     * If the root key is not found in the POSTed data, an empty
      * form will be created.
      * <p>
      * Never returns <code>null</code>.
@@ -418,12 +428,12 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public Form getFormOrCreate(String rootKey);
 
     /**
-     * Gets the part of the submitted <code>FORM</code> body 
+     * Gets the part of the submitted <code>FORM</code> body
      * that is scoped by the specified <code>root key</code>.
      * <p>
      * When an HTML form is submitted, there may be utility fields
      * (such as a CSRF token, etc.) in addition to
-     * business logic fields. 
+     * business logic fields.
      * By using this {@link #getFormOrCreate(String)}
      * you only get the fields which names start with the specified
      * <code>root key</code>. For example, if this HTML form was submitted:
@@ -446,17 +456,17 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * The same field is returned, everytime this method is called
      * with the same <code>name</code>.
      * <p>
-     * If the root key is not found in the POSTed data, an empty 
+     * If the root key is not found in the POSTed data, an empty
      * form will be created.
      * <p>
      * The key are <em>case sensitive</em>.
-     * 
+     *
      * @return the form if it exists or <code>null</code> otherwise.
      */
     public Form getForm(String rootKey);
 
     /**
-     * The key of the map if the HTML's <code>name</code> attribute. 
+     * The key of the map if the HTML's <code>name</code> attribute.
      * <p>
      * More than one uploaded file with the same name is possible.
      * The map is immutable.
@@ -491,7 +501,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     /**
      * Returns the <code>ETags</code> from
      * the <code>If-None-Match</code> header, if any.
-     * 
+     *
      * @return the <code>If-None-Match</code> ETags or an empty
      * list if there is none.
      */
@@ -500,7 +510,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     /**
      * Returns the <code>ETags</code> from
      * the <code>If-Match</code> header, if any.
-     * 
+     *
      * @return the <code>If-Match</code> ETags or an empty list
      * if there is none.
      */
@@ -522,7 +532,7 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
 
     /**
      * Gets the Flash message, if any.
-     * 
+     *
      * @return the Flash message or <code>null</code> if there
      * is none.
      */
@@ -535,21 +545,21 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
 
 
     /**
-     * Gets the the request cookies values as a Map, 
+     * Gets the the request cookies values as a Map,
      * using the names of the cookies as the keys.
      */
     public Map<String, String> getCookiesValues();
 
     /**
      * Gets the value of a request cookie by name.
-     * 
+     *
      * @return the value or <code>null</code> if not found.
      */
     public String getCookieValue(String name);
 
 
     /**
-     * Did we validate that the current user has 
+     * Did we validate that the current user has
      * cookies enabled?
      */
     public boolean isCookiesEnabledValidated();

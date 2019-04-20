@@ -14,7 +14,7 @@ import org.spincast.plugins.session.SpincastSession;
 
 import com.google.inject.Inject;
 
-public class SessionManagerTest extends SessionTestBase {
+public class SessionManagerTest extends TestRepoTestBase {
 
     @Inject
     protected JsonManager jsonManager;

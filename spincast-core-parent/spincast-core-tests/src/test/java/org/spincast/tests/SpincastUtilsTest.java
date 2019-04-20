@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.spincast.core.guice.SpincastPlugin;
@@ -520,4 +521,65 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         }
     }
 
+    @Test
+    public void convertToUrlToken() throws Exception {
+        String urlToken = getSpincastUtils().convertToUrlToken("__‛'ïœ𣎴𠀋ᚡŠ šÈÆæÐ_-_-\n\tx__pð𝅘𝅥𝅯’\" àÉ  5---4-");
+        assertEquals("is-se-x-p-ae-5-4", urlToken);
+    }
+
+    @Test
+    public void convertToUrlTokenEmpty() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken("");
+        assertTrue(uuid.length() == urlToken.length());
+    }
+
+    @Test
+    public void convertToUrlTokenEmpty2() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken("  ");
+        assertTrue(uuid.length() == urlToken.length());
+    }
+
+    @Test
+    public void convertToUrlTokenEmpty3() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken("Æ");
+        assertTrue(uuid.length() == urlToken.length());
+    }
+
+    @Test
+    public void convertToUrlTokenEmpty4() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken("Æ _-");
+        assertTrue(uuid.length() == urlToken.length());
+    }
+
+    @Test
+    public void convertToUrlTokenNull() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken(null);
+        assertTrue(uuid.length() == urlToken.length());
+    }
+
+    @Test
+    public void convertToUrlTokenEmptyWithDefault() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken("", uuid);
+        assertEquals(uuid, urlToken);
+    }
+
+    @Test
+    public void convertToUrlTokenEmptyWithDefault2() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken("Æ _-", uuid);
+        assertEquals(uuid, urlToken);
+    }
+
+    @Test
+    public void convertToUrlTokenNullWithDefault() throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        String urlToken = getSpincastUtils().convertToUrlToken(null, uuid);
+        assertEquals(uuid, urlToken);
+    }
 }

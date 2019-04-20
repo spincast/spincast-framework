@@ -343,21 +343,29 @@ router.ALL().pos(100).skipResourcesRequests().handle(spincastSessionFilter::afte
                 
                 <h4 id="installation_repo">
                     <a class="anchor_small" href="#installation_repo" title="permanent link"></a>
-                    Providing a repository implementation
+                    Repository implementation
                 </h4>
 
                 <p>
-                    You need to bind an implementation of the 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>,
-                    in the Guice context. The reason is that this plugin is totally agnostic on how the sessions are actually persisted. 
-                    <em>You</em> decide how and where to save them...
+                    This plugin is totally agnostic on how the sessions are actually persisted. You
+                    bind an implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>
+                    to control how the sessions are actually saved. In general, you are going to save them in the same database/data source that 
+                    your application already uses.
                 </p>
                 <p>
-                    In general, you are going to save them in the same database/data source that your application already uses.
+                    The default repository implementation is 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/repositories/SpincastSessionRepositoryDefault.html">SpincastSessionRepositoryDefault</a>
+                    which saved the sessions <em>in a cookie</em> on the users.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    We recommend that you do bind a custom repository using a real database! The default repository, that uses cookies,
+                    is somewhat limited. The number of characters that can be stored in a cookie 
+                    <a href="https://stackoverflow.com/questions/640938/what-is-the-maximum-size-of-a-web-browsers-cookies-key">is indeed limited</a>...
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    There are four methods to implement: 
+                    There are four methods to implement a custom repository: 
                     
                     <ul class="apiList">
                         <li>
@@ -564,10 +572,23 @@ SpincastSession session =
                             <code class="apiItem">String <span>getSessionIdCookieName</span>()</code>
                             <div class="well">
                                 <p>
-                                    The name of the cookie that is used to store the session, on the user.
+                                    The name of the cookie that is used to store the session id, on the user.
                                 </p>
                                 <p>
                                     Defaults to "<code>spincast_sid</code>". 
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_cookie_session" href="#configs_cookie_session" title="permanent link"></a>
+                            <code class="apiItem">String <span>getDefaultCookieRepositoryCookieName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    When the <a href="#installation_repo">default repository</a>
+                                    is used, this will be the name of the cookie used to store a session, on the user.
+                                </p>
+                                <p>
+                                    Defaults to "<code>spincast_srepo</code>". 
                                 </p>
                             </div>
                         </li>

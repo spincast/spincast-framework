@@ -1170,4 +1170,29 @@ public class SpincastUtilsDefault implements SpincastUtils {
         return endsWith;
     }
 
+    @Override
+    public String convertToUrlToken(String str) {
+        return convertToUrlToken(str, null);
+    }
+
+    @Override
+    public String convertToUrlToken(String str, String resultIfEmpty) {
+        if (!StringUtils.isBlank(str)) {
+            str = StringUtils.stripAccents(str);
+            str = str.replaceAll("( |_)", "-");
+            str = str.replaceAll("(?i)[^a-z0-9\\-]", "");
+            str = str.replaceAll("(-)\\1+", "$1");
+            str = StringUtils.strip(str, "-");
+            str = str.toLowerCase();
+        }
+        if (StringUtils.isBlank(str)) {
+            if (resultIfEmpty != null) {
+                return resultIfEmpty;
+            }
+            return UUID.randomUUID().toString();
+        }
+        return str;
+    }
+
+
 }

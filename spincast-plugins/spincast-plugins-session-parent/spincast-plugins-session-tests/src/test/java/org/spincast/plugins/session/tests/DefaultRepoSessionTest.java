@@ -21,7 +21,7 @@ import org.spincast.plugins.session.SpincastSession;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SessionTest extends TestRepoTestBase {
+public class DefaultRepoSessionTest extends SessionTestBase {
 
     protected static String mySessionId;
 
@@ -91,18 +91,22 @@ public class SessionTest extends TestRepoTestBase {
         mySessionId = response.getContentAsString();
         assertNotNull(mySessionId);
 
-        // Session cookie
-        Cookie sessionCookie = response.getCookie(getSpincastSessionConfig().getSessionIdCookieName());
-        assertNotNull(sessionCookie);
+        // SessionId cookie
+        Cookie sessionIdCookie = response.getCookie(getSpincastSessionConfig().getSessionIdCookieName());
+        assertNotNull(sessionIdCookie);
 
-        String sessionCookieValue = sessionCookie.getValue();
+        String sessionCookieValue = sessionIdCookie.getValue();
         assertNotNull(sessionCookieValue);
         assertEquals(mySessionId, sessionCookieValue);
 
         //==========================================
         // The session was saved
         //==========================================
-        assertEquals(1, savedSession.size());
+        Cookie sessionCookie = response.getCookie(getSpincastSessionConfig().getDefaultCookieRepositoryCookieName());
+        assertNotNull(sessionCookie);
+        JsonObject sessionObj = getJsonManager().fromString(sessionCookie.getValue());
+        assertNotNull(sessionObj);
+        assertEquals(sessionObj.getString("kiki"), "koko");
     }
 
     @Test
@@ -142,13 +146,11 @@ public class SessionTest extends TestRepoTestBase {
         assertNotNull(sessionId);
         assertEquals(mySessionId, sessionId);
 
-        // Session cookie
-        Cookie sessionCookie = response.getCookie(getSpincastSessionConfig().getSessionIdCookieName());
+        Cookie sessionCookie = response.getCookie(getSpincastSessionConfig().getDefaultCookieRepositoryCookieName());
         assertNotNull(sessionCookie);
-
-        String sessionCookieValue = sessionCookie.getValue();
-        assertNotNull(sessionCookieValue);
-        assertEquals(sessionId, sessionCookieValue);
+        JsonObject sessionObj = getJsonManager().fromString(sessionCookie.getValue());
+        assertNotNull(sessionObj);
+        assertEquals(sessionObj.getString("kiki"), "koko");
     }
 
     @Test
@@ -325,15 +327,17 @@ public class SessionTest extends TestRepoTestBase {
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         saveResponseCookies(response);
 
-        // Session cookie
-        Cookie sessionCookie = response.getCookie(getSpincastSessionConfig().getSessionIdCookieName());
-        assertNotNull(sessionCookie);
+        // Session id cookie
+        Cookie sessionIdCookie = response.getCookie(getSpincastSessionConfig().getSessionIdCookieName());
+        assertNotNull(sessionIdCookie);
 
         //==========================================
         // The session was saved
         //==========================================
-        assertEquals(1, savedSession.size());
+        Cookie sessionCookie = response.getCookie(getSpincastSessionConfig().getDefaultCookieRepositoryCookieName());
+        assertNotNull(sessionCookie);
+        JsonObject sessionObj = getJsonManager().fromString(sessionCookie.getValue());
+        assertNotNull(sessionObj);
     }
-
 
 }

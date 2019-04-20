@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.guice.SpincastPlugin;
+import org.spincast.core.json.JsonManager;
 import org.spincast.plugins.session.SpincastSession;
 import org.spincast.plugins.session.SpincastSessionFilter;
 import org.spincast.plugins.session.SpincastSessionManager;
@@ -27,8 +28,15 @@ public abstract class SessionTestBase extends NoAppStartHttpServerTestingBase {
     @Inject
     protected SpincastSessionManager sessionManager;
 
+    @Inject
+    protected JsonManager jsonManager;
+
     protected SpincastSessionManager getSessionManager() {
         return this.sessionManager;
+    }
+
+    protected JsonManager getJsonManager() {
+        return this.jsonManager;
     }
 
     @Inject
@@ -58,9 +66,15 @@ public abstract class SessionTestBase extends NoAppStartHttpServerTestingBase {
 
             @Override
             protected void configure() {
-                bind(SpincastSessionRepository.class).to(TestSessionRepository.class).in(Scopes.SINGLETON);
+                if (getSpincastSessionRepositoryImplClass() != null) {
+                    bind(SpincastSessionRepository.class).to(getSpincastSessionRepositoryImplClass()).in(Scopes.SINGLETON);
+                }
             }
         });
+    }
+
+    protected Class<? extends SpincastSessionRepository> getSpincastSessionRepositoryImplClass() {
+        return null; // use the default repo
     }
 
     @Override

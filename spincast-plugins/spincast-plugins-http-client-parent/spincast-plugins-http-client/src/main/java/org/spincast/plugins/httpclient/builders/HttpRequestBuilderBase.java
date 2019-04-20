@@ -2,6 +2,7 @@ package org.spincast.plugins.httpclient.builders;
 
 import java.lang.reflect.Field;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -188,7 +189,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         // Some magic is required here, sadly... :-(
         //
         // We want to know if a Cookie Store has been
-        // defined on the custom HttpClientBuilder, so we 
+        // defined on the custom HttpClientBuilder, so we
         // do not overwrite it with a default one.
         //
         // HttpClientBuilder#setDefaultCookieStore(...) is final so we
@@ -316,7 +317,10 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
             return null;
         }
 
-        BasicClientCookie apacheCookie = new BasicClientCookie(cookie.getName(), cookie.getValue());
+        String name = convertToApacheCookieTweakName(cookie.getName());
+        String value = convertToApacheCookieTweakValue(cookie.getValue());
+
+        BasicClientCookie apacheCookie = new BasicClientCookie(name, value);
         apacheCookie.setDomain(cookie.getDomain());
         apacheCookie.setPath(cookie.getPath());
         apacheCookie.setVersion(cookie.getVersion());
@@ -324,6 +328,22 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
         apacheCookie.setExpiryDate(cookie.getExpires());
 
         return apacheCookie;
+    }
+
+    protected String convertToApacheCookieTweakName(String name) {
+        try {
+            return URLEncoder.encode(name, "UTF-8");
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    protected String convertToApacheCookieTweakValue(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
     }
 
     @Override
@@ -480,7 +500,7 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
             org.spincast.shaded.org.apache.http.HttpResponse response = sendGetRawResponse();
 
             //==========================================
-            // Then parses the respnse and create the 
+            // Then parses the respnse and create the
             // SpincastTestHttpResponse to return.
             //==========================================
             try {
