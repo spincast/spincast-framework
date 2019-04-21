@@ -64,7 +64,7 @@
                     Overview
                 </h3>
 	            <p>
-	                This plugin provides the logic required to manage sessions for the users of your application.
+	                This plugin provides the logic required to manage sessions associated to the users of your application.
                 </p>
                 <p>
                     In summary, a <code>session</code> is an object containing informations about a particular user.
@@ -220,6 +220,12 @@
                 <p>
                     Just don't be surprised if you see transitive dependencies being added to your application!
                 </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    It is always a good idea to read the documentation of the plugins that are
+                    automatically added. You
+                    may want to modify some of their default configurations!
+                </p> 
             </section> 
             
             <section id="installation">
@@ -230,10 +236,9 @@
                 </h3>
                 
                 <p>
-                    The installation of this plugin requires a couple of steps. 
-                    To work properly, it <em>needs</em> a custom
-                    implementation of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>
-                    to be bound in the Guice context and <em>needs</em> two filters to be added to your router.
+                    This plugin work out-of-the-box, but we recommend some of the parts to be tweaked! For example,
+                    the default <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>
+                    implementation, used to store the sessions, is based on <em>cookies</em>, and you may want a more robust solution.
                 </p>
                 <p>
                     But let's start with step one...
@@ -280,28 +285,41 @@ Spincast.configure()
                 
                 <h4 id="installation_filters">
                     <a class="anchor_small" href="#installation_filters" title="permanent link"></a>
-                    Adding the provided filters to your router
+                    Session filters
                 </h4>
-
                 <p>
-                    You need to add to the <a href="/documentation#filters">router</a> of your application
-                    two filters provided by the plugin:
-                </p>
-                <p>
+                    Two filters are required for this plugin to work properly.
+                    
                     <ul>
                         <li>
-                            The first one, a <em>before</em> filter, <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionFilter.html#before-org.spincast.core.exchange.RequestContext-">SpincastSessionFilter#before</a>, 
-                            will make sure the session of the current visitor is loaded and accessible to your application. 
+                            The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionFilter.html#before-org.spincast.core.exchange.RequestContext-">first filter</a>, a <em>before</em> filter, makes sure the session is loaded and
+                            available through your application.
                         </li>
-                        <li>
-                            The second one, an <em>after</em> filter, <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionFilter.html#after-org.spincast.core.exchange.RequestContext-">SpincastSessionFilter#after</a>, 
-                            will make sure a dirty session (a session which has been modified) will be saved in your database, once the request is over.
-                        </li> 
-                    </ul>
+                         <li>
+                            The <a class="javadoc" href="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionFilter.html#after-org.spincast.core.exchange.RequestContext-">second filter</a>, an <em>after</em> filter, makes sure a modified session is
+                            saved at the end of a request.
+                        </li>
+                    </ul>   
                 </p>
                 <p>
-                    For example, in the class where you add the filters for your application:
-
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    By default, those filters are automatically added by the plugin! You can disable this by
+                    setting <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfig.html#isAutoAddSessionFilters--">isAutoAddSessionFilters()</a>
+                    to <code>false</code>.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The default positions used to add those filters are <code>-100</code> and <code>100</code>
+                    respectively. If you let the plugin bind the filters, you can still modify those positions
+                    by using the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfig.html#getAutoAddedFilterBeforePosition--">getAutoAddedFilterBeforePosition()</a>
+                    and <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfig.html#getAutoAddedFilterAfterPosition--">getAutoAddedFilterAfterPosition()</a>
+                    configurations.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+                    To bind the filters by yourself (if you need full control), disable <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfig.html#isAutoAddSessionFilters--">isAutoAddSessionFilters()</a>
+                    and then:
+                    
                     {% verbatim %}
                     <div>
                         <p>
@@ -310,35 +328,41 @@ Spincast.configure()
 SpincastSessionFilter spincastSessionFilter;
 
 // "Before" filter
-router.ALL().pos(-1000).skipResourcesRequests().handle(spincastSessionFilter::before);
-
+router.ALL()
+      .id(SpincastSessionFilter.ROUTE_ID_BEFORE_FILTER)
+      .pos(-1000)
+      .skipResourcesRequests()
+      .handle(spincastSessionFilter::before);
+      
 // "After" filter
-router.ALL().pos(100).skipResourcesRequests().handle(spincastSessionFilter::after);
+router.ALL()
+      .id(SpincastSessionFilter.ROUTE_ID_AFTER_FILTER)
+      .pos(200)
+      .skipResourcesRequests()
+      .handle(spincastSessionFilter::after);
 </pre>
                         </p>
                     </div> 
                     {% endverbatim %} 
                 </p>
                 <p>
-                    <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    Those filters are not automatically added to the router by the plugin (even if they could). We
-                    decided to do it this way because in our opinion it is clearer when pretty much all the filters 
-                    of an application are grouped together...
-                    Therefore, <em>you</em> are responsible to add them to the router and to choose 
-                    which "<code>positions</code>" they must be added to, considering your other filters.
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    By using the provided <em>ids</em> ("<code>SpincastSessionFilter.ROUTE_ID_BEFORE_FILTER</code>" and
+                    "<code>SpincastSessionFilter.ROUTE_ID_AFTER_FILTER</code>") you make sure the filters will
+                    only be added by you, since the same <em>id</em> can only be used once (otherwise an exception
+                    is thrown when the application starts).
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    In a typical application, a filter that is often created is one to retrieve a logged in
+                    In a typical application, a custom filter that is often created and added is one to retrieve a logged in
                     <code>User</code> from the database and add it to the <a href="/plugins/spincast-variables-addon">request's variables</a>, 
-                    so it is easily accessible to the application's code. 
-                </p>
-                <p>
-                    Such <code>UserFilter</code> would be added at a position <em>after</em> the 
+                    so the user is easily accessible to the application's code. 
+                    Such <code>UserFilter</code> would probably need to be added at a position <em>after</em> the 
                     <code>spincastSessionFilter::before</code> filter! Indeed,
                     the <code>UserFilter</code> would <em>use the session of the current visitor</em> to determine 
                     if he is a logged in user or not and, if so, what is his "<code>userId</code>" (an <em>attribute</em>
-                    saved in the session!).
+                    saved in the session!). This is an example of why being able to modify the positions of
+                    filters may be important.
                 </p>
                 
                 <h4 id="installation_repo">
@@ -347,25 +371,22 @@ router.ALL().pos(100).skipResourcesRequests().handle(spincastSessionFilter::afte
                 </h4>
 
                 <p>
-                    This plugin is totally agnostic on how the sessions are actually persisted. You
-                    bind an implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>
-                    to control how the sessions are actually saved. In general, you are going to save them in the same database/data source that 
-                    your application already uses.
-                </p>
-                <p>
-                    The default repository implementation is 
+                    This plugin is totally agnostic on how the sessions are actually persisted. It is the
+                    implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/SpincastSessionRepository.html">SpincastSessionRepository</a>
+                    that controls how the sessions are actually saved. The default implementation is 
                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/repositories/SpincastSessionRepositoryDefault.html">SpincastSessionRepositoryDefault</a>
                     which saved the sessions <em>in a cookie</em> on the users.
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    We recommend that you do bind a custom repository using a real database! The default repository, that uses cookies,
+                    Even if a default repository is provided, we recommend that you do bind a custom repository <em>using a real database</em>! 
+                    The default repository, that uses cookies,
                     is somewhat limited. The number of characters that can be stored in a cookie 
                     <a href="https://stackoverflow.com/questions/640938/what-is-the-maximum-size-of-a-web-browsers-cookies-key">is indeed limited</a>...
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" /> 
-                    There are four methods to implement a custom repository: 
+                    There are four methods to implement in a custom repository: 
                     
                     <ul class="apiList">
                         <li>
@@ -588,10 +609,52 @@ SpincastSession session =
                                     is used, this will be the name of the cookie used to store a session, on the user.
                                 </p>
                                 <p>
-                                    Defaults to "<code>spincast_srepo</code>". 
+                                    Defaults to "<code>spincast_session</code>". 
                                 </p>
                             </div>
                         </li>
+                        <li>
+                            <a class="anchor_small" id="configs_cookie_isAutoAddSessionFilters" href="#configs_cookie_isAutoAddSessionFilters" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isAutoAddSessionFilters</span>()</code>
+                            <div class="well">
+                                <p>
+                                     Should the required <em>before</em> and <em>after</em>
+                                     filters be added automatically? If <code>false</code>, you will have to add them by
+                                     yourself.
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code>. 
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="configs_cookie_getAutoAddedFilterBeforePosition" href="#configs_cookie_getAutoAddedFilterBeforePosition" title="permanent link"></a>
+                            <code class="apiItem">int <span>getAutoAddedFilterBeforePosition</span>()</code>
+                            <div class="well">
+                                <p>
+                                     When the session filters are added automatically, 
+                                     this will be the position of the <code>before</code>
+                                     filter.
+                                </p>
+                                <p>
+                                    Defaults to <code>-100</code>. 
+                                </p>
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="configs_cookie_getAutoAddedFilterAfterPosition" href="#configs_cookie_getAutoAddedFilterAfterPosition" title="permanent link"></a>
+                            <code class="apiItem">int <span>getAutoAddedFilterAfterPosition</span>()</code>
+                            <div class="well">
+                                <p>
+                                     When the session filters are added automatically, 
+                                     this will be the position of the <code>after</code>
+                                     filter.
+                                </p>
+                                <p>
+                                    Defaults to <code>100</code>. 
+                                </p>
+                            </div>
+                        </li> 
                     </ul>
                 </p> 
             </section>

@@ -83,43 +83,6 @@ public abstract class SessionTestBase extends NoAppStartHttpServerTestingBase {
 
         savedSession = new HashMap<String, SpincastSession>();
         deleteOldSessionsCalled = new int[]{0};
-
-        //==========================================
-        // Add the session filters
-        // We add them with ".spicastCoreRouteOrPluginRoute()"
-        // so they are not cleared before each test...
-        //==========================================
-        getRouter().ALL().pos(-1000).spicastCoreRouteOrPluginRoute().skipResourcesRequests()
-                   .handle(getSpincastSessionFilter()::before);
-        getRouter().ALL().pos(100).spicastCoreRouteOrPluginRoute().skipResourcesRequests()
-                   .handle(getSpincastSessionFilter()::after);
-    }
-
-    /**
-     * Session repository implementation
-     */
-    public static class TestSessionRepository implements SpincastSessionRepository {
-
-        @Override
-        public SpincastSession getSession(String sessionId) {
-            SpincastSession session = savedSession.get(sessionId);
-            return session;
-        }
-
-        @Override
-        public void saveSession(SpincastSession session) {
-            savedSession.put(session.getId(), session);
-        }
-
-        @Override
-        public void deleteSession(String sessionId) {
-            savedSession.remove(sessionId);
-        }
-
-        @Override
-        public void deleteOldInactiveSession(int sessionMaxInactiveMinutes) {
-            deleteOldSessionsCalled[0]++;
-        }
     }
 
 }

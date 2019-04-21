@@ -20,7 +20,7 @@ public class SpincastSessionManagerDefault implements SpincastSessionManager {
     protected final static Logger logger = LoggerFactory.getLogger(SpincastSessionManagerDefault.class);
 
     /**
-     * The name of the request context variable used to 
+     * The name of the request context variable used to
      * save the user session.
      */
     public static final String REQUEST_CONTEXT_VARIABLE_SESSION =
@@ -93,6 +93,10 @@ public class SpincastSessionManagerDefault implements SpincastSessionManager {
         try {
             RequestContext<?> context = getRequestContextProvider().get();
             session = (SpincastSession)context.variables().get(REQUEST_CONTEXT_VARIABLE_SESSION);
+            if (session == null) {
+                logger.error("No session found in request contaxt variables. Make sure the filters " +
+                             "provided by the Spincast Session plugin have been added properly to your router!");
+            }
 
         } catch (OutOfScopeException | ProvisionException ex) {
             // ok, not in the scope a a request

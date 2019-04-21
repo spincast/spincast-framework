@@ -91,7 +91,12 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
 
             @Override
             public void handle(R context) {
-                String newPathOrFullUrl = handler.handle(context, getOldPath());
+                String pathAndQuerystyring = context.request().getRequestPath();
+                String qs = context.request().getQueryString(false);
+                if (!StringUtils.isBlank(qs)) {
+                    pathAndQuerystyring += "?" + qs;
+                }
+                String newPathOrFullUrl = handler.handle(context, pathAndQuerystyring);
                 throwRedirect(context, newPathOrFullUrl);
             }
         });

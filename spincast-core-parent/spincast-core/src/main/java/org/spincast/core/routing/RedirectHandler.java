@@ -8,6 +8,6 @@ import org.spincast.core.websocket.WebsocketContext;
  */
 public interface RedirectHandler<R extends RequestContext<?>, W extends WebsocketContext<?>> {
 
-    public String handle(R context, String originalPath);
+    public String handle(R context, String pathAndQuerystring);
 
 }

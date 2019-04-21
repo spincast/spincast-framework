@@ -513,16 +513,18 @@
                     </ul>
                 </p>
                 <p>
-                    Those dependencies <em>will be automatically installed</em>, 
-                    you are not required to install them by yourself in your application. 
-                </p> 
-                <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    Note that the default configurations will be used for those plugins, 
-                    if you haven't installed them by yourself in your application...
-                    In some case, we <em>do</em> recommend custom configurations though (for example,
-                    we recommend a <a href="/plugins/spincast-session#installation_repo">custom repository</a> for
-                    the <code>Spincast Session</code> plugin), so make sure you read the documentation of the plugins!
+                    Those dependencies <em>will be automatically installed</em>, but you may need to 
+                    configure them! For example, the <code>Spincast Session</code> plugin will
+                    add a <a href="/plugins/spincast-session#installation_repo">default repository</a> <em>that uses cookies</em> 
+                    in order to store the sessions... you may want to bind a custom one instead. It will also bind
+                    <a href="/plugins/spincast-session#installation_filters">two filters</a>, by default at positions <code>-100</code>
+                    and <code>100</code>. You may want to bind a custom implementation
+                    of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/session/config/SpincastSessionConfig.html">SpincastSessionConfig</a>
+                    if you need to modify those positions! 
+                </p>
+                <p>
+                    In other words, make sure you read the documentation of the automatically installed plugins!
                 </p>
             </section> 
             

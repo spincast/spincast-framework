@@ -412,7 +412,7 @@ ul ul {
 }
 .subMenu {
     z-index:100;
-    color: #000000;
+    color: #FFFFFF;
     width:100%;
     border-top: solid 1px #4C4C4C;
     border-bottom: solid 1px #4C4C4C !important;
@@ -421,7 +421,7 @@ ul ul {
 
 .subMenu a {
     font-size:19px; 
-    color:#000000 !important;
+    color: #FFFFFF !important;
 }
 
 .subMenu .subMenuIcon {
@@ -448,7 +448,7 @@ ul ul {
     border-bottom: 0 !important;
 }
 .menu.subMenu a:hover {
-    border-bottom: solid 2px #323F1C !important;
+    border-bottom: solid 2px #FFFFFF !important;
 }
 
 .menu ul {
@@ -499,10 +499,8 @@ ul ul {
 .about #menu_about a
 {
     color: #FBFFF4;
-    border-bottom: 2px solid #323F1C; 
+    border-bottom: 2px solid #FFFFFF; 
 }
-
-
 
 .nav-tabs a {
     color: #346A91;
@@ -528,9 +526,8 @@ ul ul {
 .demo_form_auth #menu_demos_form_auth a,
 .demo_html_forms #menu_demos_html_forms a
 {
-    border-bottom: 3px solid #000000; 
-    color:#000000 !important;
-    font-style: italic;
+    border-bottom: 3px solid #FFFFFF; 
+    color: #FFFFFF !important;
 }
 
 .admin #sectionTitle h2 {
@@ -542,7 +539,7 @@ ul ul {
     font-weight:bold;
 }
 #adminMenu li a:hover {
-    color: #002;
+    color: #FFFFFF;
 }
 
 @media only screen and (max-width: 1024px) {
@@ -649,18 +646,19 @@ ul ul {
 .quickStartWrapper a, .quickStartWrapper a:active, .quickStartWrapper a:visited
 {
     width:100%;
-    background-color: #E8F2D2;
-    color:#000000;
+    background-color: #779943;
+    color: #FFFFFF;
     border:solid 2px #000000;
     padding:20px 0px;
-    font-size: 18px;
+    font-size: 20px;
     text-decoration:none;
     margin-right:px;
 }
 
 .quickStartWrapper a:hover {
 	text-decoration: none !important;
-	border-color: #779943;
+    background-color: #E8F2D2;
+    color: #000000;
 }
 .quickStartWrapper > a:hover i {
 	color:#FFFFFF;
@@ -1192,11 +1190,14 @@ pre {
     color: #000000;
 }
 .breadcrumb, .subMenu {
-    background-color: #E8F2D2;
+    background-color: #779943;
 }
 
 .breadcrumb > li + li::before, .breadcrumb a, .breadcrumb > .active {
-    color:#000000 !important;
+    color: #FFFFFF !important;
+}
+.breadcrumb a:hover {
+    border-color: #FFFFFF;
 }
 
 .breadcrumb span {

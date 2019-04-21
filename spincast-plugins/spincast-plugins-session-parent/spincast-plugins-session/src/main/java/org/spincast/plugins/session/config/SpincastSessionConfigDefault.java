@@ -36,11 +36,23 @@ public class SpincastSessionConfigDefault implements SpincastSessionConfig {
     }
 
     @Override
+    public boolean isAutoAddSessionFilters() {
+        return true;
+    }
+
+    @Override
     public String getDefaultCookieRepositoryCookieName() {
-        return "spincast_srepo";
+        return "spincast_session";
+    }
+
+    @Override
+    public int getAutoAddedFilterBeforePosition() {
+        return -100;
+    }
+
+    @Override
+    public int getAutoAddedFilterAfterPosition() {
+        return 100;
     }
 
 }
-
-
-

@@ -26,6 +26,7 @@ import org.spincast.plugins.session.SpincastSessionManager;
 import org.spincast.plugins.session.SpincastSessionPlugin;
 import org.spincast.plugins.session.SpincastSessionRepository;
 import org.spincast.plugins.session.config.SpincastSessionConfig;
+import org.spincast.plugins.session.config.SpincastSessionConfigDefault;
 import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 import com.google.inject.Inject;
@@ -110,6 +111,14 @@ public abstract class FormsProtectionTestBase extends NoAppStartHttpServerTestin
                 bind(SpincastFormsDoubleSubmitProtectionRepository.class).to(TestFormsDoubleSubmitProtectionRepository.class)
                                                                          .in(Scopes.SINGLETON);
                 bind(SpincastScheduledTaskRegister.class).to(TestSpincastScheduledTaskRegistrer.class).in(Scopes.SINGLETON);
+
+                bind(SpincastSessionConfig.class).toInstance(new SpincastSessionConfigDefault() {
+
+                    @Override
+                    public boolean isAutoAddSessionFilters() {
+                        return false;
+                    }
+                });
             }
         });
     }

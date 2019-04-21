@@ -30,6 +30,11 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
         bind(SpincastSessionManager.class).to(getSpincastSessionManagerImplClass())
                                           .in(Scopes.SINGLETON);
 
+        //==========================================
+        // Filters to be added as soon as the app starts
+        //==========================================
+        bind(SpincastSessionFilterAdder.class).asEagerSingleton();
+
         install(new FactoryModuleBuilder().implement(SpincastSession.class,
                                                      getSpincastUserSessionImplClass())
                                           .build(SpincastSessionFactory.class));
@@ -74,5 +79,7 @@ public class SpincastSessionPluginModule extends SpincastGuiceModuleBase {
         return SpincastSessionRepositoryDefault.class;
     }
 
-
+    protected Class<? extends SpincastSessionFilterAdder> getSpincastSessionFilterAdderImplClass() {
+        return SpincastSessionFilterAdder.class;
+    }
 }

@@ -21,7 +21,7 @@ import org.spincast.plugins.session.SpincastSession;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SessionTest extends TestRepoTestBase {
+public class SessionTest extends CustomRepoTestBase {
 
     protected static String mySessionId;
 

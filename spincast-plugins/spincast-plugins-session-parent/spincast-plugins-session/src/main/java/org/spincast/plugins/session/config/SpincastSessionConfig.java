@@ -57,6 +57,29 @@ public interface SpincastSessionConfig {
      */
     public int getUpdateNotDirtySessionPeriodInSeconds();
 
+    /**
+     * Should the required <em>before</em> and <em>after</em>
+     * filters be added automatically?
+     * <p>
+     * If <code>false</code>, you will have to add them by
+     * yourself.
+     */
+    public boolean isAutoAddSessionFilters();
+
+    /**
+     * When the session filters are added automatically,
+     * this would be the position of the <code>before</code>
+     * filter.
+     */
+    public int getAutoAddedFilterBeforePosition();
+
+    /**
+     * When the session filters are added automatically,
+     * this would be the position of the <code>after</code>
+     * filter.
+     */
+    public int getAutoAddedFilterAfterPosition();
+
 
 
 }
