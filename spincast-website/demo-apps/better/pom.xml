@@ -54,6 +54,18 @@
         <plugins>
         
             <!--=================================== 
+            Java 8 by default
+            ====================================-->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version><!--$NO-MVN-MAN-VER$-->
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        
+            <!--=================================== 
             Fat jar creation
             ====================================-->
             <plugin>
