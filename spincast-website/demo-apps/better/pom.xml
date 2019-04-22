@@ -64,6 +64,25 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            
+            <!--=================================== 
+            This adds the artifact version to the jar Manifest 
+            so it can be read using:
+            "getClass().getPackage().getImplementationVersion()".
+            ====================================-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version><!--$NO-MVN-MAN-VER$-->
+                <configuration>
+                    <archive>                   
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         
             <!--=================================== 
             Fat jar creation
