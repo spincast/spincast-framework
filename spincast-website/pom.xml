@@ -72,6 +72,16 @@
             <scope>test</scope>
         </dependency>
         
+        <!--=================================== 
+        Spincast Process Utils plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-process-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-exec</artifactId>
@@ -83,6 +93,9 @@
             <artifactId>jsoup</artifactId>
             <version>1.11.3</version>
         </dependency>
+        
+        
+        
 
     </dependencies>
 

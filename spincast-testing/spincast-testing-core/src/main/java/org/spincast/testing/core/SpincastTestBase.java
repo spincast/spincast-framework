@@ -26,6 +26,7 @@ import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastConfigTestingDefault;
 import org.spincast.testing.junitrunner.BeforeAfterClassMethodsProvider;
+import org.spincast.testing.junitrunner.CanBeDisabled;
 import org.spincast.testing.junitrunner.RepeatedClassAfterMethodProvider;
 import org.spincast.testing.junitrunner.SpincastJUnitRunner;
 import org.spincast.testing.junitrunner.TestFailureListener;
@@ -69,7 +70,8 @@ import com.google.inject.Scopes;
 @RunWith(SpincastJUnitRunner.class)
 public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvider,
                                        TestFailureListener,
-                                       RepeatedClassAfterMethodProvider {
+                                       RepeatedClassAfterMethodProvider,
+                                       CanBeDisabled {
 
     protected static final Logger logger = LoggerFactory.getLogger(SpincastTestBase.class);
 
@@ -82,9 +84,37 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     @Inject
     protected SpincastConfig spincastConfig;
 
+    /**
+     * Should the tests file be disabled?
+     * <p>
+     * This allow you to disable some tests file
+     * for example when they can only be ran
+     * from inside an IDE.
+     * <p>
+     * Note that this will be ran before everything
+     * (including {@link #beforeClass()}):
+     * no Guice context is available... But you can look
+     * at System properties, for example as a way of
+     * finding if the file must be ran or not.
+     *
+     */
+    @Override
+    public boolean isTestsFileDisabled() {
+        // Not disabled by default
+        return false;
+    }
+
+    /**
+     * Utility that return <code>true</code> if
+     * the current Maven profile is "release".
+     */
+    protected final boolean isMavenReleaseProfile() {
+        String mavenProfileId = System.getProperty("mavenProfileId");
+        return "release".equals(mavenProfileId);
+    }
+
     @Override
     public void beforeClass() {
-
         //==========================================
         // Extra System properties to add?
         //==========================================

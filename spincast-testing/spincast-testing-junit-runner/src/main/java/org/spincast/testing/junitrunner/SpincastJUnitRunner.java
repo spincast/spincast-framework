@@ -171,6 +171,14 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         this.runNotifier = notifier;
 
         //==========================================
+        // If the tests file disabled?
+        //==========================================
+        if (getTestClassInstance() instanceof CanBeDisabled && ((CanBeDisabled)getTestClassInstance()).isTestsFileDisabled()) {
+            logger.info("tests file disabled! Skipping...");
+            return;
+        }
+
+        //==========================================
         // We add a testFailure listener in case the
         // Test class implements TestFailureListener
         // to be informed of any failing test.
@@ -201,7 +209,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
                     if (loopsNbr > 1) {
                         logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopsNbr + " of " +
-                                         "test class " + getTestClass().getJavaClass().getName());
+                                    "test class " + getTestClass().getJavaClass().getName());
                     }
 
                     //==========================================
@@ -294,7 +302,7 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                         }
                     } else {
                         logger.info("An exception occured in the 'beforeClass()' method, " +
-                                         "so the 'afterClassLoops()' method won't be called.");
+                                    "so the 'afterClassLoops()' method won't be called.");
                     }
                 }
             }
@@ -338,8 +346,8 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
             if (loopsNbr > 1) {
                 logger.info("Execution " + (i + 1) + "/" + loopsNbr + " of " +
-                                 "test " + method.getMethod().getName() + " from " +
-                                 "test class " + getTestClass().getJavaClass().getName());
+                            "test " + method.getMethod().getName() + " from " +
+                            "test class " + getTestClass().getJavaClass().getName());
             }
 
             super.runChild(method, notifier);
