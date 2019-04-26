@@ -27,18 +27,7 @@ import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class QuickExecutableJarTest extends NoAppTestingBase {
-
-    @Override
-    public boolean isTestsFileDisabled() {
-        //==========================================
-        // This tests file can't be ran during a release
-        // since the executable jar has dependencies on
-        // other jars of the current version which won't be
-        // installed yet during the Maven "test" phase...
-        //==========================================
-        return isMavenReleaseProfile();
-    }
+public class QuickStartExecutableJarPostInstallTest extends NoAppTestingBase {
 
     @Override
     protected List<SpincastPlugin> getExtraPlugins() {
@@ -53,6 +42,7 @@ public class QuickExecutableJarTest extends NoAppTestingBase {
     @Override
     public void beforeClass() {
         super.beforeClass();
+
         unzipDemoProject();
         getSpincastProcessUtils().executeGoalOnExternalMavenProject(new ResourceInfo(this.demoDir.getAbsolutePath(), false),
                                                                     MavenProjectGoal.PACKAGE);
@@ -61,11 +51,11 @@ public class QuickExecutableJarTest extends NoAppTestingBase {
     protected void unzipDemoProject() {
         String targetZipFileName = UUID.randomUUID().toString() + ".zip";
         File targetZipFile = new File(createTestingFilePath(targetZipFileName));
-        getSpincastUtils().copyClasspathFileToFileSystem("/public/demo-apps/spincast-demos-quick.zip", targetZipFile);
+        getSpincastUtils().copyClasspathFileToFileSystem("/public/quickstart/spincast-quick-start.zip", targetZipFile);
 
         File dir = createTestingDir();
         getSpincastUtils().zipExtract(targetZipFile, dir);
-        this.demoDir = new File(dir, "spincast-demos-quick");
+        this.demoDir = new File(dir, "spincast-quickstart");
     }
 
     protected File getProjectDir() {
@@ -122,7 +112,7 @@ public class QuickExecutableJarTest extends NoAppTestingBase {
         }
 
         File demoJar =
-                new File(this.demoDir, "target/spincast-demos-quick-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar");
+                new File(this.demoDir, "target/spincast-quickstart-1.0.0-SNAPSHOT.jar");
         assertTrue(demoJar.isFile());
 
         JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
@@ -131,11 +121,22 @@ public class QuickExecutableJarTest extends NoAppTestingBase {
             handler.waitForPortOpen("localhost", 44419, 10, 1000);
 
             String urlBase = "http://localhost:44419";
+
             HttpResponse response = getHttpClient().GET(urlBase + "/").send();
             assertEquals(HttpStatus.SC_OK, response.getStatus());
-
             String content = response.getContentAsString();
-            assertEquals("<h1>Hello World!</h1>", content);
+            assertTrue(content.contains("<div class=\"butterflyCon\">"));
+
+            response = getHttpClient().GET(urlBase + "/robots.txt").send();
+            assertEquals(HttpStatus.SC_OK, response.getStatus());
+            content = response.getContentAsString();
+            assertTrue(content.contains("User-agent: *"));
+
+            response = getHttpClient().GET(urlBase + "/nope").send();
+            assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+            response = getHttpClient().GET(urlBase + "/exception-example").send();
+            assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
 
         } finally {
             handler.killJarProcess();

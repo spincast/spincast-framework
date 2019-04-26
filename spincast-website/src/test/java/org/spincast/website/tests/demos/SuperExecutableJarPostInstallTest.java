@@ -12,10 +12,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.core.json.JsonManager;
-import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ResourceInfo;
+import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.plugins.httpclient.HttpClient;
 import org.spincast.plugins.httpclient.HttpResponse;
@@ -24,23 +23,13 @@ import org.spincast.plugins.processutils.JarExecutionHandlerDefault;
 import org.spincast.plugins.processutils.MavenProjectGoal;
 import org.spincast.plugins.processutils.SpincastProcessUtils;
 import org.spincast.plugins.processutils.SpincastProcessUtilsPlugin;
+import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class SumExecutableJarTest extends NoAppTestingBase {
-
-    @Override
-    public boolean isTestsFileDisabled() {
-        //==========================================
-        // This tests file can't be ran during a release
-        // since the executable jar has dependencies on
-        // other jars of the current version which won't be
-        // installed yet during the Maven "test" phase...
-        //==========================================
-        return isMavenReleaseProfile();
-    }
+public class SuperExecutableJarPostInstallTest extends NoAppTestingBase {
 
     @Override
     protected List<SpincastPlugin> getExtraPlugins() {
@@ -59,16 +48,26 @@ public class SumExecutableJarTest extends NoAppTestingBase {
         unzipDemoProject();
         getSpincastProcessUtils().executeGoalOnExternalMavenProject(new ResourceInfo(this.demoDir.getAbsolutePath(), false),
                                                                     MavenProjectGoal.PACKAGE);
+
+        //==========================================
+        // Copy the provided config near the jar file!
+        //==========================================
+        try {
+            FileUtils.copyFile(new File(this.demoDir, "app-config.yaml"), new File(this.demoDir, "target/app-config.yaml"));
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
     }
 
     protected void unzipDemoProject() {
         String targetZipFileName = UUID.randomUUID().toString() + ".zip";
         File targetZipFile = new File(createTestingFilePath(targetZipFileName));
-        getSpincastUtils().copyClasspathFileToFileSystem("/public/demo-apps/spincast-demos-sum.zip", targetZipFile);
+        getSpincastUtils().copyClasspathFileToFileSystem("/public/demo-apps/spincast-demos-supercalifragilisticexpialidocious.zip",
+                                                         targetZipFile);
 
         File dir = createTestingDir();
         getSpincastUtils().zipExtract(targetZipFile, dir);
-        this.demoDir = new File(dir, "spincast-demos-sum");
+        this.demoDir = new File(dir, "spincast-demos-supercalifragilisticexpialidocious");
     }
 
     protected File getProjectDir() {
@@ -87,9 +86,6 @@ public class SumExecutableJarTest extends NoAppTestingBase {
     @Inject
     private SpincastProcessUtils spincastProcessUtils;
 
-    @Inject
-    private JsonManager jsonManager;
-
     protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
@@ -106,21 +102,17 @@ public class SumExecutableJarTest extends NoAppTestingBase {
         return this.spincastProcessUtils;
     }
 
-    protected JsonManager getJsonManager() {
-        return this.jsonManager;
-    }
-
     @Test
     public void test() throws Exception {
 
         //==========================================
-        // port 44419 must be available
+        // port 12345 must be available
         //==========================================
         Socket socket = null;
         try {
             socket = new Socket();
-            socket.connect(new InetSocketAddress("localhost", 44419));
-            throw new RuntimeException("Port 44419 not available!");
+            socket.connect(new InetSocketAddress("localhost", 12345));
+            throw new RuntimeException("Port 12345 not available!");
         } catch (IOException e) {
             // ok!
         } finally {
@@ -132,24 +124,22 @@ public class SumExecutableJarTest extends NoAppTestingBase {
         }
 
         File demoJar =
-                new File(this.demoDir, "target/spincast-demos-sum-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar");
+                new File(this.demoDir,
+                         "target/spincast-demos-supercalifragilisticexpialidocious-" +
+                                       getSpincastUtils().getSpincastCurrentVersion() + ".jar");
         assertTrue(demoJar.isFile());
 
         JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
         getSpincastProcessUtils().executeJar(demoJar.getAbsolutePath(), null, handler);
         try {
-            handler.waitForPortOpen("localhost", 44419, 10, 1000);
+            handler.waitForPortOpen("localhost", 12345, 10, 1000);
 
-            String urlBase = "http://localhost:44419";
-
-            HttpResponse response = getHttpClient().POST(urlBase + "/sum")
-                                                   .addFormBodyFieldValue("first", "10")
-                                                   .addFormBodyFieldValue("second", "7")
-                                                   .send();
+            String urlBase = "http://localhost:12345";
+            HttpResponse response = getHttpClient().GET(urlBase + "/").send();
             assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-            JsonObject resultObj = response.getContentAsJsonObject();
-            assertEquals(new Integer(17), resultObj.getInteger("result"));
+            String content = response.getContentAsString();
+            assertEquals("Hello World!", content);
 
         } finally {
             handler.killJarProcess();

@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.extension.Extension;
 
 /**
  * Configurations for the Pebble templating engine plugin.
- * 
+ *
  * We use "@ImplementedBy" to specify the default configurations
  * to use if none is specified in a Guice module.
  */
@@ -20,7 +20,7 @@ public interface SpincastPebbleTemplatingEngineConfig {
 
     /**
      * The number of template item to keep in cache.
-     * 
+     *
      * @return the max number of items to cache. If <code>&lt;= 0</code>,
      * thi cache will be disabled.
      */
@@ -28,8 +28,8 @@ public interface SpincastPebbleTemplatingEngineConfig {
 
     /**
      * The number of "cache" tag item to keep in cache.
-     * <a href="http://www.mitchellbosecke.com/pebble/documentation/tag/cache">more info</a>
-     * 
+     * <a href="https://github.com/PebbleTemplates/pebble/wiki/cache">more info</a>
+     *
      * @return the max number of items to cache. If <code>&lt;= 0</code>,
      * this cache will be disabled.
      */
@@ -38,10 +38,10 @@ public interface SpincastPebbleTemplatingEngineConfig {
     /**
      * Is the strict variable policy on?
      * <p>
-     * From the doc : "If set to true, Pebble will throw an exception 
-     * if you try to access a variable or attribute that does not exist 
-     * (or an attribute of a null variable). If set to false, 
-     * your template will treat non-existing variables/attributes 
+     * From the doc : "If set to true, Pebble will throw an exception
+     * if you try to access a variable or attribute that does not exist
+     * (or an attribute of a null variable). If set to false,
+     * your template will treat non-existing variables/attributes
      * as null without ever skipping a beat."
      */
     public boolean isStrictVariablesEnabled();

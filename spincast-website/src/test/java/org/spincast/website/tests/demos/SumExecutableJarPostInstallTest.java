@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.spincast.core.guice.SpincastPlugin;
+import org.spincast.core.json.JsonManager;
+import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ResourceInfo;
 import org.spincast.core.utils.SpincastUtils;
@@ -27,18 +29,7 @@ import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class QuickStartExecutableJarTest extends NoAppTestingBase {
-
-    @Override
-    public boolean isTestsFileDisabled() {
-        //==========================================
-        // This tests file can't be ran during a release
-        // since the executable jar has dependencies on
-        // other jars of the current version which won't be
-        // installed yet during the Maven "test" phase...
-        //==========================================
-        return isMavenReleaseProfile();
-    }
+public class SumExecutableJarPostInstallTest extends NoAppTestingBase {
 
     @Override
     protected List<SpincastPlugin> getExtraPlugins() {
@@ -62,11 +53,11 @@ public class QuickStartExecutableJarTest extends NoAppTestingBase {
     protected void unzipDemoProject() {
         String targetZipFileName = UUID.randomUUID().toString() + ".zip";
         File targetZipFile = new File(createTestingFilePath(targetZipFileName));
-        getSpincastUtils().copyClasspathFileToFileSystem("/public/quickstart/spincast-quick-start.zip", targetZipFile);
+        getSpincastUtils().copyClasspathFileToFileSystem("/public/demo-apps/spincast-demos-sum.zip", targetZipFile);
 
         File dir = createTestingDir();
         getSpincastUtils().zipExtract(targetZipFile, dir);
-        this.demoDir = new File(dir, "spincast-quickstart");
+        this.demoDir = new File(dir, "spincast-demos-sum");
     }
 
     protected File getProjectDir() {
@@ -85,6 +76,9 @@ public class QuickStartExecutableJarTest extends NoAppTestingBase {
     @Inject
     private SpincastProcessUtils spincastProcessUtils;
 
+    @Inject
+    private JsonManager jsonManager;
+
     protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
@@ -99,6 +93,10 @@ public class QuickStartExecutableJarTest extends NoAppTestingBase {
 
     protected SpincastProcessUtils getSpincastProcessUtils() {
         return this.spincastProcessUtils;
+    }
+
+    protected JsonManager getJsonManager() {
+        return this.jsonManager;
     }
 
     @Test
@@ -123,7 +121,7 @@ public class QuickStartExecutableJarTest extends NoAppTestingBase {
         }
 
         File demoJar =
-                new File(this.demoDir, "target/spincast-quickstart-1.0.0-SNAPSHOT.jar");
+                new File(this.demoDir, "target/spincast-demos-sum-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar");
         assertTrue(demoJar.isFile());
 
         JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
@@ -133,21 +131,14 @@ public class QuickStartExecutableJarTest extends NoAppTestingBase {
 
             String urlBase = "http://localhost:44419";
 
-            HttpResponse response = getHttpClient().GET(urlBase + "/").send();
+            HttpResponse response = getHttpClient().POST(urlBase + "/sum")
+                                                   .addFormBodyFieldValue("first", "10")
+                                                   .addFormBodyFieldValue("second", "7")
+                                                   .send();
             assertEquals(HttpStatus.SC_OK, response.getStatus());
-            String content = response.getContentAsString();
-            assertTrue(content.contains("<div class=\"butterflyCon\">"));
 
-            response = getHttpClient().GET(urlBase + "/robots.txt").send();
-            assertEquals(HttpStatus.SC_OK, response.getStatus());
-            content = response.getContentAsString();
-            assertTrue(content.contains("User-agent: *"));
-
-            response = getHttpClient().GET(urlBase + "/nope").send();
-            assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
-
-            response = getHttpClient().GET(urlBase + "/exception-example").send();
-            assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+            JsonObject resultObj = response.getContentAsJsonObject();
+            assertEquals(new Integer(17), resultObj.getInteger("result"));
 
         } finally {
             handler.killJarProcess();

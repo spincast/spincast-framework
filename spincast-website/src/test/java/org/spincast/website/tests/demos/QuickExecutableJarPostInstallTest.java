@@ -1,7 +1,6 @@
 package org.spincast.website.tests.demos;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -13,7 +12,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.spincast.core.guice.SpincastPlugin;
-import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ResourceInfo;
 import org.spincast.core.utils.SpincastUtils;
@@ -29,18 +27,7 @@ import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class BetterExecutableJarTest extends NoAppTestingBase {
-
-    @Override
-    public boolean isTestsFileDisabled() {
-        //==========================================
-        // This tests file can't be ran during a release
-        // since the executable jar has dependencies on
-        // other jars of the current version which won't be
-        // installed yet during the Maven "test" phase...
-        //==========================================
-        return isMavenReleaseProfile();
-    }
+public class QuickExecutableJarPostInstallTest extends NoAppTestingBase {
 
     @Override
     protected List<SpincastPlugin> getExtraPlugins() {
@@ -55,7 +42,6 @@ public class BetterExecutableJarTest extends NoAppTestingBase {
     @Override
     public void beforeClass() {
         super.beforeClass();
-
         unzipDemoProject();
         getSpincastProcessUtils().executeGoalOnExternalMavenProject(new ResourceInfo(this.demoDir.getAbsolutePath(), false),
                                                                     MavenProjectGoal.PACKAGE);
@@ -64,11 +50,11 @@ public class BetterExecutableJarTest extends NoAppTestingBase {
     protected void unzipDemoProject() {
         String targetZipFileName = UUID.randomUUID().toString() + ".zip";
         File targetZipFile = new File(createTestingFilePath(targetZipFileName));
-        getSpincastUtils().copyClasspathFileToFileSystem("/public/demo-apps/spincast-demos-better.zip", targetZipFile);
+        getSpincastUtils().copyClasspathFileToFileSystem("/public/demo-apps/spincast-demos-quick.zip", targetZipFile);
 
         File dir = createTestingDir();
         getSpincastUtils().zipExtract(targetZipFile, dir);
-        this.demoDir = new File(dir, "spincast-demos-better");
+        this.demoDir = new File(dir, "spincast-demos-quick");
     }
 
     protected File getProjectDir() {
@@ -125,7 +111,7 @@ public class BetterExecutableJarTest extends NoAppTestingBase {
         }
 
         File demoJar =
-                new File(this.demoDir, "target/spincast-demos-better-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar");
+                new File(this.demoDir, "target/spincast-demos-quick-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar");
         assertTrue(demoJar.isFile());
 
         JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
@@ -137,10 +123,8 @@ public class BetterExecutableJarTest extends NoAppTestingBase {
             HttpResponse response = getHttpClient().GET(urlBase + "/").send();
             assertEquals(HttpStatus.SC_OK, response.getStatus());
 
-            JsonObject responseObj = response.getContentAsJsonObject();
-            assertNotNull(responseObj);
-            assertEquals("Stromgol", responseObj.getString("name"));
-            assertEquals(new Integer(42), responseObj.getInteger("age"));
+            String content = response.getContentAsString();
+            assertEquals("<h1>Hello World!</h1>", content);
 
         } finally {
             handler.killJarProcess();

@@ -58,7 +58,7 @@ Installation
     	<img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
         Most of the time, you'll want to extend
         <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/AppBasedTestingBase.html">AppBasedTestingBase</a>, or
-        <a class="javadoc" href="/public/javadoc/org/spincast/defaults/testing/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a>
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/defaults/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a>
         if your application uses the default request context types.
     </p>
      
@@ -182,7 +182,7 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
                 <ul>
                     <li>
                         <span class="code-line-nbr">2</span> : Our test class extends 
-                        <a class="javadoc" href="/public/javadoc/org/spincast/defaults/testing/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a>.
+                        <a class="javadoc" href="/public/javadoc/org/spincast/testing/defaults/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a>.
                         This class is a child of <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/SpincastTestBase.html">SpincastTestBase</a> and therefore allows
                         us to use all the tools Spincast testing provides. Note there are other base classes you can extend, we're going to
                         <a href="#testing_base_classes">look at them</a> soon.
@@ -380,7 +380,7 @@ public class ResponseIsGzippedTest extends AppBasedDefaultContextTypesTestingBas
                 <ul>
                     <li>
                         <span class="code-line-nbr">2</span> : this test class also extends 
-                        <a class="javadoc" href="/public/javadoc/org/spincast/defaults/testing/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a>.
+                        <a class="javadoc" href="/public/javadoc/org/spincast/testing/defaults/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a>.
                     </li>
                     <li>
                         <span class="code-line-nbr">4-7</span> : we start our application.
@@ -669,7 +669,7 @@ Testing base classes
                 to run the tests.
             </li>
             <li>
-                <a class="javadoc" href="/public/javadoc/org/spincast/defaults/testing/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a> :
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/defaults/AppBasedDefaultContextTypesTestingBase.html">AppBasedDefaultContextTypesTestingBase</a> :
                 Same as <code>AppBasedTestingBase</code>, but if you use the <em>default</em> request context type in your application, instead of
                 a <a href="#extending_request_context">custom one</a>.
             </li>
@@ -680,11 +680,11 @@ Testing base classes
         <br />
         <ul>
             <li>
-                <a class="javadoc" href="/public/javadoc/org/spincast/defaults/testing/NoAppTestingBase.html">NoAppTestingBase</a> : base class
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/defaults/NoAppTestingBase.html">NoAppTestingBase</a> : base class
                 to use to test components using the default Guice context (the default plugins only). No application class is involved.
             </li>
             <li>
-                <a class="javadoc" href="/public/javadoc/org/spincast/defaults/testing/NoAppStartHttpServerTestingBase.html">NoAppStartHttpServerTestingBase</a> : 
+                <a class="javadoc" href="/public/javadoc/org/spincast/testing/defaults/NoAppStartHttpServerTestingBase.html">NoAppStartHttpServerTestingBase</a> : 
                 as <code>NoAppTestingBase</code>, but if you also need the HTTP server to be started! This base class will be responsible to
                 start and stop the server.
             </li>
@@ -703,7 +703,7 @@ Spincast JUnit runner
     
     <p>
         Spincast's testing base classes all use a custom JUnit runner: 
-        <a class="javadoc" href="/public/javadoc/org/spincast/testing/utils/SpincastJUnitRunner.html">SpincastJUnitRunner</a>.
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/SpincastJUnitRunner.html">SpincastJUnitRunner</a>.
     </p>
     <p>
         This custom runner has a couple of differences as compared with the default JUnit runner, 

@@ -384,6 +384,7 @@ ul ul {
     -o-transform: rotate(-20deg);
     -ms-transform: rotate(-20deg);
     transform: rotate(-20deg);
+    border-bottom: 0;
 }
 
 @media only screen and (max-width: 660px) {
@@ -711,7 +712,7 @@ ul ul {
 .appFooter {
     border-top: 1px solid #DDDDDD;
     color: #777777;
-    padding: 22px 0px 20px 0px;
+    padding: 22px 10px 20px 10px;
     text-align:center;
     font-style:italic;
     font-size:14px;
@@ -1490,13 +1491,16 @@ ul.tutoBullets li {
 }
 
 @media only screen and (max-width: 768px) {
-    
 	#noPresentation .thumbnail {
 		border:0;
 		height:200px;
 	}
 }
-
+@media only screen and (max-width: 500px) {
+    #noPresentation .thumbnail {
+        height: auto;
+    }
+}
 #noPresentation h4 {
 	margin-top:0px;
 	text-align:center;
