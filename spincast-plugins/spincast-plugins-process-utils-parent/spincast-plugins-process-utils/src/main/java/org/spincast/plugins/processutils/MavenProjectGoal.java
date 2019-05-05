@@ -15,5 +15,4 @@ public enum MavenProjectGoal {
     public String getValue() {
         return this.value;
     }
-
 }

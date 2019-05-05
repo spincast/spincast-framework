@@ -14,22 +14,13 @@ import java.util.UUID;
 import org.junit.Test;
 import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.templating.TemplatingEngine;
-import org.spincast.core.utils.ResourceInfo;
-import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.plugins.httpclient.HttpClient;
-import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.httpclient.SpincastHttpClientPlugin;
-import org.spincast.plugins.processutils.JarExecutionHandlerDefault;
-import org.spincast.plugins.processutils.MavenProjectGoal;
-import org.spincast.plugins.processutils.SpincastProcessUtils;
-import org.spincast.plugins.processutils.SpincastProcessUtilsPlugin;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
-import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.defaults.NoAppTestingBase;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 public class SpincastUtilsTest extends NoAppTestingBase {
@@ -38,40 +29,7 @@ public class SpincastUtilsTest extends NoAppTestingBase {
     protected List<SpincastPlugin> getExtraPlugins() {
         List<SpincastPlugin> extraPlugins = super.getExtraPlugins();
         extraPlugins.add(new SpincastHttpClientPlugin());
-        extraPlugins.add(new SpincastProcessUtilsPlugin());
         return extraPlugins;
-    }
-
-    @Override
-    public void beforeClass() {
-        super.beforeClass();
-        packageTestmavenProject();
-        assertTrue(getTestMavenJarFile().isFile());
-    }
-
-    private File testMavenProjectDir;
-
-    protected String getSpincastVersionToUse() {
-        return "1.4.0";
-    }
-
-    protected void packageTestmavenProject() {
-        this.testMavenProjectDir =
-                getSpincastProcessUtils().executeGoalOnExternalMavenProject(new ResourceInfo("/testMavenProject",
-                                                                                             true),
-                                                                            MavenProjectGoal.PACKAGE,
-                                                                            SpincastStatics.map("spincastVersion",
-                                                                                                getSpincastVersionToUse()));
-    }
-
-    protected File getTestMavenProjectDir() {
-        return this.testMavenProjectDir;
-    }
-
-    protected File getTestMavenJarFile() {
-        File jarFile = new File(getTestMavenProjectDir(),
-                                "target/spincast-test-" + getSpincastVersionToUse() + ".jar");
-        return jarFile;
     }
 
     @Inject
@@ -83,9 +41,6 @@ public class SpincastUtilsTest extends NoAppTestingBase {
     @Inject
     private HttpClient httpClient;
 
-    @Inject
-    private SpincastProcessUtils spincastProcessUtils;
-
     protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
     }
@@ -96,10 +51,6 @@ public class SpincastUtilsTest extends NoAppTestingBase {
 
     protected HttpClient getHttpClient() {
         return this.httpClient;
-    }
-
-    protected SpincastProcessUtils getSpincastProcessUtils() {
-        return this.spincastProcessUtils;
     }
 
     @Test
@@ -433,153 +384,77 @@ public class SpincastUtilsTest extends NoAppTestingBase {
     }
 
     @Test
-    public void copyClasspathFileToFileSystemInsideJar() throws Exception {
-
-        int port = SpincastTestingUtils.findFreePort();
-
-        //==========================================
-        // Execute the project's jar which is going
-        // to copy a classpath dir to the specified
-        // "targetDir" passed as an argument.
-        //==========================================
-        File targetFile = new File(createTestingFilePath());
-        assertFalse(targetFile.isFile());
-
-        JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
-        getSpincastProcessUtils().executeJar(getTestMavenJarFile().getAbsolutePath(),
-                                             Lists.newArrayList(String.valueOf(port),
-                                                                "/quick-start/public/js/main.js",
-                                                                targetFile.getAbsolutePath()),
-                                             handler);
-        try {
-            handler.waitForPortOpen("localhost", port, 10, 1000);
-
-            String urlBase = "http://localhost:" + port;
-            HttpResponse response = getHttpClient().GET(urlBase + "/file").send();
-            assertEquals(HttpStatus.SC_OK, response.getStatus());
-            assertTrue(targetFile.isFile());
-        } finally {
-            handler.killJarProcess();
-        }
-    }
-
-    @Test
-    public void copyClasspathDirToFileSystemInsideJar() throws Exception {
-
-        int port = SpincastTestingUtils.findFreePort();
-
-        //==========================================
-        // Execute the project's jar which is going
-        // to copy a classpath dir to the specified
-        // "targetDir" passed as an argument.
-        //==========================================
-        File targetDir = createTestingDir();
-        assertFalse(new File(targetDir, "bg.jpg").isFile());
-        assertFalse(new File(targetDir, "logo.png").isFile());
-
-        JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
-        getSpincastProcessUtils().executeJar(getTestMavenJarFile().getAbsolutePath(),
-                                             Lists.newArrayList(String.valueOf(port),
-                                                                "/quick-start/public/images",
-                                                                targetDir.getAbsolutePath()),
-                                             handler);
-        try {
-            handler.waitForPortOpen("localhost", port, 10, 1000);
-
-            String urlBase = "http://localhost:" + port;
-            HttpResponse response = getHttpClient().GET(urlBase + "/").send();
-            assertEquals(HttpStatus.SC_OK, response.getStatus());
-
-            assertTrue(new File(targetDir, "bg.jpg").isFile());
-            assertTrue(new File(targetDir, "logo.png").isFile());
-        } finally {
-            handler.killJarProcess();
-        }
-    }
-
-    @Test
-    public void isClasspathResourceInJar() throws Exception {
-
-        int port = SpincastTestingUtils.findFreePort();
-
-        JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
-        getSpincastProcessUtils().executeJar(getTestMavenJarFile().getAbsolutePath(),
-                                             Lists.newArrayList(String.valueOf(port)),
-                                             handler);
-        try {
-            handler.waitForPortOpen("localhost", port, 10, 1000);
-
-            String urlBase = "http://localhost:" + port;
-            HttpResponse response = getHttpClient().GET(urlBase + "/resource").send();
-            assertEquals(HttpStatus.SC_OK, response.getStatus());
-
-            String body = response.getContentAsString();
-            assertEquals("true", body);
-
-        } finally {
-            handler.killJarProcess();
-        }
-    }
-
-    @Test
-    public void convertToUrlToken() throws Exception {
-        String urlToken = getSpincastUtils().convertToUrlToken("__‛'ïœ𣎴𠀋ᚡŠ šÈÆæÐ_-_-\n\tx__pð𝅘𝅥𝅯’\" àÉ  5---4-");
+    public void convertToFriendlyToken() throws Exception {
+        String urlToken = getSpincastUtils().convertToFriendlyToken("__‛'ïœ𣎴𠀋ᚡŠ šÈÆæÐ_-_-\n\tx__pð𝅘𝅥𝅯’\" àÉ  5---4-");
         assertEquals("is-se-x-p-ae-5-4", urlToken);
     }
 
     @Test
-    public void convertToUrlTokenEmpty() throws Exception {
+    public void convertToFriendlyTokenEmpty() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken("");
+        String urlToken = getSpincastUtils().convertToFriendlyToken("");
         assertTrue(uuid.length() == urlToken.length());
     }
 
     @Test
-    public void convertToUrlTokenEmpty2() throws Exception {
+    public void convertToFriendlyTokenEmpty2() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken("  ");
+        String urlToken = getSpincastUtils().convertToFriendlyToken("  ");
         assertTrue(uuid.length() == urlToken.length());
     }
 
     @Test
-    public void convertToUrlTokenEmpty3() throws Exception {
+    public void convertToFriendlyTokenEmpty3() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken("Æ");
+        String urlToken = getSpincastUtils().convertToFriendlyToken("Æ");
         assertTrue(uuid.length() == urlToken.length());
     }
 
     @Test
-    public void convertToUrlTokenEmpty4() throws Exception {
+    public void convertToFriendlyTokenEmpty4() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken("Æ _-");
+        String urlToken = getSpincastUtils().convertToFriendlyToken("Æ _-");
         assertTrue(uuid.length() == urlToken.length());
     }
 
     @Test
-    public void convertToUrlTokenNull() throws Exception {
+    public void convertToFriendlyTokenNull() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken(null);
+        String urlToken = getSpincastUtils().convertToFriendlyToken(null);
         assertTrue(uuid.length() == urlToken.length());
     }
 
     @Test
-    public void convertToUrlTokenEmptyWithDefault() throws Exception {
+    public void convertToFriendlyTokenEmptyWithDefault() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken("", uuid);
+        String urlToken = getSpincastUtils().convertToFriendlyToken("", uuid);
         assertEquals(uuid, urlToken);
     }
 
     @Test
-    public void convertToUrlTokenEmptyWithDefault2() throws Exception {
+    public void convertToFriendlyTokenEmptyWithDefault2() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken("Æ _-", uuid);
+        String urlToken = getSpincastUtils().convertToFriendlyToken("Æ _-", uuid);
         assertEquals(uuid, urlToken);
     }
 
     @Test
-    public void convertToUrlTokenNullWithDefault() throws Exception {
+    public void convertToFriendlyTokenNullWithDefault() throws Exception {
         String uuid = UUID.randomUUID().toString();
-        String urlToken = getSpincastUtils().convertToUrlToken(null, uuid);
+        String urlToken = getSpincastUtils().convertToFriendlyToken(null, uuid);
         assertEquals(uuid, urlToken);
     }
+
+    @Test
+    public void getClassLocationDirOrJar() throws Exception {
+
+        File file = getSpincastUtils().getClassLocationDirOrJarFile(getClass());
+        if (getSpincastUtils().isClassLoadedFromJar(getClass())) {
+            assertTrue(file.isFile());
+            assertTrue(file.getAbsolutePath().toLowerCase().endsWith(".jar"));
+        } else {
+            assertTrue(file.isDirectory());
+        }
+    }
+
 }

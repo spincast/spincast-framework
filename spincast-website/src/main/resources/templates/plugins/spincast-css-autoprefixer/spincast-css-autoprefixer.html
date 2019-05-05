@@ -1,0 +1,347 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-css-autoprefixer{% endblock %}
+{% block meta_title %}Plugins - Spincast CSS Autoprefixer{% endblock %}
+{% block meta_description %}Spincast Spincast CSS Autoprefixer plugin - Autoprefixer integration to add vendor prefixes to CSS rules.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast CSS Autoprefixer plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast CSS Autoprefixer <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/cssautoprefixer/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast CSS Autoprefixer <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="veryLongTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#requirements">Requirements</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#config">Configurations</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin integrates <a href="https://github.com/postcss/autoprefixer">Autoprefixer</a> with Spincast
+                    to easily add vendor prefixes to your <code>CSS</code>.
+                </p>
+                <p>
+                    It allows you to serve <code>CSS</code> that has been tweaked so browsers support
+                    is enhanced. For example, you may use this plugin to be able to use 
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Basic_Concepts_of_Grid_Layout">CSS Grids</a>
+                    with <a href="https://css-tricks.com/css-grid-in-ie-css-grid-and-the-new-autoprefixer/">good support for IE11</a>!
+                </p>
+
+            </section>
+            
+            <section id="requirements">
+                <h3>
+                    <a class="anchor" href="#requirements" title="permanent link"></a>
+                    Requirements
+                </h3>
+                <p>
+                    As you will see in the <a href="#installation">Installation</a> section, this plugin requires
+                    <a href="https://nodejs.org">Node.js</a> and three npm libraries to be installed on the
+                    environment(s) your Spincast application will run on.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    In order to remove the need to install Node, we could have used hacks such 
+                    as <a href="https://github.com/eclipsesource/J2V8">J2V8</a>! But solutions like those
+                    <em>always</em> have more issues than "using the real thing" directly. Also, it seems 
+                    <code>J2V8</code> may even 
+                    <a href="https://github.com/eclipsesource/J2V8/issues/441">drop support</a> for Node.js
+                    in the near future.
+                </p>
+
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                <p>
+                    You inject and use 
+                    the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssautoprefixer/SpincastCssAutoprefixerManager.html">SpincastCssAutoprefixerManager</a>
+                    component to transform your CSS.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Let's say you have a <a href="/documentation#dynamic_resources">dynamic resource</a> route that serves
+                    your CSS files dynamically:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>router.dir("/publicdyn/css/*{relativePath}")
+      .pathRelative("/publicdyn/css")
+      .handle(publicResourcesController::dynCss);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    In the "<code>dynCss(...)</code>" handler, you would get the raw content of the CSS file and tweak it using
+                    the <code>SpincastCssAutoprefixerManager</code> component before sending it:
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>
+File rawCssFile = //... get the raw CSS file
+
+String cssContent = FileUtils.readFileToString(rawCssFile, "UTF-8");
+
+JsonObject options = context.json().create();
+options.set("grid", "autoplace");
+String cssContentTweaked = getSpincastCssAutoprefixerManager().autoPrefix(cssContent, options);
+
+context.response().sendCharacters(cssContentTweaked, "text/css");</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : We get the raw CSS file using the 
+                                    "<code>relativePath</code>" path parameter taken from the request. <em>We make sure we validate
+                                    this user input properly!</em>
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : We get the raw CSS content.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5-6</span> : In this example, we add 
+                                    an <a href="https://github.com/postcss/autoprefixer#options">option</a> in order to
+                                    tell Autoprefixer that we want to enable support for <code>CSS Grids</code>.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">7</span> : We call the 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssautoprefixer/SpincastCssAutoprefixerManager.html#autoPrefix-java.lang.String-org.spincast.core.json.JsonObject-">autoPrefix(...)</a>
+                                    method.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">9</span> : We send the tweaked CSS, using the proper content-type.
+                                </li>
+                            </ul>
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Under the hood, another plugin is used, 
+                    <a href="/plugins/spincast-process-utils">Spincast Process Utils</a>, in order to
+                    call the <a href="https://github.com/postcss/postcss-cli"><code>postcss-cli</code></a> Node program,
+                    with <a href="https://github.com/postcss/autoprefixer">Autoprefixer</a> enabled.
+                </p>
+                <p>
+                    <h5 id="methods">
+                        <a class="anchor_small" href="#methods" title="permanent link"></a>
+                        SpincastCssAutoprefixerManager methods
+                    </h5>
+                
+                    The main methods provided by 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssautoprefixer/SpincastCssAutoprefixerManager.html">SpincastCssAutoprefixerManager</a> are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="method_autoPrefixString" href="#method_autoPrefixString" title="permanent link"></a>
+                            <code class="apiItem">String <span>autoPrefix</span>(String cssContent, JsonObject options)</code>
+                            <div class="well">
+                                <p>
+                                    Run Autoprefixer on the specified CSS content, as a String. Returns the modified
+                                    CSS.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="method_autoPrefixFile" href="#method_autoPrefixFile" title="permanent link"></a>
+                            <code class="apiItem">void <span>autoPrefix</span>(File cssFile, JsonObject options)</code>
+                            <div class="well">
+                                <p>
+                                    Run Autoprefixer on the specified CSS <em>file</em>. The file will be
+                                    modified and will contain the vendor prefixes.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="method_validate" href="#method_validate" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isValidAutoprefixerEnvironment</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Validate if the current environment has been <a href="#installation">properly configured</a> for this plugin to
+                                    work properly. 
+                                </p> 
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+  
+            </section>
+            
+            <section id="config">
+                <h3>
+                    <a class="anchor" href="#config" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    Most of the possible options are passed <em>inline</em>, when you call
+                    <a class="javadoc" href="public/javadoc/org/spincast/plugins/cssautoprefixer/SpincastCssAutoprefixerManager.html#autoPrefix-java.lang.String-org.spincast.core.json.JsonObject-">autoPrefix(...)</a>.
+                    Those options are documented <a href="https://github.com/postcss/autoprefixer#options">here</a>.
+                </p>
+                <p>   
+                    There is only one global configuration:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="config_getPostcssExecutableName" href="#config_getPostcssExecutableName" title="permanent link"></a>
+                            <code class="apiItem">String <span>getPostcssExecutableName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Allows you to modify the name of the executable the plugin will call.
+                                </p>
+                                <p>
+                                    By default, it will be "<code>postcss</code>" except
+                                    on Windows where it will be "<code>postcss.cmd</code>".
+                                </p>
+                                <p>
+                                    You can specify an absolute path here, but beware that
+                                    the "<code>autoprefixer</code>" library must still be installed <em>globally</em>
+                                    or the command run by the plugin will fail.
+                                </p> 
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    
+                </p>
+                <p>
+                    In your Guice module, you can bind a custom implementation of
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssautoprefixer/config/SpincastCssAutoprefixerConfig.html">SpincastCssAutoprefixerConfig</a>
+                    in order to change the configuration.
+                </p>
+            </section>
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    This plugin depends on the <a href="/plugins/spincast-process-utils">Spincast Process Utils</a> plugin
+                    which is <em>not</em> provided by default by the <code>spincast-default</code> package.
+                </p>
+                <p>
+                    This dependency <em>will be automatically installed</em>. Note that it is always a good
+                    idea to read the documentation of the automatically installed plugins.
+                </p>
+            </section> 
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. Make sure <a href="https://nodejs.org/en/download/">Node.js</a> is properly installed on the machine(s) your
+                    Spincast application will run on.
+                </p>
+                <p>
+                    2. Install <a href="https://github.com/postcss/postcss">postcss</a>, <a href="https://github.com/postcss/postcss-cli">postcss-cli</a>
+                    and <a href="https://github.com/postcss/autoprefixer">autoprefixer</a>, <em>globally</em>, using npm:
+                    
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-text"
+>
+
+npm install -g postcss postcss-cli autoprefixer
+</pre> 
+                        {% endverbatim %}
+                        </p> 
+                </p>
+                <p>
+                    3. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-css-autoprefixer&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    4. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssautoprefixer/SpincastCssAutoprefixerPlugin.html">SpincastCssAutoprefixerPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,50"
+>
+
+Spincast.configure()
+        .plugin(new SpincastCssAutoprefixerPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

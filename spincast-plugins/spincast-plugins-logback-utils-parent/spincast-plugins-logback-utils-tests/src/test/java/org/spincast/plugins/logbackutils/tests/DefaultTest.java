@@ -12,6 +12,19 @@ import org.spincast.plugins.logbackutils.config.SpincastLogbackConfigurerConfig;
 
 public class DefaultTest extends LogbackUtilsTestBase {
 
+    //==========================================
+    // NOTE!
+    // We only run this test class during a release.
+    // When ran from an IDE, the /logback.xml
+    // classpath resource is not always to correct one
+    // due to multiple projects potentially overlapping.
+    //==========================================
+    @Override
+    public boolean isTestClassDisabledPreBeforeClass() {
+        String mavenProfileId = System.getProperty("mavenProfileId");
+        return !"release".equals(mavenProfileId);
+    }
+
     protected final static Logger logger = LoggerFactory.getLogger(DefaultTest.class);
 
     @Override
@@ -26,7 +39,7 @@ public class DefaultTest extends LogbackUtilsTestBase {
         resetOutput();
         logger.warn(uuid);
         String output = getOutput();
-        assertFalse(output.contains(uuid));
+        assertFalse(output, output.contains(uuid));
     }
 
     @Test

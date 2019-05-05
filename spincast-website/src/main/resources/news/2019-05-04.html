@@ -1,0 +1,21 @@
+<p>
+    A new plugin, <a href="{{appUrlPrefix}}/plugins/spincast-css-autoprefixer">Spincast CSS Autoprefixer</a>,
+    integrates <a href="https://github.com/postcss/autoprefixer">Autoprefixer</a> to easily 
+    add vendor prefixes to your <code>CSS</code>.
+</p>
+<p>
+    The plugin allows you to serve <code>CSS</code> that has been tweaked so browsers support is enhanced. 
+    For example, you may use this plugin to be able to use <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Basic_Concepts_of_Grid_Layout">CSS Grids</a> 
+    with <a href="https://css-tricks.com/css-grid-in-ie-css-grid-and-the-new-autoprefixer/">good support for IE11</a>! 
+</p>
+<p>
+    <img class="inlineIcon" src="{{appUrlPrefix}}/public/images/icons/para.png" />
+    Also, some methods of the <a href="{{appUrlPrefix}}/plugins/spincast-process-utils">Spincast Process Utils</a> plugin
+    have been refactored to be more generic. If you are currently using the <code>executeJar(...)</code> method, please
+    upgrade to one of the new <a class="javadoc" href="{{appUrlPrefix}}/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeAsync-org.spincast.plugins.processutils.ProcessExecutionHandler-java.lang.String...-">executeAsync(...)</a>
+    or <a class="javadoc" href="{{appUrlPrefix}}/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeSync-long-java.util.concurrent.TimeUnit-org.spincast.plugins.processutils.ExecutionOutputStrategy-java.lang.String...-">executeSync(...)</a>
+    methods! Those are more generic and provide way more control over the executed programs.
+</p>
+<p>
+    Read more about those new methods in the plugin's <a href="{{appUrlPrefix}}/plugins/spincast-process-utils">documentation</a>.
+</p>

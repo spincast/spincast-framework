@@ -16,6 +16,7 @@ import org.spincast.plugins.undertow.UndertowWebsocketEndpointWriterFactory;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfig;
 import org.spincast.plugins.undertow.config.SpincastUndertowConfigDefault;
 import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
+import org.spincast.testing.junitrunner.RepeatUntilSuccess;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
@@ -68,7 +69,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
                                           String closingReason,
                                           Set<String> peerIds,
                                           ClosedEventSentCallback callback) {
-            // We disable the "Endpoint closed" events normally 
+            // We disable the "Endpoint closed" events normally
             // sent to the peers!
             callback.done();
         }
@@ -116,6 +117,7 @@ public class WebsockePingsTest extends NoAppWebsocketTestingBase {
     }
 
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     public void serverShouldDetectClosedPeerViaPings() throws Exception {
 
         final DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());

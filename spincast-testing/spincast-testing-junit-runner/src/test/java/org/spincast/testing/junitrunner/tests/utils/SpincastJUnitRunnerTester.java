@@ -9,9 +9,11 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 import org.spincast.testing.junitrunner.SpincastJUnitRunner;
 
-/** 
- * Class that extends SpincastJUnitRunner only to 
- * be able to test it.
+/**
+ * Class that extends {@link SpincastJUnitRunner} only to
+ * be able to test it!
+ * <p>
+ * Should not be used in general.
  */
 public class SpincastJUnitRunnerTester extends SpincastJUnitRunner {
 
@@ -28,7 +30,7 @@ public class SpincastJUnitRunnerTester extends SpincastJUnitRunner {
     protected String getTestExpectedToFail() {
 
         String testExpectedToFail = null;
-        if(getTestClassInstance() instanceof TestExpectedToFailProvider) {
+        if (getTestClassInstance() instanceof TestExpectedToFailProvider) {
             testExpectedToFail = ((TestExpectedToFailProvider)getTestClassInstance()).getTestExpectedToFail();
         }
 
@@ -44,7 +46,7 @@ public class SpincastJUnitRunnerTester extends SpincastJUnitRunner {
         // Are we expecting this test to fail?
         //==========================================
         String testExpectedToFail = getTestExpectedToFail();
-        if(testExpectedToFail != null && testExpectedToFail.equals(testName)) {
+        if (testExpectedToFail != null && testExpectedToFail.equals(testName)) {
             setIgnoreRemainingTests();
             return;
         }
@@ -58,7 +60,7 @@ public class SpincastJUnitRunnerTester extends SpincastJUnitRunner {
         super.run(notifier);
 
         String testExpectedToFail = getTestExpectedToFail();
-        if(testExpectedToFail != null && !getTestsFailed().contains(testExpectedToFail)) {
+        if (testExpectedToFail != null && !getTestsFailed().contains(testExpectedToFail)) {
 
             String errorMessage = "[Spincast] This test was expected to fail but didn't: " + testExpectedToFail;
             Description description = Description.createTestDescription(getTestClass().getJavaClass(),

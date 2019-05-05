@@ -15,6 +15,7 @@ import org.spincast.core.websocket.WebsocketConnectionConfig;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.tuple.Pair;
 import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
+import org.spincast.testing.junitrunner.RepeatUntilSuccess;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
@@ -356,8 +357,8 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
 
     }
 
-
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     public void t04_multipleEndpointsSendMessages() throws Exception {
 
         final String[] endpointIdToUse = new String[]{"endpoint1"};

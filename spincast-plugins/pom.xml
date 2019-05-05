@@ -47,6 +47,7 @@
         <module>spincast-plugins-gson-parent</module>
         <module>spincast-plugins-swagger-ui-parent</module>
         <module>spincast-plugins-process-utils-parent</module>
+        <module>spincast-plugins-css-autoprefixer-parent</module>
     </modules>
 
 </project>

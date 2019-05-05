@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -414,7 +416,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
     }
 
     @Override
-    public boolean isClasspathResourceInJar(String resourcePath) {
+    public boolean isClasspathResourceLoadedFromJar(String resourcePath) {
         Objects.requireNonNull(resourcePath, "The resourcePath can't be NULL");
 
         try {
@@ -495,6 +497,29 @@ public class SpincastUtilsDefault implements SpincastUtils {
         }
 
         return this.appJarDirectory;
+    }
+
+    @Override
+    public boolean isClassLoadedFromJar(Class<?> clazz) {
+        Objects.requireNonNull(clazz, "The clazz parameter can't be NULL");
+
+        File file = getClassLocationDirOrJarFile(clazz);
+        try {
+            String path = URLDecoder.decode(file.getAbsolutePath(), "UTF-8");
+            boolean inJar = path.toLowerCase().endsWith(".jar");
+            return inJar;
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    @Override
+    public File getClassLocationDirOrJarFile(Class<?> clazz) {
+        String path = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+        if (path == null) {
+            throw new RuntimeException("Unable to get the path of " + SpincastUtilsDefault.class.getName() + "!");
+        }
+        return new File(path);
     }
 
     @Override
@@ -815,7 +840,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                 }
             }
 
-            boolean isInJar = isClasspathResourceInJar(classpathFilePath);
+            boolean isInJar = isClasspathResourceLoadedFromJar(classpathFilePath);
             if (isInJar) {
                 //==========================================
                 // In a jar
@@ -860,7 +885,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
                 FileUtils.cleanDirectory(targetDir);
             }
 
-            boolean isInJar = isClasspathResourceInJar(classpathDirPath);
+            boolean isInJar = isClasspathResourceLoadedFromJar(classpathDirPath);
             if (isInJar) {
                 //==========================================
                 // In a jar
@@ -1171,12 +1196,12 @@ public class SpincastUtilsDefault implements SpincastUtils {
     }
 
     @Override
-    public String convertToUrlToken(String str) {
-        return convertToUrlToken(str, null);
+    public String convertToFriendlyToken(String str) {
+        return convertToFriendlyToken(str, null);
     }
 
     @Override
-    public String convertToUrlToken(String str, String resultIfEmpty) {
+    public String convertToFriendlyToken(String str, String resultIfEmpty) {
         if (!StringUtils.isBlank(str)) {
             str = StringUtils.stripAccents(str);
             str = str.replaceAll("( |_)", "-");
@@ -1194,5 +1219,23 @@ public class SpincastUtilsDefault implements SpincastUtils {
         return str;
     }
 
+    @Override
+    public boolean isPortOpen(String host, int port) {
+
+        Socket socket = null;
+        try {
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port));
+            return true;
+        } catch (IOException e) {
+            return false;
+        } finally {
+            try {
+                socket.close();
+            } catch (Exception ex) {
+                //...
+            }
+        }
+    }
 
 }

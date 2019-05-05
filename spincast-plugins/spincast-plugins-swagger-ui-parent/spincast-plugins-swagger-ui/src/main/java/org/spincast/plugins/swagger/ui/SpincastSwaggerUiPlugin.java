@@ -6,7 +6,7 @@ import com.google.inject.Module;
 import com.google.inject.util.Modules;
 
 /**
- * Spincast SWagger UI plugin.
+ * Spincast Swagger UI plugin.
  */
 public class SpincastSwaggerUiPlugin extends SpincastPluginBase {
 

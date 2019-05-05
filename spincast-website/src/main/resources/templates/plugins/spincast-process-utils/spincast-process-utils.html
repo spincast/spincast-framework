@@ -64,8 +64,8 @@
 	            <p>
 	                This plugin contains utilities to help manipulate processes and external programs.
 	                It allows you to easily compile/package/install a <code>Maven</code> project 
-	                located outside your application. It also provides a way to programmatically launch and 
-	                control an executable <code>.jar</code> file.
+	                located outside your application. It also provides a way to programmatically execute and 
+	                manipulate an external program.
                 </p>
             </section>
             
@@ -194,121 +194,256 @@ assertTrue(jarFile.isFile());</pre>
                     for a real example of running a goal on an external Maven project.
                 </p>
                 
+                
                 <h4>
-                    <a class="anchor_small" id="jar" href="#jar" title="permanent link"></a>
-                    Running an external executable .jar file
+                    <a class="anchor_small" id="execute_async" href="#execute_async" title="permanent link"></a>
+                    Executing an external program, asynchronously
                 </h4>
 	            <p>
-                  The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeJar-java.lang.String-java.util.List-org.spincast.plugins.processutils.JarExecutionHandler-">executeJar(...)</a> 
-                  method allows you to run an external executable <code>.jar</code> file and to keep control over the process.
-                  It starts the target .jar file using <code><em>java -jar yourJar.jar arg1 arg2 arg3 ...</em></code>
+                  The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeAsync-org.spincast.plugins.processutils.ProcessExecutionHandler-java.lang.String...-">executeAsync(...)</a> 
+                  method allows you to run an external program and to keep control over the created process.
                 </p>
                 <p>
-                    Here is the signature of the method:
+                    Here is an example where we run an executable <code>.jar</code> file programmatically:
+                    
                     <div>
                         <p>
                             {% verbatim %}
-                            <pre class="ace ace-java" 
->public void executeJar(String jarFilePath,
-                       List&lt;String&gt; args,
-                       JarExecutionHandler handler)</pre> 
+                            <pre class="ace ace-java"
+>ProcessExecutionHandlerDefault handler = new ProcessExecutionHandlerDefault() {
+    @Override
+    public void onSystemOut(String line) {
+        System.out.println("[jar out] - " + line);
+    }
+};
+
+// Start an executable jar
+getSpincastProcessUtils().executeAsync(handler,
+                                       "java",
+                                       "-jar", 
+                                       "/some/path.jar", 
+                                       "12345"); // argument for the .jar program
+try {
+    // Wait for the port 12345 to be open
+    handler.waitForPortOpen("localhost", 12345, 5, 1000);
+
+    // Make a request to the HTTP server started by the .jar program
+    HttpResponse response = getHttpClient().GET("http://localhost:12345").send();
+    assertEquals(HttpStatus.SC_OK, response.getStatus());
+    // ...
+} finally {
+    // Kill the process when we are done with it!
+    handler.killProcess();
+}</pre> 
                             {% endverbatim %}
                         </p> 
                         <p>
                             <span class="explanation">Explanation :</span>
                             <ul>
                                 <li>
-                                    <span class="code-line-nbr">1</span> : The absolute path to the executable <code>.jar</code>
-                                    file to run, on the file system.
+                                    <span class="code-line-nbr">1-6</span> : The 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandler.html">ProcessExecutionHandler</a>
+                                    handler that is going to receive information
+                                    about the created process. Here, we base this handler on the default 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>
+                                    implementation and we only override <code>onSystemOut(...)</code>.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">2</span> : Arguments to be passed to the <code>.jar</code>
-                                    when executing it.
+                                    <span class="code-line-nbr">9</span> : We call the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeAsync-org.spincast.plugins.processutils.ProcessExecutionHandler-java.lang.String...-">executeAsync(...)</a>
+                                    method.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">3</span> : An <em>handler</em> allowing you to keep control over the
-                                    started process.
+                                    <span class="code-line-nbr">10</span> : The program to run. Here, we will use <code>java</code> in order
+                                    to start an executable .jar file. Note that you can (and sometimes <em>must</em>) specify an absolute path.
                                 </li>
+                                <li>
+                                    <span class="code-line-nbr">11-13</span> : The program arguments. Here, the resulting command would be:
+                                    <code><em>java -jar /some/path.jar 12345</em></code>. The "<code>12345</code>" argument
+                                    would be passed to the executed jar (in our example this is the port to use 
+                                    for the jar to start an HTTP server!).
+                                </li> 
+                                <li>
+                                    <span class="code-line-nbr">16</span> : The default 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a> handler
+                                    provides a <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/HttpServerProcessHandlerExecutionHandler.html#waitForPortOpen-java.lang.String-int-int-int-">waitForPortOpen(...)</a>
+                                    method which allows you to wait for a port to be open (this method is synchronous!).
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">19-20</span> : You use the started program. In our example, the executed
+                                    .jar file started an HTTP server on port <code>12345</code>. We make a request to it.
+                                </li> 
+                                <li>
+                                    <span class="code-line-nbr">22-25</span> : When we are done with the programmatically started program,
+                                    we make sure its process is killed by calling
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandler.html#killProcess--">killProcess()</a>. 
+                                    Doing so is not always required but it <em>is</em> when the executed program does not exit by itself
+                                    (as in our example, since the HTTP server started by the jar would listen for requests indefinitely).
+                                </li> 
                             </ul>
                         </p>
-                    </div>  
+                    </div> 
+
+                </p>
+                <p> 
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    On some environments, you may have to specify the <em>full path</em> to the program to be executed
+                    (it may depend on the <code>PATH</code> variable of your system).
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    The <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandler.html">JarExecutionHandler</a>
-                    instance you pass to the method allows you to control the process that is going to be started to run the .jar file. 
-                    The default
-                    implementation is <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>
-                    and you can, of course, extend it.
-                </p>
-                <p>
-                    The main methods of the handler are:
+                    Here are the methods available on the 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandler.html">ProcessExecutionHandler</a> handler
+                    and that need to be implemented (if you don't use the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>
+                    default implementation, in which case you can override some):
                     
                     <ul class="apiList">
                         <li>
-                            <a class="anchor_small" id="jar_getJarProcess" href="#jar_getJarProcess" title="permanent link"></a>
-                            <code class="apiItem">Process <span>getJarProcess</span>()</code>
+                            <a class="anchor_small" id="executeAsync_onExit" href="#executeAsync_onExit" title="permanent link"></a>
+                            <code class="apiItem">void <span>onExit</span>(int exitCode)</code>
                             <div class="well">
                                 <p>
-                                    To get direct access to the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html">Process</a>
-                                    started to execute the .jar file.
+                                    This method will be called when the process exits. If it exits without any error,
+                                    <code>exitCode</code> will in general be "<code>0</code>". 
+                                </p>
+                                <p>    
+                                    The default implementation, from
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>,
+                                    will simply log the exit code.
+                                </p>
+                                <p>
+                                    Note that if you execute a program that does <em>not</em> exit by
+                                    itself (for example an HTTP server is started and wait for requests indefinitely), you have
+                                    to explicitly <a href="#executeAsync_killProcess">kill the process</a>.
+                                </p>
+                                <p>
+                                    The <a href="#executeAsync_onEnd">onEnd()</a> method is called after this one.
                                 </p> 
                             </div>
                         </li>
                         <li>
-                            <a class="anchor_small" id="jar_onException" href="#jar_onException" title="permanent link"></a>
-                            <code class="apiItem">void <span>onException</span>(Exception ex)</code>
+                            <a class="anchor_small" id="executeAsync_onLaunchException" href="#executeAsync_onLaunchException" title="permanent link"></a>
+                            <code class="apiItem">void <span>onLaunchException</span>(Exception ex)</code>
                             <div class="well">
                                 <p>
                                     This method is going to be called if an exception occurs during the launch of the
-                                    executable .jar file. The default method, in
-                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>,
-                                    will catch the exception, will make sure the process is killed properly, 
-                                    and will then rethrow the exception.
+                                    external program. 
+                                </p>
+                                <p>    
+                                    The default implementation, from
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>,
+                                    will simply log the exception.
+                                </p>
+                                <p>
+                                    Note that when this method is called, <a href="#executeAsync_onExit">onExit()</a> will
+                                    <em>not</em> be called: the program was never even started.
+                                </p>
+                                <p>
+                                    The <a href="#executeAsync_onEnd">onEnd()</a> method is called after this one.
                                 </p> 
                             </div>
                         </li>
                         <li>
-                            <a class="anchor_small" id="jar_onExit" href="#jar_onExit" title="permanent link"></a>
-                            <code class="apiItem">void <span>onExit</span>(int exitVal)</code>
+                            <a class="anchor_small" id="executeAsync_onTimeoutException" href="#executeAsync_onTimeoutException" title="permanent link"></a>
+                            <code class="apiItem">void <span>onTimeoutException</span>()</code>
                             <div class="well">
                                 <p>
-                                    This method will be called when the process exits. If it exits by itself, without any error,
-                                    <code>exitVal</code> will in general be "<code>0</code>". 
+                                    This method is going to be called if the program is launched properly but
+                                    doesn't exit before the specified timeout is reached (if one is specified) .
+                                </p>
+                                <p>    
+                                    The default implementation, from
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>,
+                                    will simply log the error.
                                 </p>
                                 <p>
-                                    Note that if you execute a .jar file that doesn't exit by
-                                    itself (for example an HTTP server is started by the .jar file), you have
-                                    to explicitly <a href="#jar_killJarProcess">kill the process</a>.
+                                    Note that when this method is called, <a href="#executeAsync_onExit">onExit()</a> will
+                                    <em>not</em> be called.
                                 </p>
                                 <p>
-                                    The default implementation for this method simply logs the exit value.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <a class="anchor_small" id="jar_killJarProcess" href="#jar_killJarProcess" title="permanent link"></a>
-                            <code class="apiItem">void <span>killJarProcess</span>()</code>
-                            <div class="well">
-                                <p>
-                                    Kills the .jar process. 
+                                    The process is killed automatically.
                                 </p>
                                 <p>
-                                    If it is not able to kill it, for any reason, an exception is thrown.
+                                    The <a href="#executeAsync_onEnd">onEnd()</a> method is called after this one.
                                 </p> 
                             </div>
                         </li>
                         <li>
-                            <a class="anchor_small" id="jar_waitForPortOpen" href="#jar_waitForPortOpen" title="permanent link"></a>
+                            <a class="anchor_small" id="executeAsync_onEnd" href="#executeAsync_onEnd" title="permanent link"></a>
+                            <code class="apiItem">void <span>onEnd</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Always called at the end, whether the process
+                                    exited properly or an exception/timeout occurred.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeAsync_onSystemOut" href="#executeAsync_onSystemOut" title="permanent link"></a>
+                            <code class="apiItem">void <span>onSystemOut</span>(String line)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called when a line is printed to the standard output
+                                    by the executed program.
+                                </p>
+                                <p>    
+                                    The default implementation, from
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>,
+                                    will simply log the line using <code>System.out.println()</code>.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeAsync_onSystemErr" href="#executeAsync_onSystemErr" title="permanent link"></a>
+                            <code class="apiItem">void <span>onSystemErr</span>(String line)</code>
+                            <div class="well">
+                                <p>
+                                    This method will be called when a line is printed to the standard errors output
+                                    by the executed program.
+                                </p>
+                                <p>    
+                                    The default implementation, from
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>,
+                                    will simply log the line using <code>System.err.println()</code>.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeAsync_killProcess" href="#executeAsync_killProcess" title="permanent link"></a>
+                            <code class="apiItem">void <span>killProcess</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Kills the created process. 
+                                </p>
+                                <p>
+                                    If the process can't be killed, for any reason, an exception is thrown.
+                                </p>
+                                <p>
+                                    Only the first call to this method will be acknowledged, the following ones will
+                                    simply be ignored.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeAsync_isProcessAlive" href="#executeAsync_isProcessAlive" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isProcessAlive</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Return <code>true</code> if the created process is alive.
+                                    
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeAsync_waitForPortOpen" href="#executeAsync_waitForPortOpen" title="permanent link"></a>
                             <code class="apiItem">void <span>waitForPortOpen</span>(String host, int port, int nbrTry, int sleepMilliseconds)</code>
                             <div class="well">
                                 <p>
-                                    This method, provided by <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>,
-                                    allows you to wait for a <code>port</code> to be available. This is useful when the
-                                    executable .jar file starts an HTTP server and you need to wait for it to be ready.
+                                    This method, provided by the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ProcessExecutionHandlerDefault.html">ProcessExecutionHandlerDefault</a>
+                                    default implementation, allows you to wait for a <code>port</code> to be connectable. This is useful if the
+                                    executed program starts an HTTP server and you need to wait for it to be ready.
                                 </p> 
                                 <p>
-                                    If the port is still not available after <code>nbrTry * sleepMilliseconds</code>, a
+                                    If the port is still not available after <code>nbrTry * sleepMilliseconds</code> milliseconds, a
                                     <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/exceptions/PortNotOpenException.html">PortNotOpenException</a>
                                     exception is thrown.
                                 </p> 
@@ -319,54 +454,189 @@ assertTrue(jarFile.isFile());</pre>
                 </p>
                 <p> 
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    You can create a custom implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandler.html">JarExecutionHandler</a>
-                    to be used as the handler. This gives you control over how errors and exit codes are dealt with.
-                    Your implementation can extend the default 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/JarExecutionHandlerDefault.html">JarExecutionHandlerDefault</a>
-                    implementation.
-                </p>
-                <p> 
-                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    If you need to specify the <em>full path</em> to the <code>java</code> binary to be used to execute the
-                    .jar file ("<em>/usr/bin/java</em>" for example), you can do so using 
-                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeJar-java.lang.String-java.lang.String-java.util.List-org.spincast.plugins.processutils.JarExecutionHandler-">this overload</a>.
-                    Otherwise, "<em>java</em>" is used, as is, and must be on your <code>PATH</code>.
-                </p>
-                <p> 
-                    <img class="inlineIcon" src="/public/images/icons/para.png" />
-                    Finally, note that if you run an executable .jar file that doesn't exit by itself (for example
-                    it starts an HTTP server that listens forever for requests), <em>you are responsible</em>
-                    to kill the process when you are done with it, by calling <a href="#jar_killJarProcess">killJarProcess()</a>. 
-                    This can be done using a <code>try/finally</code> block:
+                    Remember that if you run a program that doesn't exit by itself (for example
+                    it starts an HTTP server that listens for requests indefinitely), <em>you are responsible</em>
+                    to kill the process when you are done with it, by calling <a href="#executeAsync_killProcess">killProcess()</a>!
+                    This can be done using a <code>try/finally</code> block.
+                </p> 
+
+                <h4>
+                    <a class="anchor_small" id="execute_sync" href="#execute_sync" title="permanent link"></a>
+                    Executing an external program, synchronously
+                </h4>
+                <p>
+                    As we saw in the previous section, you can execute an external program <em>asynchronously</em>, 
+                    so it doesn't block the current thread and ca be manipulated. In simple cases, you
+                    can also execute it <em>synchronously</em>. Here is an example:
                     
                     <div>
                         <p>
                             {% verbatim %}
-                            <pre class="ace ace-java" data-ace-hi="16,4,16,28"
->JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
-
-// Start an executable jar on port 12345
-getSpincastProcessUtils().executeJar("/some/path.jar", 
-                                     Lists.newArrayList("12345")),
-                                     handler);
+                            <pre class="ace ace-java"
+>
 try {
-    // Wait for the port 12345 to be open
-    handler.waitForPortOpen("localhost", 12345, 5, 1000);
-
-    // Make a request to the HTTP server started by the .jar file
-    HttpResponse response = getHttpClient().GET("http://localhost:12345").send();
-    assertEquals(HttpStatus.SC_OK, response.getStatus());
-    // ...
-} finally {
-    // Kill the process when we are done with it!
-    handler.killJarProcess();
+    SyncExecutionResult result = 
+        getSpincastProcessUtils().executeSync(3,
+                                              TimeUnit.MINUTES,
+                                              ExecutionOutputStrategy.BUFFER,
+                                              "/my/program/to/execute",
+                                              "arg1",
+                                              "arg2");
+    assertEquals(new Integer(0), result.getExitCode());
+    
+} catch (LaunchException ex) {
+    // manage the exception
+    
+} catch (TimeoutException ex) {
+    // manage the exception
 }</pre> 
                             {% endverbatim %}
                         </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">2</span> : 
+                                    A <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SyncExecutionResult.html">SyncExecutionResult</a>
+                                    object will be returned and will contain the result of the execution.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : We call 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeSync-long-java.util.concurrent.TimeUnit-java.lang.String...-">executeSync(...)</a>
+                                    to launch the program synchronously.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3-4</span> : A timeout is always required when executing a program
+                                    synchronously!
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : The strategy to use to deal with the output from the
+                                    created process. Here, we ask for the outputs (<code>Standard output</code> and <code>Standard errors</code>)
+                                    to be buffered so they are available through the <code>SyncExecutionResult</code>
+                                    result object when the execution is done.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">6</span> : The program to execute.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">7-8</span> : arguments for the program.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">9</span> : as soon as the <code>executeSync(...)</code> method
+                                    exits, we can get information from the <code>SyncExecutionResult</code> object. Here, we 
+                                    simply validate that the program exited with the code "<code>0</code>".  
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">11-12</span> : We manage the exception if one occurs
+                                    during the launch of the program.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">14-16</span> : We manage the timeout exception,
+                                    if any.
+                                </li> 
+                            </ul>
+                        </p>
                     </div> 
-                </p> 
-                
-                
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Two typed exceptions can be thrown when using <code>executeSync()</code>:
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/exceptions/LaunchException.html">LaunchException</a>: 
+                            if an error occurs during the launch of the program.
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/exceptions/TimeoutException.html">TimeoutException</a>: 
+                            if the program launched successfully but timed out. Note that the process 
+                            will then be killed automatically.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    The methods available on the
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SyncExecutionResult.html">SyncExecutionResult</a> object
+                    are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="executeSync_getExitCode" href="#executeSync_getExitCode" title="permanent link"></a>
+                            <code class="apiItem">int <span>getExitCode</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The exit code of the executed program.
+                                </p>
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    Note that this code is <em>undefined</em> if the program timed out and the 
+                                    <code>SyncExecutionResult</code> instance has been taken from 
+                                    <code>TimeoutException</code>'s 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/exceptions/TimeoutException.html#getSyncExecutionResult--">getSyncExecutionResult()</a>!
+                                </p>
+                                
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeSync_getSystemOutLines" href="#executeSync_getSystemOutLines" title="permanent link"></a>
+                            <code class="apiItem">List&lt;String&gt; <span>getSystemOutLines</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The lines outputted to the standard output by the created process. 
+                                    Those will only be available if the
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html">ExecutionOutputStrategy</a>
+                                    parameter is explicitly set to <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html#BUFFER">BUFFER</a>.
+                                    Otherwise, an empty list is returned.
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="executeSync_getSystemErrLines" href="#executeSync_getSystemErrLines" title="permanent link"></a>
+                            <code class="apiItem">List&lt;String&gt; <span>getSystemErrLines</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The lines outputted to the standard errors by the created process. 
+                                    Those will only be available if the
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html">ExecutionOutputStrategy</a>
+                                    parameter is explicitly set to <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html#BUFFER">BUFFER</a>.
+                                    Otherwise, an empty list is returned.
+                                </p>
+                            </div>
+                        </li>   
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    The strategies that you can use to deal with the output of the
+                    created process are:
+                    
+                    <ul>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html#SYSTEM"><strong>SYSTEM</strong></a> (<em>default</em>): the
+                            output will be redirected to <code>System.out</code> or <code>System.err</code> immediately, as it occurs.
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html#BUFFER"><strong>BUFFER</strong></a>: the 
+                            output will be buffered so it is available through the 
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SyncExecutionResult.html#getSystemOutLines--">getSystemOutLines()</a>
+                            and <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SyncExecutionResult.html#getSystemErrLines--">getSystemErrLines()</a>
+                            methods of the <code>SyncExecutionResult</code> result object.
+                        </li>
+                        <li>
+                            <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html#NONE"><strong>NONE</strong></a>: the output
+                            is ignored and discarded.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Beware that buffering the output (by using 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/ExecutionOutputStrategy.html#BUFFER">BUFFER</a>
+                    as the strategy) may 
+                    consume a lot of memory if the created process generates a lot of it! If this is the case for you, 
+                    you may have to use the <a href="#execute_async">asynchronous method</a> instead.
+                </p>
+
             </section>
 
             <section id="installation">

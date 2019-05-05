@@ -81,7 +81,35 @@ public interface SpincastUtils {
     public boolean isContentTypeToSkipGziping(String contentType);
 
     /**
-     * Is the application currently running from
+     * Is the classpath resource in a .jar file? Otherwise
+     * it is on the file system.
+     *
+     * @throws an exception if the resource doesn't
+     * exist.
+     */
+    public boolean isClasspathResourceLoadedFromJar(String resourcePath);
+
+    /**
+     * Was the specified Class loaded from a .jar file?
+     */
+    public boolean isClassLoadedFromJar(Class<?> clazz);
+
+    /**
+     * The location of the specified class.
+     * <p>
+     * This will be a <em>directory</em> if the
+     * class was loaded from the file system as
+     * a standalone <code>.class</code> file or
+     * a <em>.jar file</em> if the class was loaded
+     * from a jar.
+     * <p>
+     * You can use {@link SpincastUtils#isClassLoadedFromJar(Class)} to
+     * know if the class was loaded from a .jar file or not.
+     */
+    public File getClassLocationDirOrJarFile(Class<?> clazz);
+
+    /**
+     * Is the current code running from
      * an executable .jar? An executable .jar is a
      * jar with <code>Main-Class</code> in its
      * <code>META-INF/MANIFEST.MF</code>.
@@ -98,12 +126,6 @@ public interface SpincastUtils {
      * file.
      */
     public File getAppJarDirectory();
-
-    /**
-     * Is the classpath resource in a .jar file? Otherwise
-     * it is on the file system.
-     */
-    public boolean isClasspathResourceInJar(String resourcePath);
 
     /**
      * If the project is not running from an executable
@@ -333,7 +355,8 @@ public interface SpincastUtils {
      * being escaped: remove accents, spaces, etc.
      * <p>
      * This can be used to create "friendly token" in an SEO
-     * optimized URL.
+     * optimized URL. It can also be used to create a human friendly
+       <em>file name</em> from a random string.
      * <p>
      * Be careful if you plan on using the result of this
      * methos as an unique token since many strings may
@@ -342,25 +365,30 @@ public interface SpincastUtils {
      * @return the string with only A-Z, "-" and "_" characters. Or, if
      * the resulting string is empty, a random {@link UUID} will be returned.
      */
-    public String convertToUrlToken(String str);
+    public String convertToFriendlyToken(String str);
 
     /**
      * Convert a string so it can be used in an URL without
      * being escaped: remove accents, spaces, etc.
      * <p>
      * This can be used to create "friendly token" in an SEO
-     * optimized URL.
+     * optimized URL. It can also be used to create a human friendly
+       <em>file name</em> from a random string.
      * <p>
      * Be careful if you plan on using the result of this
-     * methos as an unique token since many strings may
+     * method as an unique token since many strings may
      * result in the same thing!
-     *
      *
      * @return the string with only A-Z, "-" and "_" characters. Or, if
      * the resulting string is empty, the <code>resultIfEmpty</code> param
      * is returned.
      */
-    public String convertToUrlToken(String str, String resultIfEmpty);
+    public String convertToFriendlyToken(String str, String resultIfEmpty);
+
+    /**
+     * Validate if a port is open and connectable.
+     */
+    public boolean isPortOpen(String host, int port);
 
 
 }

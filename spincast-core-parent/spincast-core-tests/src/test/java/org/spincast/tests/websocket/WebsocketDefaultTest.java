@@ -25,6 +25,7 @@ import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
 import org.spincast.testing.core.utils.TrueChecker;
 import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
+import org.spincast.testing.junitrunner.RepeatUntilSuccess;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
@@ -216,6 +217,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     }
 
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     public void createThenDeleteRoute() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
@@ -258,6 +260,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
     }
 
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     public void customEndpointClosingCode() throws Exception {
 
         DefaultWebsocketControllerTest controller = new DefaultWebsocketControllerTest(getServer());
@@ -505,7 +508,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertTrue(controller.waitForStringMessageReceived("endpoint1", 1));
         assertEquals(SpincastTestingUtils.TEST_STRING, controller.getStringMessageReceived("endpoint1").get(0));
 
-        // All peers receive it as an echo, even Peer #2 which is the 
+        // All peers receive it as an echo, even Peer #2 which is the
         // original sender.
         assertTrue(client1.waitForStringMessageReceived(1));
         assertEquals(SpincastTestingUtils.TEST_STRING, client1.getStringMessageReceived().get(0));
@@ -806,7 +809,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"),
                           controller.getBytesMessageReceived("endpoint1").get(0));
 
-        // All peers receive it as an echo, even Peer #2 which is the 
+        // All peers receive it as an echo, even Peer #2 which is the
         // original sender.
         assertTrue(client1.waitForBytesMessageReceived(1));
         assertArrayEquals(SpincastTestingUtils.TEST_STRING.getBytes("UTF-8"), client1.getBytesMessageReceived().get(0));

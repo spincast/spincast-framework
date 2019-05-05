@@ -84,33 +84,16 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     @Inject
     protected SpincastConfig spincastConfig;
 
-    /**
-     * Should the tests file be disabled?
-     * <p>
-     * This allow you to disable some tests file
-     * for example when they can only be ran
-     * from inside an IDE.
-     * <p>
-     * Note that this will be ran before everything
-     * (including {@link #beforeClass()}):
-     * no Guice context is available... But you can look
-     * at System properties, for example as a way of
-     * finding if the file must be ran or not.
-     *
-     */
     @Override
-    public boolean isTestsFileDisabled() {
+    public boolean isTestClassDisabledPreBeforeClass() {
         // Not disabled by default
         return false;
     }
 
-    /**
-     * Utility that return <code>true</code> if
-     * the current Maven profile is "release".
-     */
-    protected final boolean isMavenReleaseProfile() {
-        String mavenProfileId = System.getProperty("mavenProfileId");
-        return "release".equals(mavenProfileId);
+    @Override
+    public boolean isTestClassDisabledPostBeforeClass() {
+        // Not disabled by default
+        return false;
     }
 
     @Override

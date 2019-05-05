@@ -13,7 +13,27 @@ public class App {
             return;
         }
         
+        if(exitCode == 123) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception ex) {
+                //...
+            }
+        }
+
+        System.out.println("This is a System.out output1");
+        System.err.println("This is a System.err output1");
+        System.out.println("This is a System.out output2");
+        System.err.println("This is a System.err output2");
+ 
+        if(exitCode == 456) {
+            try {
+                Thread.sleep(60000);
+            } catch (Exception ex) {
+                //...
+            }
+        }
+        
         System.exit(exitCode);
     }
-
 }

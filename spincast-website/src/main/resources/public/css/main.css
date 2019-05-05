@@ -870,6 +870,9 @@ ul.apiList li:hover {
 #toc.longTitle ul.affix {
     top: 140px;
 }
+#toc.veryLongTitle ul.affix {
+    top: 170px;
+}
 
 #tocTopUl {
     height:100%;

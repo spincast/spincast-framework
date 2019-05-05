@@ -20,7 +20,7 @@ import org.spincast.testing.defaults.NoAppTestingBase;
 
 import com.google.inject.Inject;
 
-public class ExternalMavenProjectTest extends NoAppTestingBase {
+public class ExternalMavenProjectPostInstallTest extends NoAppTestingBase {
 
     @Override
     protected List<SpincastPlugin> getExtraPlugins() {
@@ -43,26 +43,22 @@ public class ExternalMavenProjectTest extends NoAppTestingBase {
         return this.spincastUtils;
     }
 
-    protected String getSpincastVersionToUse() {
-        return "1.4.0";
-    }
-
     @Test
     public void fromClasspath() throws Exception {
         File projectDir = getSpincastProcessUtils().executeGoalOnExternalMavenProject(new ResourceInfo("/externalMavenProject",
                                                                                                        true),
                                                                                       MavenProjectGoal.PACKAGE,
                                                                                       SpincastStatics.map("spincastVersion",
-                                                                                                          getSpincastVersionToUse()));
+                                                                                                          getSpincastUtils().getSpincastCurrentVersion()));
 
         File pomFile = new File(projectDir, "pom.xml");
-        File jarFile = new File(projectDir, "target/spincast-test-" + getSpincastVersionToUse() + ".jar");
+        File jarFile = new File(projectDir, "target/spincast-test-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar");
         assertTrue(pomFile.isFile());
         assertTrue(jarFile.isFile());
 
         String pomContent = FileUtils.readFileToString(pomFile, "UTF-8");
         assertFalse(pomContent.contains("<version>{{ spincastVersion }}</version>"));
-        assertTrue(pomContent.contains("<version>" + getSpincastVersionToUse() + "</version>"));
+        assertTrue(pomContent.contains("<version>" + getSpincastUtils().getSpincastCurrentVersion() + "</version>"));
     }
 
     @Test
@@ -72,24 +68,26 @@ public class ExternalMavenProjectTest extends NoAppTestingBase {
 
         getSpincastUtils().copyClasspathDirToFileSystem("/externalMavenProject", projectDir);
         assertTrue(new File(projectDir, "pom.xml").isFile());
-        assertFalse(new File(projectDir, "target/spincast-test-" + getSpincastVersionToUse() + ".jar").isFile());
+        assertFalse(new File(projectDir,
+                             "target/spincast-test-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar").isFile());
 
         File projectDir2 =
                 getSpincastProcessUtils().executeGoalOnExternalMavenProject(new ResourceInfo(projectDir.getAbsolutePath(),
                                                                                              false),
                                                                             MavenProjectGoal.INSTALL,
                                                                             SpincastStatics.map("spincastVersion",
-                                                                                                getSpincastVersionToUse()));
+                                                                                                getSpincastUtils().getSpincastCurrentVersion()));
 
         assertEquals(projectDir.getAbsolutePath(), projectDir2.getAbsolutePath());
 
         File pomFile = new File(projectDir, "pom.xml");
         assertTrue(pomFile.isFile());
-        assertTrue(new File(projectDir, "target/spincast-test-" + getSpincastVersionToUse() + ".jar").isFile());
+        assertTrue(new File(projectDir,
+                            "target/spincast-test-" + getSpincastUtils().getSpincastCurrentVersion() + ".jar").isFile());
 
         String pomContent = FileUtils.readFileToString(pomFile, "UTF-8");
         assertFalse(pomContent.contains("<version>{{ spincastVersion }}</version>"));
-        assertTrue(pomContent.contains("<version>" + getSpincastVersionToUse() + "</version>"));
+        assertTrue(pomContent.contains("<version>" + getSpincastUtils().getSpincastCurrentVersion() + "</version>"));
     }
 
 }

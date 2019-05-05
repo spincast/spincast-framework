@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.spincast.testing.junitrunner.BeforeAfterClassMethodsProvider;
-import org.spincast.testing.junitrunner.Repeat;
+import org.spincast.testing.junitrunner.RepeatUntilFailure;
 import org.spincast.testing.junitrunner.RepeatedClassAfterMethodProvider;
-import org.spincast.testing.junitrunner.tests.utils.SpincastJUnitRunnerTester;
+import org.spincast.testing.junitrunner.SpincastJUnitRunner;
 
-@RunWith(SpincastJUnitRunnerTester.class)
-@Repeat(value = 3, sleep = 0)
+@RunWith(SpincastJUnitRunner.class)
+@RepeatUntilFailure(value = 3, sleep = 0)
 public class RepeatTest implements BeforeAfterClassMethodsProvider, RepeatedClassAfterMethodProvider {
 
     private int test1Called = 0;
@@ -40,7 +40,7 @@ public class RepeatTest implements BeforeAfterClassMethodsProvider, RepeatedClas
     }
 
     @Test
-    @Repeat(value = 2, sleep = 500)
+    @RepeatUntilFailure(value = 2, sleep = 500)
     public void test2() throws Exception {
 
         if (this.test2Called == 0) {

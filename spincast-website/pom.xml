@@ -93,12 +93,46 @@
             <artifactId>jsoup</artifactId>
             <version>1.11.3</version>
         </dependency>
+        
+        <!--=================================== 
+        Demos to test
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-demos-quick</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-demos-better</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-demos-supercalifragilisticexpialidocious</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-demos-sum</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-quickstart</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
-     
+                
             <!--=================================== 
             Fat jar creation
             ====================================-->

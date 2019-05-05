@@ -14,6 +14,7 @@ import org.spincast.plugins.hotswap.fileswatcher.FileToWatch;
 import org.spincast.plugins.hotswap.fileswatcher.HotSwapFilesModificationsListener;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.testing.core.utils.SpincastTestingUtils;
+import org.spincast.testing.junitrunner.RepeatUntilSuccess;
 
 import com.google.common.collect.Sets;
 
@@ -88,6 +89,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
     }
 
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     public void twoFilesOneListenerNotOnClasspath() throws Exception {
 
         File testFile1 = new File(createTestingFilePath());
@@ -227,7 +229,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
         getHotSwapFilesModificationsWatcher().registerListener(listener2);
 
         //==========================================
-        // Also register the listener1 again to make sure it doesn't 
+        // Also register the listener1 again to make sure it doesn't
         // change anything.
         //==========================================
         getHotSwapFilesModificationsWatcher().registerListener(listener1);
@@ -398,6 +400,7 @@ public class HotSwapFilesModificationsListenersTest extends HotSwapTestBase {
     }
 
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     public void addListenerAfterAWhile() throws Exception {
 
         File testFile1 = new File(createTestingFilePath());

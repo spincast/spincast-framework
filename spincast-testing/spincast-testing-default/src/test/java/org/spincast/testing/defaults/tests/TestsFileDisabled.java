@@ -8,7 +8,7 @@ import org.spincast.testing.defaults.NoAppTestingBase;
 public class TestsFileDisabled extends NoAppTestingBase {
 
     @Override
-    public boolean isTestsFileDisabled() {
+    public boolean isTestClassDisabledPreBeforeClass() {
         return true;
     }
 

@@ -726,10 +726,11 @@ Spincast JUnit runner
             <li>
                 First, if your test class (or a parent) implements
                 the <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/CanBeDisabled.html">CanBeDisabled</a> 
-                interface and the <code>isTestsFileDisabled()</code> method returns <code>true</code>, the tests are all ignored.
+                interface and the <code>isTestClassDisabledPreBeforeClass()</code> method returns <code>true</code>, the
+                test class is ignored (the Guice context is not even created).
             </li> 
             <li>
-                Otherwise, the <code>beforeClass()</code> method is first called. As opposed to a classic 
+                The <code>beforeClass()</code> method is called. As opposed to a classic 
                 JUnit's <code>@BeforeClass</code> annotated method, Spincast's <code>beforeClass()</code> method is
                 <em>not static</em>. It is called when the test class is initialized.
             </li>
@@ -746,7 +747,14 @@ Spincast JUnit runner
                 the <code>beforeClassException(...)</code> method will be called, the process will be stop and the tests won't be run.
             </li>
             <li>
-                If no exception occures, the tests are then run.
+                If your test class (or a parent) implements
+                the <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/CanBeDisabled.html">CanBeDisabled</a> 
+                interface and the <code>isTestClassDisabledPostBeforeClass()</code> method returns <code>true</code>, the
+                tests are all ignored (but the Guice context <em>is</em> created and you have access to it to perform the logic required
+                to determine if tests must be ignored or not).
+            </li> 
+            <li>
+                The tests are run.
             </li>
             <li>
                 The <code>afterClass()</code> method is called. Like the <code>beforeClass()</code> method, this
@@ -770,6 +778,7 @@ Spincast JUnit runner
     <p>
         <ul>
             <li>
+                <a class="anchor_small" id="testing_runner_features_ExpectingBeforeClassException" href="#testing_runner_features_ExpectingBeforeClassException" title="permanent link"></a>
                 If your test class is annotated with
                 <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/ExpectingBeforeClassException.html">@ExpectingBeforeClassException</a>
                 then the <code>beforeClass()</code> method is expected to throw an exception! In other words, the test class will be
@@ -778,37 +787,66 @@ Spincast JUnit runner
                 it starts, for example.
             </li>
             <li>
+                <a class="anchor_small" id="testing_runner_features_TestFailureListener" href="#testing_runner_features_TestFailureListener" title="permanent link"></a>
                 If your test class (or a parent) implements
                 <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/TestFailureListener.html">TestFailureListener</a>
                 then the <code>testFailure(...)</code> method will be called each time a test fails. This
                 allows you to add a breakpoint or some logs, and to inspect the context of the failure.
             </li>
             <li>
-                You can use the <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/Repeat.html">@Repeat</a> annotation. 
-                When added to the class itself, this annotation makes your test class loop X number of times. Note that the 
-                <code>beforeClass()</code> and <code>afterClass()</code> methods will also be called X number of time, so the
-                Guice context will be recreated each time.
-                You can specify an amount of milliseconds to sleep between two loops, using the <code>sleep</code> parameter.
+                <p>
+                    <a class="anchor_small" id="testing_runner_features_RepeatUntilFailure" href="#testing_runner_features_RepeatUntilFailure" title="permanent link"></a>
+                    The <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/RepeatUntilFailure.html">@RepeatUntilFailure</a> annotation 
+                    makes your test class loop until an error occurs or the specified number of loops is reached. This can be useful to debug
+                    tests that <em>sometimes</em> fail and you need a way to run them over and over until they do fail.
+                </p>
+                <p>
+                    Note that the  <code>beforeClass()</code> and <code>afterClass()</code> methods will also be called X number of time, so the
+                    Guice context will be recreated each time.
+                </p>
+                <p>
+                    You can specify a number of milliseconds to sleep between two loops, using the <code>sleep</code> parameter.
+                </p>
+                <p>
+                    This annotation can also be used on a single test <em>method</em> too. In that case, only the annotated test method will be looped over.
+                </p>
             </li>
             <li>
-                You can also use the <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/Repeat.html">@Repeat</a> annotation
-                <em>on a test</em>. This will make the test run X number of time during the execution of a test class
-                loop.
+                <p>
+                    <a class="anchor_small" id="testing_runner_features_RepeatUntilSuccess" href="#testing_runner_features_RepeatUntilSuccess" title="permanent link"></a>
+                    The <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/RepeatUntilSuccess.html">@RepeatUntilSuccess</a> annotation 
+                    makes your test class loop until all tests pass or the specified number of loops is reached.
+                </p>
+                <p>
+                    It is a bad practice to use this annotation without good reasons! Tests should always be replicable. You should not
+                    have to run a test multiple time for it to actually pass! But, in seldom situations where you are <em>not able</em> to
+                    make a test pass 100% of the time, and you consciously decide that the test is <em>ok</em> like it is, then this annotation
+                    can help.
+                </p>
+                <p>
+                    You can specify a number of milliseconds to sleep between two loops, using the <code>sleep</code> parameter.
+                </p>
+                <p>
+                    This annotation can also be used on a single test <em>method</em>.
+                    In that case, only the annotated test method will be looped until it passes or the maximum number of loops is reached.
+                </p>
             </li>
             <li>
+                <p>
+                    <a class="anchor_small" id="testing_runner_features_ExpectingFailure" href="#testing_runner_features_ExpectingFailure" title="permanent link"></a>
+                    The <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/ExpectingFailure.html">@ExpectingFailure</a> annotation 
+                    will make your test class <em>pass</em> when at least one test <em>fails</em>. It will make the test class <em>fails</em>
+                    if all tests pass.
+                </p>
+            </li>
+            <li>
+                <a class="anchor_small" id="testing_runner_features_RepeatedClassAfterMethodProvider" href="#testing_runner_features_RepeatedClassAfterMethodProvider" title="permanent link"></a>
                 If your test class (or a parent) implements
                 <a class="javadoc" href="/public/javadoc/org/spincast/testing/junitrunner/RepeatedClassAfterMethodProvider.html">RepeatedClassAfterMethodProvider</a> 
                 then the <code>afterClassLoops()</code> method will be called when all the loops of the test class have been
                 run.
             </li>
         </ul>
-    </p>
-    <p>
-        A quick note about the <code>@Repeat</code></a> annotation : this annotation should probably only be used 
-        for <em>debugging</em> purpose! A test should always be reproducible and should probably not have
-        to be run multiple times. But this annotation, in association with the 
-        <code>testFailure(...)</code> method, can be a great help to debug a test
-        which <em>sometimes</em> fails and you don't know why!
     </p>
     
 </section>
@@ -820,7 +858,7 @@ Managing cookies
 <section id="testing_cookies">
     <h4>
         <a class="anchor_small" href="#testing_cookies" title="permanent link"></a>
-        Managing cookies
+        Managing cookies during tests
     </h4>
     
     <p>
@@ -829,7 +867,7 @@ Managing cookies
     </p>
     <p>
         To keep the cookies sent by a response, simple call
-        <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/AppBasedTestingBase.html#saveResponseCookies-org.spincast.plugins.httpclient.HttpResponse-">saveResponseCookies(response)</a>
+        <a class="javadoc" href="/public/javadoc/org/spincast/testing/core/AppBasedTestingBase.html#saveResponseCookies-org.spincast.plugins.httpclient.HttpResponse-">saveResponseCookies(...)</a>
         when a valid response is received. Then, you can add back those cookies to a new request using 
         <code>.setCookies(getPreviousResponseCookies())</code>:
         
@@ -858,7 +896,7 @@ Spincast Testing databases
 <section id="testing_databases">
     <h4>
         <a class="anchor_small" href="#testing_databases" title="permanent link"></a>
-        Testing/embedded databases
+        Embedded databases for testing
     </h4>
     
     <p>
@@ -1125,15 +1163,17 @@ Testing a real .jar
             </li>
             <li>
                 You use another feature provided by the <code>Spincast Process Utils plugin</code>, 
-                "<a href="/plugins/spincast-process-utils#jar">Running an external executable .jar file</a>"
+                "<a href="/plugins/spincast-process-utils#execute_async">Executing an external program, asynchronously</a>"
                 to execute the generated .jar file. For example:
                 <div>
                     <p>
                         <pre class="ace ace-java" data-ace-hi="1,25,1,37"
->JarExecutionHandlerDefault handler = new JarExecutionHandlerDefault();
-getSpincastProcessUtils().executeJar(generatedJarFilePath,
-                                     Lists.newArrayList("12345"),
-                                     handler);
+>ProcessExecutionHandlerDefault handler = new ProcessExecutionHandlerDefault();
+getSpincastProcessUtils().executeAsync(handler,
+                                       "java",
+                                       "-jar",
+                                       generatedJarFilePath,
+                                       "12345");
 try {
     // Wait for the HTTP port to be open
     handler.waitForPortOpen("localhost", 12345, 10, 1000);
@@ -1142,7 +1182,7 @@ try {
                                            .send();
     assertEquals(HttpStatus.SC_OK, response.getStatus());
 } finally {
-    handler.killJarProcess();
+    handler.killProcess();
 }</pre>
                     </p>
                 </div> 
@@ -1154,12 +1194,12 @@ try {
                 </p>
                 <p>
                    For your @Test to know if the executed code worked successfully or not inside the .jar file, you can 
-                   make the code return a <code>200</code> status code, for example. You could also return
+                   make the endpoint of your HTTP server return a <code>200</code> status code, for example. You could also return
                    a <code>JSON</code> object containing more details about the result of the execution.
                 </p>
             </li>
             <li>
-                Finally, when your test is done, you kill the .jar process ("<code>handler.killJarProcess()</code>").
+                Finally, when your test is done, you kill the created process ("<code>handler.killProcess()</code>").
             </li>
         </ol>
     </p>
@@ -1191,10 +1231,58 @@ try {
     <p>
         <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
         Here's 
-        <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-process-utils-parent/spincast-plugins-process-utils-tests/src/test/java/org/spincast/plugins/processutils/tests/ExecuteJarNoAutoExitTest.java">a real test</a>
+        <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-plugins/spincast-plugins-process-utils-parent/spincast-plugins-process-utils-tests/src/test/java/org/spincast/plugins/processutils/tests/ExecuteAsyncNoAutoExitPostInstallTest.java">a real test class</a>
         validating code located inside a .jar file.
     </p>
     
 </section>
 
+{#==========================================
+Post install tests
+==========================================#}         
+<section id="testing_post_install">
+    <h4>
+        <a class="anchor_small" href="#testing_post_install" title="permanent link"></a>
+        Post install tests
+    </h4>
+    <p>
+        In some cases, mainly if you have some tests that programmatically package a test Maven project
+        and then uses the generated .jar file (as seen in the <a href="#testing_jar">previous section</a>), 
+        you may need those tests to be run <em>only when the artifacts of your main project are available
+        in your local repository</em>. 
+    </p>
+    <p>
+        Indeed, such test Maven projects may use artifacts from your main
+        project (in their <code>pom.xml</code>) and those artifacts may not be found if they were not
+        <em>installed</em> in the first place!   
+    </p>
+    <p>
+        This situation may occur for example during the <em>release</em> of your project, if you use the "<code><em>mvn release:prepare</em></code>" 
+        command. 
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/para.png" /> 
+        For such tests that need to be run at the Maven <code>install</code> phase (right after
+        the default <code>maven-install-plugin</code> plugin), you can suffix their names
+        with "<em>PostInstallTest</em>". For example, a test class named "<em>ExamplePostInstallTest</em>"
+        would not be run at the standard Maven <code>test</code> phase, but rather at the 
+        Maven <code>install</code> phase!:
+        
+        <div>
+            <p>
+                <pre class="ace ace-java" data-ace-hi="1,20,1,35"
+>
+
+public class ExamplePostInstallTest extends NoAppTestingBase {
+    
+    @Test
+    public void test() throws Exception {
+        //...
+    }
+}</pre> 
+            </p>
+        </div> 
+    </p>
+    
+</section>
 

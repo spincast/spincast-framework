@@ -23,6 +23,7 @@ import org.spincast.core.websocket.WebsocketEndpointManager;
 import org.spincast.plugins.httpclient.websocket.WebsocketClientWriter;
 import org.spincast.shaded.org.apache.commons.lang3.RandomUtils;
 import org.spincast.testing.defaults.NoAppWebsocketTestingBase;
+import org.spincast.testing.junitrunner.RepeatUntilSuccess;
 import org.spincast.tests.varia.DefaultWebsocketControllerTest;
 import org.spincast.tests.varia.WebsocketClientTest;
 
@@ -302,6 +303,7 @@ public class LoadTest extends NoAppWebsocketTestingBase {
     }
 
     @Test
+    @RepeatUntilSuccess(value = 5, sleep = 1000)
     public void loadTest() throws Exception {
 
         //==========================================

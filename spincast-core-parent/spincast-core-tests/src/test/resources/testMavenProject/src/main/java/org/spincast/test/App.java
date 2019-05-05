@@ -97,7 +97,17 @@ public class App {
         });
         
         router.GET("/resource").handle((context) -> {
-            context.response().sendPlainText(String.valueOf(spincastUtils.isClasspathResourceInJar("/oneDir/file2.txt")));
+            context.response().sendPlainText(String.valueOf(spincastUtils.isClasspathResourceLoadedFromJar("/oneDir/file2.txt")));
+        });
+        
+        router.GET("/getClassLocationDirOrJar").handle((context) -> {
+            
+            if(!spincastUtils.isClassLoadedFromJar(getClass())) {
+                throw new RuntimeException("Was supposed to be from a jar here...");
+            }
+
+            File file = spincastUtils.getClassLocationDirOrJarFile(getClass());
+            context.response().sendPlainText(file.getAbsolutePath());
         });
 
         server.start();

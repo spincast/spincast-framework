@@ -15,6 +15,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,33 +23,33 @@ import org.slf4j.LoggerFactory;
  * Spincast JUnit Runner.
  * <p>
  * Only creates <em>one</em> instance of the test class for all
- * the tests.
- * </p>
+ * its tests.
  * <p>
- * If the class is annotated with {@link BeforeAfterClassMethodsProvider}, then
+ * If the class implements {@link BeforeAfterClassMethodsProvider}, then
  * a <code>beforeClass()</code> and <code>afterClass()</code> methods will be
  * called.
- * </p>
  * <p>
  * You can use the {@link ExpectingBeforeClassException} annotation on the test
  * class to indicate that an exception is expected from the <code>beforeClass()</code>
  * method.
- * </p>
  * <p>
  * If you try to debug a test that only fails <em>sometimes</em> (those are the
- * worst!), you can use the {@link Repeat} annotation on the test or on
+ * worst!), you can use the {@link RepeatUntilFailure @RepeatUntilFail} annotation on the test or on
  * its test class. This allows you to run the test or the whole test class multiple times.
- * </p>
+ * <p>
+ * You can also use {@link RepeatUntilSuccess @RepeatUntilSuccess} instead to repeat
+ * the test class (or a single test) multiple time until it succeeds (or the maximum
+ * number of tries is reached).
  */
 public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
     protected static final Logger logger = LoggerFactory.getLogger(SpincastJUnitRunner.class);
 
     public final static String SPINCAST_TEST_NAME_BEFORE_CLASS_ANNOTATIONS_VALIDATION =
-            "[Spincast] @BeforeClass annotations validation";
+            "[Spincast] @" + BeforeClass.class.getSimpleName() + " annotations validation";
 
     public final static String SPINCAST_TEST_NAME_AFTER_CLASS_ANNOTATIONS_VALIDATION =
-            "[Spincast] @AfterClass annotations validation";
+            "[Spincast] @" + AfterClass.class.getSimpleName() + " annotations validation";
 
     public final static String SPINCAST_TEST_NAME_BEFORE_CLASS_METHOD_VALIDATION =
             "[Spincast] beforeClass method validation";
@@ -62,16 +63,29 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     public final static String SPINCAST_TEST_NAME_AFTER_CLASS_LOOPS_EXCEPTION =
             "[Spincast] afterClassLoops method validation";
 
+    public final static String SPINCAST_TEST_NAME_REPEAT_ANNOTATIONS_VALIDATION =
+            "[Spincast] @" + RepeatUntilSuccess.class.getSimpleName() + " and @" + RepeatUntilFailure.class.getSimpleName() +
+                                                                                  " annotations validation";
+
+    public final static String SPINCAST_TEST_NAME_EXPECTING_FAILURE_BUT_ONLY_SUCCESSES =
+            "[Spincast] @" + ExpectingFailure.class.getSimpleName() + " annotation but only successes!";
+
     private Object testClassInstance = null;
     private boolean exceptionInBeforeClass = false;
     private Boolean isExpectingBeforeClassException = null;
-    private boolean atLeastOneTestFailed = false;
+    private Boolean isExpectingFailure = null;
+    private boolean currentTestFailed = false;
+    private boolean atLeastOneTestFailedInAllLoops = false;
+    private boolean atLeastOneTestFailedInCurrentLoop = false;
+    private boolean stopLoopsForced = false;
     private RunNotifier runNotifier = null;
     private int currentClassLoopPosition = 1;
     private boolean ignoreRemainingTests = false;
+    private boolean isLastLoop = false;
+    private boolean isLastSingleTestLoop = false;
 
-    public SpincastJUnitRunner(Class<?> klass) throws InitializationError {
-        super(klass);
+    public SpincastJUnitRunner(Class<?> clazz) throws InitializationError {
+        super(clazz);
     }
 
     protected RunNotifier getRunNotifier() {
@@ -96,10 +110,6 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
     protected int getCurrentClassLoopPosition() {
         return this.currentClassLoopPosition;
-    }
-
-    protected void setCurrentClassLoopPosition(int currentClassLoopPosition) {
-        this.currentClassLoopPosition = currentClassLoopPosition;
     }
 
     /**
@@ -133,7 +143,16 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
         String name = super.getName();
 
-        int loopsNbr = getTestClassLoopsNbr();
+        Integer repeatUntilFailureLoopsNbr = getTestClassRepeatUntilFailureAnnotationLoopsNbr();
+        Integer repeatUntilSuccessLoopsNbr = getTestClassRepeatUntilSuccessAnnotationLoopsNbr();
+
+        Integer loopsNbr = 1;
+        if (repeatUntilFailureLoopsNbr != null) {
+            loopsNbr = repeatUntilFailureLoopsNbr;
+        } else if (repeatUntilSuccessLoopsNbr != null) {
+            loopsNbr = repeatUntilSuccessLoopsNbr;
+        }
+
         if (loopsNbr > 1) {
             name = name + " [" + loopsNbr + " loops]";
         }
@@ -146,11 +165,11 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
 
         //==========================================
         // No tests are required if we simply validate
-        // that an exception must occure in the
+        // that an exception must occur in the
         // beforeClass() method.
         //
         // But JUnit required at least one test to
-        // exist, so we create a dummy one.
+        // be defined, so we create a dummy one.
         //==========================================
         List<FrameworkMethod> tests = super.computeTestMethods();
         if ((tests == null || tests.size() == 0)) {
@@ -169,12 +188,15 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     public void run(final RunNotifier notifier) {
 
         this.runNotifier = notifier;
+        this.stopLoopsForced = false;
+        this.isLastLoop = false;
 
         //==========================================
-        // If the tests file disabled?
+        // If the tests class disabled?
         //==========================================
-        if (getTestClassInstance() instanceof CanBeDisabled && ((CanBeDisabled)getTestClassInstance()).isTestsFileDisabled()) {
-            logger.info("tests file disabled! Skipping...");
+        if (getTestClassInstance() instanceof CanBeDisabled &&
+            ((CanBeDisabled)getTestClassInstance()).isTestClassDisabledPreBeforeClass()) {
+            logger.info("Test class disabled (pre 'beforeClass')! Skipping...");
             return;
         }
 
@@ -195,20 +217,46 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             //==========================================
             // How many loops of the class should we make?
             //==========================================
-            int loopsNbr = getTestClassLoopsNbr();
-            int sleep = getTestClassLoopsSleep();
+            Integer repeatUntilFailureLoopsNbr = getTestClassRepeatUntilFailureAnnotationLoopsNbr();
+            Integer repeatUntilFailureSleep = getTestClassRepeatUntilFailureAnnotationLoopsSleep();
+            Integer repeatUntilSuccessLoopsNbr = getTestClassRepeatUntilSuccessAnnotationLoopsNbr();
+            Integer repeatUntilSuccessSleep = getTestClassRepeatUntilSuccessAnnotationLoopsSleep();
+
+            int loopNbr = 1;
+            if (repeatUntilFailureLoopsNbr != null) {
+                loopNbr = repeatUntilFailureLoopsNbr;
+            } else if (repeatUntilSuccessLoopsNbr != null) {
+                loopNbr = repeatUntilSuccessLoopsNbr;
+            }
+
+            int sleep = 0;
+            if (repeatUntilFailureSleep != null) {
+                sleep = repeatUntilFailureSleep;
+            } else if (repeatUntilSuccessSleep != null) {
+                sleep = repeatUntilSuccessSleep;
+            }
 
             try {
 
                 //==========================================
                 // Executes the loops
                 //==========================================
-                for (int i = 0; i < loopsNbr; i++) {
+                for (int i = 0; i < loopNbr; i++) {
 
-                    setCurrentClassLoopPosition(i + 1);
+                    this.currentClassLoopPosition = i + 1;
 
-                    if (loopsNbr > 1) {
-                        logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopsNbr + " of " +
+                    //==========================================
+                    // Reset current loop errors
+                    //==========================================
+                    this.atLeastOneTestFailedInCurrentLoop = false;
+
+                    //==========================================
+                    // Is it the last loop?
+                    //==========================================
+                    this.isLastLoop = (i == (loopNbr - 1));
+
+                    if (loopNbr > 1) {
+                        logger.info("Running loop " + getCurrentClassLoopPosition() + "/" + loopNbr + " of " +
                                     "test class " + getTestClass().getJavaClass().getName());
                     }
 
@@ -259,6 +307,15 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                     }
 
                     //==========================================
+                    // If the tests class disabled?
+                    //==========================================
+                    if (getTestClassInstance() instanceof CanBeDisabled &&
+                        ((CanBeDisabled)getTestClassInstance()).isTestClassDisabledPostBeforeClass()) {
+                        logger.info("Test class disabled (post 'beforeClass')! Skipping...");
+                        return;
+                    }
+
+                    //==========================================
                     // Runs the regular tests
                     //==========================================
                     super.run(notifier);
@@ -276,8 +333,18 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                         }
                     }
 
-                    if (this.atLeastOneTestFailed || i >= (loopsNbr - 1)) {
+                    if (this.stopLoopsForced || i >= (loopNbr - 1)) {
                         break;
+                    }
+
+                    if (this.atLeastOneTestFailedInCurrentLoop) {
+                        if (repeatUntilFailureLoopsNbr != null) {
+                            break;
+                        }
+                    } else {
+                        if (repeatUntilSuccessLoopsNbr != null) {
+                            break;
+                        }
                     }
 
                     //==========================================
@@ -291,6 +358,15 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
                         }
                     }
                 }
+
+                //==========================================
+                // Failures were expected?
+                //==========================================
+                if (isExpectingFailure() && !this.atLeastOneTestFailedInAllLoops) {
+                    String msg = "There were no failures but we were expecting some.";
+                    spincastTestError(SPINCAST_TEST_NAME_EXPECTING_FAILURE_BUT_ONLY_SUCCESSES, msg);
+                }
+
             } finally {
 
                 if (getTestClassInstance() instanceof RepeatedClassAfterMethodProvider) {
@@ -311,8 +387,13 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             throw(ex instanceof RuntimeException) ? (RuntimeException)ex : new RuntimeException(ex);
         } finally {
 
-            int classLoopsNbr = getTestClassLoopsNbr();
-            if (this.atLeastOneTestFailed && classLoopsNbr > 1) {
+            Integer classLoopsNbr = 1;
+            if (getTestClassRepeatUntilFailureAnnotationLoopsNbr() != null) {
+                classLoopsNbr = getTestClassRepeatUntilFailureAnnotationLoopsNbr();
+            } else if (getTestClassRepeatUntilSuccessAnnotationLoopsNbr() != null) {
+                classLoopsNbr = getTestClassRepeatUntilSuccessAnnotationLoopsNbr();
+            }
+            if (this.atLeastOneTestFailedInAllLoops && classLoopsNbr != null && classLoopsNbr > 1) {
                 logger.error("The test failure occured during the class loop #" + getCurrentClassLoopPosition());
             }
         }
@@ -337,28 +418,71 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
             return;
         }
 
+        this.isLastSingleTestLoop = false;
+
         //==========================================
         // How many times should we run the test?
         //==========================================
-        int sleep = getMethodLoopsSleep(method.getMethod());
-        int loopsNbr = getMethodLoopsNbr(method.getMethod());
-        for (int i = 0; i < loopsNbr; i++) {
+        Method methodObj = method.getMethod();
+        Integer repeatUntilFailureLoopsNbr = getMethodRepeatUntilFailureAnnotationLoopsNbr(methodObj);
+        Integer repeatUntilFailureSleep = getMethodRepeatUntilFailureAnnotationLoopsSleep(methodObj);
+        Integer repeatUntilSuccessLoopsNbr = getMethodRepeatUntilSuccessAnnotationLoopsNbr(methodObj);
+        Integer repeatUntilSuccessSleep = getMethodRepeatUntilSuccessAnnotationLoopsSleep(methodObj);
 
-            if (loopsNbr > 1) {
-                logger.info("Execution " + (i + 1) + "/" + loopsNbr + " of " +
+        int loopNbr = 1;
+        if (repeatUntilFailureLoopsNbr != null && repeatUntilSuccessLoopsNbr != null) {
+            String msg = "Only one of the @" + RepeatUntilSuccess.class.getSimpleName() + " or @" +
+                         RepeatUntilFailure.class.getSimpleName() + " annotation can be used at the time.";
+            spincastTestError(SPINCAST_TEST_NAME_REPEAT_ANNOTATIONS_VALIDATION, msg);
+            return;
+        } else if (repeatUntilFailureLoopsNbr != null) {
+            loopNbr = repeatUntilFailureLoopsNbr;
+        } else if (repeatUntilSuccessLoopsNbr != null) {
+            loopNbr = repeatUntilSuccessLoopsNbr;
+        }
+
+
+        int sleep = 0;
+        if (repeatUntilFailureSleep != null) {
+            sleep = repeatUntilFailureSleep;
+        } else if (repeatUntilSuccessSleep != null) {
+            sleep = repeatUntilSuccessSleep;
+        }
+
+        for (int i = 0; i < loopNbr; i++) {
+
+            //==========================================
+            // Is the last single test loop?
+            //==========================================
+            this.isLastSingleTestLoop = (i == (loopNbr - 1));
+
+            if (loopNbr > 1) {
+                logger.info("Execution " + (i + 1) + "/" + loopNbr + " of " +
                             "test " + method.getMethod().getName() + " from " +
                             "test class " + getTestClass().getJavaClass().getName());
             }
 
+            //==========================================
+            // Reset current test error
+            //==========================================
+            this.currentTestFailed = false;
+
             super.runChild(method, notifier);
 
-            if (loopsNbr > 1 && this.atLeastOneTestFailed) {
-                logger.error("The test \"" + method.getMethod().getName() + "\" failed during the loop #" + (i + 1));
+            if (this.stopLoopsForced || i >= (loopNbr - 1)) {
                 break;
             }
 
-            if (i >= (loopsNbr - 1)) {
-                break;
+            if (this.currentTestFailed) {
+                if (repeatUntilFailureLoopsNbr != null) {
+                    logger.error("The test \"" + method.getMethod().getName() + "\" failed during the loop #" + (i + 1));
+                    break;
+                }
+            } else {
+                if (repeatUntilSuccessLoopsNbr != null) {
+                    logger.info("The test \"" + method.getMethod().getName() + "\" succeeded during the loop #" + (i + 1));
+                    break;
+                }
             }
 
             if (sleep > 0) {
@@ -371,30 +495,108 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         }
     }
 
+    @Override
+    protected Statement methodBlock(FrameworkMethod method) {
+        return customizeStatement(super.methodBlock(method), method);
+    }
+
+    protected Statement customizeStatement(Statement statement, FrameworkMethod method) {
+        statement = addCustomErrorHandling(statement, method);
+        return statement;
+    }
+
+    protected Statement addCustomErrorHandling(Statement baseStatement, FrameworkMethod method) {
+
+        Statement statement = new Statement() {
+
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    baseStatement.evaluate();
+                } catch (Throwable ex) {
+
+                    Description description = describeChild(method);
+                    if (description.getAnnotation(IgnoreErrorButStopLoops.class) != null) {
+                        //==========================================
+                        // Bypass regular JUnit error handling code
+                        // but set "stopLoopsForced" to true.
+                        //==========================================
+                        SpincastJUnitRunner.this.stopLoopsForced = true;
+                        logger.info("The test failed, but is annotated with @" +
+                                    IgnoreErrorButStopLoops.class.getSimpleName() + " so " +
+                                    "we don't show it as an error but stop any test loops.");
+
+
+                    } else if (((getTestClassRepeatUntilSuccessAnnotationLoopsNbr() != null ||
+                                 getMethodRepeatUntilSuccessAnnotationLoopsNbr(method.getMethod()) != null) &&
+                                !isLastInstanceOfThisTestToRun()) ||
+                               isExpectingFailure()) {
+                        //==========================================
+                        // Bypass regular JUnit error handling code
+                        // and only use our custom handling.
+                        //==========================================
+                        testFailureCustomHandling(new Failure(description, ex));
+
+                    } else {
+
+                        if (getTestClassRepeatUntilSuccessAnnotationLoopsNbr() != null) {
+                            String msg = "The @" + RepeatUntilSuccess.class.getSimpleName() + " annotation " +
+                                         "was used on the test class but there was no success after " +
+                                         getTestClassRepeatUntilSuccessAnnotationLoopsNbr() +
+                                         " loops.";
+                            ex = new RuntimeException(msg, ex);
+                        } else if (getMethodRepeatUntilSuccessAnnotationLoopsNbr(method.getMethod()) != null) {
+                            String msg = "The @" + RepeatUntilSuccess.class.getSimpleName() + " annotation " +
+                                         "was used on the test method but there was no success after " +
+                                         getMethodRepeatUntilSuccessAnnotationLoopsNbr(method.getMethod()) +
+                                         " loops.";
+                            ex = new RuntimeException(msg, ex);
+                        }
+
+                        throw ex;
+                    }
+                }
+            }
+        };
+
+        return statement;
+    }
+
     protected void addTestFailureListener(RunNotifier notifier) {
         notifier.addListener(new RunListener() {
 
             @Override
             public void testFailure(Failure failure) throws Exception {
-                SpincastJUnitRunner.this.atLeastOneTestFailed = true;
-
-                logTestFailure(failure);
-
-                if (SpincastJUnitRunner.this.testClassInstance instanceof TestFailureListener) {
-                    ((TestFailureListener)SpincastJUnitRunner.this.testClassInstance).testFailure(failure);
-                }
+                testFailureCustomHandling(failure);
             }
         });
+    }
+
+    protected void testFailureCustomHandling(Failure failure) {
+        SpincastJUnitRunner.this.currentTestFailed = true;
+        SpincastJUnitRunner.this.atLeastOneTestFailedInCurrentLoop = true;
+        SpincastJUnitRunner.this.atLeastOneTestFailedInAllLoops = true;
+
+        logTestFailure(failure);
+
+        if (SpincastJUnitRunner.this.testClassInstance instanceof TestFailureListener) {
+            ((TestFailureListener)SpincastJUnitRunner.this.testClassInstance).testFailure(failure);
+        }
     }
 
     protected void logTestFailure(Failure failure) {
         System.err.println(getStackTrace(failure.getException()));
     }
 
+    protected boolean isLastInstanceOfThisTestToRun() {
+        return this.isLastLoop && this.isLastSingleTestLoop;
+    }
+
     protected void runPreClassLoopsSpincastTests() {
         validateNoBeforeClassAnnotations();
         validateNoAfterClassAnnotations();
         validateNoTestsAndNoExpectingBeforeClassExceptionAnnotation();
+        validateTestClassRepeateAnnotations();
     }
 
     protected void validateNoBeforeClassAnnotations() {
@@ -431,6 +633,17 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         }
     }
 
+    protected void validateTestClassRepeateAnnotations() {
+        Integer repeatUntilFailureLoopsNbr = getTestClassRepeatUntilFailureAnnotationLoopsNbr();
+        Integer repeatUntilSuccessLoopsNbr = getTestClassRepeatUntilSuccessAnnotationLoopsNbr();
+
+        if (repeatUntilFailureLoopsNbr != null && repeatUntilSuccessLoopsNbr != null) {
+            String msg = "Only one of the @" + RepeatUntilSuccess.class.getSimpleName() + " or " +
+                         RepeatUntilFailure.class.getSimpleName() + " annotation can be used at the time.";
+            spincastTestError(SPINCAST_TEST_NAME_REPEAT_ANNOTATIONS_VALIDATION, msg);
+        }
+    }
+
     protected void spincastTestError(String testName, String errorMessage) {
         spincastTestError(testName, new RuntimeException(errorMessage));
     }
@@ -438,6 +651,11 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
     protected void spincastTestError(String testName, Throwable exception) {
 
         logger.error("Test error", exception);
+
+        if (isExpectingFailure()) {
+            logger.info("Error expected due to the " + ExpectingFailure.class.getSimpleName() + " annotation. Error ignored.");
+            return;
+        }
 
         Description description = Description.createTestDescription(getTestClass().getJavaClass(),
                                                                     testName);
@@ -467,19 +685,43 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         return this.isExpectingBeforeClassException;
     }
 
-    protected int getTestClassLoopsNbr() {
-        return getLoopsNbr(getTestClass().getAnnotation(Repeat.class));
+    public boolean isExpectingFailure() {
+        if (this.isExpectingFailure == null) {
+            this.isExpectingFailure = getTestClass().getAnnotation(ExpectingFailure.class) != null;
+        }
+        return this.isExpectingFailure;
     }
 
-    protected int getMethodLoopsNbr(Method method) {
-        return getLoopsNbr(method.getAnnotation(Repeat.class));
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilFailure} annotation.
+     */
+    protected Integer getTestClassRepeatUntilFailureAnnotationLoopsNbr() {
+
+        return geRepeatUntilFailureAnnotationLoopsNbr(getTestClass().getAnnotation(RepeatUntilFailure.class));
     }
 
-    protected int getLoopsNbr(Repeat repeatAnnotation) {
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilFailure} annotation.
+     */
+    protected Integer getMethodRepeatUntilFailureAnnotationLoopsNbr(Method method) {
+        return geRepeatUntilFailureAnnotationLoopsNbr(method.getAnnotation(RepeatUntilFailure.class));
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilFailure} annotation.
+     */
+    protected Integer geRepeatUntilFailureAnnotationLoopsNbr(RepeatUntilFailure repeatUntilFailureAnnotation) {
+
+        if (repeatUntilFailureAnnotation == null) {
+            return null;
+        }
 
         int loopsNbr = 1;
-        if (repeatAnnotation != null) {
-            loopsNbr = repeatAnnotation.value();
+        if (repeatUntilFailureAnnotation != null) {
+            loopsNbr = repeatUntilFailureAnnotation.value();
             if (loopsNbr < 1) {
                 loopsNbr = 1;
             }
@@ -487,21 +729,98 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         return loopsNbr;
     }
 
-    protected int getMethodLoopsSleep(Method method) {
-        return getLoopsSleep(method.getAnnotation(Repeat.class));
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilFailure} annotation.
+     */
+    protected Integer getTestClassRepeatUntilFailureAnnotationLoopsSleep() {
+        return getRepeatUntilFailureAnnotationLoopsSleep(getTestClass().getAnnotation(RepeatUntilFailure.class));
     }
 
-    protected int getTestClassLoopsSleep() {
-        return getLoopsSleep(getTestClass().getAnnotation(Repeat.class));
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilFailure} annotation.
+     */
+    protected Integer getMethodRepeatUntilFailureAnnotationLoopsSleep(Method method) {
+        return getRepeatUntilFailureAnnotationLoopsSleep(method.getAnnotation(RepeatUntilFailure.class));
     }
 
-    protected int getLoopsSleep(Repeat repeatAnnotation) {
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilFailure} annotation.
+     */
+    protected Integer getRepeatUntilFailureAnnotationLoopsSleep(RepeatUntilFailure repeatAnnotation) {
 
-        int sleep = 0;
-        if (repeatAnnotation != null) {
-            sleep = repeatAnnotation.sleep();
+        if (repeatAnnotation == null) {
+            return null;
         }
-        return sleep;
+
+        return repeatAnnotation.sleep();
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilSuccess} annotation.
+     */
+    protected Integer getTestClassRepeatUntilSuccessAnnotationLoopsNbr() {
+        return geRepeatUntilSuccessAnnotationLoopsNbr(getTestClass().getAnnotation(RepeatUntilSuccess.class));
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilSuccess} annotation.
+     */
+    protected Integer getMethodRepeatUntilSuccessAnnotationLoopsNbr(Method method) {
+        return geRepeatUntilSuccessAnnotationLoopsNbr(method.getAnnotation(RepeatUntilSuccess.class));
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilSuccess} annotation.
+     */
+    protected Integer geRepeatUntilSuccessAnnotationLoopsNbr(RepeatUntilSuccess repeatUntilSuccessAnnotation) {
+
+        if (repeatUntilSuccessAnnotation == null) {
+            return null;
+        }
+
+        int loopsNbr = 1;
+        if (repeatUntilSuccessAnnotation != null) {
+            loopsNbr = repeatUntilSuccessAnnotation.value();
+            if (loopsNbr < 1) {
+                loopsNbr = 1;
+            }
+        }
+        return loopsNbr;
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilSuccess} annotation.
+     */
+    protected Integer getTestClassRepeatUntilSuccessAnnotationLoopsSleep() {
+        return getRepeatUntilSuccessAnnotationLoopsSleep(getTestClass().getAnnotation(RepeatUntilSuccess.class));
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilSuccess} annotation.
+     */
+    protected Integer getMethodRepeatUntilSuccessAnnotationLoopsSleep(Method method) {
+        return getRepeatUntilSuccessAnnotationLoopsSleep(method.getAnnotation(RepeatUntilSuccess.class));
+    }
+
+    /**
+     * Will be <code>null</code> if there if no
+     * {@link RepeatUntilSuccess} annotation.
+     */
+    protected Integer getRepeatUntilSuccessAnnotationLoopsSleep(RepeatUntilSuccess repeatUntilSuccessAnnotation) {
+
+        if (repeatUntilSuccessAnnotation == null) {
+            return null;
+        }
+
+        return repeatUntilSuccessAnnotation.sleep();
     }
 
 }

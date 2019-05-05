@@ -744,6 +744,51 @@ Spincast Utilities
             </li> 
             
             <li>
+                <a class="anchor_small" id="utils_isClasspathResourceLoadedFromJar" href="#utils_isClasspathResourceLoadedFromJar" title="permanent link"></a>
+                <code class="apiItem">boolean <span>isClasspathResourceLoadedFromJar</span>(String resourcePath)</code>
+                <div class="well">
+                    <p>
+                        Return <code>true</code> if the classpath resource
+                        is located inside a .jar file. If it is a regular file located on the file system, 
+                        <code>false</code> is returned.
+                    </p>
+                    <p>
+                        Throws an exception if the resource is not found.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="utils_isClassLoadedFromJar" href="#utils_isClassLoadedFromJar" title="permanent link"></a>
+                <code class="apiItem">boolean <span>isClassLoadedFromJar</span>(Class&lt;?&gt; clazz)</code>
+                <div class="well">
+                    <p>
+                        Return <code>true</code> if the specified <code>Class</code> was loaded from a
+                        <em>.jar file</em> and not from a standalone <code>.class</code> file on the file system.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="utils_getClassLocationDirOrJarFile" href="#utils_getClassLocationDirOrJarFile" title="permanent link"></a>
+                <code class="apiItem">File <span>getClassLocationDirOrJarFile</span>(Class&lt;?&gt; clazz)</code>
+                <div class="well">
+                    <p>
+                        The location of the specified class.
+                    </p>
+                    <p>
+                        This will be a <em>directory</em> if the class was loaded from the file system as
+                        a standalone <code>.class</code> file or a <em>.jar file</em> if the class was loaded
+                        from a jar.
+                    </p>
+                    <p>
+                        You can use <a href="#utils_isClassLoadedFromJar">isClassLoadedFromJar()</a> to 
+                        determine if the class was loaded from a .jar file or not.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
                 <a class="anchor_small" id="utils_isRunningFromExecutableJar" href="#utils_isRunningFromExecutableJar" title="permanent link"></a>
                 <code class="apiItem">boolean <span>isRunningFromExecutableJar</span>()</code>
                 <div class="well">
@@ -784,18 +829,39 @@ Spincast Utilities
                     </p>
                 </div>
             </li>
- 
+
+            
             <li>
-                <a class="anchor_small" id="utils_isClasspathResourceInJar" href="#utils_isClasspathResourceInJar" title="permanent link"></a>
-                <code class="apiItem">boolean <span>isClasspathResourceInJar</span>(String resourcePath)</code>
+                <a class="anchor_small" id="utils_isPortOpen" href="#utils_isPortOpen" title="permanent link"></a>
+                <code class="apiItem">boolean <span>isPortOpen</span>(String host, int port)</code>
                 <div class="well">
                     <p>
-                        Return <code>true</code> if the classpath resource at the specified path
-                        is located inside a .jar file. If it is located on the file system, <code>false</code> is
-                        returned.
+                        Validate if a port is open on the specified host.
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <a class="anchor_small" id="utils_convertToFriendlyToken" href="#utils_convertToFriendlyToken" title="permanent link"></a>
+                <code class="apiItem">String <span>convertToFriendlyToken</span>(String str)</code>
+                <div class="well">
+                    <p>
+                         Converts a string so it can be used in an URL without
+                         being escaped: remove accents, spaces, etc.
                     </p>
                     <p>
-                        Throws an exception if the resource is not found.
+                         This can be used to create "friendly token" in an SEO
+                         optimized URL. It can also be used to create a human friendly
+                         <em>file name</em> from a random string.
+                    </p>
+                    <p>
+                         Be careful if you plan on using the result of this
+                         method as a unique token since many strings may
+                         result in the same thing!
+                    </p>
+                    <p>
+                         Returns the string with only <code>a-z</code>, "<code>-</code>" and "<code>_</code>" characters.
+                         Or, if the resulting string is empty, a random <code>UUID</code> is returned.
                     </p>
                 </div>
             </li>
