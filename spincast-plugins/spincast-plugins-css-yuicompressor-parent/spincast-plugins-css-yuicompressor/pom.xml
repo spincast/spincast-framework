@@ -4,47 +4,36 @@
 	
     <parent>
         <groupId>org.spincast</groupId>
-        <artifactId>spincast-plugins-css-autoprefixer-parent</artifactId>
+        <artifactId>spincast-plugins-css-yuicompressor-parent</artifactId>
         <version>1.9.1-SNAPSHOT</version>
     </parent>
-	
-	<artifactId>spincast-plugins-css-autoprefixer-tests</artifactId>
+    
+	<artifactId>spincast-plugins-css-yuicompressor</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Tests for the Spincast CSS Autoprefixer plugin</description>
+    <description>The Spincast CSS YUI Compressor plugin</description>
     <url>https://www.spincast.org</url>
 
 	<dependencies>
     
         <!--=================================== 
-        Spincast testing default
+        Spincast core - provided
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-testing-default</artifactId>
+            <artifactId>spincast-core</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         
         <!--=================================== 
-        Spincast CSS Autoprefixer plugin
+        Yahoo - yuicompressor
         ====================================-->
         <dependency>
-            <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-css-autoprefixer</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.8</version>
         </dependency>
-        
-        <!--=================================== 
-        Logs to the console
-        ====================================-->
-		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-simple</artifactId>
-		    <version>1.7.25</version>
-		    <scope>test</scope>
-		</dependency>
 
 	</dependencies>
 

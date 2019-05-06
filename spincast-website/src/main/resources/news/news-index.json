@@ -179,6 +179,12 @@
             "date" : "2019-05-05T12:00:00Z",
             "title" : "Spincast CSS Autoprefixer plugin + refactoring",
             "path" : "/news/2019-05-04.html"
+        },
+        {
+            "id" : "32",
+            "date" : "2019-05-05T22:00:00Z",
+            "title" : "Spincast CSS YUI Compressor plugin",
+            "path" : "/news/2019-05-05.html"
         }
           
 		

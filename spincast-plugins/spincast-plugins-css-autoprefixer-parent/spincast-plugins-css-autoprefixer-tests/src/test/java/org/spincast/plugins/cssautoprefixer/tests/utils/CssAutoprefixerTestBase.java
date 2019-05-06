@@ -1,4 +1,4 @@
-package org.spincast.plugins.swagger.ui.tests.utils;
+package org.spincast.plugins.cssautoprefixer.tests.utils;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.spincast.plugins.swagger.ui.tests;
+package org.spincast.plugins.cssautoprefixer.tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -8,7 +8,7 @@ import java.io.File;
 
 import org.junit.Test;
 import org.spincast.core.json.JsonObject;
-import org.spincast.plugins.swagger.ui.tests.utils.CssAutoprefixerTestBase;
+import org.spincast.plugins.cssautoprefixer.tests.utils.CssAutoprefixerTestBase;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
 public class CssAutoprefixerTest extends CssAutoprefixerTestBase {

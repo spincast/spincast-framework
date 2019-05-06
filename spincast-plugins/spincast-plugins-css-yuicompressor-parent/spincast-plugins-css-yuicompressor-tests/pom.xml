@@ -4,14 +4,14 @@
 	
     <parent>
         <groupId>org.spincast</groupId>
-        <artifactId>spincast-plugins-css-autoprefixer-parent</artifactId>
+        <artifactId>spincast-plugins-css-yuicompressor-parent</artifactId>
         <version>1.9.1-SNAPSHOT</version>
     </parent>
 	
-	<artifactId>spincast-plugins-css-autoprefixer-tests</artifactId>
+	<artifactId>spincast-plugins-css-yuicompressor-tests</artifactId>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Tests for the Spincast CSS Autoprefixer plugin</description>
+    <description>Tests for the Spincast CSS YUI Compressor plugin</description>
     <url>https://www.spincast.org</url>
 
 	<dependencies>
@@ -27,11 +27,11 @@
         </dependency>
         
         <!--=================================== 
-        Spincast CSS Autoprefixer plugin
+        Spincast CSS YUI Compressor plugin
         ====================================-->
         <dependency>
             <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-css-autoprefixer</artifactId>
+            <artifactId>spincast-plugins-css-yuicompressor</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -1,0 +1,252 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-css-yuicompressor{% endblock %}
+{% block meta_title %}Plugins - Spincast CSS YUI Compressor{% endblock %}
+{% block meta_description %}Spincast CSS YUI Compressor plugin - YUI Compressor integration to minify/compress your CSS.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast CSS YUI Compressor plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast CSS YUI Compressor <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/cssyuicompressor/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast CSS YUI Compressor <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="veryLongTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#config">Configurations</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                A small plugin that simply wraps <a href="https://yui.github.io/yuicompressor/">YUI Compressor</a> 
+                    so you can compress <code>CSS</code>. It removes spaces, newlines, etc. This leads to faster
+                    load time for your webpages.
+                </p>
+                <p>
+                    Note that this plugin only provides the <em>CSS</em> compression feature of <code>YUI Compressor</code>, not
+                    its ability to also compress <em>Javascript</em>. The reason is that <code>YUI Compressor</code> is 
+                    <a href="https://github.com/yui/yuicompressor/issues/262">not up to date</a> in regard to Javascript... 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    We will soon release another plugin that will wrap 
+                    <a href="https://github.com/google/closure-compiler">Google Closure Compiler</a>: and <em>this</em> will be
+                    our recommendation on how to minify <em>Javascript</em>!
+                </p>
+
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                <p>
+                    You inject and use 
+                    the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/SpincastCssYuiCompressorManager.html">SpincastCssYuiCompressorManager</a>
+                    component to minify your CSS.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    Let's say you have a <a href="/documentation#dynamic_resources">dynamic resource</a> route that serves
+                    your CSS files dynamically:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>router.dir("/publicdyn/css/*{relativePath}")
+      .pathRelative("/publicdyn/css")
+      .handle(publicResourcesController::dynCss);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    In the "<code>dynCss(...)</code>" handler, you would get the raw content of the CSS file and tweak it using
+                    the <code>SpincastCssYuiCompressorManager</code> component before sending it:
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>
+File rawCssFile = //... get the raw CSS file
+
+String cssContent = FileUtils.readFileToString(rawCssFile, "UTF-8");
+
+String cssMinified = getSpincastCssYuiCompressorManager().minify(cssContent);
+
+context.response().sendCharacters(cssMinified, "text/css");</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : We get the raw CSS file using the 
+                                    "<code>relativePath</code>" path parameter taken from the request. <em>We make sure we validate
+                                    this user input properly!</em>
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : We get the raw CSS content.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5</span> : We call the 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/SpincastCssYuiCompressorManager.html#minify-java.lang.String-">minify(...)</a>
+                                    method.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">7</span> : We send the minified CSS, using the proper content-type.
+                                </li>
+                            </ul>
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    <h5 id="methods">
+                        <a class="anchor_small" href="#methods" title="permanent link"></a>
+                        SpincastCssYuiCompressorManager methods
+                    </h5>
+                
+                    The main methods provided by 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/SpincastCssYuiCompressorManager.html">SpincastCssYuiCompressorManager</a> are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="method_minifyString" href="#method_minifyString" title="permanent link"></a>
+                            <code class="apiItem">String <span>minify</span>(String cssContent)</code>
+                            <div class="well">
+                                <p>
+                                    Run YUI Compressor on the specified CSS content, as a String. Returns the compressed
+                                    CSS.
+                                </p> 
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="method_minifyFile" href="#method_minifyFile" title="permanent link"></a>
+                            <code class="apiItem">void <span>minify</span>(File cssFile)</code>
+                            <div class="well">
+                                <p>
+                                    Run  YUI Compressor on the specified CSS <em>file</em>. The file will be
+                                    modified and will contain the compressed CSS.
+                                </p> 
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    There is one extra option available on both methods: <code>lineBreakPos</code>.
+                    Here is the documentation about this option, taken directly from YUI Compressor <a href="https://yui.github.io/yuicompressor/#using">documentation</a>
+                    (search for "<code>--line-break</code>"):
+                </p>
+                <p>
+                    <em>"Some source control tools don't like files containing lines longer than,
+                    say 8000 characters. The linebreak option is used in that case to split
+                    long lines after a specific column. It can also be used to make the code
+                    more readable, easier to debug (especially with the MS Script Debugger)
+                    Specify 0 to get a line break after each semi-colon in JavaScript, and
+                    after each rule in CSS."</em>
+                </p>
+  
+            </section>
+            
+            <section id="config">
+                <h3>
+                    <a class="anchor" href="#config" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>
+                    This plugin has no global configuration.
+                </p>
+            </section>
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-css-yuicompressor&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/SpincastCssYuiCompressorPlugin.html">SpincastCssYuiCompressorPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,51"
+>
+
+Spincast.configure()
+        .plugin(new SpincastCssYuiCompressorPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

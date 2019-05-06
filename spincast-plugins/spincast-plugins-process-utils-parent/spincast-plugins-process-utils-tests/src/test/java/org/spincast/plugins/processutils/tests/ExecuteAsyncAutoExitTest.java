@@ -474,7 +474,18 @@ public class ExecuteAsyncAutoExitTest extends NoAppTestingBase {
                                                "456");
         try {
 
-            Thread.sleep(5000);
+
+            //==========================================
+            // Wait for the process to be started or an error
+            // to have occured.
+            //==========================================
+            SpincastTestingUtils.waitForTrue(new TrueChecker() {
+
+                @Override
+                public boolean check() {
+                    return handler.isProcessAlive() || endCalled[0];
+                }
+            }, 10000);
 
             assertTrue(handler.isProcessAlive());
 
