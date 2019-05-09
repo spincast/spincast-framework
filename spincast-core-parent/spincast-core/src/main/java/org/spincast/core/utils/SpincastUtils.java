@@ -390,5 +390,4 @@ public interface SpincastUtils {
      */
     public boolean isPortOpen(String host, int port);
 
-
 }

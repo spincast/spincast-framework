@@ -1,0 +1,420 @@
+{% extends "../../layout.html" %}
+
+{% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-js-closurecompiler{% endblock %}
+{% block meta_title %}Plugins - Spincast JS Closure Compiler{% endblock %}
+{% block meta_description %}Spincast JS Closure Compiler plugin - Integration with Google's Closure Compiler to optimize your JS files.{% endblock %}
+
+{% block scripts %}
+<script>
+
+    {#==========================================
+    Initialize the Table Of Content
+    ==========================================#}
+    $(function() {
+        app.toc(230);
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+<div class="container pluginDoc">
+
+    <ol class="breadcrumb">
+        <li><img class="inlineIcon breadIcon" src="/public/images/icons/bread.png" /> <a href="/plugins">Plugins</a></li>
+        <li class="active">Spincast JS Closure Compiler plugin</li>
+    </ol>
+    
+    <div id="sectionTitle" class="row"> 
+        <div class="col-xs-12"> 
+            <a href="#top"><h2 class="shortTop noBottom"><img class="inlineIcon" src="/public/images/icons/breadPlugin.png" /> Spincast JS Closure Compiler <span>plugin</span></h2></a>
+            <div class="pluginBadges">
+                <div class="pluginBadgeTop hint--bottom-left hint--bounce" 
+                     data-hint="Plugin's Javadoc">
+                     <a class="javadoc" href="/public/javadoc/index.html?org/spincast/plugins/jsclosurecompiler/package-summary.html"><img class="inlineIcon" src="/public/images/javadoc-badge.png" /></a>
+                </div>
+                <span class="clear"></span>
+            </div>  
+        </div>
+    </div>
+    
+    <div id="sectionTitleFixed" class="row"> 
+        <div class="col-xs-12">
+            <a href="#top"><h2 class="shortTop"><img src="/public/images/logo_xsmall.png" /> Spincast JS Closure Compiler <span>plugin</span></h2></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <nav id="toc" class="veryLongTitle col-md-3">
+            <ul class="nav nav-stacked">
+                <li class="openable"><a href="#top">Overview</a></li>
+                <li class="openable"><a href="#usage">Usage</a></li>
+                <li class="openable"><a href="#config">Configurations</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
+                <li class="openable"><a href="#installation">Installation</a></li>
+            </ul>
+        </nav>
+        
+        <div id="toc-content" class="col-md-9">
+
+            <section id="overview">
+	            <h3>
+                    <a class="anchor" href="#overview" title="permanent link"></a>
+                    Overview
+                </h3>
+	            <p>
+	                This plugin integrates Google's <a href="https://github.com/google/closure-compiler">Closure Compiler</a>.
+                    It is used to optimize and compress your Javascript files.
+                    <code>Closure Compiler</code> is a well-supported library that can be used
+                    even with modern <code>ECMAScript</code> features!
+                </p>
+            </section>
+            
+            <section id="usage">
+	            <h3>
+                    <a class="anchor" href="#usage" title="permanent link"></a>
+                    Usage
+                </h3>
+                <p>
+                    You inject and use 
+                    the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/SpincastJsClosureCompilerManager.html">SpincastJsClosureCompilerManager</a>
+                    component where you need to optimize Javascript files. 
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    It is highly suggested that you only optimize a given Javascript file <em>one time</em> and
+                    then serve a <em>cached version</em> of it after that! The optimization done by the <code>Closure Compiler</code>
+                    can indeed take a couple of seconds.
+                </p>
+                <p>
+                    One good way to optimize and then cache a Javascript file is by using
+                    a <a href="/documentation#dynamic_resources">dynamic resource</a>:
+                    
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>router.dir("/publicdyn/js/*{relativePath}")
+      .pathRelative("/publicdyn/js")
+      .handle(publicResourcesController::dynJs);</pre> 
+                        {% endverbatim %}
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    In the "<code>dynJs(...)</code>" handler, you would get the raw content of the <code>.js</code> file and optimize it using
+                    the <code>SpincastJsClosureCompilerManager</code> component before sending the result:
+                    <div>
+                        <p>
+                            {% verbatim %}
+                            <pre class="ace ace-java"
+>
+File jsFile = //... get the .js file
+
+String rawJsContent = FileUtils.readFileToString(jsFile, "UTF-8");
+
+String jsOptimized = getSpincastJsClosureCompilerManager()
+                        .compile(rawJsContent,
+                                 "--compilation_level ", "WHITESPACE_ONLY");
+
+context.response().sendCharacters(jsOptimized, "application/javascript");</pre> 
+                        {% endverbatim %}
+                        </p> 
+                        <p>
+                            <span class="explanation">Explanation :</span>
+                            <ul>
+                                <li>
+                                    <span class="code-line-nbr">1</span> : We get the <code>.js</code> file using the 
+                                    "<code>relativePath</code>" path parameter taken from the request. <em>We make sure we validate
+                                    this user input properly!</em>
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">3</span> : We get the raw Javascript content.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">5-6</span> : We call the 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/SpincastJsClosureCompilerManager.html#compile-java.lang.String-java.lang.String...-">compile(...)</a>
+                                    method.
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">7</span> : In this example, we specify one option (using two arguments).
+                                    You will learn more about options in <a href="#options">the next section</a>
+                                </li>
+                                <li>
+                                    <span class="code-line-nbr">9</span> : We send the optimized Javascript, using the proper content-type. Since this is a 
+                                    dynamic resource route, the result will be cached and it is this cached version that will be served on next requests!
+                                </li>
+                            </ul>
+                        </p> 
+                    </div> 
+                </p>
+                <p>
+                    <h5 id="options">
+                        <a class="anchor_small" href="#options" title="permanent link"></a>
+                        Flags and Options
+                    </h5>
+                
+                    <p>
+                        Read the official <a href="https://github.com/google/closure-compiler/wiki/Flags-and-Options">Flags and Options</a>
+                        documentation of <code>Closure Compiler</code> to learn how to tweak the optimization of your Javascript files.
+                    </p>
+                    <p>
+                        <img class="inlineIcon" src="/public/images/icons/para.png" />
+                        There are two ways you can specify an option such as "<code>--compilation_level</code>" with a value of "<code>WHITESPACE_ONLY</code>":
+                    </p>
+                    <p>
+                        1. Using two separate arguments
+                        
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-java" data-ace-hi="2,29,2,48|2,52,2,67"
+>String jsOptimized = 
+    getSpincastJsClosureCompilerManager()
+        .compile(jsContent, "--compilation_level", "WHITESPACE_ONLY");
+                                </pre>
+                                {% endverbatim %}
+                            </p> 
+                        </div>
+                    
+                        2. Or using one argument only with a "<code>=</code>" between the name and the value
+                    
+                        <div>
+                            <p>
+                                {% verbatim %}
+                                <pre class="ace ace-java" data-ace-hi="2,29,2,64"
+>String jsOptimized = 
+    getSpincastJsClosureCompilerManager()
+        .compile(jsContent, "--compilation_level=WHITESPACE_ONLY");
+                                </pre>
+                                {% endverbatim %}
+                            </p> 
+                        </div>
+                    </p>
+                    <p>
+                        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                        Some options take only one argument without any value at all (ex: <code>--strict_mode_input</code>).
+                    </p>
+                    <p>
+                        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                        You <em>cannot</em> use the "<code>--js_output_file</code>" option! This option is managed
+                        by the plugin. If you specify it, your version will be ignored.
+                    </p>
+                </p>
+
+                <p>
+                    <h5 id="methods">
+                        <a class="anchor_small" href="#methods" title="permanent link"></a>
+                        SpincastJsClosureCompilerManager methods
+                    </h5>
+                
+                    The main methods provided by 
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/SpincastJsClosureCompilerManager.html">SpincastJsClosureCompilerManager</a> are:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="method_compileString" href="#method_compileString" title="permanent link"></a>
+                            <code class="apiItem">String <span>compile</span>(String jsContent, String... args))</code>
+                            <div class="well">
+                                <p>
+                                    Run the Closure Compiler on the specified Javascript content, as a String. Return the optimized
+                                    Javascript.
+                                </p>
+                                <p>
+                                    The command generated by this method will look like:
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-text"
+>
+
+java -jar closure-compiler.jar --js_output_file=internalSpincastFile fileCreatedFromYourJsContent.js [YOUR ARGS]
+</pre> 
+                                        </p>
+                                    </div> 
+                                </p>
+                                
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="method_compileFile" href="#method_compileFile" title="permanent link"></a>
+                            <code class="apiItem">String <span>compile</span>(File jsFile, String... args))</code>
+                            <div class="well">
+                                <p>
+                                    Run the Closure Compiler on the content of the specified .js file. Return the optimized
+                                    Javascript.
+                                </p>
+                                <p>
+                                    The command generated by this method will look like:
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-text"
+>
+
+java -jar closure-compiler.jar --js_output_file=internalSpincastFile yourFile.js [YOUR ARGS]
+</pre> 
+                                        </p>
+                                    </div> 
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="method_compileFiles" href="#method_compileFiles" title="permanent link"></a>
+                            <code class="apiItem">String <span>compile</span>(List&lt;File&gt; jsFiles, String... args))</code>
+                            <div class="well">
+                                <p>
+                                    Run the Closure Compiler on the concatenated content of <em>multiple</em> .js files. Return the 
+                                    concatenated and optimized Javascript.
+                                </p>
+                                <p>
+                                    You can read more about using multiple input files <a href="https://github.com/google/closure-compiler#compiling-multiple-scripts">here</a>.
+                                </p> 
+                                <p>
+                                    The command generated by this method will look like:
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-text"
+>
+
+java -jar closure-compiler.jar --js_output_file=internalSpincastFile file1.js file2.js file3.js [YOUR ARGS]
+</pre> 
+                                        </p>
+                                    </div> 
+                                </p>
+                                
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="method_compileCustom" href="#method_compileCustom" title="permanent link"></a>
+                            <code class="apiItem">String <span>compileCustom</span>(String... args))</code>
+                            <div class="well">
+                                <p>
+                                    Run the Closure Compiler using only <em>custom</em> arguments. Return the optimized
+                                    Javascript.
+                                </p>
+                                <p>
+                                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                                    When you use this method, you are responsible to specify
+                                    <em>all</em> the arguments that are going to be passed to the Closure Compiler (except, again,
+                                    "<code>--js_output_file</code>"). This means you are responsible to specify
+                                    the <em>input files</em> as arguments too!
+                                </p>
+                                <p>
+                                    To specify the input files as arguments, you can use <a href="https://github.com/google/closure-compiler#compiling-multiple-scripts">globs patterns</a>
+                                    if you want.
+                                </p>
+                                <p>
+                                    The command generated by this method will look like:
+                                    
+                                    <div>
+                                        <p>
+                                            <pre class="ace ace-text"
+>
+
+java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
+</pre> 
+                                        </p>
+                                    </div> 
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+  
+            </section>
+            
+            <section id="config">
+                <h3>
+                    <a class="anchor" href="#config" title="permanent link"></a>
+                    Configurations
+                </h3>
+                <p>   
+                    There is only one global configuration:
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="config_getJavaBinPath" href="#config_getJavaBinPath" title="permanent link"></a>
+                            <code class="apiItem">String <span>getJavaBinPath</span>()</code>
+                            <div class="well">
+                                <p>
+                                    Allows you to modify the path to the <code>java</code> executable that
+                                    will be used. You can specify an absolute path if required.
+                                </p>
+                                <p>
+                                    The value is "<code>java</code>" by default.
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </p>
+            </section>
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    This plugin depends on the <a href="/plugins/spincast-process-utils">Spincast Process Utils</a> plugin
+                    which is <em>not</em> provided by default by the <code>spincast-default</code> package.
+                </p>
+                <p>
+                    This dependency <em>will be automatically installed</em>. Note that it is always a good
+                    idea to read the documentation of the automatically installed plugins.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Even if <code>Closure Compiler</code> is written in Java and we could have used its Java API
+                    directly, we do call it using a terminal command so all the
+                    flags and options from the official documentation can be easily used.
+                </p>
+            </section> 
+
+            <section id="installation">
+                <h3>
+                    <a class="anchor" href="#installation" title="permanent link"></a>
+                    Installation
+                </h3>
+                <p>
+                    1. 
+                    Add this Maven artifact to your project:
+                    <div>
+                        <p>
+                            <pre class="ace ace-xml"
+>&lt;dependency&gt;
+    &lt;groupId&gt;org.spincast&lt;/groupId&gt;
+    &lt;artifactId&gt;spincast-plugins-js-closurecompiler&lt;/artifactId&gt;
+    &lt;version&gt;{{spincast.spincastCurrrentVersion}}&lt;/version&gt;
+&lt;/dependency&gt;</pre> 
+                        </p>
+                    </div>  
+                </p>
+                <p>
+                    2. Add an instance of the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/SpincastJsClosureCompilerPlugin.html">SpincastJsClosureCompilerPlugin</a> 
+                    plugin to your Spincast <a href="/documentation#boot_bootstrapper">Bootstrapper</a>:
+                    
+                        {% verbatim %}
+                        <div>
+                            <p>
+                            <pre class="ace ace-java" data-ace-hi="2,16,2,53"
+>
+
+Spincast.configure()
+        .plugin(new SpincastJsClosureCompilerPlugin())
+        // ...
+</pre>
+                            </p>
+                        </div> 
+                        {% endverbatim %} 
+                </p>
+            </section>
+
+        </div>
+    </div>
+</div> 
+
+{% endblock %}

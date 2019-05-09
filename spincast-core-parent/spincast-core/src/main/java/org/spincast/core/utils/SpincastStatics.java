@@ -9,10 +9,12 @@ import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +27,7 @@ import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * Some few static methods.
- * 
+ *
  * You can still change the underlying instance though, in case
  * you need to change/fix something.
  */
@@ -124,7 +126,7 @@ public class SpincastStatics {
     /**
      * Return <code>null</code> to continue the exception processing or
      * an exception to be returned immediatly.
-     * 
+     *
      * @see <a href="http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html">http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html</a>
      */
     protected RuntimeException manageInterruptedException(Exception ex) {
@@ -329,7 +331,7 @@ public class SpincastStatics {
     /**
      * Gets all the methods of a class, for all visibilities
      * and for all the parents hierarchy.
-     * 
+     *
      * @param includeJavaLangObjectMethods if <code>false</code>,
      * methods from {@link Object} will be excluded.
      */
@@ -360,7 +362,7 @@ public class SpincastStatics {
     }
 
     /**
-     * Parse a ISO 8601 string representation of a date 
+     * Parse a ISO 8601 string representation of a date
      * to a Date object.
      */
     public static Date parseISO8601date(String str) {
@@ -490,5 +492,25 @@ public class SpincastStatics {
         return Long.parseLong(obj.toString());
     }
 
+    /**
+     * Converts an array to a <em>mutable</em> list.
+     * <p>
+     * The {@link Arrays#asList(Object...)} method doesn't return
+     * a fully mutable list.
+     *
+     * @param emptyListIfNullArray if <code>true</code> and the
+     * specified array is <code>null</code>, an empty list is returned.
+     * If <code>false</code>, <code>null</code> is returned.
+     */
+    public static <T> List<T> toList(T[] array, boolean emptyListIfNullArray) {
+        return getInstance().toListInstance(array, emptyListIfNullArray);
+    }
+
+    public <T> List<T> toListInstance(T[] array, boolean emptyListIfNullArray) {
+        if (array == null) {
+            return emptyListIfNullArray ? new ArrayList<T>() : null;
+        }
+        return new ArrayList<T>(Arrays.asList(array));
+    }
 
 }

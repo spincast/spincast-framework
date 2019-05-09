@@ -185,6 +185,12 @@
             "date" : "2019-05-05T22:00:00Z",
             "title" : "Spincast CSS YUI Compressor plugin",
             "path" : "/news/2019-05-05.html"
+        },
+        {
+            "id" : "33",
+            "date" : "2019-05-09T23:30:00Z",
+            "title" : "Optimize your Javascript with the new Closure Compiler integration",
+            "path" : "/news/2019-05-09.html"
         }
           
 		

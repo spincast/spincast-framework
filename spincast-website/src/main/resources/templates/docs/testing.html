@@ -1220,13 +1220,22 @@ try {
                to compile/package/install it.
             </li>
         </ul>
-        <p>
-            <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
-            Note that if you simply need to replace some placeholders
-            in the <code>pom.xml</code> file of the project, the 
-            (<a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeGoalOnExternalMavenProject-org.spincast.core.utils.ResourceInfo-org.spincast.plugins.processutils.MavenProjectGoal-java.util.Map-">executeGoalOnExternalMavenProject(...)</a>
-            method already provides a way of doing it. 
-        </p>
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+        Note that when using a test Maven project, and that Maven project uses artifacts from your
+        main multi-modules project, you may have to add those artifacts as
+        <code>&lt;scope&gt;test&lt;/scope&gt;</code> dependencies <em>in your main artifact, where the test
+        Maven project is packaged</em>. Indeed, without this, Maven can not know in advance that those artifacts are required by
+        the test Maven project, and therefore may not have built them prior to running the tests! By adding them as
+        dependencies in your main project, Maven will build those artifacts first.
+    </p>
+    <p>
+        <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 
+        Note that if you simply need to replace some placeholders
+        in the <code>pom.xml</code> file of the project, the 
+        (<a class="javadoc" href="/public/javadoc/org/spincast/plugins/processutils/SpincastProcessUtils.html#executeGoalOnExternalMavenProject-org.spincast.core.utils.ResourceInfo-org.spincast.plugins.processutils.MavenProjectGoal-java.util.Map-">executeGoalOnExternalMavenProject(...)</a>
+        method already provides a way of doing it. 
     </p>
     <p>
         <img class="inlineIcon" src="/public/images/icons/tipy.png" /> 

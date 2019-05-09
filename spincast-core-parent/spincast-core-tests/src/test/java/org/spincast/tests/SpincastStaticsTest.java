@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Ignore;
@@ -23,7 +24,7 @@ public class SpincastStaticsTest {
 
         try {
             throw new Exception(SpincastTestingUtils.TEST_STRING);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             String stackTrace = SpincastStatics.getStackTrace(ex);
             assertNotNull(stackTrace);
@@ -46,7 +47,7 @@ public class SpincastStaticsTest {
             Exception theException = new Exception(SpincastTestingUtils.TEST_STRING);
             try {
                 throw theException;
-            } catch(Exception ex) {
+            } catch (Exception ex) {
 
                 String stackTrace = SpincastStatics.getStackTrace(ex);
                 assertNotNull(stackTrace);
@@ -63,7 +64,7 @@ public class SpincastStaticsTest {
         Exception theException = new Exception(SpincastTestingUtils.TEST_STRING);
         try {
             throw theException;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             assertFalse(ex instanceof RuntimeException);
             assertTrue(ex == theException);
@@ -87,7 +88,7 @@ public class SpincastStaticsTest {
 
         try {
             throw invocationTargetException;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             assertFalse(ex instanceof RuntimeException);
             assertTrue(ex == invocationTargetException);
@@ -110,7 +111,7 @@ public class SpincastStaticsTest {
         RuntimeException theException = new RuntimeException(SpincastTestingUtils.TEST_STRING);
         try {
             throw theException;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             assertTrue(ex instanceof RuntimeException);
 
@@ -136,7 +137,7 @@ public class SpincastStaticsTest {
         InterruptedException theException = new InterruptedException(SpincastTestingUtils.TEST_STRING);
         try {
             throw theException;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
 
             assertFalse(Thread.currentThread().isInterrupted());
 
@@ -180,7 +181,7 @@ public class SpincastStaticsTest {
         try {
             SpincastStatics.map(null, "v1");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -215,7 +216,7 @@ public class SpincastStaticsTest {
         try {
             SpincastStatics.map("k1", "v1", null, "v2");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -253,7 +254,7 @@ public class SpincastStaticsTest {
         try {
             SpincastStatics.map("k1", "v1", "k2", "v2", null, "v3");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -295,7 +296,7 @@ public class SpincastStaticsTest {
         try {
             SpincastStatics.map("k1", "v1", "k2", "v2", "k3", "v3", null, "v4");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
     }
 
@@ -322,15 +323,15 @@ public class SpincastStaticsTest {
 
         Map<String, Date> map =
                 SpincastStatics.map("k1",
-                                          new Date(),
-                                          "k2",
-                                          new Date(),
-                                          "k3",
-                                          new Date(),
-                                          "k4",
-                                          new Date(),
-                                          "k5",
-                                          new Date());
+                                    new Date(),
+                                    "k2",
+                                    new Date(),
+                                    "k3",
+                                    new Date(),
+                                    "k4",
+                                    new Date(),
+                                    "k5",
+                                    new Date());
         assertNotNull(map);
         assertEquals(5, map.size());
         assertNotNull(map.get("k1"));
@@ -351,8 +352,39 @@ public class SpincastStaticsTest {
         try {
             SpincastStatics.map("k1", "v1", "k2", "v2", "k3", "v3", "k4", "v4", null, "v5");
             fail();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
         }
+    }
+
+    @Test
+    public void arrayToList() throws Exception {
+
+        String[] array = new String[]{"aaa", "bbb", "ccc"};
+        List<String> list = SpincastStatics.toList(array, false);
+        assertNotNull(list);
+        assertEquals(3, list.size());
+        assertTrue(list.contains("aaa"));
+        assertTrue(list.contains("bbb"));
+        assertTrue(list.contains("ccc"));
+
+        list.add("ddd");
+        assertEquals(4, list.size());
+    }
+
+    @Test
+    public void arrayToListNullToNull() throws Exception {
+        List<String> list = SpincastStatics.toList(null, false);
+        assertNull(list);
+    }
+
+    @Test
+    public void arrayToListNullToEmpty() throws Exception {
+        List<String> list = SpincastStatics.toList(null, true);
+        assertNotNull(list);
+        assertEquals(0, list.size());
+
+        list.add("ddd");
+        assertEquals(1, list.size());
     }
 
 }

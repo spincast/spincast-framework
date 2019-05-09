@@ -367,6 +367,7 @@ ul ul {
     float: right;
     margin-left:20px;
     text-align: left;
+    outline: none;
     
     -webkit-box-shadow: 3px 3px 3px #3F3B3B;
     box-shadow: 3px 3px 3px #3F3B3B;  

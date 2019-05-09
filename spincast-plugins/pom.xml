@@ -49,6 +49,7 @@
         <module>spincast-plugins-process-utils-parent</module>
         <module>spincast-plugins-css-autoprefixer-parent</module>
         <module>spincast-plugins-css-yuicompressor-parent</module>
+        <module>spincast-plugins-js-closurecompiler-parent</module>
     </modules>
 
 </project>

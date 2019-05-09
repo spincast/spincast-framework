@@ -214,7 +214,7 @@ public class SpincastCssAutoprefixerManagerDefault implements SpincastCssAutopre
             // Execute "postcss"!
             //==========================================
             logger.info("Executing: " + StringUtils.join(args, " "));
-            SyncExecutionResult result = getSpincastProcessUtils().executeSync(1,
+            SyncExecutionResult result = getSpincastProcessUtils().executeSync(getAutoprefixCommandMaxNbrMinutes(),
                                                                                TimeUnit.MINUTES,
                                                                                args);
             if (result.getExitCode() != 0) {
@@ -228,9 +228,13 @@ public class SpincastCssAutoprefixerManagerDefault implements SpincastCssAutopre
             throw SpincastStatics.runtimize(ex);
         } finally {
             if (tempCssFile != null && tempCssFile.isFile()) {
-                tempCssFile.delete();
+                FileUtils.deleteQuietly(tempCssFile);
             }
         }
+    }
+
+    protected int getAutoprefixCommandMaxNbrMinutes() {
+        return 1;
     }
 
     protected File getPostCssConfigFileDirsParentDir() {

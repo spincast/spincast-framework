@@ -71,12 +71,9 @@
                     Note that this plugin only provides the <em>CSS</em> compression feature of <code>YUI Compressor</code>, not
                     its ability to also compress <em>Javascript</em>. The reason is that <code>YUI Compressor</code> is 
                     <a href="https://github.com/yui/yuicompressor/issues/262">not up to date</a> in regard to Javascript... 
-                </p>
-                <p>
-                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
-                    We will soon release another plugin that will wrap 
-                    <a href="https://github.com/google/closure-compiler">Google Closure Compiler</a>: and <em>this</em> will be
-                    our recommendation on how to minify <em>Javascript</em>!
+                    To optimize Javascript, use the
+                    <a href="https://www.spincast.loc:44420/plugins/spincast-js-closurecompiler">Spincast JS Closure Compiler</a>
+                    plugin!
                 </p>
 
             </section>
@@ -109,17 +106,17 @@
                 </p>
                 <p>
                     In the "<code>dynCss(...)</code>" handler, you would get the raw content of the CSS file and tweak it using
-                    the <code>SpincastCssYuiCompressorManager</code> component before sending it:
+                    the <code>SpincastCssYuiCompressorManager</code> component before sending the result:
                     <div>
                         <p>
                             {% verbatim %}
                             <pre class="ace ace-java"
 >
-File rawCssFile = //... get the raw CSS file
+File cssFile = //... get the CSS file
 
-String cssContent = FileUtils.readFileToString(rawCssFile, "UTF-8");
+String rawCssContent = FileUtils.readFileToString(cssFile, "UTF-8");
 
-String cssMinified = getSpincastCssYuiCompressorManager().minify(cssContent);
+String cssMinified = getSpincastCssYuiCompressorManager().minify(rawCssContent);
 
 context.response().sendCharacters(cssMinified, "text/css");</pre> 
                         {% endverbatim %}
@@ -128,7 +125,7 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                             <span class="explanation">Explanation :</span>
                             <ul>
                                 <li>
-                                    <span class="code-line-nbr">1</span> : We get the raw CSS file using the 
+                                    <span class="code-line-nbr">1</span> : We get the CSS file using the 
                                     "<code>relativePath</code>" path parameter taken from the request. <em>We make sure we validate
                                     this user input properly!</em>
                                 </li>
@@ -141,7 +138,8 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                                     method.
                                 </li>
                                 <li>
-                                    <span class="code-line-nbr">7</span> : We send the minified CSS, using the proper content-type.
+                                    <span class="code-line-nbr">7</span> : We send the minified CSS, using the proper content-type. Since this is a 
+                                    dynamic resource route, the result will be cached and it is this cached version that will be served on next requests!
                                 </li>
                             </ul>
                         </p> 
@@ -162,7 +160,7 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                             <code class="apiItem">String <span>minify</span>(String cssContent)</code>
                             <div class="well">
                                 <p>
-                                    Run YUI Compressor on the specified CSS content, as a String. Returns the compressed
+                                    Run YUI Compressor on the specified CSS content, as a String. Return the compressed
                                     CSS.
                                 </p> 
                             </div>
