@@ -5,12 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.spincast.core.filters.SpincastFilters;
 import org.spincast.core.server.Server;
 import org.spincast.defaults.bootstrapping.Spincast;
+import org.spincast.plugins.cssyuicompressor.SpincastCssYuiCompressorPlugin;
 import org.spincast.plugins.dateformatter.SpincastDateFormatterPlugin;
+import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerPlugin;
 import org.spincast.plugins.logbackutils.SpincastLogbackUtilsPlugin;
 import org.spincast.website.controllers.AdminController;
 import org.spincast.website.controllers.ErrorController;
 import org.spincast.website.controllers.FeedController;
 import org.spincast.website.controllers.MainPagesController;
+import org.spincast.website.controllers.PublicDynamicResourcesController;
 import org.spincast.website.controllers.WebsocketsDemoEchoAllController;
 import org.spincast.website.controllers.demos.DemoFormAuthController;
 import org.spincast.website.controllers.demos.DemoHtmlFormsDynamicFieldsController;
@@ -38,6 +41,8 @@ public class App {
                 .module(new AppModule())
                 .plugin(new SpincastDateFormatterPlugin())
                 .plugin(new SpincastLogbackUtilsPlugin())
+                .plugin(new SpincastCssYuiCompressorPlugin())
+                .plugin(new SpincastJsClosureCompilerPlugin())
                 .requestContextImplementationClass(AppRequestContextDefault.class)
                 .init(args);
     }
@@ -59,7 +64,7 @@ public class App {
     private final DemoHtmlFormsMultipleFieldsController demoHtmlFormsMultipleFieldsController;
     private final DemoHtmlFormsDynamicFieldsController demoHtmlFormsDynamicFieldsController;
     private final DemoHtmlFormsFileUploadController demoHtmlFormsFileUploadController;
-
+    private final PublicDynamicResourcesController publicResourcesController;
     private final SpincastFilters<AppRequestContext> spincastFilters;
     private final WebsocketsDemoEchoAllController websocketsDemoEchoAllController;
 
@@ -78,7 +83,8 @@ public class App {
                DemoHtmlFormsDynamicFieldsController demoHtmlFormsDynamicFieldsController,
                SpincastFilters<AppRequestContext> spincastFilters,
                WebsocketsDemoEchoAllController websocketsDemoEchoAllController,
-               DemoHtmlFormsFileUploadController demoHtmlFormsFileUploadController) {
+               DemoHtmlFormsFileUploadController demoHtmlFormsFileUploadController,
+               PublicDynamicResourcesController publicResourcesController) {
         this.server = server;
         this.appConfig = config;
         this.router = router;
@@ -94,6 +100,7 @@ public class App {
         this.spincastFilters = spincastFilters;
         this.websocketsDemoEchoAllController = websocketsDemoEchoAllController;
         this.demoHtmlFormsFileUploadController = demoHtmlFormsFileUploadController;
+        this.publicResourcesController = publicResourcesController;
     }
 
     protected Server getServer() {
@@ -156,6 +163,10 @@ public class App {
         return this.demoHtmlFormsFileUploadController;
     }
 
+    protected PublicDynamicResourcesController getPublicResourcesController() {
+        return this.publicResourcesController;
+    }
+
     /**
      * Starts the application!
      */
@@ -205,6 +216,14 @@ public class App {
         router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").handle();
         router.file("/tile-wide.png").classpath("/public/tile-wide.png").handle();
         router.file("/tile.png").classpath("/public/tile.png").handle();
+
+        //==========================================
+        // Dynamic JS + CSS, minified
+        //==========================================
+        this.router.dir("/publicdyn/js/*{fileRelativePath}").pathRelative("/publicdyn/js")
+                   .handle(getPublicResourcesController()::dynJs);
+        this.router.dir("/publicdyn/css/*{fileRelativePath}").pathRelative("/publicdyn/css")
+                   .handle(getPublicResourcesController()::dynCss);
 
         //==========================================
         // Add some security headers.

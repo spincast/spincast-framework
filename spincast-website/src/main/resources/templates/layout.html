@@ -16,13 +16,19 @@
         is set!
         ==========================================#}
         {{ timeZoneCookie(true) }}
-
-        <link rel="stylesheet" href="/public/js/bootstrap/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/public/js/letterfx/jquery-letterfx.min.css">
-        <link rel="stylesheet" href="/public/css/hint.min.css">
-        <link rel="stylesheet" href="/public/js/toastr/toastr.min.css">
-        <link rel="stylesheet" href="/public/css/{{spincast.cacheBuster}}main.css">
         
+        {#==========================================
+        CSS files
+        All bundled together!
+        ==========================================#}
+        {% set cssBundlePath = cssBundle('/public/js/bootstrap/css/bootstrap.min.css',
+                                         '/public/js/letterfx/jquery-letterfx.min.css',
+                                         '/public/css/hint.min.css',
+                                         '/public/js/toastr/toastr.min.css',
+                                         '/publicdyn/css/main.css'
+                                         ) %}
+        <link rel="stylesheet" href="{{ cssBundlePath }}">
+
     </head>
     <body class="{% block sectionClasses %}{% endblock %}">
     <a href="#top"></a>
@@ -44,16 +50,27 @@
         
         {#==========================================
         Global js
+        All bundled together!
         ==========================================#}
-        <script src="/public/js/jquery-1.12.0.min.js"></script>
-        <script src="/public/js/bootstrap/js/bootstrap.min.js"></script>
-        <script src="/public/js/jquery.inview.js"></script>
-        <script src="/public/js/letterfx/jquery-letterfx.min.js"></script>
-        <script src="/public/js/ace/ace.js"></script>
-        <script src="/public/js/toastr/toastr.min.js"></script>
-        <script src="/public/js/arrive.min.js"></script>
-        <script src="/public/js/{{spincast.cacheBuster}}main.js"></script>
-            
+        {% set jsBundlePath = jsBundle('/public/js/jquery-1.12.0.min.js',
+                                       '/public/js/bootstrap/js/bootstrap.min.js',
+                                       '/public/js/jquery.inview.js',
+                                       '/public/js/letterfx/jquery-letterfx.min.js',
+                                       '/public/js/ace/ace.js',
+                                       '/public/js/toastr/toastr.min.js',
+                                       '/public/js/arrive.min.js',
+                                       '/publicdyn/js/main.js',
+                                       '--language_out', 'ECMASCRIPT_2017') %}
+        <script src="{{ jsBundlePath }}"></script>
+        
+        {#==========================================
+        ACE basePath must be set for its extra .js
+        to be found.
+        ==========================================#}
+        <script>
+            ace.config.set("basePath", "/public/js/ace/");
+        </script>
+        
         {#==========================================
         Page specific scripts
         ==========================================#}

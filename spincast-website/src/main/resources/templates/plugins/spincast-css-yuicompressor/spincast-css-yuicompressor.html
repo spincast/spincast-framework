@@ -51,6 +51,7 @@
                 <li class="openable"><a href="#top">Overview</a></li>
                 <li class="openable"><a href="#usage">Usage</a></li>
                 <li class="openable"><a href="#config">Configurations</a></li>
+                <li class="openable"><a href="#dependencies">Dependencies</a></li>
                 <li class="openable"><a href="#installation">Installation</a></li>
             </ul>
         </nav>
@@ -72,7 +73,7 @@
                     its ability to also compress <em>Javascript</em>. The reason is that <code>YUI Compressor</code> is 
                     <a href="https://github.com/yui/yuicompressor/issues/262">not up to date</a> in regard to Javascript... 
                     To optimize Javascript, use the
-                    <a href="https://www.spincast.loc:44420/plugins/spincast-js-closurecompiler">Spincast JS Closure Compiler</a>
+                    <a href="/plugins/spincast-js-closurecompiler">Spincast JS Closure Compiler</a>
                     plugin!
                 </p>
 
@@ -191,6 +192,140 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                     Specify 0 to get a line break after each semi-colon in JavaScript, and
                     after each rule in CSS."</em>
                 </p>
+                
+                <p>
+                    <h5 id="pebble">
+                        <a class="anchor_small" href="#pebble" title="permanent link"></a>
+                        Pebble function to easily bundle multiple CSS files
+                    </h5>
+                
+                    If you are using Pebble, the default <a href="/documentation#templating_engine">Templating Engine</a>, a
+                    function is provided by this plugin to bundle multiple CSS files together directly from an <code>HTML</code> template. 
+                </p>
+                <p>
+                    Let's say your <code>HTML</code> template includes those <code>.css</code> files:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+&lt;link rel="stylesheet" href="/public/css/bootstrap.min.css"&gt;
+&lt;link rel="stylesheet" href="/public/css/anotherLibrary.css"&gt;
+&lt;link rel="stylesheet" href="/publicdyn/css/{{spincast.cacheBuster}}main.css"&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    You could convert those separate files to a single compressed bundle,
+                    so an unique and fast request is required from the client!
+                </p>
+                <p>
+                    To do so, you use the <code>cssBundle(...)</code> Pebble function which is provided when this
+                    plugin is installed:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+{% set bundlePath = cssBundle('/public/css/bootstrap.min.css',
+                              '/public/css/anotherLibrary.css',
+                              '/publicdyn/css/main.css') %}
+&lt;link rel="stylesheet" href="{{ bundlePath }}"&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    This function will concatenate all the specified
+                    CSS files, will compress them using the <code>YUI Compressor</code>
+                    and will return the URL path to the resulting bundle! You then
+                    simply include the bundle using this generated path.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    The parameters accepted by the <code>cssBundle(...)</code> function are:
+                    <ul>
+                        <li>
+                            First, the paths to the CSS files to bundle. Those paths must 
+                            be absolute (they must start with a "<code>/</code>").
+                        </li>
+                        <li>
+                            "<code>--line-break-pos</code>" followed by the value to use,
+                            "<code>10</code>" for example. There is an explanation of this option in
+                            the previous section.
+                        </li>
+                        <li>
+                            "<code>--spincast-no-cache-busting</code>": when this flag is specified, 
+                            no <a href="/documentation#http_caching_cache_busting">cache busting</a> code
+                            will be added to the resulting bundle path.
+                        </li>  
+                    </ul>
+                </p>
+                <p>
+                    The two supported options must be specified <em>after</em> the paths
+                    to the CSS files to bundle.
+                </p> 
+                <p>
+                    Here is an example of using <code>cssBundle(...)</code> with those options:
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+{% set bundlePath = cssBundle('/public/css/bootstrap.min.css',
+                              '/public/css/anotherLibrary.css',
+                              '/publicdyn/css/main.css',
+                              '--line-break-pos', '10',
+                              '--spincast-no-cache-busting') %}
+&lt;link rel="stylesheet" href="{{ bundlePath }}"&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Behind the scene, calling <code>cssBundle(...)</code> will not only generate the bundle,
+                    but will also automatically add the associated route to
+                    your <a href="/documentation#adding_route">router</a>!
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The resulting bundle will be cached (it will only be generated on the very first
+                    request), will be served with <a href="/documentation#route_http_caching">caching HTTP headers</a> and will contain
+                    a <a href="/documentation#http_caching_cache_busting">cache busting</a> code (except if the 
+                    "<code>--spincast-no-cache-busting</code>" flag is used).
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    {% verbatim %}
+                    Don't forget to remove any "<code>{{spincast.cacheBuster}}</code>" tag
+                    when you move a regular .css file to a <code>cssBundle(...)</code> function!
+                    {% endverbatim %}
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that the content of the CSS files to bundle together will be retrieved using <code>HTTP</code>
+                    requests! This allows you
+                    to use <a href="/documentation#dynamic_resources">dynamic resources</a> to generate those files,
+                    if required.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Bundling multiple files may take a couple of seconds... If you want to prevent the
+                    first request made to this bundle to be slow, you can pre-generate the bundle when your application
+                    starts.
+                    Here is <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/AppInit.java">an example</a> 
+                    where we do this, for this very website.
+                </p>
   
             </section>
             
@@ -199,10 +334,95 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                     <a class="anchor" href="#config" title="permanent link"></a>
                     Configurations
                 </h3>
-                <p>
-                    This plugin has no global configuration.
+                <p>   
+                    You can bind a custom implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/config/SpincastCssYuiCompressorConfig.html">SpincastCssYuiCompressorConfig</a>
+                    to tweak global configurations. This implementation can extend
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/config/SpincastCssYuiCompressorConfigDefault.html">SpincastCssYuiCompressorConfigDefault</a>
+                    as a base class.
+                    
+                    <ul class="apiList">
+                        <li>
+                            <a class="anchor_small" id="config_getCssBundlePebbleFunctionName" href="#config_getCssBundlePebbleFunctionName" title="permanent link"></a>
+                            <code class="apiItem">String <span>getCssBundlePebbleFunctionName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The name to give to the Pebble function provided by this plugin to
+                                    bundle multiple CSS files together. It is the name you are going to use
+                                    in your <code>HTML</code> file to call the function.
+                                </p>
+                                <p>
+                                    Defaults to "<code>cssBundle</code>".
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="config_getCssBundleUrlPath" href="#config_getCssBundleUrlPath" title="permanent link"></a>
+                            <code class="apiItem">String <span>getCssBundlesUrlPath</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The base URL path where the CSS bundles will be served from. 
+                                    The path returned by the <code>cssBundle()</code> Pebble function
+                                    will start with this base path.
+                                </p>
+                                <p>
+                                    Defaults to "<code>/spincast/plugins/cssyuicompressor/cssbundles</code>".
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="config_getCssBundlesDir" href="#config_getCssBundlesDir" title="permanent link"></a>
+                            <code class="apiItem">File <span>getCssBundlesDir</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The directory where the <code>cssBundle()</code> Pebble function will save the
+                                    generated CSS bundles.
+                                </p>
+                                <p>
+                                    Defaults to "<code><a href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getWritableRootDir--">[WRITABLE_DIR]</a>/spincast/plugins/cssyuicompressor/cssbundles</code>".
+                                </p>
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="config_isCssBundlesIgnoreSslCertificateErrors" href="#config_isCssBundlesIgnoreSslCertificateErrors" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isCssBundlesIgnoreSslCertificateErrors</span>()</code>
+                            <div class="well">
+                                <p>
+                                    When the <code>cssBundle()</code> Pebble function retrieves the files to be bundled
+                                    together, should <code>SSL</code> certificate errors be ignored? Setting this to <code>true</code> is useful
+                                    during <em>testing</em>, on a development environment where a self-signed certificate may be used.
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code> if 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a>
+                                    or
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isTestingMode--">isTestingMode()</a>
+                                    is <code>true</code> .
+                                </p>
+                            </div>
+                        </li> 
+                    </ul>
                 </p>
             </section>
+            
+            <section id="dependencies">
+                <h3>
+                    <a class="anchor" href="#dependencies" title="permanent link"></a>
+                    Dependencies
+                </h3>
+                
+                <p>
+                    This plugin depends on the <a href="/plugins/spincast-http-client">Spincast HTTP Client</a> plugin
+                    which is <em>not</em> provided by default by the <code>spincast-default</code> artifact.
+                </p>
+                <p>
+                    It also uses <a href="/plugins/spincast-pebble">Spincast Pebble</a> plugin which <em>is</em> included
+                    in the <code>spincast-default</code> artifact.
+                </p>
+                <p>
+                    Those plugins <em>will be automatically installed</em>. Note that it is always a good
+                    idea to read the documentation of the automatically installed plugins though!
+                </p>
+            </section> 
 
             <section id="installation">
                 <h3>

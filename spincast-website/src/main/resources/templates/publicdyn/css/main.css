@@ -20,7 +20,7 @@ body {
     float: right;
 }
 .rightText {
-    text-align: right;	
+    text-align: right;  
 }
 
 a {
@@ -50,14 +50,14 @@ a:hover {
     font-weight:bold;
 }
 .big {
-	font-size:1.1em;
+    font-size:1.1em;
 }
 .center {
     text-align:center;
 }
 
 .underline {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 img {
@@ -105,19 +105,19 @@ blockquote code {
 }
 
 .right-section {
-	padding:14px;
-	padding-left:10px;
+    padding:14px;
+    padding-left:10px;
 }
 .right-section blockquote {
-	margin:0px;
-	padding:10px;
-	padding-left:10px;
-	color:#4C4C4C;
-	font-size:16px;
+    margin:0px;
+    padding:10px;
+    padding-left:10px;
+    color:#4C4C4C;
+    font-size:16px;
 }
 
 .right-section {
-	font-size:14px;
+    font-size:14px;
 }
 .right-section ul {
     padding-left:10px;
@@ -127,7 +127,7 @@ blockquote code {
 }
 
 .topContextAlert {
-	margin-top:20px;
+    margin-top:20px;
 }
 
 .noTop {
@@ -156,13 +156,13 @@ blockquote code {
 }
 
 a.anchor, a.anchor_small, a.anchor_xsmall {
-	margin-left:-28px;
-	padding-left:22px;
-	padding-right:6px;
-	background: #FFFFFF url("/public/images/anchor.png") no-repeat left center;
-	background-size: 86% 60%;
-	text-decoration:none;
-	opacity: 0;
+    margin-left:-28px;
+    padding-left:22px;
+    padding-right:6px;
+    background: #FFFFFF url("/public/images/anchor.png") no-repeat left center;
+    background-size: 86% 60%;
+    text-decoration:none;
+    opacity: 0;
 }
 a.anchor_small {
     margin-left:-20px;
@@ -182,13 +182,13 @@ a.anchor:hover, a.anchor_small:hover, a.anchor_xsmall:hover {
 }
 
 h2 {
-	font-size: 40px;
-	font-weight: bold;
-	color: #4C4C4C;
-	padding-bottom: 4px;
-	margin-top: 40px;
-	margin-bottom: 14px;
-	border-bottom: 2px solid #E0E0E0; 
+    font-size: 40px;
+    font-weight: bold;
+    color: #4C4C4C;
+    padding-bottom: 4px;
+    margin-top: 40px;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #E0E0E0; 
 }
 
 h2.noUnder {
@@ -215,7 +215,7 @@ h4 {
 }
 
 blockquote {
-	margin-top:20px;
+    margin-top:20px;
 }
 
 blockquote.niceQuote {
@@ -309,7 +309,7 @@ h5 code {
 }
 
 .pointerCursor {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 a.love:hover::after {
@@ -352,6 +352,9 @@ ul ul {
     padding-top:10px;
     text-align:left;
 }
+#top a {
+    outline: none;
+}
 
 #topLinks {
     padding:0px;
@@ -367,7 +370,6 @@ ul ul {
     float: right;
     margin-left:20px;
     text-align: left;
-    outline: none;
     
     -webkit-box-shadow: 3px 3px 3px #3F3B3B;
     box-shadow: 3px 3px 3px #3F3B3B;  
@@ -427,10 +429,10 @@ ul ul {
 }
 
 .subMenu .subMenuIcon {
-	float:left;
-	margin-left:10px !important;
-	margin-top:10px !important;
-	margin-right:10px !important;
+    float:left;
+    margin-left:10px !important;
+    margin-top:10px !important;
+    margin-right:10px !important;
 }
 
 @media only screen and (max-width: 430px) {
@@ -512,8 +514,8 @@ ul ul {
 }
 
 .nav > li > a:hover {
-	background-color: #E8F2D2;
-	color: #1E1E1E;
+    background-color: #E8F2D2;
+    color: #1E1E1E;
 }
 
 .nav-tabs li.active a, .nav-tabs li.active a:hover {
@@ -648,8 +650,8 @@ ul ul {
 .quickStartWrapper a, .quickStartWrapper a:active, .quickStartWrapper a:visited
 {
     width:100%;
-    background-color: #779943;
-    color: #FFFFFF;
+    background-color: #E8F2D2;
+    color: #000000;
     border:solid 2px #000000;
     padding:20px 0px;
     font-size: 20px;
@@ -658,12 +660,12 @@ ul ul {
 }
 
 .quickStartWrapper a:hover {
-	text-decoration: none !important;
-    background-color: #E8F2D2;
-    color: #000000;
+    text-decoration: none !important;
+    background-color: #779943;
+    color: #FFFFFF;
 }
 .quickStartWrapper > a:hover i {
-	color:#FFFFFF;
+    color:#FFFFFF;
 }
 
 .quickStartWrapper i {
@@ -704,7 +706,7 @@ ul ul {
 }
 
 .learnMore {
-	padding-right:20px;
+    padding-right:20px;
 }
 
 /************************************************************
@@ -836,7 +838,7 @@ ul.apiList  {
     padding-left:16px;
 }
 ul.apiList li {
-	padding-top:10px;
+    padding-top:10px;
 }
 ul.apiList li.first {
     padding-top:0px;
@@ -1030,7 +1032,7 @@ ul.apiList li:hover {
 }
 
 #introMainParts li span {
-    font-weight:bold;	
+    font-weight:bold;   
 }
 #introMainParts li ul li {
     margin-top:6px; 
@@ -1040,15 +1042,15 @@ ul.apiList li:hover {
     text-decoration:underline;
 }
 .explTip {
-	font-size:14px;
+    font-size:14px;
 }
 
 .explTip img {
-	height:16px;
+    height:16px;
 }
 
 .subIcon {
-	color:#919191;
+    color:#919191;
 }
 
 .subSection {
@@ -1097,16 +1099,16 @@ a.noOutline {
 
 .ace-error {
     background: transparent !important; 
-	border: 0 !important;
-	background-image: url("/public/images/error-border.png") !important;
-	background-position: bottom !important;
-	background-repeat: repeat-x !important;
+    border: 0 !important;
+    background-image: url("/public/images/error-border.png") !important;
+    background-position: bottom !important;
+    background-repeat: repeat-x !important;
 }
 
 .ace-error-gutter {
-	background-image: url("/public/images/error-icon.png") !important;
-	background-position: left !important;
-	background-repeat: no-repeat !important;
+    background-image: url("/public/images/error-icon.png") !important;
+    background-position: left !important;
+    background-repeat: no-repeat !important;
 }
 
 .ace-pebble .ace_line .ace_keyword, .ace-pebble .ace_line .ace_storage, .ace-pebble .ace_line .ace_variable, .ace-pebble .ace_line .ace_parameter {
@@ -1161,9 +1163,9 @@ pre {
 }
 
 .pluginBadges {
-	position:absolute;
-	right:20px;
-	bottom:5px;
+    position:absolute;
+    right:20px;
+    bottom:5px;
 }
 
 .plugins-list .pluginBadges {
@@ -1184,9 +1186,9 @@ pre {
 }
 
 .onPageBadges {
-	position:absolute;
-	right:26px;
-	top:4px;
+    position:absolute;
+    right:26px;
+    top:4px;
 }
 
 .breadcrumb {
@@ -1452,11 +1454,11 @@ pre {
 }
 
 ul.tutoBullets li {
-	padding-bottom:10px;
+    padding-bottom:10px;
 }
 
 #right-sidebar {
-	padding-left:0px;
+    padding-left:0px;
 }
 
 #version h4 {
@@ -1478,11 +1480,11 @@ ul.tutoBullets li {
 }
 
 #presentationIframe {
-	width:100%;
-	height:400px;
-	overflow: hidden;
-	border:0;
-	position: relative;
+    width:100%;
+    height:400px;
+    overflow: hidden;
+    border:0;
+    position: relative;
 }
 
 #noPresentation {
@@ -1490,15 +1492,15 @@ ul.tutoBullets li {
 }
 
 #noPresentation .thumbnail {
-	border:0;
-	height:300px;
+    border:0;
+    height:300px;
 }
 
 @media only screen and (max-width: 768px) {
-	#noPresentation .thumbnail {
-		border:0;
-		height:200px;
-	}
+    #noPresentation .thumbnail {
+        border:0;
+        height:200px;
+    }
 }
 @media only screen and (max-width: 500px) {
     #noPresentation .thumbnail {
@@ -1506,98 +1508,98 @@ ul.tutoBullets li {
     }
 }
 #noPresentation h4 {
-	margin-top:0px;
-	text-align:center;
-	font-size: 20px;
+    margin-top:0px;
+    text-align:center;
+    font-size: 20px;
 }
 
 #noPresentation ul {
-	margin-left:-20px;
+    margin-left:-20px;
 }
 
 #noPresentation ul li {
-	margin-bottom:4px;
+    margin-bottom:4px;
 }
 
 #spincastIntro {
-	margin-top: 0 !important;
+    margin-top: 0 !important;
 }
 
 
 #noPresentation ul a:hover {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 #noPresentation .featureLogo {
-	text-align:center;
-	margin-bottom:6px;
+    text-align:center;
+    margin-bottom:6px;
 }
 
 #noPresentation  #veryFlexible {
-	text-decoration:underline;
+    text-decoration:underline;
 }
 
 #presentationControls {
-	text-align:right;
-	padding-right:0px;
+    text-align:right;
+    padding-right:0px;
 }
 #presentationControls a {
-	color:#808080;
-	font-size:0.9em;
-	font-style:italic;
-	text-decoration:none;
-	margin-left:4px;
+    color:#808080;
+    font-size:0.9em;
+    font-style:italic;
+    text-decoration:none;
+    margin-left:4px;
 }
 
 .inlineIcon {
-	margin:0 !important;
-	padding:0 !important;
-	display:inline !important;
-	vertical-align: middle !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:inline !important;
+    vertical-align: middle !important;
 }
 
 .alignBottom {
-	vertical-align: text-bottom !important;
+    vertical-align: text-bottom !important;
 }
 .alignMin5 {
-	vertical-align:-5% !important;
+    vertical-align:-5% !important;
 }
 .alignMin3 {
-	vertical-align:-3% !important;
+    vertical-align:-3% !important;
 }
 .breadIcon {
-	margin-right:4px !important;
-	vertical-align:-5% !important;
+    margin-right:4px !important;
+    vertical-align:-5% !important;
 }
 
 #quickIcon {
-	vertical-align:-5% !important;
+    vertical-align:-5% !important;
 }
 #quickIconSmall {
-	vertical-align:-5% !important;
-	width:10px;
+    vertical-align:-5% !important;
+    width:10px;
 }
 .javadocPencil {
-	width:10px;
-	vertical-align:0% !important;
+    width:10px;
+    vertical-align:0% !important;
 }
 
 .authEmail {
-	font-style: italic;
+    font-style: italic;
 }
 .authEmail span {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .colImg img {
-	max-width: none !important;
+    max-width: none !important;
 }
 
 .demo_html_forms form textarea {
-	min-height:140px;
+    min-height:140px;
 }
 .forCheckable {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 span.msgSuccess {

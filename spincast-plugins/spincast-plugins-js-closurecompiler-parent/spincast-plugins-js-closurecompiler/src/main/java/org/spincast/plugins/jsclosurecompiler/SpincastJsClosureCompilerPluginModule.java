@@ -7,6 +7,8 @@ import org.spincast.plugins.jsclosurecompiler.config.SpincastJsClosureCompilerCo
 import org.spincast.plugins.jsclosurecompiler.config.SpincastJsClosureCompilerConfigDefault;
 
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.Multibinder;
+import com.mitchellbosecke.pebble.extension.Extension;
 
 /**
  * Spincast JS Closure Compiler plugin module.
@@ -26,6 +28,8 @@ public class SpincastJsClosureCompilerPluginModule extends SpincastGuiceModuleBa
     protected void configure() {
         bind(SpincastJsClosureCompilerManager.class).to(getSpincastJsCLosureCompilerManagerImpl()).in(Scopes.SINGLETON);
         bind(SpincastJsClosureCompilerConfig.class).to(getSpincastJsClosureCompilerConfigImpl()).in(Scopes.SINGLETON);
+
+        bindPebbleExtension();
     }
 
     protected Class<? extends SpincastJsClosureCompilerManager> getSpincastJsCLosureCompilerManagerImpl() {
@@ -34,6 +38,11 @@ public class SpincastJsClosureCompilerPluginModule extends SpincastGuiceModuleBa
 
     protected Class<? extends SpincastJsClosureCompilerConfig> getSpincastJsClosureCompilerConfigImpl() {
         return SpincastJsClosureCompilerConfigDefault.class;
+    }
+
+    protected void bindPebbleExtension() {
+        Multibinder<Extension> pebbleExtensionsMultibinder = Multibinder.newSetBinder(binder(), Extension.class);
+        pebbleExtensionsMultibinder.addBinding().to(SpincastJsClosureCompilerPebbleExtension.class).in(Scopes.SINGLETON);
     }
 
 }

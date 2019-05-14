@@ -27,6 +27,25 @@
         </dependency>
         
         <!--=================================== 
+        Spincast Pebble plugin - We provide
+        an extension for it.
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-pebble</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
+        Spincast HTTP Client plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-http-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
         Yahoo - yuicompressor
         ====================================-->
         <dependency>

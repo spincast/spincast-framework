@@ -54,6 +54,24 @@
         </dependency>
         
         <!--=================================== 
+        Spincast CSS YUI Compressor plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-css-yuicompressor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--=================================== 
+        Spincast JS Closure Compiler plugin
+        ====================================-->
+        <dependency>
+            <groupId>org.spincast</groupId>
+            <artifactId>spincast-plugins-js-closurecompiler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <!--=================================== 
         Rome - For the RSS feed
         ====================================-->
         <dependency>
@@ -68,16 +86,6 @@
         <dependency>
             <groupId>org.spincast</groupId>
             <artifactId>spincast-testing-default</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <!--=================================== 
-        Spincast Process Utils plugin
-        ====================================-->
-        <dependency>
-            <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-process-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

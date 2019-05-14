@@ -31,7 +31,7 @@ public interface HttpRequestBuilder<T extends HttpRequestBuilder<?>> {
     public T setHeaders(Map<String, List<String>> headers);
 
     /**
-     * Sets the values of the specified header. Existing values 
+     * Sets the values of the specified header. Existing values
      * of this header will be overwritten.
      */
     public T setHeaderValues(String key, List<String> values);
@@ -89,13 +89,13 @@ public interface HttpRequestBuilder<T extends HttpRequestBuilder<?>> {
     public T setHttpClientBuilder(HttpClientBuilder httpClientBuilder);
 
     /**
-     * Disables <code>SSL</code> certificates errors (such as self-signed 
+     * Disables some <code>SSL</code> certificates errors (such as self-signed
      * certificate errors).
-     * 
+     * <p>
      * <code>SSL</code> certificate errors are not disabled by default.
-     * 
+     * <p>
      * Be sure you know what you are doing if you disable this! It may lead to
-     * some security concerns.
+     * some security concerns!
      */
     public T disableSslCertificateErrors();
 

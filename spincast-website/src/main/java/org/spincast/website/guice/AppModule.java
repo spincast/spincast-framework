@@ -1,11 +1,13 @@
 package org.spincast.website.guice;
 
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.server.ServerStartedListener;
 import org.spincast.plugins.config.SpincastConfigPluginConfig;
 import org.spincast.plugins.logbackutils.config.SpincastLogbackConfigurerConfig;
 import org.spincast.plugins.pebble.SpincastPebbleTemplatingEngineConfig;
 import org.spincast.website.AppConfig;
 import org.spincast.website.AppConfigDefault;
+import org.spincast.website.AppInit;
 import org.spincast.website.AppLogbackConfigurerConfig;
 import org.spincast.website.AppPebbleTemplatingEngineConfig;
 import org.spincast.website.AppSpincastConfigPluginConfig;
@@ -23,6 +25,7 @@ import org.spincast.website.services.NewsService;
 import org.spincast.website.services.NewsServiceDefault;
 
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.Multibinder;
 
 public class AppModule extends SpincastGuiceModuleBase {
 
@@ -78,6 +81,12 @@ public class AppModule extends SpincastGuiceModuleBase {
         //==========================================
         bind(SpincastLogbackConfigurerConfig.class).to(AppLogbackConfigurerConfig.class).in(Scopes.SINGLETON);
 
+        //==========================================
+        // Server started listeners
+        //==========================================
+        Multibinder<ServerStartedListener> serverStartedListenersMultibinder =
+                Multibinder.newSetBinder(binder(), ServerStartedListener.class);
+        serverStartedListenersMultibinder.addBinding().to(AppInit.class).in(Scopes.SINGLETON);
     }
 
 }

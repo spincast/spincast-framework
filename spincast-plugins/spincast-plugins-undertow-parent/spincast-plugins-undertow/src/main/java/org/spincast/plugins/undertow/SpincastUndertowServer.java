@@ -837,7 +837,8 @@ public class SpincastUndertowServer implements Server {
     @Override
     public void removeAllStaticResourcesServed() {
 
-        for (Entry<String, StaticResource<?>> entry : getStaticResourcesServedByUrlPath().entrySet()) {
+        Map<String, StaticResource<?>> mapCopy = new HashMap<String, StaticResource<?>>(getStaticResourcesServedByUrlPath());
+        for (Entry<String, StaticResource<?>> entry : mapCopy.entrySet()) {
 
             String urlPath = entry.getKey();
             StaticResource<?> staticResource = entry.getValue();
@@ -856,6 +857,7 @@ public class SpincastUndertowServer implements Server {
         } else {
             throw new RuntimeException("Unamanaged static resource stype : " + staticResourceType);
         }
+        getStaticResourcesServedByUrlPath().remove(urlPath);
     }
 
     @Override

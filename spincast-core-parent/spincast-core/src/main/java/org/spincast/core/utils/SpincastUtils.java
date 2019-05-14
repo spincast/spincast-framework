@@ -390,4 +390,9 @@ public interface SpincastUtils {
      */
     public boolean isPortOpen(String host, int port);
 
+    /**
+     * Empty a directory if it exists.
+     */
+    public void clearDirectory(File dir);
+
 }

@@ -2,7 +2,7 @@
 
 {% block sectionClasses %}plugins hasBreadCrumb plugins-spincast-js-closurecompiler{% endblock %}
 {% block meta_title %}Plugins - Spincast JS Closure Compiler{% endblock %}
-{% block meta_description %}Spincast JS Closure Compiler plugin - Integration with Google's Closure Compiler to optimize your JS files.{% endblock %}
+{% block meta_description %}Spincast JS Closure Compiler plugin - Integration with Google's Closure Compiler to optimize your Javascript files.{% endblock %}
 
 {% block scripts %}
 <script>
@@ -201,6 +201,12 @@ context.response().sendCharacters(jsOptimized, "application/javascript");</pre>
                         You <em>cannot</em> use the "<code>--js_output_file</code>" option! This option is managed
                         by the plugin. If you specify it, your version will be ignored.
                     </p>
+                    <p>
+                        <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                        Note that, when bundling Javascript files
+                        <a href="https://github.com/spincast/spincast-framework/blob/master/spincast-website/src/main/resources/templates/layout.html#L55">for Spincast itself</a>, 
+                        we had to use "<code>--language_out ECMASCRIPT_2017</code>" or errors were generated! You may try this option if you get errors.
+                    </p>
                 </p>
 
                 <p>
@@ -323,7 +329,141 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                         </li>
                     </ul>
                 </p>
-  
+                <p>
+                    <h5 id="pebble">
+                        <a class="anchor_small" href="#pebble" title="permanent link"></a>
+                        Pebble function to easily bundle multiple Javascript files
+                    </h5>
+                
+                    If you are using Pebble, the default <a href="/documentation#templating_engine">Templating Engine</a>, a
+                    function is provided by this plugin to bundle multiple Javascript files together directly from an <code>HTML</code> template. 
+                </p>
+                <p>
+                    Let's say your <code>HTML</code> template includes those <code>.js</code> files:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+&lt;script src="/public/js/jquery.js"&gt;&lt;/script&gt;
+&lt;script src="/public/js/anotherLibrary.js"&gt;&lt;/script&gt;
+&lt;script src="/publicdyn/js/{{spincast.cacheBuster}}main.js"&gt;&lt;/script&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    You could convert those separate files to a single compressed and optimized bundle,
+                    so an unique and fast request is required from the client!
+                </p>
+                <p>
+                    To do so, you use the <code>jsBundle(...)</code> Pebble function which is provided when this
+                    plugin is installed:
+                    
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+{% set bundlePath = jsBundle('/public/js/jquery.js',
+                             '/public/js/anotherLibrary.js',
+                             '/publicdyn/js/main.js') %}
+&lt;script src="{{ bundlePath }}"&gt;&lt;/script&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    This function will concatenate all the specified
+                    Javascript files, will optimize them using the <code>Closure Compiler</code>
+                    and will return the URL path to the resulting bundle! You then
+                    simply include the bundle using this generated path.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/para.png" />
+                    The parameters accepted by the <code>jsBundle(...)</code> function are:
+                    <ul>
+                        <li>
+                            First, the paths to the Javascript files to bundle. Those paths must 
+                            be absolute (they must start with a "<code>/</code>").
+                        </li>
+                        <li>
+                            <p>
+                                Then, the <a href="#options">options</a> to pass to the <code>Closure Compiler</code>.
+                                Those must be specified after the paths to the Javascript files.
+                                When an argument starting with "<code>-</code>" is found, this argument and all the following ones
+                                are considered as <em>options</em> for the <code>Closure Compiler</code>!
+                            </p> 
+                        </li>
+                        <li>
+                            <p>
+                                There is a single option specific to Spincast that you can use: "<code>--spincast-no-cache-busting</code>".
+                                When this flag is specified, no <a href="/documentation#http_caching_cache_busting">cache busting</a> code
+                                will be added to the resulting bundle path.
+                            </p> 
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    Here is an example of using <code>jsBundle(...)</code> with options:
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+{% set bundlePath = jsBundle('/public/js/jquery.js',
+                             '/public/js/anotherLibrary.js',
+                             '/publicdyn/js/main.js',
+                             '--compilation_level', 'WHITESPACE_ONLY', 
+                             '--formatting', 'PRETTY_PRINT',
+                             '--spincast-no-cache-busting') %}
+&lt;script src="{{ bundlePath }}"&gt;&lt;/script&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %}
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Behind the scene, calling <code>jsBundle(...)</code> will not only generate the bundle,
+                    but will also automatically add the associated route to
+                    your <a href="/documentation#adding_route">router</a>!
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    The resulting bundle will be cached (it will only be generated on the very first
+                    request), will be served with <a href="/documentation#route_http_caching">caching HTTP headers</a> and will contain
+                    a <a href="/documentation#http_caching_cache_busting">cache busting</a> code (except if the 
+                    "<code>--spincast-no-cache-busting</code>" flag is used).
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    {% verbatim %}
+                    Don't forget to remove any "<code>{{spincast.cacheBuster}}</code>" tag
+                    when you move a regular .js file to a <code>jsBundle(...)</code> function!
+                    {% endverbatim %}
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Note that the content of the Javascript files to bundle together will be retrieved using <code>HTTP</code>
+                    requests! This allows you
+                    to use <a href="/documentation#dynamic_resources">dynamic resources</a> to generate those files,
+                    if required.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    Bundling multiple files may take a couple of seconds... If you want to prevent the
+                    first request made to this bundle to be slow, you can pre-generate the bundle when your application
+                    starts.
+                    Here is <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/AppInit.java">an example</a> where we do this, for this very website.
+                </p>
+                
             </section>
             
             <section id="config">
@@ -332,7 +472,10 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                     Configurations
                 </h3>
                 <p>   
-                    There is only one global configuration:
+                    You can bind a custom implementation of <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/config/SpincastJsClosureCompilerConfig.html">SpincastJsClosureCompilerConfig</a>
+                    to tweak global configurations. This implementation can extend
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/config/SpincastJsClosureCompilerConfigDefault.html">SpincastJsClosureCompilerConfigDefault</a>
+                    as a base class.
                     
                     <ul class="apiList">
                         <li>
@@ -341,13 +484,72 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                             <div class="well">
                                 <p>
                                     Allows you to modify the path to the <code>java</code> executable that
-                                    will be used. You can specify an absolute path if required.
+                                    is used to call the <code>Closure Compiler</code> .jar file. You can specify an absolute path if required.
                                 </p>
                                 <p>
                                     The value is "<code>java</code>" by default.
                                 </p>
                             </div>
                         </li>
+                        <li>
+                            <a class="anchor_small" id="config_getJsBundlePebbleFunctionName" href="#config_getJsBundlePebbleFunctionName" title="permanent link"></a>
+                            <code class="apiItem">String <span>getJsBundlePebbleFunctionName</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The name to give to the Pebble function provided by this plugin to
+                                    bundle multiple Javascript files together. It is the name you are going to use
+                                    in your <code>HTML</code> file to call the function.
+                                </p>
+                                <p>
+                                    Defaults to "<code>jsBundle</code>".
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="config_getJsBundlesUrlPath" href="#config_getJsBundlesUrlPath" title="permanent link"></a>
+                            <code class="apiItem">String <span>getJsBundlesUrlPath</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The base URL path where the Javascript bundles will be served from. 
+                                    The path returned by the <code>jsBundle()</code> Pebble function
+                                    will start with this base path.
+                                </p>
+                                <p>
+                                    Defaults to "<code>/spincast/plugins/jsclosurecompiler/jsbundles</code>".
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="config_getJsBundlesDir" href="#config_getJsBundlesDir" title="permanent link"></a>
+                            <code class="apiItem">File <span>getJsBundlesDir</span>()</code>
+                            <div class="well">
+                                <p>
+                                    The directory where the <code>jsBundle()</code> Pebble function will save the
+                                    generated Javascript bundles.
+                                </p>
+                                <p>
+                                    Defaults to "<code><a href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#getWritableRootDir--">[WRITABLE_DIR]</a>/spincast/plugins/jsclosurecompiler/jsBundles</code>".
+                                </p>
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="config_isJsBundlesIgnoreSslCertificateErrors" href="#config_isJsBundlesIgnoreSslCertificateErrors" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isJsBundlesIgnoreSslCertificateErrors</span>()</code>
+                            <div class="well">
+                                <p>
+                                    When the <code>jsBundle()</code> Pebble function retrieves the files to be bundled
+                                    together, should <code>SSL</code> certificate errors be ignored? Setting this to <code>true</code> is useful
+                                    during <em>testing</em>, on a development environment where a self-signed certificate may be used.
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code> if 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a>
+                                    or
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isTestingMode--">isTestingMode()</a>
+                                    is <code>true</code> .
+                                </p>
+                            </div>
+                        </li> 
                     </ul>
                 </p>
             </section>
@@ -359,18 +561,24 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                 </h3>
                 
                 <p>
-                    This plugin depends on the <a href="/plugins/spincast-process-utils">Spincast Process Utils</a> plugin
-                    which is <em>not</em> provided by default by the <code>spincast-default</code> package.
+                    This plugin depends on the <a href="/plugins/spincast-process-utils">Spincast Process Utils</a> and the
+                    <a href="/plugins/spincast-http-client">Spincast HTTP Client</a> plugins
+                    which are <em>not</em> provided by default by the <code>spincast-default</code> artifact.
                 </p>
                 <p>
-                    This dependency <em>will be automatically installed</em>. Note that it is always a good
-                    idea to read the documentation of the automatically installed plugins.
+                    It also uses <a href="/plugins/spincast-pebble">Spincast Pebble</a> plugin which <em>is</em> included
+                    in the <code>spincast-default</code> artifact.
+                </p>
+                <p>
+                    Those plugins <em>will be automatically installed</em>. Note that it is always a good
+                    idea to read the documentation of the automatically installed plugins though!
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
                     Even if <code>Closure Compiler</code> is written in Java and we could have used its Java API
-                    directly, we do call it using a terminal command so all the
-                    flags and options from the official documentation can be easily used.
+                    directly, without the need for the <a href="/plugins/spincast-process-utils">Spincast Process Utils</a>
+                    plugin, we do call it using a terminal command so all the
+                    flags and options from the official documentation can be easily used!
                 </p>
             </section> 
 

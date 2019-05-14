@@ -1238,4 +1238,18 @@ public class SpincastUtilsDefault implements SpincastUtils {
         }
     }
 
+    @Override
+    public void clearDirectory(File dir) {
+
+        if (dir == null || !dir.isDirectory()) {
+            return;
+        }
+
+        try {
+            FileUtils.cleanDirectory(dir);
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
 }

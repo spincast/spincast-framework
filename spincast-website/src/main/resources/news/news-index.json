@@ -191,8 +191,13 @@
             "date" : "2019-05-09T23:30:00Z",
             "title" : "Optimize your Javascript with the new Closure Compiler integration",
             "path" : "/news/2019-05-09.html"
+        },
+        {
+            "id" : "34",
+            "date" : "2019-05-14T21:00:00Z",
+            "title" : "Easy Javascript and CSS bundling",
+            "path" : "/news/2019-05-14.html"
         }
-          
-		
+
 	]
 }
