@@ -22,7 +22,7 @@ public class JsClosureCompilerTest extends JsClosureCompileTestBase {
 
         // @formatter:off
         String jsContent = "function titi(aaa , bbb ,ccc ) {\n" +
-                           "    return aaa + bbb ;\n" +
+                           "    return aaa + bbb ; \n" +
                            "} ";
         // @formatter:on
 

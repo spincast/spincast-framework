@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -451,14 +452,14 @@ public class SpincastStatics {
         IOUtils.closeQuietly(closeable);
     }
 
-    public static <T> T[] toArray(Set<T> set, Class<? super T> clazz) {
-        return getInstance().toArrayInstance(set, clazz);
+    public static <T> T[] toArray(Collection<T> collection, Class<? super T> clazz) {
+        return getInstance().toArrayInstance(collection, clazz);
     }
 
-    public <T> T[] toArrayInstance(Set<T> set, Class<? super T> clazz) {
+    public <T> T[] toArrayInstance(Collection<T> collection, Class<? super T> clazz) {
         @SuppressWarnings("unchecked")
-        T[] array = (T[])Array.newInstance(clazz, set.size());
-        return set.toArray(array);
+        T[] array = (T[])Array.newInstance(clazz, collection.size());
+        return collection.toArray(array);
     }
 
     /**

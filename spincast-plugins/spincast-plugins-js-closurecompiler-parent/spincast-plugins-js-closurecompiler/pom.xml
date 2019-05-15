@@ -27,15 +27,6 @@
         </dependency>
         
         <!--=================================== 
-        Spincast Process Utils plugin
-        ====================================-->
-        <dependency>
-            <groupId>org.spincast</groupId>
-            <artifactId>spincast-plugins-process-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <!--=================================== 
         Spincast Pebble plugin - We provide
         an extension for it.
         ====================================-->

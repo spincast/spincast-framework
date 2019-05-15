@@ -23,11 +23,6 @@ public class SpincastJsClosureCompilerConfigDefault implements SpincastJsClosure
     }
 
     @Override
-    public String getJavaBinPath() {
-        return "java";
-    }
-
-    @Override
     public String getJsBundlePebbleFunctionName() {
         return "jsBundle";
     }

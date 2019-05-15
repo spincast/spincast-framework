@@ -122,6 +122,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertEquals("Pong " + message2, client.getStringMessageReceived().get(1));
     }
 
+    @RepeatUntilSuccess(value = 5, sleep = 100)
     @Test
     public void closingTheEndpointShouldSendClosedEventToPeer() throws Exception {
 

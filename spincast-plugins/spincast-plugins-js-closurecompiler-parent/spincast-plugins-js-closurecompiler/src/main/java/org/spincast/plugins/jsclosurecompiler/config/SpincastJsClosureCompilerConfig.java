@@ -10,14 +10,6 @@ import org.spincast.core.config.SpincastConfig;
 public interface SpincastJsClosureCompilerConfig {
 
     /**
-     * The path to the <code>java</code> binary.
-     * <p>
-     * Is "<em>java</em>" par default.
-     * You can set it to an absolute path if required.
-     */
-    public String getJavaBinPath();
-
-    /**
      * The name of the provided Pebble function to
      * bundle multiple .js files.
      * <p>

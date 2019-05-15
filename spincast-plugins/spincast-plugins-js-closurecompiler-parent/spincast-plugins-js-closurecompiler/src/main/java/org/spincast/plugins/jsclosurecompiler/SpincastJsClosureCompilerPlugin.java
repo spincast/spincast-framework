@@ -3,7 +3,6 @@ package org.spincast.plugins.jsclosurecompiler;
 import org.spincast.core.guice.SpincastPluginBase;
 import org.spincast.plugins.httpclient.SpincastHttpClientPlugin;
 import org.spincast.plugins.pebble.SpincastPebblePlugin;
-import org.spincast.plugins.processutils.SpincastProcessUtilsPlugin;
 
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
@@ -41,9 +40,6 @@ public class SpincastJsClosureCompilerPlugin extends SpincastPluginBase {
     }
 
     protected Module applyRequiredPlugins(Module module) {
-
-        SpincastProcessUtilsPlugin spincastProcessUtilsPlugin = new SpincastProcessUtilsPlugin();
-        module = spincastProcessUtilsPlugin.apply(module);
 
         SpincastHttpClientPlugin spincastHttpClientPlugin = new SpincastHttpClientPlugin();
         module = spincastHttpClientPlugin.apply(module);

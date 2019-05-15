@@ -5,85 +5,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.plugins.jsclosurecompiler.config.SpincastJsClosureCompilerConfig;
-import org.spincast.plugins.processutils.SpincastProcessUtils;
-import org.spincast.plugins.processutils.SyncExecutionResult;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.javascript.jscomp.Compiler;
+import com.google.javascript.jscomp.CommandLineRunner;
 
 public class SpincastJsClosureCompilerManagerDefault implements SpincastJsClosureCompilerManager {
 
     protected static final Logger logger = LoggerFactory.getLogger(SpincastJsClosureCompilerManagerDefault.class);
 
     private final SpincastConfig spincastConfig;
-    private final SpincastProcessUtils spincastProcessUtils;
     private final SpincastUtils spincastUtils;
-    private final SpincastJsClosureCompilerConfig spincastJsClosureCompilerConfig;
-
-    private String closureCompilerJarFilePath;
 
     @Inject
     public SpincastJsClosureCompilerManagerDefault(SpincastConfig spincastConfig,
-                                                   SpincastProcessUtils spincastProcessUtils,
-                                                   SpincastUtils spincastUtils,
-                                                   SpincastJsClosureCompilerConfig spincastJsClosureCompilerConfig) {
+                                                   SpincastUtils spincastUtils) {
         this.spincastConfig = spincastConfig;
-        this.spincastProcessUtils = spincastProcessUtils;
         this.spincastUtils = spincastUtils;
-        this.spincastJsClosureCompilerConfig = spincastJsClosureCompilerConfig;
-    }
-
-    @Inject
-    protected void init() {
-        //==========================================
-        // Validate the closure compile jar
-        //==========================================
-        getClosureCompilerJarFilePath();
     }
 
     protected SpincastConfig getSpincastConfig() {
         return this.spincastConfig;
     }
 
-    protected SpincastProcessUtils getSpincastProcessUtils() {
-        return this.spincastProcessUtils;
-    }
-
     protected SpincastUtils getSpincastUtils() {
         return this.spincastUtils;
-    }
-
-    protected SpincastJsClosureCompilerConfig getSpincastJsClosureCompilerConfig() {
-        return this.spincastJsClosureCompilerConfig;
-    }
-
-    protected String getClosureCompilerJarFilePath() {
-        if (this.closureCompilerJarFilePath == null) {
-
-            File classDirOrJarFile = getSpincastUtils().getClassLocationDirOrJarFile(Compiler.class);
-            if (!getSpincastUtils().isClassLoadedFromJar(Compiler.class)) {
-                throw new RuntimeException("Expecting the " + Compiler.class.getName() +
-                                           " class to be loaded from a .jar here! But was " +
-                                           "loaded from: " + classDirOrJarFile);
-            }
-            this.closureCompilerJarFilePath = classDirOrJarFile.getAbsolutePath();
-        }
-        return this.closureCompilerJarFilePath;
-    }
-
-    protected int getCompileCommandMaxNbrMinutes() {
-        return 1;
     }
 
     protected File createJsFile(String jsContent) {
@@ -191,9 +145,6 @@ public class SpincastJsClosureCompilerManagerDefault implements SpincastJsClosur
             tempJsFile = createJsFile("");
 
             List<String> argsList = new ArrayList<String>();
-            argsList.add(getSpincastJsClosureCompilerConfig().getJavaBinPath());
-            argsList.add("-jar");
-            argsList.add(getClosureCompilerJarFilePath());
             argsList.add("--js_output_file=" + tempJsFile.getAbsolutePath());
 
             for (String arg : args) {
@@ -209,12 +160,23 @@ public class SpincastJsClosureCompilerManagerDefault implements SpincastJsClosur
                 argsList.add(arg);
             }
 
-            SyncExecutionResult result = getSpincastProcessUtils().executeSync(getCompileCommandMaxNbrMinutes(),
-                                                                               TimeUnit.MINUTES,
-                                                                               argsList);
-            if (result.getExitCode() != 0) {
-                throw new RuntimeException("Program did not exit with code '0': " + result.getExitCode());
+            //==========================================
+            // Run the Closure Compiler!
+            //==========================================
+            logger.info("Running the Closure Compiler... Arguments: " + argsList.toString());
+            CommandLineRunner runner =
+                    new SpincastJsClosureCompilerCommandLineRunner(SpincastStatics.toArray(argsList, String.class));
+            if (runner.shouldRunCompiler()) {
+                //==========================================
+                // The ExitCodeReceiver has been replaced so
+                // System.exit() will *not* be called.
+                //==========================================
+                runner.run();
             }
+            if (runner.hasErrors()) {
+                throw new RuntimeException("Errors running the closure compiler!");
+            }
+            logger.info("The Closure Compiler ran without any errors.");
 
             String resultContent = FileUtils.readFileToString(tempJsFile, "UTF-8");
             return resultContent;
