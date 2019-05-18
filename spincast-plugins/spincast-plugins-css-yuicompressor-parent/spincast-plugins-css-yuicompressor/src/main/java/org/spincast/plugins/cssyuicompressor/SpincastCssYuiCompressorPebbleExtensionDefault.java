@@ -1,10 +1,13 @@
 package org.spincast.plugins.cssyuicompressor;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.spincast.core.config.SpincastConfig;
@@ -35,6 +38,9 @@ public class SpincastCssYuiCompressorPebbleExtensionDefault extends AbstractExte
     public static final String CSS_BUNDLE_FUNCTION_ARG_DISABLE_CACHE_BUSTING = "--spincast-no-cache-busting";
     public static final String CSS_BUNDLE_FUNCTION_ARG_LINE_BREAK_POS = "--line-break-pos";
 
+    protected static final String HASH_LINE_START = "/*hash:";
+    protected static final String HASH_LINE_END = "*/";
+
     private final SpincastCssYuiCompressorConfig spincastCssYuiCompressorConfig;
     private final SpincastConfig spincastConfig;
     private final SpincastUtils spincastUtils;
@@ -42,7 +48,7 @@ public class SpincastCssYuiCompressorPebbleExtensionDefault extends AbstractExte
     private final Server server;
     private final HttpClient httpClient;
     private final SpincastCssYuiCompressorManager spincastCssYuiCompressorManager;
-    private final Object cssBundleLock = new Object();
+    private final ReentrantLock cssBundleLock = new ReentrantLock();
 
     @Inject
     public SpincastCssYuiCompressorPebbleExtensionDefault(SpincastCssYuiCompressorConfig spincastCssYuiCompressorConfig,
@@ -162,13 +168,21 @@ public class SpincastCssYuiCompressorPebbleExtensionDefault extends AbstractExte
                                   return bundlingDisabledOutput(cssFilesUrlRelativePaths);
                               }
 
-                              String hash = generateCssBundleHash(cssFilesUrlRelativePaths);
-                              File bundleFile = getCssBundleFile(hash);
+                              String bundleName = generateCssBundleName(cssFilesUrlRelativePaths);
+                              File bundleFile = getCssBundleFile(bundleName);
 
-                              String urlPath = generateCssBundleUrlPath(hash, false);
-                              bundleCss(bundleFile, cssFilesUrlRelativePaths, urlPath, lineBreakPos);
+                              String urlPath = generateCssBundleUrlPath(bundleName, false);
+                              boolean bundleAvailable = bundleCss(bundleFile, cssFilesUrlRelativePaths, urlPath, lineBreakPos);
 
-                              String path = generateCssBundleUrlPath(hash, !disableCacheBusting);
+                              //==========================================
+                              // If the bundle is not done yet, we output
+                              // the files as is.
+                              //==========================================
+                              if (!bundleAvailable) {
+                                  return bundlingDisabledOutput(cssFilesUrlRelativePaths);
+                              }
+
+                              String path = generateCssBundleUrlPath(bundleName, !disableCacheBusting);
                               return bundlingOutput(path);
                           }
                       });
@@ -191,49 +205,58 @@ public class SpincastCssYuiCompressorPebbleExtensionDefault extends AbstractExte
         return new SafeString("<link rel=\"stylesheet\" href=\"" + path + "\">\n");
     }
 
-    protected void bundleCss(File bundleFile, List<String> cssFilesUrlRelativePaths, String urlPath, int lineBreakPos) {
+    protected boolean bundleCss(File bundleFile, List<String> cssFilesUrlRelativePaths, String urlPath, int lineBreakPos) {
 
-        if (!getSpincastConfig().isTestingMode() &&
-            bundleFile.isFile() &&
+        if (bundleFile.isFile() &&
             getServer().getStaticResourceServed(urlPath) != null) {
-            return;
+            return true;
         }
 
-        synchronized (this.cssBundleLock) {
-
-            if (!getSpincastConfig().isTestingMode() && bundleFile.isFile() &&
-                getServer().getStaticResourceServed(urlPath) != null) {
-                return;
-            }
-
+        if (this.cssBundleLock.tryLock()) {
             try {
+                if (bundleFile.isFile() &&
+                    getServer().getStaticResourceServed(urlPath) != null) {
+                    return true;
+                }
 
-                if (!bundleFile.isFile()) {
-                    StringBuilder content = new StringBuilder();
+                StringBuilder content = new StringBuilder();
 
-                    String publicUrlBase = getSpincastConfig().getPublicUrlBase();
-                    if (!publicUrlBase.endsWith("/")) {
-                        publicUrlBase += "/";
+                String publicUrlBase = getSpincastConfig().getPublicUrlBase();
+                if (!publicUrlBase.endsWith("/")) {
+                    publicUrlBase += "/";
+                }
+
+                for (String cssFileUrlRelativePath : cssFilesUrlRelativePaths) {
+                    cssFileUrlRelativePath = StringUtils.stripStart(cssFileUrlRelativePath, "/");
+                    String url = publicUrlBase + cssFileUrlRelativePath;
+
+                    GetRequestBuilder requestBuilder = getHttpClient().GET(url);
+                    if (getSpincastCssYuiCompressorConfig().isCssBundlesIgnoreSslCertificateErrors()) {
+                        requestBuilder = requestBuilder.disableSslCertificateErrors();
                     }
+                    HttpResponse response = requestBuilder.send();
 
-                    for (String cssFileUrlRelativePath : cssFilesUrlRelativePaths) {
-                        cssFileUrlRelativePath = StringUtils.stripStart(cssFileUrlRelativePath, "/");
-                        String url = publicUrlBase + cssFileUrlRelativePath;
-
-                        GetRequestBuilder requestBuilder = getHttpClient().GET(url);
-                        if (getSpincastCssYuiCompressorConfig().isCssBundlesIgnoreSslCertificateErrors()) {
-                            requestBuilder = requestBuilder.disableSslCertificateErrors();
-                        }
-                        HttpResponse response = requestBuilder.send();
-
-                        if (response.getStatus() != HttpStatus.SC_OK) {
-                            throw new RuntimeException("Invalid response for file '" + url + "' : " + response.getStatus());
-                        }
-                        content.append(response.getContentAsString() + "\n");
+                    if (response.getStatus() != HttpStatus.SC_OK) {
+                        throw new RuntimeException("Invalid response for file '" + url + "' : " + response.getStatus());
                     }
+                    content.append(response.getContentAsString() + "\n");
+                }
 
+                String all = content.toString();
+                String newContentHash = DigestUtils.md5Hex(all.toString());
+
+                String existingContentHash = getExistingBundleFileHash(bundleFile);
+
+                //==========================================
+                // Bundle content has changed?
+                //==========================================
+                if (existingContentHash == null || !existingContentHash.equals(newContentHash)) {
                     String optimizedContent = getSpincastCssYuiCompressorManager().minify(content.toString(), lineBreakPos);
 
+                    //==========================================
+                    // Add the hash
+                    //==========================================
+                    optimizedContent = HASH_LINE_START + newContentHash + HASH_LINE_END + "\n" + optimizedContent;
                     FileUtils.writeStringToFile(bundleFile, optimizedContent, "UTF-8");
                 }
 
@@ -246,13 +269,52 @@ public class SpincastCssYuiCompressorPebbleExtensionDefault extends AbstractExte
                                .handle();
                 }
 
+                return true;
+
             } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
+            } finally {
+                this.cssBundleLock.unlock();
             }
+        } else {
+            //==========================================
+            // The bundle is being created by another
+            // thread.
+            //==========================================
+            return false;
         }
     }
 
-    protected String generateCssBundleHash(List<String> cssFilesUrlRelativePaths) {
+    /**
+     * Return the hash used to create the existing
+     * bundle oir <code>null</code> if the bundle doesn't
+     * exist.
+     */
+    protected String getExistingBundleFileHash(File bundleFile) {
+        if (!bundleFile.isFile()) {
+            return null;
+        }
+
+        try (BufferedReader buff = new BufferedReader(new FileReader(bundleFile))) {
+
+            String line = buff.readLine();
+
+            if (StringUtils.isBlank(line)) {
+                throw new RuntimeException("Unable to read the first line of: " + bundleFile.getAbsolutePath());
+            }
+
+            if (!line.startsWith(HASH_LINE_START) || !line.endsWith("*/")) {
+                throw new RuntimeException("First line must be '/*hash:xxxxxx*/': " + bundleFile.getAbsolutePath());
+            }
+            String hash = line.substring(HASH_LINE_START.length(), line.length() - (HASH_LINE_END.length()));
+            return hash;
+
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    protected String generateCssBundleName(List<String> cssFilesUrlRelativePaths) {
 
         StringBuilder builder = new StringBuilder();
         for (String path : cssFilesUrlRelativePaths) {

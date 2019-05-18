@@ -595,7 +595,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                     //==========================================
                     // Should this before filter be skipped?
                     //==========================================
-                    if (route.getId() != null && matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
+                    if (route.getId() != null && matchingRoute.getFilterIdsToSkip() != null &&
+                        matchingRoute.getFilterIdsToSkip().contains(route.getId())) {
                         continue;
                     }
 

@@ -1,12 +1,17 @@
 package org.spincast.plugins.jsclosurecompiler;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.routing.Router;
 import org.spincast.core.server.Server;
@@ -32,7 +37,12 @@ import com.mitchellbosecke.pebble.extension.escaper.SafeString;
 public class SpincastJsClosureCompilerPebbleExtensionDefault extends AbstractExtension
                                                              implements SpincastJsClosureCompilerPebbleExtension {
 
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastJsClosureCompilerPebbleExtensionDefault.class);
+
     public static final String JS_BUNDLE_FUNCTION_ARG_DISABLE_CACHE_BUSTING = "--spincast-no-cache-busting";
+
+    protected static final String HASH_LINE_START = "/*hash:";
+    protected static final String HASH_LINE_END = "*/";
 
     private final SpincastJsClosureCompilerConfig spincastJsClosureCompilerConfig;
     private final SpincastConfig spincastConfig;
@@ -41,7 +51,7 @@ public class SpincastJsClosureCompilerPebbleExtensionDefault extends AbstractExt
     private final Server server;
     private final HttpClient httpClient;
     private final SpincastJsClosureCompilerManager spincastJsClosureCompilerManager;
-    private final Object jsBundleLock = new Object();
+    private final ReentrantLock jsBundleLock = new ReentrantLock();
 
     @Inject
     public SpincastJsClosureCompilerPebbleExtensionDefault(SpincastJsClosureCompilerConfig spincastJsClosureCompilerConfig,
@@ -145,16 +155,26 @@ public class SpincastJsClosureCompilerPebbleExtensionDefault extends AbstractExt
                               // Bundling disabled?
                               //==========================================
                               if (getSpincastJsClosureCompilerConfig().isJsBundlesDisabled()) {
+                                  logger.info("JS bundling disabled, outputing regular files!");
                                   return bundlingDisabledOutput(jsFilesUrlRelativePaths);
                               }
 
-                              String hash = generateJsBundleHash(jsFilesUrlRelativePaths);
-                              File bundleFile = getJsBundleFile(hash);
+                              String bundleName = generateJsBundleName(jsFilesUrlRelativePaths);
+                              File bundleFile = getJsBundleFile(bundleName);
 
-                              String urlPath = generateJsBundleUrlPath(hash, false);
-                              bundleJs(bundleFile, jsFilesUrlRelativePaths, urlPath, cmdArgs);
+                              String urlPath = generateJsBundleUrlPath(bundleName, false);
+                              boolean bundleAvailable = bundleJs(bundleFile, jsFilesUrlRelativePaths, urlPath, cmdArgs);
 
-                              String path = generateJsBundleUrlPath(hash, !disableCacheBusting);
+                              //==========================================
+                              // If the bundle is not done yet, we output
+                              // the files as is.
+                              //==========================================
+                              if (!bundleAvailable) {
+                                  logger.info("JS bundle not available yet (being created by another thread), outputing regular files!");
+                                  return bundlingDisabledOutput(jsFilesUrlRelativePaths);
+                              }
+
+                              String path = generateJsBundleUrlPath(bundleName, !disableCacheBusting);
                               return bundlingOutput(path);
                           }
                       });
@@ -176,48 +196,66 @@ public class SpincastJsClosureCompilerPebbleExtensionDefault extends AbstractExt
         return new SafeString("<script src=\"" + path + "\"></script>\n");
     }
 
-    protected void bundleJs(File bundleFile, List<String> jsFilesUrlRelativePaths, String urlPath, List<String> cmdArgs) {
+    protected boolean bundleJs(File bundleFile, List<String> jsFilesUrlRelativePaths, String urlPath, List<String> cmdArgs) {
 
-        if (!getSpincastConfig().isTestingMode() && bundleFile.isFile() && getServer().getStaticResourceServed(urlPath) != null) {
-            return;
+        if (bundleFile.isFile() &&
+            getServer().getStaticResourceServed(urlPath) != null) {
+            return true;
         }
 
-        synchronized (this.jsBundleLock) {
-
-            if (!getSpincastConfig().isTestingMode() && bundleFile.isFile() &&
-                getServer().getStaticResourceServed(urlPath) != null) {
-                return;
-            }
-
+        if (this.jsBundleLock.tryLock()) {
             try {
 
-                if (!bundleFile.isFile()) {
-                    StringBuilder content = new StringBuilder();
+                if (bundleFile.isFile() &&
+                    getServer().getStaticResourceServed(urlPath) != null) {
+                    return true;
+                }
 
-                    String publicUrlBase = getSpincastConfig().getPublicUrlBase();
-                    if (!publicUrlBase.endsWith("/")) {
-                        publicUrlBase += "/";
+                StringBuilder content = new StringBuilder();
+
+                String publicUrlBase = getSpincastConfig().getPublicUrlBase();
+                if (!publicUrlBase.endsWith("/")) {
+                    publicUrlBase += "/";
+                }
+
+                logger.info("Getting JS files via HTTP to bundle them together...");
+                for (String jsFileUrlRelativePath : jsFilesUrlRelativePaths) {
+                    jsFileUrlRelativePath = StringUtils.stripStart(jsFileUrlRelativePath, "/");
+                    String url = publicUrlBase + jsFileUrlRelativePath;
+
+                    GetRequestBuilder requestBuilder = getHttpClient().GET(url);
+                    if (getSpincastJsClosureCompilerConfig().isJsBundlesIgnoreSslCertificateErrors()) {
+                        requestBuilder = requestBuilder.disableSslCertificateErrors();
                     }
+                    HttpResponse response = requestBuilder.send();
 
-                    for (String jsFileUrlRelativePath : jsFilesUrlRelativePaths) {
-                        jsFileUrlRelativePath = StringUtils.stripStart(jsFileUrlRelativePath, "/");
-                        String url = publicUrlBase + jsFileUrlRelativePath;
-
-                        GetRequestBuilder requestBuilder = getHttpClient().GET(url);
-                        if (getSpincastJsClosureCompilerConfig().isJsBundlesIgnoreSslCertificateErrors()) {
-                            requestBuilder = requestBuilder.disableSslCertificateErrors();
-                        }
-                        HttpResponse response = requestBuilder.send();
-
-                        if (response.getStatus() != HttpStatus.SC_OK) {
-                            throw new RuntimeException("Invalid response for file '" + url + "' : " + response.getStatus());
-                        }
-                        content.append(response.getContentAsString() + "\n");
+                    if (response.getStatus() != HttpStatus.SC_OK) {
+                        throw new RuntimeException("Invalid response for file '" + url + "' : " + response.getStatus());
                     }
+                    content.append(response.getContentAsString() + "\n");
+                }
 
-                    String optimizedContent = getSpincastJsClosureCompilerManager().compile(content.toString(), cmdArgs);
+                String all = content.toString();
+                String newContentHash = DigestUtils.md5Hex(all.toString());
+                logger.info("JS files all gotten. Content hash: " + newContentHash);
 
+                String existingContentHash = getExistingBundleFileHash(bundleFile);
+
+                //==========================================
+                // Bundle content has changed?
+                //==========================================
+                if (existingContentHash == null || !existingContentHash.equals(newContentHash)) {
+                    logger.info("Optimizing the JS content...");
+                    String optimizedContent = getSpincastJsClosureCompilerManager().compile(all, cmdArgs);
+                    logger.info("JS content optimized!");
+
+                    //==========================================
+                    // Add the hash
+                    //==========================================
+                    optimizedContent = HASH_LINE_START + newContentHash + HASH_LINE_END + "\n" + optimizedContent;
                     FileUtils.writeStringToFile(bundleFile, optimizedContent, "UTF-8");
+                } else {
+                    logger.info("JS content not changed, no need to optimize.");
                 }
 
                 //==========================================
@@ -229,14 +267,52 @@ public class SpincastJsClosureCompilerPebbleExtensionDefault extends AbstractExt
                                .handle();
                 }
 
+                return true;
+
             } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);
+            } finally {
+                this.jsBundleLock.unlock();
             }
+        } else {
+            //==========================================
+            // The bundle is being created by another
+            // thread.
+            //==========================================
+            return false;
         }
     }
 
-    protected String generateJsBundleHash(List<String> jsFilesUrlRelativePaths) {
+    /**
+     * Return the hash used to create the existing
+     * bundle oir <code>null</code> if the bundle doesn't
+     * exist.
+     */
+    protected String getExistingBundleFileHash(File bundleFile) {
+        if (!bundleFile.isFile()) {
+            return null;
+        }
 
+        try (BufferedReader buff = new BufferedReader(new FileReader(bundleFile))) {
+
+            String line = buff.readLine();
+
+            if (StringUtils.isBlank(line)) {
+                throw new RuntimeException("Unable to read the first line of: " + bundleFile.getAbsolutePath());
+            }
+
+            if (!line.startsWith(HASH_LINE_START) || !line.endsWith("*/")) {
+                throw new RuntimeException("First line must be '/*hash:xxxxxx*/': " + bundleFile.getAbsolutePath());
+            }
+            String hash = line.substring(HASH_LINE_START.length(), line.length() - (HASH_LINE_END.length()));
+            return hash;
+
+        } catch (Exception ex) {
+            throw SpincastStatics.runtimize(ex);
+        }
+    }
+
+    protected String generateJsBundleName(List<String> jsFilesUrlRelativePaths) {
         StringBuilder builder = new StringBuilder();
         for (String path : jsFilesUrlRelativePaths) {
             builder.append(path).append("|");

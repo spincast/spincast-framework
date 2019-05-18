@@ -159,7 +159,6 @@ public class FeedTest extends WebsiteIntegrationTestBase {
         String dcDate = itemObj.getString("date");
         assertNotNull(dcDate);
         assertEquals("2000-01-02T19:00:00Z", dcDate);
-
     }
 
 }

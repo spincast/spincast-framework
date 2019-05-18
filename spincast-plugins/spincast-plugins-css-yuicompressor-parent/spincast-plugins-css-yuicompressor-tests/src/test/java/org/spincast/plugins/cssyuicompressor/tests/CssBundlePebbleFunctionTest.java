@@ -56,6 +56,7 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         String optimizedCss = response.getContentAsString();
+        optimizedCss = optimizedCss.substring(optimizedCss.indexOf('\n') + 1); // first line is the hash
         assertEquals("#test1{width:100px}#test2{width:100px}", optimizedCss);
     }
 
@@ -73,6 +74,7 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         String optimizedCss = response.getContentAsString();
+        optimizedCss = optimizedCss.substring(optimizedCss.indexOf('\n') + 1); // first line is the hash
         assertEquals("#test1{width:100px}\n#test2{width:100px}", optimizedCss);
     }
 
@@ -122,6 +124,7 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         String optimizedCss = response.getContentAsString();
+        optimizedCss = optimizedCss.substring(optimizedCss.indexOf('\n') + 1); // first line is the hash
         assertEquals("#test1{width:100px}#test2{width:100px}", optimizedCss);
     }
 

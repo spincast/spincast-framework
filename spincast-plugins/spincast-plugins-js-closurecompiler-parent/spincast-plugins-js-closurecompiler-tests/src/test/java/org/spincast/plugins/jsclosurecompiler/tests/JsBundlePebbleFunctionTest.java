@@ -57,6 +57,7 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         String optimizedJs = response.getContentAsString();
+        optimizedJs = optimizedJs.substring(optimizedJs.indexOf('\n') + 1); // first line is the hash
         assertEquals("function titi(a,b,c){return a+b}function toto(a,b,c){return a+b};\n", optimizedJs);
     }
 
@@ -73,6 +74,7 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         String optimizedJs = response.getContentAsString();
+        optimizedJs = optimizedJs.substring(optimizedJs.indexOf('\n') + 1); // first line is the hash
         assertEquals("function titi(aaa,bbb,ccc){return aaa+bbb}function toto(aaa,bbb,ccc){return aaa+bbb};\n", optimizedJs);
     }
 
@@ -107,6 +109,7 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         String optimizedJs = response.getContentAsString();
+        optimizedJs = optimizedJs.substring(optimizedJs.indexOf('\n') + 1); // first line is the hash
         assertEquals("function titi(a,b,c){return a+b}function toto(a,b,c){return a+b};\n", optimizedJs);
     }
 

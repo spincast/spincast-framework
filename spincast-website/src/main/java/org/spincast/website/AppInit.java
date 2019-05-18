@@ -46,21 +46,22 @@ public class AppInit implements ServerStartedListener {
      */
     protected void cacheWebBundle() {
 
+        if (getSpincastConfig().isTestingMode()) {
+            logger.info("Testing mode. We skip the web bundles generation.");
+            return;
+        }
+
+        logger.info("Calling the homepage to generate the web bundles...");
         GetRequestBuilder builder = getHttpClient().GET(getSpincastConfig().getPublicUrlBase());
         if (getSpincastConfig().isDevelopmentMode()) {
             builder = builder.disableSslCertificateErrors();
         }
         HttpResponse response = builder.send();
         if (response.getStatus() != HttpStatus.SC_OK) {
-            String msg = "Error generating the web bundles caches: " + response.getStatus();
-            logger.error(msg);
-            if (!getSpincastConfig().isTestingMode()) {
-                System.exit(1);
-            } else {
-                throw new RuntimeException(msg);
-            }
+            logger.error("Calling the homepage to generate the web bundles returned an error: " + response.getStatus());
+        } else {
+            logger.info("Homepage returned 200 to generate the web bundles!");
         }
     }
-
 
 }
