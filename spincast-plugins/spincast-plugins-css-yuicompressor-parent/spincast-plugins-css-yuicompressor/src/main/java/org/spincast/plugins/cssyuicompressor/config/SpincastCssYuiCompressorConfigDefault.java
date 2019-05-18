@@ -54,4 +54,9 @@ public class SpincastCssYuiCompressorConfigDefault implements SpincastCssYuiComp
         return getSpincastConfig().isDevelopmentMode() || getSpincastConfig().isTestingMode();
     }
 
+    @Override
+    public boolean isCssBundlesDisabled() {
+        return getSpincastConfig().isDevelopmentMode();
+    }
+
 }

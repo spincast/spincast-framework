@@ -45,5 +45,15 @@ public interface SpincastCssYuiCompressorConfig {
      */
     public boolean isCssBundlesIgnoreSslCertificateErrors();
 
+    /**
+     * Is bundling disabled?
+     * <p>
+     * This is useful during development when you want changes to
+     * the CSS files to be reflected and not be cached.
+     * <p>
+     * By default, return <code>true</code> if {@link SpincastConfig#isDevelopmentMode()}
+     * is <code>true</code>.
+     */
+    public boolean isCssBundlesDisabled();
 
 }

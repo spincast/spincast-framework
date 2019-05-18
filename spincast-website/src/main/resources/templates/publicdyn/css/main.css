@@ -1,9 +1,11 @@
 
 
+
 body {
     background-color: #FFFFFF; 
     font-family: verdana, arial;
     font-size:16px;
+    overflow-x: hidden; 
 }
 
 .clear {
@@ -273,6 +275,9 @@ code, code.block, .code-line-nbr {
     border: solid 1px #D3D3D3;
     margin: 0;
     white-space: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+
 }
 code.language-pebble {
     border:0 !important;
@@ -805,6 +810,8 @@ ul ul {
     padding:1px 6px;
     font-size:15px;
     margin: 0px 10px;
+    max-width: 98%;
+    overflow-x: auto;
 }
 .apiItem span {
     font-weight: bold;

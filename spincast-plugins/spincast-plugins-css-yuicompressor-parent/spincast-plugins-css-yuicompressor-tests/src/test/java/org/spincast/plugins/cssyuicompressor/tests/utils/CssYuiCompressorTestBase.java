@@ -11,7 +11,7 @@ import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.plugins.cssyuicompressor.SpincastCssYuiCompressorManager;
-import org.spincast.plugins.cssyuicompressor.SpincastCssYuiCompressorPebbleExtension;
+import org.spincast.plugins.cssyuicompressor.SpincastCssYuiCompressorPebbleExtensionDefault;
 import org.spincast.plugins.cssyuicompressor.SpincastCssYuiCompressorPlugin;
 import org.spincast.plugins.cssyuicompressor.config.SpincastCssYuiCompressorConfig;
 import org.spincast.plugins.cssyuicompressor.config.SpincastCssYuiCompressorConfigDefault;
@@ -83,7 +83,7 @@ public abstract class CssYuiCompressorTestBase extends NoAppStartHttpServerTesti
     private TemplatingEngine templatingEngine;
 
     @Inject
-    private SpincastCssYuiCompressorPebbleExtension spincastCssYuiCompressorPebbleExtension;
+    private SpincastCssYuiCompressorPebbleExtensionDefault spincastCssYuiCompressorPebbleExtension;
 
     @Inject
     private SpincastUtils spincastUtils;
@@ -99,7 +99,7 @@ public abstract class CssYuiCompressorTestBase extends NoAppStartHttpServerTesti
         return this.templatingEngine;
     }
 
-    protected SpincastCssYuiCompressorPebbleExtension getSpincastCssYuiCompressorPebbleExtension() {
+    protected SpincastCssYuiCompressorPebbleExtensionDefault getSpincastCssYuiCompressorPebbleExtension() {
         return this.spincastCssYuiCompressorPebbleExtension;
     }
 

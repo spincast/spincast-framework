@@ -233,10 +233,9 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                             <pre class="ace ace-html"
 >
 
-{% set bundlePath = cssBundle('/public/css/bootstrap.min.css',
-                              '/public/css/anotherLibrary.css',
-                              '/publicdyn/css/main.css') %}
-&lt;link rel="stylesheet" href="{{ bundlePath }}"&gt;
+{{ cssBundle('/public/css/bootstrap.min.css',
+             '/public/css/anotherLibrary.css',
+             '/publicdyn/css/main.css') }}
 </pre> 
                         </p>
                     </div> 
@@ -245,9 +244,21 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                 <p>
                     This function will concatenate all the specified
                     CSS files, will compress them using the <code>YUI Compressor</code>
-                    and will return the URL path to the resulting bundle! You then
-                    simply include the bundle using this generated path.
+                    and will output a resulting "<code>&lt;link&gt;</code>" element pointing to the
+                    bundle:
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+&lt;link rel="stylesheet" href="/spincast/plugins/cssyuicompressor/cssbundles/resultingBundle.css"&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
                 </p>
+
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" />
                     The parameters accepted by the <code>cssBundle(...)</code> function are:
@@ -280,12 +291,11 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                             <pre class="ace ace-html"
 >
 
-{% set bundlePath = cssBundle('/public/css/bootstrap.min.css',
-                              '/public/css/anotherLibrary.css',
-                              '/publicdyn/css/main.css',
-                              '--line-break-pos', '10',
-                              '--spincast-no-cache-busting') %}
-&lt;link rel="stylesheet" href="{{ bundlePath }}"&gt;
+{{ cssBundle('/public/css/bootstrap.min.css',
+             '/public/css/anotherLibrary.css',
+             '/publicdyn/css/main.css',
+             '--line-break-pos', '10',
+             '--spincast-no-cache-busting') }}
 </pre> 
                         </p>
                     </div> 
@@ -303,6 +313,12 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                     request), will be served with <a href="/documentation#route_http_caching">caching HTTP headers</a> and will contain
                     a <a href="/documentation#http_caching_cache_busting">cache busting</a> code (except if the 
                     "<code>--spincast-no-cache-busting</code>" flag is used).
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    During development, you probably want to disable the bundling
+                    so changes made to the CSS files are available immediately (no cache). 
+                    There is a <a href="#config_isCssBundlesDisabled">configuration</a> for that!
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
@@ -325,6 +341,15 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                     starts.
                     Here is <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/AppInit.java">an example</a> 
                     where we do this, for this very website.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    If, for some reason, you  want to change the output made by 
+                    <code>cssBundle(...)</code>, you can extend
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/SpincastCssYuiCompressorPebbleExtensionDefault.html">SpincastCssYuiCompressorPebbleExtensionDefault</a>,
+                    override the "<code>bundlingOutput(String path)</code>" function and bind your implementation
+                    to the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/cssyuicompressor/SpincastCssYuiCompressorPebbleExtension.html">SpincastCssYuiCompressorPebbleExtension</a>
+                    interface in the Guice context.
                 </p>
   
             </section>
@@ -396,6 +421,26 @@ context.response().sendCharacters(cssMinified, "text/css");</pre>
                                     <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a>
                                     or
                                     <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isTestingMode--">isTestingMode()</a>
+                                    is <code>true</code> .
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="anchor_small" id="config_isCssBundlesDisabled" href="#config_isCssBundlesDisabled" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isCssBundlesDisabled</span>()</code>
+                            <div class="well">
+                                <p>
+                                    When this is <code>true</code>, the <code>cssBundle()</code> Pebble function will <em>not</em> bundle
+                                    the specified files together. The files will be served as usual, each with their
+                                    own "<code>&lt;link&gt;</code>" tag.
+                                </p>
+                                <p>
+                                    This is useful during development, when you don't want any cache
+                                    and want changes to the files to be immediately available!
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code> if 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a>
                                     is <code>true</code> .
                                 </p>
                             </div>

@@ -41,8 +41,16 @@ public class SpincastJsClosureCompilerPluginModule extends SpincastGuiceModuleBa
     }
 
     protected void bindPebbleExtension() {
+
+        bind(SpincastJsClosureCompilerPebbleExtension.class).to(getSpincastJsClosureCompilerPebbleExtensionImpl())
+                                                            .in(Scopes.SINGLETON);
+
         Multibinder<Extension> pebbleExtensionsMultibinder = Multibinder.newSetBinder(binder(), Extension.class);
         pebbleExtensionsMultibinder.addBinding().to(SpincastJsClosureCompilerPebbleExtension.class).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends SpincastJsClosureCompilerPebbleExtension> getSpincastJsClosureCompilerPebbleExtensionImpl() {
+        return SpincastJsClosureCompilerPebbleExtensionDefault.class;
     }
 
 }

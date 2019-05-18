@@ -208,14 +208,14 @@ public class App {
         //==========================================
         // Public resources
         //==========================================
-        router.dir("/public").classpath("/public").handle();
-        router.file("/favicon.ico").classpath("/public/favicon.ico").handle();
-        router.file("/robots.txt").classpath("/public/robots.txt").handle();
-        router.file("/humans.txt").classpath("/public/humans.txt").handle();
-        router.file("/browserconfig.xml").classpath("/public/browserconfig.xml").handle();
-        router.file("/apple-touch-icon.png").classpath("/public/apple-touch-icon.png").handle();
-        router.file("/tile-wide.png").classpath("/public/tile-wide.png").handle();
-        router.file("/tile.png").classpath("/public/tile.png").handle();
+        router.dir("/public").cache(60 * 60 * 24 * 365).classpath("/public").handle();
+        router.file("/favicon.ico").cache(60 * 60 * 24 * 365).classpath("/public/favicon.ico").handle();
+        router.file("/robots.txt").cache(60 * 60 * 24 * 365).classpath("/public/robots.txt").handle();
+        router.file("/humans.txt").cache(60 * 60 * 24 * 365).classpath("/public/humans.txt").handle();
+        router.file("/browserconfig.xml").cache(60 * 60 * 24 * 365).classpath("/public/browserconfig.xml").handle();
+        router.file("/apple-touch-icon.png").cache(60 * 60 * 24 * 365).classpath("/public/apple-touch-icon.png").handle();
+        router.file("/tile-wide.png").cache(60 * 60 * 24 * 365).classpath("/public/tile-wide.png").handle();
+        router.file("/tile.png").cache(60 * 60 * 24 * 365).classpath("/public/tile.png").handle();
 
         //==========================================
         // Dynamic JS + CSS, minified

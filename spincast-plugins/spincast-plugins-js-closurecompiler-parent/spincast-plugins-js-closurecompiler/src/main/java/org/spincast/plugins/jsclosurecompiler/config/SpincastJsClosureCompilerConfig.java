@@ -45,5 +45,16 @@ public interface SpincastJsClosureCompilerConfig {
      */
     public boolean isJsBundlesIgnoreSslCertificateErrors();
 
+    /**
+     * Is bundling disabled?
+     * <p>
+     * This is useful during development when you want changes to
+     * the JS files to be reflected and not be cached.
+     * <p>
+     * By default, return <code>true</code> if {@link SpincastConfig#isDevelopmentMode()}
+     * is <code>true</code>.
+     */
+    public boolean isJsBundlesDisabled();
+
 
 }

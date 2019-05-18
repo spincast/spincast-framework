@@ -41,8 +41,16 @@ public class SpincastCssYuiCompressorPluginModule extends SpincastGuiceModuleBas
     }
 
     protected void bindPebbleExtension() {
+
+        bind(SpincastCssYuiCompressorPebbleExtension.class).to(getSpincastCssYuiCompressorPebbleExtensionImpl())
+                                                           .in(Scopes.SINGLETON);
+
         Multibinder<Extension> pebbleExtensionsMultibinder = Multibinder.newSetBinder(binder(), Extension.class);
         pebbleExtensionsMultibinder.addBinding().to(SpincastCssYuiCompressorPebbleExtension.class).in(Scopes.SINGLETON);
+    }
+
+    protected Class<? extends SpincastCssYuiCompressorPebbleExtension> getSpincastCssYuiCompressorPebbleExtensionImpl() {
+        return SpincastCssYuiCompressorPebbleExtensionDefault.class;
     }
 
 }

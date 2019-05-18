@@ -11,7 +11,7 @@ import org.spincast.core.guice.SpincastPlugin;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerManager;
-import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerPebbleExtension;
+import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerPebbleExtensionDefault;
 import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerPlugin;
 import org.spincast.plugins.jsclosurecompiler.config.SpincastJsClosureCompilerConfig;
 import org.spincast.plugins.jsclosurecompiler.config.SpincastJsClosureCompilerConfigDefault;
@@ -82,7 +82,7 @@ public abstract class JsClosureCompileTestBase extends NoAppStartHttpServerTesti
     private TemplatingEngine templatingEngine;
 
     @Inject
-    private SpincastJsClosureCompilerPebbleExtension spincastJsClosureCompilerPebbleExtension;
+    private SpincastJsClosureCompilerPebbleExtensionDefault spincastJsClosureCompilerPebbleExtension;
 
     @Inject
     private SpincastUtils spincastUtils;
@@ -98,7 +98,7 @@ public abstract class JsClosureCompileTestBase extends NoAppStartHttpServerTesti
         return this.templatingEngine;
     }
 
-    protected SpincastJsClosureCompilerPebbleExtension getSpincastJsClosureCompilerPebbleExtension() {
+    protected SpincastJsClosureCompilerPebbleExtensionDefault getSpincastJsClosureCompilerPebbleExtension() {
         return this.spincastJsClosureCompilerPebbleExtension;
     }
 

@@ -6,10 +6,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.junit.Test;
 import org.spincast.plugins.httpclient.HttpResponse;
-import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerPebbleExtension;
+import org.spincast.plugins.jsclosurecompiler.SpincastJsClosureCompilerPebbleExtensionDefault;
 import org.spincast.plugins.jsclosurecompiler.tests.utils.JsClosureCompileTestBase;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
@@ -25,6 +29,19 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
         getSpincastUtils().clearDirectory(getSpincastJsClosureCompilerConfig().getJsBundlesDir());
     }
 
+    protected static final Pattern bundleLinkPattern =
+            Pattern.compile("^<script src=\"(.+)\"></script>.*", Pattern.DOTALL);
+
+    protected String validateAndExtractBundlePath(String output) {
+        assertNotNull(output);
+        Matcher m = bundleLinkPattern.matcher(output);
+        assertTrue(m.matches());
+        String path = m.group(1);
+        assertFalse(StringUtils.isBlank(path));
+        assertTrue(path.startsWith("/test-js-bundles/"));
+        return path;
+    }
+
     @Test
     public void bundle() throws Exception {
 
@@ -33,9 +50,8 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
 
         String html = "{{ jsBundle('/a.js', '/b.js') }}";
 
-        String bundleLink = getTemplatingEngine().evaluate(html);
-        assertNotNull(bundleLink);
-        assertTrue(bundleLink.startsWith("/test-js-bundles/"));
+        String output = getTemplatingEngine().evaluate(html);
+        String bundleLink = validateAndExtractBundlePath(output);
         assertTrue(bundleLink.contains(getSpincastUtils().getCacheBusterCode()));
 
         HttpResponse response = GET(bundleLink).send();
@@ -51,9 +67,8 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
 
         String html = "{{ jsBundle('/a.js', '/b.js', '--compilation_level', 'WHITESPACE_ONLY') }}";
 
-        String bundleLink = getTemplatingEngine().evaluate(html);
-        assertNotNull(bundleLink);
-        assertTrue(bundleLink.startsWith("/test-js-bundles/"));
+        String output = getTemplatingEngine().evaluate(html);
+        String bundleLink = validateAndExtractBundlePath(output);
 
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -83,11 +98,10 @@ public class JsBundlePebbleFunctionTest extends JsClosureCompileTestBase {
         getRouter().file("/b.js").classpath("/spincast/plugins/jsclosurecompiler/tests/b.js").handle();
 
         String html = "{{ jsBundle('/a.js', '/b.js', '" +
-                      SpincastJsClosureCompilerPebbleExtension.JS_BUNDLE_FUNCTION_ARG_DISABLE_CACHE_BUSTING + "') }}";
+                      SpincastJsClosureCompilerPebbleExtensionDefault.JS_BUNDLE_FUNCTION_ARG_DISABLE_CACHE_BUSTING + "') }}";
 
-        String bundleLink = getTemplatingEngine().evaluate(html);
-        assertNotNull(bundleLink);
-        assertTrue(bundleLink.startsWith("/test-js-bundles/"));
+        String output = getTemplatingEngine().evaluate(html);
+        String bundleLink = validateAndExtractBundlePath(output);
         assertFalse(bundleLink.contains(getSpincastUtils().getCacheBusterCode()));
 
         HttpResponse response = GET(bundleLink).send();

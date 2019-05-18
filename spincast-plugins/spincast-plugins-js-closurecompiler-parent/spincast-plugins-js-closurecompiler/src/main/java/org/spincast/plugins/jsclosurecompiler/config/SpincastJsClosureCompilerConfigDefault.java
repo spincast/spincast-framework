@@ -54,4 +54,9 @@ public class SpincastJsClosureCompilerConfigDefault implements SpincastJsClosure
         return getSpincastConfig().isDevelopmentMode() || getSpincastConfig().isTestingMode();
     }
 
+    @Override
+    public boolean isJsBundlesDisabled() {
+        return getSpincastConfig().isDevelopmentMode();
+    }
+
 }

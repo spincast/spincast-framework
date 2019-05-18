@@ -369,10 +369,9 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                             <pre class="ace ace-html"
 >
 
-{% set bundlePath = jsBundle('/public/js/jquery.js',
-                             '/public/js/anotherLibrary.js',
-                             '/publicdyn/js/main.js') %}
-&lt;script src="{{ bundlePath }}"&gt;&lt;/script&gt;
+{{ jsBundle('/public/js/jquery.js',
+            '/public/js/anotherLibrary.js',
+            '/publicdyn/js/main.js') }}
 </pre> 
                         </p>
                     </div> 
@@ -381,8 +380,19 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                 <p>
                     This function will concatenate all the specified
                     Javascript files, will optimize them using the <code>Closure Compiler</code>
-                    and will return the URL path to the resulting bundle! You then
-                    simply include the bundle using this generated path.
+                    and will output a resulting "<code>&lt;script&gt;</code>" element pointing to the
+                    bundle:
+                    {% verbatim %}
+                    <div>
+                        <p>
+                            <pre class="ace ace-html"
+>
+
+&lt;script src="/spincast/plugins/jsclosurecompiler/jsbundles/resultingBundle.js"&gt;&lt;/script&gt;
+</pre> 
+                        </p>
+                    </div> 
+                    {% endverbatim %} 
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/para.png" />
@@ -417,13 +427,12 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                             <pre class="ace ace-html"
 >
 
-{% set bundlePath = jsBundle('/public/js/jquery.js',
-                             '/public/js/anotherLibrary.js',
-                             '/publicdyn/js/main.js',
-                             '--compilation_level', 'WHITESPACE_ONLY', 
-                             '--formatting', 'PRETTY_PRINT',
-                             '--spincast-no-cache-busting') %}
-&lt;script src="{{ bundlePath }}"&gt;&lt;/script&gt;
+{{ jsBundle('/public/js/jquery.js',
+            '/public/js/anotherLibrary.js',
+            '/publicdyn/js/main.js',
+            '--compilation_level', 'WHITESPACE_ONLY', 
+            '--formatting', 'PRETTY_PRINT',
+            '--spincast-no-cache-busting') }}
 </pre> 
                         </p>
                     </div> 
@@ -441,6 +450,12 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                     request), will be served with <a href="/documentation#route_http_caching">caching HTTP headers</a> and will contain
                     a <a href="/documentation#http_caching_cache_busting">cache busting</a> code (except if the 
                     "<code>--spincast-no-cache-busting</code>" flag is used).
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    During development, you probably want to disable the bundling
+                    so changes made to the CSS files are available immediately (no cache). 
+                    There is a <a href="#config_isJsBundlesDisabled">configuration</a> for that!
                 </p>
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
@@ -462,6 +477,15 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                     first request made to this bundle to be slow, you can pre-generate the bundle when your application
                     starts.
                     Here is <a href="https://github.com/spincast/spincast-framework/tree/master/spincast-website/src/main/java/org/spincast/website/AppInit.java">an example</a> where we do this, for this very website.
+                </p>
+                <p>
+                    <img class="inlineIcon" src="/public/images/icons/tipy.png" />
+                    If, for some reason, you  want to change the output made by 
+                    <code>jsBundle(...)</code>, you can extend
+                    <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/SpincastJsClosureCompilerPebbleExtensionDefault.html">SpincastJsClosureCompilerPebbleExtensionDefault</a>,
+                    override the "<code>bundlingOutput(String path)</code>" function and bind your implementation
+                    to the <a class="javadoc" href="/public/javadoc/org/spincast/plugins/jsclosurecompiler/SpincastJsClosureCompilerPebbleExtension.html">SpincastJsClosureCompilerPebbleExtension</a>
+                    interface in the Guice context.
                 </p>
                 
             </section>
@@ -533,6 +557,26 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                                     <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a>
                                     or
                                     <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isTestingMode--">isTestingMode()</a>
+                                    is <code>true</code> .
+                                </p>
+                            </div>
+                        </li> 
+                        <li>
+                            <a class="anchor_small" id="config_isJsBundlesDisabled" href="#config_isJsBundlesDisabled" title="permanent link"></a>
+                            <code class="apiItem">boolean <span>isJsBundlesDisabled</span>()</code>
+                            <div class="well">
+                                <p>
+                                    When this is <code>true</code>, the <code>jsBundle()</code> Pebble function will <em>not</em> bundle
+                                    the specified files together. The files will be served as usual, each with their
+                                    own "<code>&lt;script&gt;</code>" tag.
+                                </p>
+                                <p>
+                                    This is useful during development, when you don't want any cache
+                                    and want changes to the files to be immediately available!
+                                </p>
+                                <p>
+                                    Defaults to <code>true</code> if 
+                                    <a class="javadoc" href="/public/javadoc/org/spincast/core/config/SpincastConfig.html#isDevelopmentMode--">isDevelopmentMode()</a>
                                     is <code>true</code> .
                                 </p>
                             </div>

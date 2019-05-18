@@ -6,9 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.junit.Test;
 import org.spincast.plugins.cssyuicompressor.tests.utils.CssYuiCompressorTestBase;
 import org.spincast.plugins.httpclient.HttpResponse;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 
 public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
@@ -24,6 +28,19 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
         getSpincastUtils().clearDirectory(getSpincastCssYuiCompressorConfig().getCssBundlesDir());
     }
 
+    protected static final Pattern bundleLinkPattern =
+            Pattern.compile("^<link rel=\"stylesheet\" href=\"(.+)\">.*", Pattern.DOTALL);
+
+    protected String validateAndExtractBundlePath(String output) {
+        assertNotNull(output);
+        Matcher m = bundleLinkPattern.matcher(output);
+        assertTrue(m.matches());
+        String path = m.group(1);
+        assertFalse(StringUtils.isBlank(path));
+        assertTrue(path.startsWith("/test-css-bundles/"));
+        return path;
+    }
+
     @Test
     public void bundle() throws Exception {
 
@@ -32,9 +49,8 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
 
         String html = "{{ cssBundle('/a.css', '/b.css') }}";
 
-        String bundleLink = getTemplatingEngine().evaluate(html);
-        assertNotNull(bundleLink);
-        assertTrue(bundleLink.startsWith("/test-css-bundles/"));
+        String output = getTemplatingEngine().evaluate(html);
+        String bundleLink = validateAndExtractBundlePath(output);
         assertTrue(bundleLink.contains(getSpincastUtils().getCacheBusterCode()));
 
         HttpResponse response = GET(bundleLink).send();
@@ -50,9 +66,9 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
 
         String html = "{{ cssBundle('/a.css', '/b.css', '--line-break-pos', '10') }}";
 
-        String bundleLink = getTemplatingEngine().evaluate(html);
-        assertNotNull(bundleLink);
-        assertTrue(bundleLink.startsWith("/test-css-bundles/"));
+        String output = getTemplatingEngine().evaluate(html);
+        String bundleLink = validateAndExtractBundlePath(output);
+        assertTrue(bundleLink.contains(getSpincastUtils().getCacheBusterCode()));
 
         HttpResponse response = GET(bundleLink).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -99,9 +115,8 @@ public class CssBundlePebbleFunctionTest extends CssYuiCompressorTestBase {
 
         String html = "{{ cssBundle('/a.css', '/b.css', '--spincast-no-cache-busting') }}";
 
-        String bundleLink = getTemplatingEngine().evaluate(html);
-        assertNotNull(bundleLink);
-        assertTrue(bundleLink.startsWith("/test-css-bundles/"));
+        String output = getTemplatingEngine().evaluate(html);
+        String bundleLink = validateAndExtractBundlePath(output);
         assertFalse(bundleLink.contains(getSpincastUtils().getCacheBusterCode()));
 
         HttpResponse response = GET(bundleLink).send();
