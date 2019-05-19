@@ -42,7 +42,6 @@ import org.spincast.core.routing.ResourceToPush;
 import org.spincast.core.routing.StaticResource;
 import org.spincast.core.routing.StaticResourceType;
 import org.spincast.core.server.Server;
-import org.spincast.core.server.ServerUtils;
 import org.spincast.core.server.UploadedFile;
 import org.spincast.core.server.UploadedFileDefault;
 import org.spincast.core.utils.ContentTypeDefaults;
@@ -116,7 +115,6 @@ public class SpincastUndertowServer implements Server {
     private final FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
     private final SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
     private final SSLContextFactory sslContextFactory;
-    private final ServerUtils serverUtils;
 
     private Undertow undertowServer;
     private IoCallback doNothingCallback = null;
@@ -164,8 +162,7 @@ public class SpincastUndertowServer implements Server {
                                   FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                   SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                   WebsocketEndpointFactory spincastWebsocketEndpointFactory,
-                                  SSLContextFactory sslContextFactory,
-                                  ServerUtils serverUtils) {
+                                  SSLContextFactory sslContextFactory) {
         this.spincastUndertowUtils = spincastUndertowUtils;
         this.config = config;
         this.spincastUndertowConfig = spincastUndertowConfig;
@@ -181,7 +178,6 @@ public class SpincastUndertowServer implements Server {
         this.spincastHttpAuthIdentityManagerFactory = spincastHttpAuthIdentityManagerFactory;
         this.spincastWebsocketEndpointFactory = spincastWebsocketEndpointFactory;
         this.sslContextFactory = sslContextFactory;
-        this.serverUtils = serverUtils;
     }
 
     protected SpincastUndertowUtils getSpincastUndertowUtils() {
@@ -258,10 +254,6 @@ public class SpincastUndertowServer implements Server {
 
     protected SSLContextFactory getSslContextFactory() {
         return this.sslContextFactory;
-    }
-
-    protected ServerUtils getServerUtils() {
-        return this.serverUtils;
     }
 
     @Override

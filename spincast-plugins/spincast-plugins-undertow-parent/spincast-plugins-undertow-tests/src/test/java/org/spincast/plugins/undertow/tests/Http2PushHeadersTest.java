@@ -13,7 +13,6 @@ import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.ResourceToPush;
 import org.spincast.core.server.Server;
-import org.spincast.core.server.ServerUtils;
 import org.spincast.core.utils.SpincastUtils;
 import org.spincast.core.utils.ssl.SSLContextFactory;
 import org.spincast.plugins.httpclient.HttpResponse;
@@ -77,7 +76,7 @@ public class Http2PushHeadersTest extends NoAppStartHttpServerTestingBase {
                                              FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                              SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                              WebsocketEndpointFactory spincastWebsocketEndpointFactory,
-                                             SSLContextFactory sslContextFactory, ServerUtils serverUtils) {
+                                             SSLContextFactory sslContextFactory) {
             super(spincastUndertowUtils,
                   config,
                   spincastUndertowConfig,
@@ -92,8 +91,7 @@ public class Http2PushHeadersTest extends NoAppStartHttpServerTestingBase {
                   fileClassPathResourceManagerFactory,
                   spincastHttpAuthIdentityManagerFactory,
                   spincastWebsocketEndpointFactory,
-                  sslContextFactory,
-                  serverUtils);
+                  sslContextFactory);
         }
 
         @Override

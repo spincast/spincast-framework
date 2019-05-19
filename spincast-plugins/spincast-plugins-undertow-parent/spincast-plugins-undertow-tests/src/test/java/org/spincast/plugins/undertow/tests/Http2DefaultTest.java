@@ -15,7 +15,6 @@ import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.server.Server;
-import org.spincast.core.server.ServerUtils;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
@@ -88,7 +87,7 @@ public class Http2DefaultTest extends NoAppStartHttpServerTestingBase {
                                              FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                              SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                              WebsocketEndpointFactory spincastWebsocketEndpointFactory,
-                                             SSLContextFactory sslContextFactory, ServerUtils serverUtils) {
+                                             SSLContextFactory sslContextFactory) {
             super(spincastUndertowUtils,
                   config,
                   spincastUndertowConfig,
@@ -103,8 +102,7 @@ public class Http2DefaultTest extends NoAppStartHttpServerTestingBase {
                   fileClassPathResourceManagerFactory,
                   spincastHttpAuthIdentityManagerFactory,
                   spincastWebsocketEndpointFactory,
-                  sslContextFactory,
-                  serverUtils);
+                  sslContextFactory);
         }
 
         @Override
