@@ -39,9 +39,4 @@ public class SpincastRouterConfigDefault implements SpincastRouterConfig {
         return -100;
     }
 
-    @Override
-    public int getRedirectFilterPosition() {
-        return -1000;
-    }
-
 }

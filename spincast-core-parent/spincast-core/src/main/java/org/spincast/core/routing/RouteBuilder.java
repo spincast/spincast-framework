@@ -36,6 +36,17 @@ public interface RouteBuilder<R extends RequestContext<?>> {
     public RouteBuilder<R> id(String id);
 
     /**
+     * A route may have multiple "classes"
+     * to identify and group them.
+     * <p>
+     * For example, multiple routes may share the
+     * same "account" class and this information
+     * could be used to set a menu item as being
+     * <em>active</em> on an HTML page.
+     */
+    public RouteBuilder<R> classes(String... classes);
+
+    /**
      * The path of the route.
      */
     public RouteBuilder<R> path(String path);

@@ -22,6 +22,8 @@ import com.google.inject.ProvisionException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 
 public class SpincastTimeZonePebbleExtensionDefault extends AbstractExtension
@@ -83,7 +85,7 @@ public class SpincastTimeZonePebbleExtensionDefault extends AbstractExtension
         String jstz = getSpincastUtils().readClasspathFile("spincast/spincast-plugins-timezone-resolver/jstz.2.0.0.min.js");
 
         //==========================================
-        // Changes the exported obj name so it doesn't 
+        // Changes the exported obj name so it doesn't
         // clash with anything
         //==========================================
         String jstzClean = jstz.replace(".jstz", ".spincast_jstz");
@@ -96,7 +98,10 @@ public class SpincastTimeZonePebbleExtensionDefault extends AbstractExtension
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 //==========================================
                 // Cookie already set?

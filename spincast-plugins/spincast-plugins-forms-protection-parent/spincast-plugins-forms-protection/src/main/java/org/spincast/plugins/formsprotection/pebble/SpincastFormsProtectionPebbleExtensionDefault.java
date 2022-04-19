@@ -18,6 +18,8 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 
 public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExtension
@@ -86,12 +88,13 @@ public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExten
 
         //==========================================
         // Double Submit protection functions only
-        // enabled if an implementation for 
+        // enabled if an implementation for
         // SpincastFormsDoubleSubmitProtectionFilter
         // was bound.
         //==========================================
         if (getSpincastFormsDoubleSubmitProtectionRepositoryOptional().orNull() != null) {
-            functions.put(FONCTION_NAME_FORM_DOUBLE_SUBMIT_PROTECTION_FIELD_VALUE, getFormDoubleSubmitProtectionFieldValueFunction());
+            functions.put(FONCTION_NAME_FORM_DOUBLE_SUBMIT_PROTECTION_FIELD_VALUE,
+                          getFormDoubleSubmitProtectionFieldValueFunction());
             functions.put(FONCTION_NAME_FORM_DOUBLE_SUBMIT_PROTECTION_FIELD_NAME,
                           getFormDoubleSubmitProtectionFieldNameFunction());
             functions.put(FONCTION_NAME_FORM_DOUBLE_SUBMIT_DISABLE_PROTECTION_FIELD_NAME,
@@ -117,7 +120,10 @@ public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExten
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
                 return getSpincastFormsDoubleSubmitProtectionFilter().createNewFormDoubleSubmitProtectionId();
             }
         };
@@ -133,7 +139,10 @@ public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExten
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
                 return getSpincastFormsProtectionConfig().getFormDoubleSubmitProtectionIdFieldName();
             }
         };
@@ -149,7 +158,10 @@ public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExten
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
                 return getSpincastFormsProtectionConfig().getFormDoubleSubmitDisableProtectionIdFieldName();
             }
         };
@@ -165,7 +177,10 @@ public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExten
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
                 return getSpincastFormsProtectionConfig().getFormCsrfProtectionIdFieldName();
             }
         };
@@ -181,7 +196,10 @@ public class SpincastFormsProtectionPebbleExtensionDefault extends AbstractExten
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 String csrf = "";
                 SpincastCsrfToken currentCsrfToken = getSpincastFormsCsrfProtectionFilter().getCurrentCsrfToken();

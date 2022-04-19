@@ -32,10 +32,10 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
     public void before(RequestContext<?> context) {
 
         //==========================================
-        // This filter should have been configured
-        // to skip resources requests, but in case :
+        // Skip resources?
         //==========================================
-        if (context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isStaticResourceRoute()) {
+        if (isSkipResources() &&
+            context.routing().getRoutingResult().getMainRouteHandlerMatch().getSourceRoute().isStaticResourceRoute()) {
             return;
         }
 
@@ -47,10 +47,10 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
             if (session != null) {
 
                 //==========================================
-                // This is a workaround to make sure a 
+                // This is a workaround to make sure a
                 // custom repository implementation that would keep
                 // the instances of the sessions as is, without
-                // recreated them, wouln't have a session 
+                // recreated them, wouln't have a session
                 // stay "new" forever.
                 //==========================================
                 if (session.isNew() || session.isDirty()) {
@@ -76,7 +76,7 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
         // found with the existing id... We create
         // a new session.
         //
-        // A new session will automatically be saved in 
+        // A new session will automatically be saved in
         // the database in the "after" part of the filter.
         //==========================================
         if (session == null) {
@@ -87,6 +87,10 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
         // Saves the session in the request context.
         //==========================================
         context.variables().set(SpincastSessionManagerDefault.REQUEST_CONTEXT_VARIABLE_SESSION, session);
+    }
+
+    protected boolean isSkipResources() {
+        return false;
     }
 
     @Override
@@ -124,7 +128,7 @@ public class SpincastSessionFilterDefault implements SpincastSessionFilter {
             getSpincastSessionManager().updateModificationDateAndSaveSession(session);
 
             //==========================================
-            // If the session is new, we save its id on 
+            // If the session is new, we save its id on
             // the user.
             //
             // Be careful with an existing session: we don't want

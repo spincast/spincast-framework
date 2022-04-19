@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
+import org.spincast.core.json.JsonArray;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.routing.Handler;
@@ -200,6 +203,82 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
     }
 
     @Test
+    public void fromTemplateWithListJsonObject() throws Exception {
+
+        List<String> list = new ArrayList<String>();
+        list.add("aaa");
+        list.add("bbb");
+        list.add("ccc");
+
+        JsonObject jsonObj = this.jsonManager.create();
+        jsonObj.set("list", list);
+
+        String result = this.templatingEngine.fromTemplate("template2.html", jsonObj);
+        assertNotNull(result);
+        assertEquals("aaabbbccc", result);
+    }
+
+    @Test
+    public void fromTemplateWithListMap() throws Exception {
+
+        List<String> list = new ArrayList<String>();
+        list.add("aaa");
+        list.add("bbb");
+        list.add("ccc");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+
+        String result = this.templatingEngine.fromTemplate("template2.html", params);
+        assertNotNull(result);
+        assertEquals("aaabbbccc", result);
+    }
+
+    @Test
+    public void fromTemplateWithJsonObjectListJsonObject() throws Exception {
+
+        List<JsonObject> list = new ArrayList<JsonObject>();
+        JsonObject obj1 = this.jsonManager.create();
+        list.add(obj1);
+        obj1.set("name", "aaa");
+        JsonObject obj2 = this.jsonManager.create();
+        list.add(obj2);
+        obj2.set("name", "bbb");
+        JsonObject obj3 = this.jsonManager.create();
+        list.add(obj3);
+        obj3.set("name", "ccc");
+
+        JsonObject jsonObj = this.jsonManager.create();
+        jsonObj.set("list", list);
+
+        String result = this.templatingEngine.fromTemplate("template3.html", jsonObj);
+        assertNotNull(result);
+        assertEquals("aaabbbccc", result);
+    }
+
+    @Test
+    public void fromTemplateWithJsonObjectListMap() throws Exception {
+
+        List<JsonObject> list = new ArrayList<JsonObject>();
+        JsonObject obj1 = this.jsonManager.create();
+        list.add(obj1);
+        obj1.set("name", "aaa");
+        JsonObject obj2 = this.jsonManager.create();
+        list.add(obj2);
+        obj2.set("name", "bbb");
+        JsonObject obj3 = this.jsonManager.create();
+        list.add(obj3);
+        obj3.set("name", "ccc");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+
+        String result = this.templatingEngine.fromTemplate("template3.html", params);
+        assertNotNull(result);
+        assertEquals("aaabbbccc", result);
+    }
+
+    @Test
     public void defaultVariables() throws Exception {
 
         getRouter().GET("/one/${param1}").id("test").handle(new Handler<DefaultRequestContext>() {
@@ -249,6 +328,74 @@ public class PebbleTest extends NoAppStartHttpServerTestingBase {
         assertEquals(0, getSpincastPebbleTemplatingEngineConfig().getTemplateCacheItemNbr());
         assertEquals(200, getSpincastPebbleTemplatingEngineConfig().getTagCacheTypeItemNbr());
         assertTrue(getSpincastPebbleTemplatingEngineConfig().isStrictVariablesEnabled());
+    }
+
+    @Test
+    public void nullValue() throws Exception {
+
+        JsonObject params = this.jsonManager.create();
+        params.set("map", null);
+
+        String result = this.templatingEngine.fromTemplate("template5.html", params);
+        assertNotNull(result);
+        assertEquals("xx", result);
+    }
+
+    /**
+     * Ne passe pas présentement!!
+     * https://github.com/PebbleTemplates/pebble/issues/446
+     */
+    @Test
+    public void nullValueInMap() throws Exception {
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("key1", null);
+        params.put("map", map);
+
+        String result = this.templatingEngine.fromTemplate("template6.html", params);
+        assertNotNull(result);
+        assertEquals("xx", result);
+    }
+
+    @Test
+    public void dynamicJsonObjects() throws Exception {
+
+        List<JsonObject> list = new ArrayList<JsonObject>();
+        JsonObject obj1 = this.jsonManager.create();
+        list.add(obj1);
+        obj1.set("name", "aaa");
+        JsonObject obj2 = this.jsonManager.create();
+        list.add(obj2);
+        obj2.set("name", "bbb");
+        JsonObject obj3 = this.jsonManager.create();
+        list.add(obj3);
+        obj3.set("name", "ccc");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+
+        String result = this.templatingEngine.fromTemplate("template3.html", params);
+        assertNotNull(result);
+        assertEquals("aaabbbccc", result);
+    }
+
+    @Test
+    public void dynamicJsonArrays() throws Exception {
+
+        List<JsonArray> list = new ArrayList<JsonArray>();
+        JsonArray arr = this.jsonManager.createArray();
+        list.add(arr);
+        arr.add("aaa");
+        arr.add("bbb");
+        arr.add("ccc");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("list", list);
+
+        String result = this.templatingEngine.fromTemplate("template4.html", params);
+        assertNotNull(result);
+        assertEquals("aaabbbccc", result);
     }
 
 

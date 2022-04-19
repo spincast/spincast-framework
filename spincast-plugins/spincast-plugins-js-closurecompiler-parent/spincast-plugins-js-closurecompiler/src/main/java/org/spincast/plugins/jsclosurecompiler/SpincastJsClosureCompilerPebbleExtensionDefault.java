@@ -30,6 +30,8 @@ import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 /**
  * Pebble extension
@@ -112,7 +114,10 @@ public class SpincastJsClosureCompilerPebbleExtensionDefault extends AbstractExt
                           }
 
                           @Override
-                          public Object execute(Map<String, Object> args) {
+                          public Object execute(Map<String, Object> args,
+                                                PebbleTemplate self,
+                                                EvaluationContext evaluationContext,
+                                                int lineNumber) {
 
                               List<String> numericalKeys = args.keySet().stream().filter((key) -> StringUtils.isNumeric(key))
                                                                .sorted()

@@ -250,6 +250,8 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     /**
      * A specific value parsed from a dynamic parameter of the route path.
      * The <code>name</code> is <i>case sensitive</i>, since you have easy control over it.
+     *
+     * @return the path param value or <code>null</code> if not found.
      */
     public String getPathParam(String name);
 

@@ -617,11 +617,11 @@ public class FormDefault extends JsonObjectDefault implements Form {
             String validationKey = entry.getKey();
 
             //==========================================
-            // A Validation message may declare its validation
-            // key as been empty, in case it want itself to be merge
+            // If the validation key of a message is empty,
+            // or if the prefix is empty, we merge the
             // at the parent's level.
             //==========================================
-            if (StringUtils.isBlank(validationKey)) {
+            if (StringUtils.isBlank(validationKey) || StringUtils.isBlank(validationKeyPrefix)) {
                 validationKey = validationKeyPrefix + validationKey;
             } else {
                 if (validationKeyPrefix.endsWith(".")) {
@@ -649,8 +649,20 @@ public class FormDefault extends JsonObjectDefault implements Form {
     }
 
     @Override
+    public void clearAllValidation() {
+        getMessages().clear();
+
+        JsonObject wholeValidation = getValidationResultAsJsonObject().getJsonObjectOrEmpty(getWholeValidationKey());
+        wholeValidation.set(ELEMENT_KEYS_IS_VALID, true);
+        wholeValidation.set(ELEMENT_KEYS_HAS_SUCCESSES, false);
+        wholeValidation.set(ELEMENT_KEYS_HAS_WARNINGS, false);
+        wholeValidation.set(ELEMENT_KEYS_HAS_ERRORS, false);
+    }
+
+    @Override
     public String toString() {
         return toJsonString(true);
     }
+
 
 }

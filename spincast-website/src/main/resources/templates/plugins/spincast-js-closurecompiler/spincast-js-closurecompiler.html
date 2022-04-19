@@ -454,7 +454,7 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                 <p>
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
                     During development, you probably want to disable the bundling
-                    so changes made to the CSS files are available immediately (no cache). 
+                    so changes made to the JS files are available immediately (no cache). 
                     There is a <a href="#config_isJsBundlesDisabled">configuration</a> for that!
                 </p>
                 <p>
@@ -468,7 +468,7 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                     <img class="inlineIcon" src="/public/images/icons/tipy.png" />
                     Note that the content of the Javascript files to bundle together will be retrieved using <code>HTTP</code>
                     requests! This allows you
-                    to use <a href="/documentation#dynamic_resources">dynamic resources</a> to generate those files,
+                    to use <a href="/documentation#dynamic_resources">dynamic resources</a> to generate this content,
                     if required.
                 </p>
                 <p>
@@ -521,9 +521,7 @@ java -jar closure-compiler.jar --js_output_file=internalSpincastFile [YOUR ARGS]
                             <code class="apiItem">String <span>getJsBundlesUrlPath</span>()</code>
                             <div class="well">
                                 <p>
-                                    The base URL path where the Javascript bundles will be served from. 
-                                    The path returned by the <code>jsBundle()</code> Pebble function
-                                    will start with this base path.
+                                    The base URL path where the Javascript bundles will be served from.
                                 </p>
                                 <p>
                                     Defaults to "<code>/spincast/plugins/jsclosurecompiler/jsbundles</code>".

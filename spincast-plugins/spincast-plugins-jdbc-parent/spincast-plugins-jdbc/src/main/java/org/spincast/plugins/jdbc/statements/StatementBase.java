@@ -19,7 +19,7 @@ import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.plugins.jdbc.utils.BasicFormatterImpl;
 
 /**
- * 
+ *
  * If the connection's {@link Connection#getAutoCommit()} is <code>true/code>,
  * the connection will be automatically closed. If you want to prevent this,
  * you can use the <code>disableCloseConnection</code> parameter... You
@@ -185,18 +185,18 @@ public abstract class StatementBase implements Statement {
                     }
                     String name = query.substring(i + 1, j);
 
-                    //==========================================@formatter:off 
-                    // Replace the parameter with a question mark  
+                    //==========================================@formatter:off
+                    // Replace the parameter with a question mark
                     //==========================================@formatter:on
                     c = '?';
                     i += name.length(); // skip past the end if the parameter
 
-                    Set<Integer> indexList = (Set<Integer>)paramMap.get(name);
+                    Set<Integer> indexList = paramMap.get(name);
                     if (indexList == null) {
                         indexList = new HashSet<>();
                         paramMap.put(name, indexList);
                     }
-                    indexList.add(new Integer(index));
+                    indexList.add(Integer.valueOf(index));
 
                     index++;
                 }

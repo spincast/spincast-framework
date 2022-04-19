@@ -49,7 +49,7 @@ public class SpincastGsonManager implements JsonManager {
     private final JsonSerializer<BigDecimal> bigDecimalSerializer;
     private final JsonSerializer<Enum<?>> enumSerializer;
     private final JsonSerializer<Class<?>> classSerializer;
-
+    private final JsonSerializer<Throwable> throwableSerializer;
     private final JsonPathUtils jsonPathUtils;
     private final JsonObjectFactory jsonObjectFactory;
     private final SpincastConfig spincastConfig;
@@ -70,6 +70,7 @@ public class SpincastGsonManager implements JsonManager {
                                JsonSerializer<BigDecimal> bigDecimalSerializer,
                                JsonSerializer<Enum<?>> enumSerializer,
                                JsonSerializer<Class<?>> classSerializer,
+                               JsonSerializer<Throwable> throwableSerializer,
                                JsonPathUtils jsonPathUtils,
                                JsonObjectFactory jsonObjectFactory,
                                SpincastConfig spincastConfig,
@@ -84,6 +85,7 @@ public class SpincastGsonManager implements JsonManager {
         this.instantSerializer = instantSerializer;
         this.bigDecimalSerializer = bigDecimalSerializer;
         this.classSerializer = classSerializer;
+        this.throwableSerializer = throwableSerializer;
         this.jsonPathUtils = jsonPathUtils;
         this.jsonObjectFactory = jsonObjectFactory;
         this.enumSerializer = enumSerializer;
@@ -127,6 +129,10 @@ public class SpincastGsonManager implements JsonManager {
 
     protected JsonSerializer<Class<?>> getClassSerializer() {
         return this.classSerializer;
+    }
+
+    protected JsonSerializer<Throwable> getThrowableSerializer() {
+        return this.throwableSerializer;
     }
 
     protected JsonPathUtils getJsonPathUtils() {
@@ -208,6 +214,7 @@ public class SpincastGsonManager implements JsonManager {
         registerBigDecimalSerializer(gsonBuilder);
         registerEnumSerializer(gsonBuilder);
         registerClassSerializer(gsonBuilder);
+        registerThrowableSerializer(gsonBuilder);
     }
 
     protected void registerJsonObjectSerializer(GsonBuilder gsonBuilder) {
@@ -236,6 +243,10 @@ public class SpincastGsonManager implements JsonManager {
 
     protected void registerClassSerializer(GsonBuilder gsonBuilder) {
         gsonBuilder.registerTypeHierarchyAdapter(Class.class, getClassSerializer());
+    }
+
+    protected void registerThrowableSerializer(GsonBuilder gsonBuilder) {
+        gsonBuilder.registerTypeHierarchyAdapter(Throwable.class, getThrowableSerializer());
     }
 
     @Override

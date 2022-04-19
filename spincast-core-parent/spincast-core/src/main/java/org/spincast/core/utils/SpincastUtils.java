@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -234,12 +235,12 @@ public interface SpincastUtils {
     public void copyClasspathDirToFileSystem(String classpathDirPath, File targetDir);
 
     /**
-     * Valid of a String only contains characters over 31 (or
+     * Validate if a String contains characters below 31 or
      * DEL (127).
      *
-     * @return <code>true</code> if the String only contains
-     * characters over 31 (or DEL (127). If the String is
-     * <code>null</code>, <code>true</code> is returned.
+     * @return <code>true</code> if the String contains
+     * characters below 31 (or DEL (127). If the String is
+     * <code>null</code>, <code>false</code> is returned.
      */
     public boolean isContainsSpecialCharacters(String str);
 
@@ -262,7 +263,7 @@ public interface SpincastUtils {
     public long[] convertLongSetToLongPrimitiveArray(Set<Long> longSet);
 
     /**
-     * Creates a randomly named temp file path targetting the
+     * Creates a randomly named temp file path in the temporary
      * writable directory.
      */
     public String createTempFilePath();
@@ -394,5 +395,10 @@ public interface SpincastUtils {
      * Empty a directory if it exists.
      */
     public void clearDirectory(File dir);
+
+    /**
+     * Sort a Map by value
+     */
+    public <K, V> LinkedHashMap<K, V> sortMapByValues(Map<K, V> map);
 
 }

@@ -1,6 +1,8 @@
 package org.spincast.plugins.session;
 
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Router;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.session.config.SpincastSessionConfig;
 
 import com.google.inject.Inject;
@@ -8,12 +10,12 @@ import com.google.inject.Inject;
 public class SpincastSessionFilterAdder {
 
     private final SpincastSessionConfig spincastSessionConfig;
-    private final Router<?, ?> router;
+    private final Router<DefaultRequestContext, DefaultWebsocketContext> router;
     private final SpincastSessionFilter spincastSessionFilter;
 
     @Inject
     public SpincastSessionFilterAdder(SpincastSessionConfig spincastSessionConfig,
-                                      Router<?, ?> router,
+                                      Router<DefaultRequestContext, DefaultWebsocketContext> router,
                                       SpincastSessionFilter spincastSessionFilter) {
         this.spincastSessionConfig = spincastSessionConfig;
         this.router = router;
@@ -24,7 +26,7 @@ public class SpincastSessionFilterAdder {
         return this.spincastSessionConfig;
     }
 
-    protected Router<?, ?> getRouter() {
+    protected Router<DefaultRequestContext, DefaultWebsocketContext> getRouter() {
         return this.router;
     }
 

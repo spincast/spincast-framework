@@ -203,7 +203,7 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
         assertEquals(1, client.getConnectionClosedEvents().size());
         Pair<Integer, String> closedEvent = client.getConnectionClosedEvents().get(0);
         assertNotNull(closedEvent);
-        assertEquals(new Integer(1000), closedEvent.getKey());
+        assertEquals(Integer.valueOf(1000), closedEvent.getKey());
         assertEquals("some reason", closedEvent.getValue());
 
         //==========================================
@@ -505,6 +505,5 @@ public class MultipleEndpointsTest extends NoAppWebsocketTestingBase {
         assertEquals(1, client3a.getStringMessageReceived().size());
         assertEquals("test4", client3a.getStringMessageReceived().get(0));
     }
-
 
 }

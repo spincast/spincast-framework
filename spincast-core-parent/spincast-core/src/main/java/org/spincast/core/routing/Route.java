@@ -16,6 +16,11 @@ public interface Route<R extends RequestContext<?>> {
     public String getId();
 
     /**
+     * The route's classes.
+     */
+    public Set<String> getClasses();
+
+    /**
      * Is this a Websocket route?
      */
     public boolean isWebsocketRoute();

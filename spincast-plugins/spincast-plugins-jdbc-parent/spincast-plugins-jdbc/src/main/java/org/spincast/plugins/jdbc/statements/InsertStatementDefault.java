@@ -51,7 +51,7 @@ public class InsertStatementDefault extends StatementBase implements InsertState
                 int affectedRowsNbr = realStatement.executeUpdate();
 
                 if (primaryKeyColumnName == null) {
-                    return new Long(affectedRowsNbr);
+                    return Long.valueOf(affectedRowsNbr);
                 }
 
                 ResultSet resultSet = realStatement.getGeneratedKeys();

@@ -296,11 +296,11 @@ public class FormatsTest extends NoAppStartHttpServerTestingBase {
         JsonObject json = this.xmlManager.fromXml(xml);
         assertNotNull(xml);
         assertEquals(true, json.getBoolean("anotherBoolean"));
-        assertEquals(new Integer(44444), json.getInteger("anotherInt"));
+        assertEquals(Integer.valueOf(44444), json.getInteger("anotherInt"));
         JsonObject inner = json.getJsonObject("innerObj");
         assertNotNull(inner);
         assertEquals(true, inner.getBoolean("someBoolean"));
-        assertEquals(new Integer(123), inner.getInteger("someInt"));
+        assertEquals(Integer.valueOf(123), inner.getInteger("someInt"));
     }
 
     @Test

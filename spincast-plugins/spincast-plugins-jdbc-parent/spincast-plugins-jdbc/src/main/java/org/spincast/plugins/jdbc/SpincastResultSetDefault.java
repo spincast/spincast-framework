@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Map;
 
-
 public class SpincastResultSetDefault implements SpincastResultSet {
 
     private final ResultSet wrappedResultSet;
@@ -1162,13 +1161,13 @@ public class SpincastResultSetDefault implements SpincastResultSet {
     @Override
     public Instant getInstant(int columnIndex) throws SQLException {
         Timestamp ts = getTimestamp(columnIndex, JdbcUtils.UTC_CALENDAR);
-        return ts != null ? Instant.ofEpochMilli(ts.getTime()) : null;
+        return ts != null ? ts.toInstant() : null;
     }
 
     @Override
     public Instant getInstant(String columnLabel) throws SQLException {
         Timestamp ts = getTimestamp(columnLabel, JdbcUtils.UTC_CALENDAR);
-        return ts != null ? Instant.ofEpochMilli(ts.getTime()) : null;
+        return ts != null ? ts.toInstant() : null;
     }
 
 }

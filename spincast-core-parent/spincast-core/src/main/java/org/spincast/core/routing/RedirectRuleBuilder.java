@@ -37,4 +37,17 @@ public interface RedirectRuleBuilder<R extends RequestContext<?>, W extends Webs
      */
     public void to(RedirectHandler<R, W> handler);
 
+    /**
+     * The position where the filter will be run.
+     * <p>
+     * By using a position below <code>0</code>, the
+     * redirection will occures even if a main handler would
+     * be found.
+     *
+     * <p>
+     * Defaults to -1000.
+     */
+    public RedirectRuleBuilder<R, W> pos(int position);
+
+
 }

@@ -30,6 +30,7 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
     private final SpincastRoutingUtils spincastRoutingUtils;
 
     private boolean permanently = true;
+    private int position = -1000;
 
     @AssistedInject
     public RedirectRuleBuilderDefault(@Assisted Router<R, W> router,
@@ -60,6 +61,10 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
 
     protected boolean isPermanently() {
         return this.permanently;
+    }
+
+    protected int getPosition() {
+        return this.position;
     }
 
     @Override
@@ -102,9 +107,16 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
         });
     }
 
+    @Override
+    public RedirectRuleBuilder<R, W> pos(int position) {
+        this.position = position;
+        return this;
+    }
+
     protected void addRedirectHandler(Handler<R> handler) {
+
         getRouter().ALL(getOldPath())
-                   .pos(getSpincastRouterConfig().getRedirectFilterPosition())
+                   .pos(getPosition())
                    .found().notFound()
                    .handle(handler);
     }
@@ -129,5 +141,6 @@ public class RedirectRuleBuilderDefault<R extends RequestContext<?>, W extends W
         //==========================================
         throw new RedirectException(result.getPath(), isPermanently());
     }
+
 
 }

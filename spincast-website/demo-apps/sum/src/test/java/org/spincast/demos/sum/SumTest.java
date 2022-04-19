@@ -71,7 +71,7 @@ public class SumTest extends AppBasedDefaultContextTypesTestingBase {
         JsonObject resultObj = this.jsonManager.fromString(content);
         assertNotNull(resultObj);
 
-        assertEquals(new Integer(1066), resultObj.getInteger("result"));
+        assertEquals(Integer.valueOf(1066), resultObj.getInteger("result"));
         assertNull(resultObj.getString("error", null));
     }
 

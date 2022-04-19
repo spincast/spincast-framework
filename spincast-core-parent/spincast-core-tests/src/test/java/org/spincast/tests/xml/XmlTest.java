@@ -51,17 +51,17 @@ public class XmlTest extends NoAppTestingBase {
         assertNotNull(xml);
 
         // @formatter:off
-        assertEquals(("<JsonObject>" + 
-                          "<innerObj>" + 
-                              "<someBoolean>true</someBoolean>" + 
+        assertEquals(("<JsonObject>" +
+                          "<innerObj>" +
+                              "<someBoolean>true</someBoolean>" +
                               "<someInt>123</someInt>" +
-                          "</innerObj>" + 
-                          "<anotherBoolean>true</anotherBoolean>" + 
+                          "</innerObj>" +
+                          "<anotherBoolean>true</anotherBoolean>" +
                           "<someArray isArray=\"true\">" +
-                              "<element>toto</element>" + 
-                              "<element>123</element>" + 
+                              "<element>toto</element>" +
+                              "<element>123</element>" +
                           "</someArray>" +
-                          "<anotherInt>44444</anotherInt>" + 
+                          "<anotherInt>44444</anotherInt>" +
                       "</JsonObject>").length(),
                      xml.length());
          // @formatter:on
@@ -82,76 +82,76 @@ public class XmlTest extends NoAppTestingBase {
         String xml = this.xmlManager.toXml(jsonObject, true);
 
         // @formatter:off
-        String expected = "<JsonObject>\n" + 
-                          "    <someArray isArray=\"true\">\n" + 
-                          "        <element>\n" + 
-                          "            <obj>\n" +  
-                          "                <fieldName>email</fieldName>\n" + 
-                          "                <message>Not a valid email address.</message>\n" + 
-                          "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                          "            </obj>\n" +  
-                          "        </element>\n" + 
-                          "    </someArray>\n" + 
+        String expected = "<JsonObject>\n" +
+                          "    <someArray isArray=\"true\">\n" +
+                          "        <element>\n" +
+                          "            <obj>\n" +
+                          "                <fieldName>email</fieldName>\n" +
+                          "                <message>Not a valid email address.</message>\n" +
+                          "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                          "            </obj>\n" +
+                          "        </element>\n" +
+                          "    </someArray>\n" +
                           "</JsonObject>\n";
 
-        String expected2 = "<JsonObject>\n" + 
-                "    <someArray isArray=\"true\">\n" + 
-                "        <element>\n" + 
-                "            <obj>\n" +  
-                "                <fieldName>email</fieldName>\n" + 
-                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                "                <message>Not a valid email address.</message>\n" + 
-                "            </obj>\n" +  
-                "        </element>\n" + 
-                "    </someArray>\n" + 
+        String expected2 = "<JsonObject>\n" +
+                "    <someArray isArray=\"true\">\n" +
+                "        <element>\n" +
+                "            <obj>\n" +
+                "                <fieldName>email</fieldName>\n" +
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                "                <message>Not a valid email address.</message>\n" +
+                "            </obj>\n" +
+                "        </element>\n" +
+                "    </someArray>\n" +
                 "</JsonObject>\n";
-        
-        String expected3 = "<JsonObject>\n" + 
-                "    <someArray isArray=\"true\">\n" + 
-                "        <element>\n" + 
-                "            <obj>\n" +  
-                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                "                <fieldName>email</fieldName>\n" + 
-                "                <message>Not a valid email address.</message>\n" + 
-                "            </obj>\n" +  
-                "        </element>\n" + 
-                "    </someArray>\n" + 
+
+        String expected3 = "<JsonObject>\n" +
+                "    <someArray isArray=\"true\">\n" +
+                "        <element>\n" +
+                "            <obj>\n" +
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                "                <fieldName>email</fieldName>\n" +
+                "                <message>Not a valid email address.</message>\n" +
+                "            </obj>\n" +
+                "        </element>\n" +
+                "    </someArray>\n" +
                 "</JsonObject>\n";
-        
-        String expected4 = "<JsonObject>\n" + 
-                "    <someArray isArray=\"true\">\n" + 
-                "        <element>\n" + 
-                "            <obj>\n" +  
-                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                "                <message>Not a valid email address.</message>\n" + 
-                "                <fieldName>email</fieldName>\n" + 
-                "            </obj>\n" +  
-                "        </element>\n" + 
-                "    </someArray>\n" + 
+
+        String expected4 = "<JsonObject>\n" +
+                "    <someArray isArray=\"true\">\n" +
+                "        <element>\n" +
+                "            <obj>\n" +
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                "                <message>Not a valid email address.</message>\n" +
+                "                <fieldName>email</fieldName>\n" +
+                "            </obj>\n" +
+                "        </element>\n" +
+                "    </someArray>\n" +
                 "</JsonObject>\n";
-        
-        String expected5 = "<JsonObject>\n" + 
-                "    <someArray isArray=\"true\">\n" + 
-                "        <element>\n" + 
-                "            <obj>\n" +  
-                "                <message>Not a valid email address.</message>\n" + 
-                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                "                <fieldName>email</fieldName>\n" + 
-                "            </obj>\n" +  
-                "        </element>\n" + 
-                "    </someArray>\n" + 
+
+        String expected5 = "<JsonObject>\n" +
+                "    <someArray isArray=\"true\">\n" +
+                "        <element>\n" +
+                "            <obj>\n" +
+                "                <message>Not a valid email address.</message>\n" +
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                "                <fieldName>email</fieldName>\n" +
+                "            </obj>\n" +
+                "        </element>\n" +
+                "    </someArray>\n" +
                 "</JsonObject>\n";
-        
-        String expected6 = "<JsonObject>\n" + 
-                "    <someArray isArray=\"true\">\n" + 
-                "        <element>\n" + 
-                "            <obj>\n" +  
-                "                <message>Not a valid email address.</message>\n" + 
-                "                <fieldName>email</fieldName>\n" + 
-                "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                "            </obj>\n" +  
-                "        </element>\n" + 
-                "    </someArray>\n" + 
+
+        String expected6 = "<JsonObject>\n" +
+                "    <someArray isArray=\"true\">\n" +
+                "        <element>\n" +
+                "            <obj>\n" +
+                "                <message>Not a valid email address.</message>\n" +
+                "                <fieldName>email</fieldName>\n" +
+                "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                "            </obj>\n" +
+                "        </element>\n" +
+                "    </someArray>\n" +
                 "</JsonObject>\n";
 
         // @formatter:on
@@ -236,16 +236,16 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXml() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <obj>\n" + 
-                     "                <fieldName>email</fieldName>\n" + 
-                     "                <message>Not a valid email address.</message>\n" + 
-                     "                <type>VALIDATION_TYPE_EMAIL</type>\n" + 
-                     "            </obj>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <obj>\n" +
+                     "                <fieldName>email</fieldName>\n" +
+                     "                <message>Not a valid email address.</message>\n" +
+                     "                <type>VALIDATION_TYPE_EMAIL</type>\n" +
+                     "            </obj>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -267,12 +267,12 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlOneChild() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -292,13 +292,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "            <message>Not a valid email address.</message>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "            <message>Not a valid email address.</message>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -313,16 +313,16 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild2() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "            <obj>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "            <obj>\n" +
                      "                <color>red</color>\n" +
                      "                <size>big</size>\n" +
-                     "            </obj>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+                     "            </obj>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -337,16 +337,16 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild3() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <obj>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <obj>\n" +
                      "                <color>red</color>\n" +
                      "                <size>big</size>\n" +
-                     "            </obj>\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+                     "            </obj>\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -361,19 +361,19 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild4() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <obj>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <obj>\n" +
                      "                <color>red</color>\n" +
                      "                <size>big</size>\n" +
-                     "            </obj>\n" + 
-                     "            <obj2>\n" + 
+                     "            </obj>\n" +
+                     "            <obj2>\n" +
                      "                <color>red</color>\n" +
                      "                <size>big</size>\n" +
-                     "            </obj2>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+                     "            </obj2>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -388,16 +388,16 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild5() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <obj>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <obj>\n" +
                      "                <color>red</color>\n" +
                      "                <size>big</size>\n" +
-                     "            </obj>\n" + 
-                     "            <empty />\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+                     "            </obj>\n" +
+                     "            <empty />\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -412,13 +412,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild6() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <empty />\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <empty />\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -433,13 +433,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayElementMoreThanOneChild7() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            directValue\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            directValue\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -454,13 +454,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlArrayElementDirectValueAtTheEnd() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "            directValue\n" + 
-                     "        </element>\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "            directValue\n" +
+                     "        </element>\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -484,13 +484,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlInvalidArrayDirectValue() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>\n" + 
-                     "    <someArray isArray=\"true\">\n" + 
-                     "        <element>\n" + 
-                     "            <fieldName>email</fieldName>\n" + 
-                     "        </element>\n" + 
-                     "        directValue\n" + 
-                     "    </someArray>\n" + 
+        String xml = "<JsonObject>\n" +
+                     "    <someArray isArray=\"true\">\n" +
+                     "        <element>\n" +
+                     "            <fieldName>email</fieldName>\n" +
+                     "        </element>\n" +
+                     "        directValue\n" +
+                     "    </someArray>\n" +
                      "</JsonObject>\n";
         // @formatter:on
 
@@ -558,17 +558,17 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObject() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<innerObj>" + 
-                             "<someBoolean>true</someBoolean>" + 
+        String xml = "<JsonObject>" +
+                         "<innerObj>" +
+                             "<someBoolean>true</someBoolean>" +
                              "<someInt>123</someInt>" +
-                         "</innerObj>" + 
-                         "<anotherBoolean>true</anotherBoolean>" + 
+                         "</innerObj>" +
+                         "<anotherBoolean>true</anotherBoolean>" +
                          "<someArray isArray=\"true\">" +
-                             "<element>toto</element>" + 
-                             "<element>123</element>" + 
+                             "<element>toto</element>" +
+                             "<element>123</element>" +
                          "</someArray>" +
-                         "<anotherInt>44444</anotherInt>" + 
+                         "<anotherInt>44444</anotherInt>" +
                      "</JsonObject>";
         // @formatter:on
 
@@ -578,21 +578,21 @@ public class XmlTest extends NoAppTestingBase {
         JsonObject innerObj = jsonObject.getJsonObject("innerObj");
         assertNotNull(innerObj);
         assertEquals(true, innerObj.getBoolean("someBoolean"));
-        assertEquals(new Integer(123), innerObj.getInteger("someInt"));
+        assertEquals(Integer.valueOf(123), innerObj.getInteger("someInt"));
 
         JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
         assertEquals(2, array.size());
         assertEquals("toto", array.getString(0));
-        assertEquals(new Integer(123), array.getInteger(1));
+        assertEquals(Integer.valueOf(123), array.getInteger(1));
     }
 
     @Test
     public void fromXmlToJsonObjectEmtpyObject() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<innerObj></innerObj>" + 
+        String xml = "<JsonObject>" +
+                         "<innerObj></innerObj>" +
                      "</JsonObject>";
         // @formatter:on
 
@@ -608,8 +608,8 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObjectEmtpyArray() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<someArray isArray=\"true\"></someArray>" + 
+        String xml = "<JsonObject>" +
+                         "<someArray isArray=\"true\"></someArray>" +
                      "</JsonObject>";
         // @formatter:on
 
@@ -624,16 +624,16 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObjectInObjects() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<someObj>" + 
-                             "<tutu>222</tutu>" + 
-                             "<otherObj>" + 
+        String xml = "<JsonObject>" +
+                         "<someObj>" +
+                             "<tutu>222</tutu>" +
+                             "<otherObj>" +
                                  "<coco>333</coco>" +
-                                 "<thirdObj>" + 
-                                     "<kiki>444</kiki>" + 
-                                 "</thirdObj>" + 
-                             "</otherObj>" + 
-                         "</someObj>" + 
+                                 "<thirdObj>" +
+                                     "<kiki>444</kiki>" +
+                                 "</thirdObj>" +
+                             "</otherObj>" +
+                         "</someObj>" +
                      "</JsonObject>";
         // @formatter:on
 
@@ -642,7 +642,7 @@ public class XmlTest extends NoAppTestingBase {
 
         JsonObject someObj = jsonObject.getJsonObject("someObj");
         assertNotNull(someObj);
-        assertEquals(new Integer(222), someObj.getInteger("tutu"));
+        assertEquals(Integer.valueOf(222), someObj.getInteger("tutu"));
         JsonObject otherObj = someObj.getJsonObject("otherObj");
         assertNotNull(otherObj);
         assertEquals("333", otherObj.getString("coco"));
@@ -656,9 +656,9 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObjectNotRealArray() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<someArray isArray=\"nope\">" + 
-                             "<element>123</element>" + 
+        String xml = "<JsonObject>" +
+                         "<someArray isArray=\"nope\">" +
+                             "<element>123</element>" +
                          "</someArray>" +
                      "</JsonObject>";
          // @formatter:on
@@ -676,9 +676,9 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObjectWithArray() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<someArray isArray=\"true\">" + 
-                             "<element>111</element>" + 
+        String xml = "<JsonObject>" +
+                         "<someArray isArray=\"true\">" +
+                             "<element>111</element>" +
                          "</someArray>" +
                      "</JsonObject>";
         // @formatter:on
@@ -696,13 +696,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObjectWith2Arrays() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<someArray isArray=\"true\">" + 
-                             "<element>111</element>" + 
+        String xml = "<JsonObject>" +
+                         "<someArray isArray=\"true\">" +
+                             "<element>111</element>" +
                          "</someArray>" +
-                         "<otherArray isArray=\"true\">" + 
-                             "<element>222</element>" + 
-                         "</otherArray>" + 
+                         "<otherArray isArray=\"true\">" +
+                             "<element>222</element>" +
+                         "</otherArray>" +
                      "</JsonObject>";
         // @formatter:on
 
@@ -724,14 +724,14 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonObjectWithArrayInArray() throws Exception {
 
         // @formatter:off
-        String xml = "<JsonObject>" + 
-                         "<someArray isArray=\"true\">" + 
-                             "<element>" + 
+        String xml = "<JsonObject>" +
+                         "<someArray isArray=\"true\">" +
+                             "<element>" +
                                  "<otherArray isArray=\"true\">" +
-                                     "<element>222</element>" + 
-                                 "</otherArray>" + 
-                             "</element>" + 
-                         "</someArray>" + 
+                                     "<element>222</element>" +
+                                 "</otherArray>" +
+                             "</element>" +
+                         "</someArray>" +
                      "</JsonObject>";
          // @formatter:on
 
@@ -782,12 +782,12 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonArray() throws Exception {
 
         // @formatter:off
-        String xml = "<someArray isArray=\"true\">" + 
-                         "<element>" + 
+        String xml = "<someArray isArray=\"true\">" +
+                         "<element>" +
                              "<otherArray isArray=\"true\">" +
-                                 "<element>222</element>" + 
-                             "</otherArray>" + 
-                         "</element>" + 
+                                 "<element>222</element>" +
+                             "</otherArray>" +
+                         "</element>" +
                          "<element>123</element>" +
                      "</someArray>";
         // @formatter:on
@@ -801,7 +801,7 @@ public class XmlTest extends NoAppTestingBase {
         assertEquals(1, otherArray.size());
         assertEquals("222", otherArray.getString(0));
 
-        assertEquals(new Integer(123), jsonArray.getInteger(1));
+        assertEquals(Integer.valueOf(123), jsonArray.getInteger(1));
     }
 
     @Test
@@ -869,10 +869,10 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlDirectValueInArray() throws Exception {
 
         //@formatter:off
-        String xml = "<someArray isArray=\"true\">" 
+        String xml = "<someArray isArray=\"true\">"
                         + "<element>"
                             + "<otherObj2>coco</otherObj2>"
-                        + "</element>" 
+                        + "</element>"
                     + "</someArray>";
         //@formatter:on
 
@@ -904,13 +904,13 @@ public class XmlTest extends NoAppTestingBase {
                                 + "</element>"
                                 + "<element>"
                                     + "<otherObj></otherObj>"
-                                + "</element>"  
-                            + "</otherArray>"  
+                                + "</element>"
+                            + "</otherArray>"
                         + "</element>"
-                        + "<element>123</element>"   
+                        + "<element>123</element>"
                         + "<element>"
                             + "<directValue>coco</directValue>"
-                        + "</element>" 
+                        + "</element>"
                     + "</someArray>";
         //@formatter:on
 
@@ -925,7 +925,7 @@ public class XmlTest extends NoAppTestingBase {
         JsonObject someObj = otherArray.getJsonObject(1);
         assertNotNull(someObj);
         assertEquals("tutu", someObj.getString("titi"));
-        assertEquals(new Integer(333), someObj.getInteger("toto"));
+        assertEquals(Integer.valueOf(333), someObj.getInteger("toto"));
         JsonArray thirdArray = someObj.getJsonArray("thirdArray");
         assertNotNull(thirdArray);
         assertEquals(1, thirdArray.size());
@@ -934,7 +934,7 @@ public class XmlTest extends NoAppTestingBase {
         JsonObject otherObj = otherArray.getJsonObject(2);
         assertNotNull(otherObj);
 
-        assertEquals(new Integer(123), jsonArray.getInteger(1));
+        assertEquals(Integer.valueOf(123), jsonArray.getInteger(1));
 
         JsonObject directObj = jsonArray.getJsonObject(2);
         assertNotNull(directObj);
@@ -945,9 +945,9 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonArrayNoSpecialAttributeAtRoot1() throws Exception {
 
         // @formatter:off
-        String xml = "<someArray>" + 
-                         "<element>111</element>" + 
-                         "<element>222</element>" + 
+        String xml = "<someArray>" +
+                         "<element>111</element>" +
+                         "<element>222</element>" +
                      "</someArray>";
         // @formatter:on
 
@@ -961,13 +961,13 @@ public class XmlTest extends NoAppTestingBase {
     public void fromXmlToJsonArrayNoSpecialAttributeAtRoot2() throws Exception {
 
         // @formatter:off
-        String xml = "<someArray>" + 
-                         "<element>111</element>" + 
-                         "<element>" + 
-                             "<obj>" + 
-                                 "<titi>toto</titi>" + 
+        String xml = "<someArray>" +
+                         "<element>111</element>" +
+                         "<element>" +
+                             "<obj>" +
+                                 "<titi>toto</titi>" +
                              "</obj>" +
-                         "</element>" + 
+                         "</element>" +
                      "</someArray>";
         // @formatter:on
 

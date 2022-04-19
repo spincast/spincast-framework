@@ -13,6 +13,7 @@ import com.google.inject.util.Modules;
 
 public class ServerStartedListenersTest extends NoAppStartHttpServerTestingBase {
 
+    @SuppressWarnings("deprecation")
     @Override
     protected Module getExtraOverridingModule() {
         return Modules.override().with(new SpincastGuiceModuleBase() {

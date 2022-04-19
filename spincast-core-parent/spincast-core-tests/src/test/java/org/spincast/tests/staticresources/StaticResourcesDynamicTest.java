@@ -14,6 +14,7 @@ import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.routing.SpincastRouterConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
+import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 import org.spincast.shaded.org.apache.http.HttpStatus;
 import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
@@ -601,7 +602,12 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
                     nbrTimeCalled[0]++;
 
-                    context.response().sendPlainText(context.request().getQueryString(false));
+                    String content = context.request().getQueryString(false);
+                    if (StringUtils.isBlank(content)) {
+                        content = "_noQs!";
+                    }
+
+                    context.response().sendPlainText(content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -610,13 +616,13 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         HttpResponse response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
         response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
@@ -645,7 +651,12 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
                     nbrTimeCalled[0]++;
 
-                    context.response().sendPlainText(context.request().getQueryString(false));
+                    String content = context.request().getQueryString(false);
+                    if (StringUtils.isBlank(content)) {
+                        content = "_noQs!";
+                    }
+
+                    context.response().sendPlainText(content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -654,13 +665,13 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         HttpResponse response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
         response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
@@ -689,7 +700,12 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
                     nbrTimeCalled[0]++;
 
-                    context.response().sendPlainText(context.request().getQueryString(false));
+                    String content = context.request().getQueryString(false);
+                    if (StringUtils.isBlank(content)) {
+                        content = "_noQs!";
+                    }
+
+                    context.response().sendPlainText(content);
                 } catch (Exception ex) {
                     throw SpincastStatics.runtimize(ex);
                 }
@@ -698,20 +714,20 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
 
         HttpResponse response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
         response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
 
         // Gets the cached version
         response = GET("/generated.txt?test=123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("", response.getContentAsString());
+        assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
         assertTrue(generatedCssFile.isFile());
     }

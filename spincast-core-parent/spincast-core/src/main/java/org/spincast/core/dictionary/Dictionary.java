@@ -2,6 +2,7 @@ package org.spincast.core.dictionary;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.locale.LocaleResolver;
@@ -17,7 +18,7 @@ public interface Dictionary {
     /**
      * Gets a message.
      * <p>
-     * Will use the proper Locale as provided by the 
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      * <p>
      * The behavior if the key is not found can be configured using
@@ -40,7 +41,7 @@ public interface Dictionary {
     /**
      * Gets a message.
      * <p>
-     * Will use the proper Locale as provided by the 
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      * <p>
      * @param forceEvaluation if <code>true</code>,
@@ -74,8 +75,8 @@ public interface Dictionary {
 
     /**
      * Gets a message.
-     * 
-     * Will use the proper Locale as provided by the 
+     *
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      * <p>
      * The behavior if the key is not found can be configured using
@@ -98,7 +99,7 @@ public interface Dictionary {
     /**
      * Gets a message.
      * <p>
-     * Will use the proper Locale as provided by the 
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      * <p>
      * The behavior if the key is not found can be configured using
@@ -118,5 +119,32 @@ public interface Dictionary {
      */
     public String get(String key, Locale locale, Map<String, Object> params);
 
+    /**
+     * Contains this key?
+     */
+    public boolean hasKey(String key);
+
+    /**
+     * Return all the possible values, for all languages used,
+     * by language abreviation.
+     */
+    public Map<String, String> getAll(String key);
+
+    /**
+     * Return all the possible values, for all languages used,
+     * by language abreviation.
+     */
+    public Map<String, String> getAll(String key, Map<String, Object> params);
+
+    /**
+     * Return all the possible values, for all languages used,
+     * by language abreviation.
+     */
+    public Map<String, String> getAll(String key, Pair... params);
+
+    /**
+     * Returns all keys the dictionary contains.
+     */
+    public Set<String> getAllKeys();
 
 }

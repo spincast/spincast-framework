@@ -8,7 +8,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -455,6 +459,35 @@ public class SpincastUtilsTest extends NoAppTestingBase {
         } else {
             assertTrue(file.isDirectory());
         }
+    }
+
+    @Test
+    public void sortMapByValues() throws Exception {
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("key1", "val2");
+        map.put("key2", "val3");
+        map.put("key3", "val1");
+        map.put("key4", "val4");
+        map.put("key5", "val0");
+
+        LinkedHashMap<String, String> sortedMap = getSpincastUtils().sortMapByValues(map);
+        int pos = 0;
+        for (Entry<String, String> entry : sortedMap.entrySet()) {
+            if (pos == 0) {
+                assertEquals("val0", entry.getValue());
+            } else if (pos == 1) {
+                assertEquals("val1", entry.getValue());
+            } else if (pos == 2) {
+                assertEquals("val2", entry.getValue());
+            } else if (pos == 3) {
+                assertEquals("val3", entry.getValue());
+            } else if (pos == 4) {
+                assertEquals("val4", entry.getValue());
+            }
+            pos++;
+        }
+
     }
 
 }

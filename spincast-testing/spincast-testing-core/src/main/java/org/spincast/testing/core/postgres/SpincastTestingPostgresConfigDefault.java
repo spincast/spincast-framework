@@ -5,6 +5,7 @@ import java.io.File;
 import javax.annotation.Nullable;
 
 import org.spincast.core.utils.SpincastUtils;
+import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -14,6 +15,7 @@ public class SpincastTestingPostgresConfigDefault implements SpincastTestingPost
 
     private final SpincastUtils spincastUtils;
     private File dataDir = null;
+    private int pgPortToUse = -1;
 
     @Inject
     public SpincastTestingPostgresConfigDefault(@Nullable @PostgresDataDir File dataDir,
@@ -40,5 +42,17 @@ public class SpincastTestingPostgresConfigDefault implements SpincastTestingPost
         return this.dataDir;
     }
 
+    @Override
+    public int getPortToUse() {
+        if (this.pgPortToUse < 0) {
+            this.pgPortToUse = SpincastTestingUtils.findFreePort();
+        }
+        return this.pgPortToUse;
+    }
+
+    @Override
+    public boolean isResetSchemaOnInit() {
+        return true;
+    }
 
 }

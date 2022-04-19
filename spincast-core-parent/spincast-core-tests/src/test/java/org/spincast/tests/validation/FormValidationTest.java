@@ -1,6 +1,7 @@
 package org.spincast.tests.validation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.json.JsonManager;
 import org.spincast.core.request.Form;
+import org.spincast.core.request.FormFactory;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.validation.ValidationFactory;
@@ -27,6 +29,8 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
     protected JsonManager jsonManager;
     @Inject
     protected ValidationFactory validationFactory;
+    @Inject
+    protected FormFactory formFactory;
 
     protected JsonManager getJsonManager() {
         return this.jsonManager;
@@ -34,6 +38,10 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
 
     protected ValidationFactory getValidationFactory() {
         return this.validationFactory;
+    }
+
+    protected FormFactory getFormFactory() {
+        return this.formFactory;
     }
 
     @Test
@@ -337,7 +345,47 @@ public class FormValidationTest extends NoAppStartHttpServerTestingBase {
         List<ValidationMessage> messages = set1.getMessages("name");
         assertNotNull(messages);
         assertEquals(2, messages.size());
+    }
 
+    @Test
+    public void mergeValidationSetMergedUsingEmptyPrefix() throws Exception {
+
+        ValidationSet set1 = getValidationFactory().createValidationSet();
+        set1.addError("name", "name", "invalid name");
+        assertEquals(1, set1.size());
+
+        ValidationSet set2 = getValidationFactory().createValidationSet();
+        set2.addError("name", "name2", "invalid name2");
+        assertEquals(1, set1.size());
+        assertEquals(1, set2.size());
+
+        set1.mergeValidationSet("", set2);
+        assertEquals(1, set1.size());
+        assertEquals(1, set2.size());
+
+        List<ValidationMessage> messages = set1.getMessages("name");
+        assertNotNull(messages);
+        assertEquals(2, messages.size());
+    }
+
+    @Test
+    public void clearAllValidation() throws Exception {
+
+        Form form = getFormFactory().createForm("myForm", getJsonManager().create());
+        assertFalse(form.hasMessages());
+        assertTrue(form.isValid());
+        assertEquals(0, form.getMessages().size());
+
+        form.addError("key", "code", "text");
+        assertTrue(form.hasMessages());
+        assertFalse(form.isValid());
+        assertEquals(1, form.getMessages().size());
+
+        form.clearAllValidation();
+
+        assertFalse(form.hasMessages());
+        assertTrue(form.isValid());
+        assertEquals(0, form.getMessages().size());
 
     }
 

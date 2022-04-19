@@ -25,8 +25,11 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 public class OverrideSpincastExtensionTest extends NoAppTestingBase {
 
@@ -76,7 +79,11 @@ public class OverrideSpincastExtensionTest extends NoAppTestingBase {
                 }
 
                 @Override
-                public Object apply(Object value, Map<String, Object> args) {
+                public Object apply(Object value,
+                                    Map<String, Object> args,
+                                    PebbleTemplate self,
+                                    EvaluationContext evaluationContext,
+                                    int lineNumber) throws PebbleException {
                     return "custom!";
                 }
             };

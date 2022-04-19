@@ -18,5 +18,6 @@ public interface WebsocketRouteFactory<R extends RequestContext<?>, W extends We
                                             @Assisted("path") String path,
                                             @Assisted("before") List<Handler<R>> beforeFilters,
                                             @Assisted("filterIdsToSkip") Set<String> filterIdsToSkip,
-                                            @Assisted("controller") WebsocketController<R, W> websocketController);
+                                            @Assisted("controller") WebsocketController<R, W> websocketController,
+                                            @Assisted("classes") Set<String> classes);
 }

@@ -67,7 +67,7 @@ public class SpincastAttemptsLimiterPluginRepositoryTesting implements SpincastA
                         "   action_name VARCHAR(255) NOT NULL, " +
                         "   criteria_name VARCHAR(255) NOT NULL, " +
                         "   criteria_value VARCHAR(255) NOT NULL, " +
-                        "   creation_date TIMESTAMP WITH TIME ZONE NOT NULL " +
+                        "   creation_date TIMESTAMP(9) WITH TIME ZONE NOT NULL " +
                         ")");
                 stm.update();
 

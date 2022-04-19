@@ -21,6 +21,17 @@ public interface WebsocketRouteBuilder<R extends RequestContext<?>, W extends We
     public WebsocketRouteBuilder<R, W> id(String id);
 
     /**
+     * A WebSocket route may have multiple "classes"
+     * to identify and group them.
+     * <p>
+     * For example, multiple routes may share the
+     * same "account" class and this information
+     * could be used to set a menu item as being
+     * <em>active</em> on an HTML page.
+     */
+    public WebsocketRouteBuilder<R, W> classes(String... classes);
+
+    /**
      * This sould only by called by *plugins*.
      * <p>
      * When this method is called, the resulting route won't

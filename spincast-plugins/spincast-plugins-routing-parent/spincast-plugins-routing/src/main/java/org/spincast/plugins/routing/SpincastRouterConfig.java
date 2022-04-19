@@ -17,22 +17,15 @@ import com.google.inject.ImplementedBy;
 public interface SpincastRouterConfig {
 
     /**
-     * The routing types to apply a filter (none "0" position) 
+     * The routing types to apply a filter (none "0" position)
      * when none is explicitly specified.
      */
     public Set<RoutingType> getFilterDefaultRoutingTypes();
 
     /**
      * The default position for a <code>cors</code> "before" filter.
-     * Must be &lt; 0 ! 
+     * Must be &lt; 0 !
      */
     public int getCorsFilterPosition();
-
-    /**
-     * The default position for a <code>redirect</code> "before" filter.
-     * Must be &lt; 0 and should probably be one of the very, very
-     * first filter to run! 
-     */
-    public int getRedirectFilterPosition();
 
 }

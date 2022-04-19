@@ -271,12 +271,18 @@ public interface SpincastResultSet extends ResultSet {
     /**
      * Returns an {@link Instant} from a <code>TIMESTAMP WITH TIME ZONE</code>
      * (ie: "TIMESTAMPTZ") column.
+     * <p>
+     * Make sure the type of the column you use can store up to <em>nanoseconds</em>,
+     * if this is required.
      */
     public Instant getInstant(int columnIndex) throws SQLException;
 
     /**
      * Returns an {@link Instant} from a <code>TIMESTAMP WITH TIME ZONE</code>
      * (ie: "TIMESTAMPTZ") column.
+     * <p>
+     * Make sure the type of the column you use can store up to <em>nanoseconds</em>,
+     * if this is required.
      */
     public Instant getInstant(String columnLabel) throws SQLException;
 

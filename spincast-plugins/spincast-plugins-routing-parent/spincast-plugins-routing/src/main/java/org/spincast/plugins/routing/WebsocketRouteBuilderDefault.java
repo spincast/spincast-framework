@@ -1,6 +1,7 @@
 package org.spincast.plugins.routing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -25,10 +26,12 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
     private final Router<R, W> router;
     private String path;
     private String id;
+    private Set<String> classes = null;
     private List<Handler<R>> beforeFilters;
     private WebsocketController<R, W> websocketController;
     private Set<String> beforeFilterIdsToSkip;
     private boolean isSpicastCoreRouteOrPluginRoute = false;
+
 
     @AssistedInject
     public WebsocketRouteBuilderDefault(WebsocketRouteFactory<R, W> websocketRouteFactory) {
@@ -40,6 +43,7 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
                                         WebsocketRouteFactory<R, W> websocketRouteFactory) {
         this.router = router;
         this.websocketRouteFactory = websocketRouteFactory;
+        this.classes = new HashSet<String>();
     }
 
     protected WebsocketRouteFactory<R, W> getWebsocketRouteFactory() {
@@ -56,6 +60,10 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
 
     public String getId() {
         return this.id;
+    }
+
+    public Set<String> getClasses() {
+        return this.classes;
     }
 
     public boolean isSpicastCoreRouteOrPluginRoute() {
@@ -82,6 +90,14 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
     @Override
     public WebsocketRouteBuilder<R, W> id(String id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public WebsocketRouteBuilder<R, W> classes(String... classes) {
+        if (classes != null) {
+            this.classes.addAll(Arrays.asList(classes));
+        }
         return this;
     }
 
@@ -128,7 +144,8 @@ public class WebsocketRouteBuilderDefault<R extends RequestContext<?>, W extends
                                                                                      getPath(),
                                                                                      getBeforeFilters(),
                                                                                      getBeforeFilterIdsToSkip(),
-                                                                                     websocketController);
+                                                                                     websocketController,
+                                                                                     getClasses());
         return websocketRoute;
     }
 

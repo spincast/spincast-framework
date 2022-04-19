@@ -30,7 +30,7 @@ import com.google.inject.Inject;
 
 /**
  * CSRF protection filter.
- * 
+ *
  * Based on: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
  */
 public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCsrfProtectionFilter {
@@ -100,11 +100,11 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
             // Gets the CSRF token for the current user...
             // We do NOT create a new token here, if there's
             // none in the session.
-            // A new token must be created only when 
+            // A new token must be created only when
             // "getCurrentCsrfToken()" if called from the
             // application... We don't want to add an
             // attribute to the session if it's not required:
-            // this makes the session dirty and therefore 
+            // this makes the session dirty and therefore
             // saved on each request.
             //==========================================
             SpincastCsrfToken userCsrfToken = getCurrentCsrfToken(false);
@@ -148,7 +148,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
                 csrfTokenSubmitted = context.request().getQueryStringParamFirst(csrfTokenName);
                 if (csrfTokenSubmitted == null) {
                     logger.warn(context.request().getHttpMethod() + " without a CSRF \"" + csrfTokenName + "\" token : " +
-                                     context.request().getFullUrl());
+                                context.request().getFullUrl());
                     csrfDoesntMatchAction(context,
                                           getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_NO_CSRF_TOKEN_PROVIDED));
                     return;
@@ -157,7 +157,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
 
             if (!csrfTokenSubmitted.equals(userCsrfToken.getId())) {
                 logger.warn("Request with an invalid CSRF token : " + context.request().getFullUrl() + " => " +
-                                 userCsrfToken);
+                            userCsrfToken);
                 csrfDoesntMatchAction(context,
                                       getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_CSRF_TOKEN));
                 return;
@@ -179,7 +179,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
                 URI uri = new URI(origin);
                 if (!getSpincastConfig().getPublicServerHost().equalsIgnoreCase(uri.getHost())) {
                     logger.warn("Request with origin header '" + uri.getHost() + "' that doesn't contain the right host : " +
-                                     getSpincastConfig().getPublicServerHost());
+                                getSpincastConfig().getPublicServerHost());
                     csrfDoesntMatchAction(context,
                                           getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_ORGIN));
                     return;
@@ -188,8 +188,8 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
                 URI uri = new URI(referer);
                 if (!getSpincastConfig().getPublicServerHost().equalsIgnoreCase(uri.getHost())) {
                     logger.warn("Request with referer header '" + uri.getHost() +
-                                     "' that doesn't contain the right host : " +
-                                     getSpincastConfig().getPublicServerHost());
+                                "' that doesn't contain the right host : " +
+                                getSpincastConfig().getPublicServerHost());
                     csrfDoesntMatchAction(context,
                                           getDictionary().get(SpincastFormsProtectionPluginDictionaryEntries.MESSAGE_KEY_FORM_INVALID_ORGIN));
                     return;
@@ -211,14 +211,20 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
         SpincastCsrfToken spincastCsrfToken = null;
         SpincastSession currentSession = getSpincastSessionManager().getCurrentSession();
 
-        if (currentSession != null) {
-            JsonObject csrfTokenJsonObj = currentSession.getAttributes()
-                                                        .getJsonObject(SpincastFormsProtectionConfig.SESSION_VARIABLE_NAME_CSRF_TOKEN);
-            if (csrfTokenJsonObj != null) {
-                spincastCsrfToken =
-                        new SpincastCsrfToken(csrfTokenJsonObj.getString("id"), csrfTokenJsonObj.getInstant("creationDate"));
-            }
+        if (currentSession == null) {
+            throw new RuntimeException("No session available to retrieve/save a CSRF token! Make sure the " +
+                                       SpincastSessionFilter.class.getSimpleName() + " before filter is installed " +
+                                       "and run *before* the " + SpincastFormsCsrfProtectionFilter.class.getSimpleName() +
+                                       " one!");
         }
+
+        JsonObject csrfTokenJsonObj = currentSession.getAttributes()
+                                                    .getJsonObject(SpincastFormsProtectionConfig.SESSION_VARIABLE_NAME_CSRF_TOKEN);
+        if (csrfTokenJsonObj != null) {
+            spincastCsrfToken =
+                    new SpincastCsrfToken(csrfTokenJsonObj.getString("id"), csrfTokenJsonObj.getInstant("creationDate"));
+        }
+
 
         //==========================================
         // Create a new token if required.
@@ -247,7 +253,7 @@ public class SpincastFormsCsrfProtectionFilterDefault implements SpincastFormsCs
 
     /**
      * What to do when the CSRF is not there or not valid?
-     * 
+     *
      * By default, throw a {@link PublicException} with
      * an HTTP status code of {@link HttpStatus#SC_BAD_REQUEST} and
      * a public message.

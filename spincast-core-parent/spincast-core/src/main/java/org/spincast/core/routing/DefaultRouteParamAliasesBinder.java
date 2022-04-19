@@ -1,5 +1,7 @@
 package org.spincast.core.routing;
 
+import java.util.Locale;
+
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.websocket.WebsocketContext;
@@ -26,6 +28,8 @@ public class DefaultRouteParamAliasesBinder<R extends RequestContext<?>, W exten
         bindAlphaPlusAlias(insensitive, router);
         bindNumericPlusAlias(insensitive, router);
         bindAlphaNumericPlusAlias(insensitive, router);
+
+        bindLangAlias(insensitive, router);
 
     }
 
@@ -98,5 +102,29 @@ public class DefaultRouteParamAliasesBinder<R extends RequestContext<?>, W exten
         router.addRouteParamPatternAlias(getAlphaNumericPlusAliasKey(),
                                          (insensitive ? "(?i)" : "") + "[-_a-z0-9]+");
     }
+
+    /**
+     * ISO 639 two-letter language codes: "en", "fr", etc.
+     * <p>
+     * As returned by {@link Locale#getISOLanguages()}.
+     */
+    public String getLangAliasKey() {
+        return "LANG";
+    }
+
+    protected void bindLangAlias(boolean insensitive, Router<R, W> router) {
+
+        StringBuilder builder = new StringBuilder("(");
+        String[] isoLanguages = Locale.getISOLanguages();
+        for (String isoLanguage : isoLanguages) {
+            builder.append(isoLanguage).append("|");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        builder.append(")");
+
+        router.addRouteParamPatternAlias(getLangAliasKey(),
+                                         (insensitive ? "(?i)" : "") + builder.toString());
+    }
+
 
 }

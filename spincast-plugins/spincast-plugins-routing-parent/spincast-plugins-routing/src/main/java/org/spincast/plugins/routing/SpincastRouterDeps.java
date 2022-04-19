@@ -4,6 +4,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.filters.SpincastFilters;
+import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.routing.RedirectRuleBuilderFactory;
 import org.spincast.core.routing.RouteBuilderFactory;
 import org.spincast.core.routing.StaticResourceBuilderFactory;
@@ -22,18 +23,18 @@ import com.google.inject.Inject;
  * We do this because the SpincastRouter is made to be extended frequently
  * by developers and :
  * <ul>
- *     <li> 
+ *     <li>
  *     We want it to be easily extended without having to inject too many
  *     dependencies in the child class.
  *     </li>
- *     <li> 
+ *     <li>
  *     We want to keep using constructor injection instead of setter and field
  *     injection.
- *     </li>  
- *     <li> 
+ *     </li>
+ *     <li>
  *     By using a wrapper, we can add new dependencies to SpincastRouter
  *     without breaking the client classes.
- *     </li>  
+ *     </li>
  * </ul>
  */
 public class SpincastRouterDeps<R extends RequestContext<?>, W extends WebsocketContext<?>> {
@@ -52,6 +53,7 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
     private final WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
     private final Server server;
     private final SpincastRoutingUtils spincastRoutingUtils;
+    private final LocaleResolver localeResolver;
 
     /**
      * Constructor
@@ -70,7 +72,8 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
                               StaticResourceFactory<R> staticResourceFactory,
                               WebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory,
                               WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory,
-                              SpincastRoutingUtils spincastRoutingUtils) {
+                              SpincastRoutingUtils spincastRoutingUtils,
+                              LocaleResolver localeResolver) {
 
         this.spincastRouterConfig = spincastRouterConfig;
         this.routeFactory = routeFactory;
@@ -86,6 +89,7 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
         this.websocketRouteBuilderFactory = websocketRouteBuilderFactory;
         this.websocketRouteHandlerFactory = websocketRouteHandlerFactory;
         this.spincastRoutingUtils = spincastRoutingUtils;
+        this.localeResolver = localeResolver;
     }
 
     public RouteHandlerMatchFactory<R> getRouteHandlerMatchFactory() {
@@ -142,6 +146,10 @@ public class SpincastRouterDeps<R extends RequestContext<?>, W extends Websocket
 
     public SpincastRoutingUtils getSpincastRoutingUtils() {
         return this.spincastRoutingUtils;
+    }
+
+    public LocaleResolver getLocaleResolver() {
+        return this.localeResolver;
     }
 
 }

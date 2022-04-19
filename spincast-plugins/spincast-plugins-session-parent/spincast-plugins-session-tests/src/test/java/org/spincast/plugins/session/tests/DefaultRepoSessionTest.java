@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -194,7 +195,7 @@ public class DefaultRepoSessionTest extends SessionTestBase {
 
                 Integer userId = currentSession.getAttributes().getInteger("userId");
                 assertNotNull(userId);
-                assertEquals(new Integer(12345), userId);
+                assertEquals(Integer.valueOf(12345), userId);
 
                 JsonObject infoSet = context.json().create();
                 infoSet.set("k1", "v1");
@@ -223,7 +224,8 @@ public class DefaultRepoSessionTest extends SessionTestBase {
                 try {
                     SpincastSession currentSession = getSessionManager().getCurrentSession();
                     currentSession.getCreationDate().isBefore(Instant.now());
-                    assertEquals(currentSession.getCreationDate(), currentSession.getModificationDate());
+                    assertEquals(currentSession.getCreationDate().truncatedTo(ChronoUnit.SECONDS),
+                                 currentSession.getModificationDate().truncatedTo(ChronoUnit.SECONDS));
 
                     currentSession.getAttributes().set("toti", "123");
 

@@ -42,15 +42,15 @@ public interface JsonObjectOrArray {
     /**
      * The <code>Json</code> string representation
      * of the object.
-     * 
-     * @param pretty if <code>true</code>, the generated String will 
+     *
+     * @param pretty if <code>true</code>, the generated String will
      * be formatted.
      */
     public String toJsonString(boolean pretty);
 
     /**
      * Clone the object.
-     * 
+     *
      * @param mutable if <code>false</code>, the resulting
      * object will be immutable.
      */
@@ -65,7 +65,7 @@ public interface JsonObjectOrArray {
     /**
      * Transforms all the elements of the object, using the specified
      * transformer.
-     * 
+     *
      * @param recursive if  <code>true</code>,
      * then all children elements will also be transformed,
      * recursively.
@@ -73,7 +73,7 @@ public interface JsonObjectOrArray {
     public void transformAll(ElementTransformer transformer, boolean recursive);
 
     /**
-     * Trims the element at the specified <code>JsonPath</code> if 
+     * Trims the element at the specified <code>JsonPath</code> if
      * it's of type <code>String</code>.
      */
     public void trim(String jsonPath);
@@ -81,14 +81,14 @@ public interface JsonObjectOrArray {
     /**
      * Trims all the elements of the object that are of type
      * <code>String</code>. This transformation is not recursive.
-     * 
+     *
      */
     public void trimAll();
 
     /**
      * Trims all the elements of the object that are of type
      * String.
-     * 
+     *
      * @param recursive if  <code>true</code>,
      * then all children elements will also be trimmed,
      * recursively.
@@ -97,14 +97,25 @@ public interface JsonObjectOrArray {
 
     /**
      * Does the object contain an element at
-     * the <code>JsonPath</code> position (even if 
+     * the <code>JsonPath</code> position (even if
      * <code>null</code>)?
+     * <p>
+     * Same as {@link #isPresent(String)}.
      */
     public boolean contains(String jsonPath);
 
     /**
+     * Does the object contain an element at
+     * the <code>JsonPath</code> position (even if
+     * <code>null</code>)?
+     * <p>
+     * Same as {@link #contains(String)}.
+     */
+    public boolean isPresent(String jsonPath);
+
+    /**
      * Removes an element at <code>JsonPath</code>.
-     * 
+     *
      * @return the current object (fluent style).
      */
     public JsonObjectOrArray remove(String jsonPath);
@@ -122,10 +133,10 @@ public interface JsonObjectOrArray {
      * and added, a modification to the original object won't
      * affect the added element, and vice-versa.
      * <p>
-     * If the element to add is a <code>JsonObject</code> or 
-     * a <code>JsonArray</code> and is <em>immutable</em> then 
-     * it will be cloned. 
-     * Doing so, we can make sure that the current object is always 
+     * If the element to add is a <code>JsonObject</code> or
+     * a <code>JsonArray</code> and is <em>immutable</em> then
+     * it will be cloned.
+     * Doing so, we can make sure that the current object is always
      * <em>fully</em> mutable or <em>fully</em> immutable.
      * <p>
      * If the element implements <code>ToJsonObjectConvertible</code>, it
@@ -134,7 +145,7 @@ public interface JsonObjectOrArray {
      * will be converted to a <code>JsonArray</code> using the associated
      * conversion method.
      * <p>
-     * Those are the types of object that will be converted to a 
+     * Those are the types of object that will be converted to a
      * JsonArray instead of a JsonObject, if no conversion interface
      * is implemented :
      * <ul>
@@ -162,10 +173,10 @@ public interface JsonObjectOrArray {
      * and added, a modification to the original object won't
      * affect the added element, and vice-versa.
      * <p>
-     * If the element to add is a <code>JsonObject</code> or 
-     * a <code>JsonArray</code> and is <em>immutable</em> then 
-     * it will be cloned. 
-     * Doing so, we can make sure that the current object is always 
+     * If the element to add is a <code>JsonObject</code> or
+     * a <code>JsonArray</code> and is <em>immutable</em> then
+     * it will be cloned.
+     * Doing so, we can make sure that the current object is always
      * <em>fully</em> mutable or <em>fully</em> immutable.
      * <p>
      * If the element implements <code>ToJsonObjectConvertible</code>, it
@@ -174,7 +185,7 @@ public interface JsonObjectOrArray {
      * will be converted to a <code>JsonArray</code> using the associated
      * conversion method.
      * <p>
-     * Those are the types of object that will be converted to a 
+     * Those are the types of object that will be converted to a
      * JsonArray instead of a JsonObject, if no conversion interface
      * is implemented :
      * <ul>
@@ -186,23 +197,111 @@ public interface JsonObjectOrArray {
      * </li>
      * </ul>
      * </p>
-     * 
+     *
      * @param clone if <code>true</code>, and the element to add is a
-     * <code>JsonObject</code> or <code>JsonArray</code>, a clone will be made 
-     * before being added. If that case, any modification to the 
-     * original element won't affect the added one, 
-     * and vice-versa. If the element is <em>immutable</em> then it will 
-     * always be cloned. Doing so, we can make sure the current object is always 
+     * <code>JsonObject</code> or <code>JsonArray</code>, a clone will be made
+     * before being added. If that case, any modification to the
+     * original element won't affect the added one,
+     * and vice-versa. If the element is <em>immutable</em> then it will
+     * always be cloned. Doing so, we can make sure the current object is always
      * <em>fully</em> mutable or <em>fully</em> immutable.
      */
     public JsonObjectOrArray set(String jsonPath, Object element, boolean clone);
 
     /**
+     * Sets an element at the specified <code>JsonPath</code> if
+     * no element exists at this path.
+     * <p>
+     * The required hierarchy will be created, if required, to
+     * support the <code>JsonPath</code>.
+     * <p>
+     * If the object to add is not of a JsonObject's native type,
+     * the object is converted to a JsonObject or a
+     * JsonArray before being added. Once the object is converted
+     * and added, a modification to the original object won't
+     * affect the added element, and vice-versa.
+     * <p>
+     * If the element to add is a <code>JsonObject</code> or
+     * a <code>JsonArray</code> and is <em>immutable</em> then
+     * it will be cloned.
+     * Doing so, we can make sure that the current object is always
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If the element implements <code>ToJsonObjectConvertible</code>, it
+     * will be converted to a <code>JsonObject</code> using the associated
+     * conversion method. If it implements <code>ToJsonArrayConvertible</code>, it
+     * will be converted to a <code>JsonArray</code> using the associated
+     * conversion method.
+     * <p>
+     * Those are the types of object that will be converted to a
+     * JsonArray instead of a JsonObject, if no conversion interface
+     * is implemented :
+     * <ul>
+     * <li>
+     * A Collection
+     * </li>
+     * <li>
+     * An array
+     * </li>
+     * </ul>
+     * </p>
+     */
+    public JsonObjectOrArray setIfAbsent(String jsonPath, Object element);
+
+    /**
+     * Sets an element at the specified <code>JsonPath</code> if
+     * no element exists at this path.
+     * <p>
+     * The required hierarchy will be created, if required, to
+     * support the <code>JsonPath</code>.
+     * <p>
+     * If the object to add is not of a JsonObject's native type,
+     * the object is converted to a JsonObject or a
+     * JsonArray before being added. Once the object is converted
+     * and added, a modification to the original object won't
+     * affect the added element, and vice-versa.
+     * <p>
+     * If the element to add is a <code>JsonObject</code> or
+     * a <code>JsonArray</code> and is <em>immutable</em> then
+     * it will be cloned.
+     * Doing so, we can make sure that the current object is always
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     * <p>
+     * If the element implements <code>ToJsonObjectConvertible</code>, it
+     * will be converted to a <code>JsonObject</code> using the associated
+     * conversion method. If it implements <code>ToJsonArrayConvertible</code>, it
+     * will be converted to a <code>JsonArray</code> using the associated
+     * conversion method.
+     * <p>
+     * Those are the types of object that will be converted to a
+     * JsonArray instead of a JsonObject, if no conversion interface
+     * is implemented :
+     * <ul>
+     * <li>
+     * A Collection
+     * </li>
+     * <li>
+     * An array
+     * </li>
+     * </ul>
+     * </p>
+     *
+     * @param clone if <code>true</code>, and the element to add is a
+     * <code>JsonObject</code> or <code>JsonArray</code>, a clone will be made
+     * before being added. If that case, any modification to the
+     * original element won't affect the added one,
+     * and vice-versa. If the element is <em>immutable</em> then it will
+     * always be cloned. Doing so, we can make sure the current object is always
+     * <em>fully</em> mutable or <em>fully</em> immutable.
+     */
+    public JsonObjectOrArray setIfAbsent(String jsonPath, Object element, boolean clone);
+
+    /**
      * Gets an element as <code>JsonObject</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the object or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -211,10 +310,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonObject</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the object or the specified 
+     *
+     * @return the object or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -223,12 +322,12 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonObject</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or an empty
      * <code>JsonObject</code> if not found or if <code>null</code>. The empty
      * <code>JsonObject</code> will <em>not</em> be added to the specified
      * path.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -237,14 +336,14 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonObject</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @param addIfDoesntExist if <code>true</code> and the element doesn't exist,
      * the created empty <code>JsonObject</code> will be added to the specified
      * <code>JsonPath</code>.
-     * 
+     *
      * @return the element or an empty
      * <code>JsonObject</code> if not found or if <code>null</code>.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -253,9 +352,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonArray</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the object or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -264,10 +363,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonArray</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the object or the specified 
+     *
+     * @return the object or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -276,12 +375,12 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonArray</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or an empty
      * <code>JsonArray</code> if not found or if <code>null</code>. The empty
      * <code>JsonArray</code> will <em>not</em> be added to the specified
      * path.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -290,14 +389,14 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>JsonArray</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @param addIfDoesntExist if <code>true</code> and the element doesn't exist,
      * the created empty <code>JsonArray</code> will be added to the specified
      * <code>JsonPath</code>.
-     * 
+     *
      * @return the element or an empty
      * <code>JsonArray</code> if not found or if <code>null</code>.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -306,7 +405,7 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>String</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
      */
     public String getString(String jsonPath);
@@ -314,8 +413,8 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>String</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
      */
     public String getString(String jsonPath, String defaultElement);
@@ -323,9 +422,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Integer</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -334,10 +433,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Integer</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -346,9 +445,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Long</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -357,10 +456,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Long</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -369,9 +468,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Float</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -380,10 +479,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Float</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -392,9 +491,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Double</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -403,10 +502,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Double</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -415,9 +514,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Boolean</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -426,10 +525,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>Boolean</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -438,9 +537,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>BigDecimal</code> using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -449,10 +548,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an element as <code>BigDecimal</code> using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -461,9 +560,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets a byte array, from a <em>base 64 encoded</em> element using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -472,10 +571,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets a byte array, from a <em>base 64 encoded</em> element using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -484,9 +583,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets a UTC timezoned date from a <code>ISO 8601</code> date string element using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -495,10 +594,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets a UTC timezoned date from a <code>ISO 8601</code> date string element using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -507,9 +606,9 @@ public interface JsonObjectOrArray {
     /**
      * Gets an Instant from a <code>ISO 8601</code> date string element using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the element or <code>null</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -518,10 +617,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets an Instant from a <code>ISO 8601</code> date string element using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the element or the specified 
+     *
+     * @return the element or the specified
      * <code>defaultElement</code> if not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -530,7 +629,7 @@ public interface JsonObjectOrArray {
     /**
      * Gets an untyped Object using the
      * specified <code>JsonPath</code>.
-     * 
+     *
      * @return the object or <code>null</code> if not found. This object
      * will necessarily be of a type managed by <code>JsonObjectOrArray</code>, since
      * an object of any other type is automatically converted when added.
@@ -540,8 +639,8 @@ public interface JsonObjectOrArray {
     /**
      * Gets an untyped Object using the
      * specified <code>JsonPath</code>.
-     * 
-     * @return the object or the specified 
+     *
+     * @return the object or the specified
      * <code>defaultElement</code> if not found. This object
      * will necessarily be of a type managed by <code>JsonObjectOrArray</code>, since
      * an object of any other type is automatically converted when added.
@@ -551,10 +650,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as JsonObject) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -563,11 +662,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as JsonObject) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -576,10 +675,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as JsonArray) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -588,11 +687,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as JsonArray) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -601,7 +700,7 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as String) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
      */
@@ -610,8 +709,8 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as String) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
      */
@@ -620,10 +719,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Integer) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -632,11 +731,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Integer) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -645,10 +744,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Long) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -657,11 +756,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Long) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -670,10 +769,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Double) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -682,11 +781,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Double) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -695,10 +794,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Float) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -707,11 +806,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Float) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -720,10 +819,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Boolean) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -732,11 +831,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Boolean) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -745,10 +844,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as BigDecimal) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -757,11 +856,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as BigDecimal) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -770,10 +869,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as byte[]) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -782,11 +881,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as byte[]) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -795,10 +894,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Date) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -807,11 +906,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Date) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -820,10 +919,10 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Instant) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
+     *
      * @return the value of the property or <code>null</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -832,11 +931,11 @@ public interface JsonObjectOrArray {
     /**
      * Gets the first value (as Instant) of a <code>JsonArray</code> property
      * of the object, using the <code>JsonPath</code> to find the array.
-     * 
-     * @return the value of the property or the specified 
+     *
+     * @return the value of the property or the specified
      * <code>defaultElement</code> if the array or
      * the first element are not found.
-     * 
+     *
      * @throws CantConvertException if an existing element can't be converted to the
      * required type.
      */
@@ -893,7 +992,7 @@ public interface JsonObjectOrArray {
 
     /**
      * Validates that the value at the specified <code>JsonPath</code> exists and
-     * is currently <code>null</code>, of type <code>base 64 String</code> representing 
+     * is currently <code>null</code>, of type <code>base 64 String</code> representing
      * a byte array, or can be converted and retrieved as one.
      */
     public boolean isCanBeConvertedToByteArray(String jsonPath);
@@ -972,7 +1071,7 @@ public interface JsonObjectOrArray {
      * Validates that the value at the specified <code>JsonPath</code> exists and
      * is currently <code>null</code> or of type <code>byte[]</code>, without requiring
      * any conversion.
-     * 
+     *
      * @param acceptBase64StringToo if <code>true</code>, then a valid base 64 String
      * will also be accepted.
      */

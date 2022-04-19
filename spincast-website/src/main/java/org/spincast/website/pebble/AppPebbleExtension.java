@@ -6,8 +6,11 @@ import java.util.Map;
 import org.jsoup.Jsoup;
 import org.spincast.core.utils.SpincastStatics;
 
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 /**
  * Custom Pebble extension.
@@ -30,11 +33,15 @@ public class AppPebbleExtension extends AbstractExtension {
             }
 
             @Override
-            public Object apply(Object input, Map<String, Object> args) {
-                if (input == null) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
+                if (value == null) {
                     return null;
                 }
-                String str = (String)input;
+                String str = (String)value;
 
                 return Jsoup.parse(str).text();
             }

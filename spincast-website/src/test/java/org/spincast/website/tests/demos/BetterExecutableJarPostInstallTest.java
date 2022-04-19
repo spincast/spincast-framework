@@ -64,7 +64,7 @@ public class BetterExecutableJarPostInstallTest extends DemoTestBase {
             JsonObject responseObj = response.getContentAsJsonObject();
             assertNotNull(responseObj);
             assertEquals("Stromgol", responseObj.getString("name"));
-            assertEquals(new Integer(42), responseObj.getInteger("age"));
+            assertEquals(Integer.valueOf(42), responseObj.getInteger("age"));
 
         } finally {
             handler.killProcess();

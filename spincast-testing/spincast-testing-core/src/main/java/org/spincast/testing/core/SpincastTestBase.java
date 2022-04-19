@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
+import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
@@ -85,7 +87,7 @@ public abstract class SpincastTestBase implements BeforeAfterClassMethodsProvide
     protected SpincastConfig spincastConfig;
 
     @Override
-    public boolean isTestClassDisabledPreBeforeClass() {
+    public boolean isTestClassDisabledPreBeforeClass(Collection<FrameworkMethod> filteredTests) {
         // Not disabled by default
         return false;
     }

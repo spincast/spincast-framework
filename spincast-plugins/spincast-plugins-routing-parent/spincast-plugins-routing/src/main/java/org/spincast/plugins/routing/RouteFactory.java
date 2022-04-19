@@ -33,5 +33,6 @@ public interface RouteFactory<R extends RequestContext<?>> {
                                 @Assisted("skipResources") boolean skipResources,
                                 @Assisted("specs") @Nullable Object specs,
                                 @Assisted("specsParameters") @Nullable Object[] specsParameters,
-                                @Assisted("specsIgnore") boolean specsIgnore);
+                                @Assisted("specsIgnore") boolean specsIgnore,
+                                @Assisted("classes") Set<String> classes);
 }

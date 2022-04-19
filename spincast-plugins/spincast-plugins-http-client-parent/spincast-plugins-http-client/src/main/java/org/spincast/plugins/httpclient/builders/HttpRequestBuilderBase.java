@@ -138,7 +138,10 @@ public abstract class HttpRequestBuilderBase<T extends HttpRequestBuilder<?>> im
             try {
                 SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
                 SSLConnectionSocketFactory sslsf =
-                        new SSLConnectionSocketFactory(sslcontext, new String[]{"TLSv1"}, null, new NoopHostnameVerifier());
+                        new SSLConnectionSocketFactory(sslcontext,
+                                                       new String[]{"TLSv1", "TLSv1.1", "TLSv1.2"},
+                                                       null,
+                                                       new NoopHostnameVerifier());
                 this.httpClientBuilder.setSSLSocketFactory(sslsf);
             } catch (Exception ex) {
                 throw SpincastStatics.runtimize(ex);

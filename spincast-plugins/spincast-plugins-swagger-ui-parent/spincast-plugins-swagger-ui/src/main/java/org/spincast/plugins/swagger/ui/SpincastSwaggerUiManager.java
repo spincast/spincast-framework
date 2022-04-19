@@ -4,11 +4,13 @@ import java.io.File;
 import java.nio.file.Files;
 
 import org.spincast.core.config.SpincastConfig;
+import org.spincast.core.exchange.DefaultRequestContext;
 import org.spincast.core.routing.Router;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
+import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.swagger.ui.config.SpincastSwaggerUiConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
@@ -16,14 +18,14 @@ import com.google.inject.Inject;
 
 public class SpincastSwaggerUiManager {
 
-    private final Router<?, ?> router;
+    private final Router<DefaultRequestContext, DefaultWebsocketContext> router;
     private final SpincastUtils spincastUtils;
     private final SpincastConfig spincastConfig;
     private final TemplatingEngine templatingEngine;
     private final SpincastSwaggerUiConfig spincastSwaggerUiConfig;
 
     @Inject
-    public SpincastSwaggerUiManager(Router<?, ?> router,
+    public SpincastSwaggerUiManager(Router<DefaultRequestContext, DefaultWebsocketContext> router,
                                     SpincastUtils spincastUtils,
                                     SpincastSwaggerUiConfig spincastSwaggerUiConfig,
                                     TemplatingEngine templatingEngine,
@@ -40,7 +42,7 @@ public class SpincastSwaggerUiManager {
         serverSwaggerUi();
     }
 
-    protected Router<?, ?> getRouter() {
+    protected Router<DefaultRequestContext, DefaultWebsocketContext> getRouter() {
         return this.router;
     }
 
@@ -126,5 +128,4 @@ public class SpincastSwaggerUiManager {
                    });
 
     }
-
 }

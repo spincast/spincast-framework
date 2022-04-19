@@ -19,7 +19,9 @@ Docs : "installation"
         <p>
             <ul>
                 <li>
-                    A Java 8 JDK
+                    A Java 17 JDK (have a look at the 
+                    <a href="https://www.spincast.loc:44420/plugins/spincast-hotswap">Spincast Hotswap</a> 
+                    plugin documentation if you want to use hot reloading)
                 </li>
                 <li>
                     A build tool able to use <a href="https://maven.apache.org">Maven</a> artifacts.
@@ -40,20 +42,8 @@ Docs : "installation"
             Spincast ultimate goal is to follow the Java <a href="https://www.oracle.com/technetwork/java/java-se-support-roadmap.html">LTS</a> (Long Term Support) versions. 
         </p>
         <p>
-            The LTS is
-            currently <code>Java 11</code> but we believe the Java 9+ ecosystem is still wobbly
-            because of the new modular system brought by Java 9 (called "<code>JPMS</code>" - <em>Java Platform Module System</em> - or
-            "<code>Jigsaw</code>"). It is still hard to develop a Java 11 application using one of the three main
-            IDEs, where annoying errors such <a href="https://stackoverflow.com/questions/54993710/the-package-com-google-inject-is-accessible-from-more-than-one-module">as this one</a>
-            are still encountered.
-        </p>
-        <p>
-            For this reason, Spincast <code>1.X.X</code> is still based on the very solid Java 8. Spincast <code>2.X.X</code>
-            will be based on Java 11, when we feel the tools are ready.
-        </p>
-        <p>
            <img class="inlineIcon" src="/public/images/icons/para.png" />
-           Finally, note that for the moment Spincast does <em>not</em> follow the <a href="https://semver.org/">Semantic Versioning</a>.
+           Note that for the moment Spincast does <em>not</em> follow the <a href="https://semver.org/">Semantic Versioning</a>.
            The major version is only incremented when a <em>very important</em> change is made (for example the Java version supported by Spincast changes). 
            A minor version increment <em>can</em> contain a breaking change.
         </p>

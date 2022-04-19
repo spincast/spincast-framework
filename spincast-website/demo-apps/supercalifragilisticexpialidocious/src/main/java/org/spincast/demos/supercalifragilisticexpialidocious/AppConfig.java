@@ -18,8 +18,8 @@ public class AppConfig extends SpincastConfigDefault {
 
     /**
      * We change the port the Server will be started on.
-     * 
-     * Note that we could also have specified a 
+     *
+     * Note that we could also have specified a
      * default value, for example :
      * return getInteger("server.port", 8899);
      */
@@ -33,7 +33,7 @@ public class AppConfig extends SpincastConfigDefault {
     }
 
     /**
-     * It is recommended to always override the 
+     * It is recommended to always override the
      * <code>getPublicUrlBase()</code> configuration.
      * Here, we externalize it and use the default only
      * if no custom value if found.

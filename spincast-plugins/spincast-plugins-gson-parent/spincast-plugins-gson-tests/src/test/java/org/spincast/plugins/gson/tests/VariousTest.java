@@ -45,7 +45,7 @@ public class VariousTest extends GsonTestBase {
         assertNotNull(jsonObj);
 
         assertEquals("val1", jsonObj.getString("key1"));
-        assertEquals(new Integer(123), jsonObj.getInteger("key2"));
+        assertEquals(Integer.valueOf(123), jsonObj.getInteger("key2"));
     }
 
     @Test
@@ -74,12 +74,12 @@ public class VariousTest extends GsonTestBase {
         assertNotNull(fromString);
 
         assertEquals("val1", fromString.getString("key1"));
-        assertEquals(new Integer(123), fromString.getInteger("key2"));
+        assertEquals(Integer.valueOf(123), fromString.getInteger("key2"));
         assertEquals(now, fromString.getInstant("key3"));
         assertEquals("val5", fromString.getString("innerObj.key5"));
 
         assertEquals("el1", fromString.getString("innerObj.key6[0]"));
-        assertEquals(new Integer(456), fromString.getInteger("innerObj.key6[1]"));
+        assertEquals(Integer.valueOf(456), fromString.getInteger("innerObj.key6[1]"));
     }
 
     @Test
@@ -134,5 +134,3 @@ public class VariousTest extends GsonTestBase {
     }
 
 }
-
-

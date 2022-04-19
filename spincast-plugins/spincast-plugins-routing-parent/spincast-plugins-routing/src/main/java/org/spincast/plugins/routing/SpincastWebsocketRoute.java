@@ -23,6 +23,7 @@ public class SpincastWebsocketRoute<R extends RequestContext<?>, W extends Webso
     private final List<Handler<R>> beforeFilters;
     private final Set<String> filterIdsToSkip;
     private final WebsocketController<R, W> websocketController;
+    private final Set<String> classes;
 
     /**
      * Constructor
@@ -33,13 +34,15 @@ public class SpincastWebsocketRoute<R extends RequestContext<?>, W extends Webso
                                   @Assisted("path") String path,
                                   @Assisted("before") @Nullable List<Handler<R>> beforeFilters,
                                   @Assisted("filterIdsToSkip") @Nullable Set<String> filterIdsToSkip,
-                                  @Assisted("controller") WebsocketController<R, W> websocketController) {
+                                  @Assisted("controller") WebsocketController<R, W> websocketController,
+                                  @Assisted("classes") Set<String> classes) {
         this.spicastCoreRouteOrPluginRoute = spicastCoreRouteOrPluginRoute;
         this.id = id;
         this.path = path;
         this.beforeFilters = beforeFilters;
         this.filterIdsToSkip = filterIdsToSkip;
         this.websocketController = websocketController;
+        this.classes = classes;
     }
 
     @Override
@@ -50,6 +53,11 @@ public class SpincastWebsocketRoute<R extends RequestContext<?>, W extends Webso
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public Set<String> getClasses() {
+        return this.classes;
     }
 
     @Override

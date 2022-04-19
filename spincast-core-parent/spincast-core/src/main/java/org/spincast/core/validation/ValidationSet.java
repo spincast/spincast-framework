@@ -17,7 +17,7 @@ public interface ValidationSet {
     /**
      * Creates and adds a new validation Message.
      * <p>
-     * Escapes the message in <code>&lt;pre&gt;</code> 
+     * Escapes the message in <code>&lt;pre&gt;</code>
      * tags if displayed in HTML.
      */
     public void addMessage(String validationKey,
@@ -27,8 +27,8 @@ public interface ValidationSet {
 
     /**
      * Creates and adds a new validation Message.
-     * 
-     * @param htmlEscape if this message if displayed using 
+     *
+     * @param htmlEscape if this message if displayed using
      * <code>HTML</code>, how should it be escaped?
      */
     public void addMessage(String validationKey,
@@ -40,15 +40,15 @@ public interface ValidationSet {
     /**
      * Creates and adds a new Error validation Message.
      * <p>
-     * Escapes the message in <code>&lt;pre&gt;</code> 
+     * Escapes the message in <code>&lt;pre&gt;</code>
      * tags if displayed in HTML.
      */
     public void addError(String validationKey, String code, String text);
 
     /**
      * Creates and adds a new Error validation Message.
-     * 
-     * @param htmlEscape if this message if displayed using 
+     *
+     * @param htmlEscape if this message if displayed using
      * <code>HTML</code>, should should it be escaped?
      */
     public void addError(String validationKey, String code, String text, ValidationHtmlEscapeType htmlEscapeType);
@@ -56,15 +56,15 @@ public interface ValidationSet {
     /**
      * Creates and adds a new Warning validation Message.)
      * <p>
-     * Escapes the message in <code>&lt;pre&gt;</code> 
+     * Escapes the message in <code>&lt;pre&gt;</code>
      * tags if displayed in HTML.
      */
     public void addWarning(String validationKey, String code, String text);
 
     /**
      * Creates and adds a new Warning validation Message.)
-     * 
-     * @param htmlEscape if this message if displayed using 
+     *
+     * @param htmlEscape if this message if displayed using
      * <code>HTML</code>, should should it be escaped?
      */
     public void addWarning(String validationKey, String code, String text, ValidationHtmlEscapeType htmlEscapeType);
@@ -72,15 +72,15 @@ public interface ValidationSet {
     /**
      * Creates and adds a new Success validation Message.
      * <p>
-     * Escapes the message in <code>&lt;pre&gt;</code> 
+     * Escapes the message in <code>&lt;pre&gt;</code>
      * tags if displayed in HTML.
      */
     public void addSuccess(String validationKey, String code, String text);
 
     /**
      * Creates and adds a new Success validation Message.
-     * 
-     * @param htmlEscapeType if this message if displayed using 
+     *
+     * @param htmlEscapeType if this message if displayed using
      * <code>HTML</code>, should should it be escaped?
      */
     public void addSuccess(String validationKey, String code, String text, ValidationHtmlEscapeType htmlEscapeType);
@@ -98,15 +98,15 @@ public interface ValidationSet {
     public boolean hasMessages(String validationKey);
 
     /**
-     * Returns <code>true</code> if the validation set 
+     * Returns <code>true</code> if the validation set
      * contains at least one <em>WARNING</em> message, but no
      * <em>ERROR</em> messages.
      */
     public boolean isWarning();
 
     /**
-     * Returns <code>true</code> if the validation set 
-     * for the element at the specified key contains at 
+     * Returns <code>true</code> if the validation set
+     * for the element at the specified key contains at
      * least one <em>WARNING</em> message, but no
      * <em>ERROR</em> messages.
      */
@@ -121,29 +121,29 @@ public interface ValidationSet {
 
     /**
      * Returns <code>true</code> if the validation set
-     * for the element at the specified key only contains 
+     * for the element at the specified key only contains
      * <em>SUCCESS</em> messages
      * (or contains no messages at all).
      */
     public boolean isSuccess(String validationKey);
 
     /**
-     * Returns <code>true</code> if the validation set 
+     * Returns <code>true</code> if the validation set
      * contains at least one <em>ERROR</em> message.
      */
     public boolean isError();
 
     /**
-     * Returns <code>true</code> if the validation set 
+     * Returns <code>true</code> if the validation set
      * for the element at the specified key contains
      * at least one <em>ERROR</em> message.
      */
     public boolean isError(String validationKey);
 
     /**
-     * Returns <code>true</code> if the validation set 
+     * Returns <code>true</code> if the validation set
      * does not contain <em>ERROR</em> messages.
-     * The set <em>may</em> contain 
+     * The set <em>may</em> contain
      * <em>WARNING</em> messages.
      * <p>
      * This is a synonym of <code>!isError()</code>.
@@ -151,7 +151,7 @@ public interface ValidationSet {
     public boolean isValid();
 
     /**
-     * Returns <code>true</code> if the validation set 
+     * Returns <code>true</code> if the validation set
      * for the elements at the specified keys
      * dont not contain <em>ERROR</em> messages.
      * <p>
@@ -164,7 +164,7 @@ public interface ValidationSet {
     public boolean isValid(String... validationKey);
 
     /**
-     * Gets the validation keys and their 
+     * Gets the validation keys and their
      * associated messages.
      * <p>
      * The Map and the lists are immutable.
@@ -181,10 +181,10 @@ public interface ValidationSet {
     /**
      * Quick way to get a formatted version of the validation
      * messages for the specified key.
-     * 
+     *
      * @param key The key to get messages for.
      * @param formatType The type of output for the messages (Text, HTML, Json or XML).
-     * 
+     *
      * @return the formatted messages or <code>null</code> if
      * there are no validation messages.
      */
@@ -193,9 +193,9 @@ public interface ValidationSet {
     /**
      * Quick way to get a formatted version of all validation
      * messages.
-     * 
+     *
      * @param formatType The type of output for the messages (Text, HTML, Json or XML).
-     * 
+     *
      * @return the formatted messages or <code>null</code> if
      * there are no validation messages.
      */
@@ -208,7 +208,7 @@ public interface ValidationSet {
 
     /**
      * Merges another {@link ValidationSet}.
-     * 
+     *
      * @return this, fluent-style.
      */
     public ValidationSet mergeValidationSet(ValidationSet validationSet);
@@ -217,7 +217,7 @@ public interface ValidationSet {
      * Merges another {@link ValidationSet} and prefixes all the
      * validation keys of this set using the
      * <code>validationKeyPrefix</code>.
-     * 
+     *
      * @return this, fluent-style.
      */
     public ValidationSet mergeValidationSet(String validationKeyPrefix, ValidationSet validationSet);
@@ -235,6 +235,13 @@ public interface ValidationSet {
      * as json, in a response.
      */
     public JsonObject getValidationResultAsJsonObject();
+
+
+    /**
+     * Removes all previously added messages
+     * and reset the validation status.
+     */
+    public void clearAllValidation();
 
 
 }

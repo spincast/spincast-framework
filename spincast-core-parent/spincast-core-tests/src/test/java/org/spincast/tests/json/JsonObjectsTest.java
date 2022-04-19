@@ -61,6 +61,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
     }
 
     public static enum TestEnum {
+
         ONE("first value"),
         SECOND("second value");
 
@@ -221,12 +222,12 @@ public class JsonObjectsTest extends NoAppTestingBase {
         JsonObject jsonObj = getJsonManager().fromString(str);
         assertNotNull(jsonObj);
         assertEquals(true, jsonObj.getBoolean("anotherBoolean"));
-        assertEquals(new Integer(44444), jsonObj.getInteger("anotherInt"));
+        assertEquals(Integer.valueOf(44444), jsonObj.getInteger("anotherInt"));
 
         JsonObject jsonObj2 = jsonObj.getJsonObject("innerObj");
         assertNotNull(jsonObj2);
         assertEquals(true, jsonObj2.getBoolean("someBoolean"));
-        assertEquals(new Integer(123), jsonObj2.getInteger("someInt"));
+        assertEquals(Integer.valueOf(123), jsonObj2.getInteger("someInt"));
 
         String jsonString = jsonObj.toJsonString();
         assertEquals(str.length(), jsonString.length());
@@ -467,11 +468,11 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Double result = jsonObj.getDouble("key5");
         assertNotNull(result);
-        assertEquals(new Double(123), result);
+        assertEquals(Double.valueOf(123), result);
 
         result = jsonObj.getDouble("key6");
         assertNotNull(result);
-        assertEquals(new Double(123), result);
+        assertEquals(Double.valueOf(123), result);
 
         result = jsonObj.getDouble("key7");
         assertNotNull(result);
@@ -479,8 +480,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         result = jsonObj.getDouble("nope");
         assertNull(result);
 
-        result = jsonObj.getDouble("nope", new Double("123"));
-        assertEquals(new Double("123"), result);
+        result = jsonObj.getDouble("nope", Double.valueOf("123"));
+        assertEquals(Double.valueOf("123"), result);
 
         result = jsonObj.getDouble("nope", null);
         assertEquals(null, result);
@@ -533,11 +534,11 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Integer result = jsonObj.getInteger("key5");
         assertNotNull(result);
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
 
         result = jsonObj.getInteger("key6");
         assertNotNull(result);
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
 
         try {
             jsonObj.getInteger("key7");
@@ -548,8 +549,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         result = jsonObj.getInteger("nope");
         assertNull(result);
 
-        result = jsonObj.getInteger("nope", new Integer("123"));
-        assertEquals(new Integer("123"), result);
+        result = jsonObj.getInteger("nope", Integer.valueOf("123"));
+        assertEquals(Integer.valueOf("123"), result);
 
         result = jsonObj.getInteger("nope", null);
         assertEquals(null, result);
@@ -602,11 +603,11 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Long result = jsonObj.getLong("key5");
         assertNotNull(result);
-        assertEquals(new Long(123), result);
+        assertEquals(Long.valueOf(123), result);
 
         result = jsonObj.getLong("key6");
         assertNotNull(result);
-        assertEquals(new Long(123), result);
+        assertEquals(Long.valueOf(123), result);
 
         try {
             jsonObj.getLong("key7");
@@ -617,8 +618,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         result = jsonObj.getLong("nope");
         assertNull(result);
 
-        result = jsonObj.getLong("nope", new Long("123"));
-        assertEquals(new Long("123"), result);
+        result = jsonObj.getLong("nope", Long.valueOf("123"));
+        assertEquals(Long.valueOf("123"), result);
 
         result = jsonObj.getLong("nope", null);
         assertEquals(null, result);
@@ -670,11 +671,11 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Float result = jsonObj.getFloat("key5");
         assertNotNull(result);
-        assertEquals(new Float(123), result);
+        assertEquals(Float.valueOf(123), result);
 
         result = jsonObj.getFloat("key6");
         assertNotNull(result);
-        assertEquals(new Float(123), result);
+        assertEquals(Float.valueOf(123), result);
 
         result = jsonObj.getFloat("key7");
         assertNotNull(result);
@@ -683,8 +684,8 @@ public class JsonObjectsTest extends NoAppTestingBase {
         result = jsonObj.getFloat("nope");
         assertNull(result);
 
-        result = jsonObj.getFloat("nope", new Float("123"));
-        assertEquals(new Float("123"), result);
+        result = jsonObj.getFloat("nope", Float.valueOf("123"));
+        assertEquals(Float.valueOf("123"), result);
 
         result = jsonObj.getFloat("nope", null);
         assertEquals(null, result);
@@ -1689,7 +1690,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Integer arrayFirst = jsonObj.getArrayFirstInteger("arr");
         assertNotNull(arrayFirst);
-        assertEquals(new Integer(123), arrayFirst);
+        assertEquals(Integer.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1704,7 +1705,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add(array2);
 
         Integer arrayFirst = array.getArrayFirstInteger(1);
-        assertEquals(new Integer(123), arrayFirst);
+        assertEquals(Integer.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1719,7 +1720,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Long arrayFirst = jsonObj.getArrayFirstLong("arr");
         assertNotNull(arrayFirst);
-        assertEquals(new Long(123), arrayFirst);
+        assertEquals(Long.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1734,7 +1735,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add(array2);
 
         Long arrayFirst = array.getArrayFirstLong(1);
-        assertEquals(new Long(123), arrayFirst);
+        assertEquals(Long.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1749,7 +1750,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Float arrayFirst = jsonObj.getArrayFirstFloat("arr");
         assertNotNull(arrayFirst);
-        assertEquals(new Float(123), arrayFirst);
+        assertEquals(Float.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1764,7 +1765,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add(array2);
 
         Float arrayFirst = array.getArrayFirstFloat(1);
-        assertEquals(new Float(123), arrayFirst);
+        assertEquals(Float.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1779,7 +1780,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
 
         Double arrayFirst = jsonObj.getArrayFirstDouble("arr");
         assertNotNull(arrayFirst);
-        assertEquals(new Double(123), arrayFirst);
+        assertEquals(Double.valueOf(123), arrayFirst);
     }
 
     @Test
@@ -1794,7 +1795,7 @@ public class JsonObjectsTest extends NoAppTestingBase {
         array.add(array2);
 
         Double arrayFirst = array.getArrayFirstDouble(1);
-        assertEquals(new Double(123), arrayFirst);
+        assertEquals(Double.valueOf(123), arrayFirst);
     }
 
     @Test

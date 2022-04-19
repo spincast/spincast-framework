@@ -28,10 +28,10 @@ import com.google.inject.Inject;
  * The instance of this class will be created by
  * HotSwap Agent.
  * <p>
- * We bind it to the Guice context using 
- * <code>toInstance()</code> and this will inject 
- * the required dependencies on members 
- * ("@Inject" annotated), directly. 
+ * We bind it to the Guice context using
+ * <code>toInstance()</code> and this will inject
+ * the required dependencies on members
+ * ("@Inject" annotated), directly.
  */
 @Plugin(name = "HotSwapClassesRedefinitionsWatcher", testedVersions = "")
 public class HotSwapClassesRedefinitionsWatcherDefault implements HotSwapClassesRedefinitionsWatcher {
@@ -58,7 +58,7 @@ public class HotSwapClassesRedefinitionsWatcherDefault implements HotSwapClasses
 
     /**
      * This will be called by HotSwap Agent to inject
-     * the Scheduler instance. 
+     * the Scheduler instance.
      */
     @Init
     protected Scheduler scheduler;
@@ -101,6 +101,12 @@ public class HotSwapClassesRedefinitionsWatcherDefault implements HotSwapClasses
     //==========================================
     @OnClassLoadEvent(classNameRegexp = THIS_CLASS_NAME, events = LoadEvent.DEFINE)
     public static void init(CtClass ctClass) throws NotFoundException, CannotCompileException {
+
+        System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+        System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+        System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+        System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+        System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
 
         String src = PluginManagerInvoker.buildInitializePlugin(HotSwapClassesRedefinitionsWatcherDefault.class);
 
@@ -189,7 +195,7 @@ public class HotSwapClassesRedefinitionsWatcherDefault implements HotSwapClasses
             //==========================================
             // The "@OnClassLoadEvent" method is
             // called *before* the class is actually reloaded.
-            // By using the agent's scheduler, we can set 
+            // By using the agent's scheduler, we can set
             // an action to be run *after* the class has been
             // redefined.
             //==========================================

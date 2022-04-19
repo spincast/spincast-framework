@@ -137,7 +137,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat('full', 'full') }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "Monday, December 3, 2007 - 10:15:30 AM UTC");
+        assertEquals(result, "Monday, December 3, 2007 - 10:15:30 AM Coordinated Universal Time");
     }
 
     @Test
@@ -163,7 +163,7 @@ public class PebbleExtensionTest extends DateFormatterTestBase {
 
         String content = "{{now | dateFormat('_', 'full') }}";
         String result = getTemplatingEngine().evaluate(content, model);
-        assertEquals(result, "2007-12-03 - 10:15:30 AM UTC");
+        assertEquals(result, "2007-12-03 - 10:15:30 AM Coordinated Universal Time");
     }
 
     @Test

@@ -45,25 +45,25 @@ public class ConvertToNativeTypeTest extends NoAppTestingBase {
     @Test
     public void nativeTypesInteger() throws Exception {
         Object result = getJsonManager().convertToNativeType(123);
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
     }
 
     @Test
     public void nativeTypesLong() throws Exception {
         Object result = getJsonManager().convertToNativeType(123L);
-        assertEquals(new Long(123), result);
+        assertEquals(Long.valueOf(123), result);
     }
 
     @Test
     public void nativeTypesFloat() throws Exception {
         Object result = getJsonManager().convertToNativeType(123.4F);
-        assertEquals(new Float(123.4), result);
+        assertEquals(Float.valueOf("123.4"), result);
     }
 
     @Test
     public void nativeTypesDouble() throws Exception {
         Object result = getJsonManager().convertToNativeType(123.4D);
-        assertEquals(new Double(123.4), result);
+        assertEquals(Double.valueOf(123.4), result);
     }
 
     @Test
@@ -220,10 +220,9 @@ public class ConvertToNativeTypeTest extends NoAppTestingBase {
         JsonObject resultObj = (JsonObject)result;
         assertEquals("Stromgol", resultObj.getString("name"));
         assertTrue(resultObj.isCanBeConvertedToJsonArray("nbrs"));
-        assertEquals(new Integer(1), resultObj.getInteger("nbrs[0]"));
-        assertEquals(new Integer(2), resultObj.getInteger("nbrs[1]"));
-        assertEquals(new Integer(3), resultObj.getInteger("nbrs[2]"));
+        assertEquals(Integer.valueOf(1), resultObj.getInteger("nbrs[0]"));
+        assertEquals(Integer.valueOf(2), resultObj.getInteger("nbrs[1]"));
+        assertEquals(Integer.valueOf(3), resultObj.getInteger("nbrs[2]"));
     }
 
 }
-

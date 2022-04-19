@@ -48,16 +48,16 @@ public class JsonPathsSelectTest extends GsonTestBase {
         obj.set("key1", 123);
 
         Integer result = obj.getInteger("key1");
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
 
         result = obj.getInteger("['key1']");
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
 
         result = obj.getInteger("[\"key1\"]");
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
 
         result = obj.getInteger("nope", 456);
-        assertEquals(new Integer(456), result);
+        assertEquals(Integer.valueOf(456), result);
     }
 
     @Test
@@ -67,16 +67,16 @@ public class JsonPathsSelectTest extends GsonTestBase {
         obj.set("key1", 123L);
 
         Long result = obj.getLong("key1");
-        assertEquals(new Long(123), result);
+        assertEquals(Long.valueOf(123), result);
 
         result = obj.getLong("['key1']");
-        assertEquals(new Long(123), result);
+        assertEquals(Long.valueOf(123), result);
 
         result = obj.getLong("[\"key1\"]");
-        assertEquals(new Long(123), result);
+        assertEquals(Long.valueOf(123), result);
 
         result = obj.getLong("nope", 456L);
-        assertEquals(new Long(456), result);
+        assertEquals(Long.valueOf(456), result);
     }
 
     @Test
@@ -86,16 +86,16 @@ public class JsonPathsSelectTest extends GsonTestBase {
         obj.set("key1", 12.34F);
 
         Float result = obj.getFloat("key1");
-        assertEquals(new Float(12.34), result);
+        assertEquals(Float.valueOf("12.34"), result);
 
         result = obj.getFloat("['key1']");
-        assertEquals(new Float(12.34), result);
+        assertEquals(Float.valueOf("12.34"), result);
 
         result = obj.getFloat("[\"key1\"]");
-        assertEquals(new Float(12.34), result);
+        assertEquals(Float.valueOf("12.34"), result);
 
         result = obj.getFloat("nope", 56.78F);
-        assertEquals(new Float(56.78), result);
+        assertEquals(Float.valueOf("56.78"), result);
     }
 
     @Test
@@ -105,16 +105,16 @@ public class JsonPathsSelectTest extends GsonTestBase {
         obj.set("key1", 12.34);
 
         Double result = obj.getDouble("key1");
-        assertEquals(new Double(12.34), result);
+        assertEquals(Double.valueOf(12.34), result);
 
         result = obj.getDouble("['key1']");
-        assertEquals(new Double(12.34), result);
+        assertEquals(Double.valueOf(12.34), result);
 
         result = obj.getDouble("[\"key1\"]");
-        assertEquals(new Double(12.34), result);
+        assertEquals(Double.valueOf(12.34), result);
 
         result = obj.getDouble("nope", 56.78);
-        assertEquals(new Double(56.78), result);
+        assertEquals(Double.valueOf(56.78), result);
     }
 
     @Test
@@ -280,13 +280,13 @@ public class JsonPathsSelectTest extends GsonTestBase {
         obj.set("inner", inner);
 
         Integer result = obj.getInteger("inner.key1");
-        assertEquals(new Integer(123), result);
+        assertEquals(Integer.valueOf(123), result);
 
         result = obj.getInteger("nope", 456);
-        assertEquals(new Integer(456), result);
+        assertEquals(Integer.valueOf(456), result);
 
         result = obj.getInteger("inner.nope", 456);
-        assertEquals(new Integer(456), result);
+        assertEquals(Integer.valueOf(456), result);
     }
 
     @Test
@@ -485,10 +485,10 @@ public class JsonPathsSelectTest extends GsonTestBase {
         assertEquals("value7", result);
 
         Integer resultInt = obj.getInteger("inner[1].key2[0][1].key4.key5[1]");
-        assertEquals(new Integer(123), resultInt);
+        assertEquals(Integer.valueOf(123), resultInt);
 
         Double resultDouble = obj.getDouble("inner[1].key2[0][1].key4.key5[2]");
-        assertEquals(new Double(12.34), resultDouble);
+        assertEquals(Double.valueOf(12.34), resultDouble);
 
         Boolean resultBoolean = obj.getBoolean("inner[1].key2[0][1].key4.key5[3]");
         assertEquals(true, resultBoolean);

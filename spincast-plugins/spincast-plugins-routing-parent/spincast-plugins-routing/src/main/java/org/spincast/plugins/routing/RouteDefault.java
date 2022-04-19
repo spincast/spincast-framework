@@ -39,6 +39,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     private final Object specs;
     private final List<Object> specsParameters;
     private final boolean specsIgnore;
+    private final Set<String> classes;
 
     /**
      * Constructor
@@ -61,7 +62,8 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
                         @Assisted("skipResources") boolean skipResources,
                         @Assisted("specs") @Nullable Object specs,
                         @Assisted("specsParameters") @Nullable Object[] specsParameters,
-                        @Assisted("specsIgnore") boolean specsIgnore) {
+                        @Assisted("specsIgnore") boolean specsIgnore,
+                        @Assisted("classes") Set<String> classes) {
         this.id = id;
         this.isWebsocketRoute = isWebsocketRoute;
         this.isResourceRoute = isResourceRoute;
@@ -102,6 +104,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
         this.specs = specs;
         this.specsParameters = specsParameters != null ? Lists.newArrayList(specsParameters) : new ArrayList<Object>();
         this.specsIgnore = specsIgnore;
+        this.classes = classes;
     }
 
     @Override
@@ -117,6 +120,11 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
     @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public Set<String> getClasses() {
+        return this.classes;
     }
 
     @Override
@@ -199,5 +207,7 @@ public class RouteDefault<R extends RequestContext<?>> implements Route<R> {
         return "[" + getPosition() + "] " +
                Arrays.toString(getHttpMethods().toArray(new HttpMethod[getHttpMethods().size()])) + " " + getPath();
     }
+
+
 
 }

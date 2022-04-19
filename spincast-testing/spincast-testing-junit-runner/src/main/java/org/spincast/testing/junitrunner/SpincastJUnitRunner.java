@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.AfterClass;
@@ -13,6 +14,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.ParentRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
@@ -194,10 +196,31 @@ public class SpincastJUnitRunner extends BlockJUnit4ClassRunner {
         //==========================================
         // If the tests class disabled?
         //==========================================
-        if (getTestClassInstance() instanceof CanBeDisabled &&
-            ((CanBeDisabled)getTestClassInstance()).isTestClassDisabledPreBeforeClass()) {
-            logger.info("Test class disabled (pre 'beforeClass')! Skipping...");
-            return;
+        if (getTestClassInstance() instanceof CanBeDisabled) {
+
+            //==========================================
+            // This is a hack to know what are the tests
+            // that are going to be run. We get those to
+            // pass them to "isTestClassDisabledPreBeforeClass"
+            // so they can be used to determine if the tests
+            // class must be ignored.
+            //==========================================
+            Collection<FrameworkMethod> filteredTests = null;
+            try {
+                Method getFilteredChildrenMethod = ParentRunner.class.getDeclaredMethod("getFilteredChildren");
+                getFilteredChildrenMethod.setAccessible(true);
+                @SuppressWarnings("unchecked")
+                Collection<FrameworkMethod> temp = (Collection<FrameworkMethod>)getFilteredChildrenMethod.invoke(this);
+                filteredTests = temp;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return;
+            }
+
+            if (((CanBeDisabled)getTestClassInstance()).isTestClassDisabledPreBeforeClass(filteredTests)) {
+                logger.info("Test class disabled (pre 'beforeClass')! Skipping...");
+                return;
+            }
         }
 
         //==========================================

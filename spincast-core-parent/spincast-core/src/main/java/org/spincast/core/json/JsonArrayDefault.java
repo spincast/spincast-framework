@@ -239,7 +239,7 @@ public class JsonArrayDefault extends JsonObjectArrayBase implements JsonArray {
         if (value != null) {
 
             //==========================================
-            // Can the object convert itself to a 
+            // Can the object convert itself to a
             // JsonObject or JsonArray?
             //==========================================
             boolean newObject = false;

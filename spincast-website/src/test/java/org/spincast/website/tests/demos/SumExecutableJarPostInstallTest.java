@@ -65,7 +65,7 @@ public class SumExecutableJarPostInstallTest extends DemoTestBase {
             assertEquals(HttpStatus.SC_OK, response.getStatus());
 
             JsonObject resultObj = response.getContentAsJsonObject();
-            assertEquals(new Integer(17), resultObj.getInteger("result"));
+            assertEquals(Integer.valueOf(17), resultObj.getInteger("result"));
 
         } finally {
             handler.killProcess();

@@ -1339,9 +1339,13 @@ public class SpincastUndertowServer implements Server {
                         if (!isFile) {
                             continue;
                         }
+                        String fileName = formValue.getFileName();
+                        if (StringUtils.isBlank(fileName)) {
+                            continue;
+                        }
+
                         File file = formValue.getFileItem().getFile().toFile();
                         if (file != null) {
-                            String fileName = formValue.getFileName();
                             if (StringUtils.isBlank(fileName)) {
                                 fileName = UUID.randomUUID().toString();
                             }

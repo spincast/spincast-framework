@@ -281,7 +281,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
         assertTrue(client.waitForConnectionClosed());
 
         assertEquals(1, client.getConnectionClosedEvents().size());
-        assertEquals(new Integer(1000), client.getConnectionClosedEvents().get(0).getKey());
+        assertEquals(Integer.valueOf(1000), client.getConnectionClosedEvents().get(0).getKey());
         assertEquals("some reason", client.getConnectionClosedEvents().get(0).getValue());
     }
 

@@ -15,13 +15,14 @@ import org.spincast.core.json.JsonManager;
 import org.spincast.core.json.JsonObject;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.SpincastStatics;
+import org.spincast.plugins.pebble.utils.SpincastCaffeineTagCache;
+import org.spincast.plugins.pebble.utils.SpincastCaffeineTemplateCache;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.PebbleEngine.Builder;
-import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
+import com.mitchellbosecke.pebble.cache.CacheKey;
+import com.mitchellbosecke.pebble.cache.PebbleCache;
 import com.mitchellbosecke.pebble.extension.Extension;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.FileLoader;
@@ -113,14 +114,14 @@ public class SpincastPebbleTemplatingEngine implements TemplatingEngine {
         if (templateCacheItemNbr < 0) {
             templateCacheItemNbr = 0;
         }
-        Cache<Object, PebbleTemplate> cache = CacheBuilder.newBuilder().maximumSize(templateCacheItemNbr).build();
-        builder.templateCache(cache);
+        PebbleCache<Object, PebbleTemplate> templateCache = new SpincastCaffeineTemplateCache(templateCacheItemNbr);
+        builder.templateCache(templateCache);
 
         int tagCacheItemNbr = getSpincastPebbleTemplatingEngineConfig().getTagCacheTypeItemNbr();
         if (tagCacheItemNbr < 0) {
             tagCacheItemNbr = 0;
         }
-        Cache<BaseTagCacheKey, Object> tagCache = CacheBuilder.newBuilder().maximumSize(templateCacheItemNbr).build();
+        PebbleCache<CacheKey, Object> tagCache = new SpincastCaffeineTagCache(tagCacheItemNbr);
         builder.tagCache(tagCache);
 
         //==========================================

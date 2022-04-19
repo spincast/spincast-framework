@@ -11,9 +11,12 @@ import org.spincast.shaded.org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 
 public class SpincastDateFormatterPebbleExtensionDefault extends AbstractExtension
@@ -61,9 +64,13 @@ public class SpincastDateFormatterPebbleExtensionDefault extends AbstractExtensi
             }
 
             @Override
-            public Object apply(Object dateObj, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
-                if (dateObj != null) {
+                if (value != null) {
 
                     try {
 
@@ -74,16 +81,16 @@ public class SpincastDateFormatterPebbleExtensionDefault extends AbstractExtensi
                         //==========================================
                         if (firstParam != null &&
                             firstParam.toString().toLowerCase().equals("relative")) {
-                            return formatUsingRelativeFormatter(dateObj, args);
+                            return formatUsingRelativeFormatter(value, args);
                         }
 
                         //==========================================
                         // Standard formatter
                         //==========================================
-                        return formatUsingStandardFormatter(dateObj, args);
+                        return formatUsingStandardFormatter(value, args);
 
                     } catch (Exception ex) {
-                        return dateObj.toString();
+                        return value.toString();
                     }
                 } else {
                     return "";

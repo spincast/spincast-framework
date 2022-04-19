@@ -21,6 +21,7 @@ import org.spincast.plugins.gson.serializers.JsonArrayDeserializer;
 import org.spincast.plugins.gson.serializers.JsonArraytSerializer;
 import org.spincast.plugins.gson.serializers.JsonObjectDeserializer;
 import org.spincast.plugins.gson.serializers.JsonObjectSerializer;
+import org.spincast.plugins.gson.serializers.ThrowableSerializer;
 
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
@@ -54,6 +55,7 @@ public class SpincastGsonPluginModule extends SpincastGuiceModuleBase {
         bind(new TypeLiteral<JsonSerializer<BigDecimal>>() {}).to(getBigDecimalSerializerImpl()).in(Scopes.SINGLETON);
         bind(new TypeLiteral<JsonSerializer<Enum<?>>>() {}).to(getEnumSerializerImpl()).in(Scopes.SINGLETON);
         bind(new TypeLiteral<JsonSerializer<Class<?>>>() {}).to(getClassSerializerImpl()).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<JsonSerializer<Throwable>>() {}).to(getThrowableSerializerImpl()).in(Scopes.SINGLETON);
 
     }
 
@@ -99,6 +101,10 @@ public class SpincastGsonPluginModule extends SpincastGuiceModuleBase {
 
     protected Class<? extends JsonSerializer<Class<?>>> getClassSerializerImpl() {
         return ClassSerializer.class;
+    }
+
+    protected Class<? extends JsonSerializer<Throwable>> getThrowableSerializerImpl() {
+        return ThrowableSerializer.class;
     }
 
 }

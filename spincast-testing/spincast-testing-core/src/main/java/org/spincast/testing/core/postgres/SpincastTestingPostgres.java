@@ -12,7 +12,6 @@ import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.plugins.jdbc.SpincastDataSource;
 import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
 import org.spincast.plugins.jdbc.statements.UpdateStatement;
-import org.spincast.testing.core.utils.SpincastTestingUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -61,7 +60,7 @@ public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
     @Inject
     public void init() {
         try {
-            this.pgPort = SpincastTestingUtils.findFreePort();
+            this.pgPort = getPortToUse();
 
             logger.info("Starting embedded PostgreSQL on port " + this.pgPort + ". Please wait...");
 
@@ -72,10 +71,29 @@ public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
                                       .start();
 
             logger.info("Embedded PostgreSQL started.");
+            logger.info(getDbConnectionString());
+            if (isLogCredentials()) {
+                logger.info("Credentials: " + getDbUsername() + "/" + getDbPassword());
+            }
 
+            if (getSpincastTestingPostgresConfig().isResetSchemaOnInit()) {
+                try {
+                    clearDatabase();
+                } catch (Exception ex) {
+                    logger.warn("Error clearing the database at startup", ex);
+                }
+            }
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
+    }
+
+    protected boolean isLogCredentials() {
+        return true;
+    }
+
+    protected int getPortToUse() {
+        return getSpincastTestingPostgresConfig().getPortToUse();
     }
 
     @Override
@@ -142,6 +160,10 @@ public class SpincastTestingPostgres implements Provider<SpincastDataSource> {
 
                 UpdateStatement stm = getJdbcUtils().statements().createUpdateStatement(connection);
                 stm.sql("DROP SCHEMA public CASCADE ");
+                stm.update();
+
+                stm = getJdbcUtils().statements().createUpdateStatement(connection);
+                stm.sql("CREATE SCHEMA public ");
                 stm.update();
                 return null;
             }

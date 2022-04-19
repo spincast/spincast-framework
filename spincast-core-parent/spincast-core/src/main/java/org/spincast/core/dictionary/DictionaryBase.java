@@ -1,7 +1,9 @@
 package org.spincast.core.dictionary;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.spincast.core.utils.Pair;
 import org.spincast.core.utils.SpincastStatics;
@@ -45,6 +47,10 @@ public abstract class DictionaryBase {
             this.messages = new HashMap<String, Map<String, String>>();
         }
         return this.messages;
+    }
+
+    public Set<String> getAllKeys() {
+        return new HashSet<String>(getMessages().keySet());
     }
 
 }

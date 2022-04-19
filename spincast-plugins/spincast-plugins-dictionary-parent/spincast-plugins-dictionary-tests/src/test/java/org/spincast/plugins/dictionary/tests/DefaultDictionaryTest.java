@@ -1,7 +1,9 @@
 package org.spincast.plugins.dictionary.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Locale;
@@ -20,6 +22,7 @@ import org.spincast.core.dictionary.SpincastCoreDictionaryEntriesDefault;
 import org.spincast.core.guice.SpincastGuiceModuleBase;
 import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.templating.TemplatingEngine;
+import org.spincast.core.utils.Pair;
 import org.spincast.plugins.dictionary.SpincastDictionaryDefault;
 import org.spincast.testing.defaults.NoAppTestingBase;
 
@@ -74,6 +77,10 @@ public class DefaultDictionaryTest extends NoAppTestingBase {
             key("my.custom.msg.3",
                 msg("en", "custom 333"),
                 msg("fr", "custom 333 fr"));
+
+            key("my.custom.msg.4",
+                msg("en", "Hi {{name}}!"),
+                msg("fr", "Allo {{name}}!"));
         }
     }
 
@@ -142,6 +149,49 @@ public class DefaultDictionaryTest extends NoAppTestingBase {
         } catch (DictionaryKeyNotFoundException ex) {
         }
     }
+
+    @Test
+    public void getAllKeys() throws Exception {
+
+        Set<String> allKeys = getDictionary().getAllKeys();
+        assertNotNull(allKeys);
+        assertTrue(allKeys.size() > 3);
+        assertTrue(allKeys.contains("my.custom.msg.1"));
+        assertTrue(allKeys.contains("my.custom.msg.2"));
+        assertTrue(allKeys.contains("my.custom.msg.3"));
+        assertTrue(allKeys.contains("my.custom.msg.4"));
+    }
+
+    @Test
+    public void getAll() throws Exception {
+
+        Map<String, String> byLang = getDictionary().getAll("my.custom.msg.2");
+        assertNotNull(byLang);
+        assertEquals(2, byLang.size());
+        assertEquals("custom 222", byLang.get("en"));
+        assertEquals("custom 222 fr", byLang.get("fr"));
+    }
+
+    @Test
+    public void getAllWithParams() throws Exception {
+
+        Map<String, String> byLang = getDictionary().getAll("my.custom.msg.4", Pair.of("name", "Sromgol"));
+        assertNotNull(byLang);
+        assertEquals(2, byLang.size());
+        assertEquals("Hi Sromgol!", byLang.get("en"));
+        assertEquals("Allo Sromgol!", byLang.get("fr"));
+    }
+
+    @Test
+    public void hasKey() throws Exception {
+
+        assertTrue(getDictionary().hasKey("my.custom.msg.1"));
+        assertTrue(getDictionary().hasKey("my.custom.msg.2"));
+        assertFalse(getDictionary().hasKey("nope"));
+        assertFalse(getDictionary().hasKey(""));
+        assertFalse(getDictionary().hasKey(null));
+    }
+
 
 }
 

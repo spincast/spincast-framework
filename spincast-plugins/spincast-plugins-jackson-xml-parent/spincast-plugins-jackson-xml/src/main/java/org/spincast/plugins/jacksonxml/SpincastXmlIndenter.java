@@ -16,7 +16,7 @@ import com.google.inject.Inject;
  * Custom XML indenter.
  * Allow us to specify how many spaces to use for indentation and what
  * newline character to use.
- * 
+ *
  * Based on com.fasterxml.jackson.dataformat.xml.util.DefaultXmlPrettyPrinter$Lf2SpacesIndenter
  */
 public class SpincastXmlIndenter implements Indenter {
@@ -48,7 +48,7 @@ public class SpincastXmlIndenter implements Indenter {
     public void writeIndentation(XMLStreamWriter2 sw, int level) throws XMLStreamException {
         sw.writeRaw(getNewlineChars());
         int spaceNbr = level * getIndentationSpaceNumber();
-        while(level > SPACE_COUNT) { // should never happen but...
+        while (level > SPACE_COUNT) { // should never happen but...
             sw.writeRaw(SPACES, 0, SPACE_COUNT);
             level -= SPACES.length;
         }
@@ -60,7 +60,7 @@ public class SpincastXmlIndenter implements Indenter {
                                                               JsonGenerationException {
         jg.writeRaw(getNewlineChars());
         int spaceNbr = level * getIndentationSpaceNumber();
-        while(level > SPACE_COUNT) { // should never happen but...
+        while (level > SPACE_COUNT) { // should never happen but...
             jg.writeRaw(SPACES, 0, SPACE_COUNT);
             level -= SPACES.length;
         }

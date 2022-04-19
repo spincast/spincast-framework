@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 /**
  * Default implementation of the {@link Dictionary}.
  * <p>
- * Provides a value for the core Spincast messages 
+ * Provides a value for the core Spincast messages
  * required by any application.
  * <p>
  * You have to override the {@link #addMessages()} method to
@@ -69,10 +69,15 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
         return this.dictionaryEntries;
     }
 
+    @Override
+    public boolean hasKey(String key) {
+        return getMessages().containsKey(key);
+    }
+
     /**
      * Gets a message.
-     * 
-     * Will use the proper Locale as provided by the 
+     *
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      */
     @Override
@@ -87,8 +92,8 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
 
     /**
      * Gets a message.
-     * 
-     * Will use the proper Locale as provided by the 
+     *
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      */
     @Override
@@ -103,8 +108,8 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
 
     /**
      * Gets a message.
-     * 
-     * Will use the proper Locale as provided by the 
+     *
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      */
     @Override
@@ -127,8 +132,8 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
 
     /**
      * Gets a message.
-     * 
-     * Will use the proper Locale as provided by the 
+     *
+     * Will use the proper Locale as provided by the
      * {@link LocaleResolver}.
      */
     @Override
@@ -230,16 +235,56 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
         }
     }
 
+    @Override
+    public Map<String, String> getAll(String key) {
+        return getAll(key, (Map<String, Object>)null);
+    }
+
+    @Override
+    public Map<String, String> getAll(String key, Pair... params) {
+        Map<String, Object> paramsMap = new HashMap<String, Object>();
+        if (params != null) {
+            for (Pair param : params) {
+                paramsMap.put(param.getKey(), param.getValue());
+            }
+        }
+        return getAll(key, paramsMap);
+    }
+
+    @Override
+    public Map<String, String> getAll(String key, Map<String, Object> params) {
+        Map<String, String> entriesByLang = getMessages().get(key);
+        if (entriesByLang == null) {
+            return new HashMap<String, String>();
+        }
+
+        Map<String, String> finalMap = new HashMap<String, String>();
+        for (Entry<String, String> entry : entriesByLang.entrySet()) {
+            String lang = entry.getKey();
+            if ("".equals(lang)) {
+                lang = getSpincastConfig().getDefaultLocale().getLanguage();
+            }
+
+            String evaluatedValue = get(key, new Locale(lang), params);
+            finalMap.put(lang, evaluatedValue);
+        }
+
+        return finalMap;
+    }
+
+
+
+
     /**
      * To override to add messages to the dictionary.
      * <p>
-     * 
+     *
      * Example :
-     * 
+     *
      * <code>
      * protected void addMessages() {
      *     super.addMessages();
-     *     
+     *
      *     key("my.message.key",
      *         msg("en", "The message in english"),
      *         msg("fr", "Le message en français"));
@@ -249,6 +294,9 @@ public class SpincastDictionaryDefault extends DictionaryBase implements Diction
     protected void addMessages() {
         // To override to add messages....
     }
+
+
+
 
 
 }

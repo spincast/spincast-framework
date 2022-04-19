@@ -1,5 +1,9 @@
 package org.spincast.testing.junitrunner;
 
+import java.util.Collection;
+
+import org.junit.runners.model.FrameworkMethod;
+
 /**
  * Allows you to ignore a test class entirely.
  * <p>
@@ -10,7 +14,7 @@ public interface CanBeDisabled {
     /**
      * Should the tests class be disabled?
      * <p>
-     * Note that this will be ran <em>before</em> everything
+     * Note that this will be run <em>before</em> everything
      * (including {@link #beforeClass()}):
      * no Guice context is available... But you can look
      * at System properties, for example as a way of
@@ -19,13 +23,15 @@ public interface CanBeDisabled {
      * Use {@link #isTestClassDisabledPostBeforeClass()} if
      * you need the Guice context in order to perform
      * your logic.
+     * <p>
+     * @param filteredTests the tests that are going to be run.
      */
-    public boolean isTestClassDisabledPreBeforeClass();
+    public boolean isTestClassDisabledPreBeforeClass(Collection<FrameworkMethod> filteredTests);
 
     /**
      * Should the tests of this class all be disabled?
      * <p>
-     * Note that this will be ran <em>after</em>
+     * Note that this will be run <em>after</em>
      * {@link #beforeClass()}: the Guice context
      * is created and available.
      * <p>

@@ -1396,6 +1396,11 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         }
     }
 
+    @Override
+    public boolean isPresent(String jsonPath) {
+        return contains(jsonPath);
+    }
+
     /**
      * Gets the element at this key/jsonPath/index.
      * If the current object is immutable, the target element
@@ -1527,6 +1532,22 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         return put(jsonPath, element, clone, true);
     }
 
+    @Override
+    public JsonObjectOrArray setIfAbsent(String jsonPath, Object element) {
+        if (contains(jsonPath)) {
+            return this;
+        }
+        return put(jsonPath, element, false, true);
+    }
+
+    @Override
+    public JsonObjectOrArray setIfAbsent(String jsonPath, Object element, boolean clone) {
+        if (contains(jsonPath)) {
+            return this;
+        }
+        return put(jsonPath, element, clone, true);
+    }
+
     protected JsonObjectOrArray put(String jsonPath, Object element, boolean clone, boolean parseJsonPath) {
 
         if (!isMutable()) {
@@ -1538,7 +1559,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
         if (element != null) {
 
             //==========================================
-            // Can the object convert itself to a 
+            // Can the object convert itself to a
             // JsonObject or JsonArray?
             //==========================================
             boolean newObject = false;
@@ -1581,7 +1602,7 @@ public abstract class JsonObjectArrayBase implements JsonObjectOrArray {
 
     /**
      * Clone the object.
-     * 
+     *
      * @param mutable if <code>true</code> the resulting
      * object and all its children will be mutable, otherwise
      * they will all be immutable.

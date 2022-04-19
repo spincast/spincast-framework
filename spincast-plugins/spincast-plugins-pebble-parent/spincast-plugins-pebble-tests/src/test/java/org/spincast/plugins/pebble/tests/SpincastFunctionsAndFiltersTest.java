@@ -1143,6 +1143,28 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
     }
 
     @Test
+    public void jsOneLineScriptTagsSingleQuotes() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.set("code", "<span>aaa</span<script>alert();</script>");
+
+        String html = getTemplatingEngine().evaluate("<script>let template='{{jsOneLine(code, true)}}';</script>", model);
+        assertEquals("<script>let template='<span>aaa</span<script>alert();</s' + 'cript>';</script>", html);
+    }
+
+    @Test
+    public void jsOneLineScriptTagsDoubleQuotes() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.set("code", "<span>aaa</span<script>alert();</script>");
+
+        String html = getTemplatingEngine().evaluate("<script>let template=\"{{jsOneLine(code, false)}}\";</script>", model);
+        assertEquals("<script>let template=\"<span>aaa</span<script>alert();</s\" + \"cript>\";</script>", html);
+    }
+
+    @Test
     public void twoFormsDefaultValidationElement() throws Exception {
 
         JsonObject model = getJsonManager().create();
@@ -1366,11 +1388,11 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         String content = "{% if val %}ok{% else %}not ok{% endif %}";
 
-        try {
-            getTemplatingEngine().evaluate(content, model);
-            fail();
-        } catch (Exception ex) {
-        }
+        //==========================================
+        // Now working with Pebble 3
+        //==========================================
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "ok");
     }
 
     @Test
@@ -2236,6 +2258,151 @@ public class SpincastFunctionsAndFiltersTest extends NoAppStartHttpServerTesting
 
         HttpResponse response = GET("/one").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
+    }
+
+    @Test
+    public void isEmptyOrFalse() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.set("val", "");
+        String content = "{% if val | isEmptyOrFalse %}emptyOrFalse{% else %}not emptyOrFalse{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "emptyOrFalse");
+
+        model.set("val", null);
+        content = "{% if val | isEmptyOrFalse %}emptyOrFalse{% else %}not emptyOrFalse{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "emptyOrFalse");
+
+        model.set("val", false);
+        content = "{% if val | isEmptyOrFalse %}emptyOrFalse{% else %}not emptyOrFalse{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "emptyOrFalse");
+
+        model.set("val", 1);
+        content = "{% if val | isEmptyOrFalse %}emptyOrFalse{% else %}not emptyOrFalse{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not emptyOrFalse");
+
+        model.set("val", "a");
+        content = "{% if val | isEmptyOrFalse %}emptyOrFalse{% else %}not emptyOrFalse{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not emptyOrFalse");
+
+        model.set("val", true);
+        content = "{% if val | isEmptyOrFalse %}emptyOrFalse{% else %}not emptyOrFalse{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not emptyOrFalse");
+    }
+
+    @Test
+    public void isEmptyOrTrue() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.set("val", "");
+        String content = "{% if val | isEmptyOrTrue %}emptyOrTrue{% else %}not emptyOrTrue{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "emptyOrTrue");
+
+        model.set("val", null);
+        content = "{% if val | isEmptyOrTrue %}emptyOrTrue{% else %}not emptyOrTrue{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "emptyOrTrue");
+
+        model.set("val", true);
+        content = "{% if val | isEmptyOrTrue %}emptyOrTrue{% else %}not emptyOrTrue{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "emptyOrTrue");
+
+        model.set("val", 1);
+        content = "{% if val | isEmptyOrTrue %}emptyOrTrue{% else %}not emptyOrTrue{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not emptyOrTrue");
+
+        model.set("val", "a");
+        content = "{% if val | isEmptyOrTrue %}emptyOrTrue{% else %}not emptyOrTrue{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not emptyOrTrue");
+
+        model.set("val", false);
+        content = "{% if val | isEmptyOrTrue %}emptyOrTrue{% else %}not emptyOrTrue{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "not emptyOrTrue");
+    }
+
+
+    @Test
+    public void isNotEmptyAndFalse() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.set("val", "");
+        String content = "{% if val | isNotEmptyAndFalse %}1{% else %}0{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", null);
+        content = "{% if val | isNotEmptyAndFalse %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", false);
+        content = "{% if val | isNotEmptyAndFalse %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "1");
+
+        model.set("val", 1);
+        content = "{% if val | isNotEmptyAndFalse %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", "a");
+        content = "{% if val | isNotEmptyAndFalse %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", true);
+        content = "{% if val | isNotEmptyAndFalse %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+    }
+
+    @Test
+    public void isNotEmptyAndTrue() throws Exception {
+
+        JsonObject model = getJsonManager().create();
+
+        model.set("val", "");
+        String content = "{% if val | isNotEmptyAndTrue %}1{% else %}0{% endif %}";
+        String result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", null);
+        content = "{% if val | isNotEmptyAndTrue %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", false);
+        content = "{% if val | isNotEmptyAndTrue %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", 1);
+        content = "{% if val | isNotEmptyAndTrue %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", "a");
+        content = "{% if val | isNotEmptyAndTrue %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "0");
+
+        model.set("val", true);
+        content = "{% if val | isNotEmptyAndTrue %}1{% else %}0{% endif %}";
+        result = getTemplatingEngine().evaluate(content, model);
+        assertEquals(result, "1");
     }
 
 }

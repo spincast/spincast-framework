@@ -333,9 +333,9 @@ public class ConfigTypesTest extends ConfigTestingBase {
         List<Integer> config = getAppConfig().getTestListIntegers();
         assertNotNull(config);
         assertEquals(3, config.size());
-        assertEquals(new Integer(111), config.get(0));
-        assertEquals(new Integer(222), config.get(1));
-        assertEquals(new Integer(333), config.get(2));
+        assertEquals(Integer.valueOf(111), config.get(0));
+        assertEquals(Integer.valueOf(222), config.get(1));
+        assertEquals(Integer.valueOf(333), config.get(2));
     }
 
     @Test
@@ -343,9 +343,9 @@ public class ConfigTypesTest extends ConfigTestingBase {
         List<Long> config = getAppConfig().getTestListLongs();
         assertNotNull(config);
         assertEquals(3, config.size());
-        assertEquals(new Long(111), config.get(0));
-        assertEquals(new Long(222), config.get(1));
-        assertEquals(new Long(333), config.get(2));
+        assertEquals(Long.valueOf(111), config.get(0));
+        assertEquals(Long.valueOf(222), config.get(1));
+        assertEquals(Long.valueOf(333), config.get(2));
     }
 
     @Test
@@ -368,6 +368,3 @@ public class ConfigTypesTest extends ConfigTestingBase {
         assertTrue(config.get(2));
     }
 }
-
-
-

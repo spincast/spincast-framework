@@ -170,37 +170,37 @@ public class Jdbc2Test extends JdbcH2TestBase {
                         assertNull(nbrb);
 
                         Byte nbr2b = rs.getByteOrNull("nbr2");
-                        assertEquals(new Byte("123"), nbr2b);
+                        assertEquals(Byte.valueOf("123"), nbr2b);
 
                         Byte nbr3b = rs.getByteOrNull("nbr3");
-                        assertEquals(new Byte("0"), nbr3b);
+                        assertEquals(Byte.valueOf("0"), nbr3b);
 
                         Short nbrs = rs.getShortOrNull("nbr");
                         assertNull(nbrs);
 
                         Short nbr2s = rs.getShortOrNull("nbr2");
-                        assertEquals(new Short("123"), nbr2s);
+                        assertEquals(Short.valueOf("123"), nbr2s);
 
                         Short nbr3s = rs.getShortOrNull("nbr3");
-                        assertEquals(new Short("0"), nbr3s);
+                        assertEquals(Short.valueOf("0"), nbr3s);
 
                         Float nbrf = rs.getFloatOrNull("nbr");
                         assertNull(nbrf);
 
                         Float nbr2f = rs.getFloatOrNull("nbr2");
-                        assertEquals(new Float("123"), nbr2f);
+                        assertEquals(Float.valueOf("123"), nbr2f);
 
                         Float nbr3f = rs.getFloatOrNull("nbr3");
-                        assertEquals(new Float("0"), nbr3f);
+                        assertEquals(Float.valueOf("0"), nbr3f);
 
                         Double nbrd = rs.getDoubleOrNull("nbr");
                         assertNull(nbrd);
 
                         Double nbr2d = rs.getDoubleOrNull("nbr2");
-                        assertEquals(new Double("123"), nbr2d);
+                        assertEquals(Double.valueOf("123"), nbr2d);
 
                         Double nbr3d = rs.getDoubleOrNull("nbr3");
-                        assertEquals(new Double("0"), nbr3d);
+                        assertEquals(Double.valueOf("0"), nbr3d);
 
                         return null;
                     }
@@ -255,8 +255,5 @@ public class Jdbc2Test extends JdbcH2TestBase {
             }
         });
     }
-
-
-
 
 }

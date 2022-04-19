@@ -298,7 +298,7 @@ public class SpincastCorePluginModule extends SpincastGuiceModuleBase {
      * Note that {@LINK #bindScope(Class, com.google.inject.Scope)}
      * can only be called once. It can't be called a second time
      * when we use {@link Modules#override(com.google.inject.Module...)}!
-     * 
+     *
      * For infos on custom scopes:
      * @see https://github.com/google/guice/wiki/CustomScopes
      */

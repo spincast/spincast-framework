@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.config.SpincastConstants;
 import org.spincast.core.dictionary.Dictionary;
@@ -30,19 +32,25 @@ import com.google.inject.Inject;
 import com.google.inject.OutOfScopeException;
 import com.google.inject.Provider;
 import com.google.inject.ProvisionException;
+import com.mitchellbosecke.pebble.attributes.AttributeResolver;
+import com.mitchellbosecke.pebble.attributes.ResolvedAttribute;
+import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.extension.Function;
 import com.mitchellbosecke.pebble.extension.core.DefaultFilter;
 import com.mitchellbosecke.pebble.extension.escaper.SafeString;
+import com.mitchellbosecke.pebble.node.ArgumentsNode;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
+import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import com.mitchellbosecke.pebble.template.ScopeChain;
 
 /**
  * Spincast Main Pebble extension implementation.
  */
 public class SpincastMainPebbleExtensionDefault extends AbstractExtension implements SpincastMainPebbleExtension {
+
+    protected static final Logger logger = LoggerFactory.getLogger(SpincastMainPebbleExtensionDefault.class);
 
     //==========================================
     // Filters names
@@ -61,6 +69,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
     public static final String FILTER_NAME_VALIDATION_GET = "get";
     public static final String FILTER_NAME_ESCAPE_BUT_REPLACE_NEWLINE_BY_BR = "newline2br";
     public static final String FILTER_NAME_BOOLEAN = "boolean";
+    public static final String FILTER_NAME_EMPTY_OR_FALSE = "isEmptyOrFalse";
+    public static final String FILTER_NAME_EMPTY_OR_TRUE = "isEmptyOrTrue";
+    public static final String FILTER_NAME_NOT_EMPTY_AND_FALSE = "isNotEmptyAndFalse";
+    public static final String FILTER_NAME_NOT_EMPTY_AND_TRUE = "isNotEmptyAndTrue";
 
     //==========================================
     // Fonctions names
@@ -131,6 +143,72 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
 
     protected SpincastPebbleTemplatingEngineConfig getSpincastPebbleTemplatingEngineConfig() {
         return this.spincastPebbleTemplatingEngineConfig;
+    }
+
+    @Override
+    public List<AttributeResolver> getAttributeResolver() {
+
+        List<AttributeResolver> attributeResolvers = new ArrayList<>();
+        AttributeResolver defaultSpincastAttributeResolver = getDefaultSpincastAttributeResolver();
+        if (defaultSpincastAttributeResolver != null) {
+            attributeResolvers.add(defaultSpincastAttributeResolver);
+        }
+        return attributeResolvers;
+    }
+
+    protected AttributeResolver getDefaultSpincastAttributeResolver() {
+        return new AttributeResolver() {
+
+            @Override
+            public ResolvedAttribute resolve(Object instance,
+                                             Object attributeNameValue,
+                                             Object[] argumentValues,
+                                             ArgumentsNode args,
+                                             EvaluationContextImpl context,
+                                             String filename,
+                                             int lineNumber) {
+                if (instance == null || attributeNameValue == null) {
+                    return null;
+                }
+
+                //==========================================
+                // JsonObjects
+                //==========================================
+                if (instance instanceof JsonObject) {
+                    return resolveJsonObjectAttribute((JsonObject)instance, String.valueOf(attributeNameValue), context);
+
+                //==========================================@formatter:off
+                // JsonArrays
+                //==========================================@formatter:on
+                } else if (instance instanceof JsonArray) {
+                    int pos;
+                    try {
+                        pos = Integer.parseInt(String.valueOf(attributeNameValue));
+                    } catch (Exception ex) {
+                        logger.warn("Invalid 'attributeNameValue' for a JsonArray, returning null: " + attributeNameValue);
+                        return null;
+                    }
+
+                    return resolveJsonArrayAttribute((JsonArray)instance, pos, context);
+                }
+
+                return null;
+            }
+        };
+    }
+
+    protected ResolvedAttribute resolveJsonObjectAttribute(JsonObject obj,
+                                                           String attrName,
+                                                           EvaluationContextImpl context) {
+        Object result = obj.getObject(attrName, null);
+        return new ResolvedAttribute(result);
+    }
+
+    protected ResolvedAttribute resolveJsonArrayAttribute(JsonArray arr,
+                                                          int pos,
+                                                          EvaluationContextImpl context) {
+        Object result = arr.getObject(pos, null);
+        return new ResolvedAttribute(result);
     }
 
     @Override
@@ -208,6 +286,26 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             filters.put(getBooleanFilterName(), filter);
         }
 
+        filter = getIsEmptyOrFalseFilter();
+        if (filter != null) {
+            filters.put(getIsEmptyOrFalseFilterName(), filter);
+        }
+
+        filter = getIsEmptyOrTrueFilter();
+        if (filter != null) {
+            filters.put(getIsEmptyOrTrueFilterName(), filter);
+        }
+
+        filter = getIsNotEmptyAndFalseFilte();
+        if (filter != null) {
+            filters.put(getIsNotEmptyAndFalseFilterName(), filter);
+        }
+
+        filter = getIsNotEmptyAndTrueFilte();
+        if (filter != null) {
+            filters.put(getIsNotEmptyAndTrueFilterName(), filter);
+        }
+
         return filters;
     }
 
@@ -225,31 +323,6 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
         functions.put(getRouteIdFunctionName(), getRouteIdFunction());
 
         return functions;
-    }
-
-    protected EvaluationContext getEvaluationContext(Map<String, Object> args) {
-        return (EvaluationContext)args.get("_context");
-    }
-
-    protected PebbleTemplate getPebbleTemplate(Map<String, Object> args) {
-        return (PebbleTemplate)args.get("_self");
-    }
-
-    protected ScopeChain getScopeChain(Map<String, Object> args) {
-        return getEvaluationContext(args).getScopeChain();
-    }
-
-    protected Object getModelElement(Map<String, Object> args, String property) {
-        return getScopeChain(args).get(property);
-    }
-
-    protected String getPropertyAsString(Map<String, Object> args, String property) {
-        return (String)getModelElement(args, property);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Map<String, Object> getPropertyAsMap(Map<String, Object> args, String property) {
-        return (Map<String, Object>)getModelElement(args, property);
     }
 
     protected Set<Object> convertToSet(Object obj) {
@@ -306,7 +379,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 Set<Object> values = convertToSet(value);
                 Set<Object> acceptableValues = convertToSet(args.get("acceptableValues"));
@@ -336,7 +413,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 Set<Object> values = convertToSet(value);
                 Set<Object> acceptableValues = convertToSet(args.get("acceptableValues"));
@@ -370,7 +451,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof Map)) {
                     return "";
@@ -403,7 +488,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof Map)) {
                     return getValidationClassNoMessage();
@@ -448,7 +537,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null) {
                     return true;
@@ -474,7 +567,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null) {
                     return false;
@@ -500,7 +597,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof Map)) {
                     return true;
@@ -531,7 +632,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof Map)) {
                     return false;
@@ -562,7 +667,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof Map)) {
                     return false;
@@ -593,7 +702,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof Map)) {
                     return false;
@@ -624,7 +737,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object value, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 if (value == null || !(value instanceof String)) {
                     return null;
@@ -632,10 +749,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
 
                 String key = (String)value;
 
+
                 @SuppressWarnings("unchecked")
                 Map<String, Object> spincastMap =
-                        (Map<String, Object>)getModelElement(args,
-                                                             SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
+                        (Map<String, Object>)evaluationContext.getVariable(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
                 if (spincastMap == null) {
                     return null;
                 }
@@ -675,7 +792,11 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object textObj, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
                 boolean escape = true;
                 Object escapeObj = args.get("escape");
@@ -684,8 +805,8 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                 }
 
                 String text = "";
-                if (textObj != null) {
-                    text = textObj.toString();
+                if (value != null) {
+                    text = value.toString();
 
                     if (escape) {
                         text = StringEscapeUtils.escapeHtml4(text);
@@ -715,19 +836,148 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object apply(Object obj, Map<String, Object> args) {
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
 
-                if (obj == null) {
+                if (value == null) {
                     return false;
                 }
 
-                String str = obj.toString();
+                String str = value.toString();
                 return Boolean.valueOf(str);
             }
         };
 
         return filter;
     }
+
+    protected String getIsEmptyOrFalseFilterName() {
+        return FILTER_NAME_EMPTY_OR_FALSE;
+    }
+
+    protected Filter getIsEmptyOrFalseFilter() {
+
+        Filter filter = new DefaultFilter() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
+
+                if (value == null || "".equals(value)) {
+                    return true;
+                }
+
+                return value.toString().equalsIgnoreCase("false");
+            }
+        };
+
+        return filter;
+    }
+
+    protected String getIsEmptyOrTrueFilterName() {
+        return FILTER_NAME_EMPTY_OR_TRUE;
+    }
+
+    protected Filter getIsEmptyOrTrueFilter() {
+
+        Filter filter = new DefaultFilter() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
+
+                if (value == null || "".equals(value)) {
+                    return true;
+                }
+
+                return value.toString().equalsIgnoreCase("true");
+            }
+        };
+
+        return filter;
+    }
+
+    protected String getIsNotEmptyAndFalseFilterName() {
+        return FILTER_NAME_NOT_EMPTY_AND_FALSE;
+    }
+
+    protected Filter getIsNotEmptyAndFalseFilte() {
+
+        Filter filter = new DefaultFilter() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
+
+                if (value == null || "".equals(value)) {
+                    return false;
+                }
+
+                return value.toString().equalsIgnoreCase("false");
+            }
+        };
+
+        return filter;
+    }
+
+    protected String getIsNotEmptyAndTrueFilterName() {
+        return FILTER_NAME_NOT_EMPTY_AND_TRUE;
+    }
+
+    protected Filter getIsNotEmptyAndTrueFilte() {
+
+        Filter filter = new DefaultFilter() {
+
+            @Override
+            public List<String> getArgumentNames() {
+                return null;
+            }
+
+            @Override
+            public Object apply(Object value,
+                                Map<String, Object> args,
+                                PebbleTemplate self,
+                                EvaluationContext evaluationContext,
+                                int lineNumber) throws PebbleException {
+
+                if (value == null || "".equals(value)) {
+                    return false;
+                }
+
+                return value.toString().equalsIgnoreCase("true");
+            }
+        };
+
+        return filter;
+    }
+
 
     protected String getGetFunctionName() {
         return FUNCTION_NAME_VALIDATION_GET;
@@ -746,7 +996,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 String key = (String)args.get("jsonPath");
                 if (StringUtils.isBlank(key)) {
@@ -755,8 +1008,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
 
                 @SuppressWarnings("unchecked")
                 Map<String, Object> spincastMap =
-                        (Map<String, Object>)getModelElement(args,
-                                                             SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
+                        (Map<String, Object>)evaluationContext.getVariable(SpincastConstants.TemplatingGlobalVariables.DEFAULT_GLOBAL_TEMPLATING_VAR_ROOT_SPINCAST_MAP);
                 if (spincastMap == null) {
                     return null;
                 }
@@ -794,7 +1046,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 Object codeObj = args.get("0");
                 if (codeObj == null) {
@@ -813,6 +1068,14 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                 }
 
                 String codeFormatted = getSpincastUtils().inQuotesStringFormat(code, singleQuotesDelimiter);
+
+                //==========================================
+                // We should also break any potential
+                // "</script>" tag...
+                //==========================================
+                char delimiter = singleQuotesDelimiter ? '\'' : '"';
+                codeFormatted = codeFormatted.replace("</script>", "</s" + delimiter + " + " + delimiter + "cript>");
+
                 return new SafeString(codeFormatted);
 
             }
@@ -833,7 +1096,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
                 if (args == null || args.size() == 0) {
                     return "";
                 }
@@ -904,7 +1170,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 Object querystringToAppendObj = args.get("querystringToAppend");
 
@@ -1026,7 +1295,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 StringBuilder builder = new StringBuilder();
 
@@ -1111,7 +1383,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 Object pathToMatchObj = args.get("path");
                 String pathToMatch = "";
@@ -1163,7 +1438,7 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
                     if (Pattern.matches(pathToMatch, currentRoutePath)) {
                         return true;
                     }
-                //==========================================@formatter:off 
+                //==========================================@formatter:off
                 // Exact path
                 //==========================================@formatter:on
                 } else {
@@ -1202,7 +1477,10 @@ public class SpincastMainPebbleExtensionDefault extends AbstractExtension implem
             }
 
             @Override
-            public Object execute(Map<String, Object> args) {
+            public Object execute(Map<String, Object> args,
+                                  PebbleTemplate self,
+                                  EvaluationContext evaluationContext,
+                                  int lineNumber) {
 
                 Object idToMatchObj = args.get("id");
                 String idToMatch = "";

@@ -413,7 +413,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("   c   ", arrayResult.getObject(2));
         assertEquals("      ", arrayResult.getObject(3));
         assertEquals(null, arrayResult.getObject(4));
-        assertEquals(new Integer(123), arrayResult.getObject(5));
+        assertEquals(Integer.valueOf(123), arrayResult.getObject(5));
 
         JsonObject objResult = arrayResult.getJsonObject(6);
         assertNotNull(objResult);
@@ -422,7 +422,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("   c   ", objResult.getObject("key3"));
         assertEquals("      ", objResult.getObject("key4"));
         assertEquals(null, objResult.getObject("key5"));
-        assertEquals(new Integer(123), objResult.getObject("key6"));
+        assertEquals(Integer.valueOf(123), objResult.getObject("key6"));
 
         JsonArray array2Result = objResult.getJsonArray("inner");
         assertNotNull(array2Result);
@@ -444,7 +444,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("c", arrayResult.getObject(2));
         assertEquals("      ", arrayResult.getObject(3));
         assertEquals(null, arrayResult.getObject(4));
-        assertEquals(new Integer(123), arrayResult.getObject(5));
+        assertEquals(Integer.valueOf(123), arrayResult.getObject(5));
 
         objResult = arrayResult.getJsonObject(6);
         assertNotNull(objResult);
@@ -453,7 +453,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("c", objResult.getObject("key3"));
         assertEquals("      ", objResult.getObject("key4"));
         assertEquals(null, objResult.getObject("key5"));
-        assertEquals(new Integer(123), objResult.getObject("key6"));
+        assertEquals(Integer.valueOf(123), objResult.getObject("key6"));
 
         array2Result = objResult.getJsonArray("inner");
         assertNotNull(array2Result);
@@ -806,7 +806,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("   c   ", arrayResult.getObject(2));
         assertEquals("      ", arrayResult.getObject(3));
         assertEquals(null, arrayResult.getObject(4));
-        assertEquals(new Integer(123), arrayResult.getObject(5));
+        assertEquals(Integer.valueOf(123), arrayResult.getObject(5));
 
         JsonObject objResult = arrayResult.getJsonObject(6);
         assertNotNull(objResult);
@@ -815,7 +815,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("   c   ", objResult.getObject("key3"));
         assertEquals("      ", objResult.getObject("key4"));
         assertEquals(null, objResult.getObject("key5"));
-        assertEquals(new Integer(123), objResult.getObject("key6"));
+        assertEquals(Integer.valueOf(123), objResult.getObject("key6"));
 
         JsonArray array2Result = objResult.getJsonArray("inner");
         assertNotNull(array2Result);
@@ -839,7 +839,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("***c***", arrayResult.getObject(2));
         assertEquals("      ", arrayResult.getObject(3));
         assertEquals(null, arrayResult.getObject(4));
-        assertEquals(new Integer(123), arrayResult.getObject(5));
+        assertEquals(Integer.valueOf(123), arrayResult.getObject(5));
 
         objResult = arrayResult.getJsonObject(6);
         assertNotNull(objResult);
@@ -848,7 +848,7 @@ public class JsonTransformersTest extends NoAppTestingBase {
         assertEquals("***c***", objResult.getObject("key3"));
         assertEquals("      ", objResult.getObject("key4"));
         assertEquals(null, objResult.getObject("key5"));
-        assertEquals(new Integer(123), objResult.getObject("key6"));
+        assertEquals(Integer.valueOf(123), objResult.getObject("key6"));
 
         array2Result = objResult.getJsonArray("inner");
         assertNotNull(array2Result);

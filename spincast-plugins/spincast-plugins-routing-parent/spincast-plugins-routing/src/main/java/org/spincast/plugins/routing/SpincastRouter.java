@@ -22,6 +22,7 @@ import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.dictionary.Dictionary;
 import org.spincast.core.exchange.RequestContext;
 import org.spincast.core.filters.SpincastFilters;
+import org.spincast.core.locale.LocaleResolver;
 import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.HttpMethod;
 import org.spincast.core.routing.RedirectRuleBuilder;
@@ -74,6 +75,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     private final WebsocketRouteBuilderFactory<R, W> websocketRouteBuilderFactory;
     private final WebsocketRouteHandlerFactory<R, W> websocketRouteHandlerFactory;
     private final SpincastRoutingUtils spincastRoutingUtils;
+    private final LocaleResolver localeResolver;
 
     private TreeMap<Integer, List<Route<R>>> globalBeforeFiltersPerPosition;
     private TreeMap<Integer, List<Route<R>>> globalAfterFiltersPerPosition;
@@ -85,6 +87,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     private final Server server;
 
     private final Map<String, String> routeParamPatternAliases = new HashMap<String, String>();
+    private final Map<String, String> routeParamPatternFromDictionaryKeyCache = new HashMap<String, String>();
 
     private final Map<String, Pattern> patternCache = new HashMap<String, Pattern>();
 
@@ -104,6 +107,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         this.websocketRouteBuilderFactory = spincastRouterDeps.getWebsocketRouteBuilderFactory();
         this.websocketRouteHandlerFactory = spincastRouterDeps.getWebsocketRouteHandlerFactory();
         this.spincastRoutingUtils = spincastRouterDeps.getSpincastRoutingUtils();
+        this.localeResolver = spincastRouterDeps.getLocaleResolver();
     }
 
     @Inject
@@ -196,6 +200,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
         return this.spincastRoutingUtils;
     }
 
+    protected LocaleResolver getLocaleResolver() {
+        return this.localeResolver;
+    }
+
     protected Pattern getPattern(String patternStr) {
         Pattern pattern = this.patternCache.get(patternStr);
         if (pattern == null) {
@@ -208,6 +216,10 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
     @Override
     public Map<String, String> getRouteParamPatternAliases() {
         return this.routeParamPatternAliases;
+    }
+
+    protected Map<String, String> getRouteParamPatternFromDictionaryKeyCache() {
+        return this.routeParamPatternFromDictionaryKeyCache;
     }
 
     @Override
@@ -408,18 +420,32 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                         token = token.substring(posColon + 1);
 
                         //==========================================
+                        // Dictionary key
+                        //==========================================
+                        if (token.startsWith("<<")) {
+                            if (!token.endsWith(">>")) {
+                                throw new RuntimeException("A parameter with a dictionary key must have a closing '>>': " +
+                                                           pathToken);
+                            }
+                            token = token.substring(2, token.length() - 2);
+
+                            if (!getDictionary().hasKey(token)) {
+                                throw new RuntimeException("No dictionary entries found with key: " + token);
+                            }
+                        }
+                        //==========================================
                         // Pattern aliases
                         //==========================================
-                        if (token.startsWith("<")) {
+                        else if (token.startsWith("<")) {
 
                             if (!token.endsWith(">")) {
-                                throw new RuntimeException("A parameter with an pattern alias must have a closing '>' : " +
+                                throw new RuntimeException("A parameter with an pattern alias must have a closing '>': " +
                                                            pathToken);
                             }
                             token = token.substring(1, token.length() - 1);
                             String pattern = getPatternFromAlias(token);
                             if (pattern == null) {
-                                throw new RuntimeException("Pattern not found using alias : " + token);
+                                throw new RuntimeException("Pattern not found using alias: " + token);
                             }
                         }
                     }
@@ -427,7 +453,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
                 String paramName = pathToken.substring(2, pathToken.length() - 1);
                 if (!StringUtils.isBlank(paramName) && paramNames.contains(paramName)) {
-                    throw new RuntimeException("Two parameters with the same name, '" + paramName + "', in route with path : " +
+                    throw new RuntimeException("Two parameters with the same name, '" + paramName + "', in route with path: " +
                                                path);
                 }
                 paramNames.add(paramName);
@@ -945,6 +971,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                 // If there a pattern?
                 //==========================================
                 String pattern = null;
+                boolean matchingDone = false;
                 if (routePathToken.startsWith("${")) {
 
                     int posComma = paramName.indexOf(":");
@@ -957,16 +984,35 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                         } else {
 
                             //==========================================
+                            // Is it a dictinary key?
+                            //==========================================
+                            if (pattern.startsWith("<<") && pattern.endsWith(">>")) {
+                                pattern = getPatternFromDictionaryKey(pattern.substring(2, pattern.length() - 2));
+
+                                //==========================================
+                                // We also match using the language!
+                                //==========================================
+                                String lang = getLocaleResolver().getLocaleToUse().getLanguage();
+                                String toMatch = lang + "_" + urlPathToken;
+                                if (!getPattern(pattern).matcher(toMatch).matches()) {
+                                    logger.trace("Url token '" + urlPathToken + "' doesn't match pattern '" + pattern +
+                                                 "' with lang '" + lang + "'.");
+                                    return null;
+                                }
+                                matchingDone = true;
+                            }
+
+                            //==========================================
                             // Is it a pattern alias?
                             //==========================================
-                            if (pattern.startsWith("<") && pattern.endsWith(">")) {
+                            else if (pattern.startsWith("<") && pattern.endsWith(">")) {
                                 pattern = getPatternFromAlias(pattern.substring(1, pattern.length() - 1));
                             }
                         }
                     }
 
-                    if (pattern != null && !getPattern(pattern).matcher(urlPathToken).matches()) {
-                        logger.debug("Url token '" + urlPathToken + "' doesn't match pattern '" + pattern + "'.");
+                    if (!matchingDone && pattern != null && !getPattern(pattern).matcher(urlPathToken).matches()) {
+                        logger.trace("Url token '" + urlPathToken + "' doesn't match pattern '" + pattern + "'.");
                         return null;
                     }
 
@@ -1003,6 +1049,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
     /**
      * Get a path pattern from its alias.
+     *
      * @return the pattern or NULL if not found.
      */
     protected String getPatternFromAlias(String alias) {
@@ -1019,6 +1066,39 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
 
         return null;
     }
+
+    /**
+     * Get a path pattern from a dictionary key.
+     *
+     * @return the pattern or NULL if not found.
+     */
+    protected String getPatternFromDictionaryKey(String dictionaryKey) {
+
+        if (dictionaryKey == null) {
+            return null;
+        }
+
+        String pattern = getRouteParamPatternFromDictionaryKeyCache().get(dictionaryKey);
+        if (pattern == null) {
+            Map<String, String> allValuesMap = getDictionary().getAll(dictionaryKey);
+            if (allValuesMap == null || allValuesMap.size() == 0) {
+                throw new RuntimeException("Supposed to have at least one value in the dictionary, for key: " + dictionaryKey);
+            }
+            StringBuilder builder = new StringBuilder("(");
+            for (Entry<String, String> entry : allValuesMap.entrySet()) {
+                String langAndValue = entry.getKey().toLowerCase() + "_" + entry.getValue();
+                langAndValue = Pattern.quote(langAndValue);
+                builder.append(langAndValue).append("|");
+            }
+            builder.deleteCharAt(builder.length() - 1);
+            builder.append(")");
+            pattern = builder.toString();
+
+            getRouteParamPatternFromDictionaryKeyCache().put(dictionaryKey, pattern);
+        }
+        return pattern;
+    }
+
 
     @Override
     public void addRouteParamPatternAlias(String alias, String pattern) {
@@ -1582,6 +1662,19 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                             return;
                         }
 
+                        //==========================================
+                        // If there is no bytes outputed, it may be
+                        // a case where the current request has been
+                        // cancelled for a new one by the server...
+                        // In that case, we simply don't save the resource
+                        // on disk.
+                        //==========================================
+                        if (context.response().getUnsentBytes() == null || context.response().getUnsentBytes().length == 0) {
+                            SpincastRouter.logger.warn("The bytes in the response are empty. The dynamic resource won't be saved for now: " +
+                                                       context.request().getFullUrl());
+                            return;
+                        }
+
                         if (staticResource.isDirResource()) {
 
                             String urlPathPrefix = StringUtils.stripStart(urlWithoutSplatParamFinal, "/");
@@ -1693,7 +1786,8 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
                                                   false,
                                                   null,
                                                   null,
-                                                  true);
+                                                  true,
+                                                  Sets.newHashSet());
 
             addRoute(route);
         }
@@ -1768,6 +1862,11 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             @Override
             public String getId() {
                 return websocketRoute.getId();
+            }
+
+            @Override
+            public Set<String> getClasses() {
+                return websocketRoute.getClasses();
             }
 
             @Override
@@ -1871,6 +1970,7 @@ public class SpincastRouter<R extends RequestContext<?>, W extends WebsocketCont
             public boolean isSpecsIgnore() {
                 return false;
             }
+
         };
 
         return httpRoute;

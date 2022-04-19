@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-plugins-session-parent</artifactId>
-        <version>1.14.2-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
 	
 	<artifactId>spincast-plugins-session-tests</artifactId>
@@ -39,12 +39,12 @@
         <!--=================================== 
         Mockito
         ====================================-->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-core</artifactId>
+		    <version>4.4.0</version>
             <scope>test</scope>
-        </dependency>
+		</dependency>
         
         <!--=================================== 
         Logs to the console

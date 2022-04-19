@@ -526,6 +526,11 @@ public interface Router<R extends RequestContext<?>, W extends WebsocketContext<
 
     /**
      * Starts the creation of a redirection rule.
+     * <p>
+     * Redirecttion rule are ran at position "0", as a
+     * regular route. Therefore the order in which they are added
+     * to the router is very important! As soon as a redirect
+     * rule matches, the request is redirected.
      *
      * @param oldPath The old path that needs to be redirected.
      */

@@ -265,7 +265,7 @@ public class JdbcScope {
 
             return result;
 
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
 
             //==========================================
             // Rollbacks wrapped connections
@@ -282,8 +282,11 @@ public class JdbcScope {
                 }
             }
 
-            throw SpincastStatics.runtimize(ex);
-
+            if (ex instanceof Error) {
+                throw(Error)ex;
+            } else {
+                throw SpincastStatics.runtimize((Exception)ex);
+            }
         } finally {
 
             if (isFirstTransactionalScope) {
@@ -312,7 +315,7 @@ public class JdbcScope {
                 }
 
                 //==========================================
-                // Removes all ThreadLocal transactionnal 
+                // Removes all ThreadLocal transactionnal
                 // information.
                 //==========================================
                 insideTransactionScopeFlagThreadLocal.remove();
@@ -324,8 +327,8 @@ public class JdbcScope {
     /**
      * Gets a Connection from a DataSource, or from the ThreadLocal cache
      * if we're inside a transaction.
-     * 
-     * This method is called by AOP intercepting 
+     *
+     * This method is called by AOP intercepting
      * {@link DataSource#getConnection()}.
      */
     public Connection getConnectionInterceptor(MethodInvocation invocation) {

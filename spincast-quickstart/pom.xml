@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.spincast</groupId>
         <artifactId>spincast-parent</artifactId>
-        <version>1.14.2-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
         <relativePath>../spincast-parent</relativePath>
     </parent>
     <artifactId>spincast-quickstart</artifactId>
@@ -84,7 +84,7 @@
             <artifactId>spincast-plugins-logback-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <!--=================================== 
         Spincast testing default
         ====================================-->
@@ -101,14 +101,14 @@
         <plugins>
         
             <!--=================================== 
-            Java 8 is required
+            Java 17 is required
             ====================================-->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version><!--$NO-MVN-MAN-VER$-->
+                <version>3.10.1</version><!--$NO-MVN-MAN-VER$-->
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             
@@ -120,7 +120,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version><!--$NO-MVN-MAN-VER$-->
+                <version>3.2.2</version><!--$NO-MVN-MAN-VER$-->
                 <configuration>
                     <archive>                   
                         <manifest>
@@ -137,7 +137,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -177,7 +177,7 @@
             ====================================-->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>delete-unwanted-artifacts</id>

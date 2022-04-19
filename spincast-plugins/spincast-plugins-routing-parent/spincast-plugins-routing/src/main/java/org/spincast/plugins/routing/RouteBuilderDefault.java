@@ -1,6 +1,7 @@
 package org.spincast.plugins.routing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +38,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
     private Set<HttpMethod> httpMethods;
     private String id = null;
+    private Set<String> classes = null;
     private String path = null;
     private int position = 0;
     private boolean skipResources = false;
@@ -70,6 +72,7 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
         this.spincastRouterConfig = spincastRouterConfig;
         this.spincastFilters = spincastFilters;
         this.spincastConfig = spincastConfig;
+        this.classes = new HashSet<String>();
     }
 
     protected Router<R, W> getRouter() {
@@ -94,6 +97,10 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
 
     public String getId() {
         return this.id;
+    }
+
+    public Set<String> getClasses() {
+        return this.classes;
     }
 
     public boolean isSpicastCoreRouteOrPluginRoute() {
@@ -176,6 +183,14 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
     @Override
     public RouteBuilder<R> id(String id) {
         this.id = id;
+        return this;
+    }
+
+    @Override
+    public RouteBuilder<R> classes(String... classes) {
+        if (classes != null) {
+            this.classes.addAll(Arrays.asList(classes));
+        }
         return this;
     }
 
@@ -410,7 +425,8 @@ public class RouteBuilderDefault<R extends RequestContext<?>, W extends Websocke
                                                        isSkipResources(),
                                                        getSpecs(),
                                                        getSpecsParameters(),
-                                                       isSpecsIgnore());
+                                                       isSpecsIgnore(),
+                                                       getClasses());
         return route;
     }
 

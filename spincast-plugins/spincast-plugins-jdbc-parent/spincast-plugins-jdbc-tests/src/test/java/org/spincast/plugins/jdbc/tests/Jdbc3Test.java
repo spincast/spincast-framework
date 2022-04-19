@@ -249,8 +249,4 @@ public class Jdbc3Test extends JdbcPostgresqlTestBase {
             }
         });
     }
-
-
-
-
 }

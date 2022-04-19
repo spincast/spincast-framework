@@ -202,7 +202,8 @@ public class HttpClientTest extends NoAppStartHttpServerTestingBase {
 
             @Override
             public void handle(DefaultRequestContext context) {
-                context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED).sendPlainText(SpincastTestingUtils.TEST_STRING);
+                context.response().setStatusCode(HttpStatus.SC_EXPECTATION_FAILED)
+                       .sendPlainText(SpincastTestingUtils.TEST_STRING);
             }
         });
 
