@@ -1,8 +1,7 @@
 package org.spincast.plugins.session;
 
-import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.Router;
-import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.session.config.SpincastSessionConfig;
 
 import com.google.inject.Inject;
@@ -10,12 +9,12 @@ import com.google.inject.Inject;
 public class SpincastSessionFilterAdder {
 
     private final SpincastSessionConfig spincastSessionConfig;
-    private final Router<DefaultRequestContext, DefaultWebsocketContext> router;
+    private final Router<?, ?> router;
     private final SpincastSessionFilter spincastSessionFilter;
 
     @Inject
     public SpincastSessionFilterAdder(SpincastSessionConfig spincastSessionConfig,
-                                      Router<DefaultRequestContext, DefaultWebsocketContext> router,
+                                      Router<?, ?> router,
                                       SpincastSessionFilter spincastSessionFilter) {
         this.spincastSessionConfig = spincastSessionConfig;
         this.router = router;
@@ -26,7 +25,7 @@ public class SpincastSessionFilterAdder {
         return this.spincastSessionConfig;
     }
 
-    protected Router<DefaultRequestContext, DefaultWebsocketContext> getRouter() {
+    protected Router<?, ?> getRouter() {
         return this.router;
     }
 
@@ -41,6 +40,7 @@ public class SpincastSessionFilterAdder {
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void addFilters() {
 
         int beforePos = getSpincastSessionConfig().getAutoAddedFilterBeforePosition();
@@ -57,7 +57,7 @@ public class SpincastSessionFilterAdder {
                    .id(SpincastSessionFilter.ROUTE_ID_BEFORE_FILTER)
                    .spicastCoreRouteOrPluginRoute()
                    .skipResourcesRequests()
-                   .handle((context) -> {
+                   .handle((Handler)(context) -> {
                        getSpincastSessionFilter().before(context);
                    });
 
@@ -65,7 +65,7 @@ public class SpincastSessionFilterAdder {
                    .id(SpincastSessionFilter.ROUTE_ID_AFTER_FILTER)
                    .spicastCoreRouteOrPluginRoute()
                    .skipResourcesRequests()
-                   .handle((context) -> {
+                   .handle((Handler)(context) -> {
                        getSpincastSessionFilter().after(context);
                    });
     }

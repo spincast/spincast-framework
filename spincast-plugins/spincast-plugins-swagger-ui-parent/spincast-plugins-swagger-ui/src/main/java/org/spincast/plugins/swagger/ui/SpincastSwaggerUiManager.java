@@ -4,13 +4,13 @@ import java.io.File;
 import java.nio.file.Files;
 
 import org.spincast.core.config.SpincastConfig;
-import org.spincast.core.exchange.DefaultRequestContext;
+import org.spincast.core.exchange.RequestContext;
+import org.spincast.core.routing.Handler;
 import org.spincast.core.routing.Router;
 import org.spincast.core.templating.TemplatingEngine;
 import org.spincast.core.utils.ContentTypeDefaults;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.core.utils.SpincastUtils;
-import org.spincast.core.websocket.DefaultWebsocketContext;
 import org.spincast.plugins.swagger.ui.config.SpincastSwaggerUiConfig;
 import org.spincast.shaded.org.apache.commons.io.FileUtils;
 
@@ -18,14 +18,14 @@ import com.google.inject.Inject;
 
 public class SpincastSwaggerUiManager {
 
-    private final Router<DefaultRequestContext, DefaultWebsocketContext> router;
+    private final Router<?, ?> router;
     private final SpincastUtils spincastUtils;
     private final SpincastConfig spincastConfig;
     private final TemplatingEngine templatingEngine;
     private final SpincastSwaggerUiConfig spincastSwaggerUiConfig;
 
     @Inject
-    public SpincastSwaggerUiManager(Router<DefaultRequestContext, DefaultWebsocketContext> router,
+    public SpincastSwaggerUiManager(Router<?, ?> router,
                                     SpincastUtils spincastUtils,
                                     SpincastSwaggerUiConfig spincastSwaggerUiConfig,
                                     TemplatingEngine templatingEngine,
@@ -42,7 +42,7 @@ public class SpincastSwaggerUiManager {
         serverSwaggerUi();
     }
 
-    protected Router<DefaultRequestContext, DefaultWebsocketContext> getRouter() {
+    protected Router<?, ?> getRouter() {
         return this.router;
     }
 
@@ -62,68 +62,72 @@ public class SpincastSwaggerUiManager {
         return this.spincastSwaggerUiConfig;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void serverSwaggerUi() {
 
         String swaggerUiFilesRoot = getSpincastConfig().getTempDir() + "/plugins/swagger-ui";
         getRouter().dir(getSpincastSwaggerUiConfig().getSwaggerUiPath())
                    .pathAbsolute(swaggerUiFilesRoot)
-                   .handle((context) -> {
+                   .handle((Handler)new Handler<RequestContext<?>>() {
 
-                       try {
-                           String absolutePath = context.request().getRequestPath();
-                           String path = absolutePath.substring(getSpincastSwaggerUiConfig().getSwaggerUiPath().length());
+                       @Override
+                       public void handle(RequestContext<?> context) {
+                           try {
+                               String absolutePath = context.request().getRequestPath();
+                               String path = absolutePath.substring(getSpincastSwaggerUiConfig().getSwaggerUiPath().length());
 
-                           File index = new File(swaggerUiFilesRoot + "/index.html");
-                           if (!index.exists()) {
-                               synchronized (this) {
-                                   if (!index.exists()) {
-                                       getSpincastUtils().copyClasspathDirToFileSystem("/spincast/plugins/swagger-ui",
-                                                                                       new File(swaggerUiFilesRoot));
+                               File index = new File(swaggerUiFilesRoot + "/index.html");
+                               if (!index.exists()) {
+                                   synchronized (this) {
+                                       if (!index.exists()) {
+                                           getSpincastUtils().copyClasspathDirToFileSystem("/spincast/plugins/swagger-ui",
+                                                                                           new File(swaggerUiFilesRoot));
 
-                                       //==========================================
-                                       // Tweak the index.html file
-                                       //==========================================
-                                       File indexFile = new File(swaggerUiFilesRoot, "index.html");
+                                           //==========================================
+                                           // Tweak the index.html file
+                                           //==========================================
+                                           File indexFile = new File(swaggerUiFilesRoot, "index.html");
 
-                                       //==========================================
-                                       // Set the correct specs file location
-                                       //==========================================
-                                       String specsUrl = getSpincastSwaggerUiConfig().getOpenApiSpecificationsUrl();
-                                       String content = FileUtils.readFileToString(indexFile, "UTF-8");
-                                       content = content.replace("https://petstore.swagger.io/v2/swagger.json", specsUrl);
+                                           //==========================================
+                                           // Set the correct specs file location
+                                           //==========================================
+                                           String specsUrl = getSpincastSwaggerUiConfig().getOpenApiSpecificationsUrl();
+                                           String content = FileUtils.readFileToString(indexFile, "UTF-8");
+                                           content = content.replace("https://petstore.swagger.io/v2/swagger.json", specsUrl);
 
-                                       //==========================================
-                                       // Remove top bar?
-                                       //==========================================
-                                       if (!getSpincastSwaggerUiConfig().showTopBar()) {
-                                           content =
-                                                   content.replace("layout: \"StandaloneLayout\"", "layout: \"BaseLayout\"");
+                                           //==========================================
+                                           // Remove top bar?
+                                           //==========================================
+                                           if (!getSpincastSwaggerUiConfig().showTopBar()) {
+                                               content =
+                                                       content.replace("layout: \"StandaloneLayout\"", "layout: \"BaseLayout\"");
+                                           }
+
+                                           FileUtils.write(indexFile, content, "UTF-8");
+
                                        }
-
-                                       FileUtils.write(indexFile, content, "UTF-8");
-
                                    }
                                }
-                           }
 
-                           boolean isIndex = path.equals("") || path.equals("/") || path.equals("/index.html");
+                               boolean isIndex = path.equals("") || path.equals("/") || path.equals("/index.html");
 
-                           File toSend = new File(swaggerUiFilesRoot + (isIndex ? "/index.html" : path));
+                               File toSend = new File(swaggerUiFilesRoot + (isIndex ? "/index.html" : path));
 
-                           String mimeTypeFromPath = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
-                           if (!isIndex) {
-                               mimeTypeFromPath = getSpincastUtils().getMimeTypeFromPath(path);
+                               String mimeTypeFromPath = ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset();
+                               if (!isIndex) {
+                                   mimeTypeFromPath = getSpincastUtils().getMimeTypeFromPath(path);
 
-                           }
-                           byte[] bytes;
-                           try {
-                               bytes = Files.readAllBytes(toSend.toPath());
+                               }
+                               byte[] bytes;
+                               try {
+                                   bytes = Files.readAllBytes(toSend.toPath());
+                               } catch (Exception ex) {
+                                   throw SpincastStatics.runtimize(ex);
+                               }
+                               context.response().sendBytes(bytes, mimeTypeFromPath);
                            } catch (Exception ex) {
                                throw SpincastStatics.runtimize(ex);
                            }
-                           context.response().sendBytes(bytes, mimeTypeFromPath);
-                       } catch (Exception ex) {
-                           throw SpincastStatics.runtimize(ex);
                        }
                    });
 
