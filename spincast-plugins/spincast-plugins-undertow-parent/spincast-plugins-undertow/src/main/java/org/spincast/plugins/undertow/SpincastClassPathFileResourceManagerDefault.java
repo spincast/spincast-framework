@@ -11,12 +11,12 @@ import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.URLResource;
 
-public class FileClassPathResourceManagerDefault implements FileClassPathResourceManager {
+public class SpincastClassPathFileResourceManagerDefault implements SpincastClassPathFileResourceManager {
 
     private final String filePath;
 
     @AssistedInject
-    public FileClassPathResourceManagerDefault(@Assisted String filePath) {
+    public SpincastClassPathFileResourceManagerDefault(@Assisted String filePath) {
         this.filePath = filePath;
     }
 

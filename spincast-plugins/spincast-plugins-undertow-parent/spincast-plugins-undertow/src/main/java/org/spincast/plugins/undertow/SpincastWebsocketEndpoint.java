@@ -87,7 +87,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
         //==========================================
         // Do we send automatic pings?
         //==========================================
-        if(getSpincastUndertowConfig().isWebsocketAutomaticPing()) {
+        if (getSpincastUndertowConfig().isWebsocketAutomaticPing()) {
             startSendingPings();
         }
     }
@@ -114,7 +114,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
     protected UndertowWebsocketEndpointWriter getUndertowWebsocketWriter() {
 
-        if(this.websocketWriter == null) {
+        if (this.websocketWriter == null) {
             this.websocketWriter = getUndertowWebsocketEndpointWriterFactory().create(getWebSocketChannelByPeerId());
         }
 
@@ -126,10 +126,10 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
      */
     protected Object getNewPeerIdLock(String peerId) {
         Object lock = this.peerIdCreationLocks.get(peerId);
-        if(lock == null) {
-            synchronized(this.peerIdCreationLocksCreationLock) {
+        if (lock == null) {
+            synchronized (this.peerIdCreationLocksCreationLock) {
                 lock = this.peerIdCreationLocks.get(peerId);
-                if(lock == null) {
+                if (lock == null) {
                     lock = new Object();
                     this.peerIdCreationLocks.put(peerId, lock);
                 }
@@ -179,7 +179,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                                                                Sets.newHashSet(peerId),
                                                                callback);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -188,7 +188,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
         try {
             removePeerChannel(peerId);
             sendPeerClosedAppEvent(peerId);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -196,19 +196,19 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
     protected void removePeerChannel(String peerId) {
         try {
             WebSocketChannel webSocketChannel = getWebSocketChannelByPeerId().get(peerId);
-            if(webSocketChannel != null) {
-                if(webSocketChannel.isOpen()) {
+            if (webSocketChannel != null) {
+                if (webSocketChannel.isOpen()) {
                     webSocketChannel.close();
                 }
 
                 getWebSocketChannelByPeerId().remove(peerId);
 
                 Set<WebSocketChannel> peerConnections = getWebSocketProtocolHandshakeHandler().getPeerConnections();
-                if(peerConnections != null) {
+                if (peerConnections != null) {
                     peerConnections.remove(webSocketChannel);
                 }
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -219,11 +219,11 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
      */
     protected void managePeersWriteConnectionClosed(Set<String> peerIds) {
 
-        if(peerIds == null || peerIds.size() == 0) {
+        if (peerIds == null || peerIds.size() == 0) {
             return;
         }
 
-        for(String peerId : peerIds) {
+        for (String peerId : peerIds) {
             removePeerChannelAndSendPeerClosedAppEvent(peerId);
         }
     }
@@ -259,11 +259,11 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
         validateWebsocketClosingCode(closingCode);
 
-        if(closingReason == null) {
+        if (closingReason == null) {
             closingReason = "";
         }
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             logger.info("Endpoint '" + getEndpointId() + "' is already closed or closing...");
             return;
         }
@@ -278,13 +278,13 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
             @Override
             public void done() {
 
-                for(String peerId : getWebSocketChannelByPeerId().keySet()) {
+                for (String peerId : getWebSocketChannelByPeerId().keySet()) {
                     try {
                         removePeerChannel(peerId);
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         SpincastWebsocketEndpoint.logger.error("Error closing peer '" + peerId + "' on endpoint '" +
-                                                                    getEndpointId() + "': " +
-                                                                    ex.getMessage());
+                                                               getEndpointId() + "': " +
+                                                               ex.getMessage());
                     }
                 }
 
@@ -296,7 +296,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                 SpincastWebsocketEndpoint.this.endpointIsClosed = true;
 
                 //==========================================
-                // We alert the event handler that the endpoint 
+                // We alert the event handler that the endpoint
                 // is now closed.
                 //==========================================
                 Runnable runnable = new Runnable() {
@@ -310,7 +310,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
             }
         };
 
-        if(sendClosingMessageToPeers) {
+        if (sendClosingMessageToPeers) {
             getUndertowWebsocketWriter().sendClosingConnection(closingCode,
                                                                closingReason,
                                                                getWebSocketChannelByPeerId().keySet(),
@@ -322,11 +322,11 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
     /**
      * Is the Websocket closing code valid?
-     * 
+     *
      * @throws an expcetion is the code is not valid.
      */
     protected void validateWebsocketClosingCode(int closingCode) {
-        if(!CloseMessage.isValid(closingCode)) {
+        if (!CloseMessage.isValid(closingCode)) {
             throw new RuntimeException("The Websocket endpoint closing code '" + closingCode + "' is not valid. " +
                                        "Please look at http://tools.ietf.org/html/rfc6455#section-7.4");
         }
@@ -342,23 +342,23 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
             @Override
             public void run() {
 
-                while(true) {
+                while (true) {
 
                     try {
                         Thread.sleep(getSpincastUndertowConfig().getWebsocketAutomaticPingIntervalSeconds() * 1000);
-                    } catch(Exception ex) {
+                    } catch (Exception ex) {
                         SpincastWebsocketEndpoint.logger.warn("Exception sleeping the thread: " +
-                                                                   ex.getMessage());
+                                                              ex.getMessage());
                     }
 
                     //==========================================
-                    // If the endpoint is closed or if 
+                    // If the endpoint is closed or if
                     // startSendingPings() has been called again,
                     // we stop the current ping sending thread.
                     //==========================================
-                    if(SpincastWebsocketEndpoint.this.endpointIsClosing ||
-                       SpincastWebsocketEndpoint.this.pingSenderThread == null ||
-                       SpincastWebsocketEndpoint.this.pingSenderThread != Thread.currentThread()) {
+                    if (SpincastWebsocketEndpoint.this.endpointIsClosing ||
+                        SpincastWebsocketEndpoint.this.pingSenderThread == null ||
+                        SpincastWebsocketEndpoint.this.pingSenderThread != Thread.currentThread()) {
                         break;
                     }
 
@@ -406,7 +406,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
     @Override
     public void sendMessage(Set<String> peerIds, String message) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             logger.warn("Endpoint '" + getEndpointId() + "' is closed or closing...");
             return;
         }
@@ -447,7 +447,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
     @Override
     public void sendMessage(Set<String> peerIds, byte[] message) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             logger.warn("Endpoint '" + getEndpointId() + "' is closed or closing...");
             return;
         }
@@ -465,7 +465,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
     public void handleConnectionRequest(HttpServerExchange exchange,
                                         final String peerId) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             logger.warn("Endpoint '" + getEndpointId() + "' is closed or closing...");
             return;
         }
@@ -475,7 +475,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
             //==========================================
             // Validates that this peer id is not already used
             //==========================================
-            if(getWebSocketChannelByPeerId().containsKey(peerId)) {
+            if (getWebSocketChannelByPeerId().containsKey(peerId)) {
                 throw new RuntimeException("The Websocket endpoint '" + this.endpointId + "' is already used by a peer with " +
                                            "id '" + peerId + "'! Close the existing peer if you want to reuse this id.");
             }
@@ -493,7 +493,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
             //==========================================
             getWebSocketProtocolHandshakeHandler().handleRequest(exchange);
 
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);
         }
     }
@@ -503,7 +503,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
      */
     protected WebSocketProtocolHandshakeHandler getWebSocketProtocolHandshakeHandler() {
 
-        if(this.webSocketProtocolHandshakeHandler == null) {
+        if (this.webSocketProtocolHandshakeHandler == null) {
 
             this.webSocketProtocolHandshakeHandler =
                     new WebSocketProtocolHandshakeHandler(new WebSocketConnectionCallback() {
@@ -518,10 +518,10 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                             final String peerId = getSpincastUndertowUtils().getRequestCustomVariables(exchange)
                                                                             .get(EXCHANGE_VARIABLE_PEER_ID);
 
-                            if(SpincastWebsocketEndpoint.this.endpointIsClosing) {
+                            if (SpincastWebsocketEndpoint.this.endpointIsClosing) {
                                 SpincastWebsocketEndpoint.logger.warn("The endpoint is closed or closing, the peer '" +
-                                                                           peerId +
-                                                                           "' onConnect() won't be handled.");
+                                                                      peerId +
+                                                                      "' onConnect() won't be handled.");
                                 return;
                             }
 
@@ -530,10 +530,10 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                             // connection only.
                             //==========================================
                             boolean peerIdAlreadyUsed = false;
-                            if(!getWebSocketChannelByPeerId().containsKey(peerId)) {
+                            if (!getWebSocketChannelByPeerId().containsKey(peerId)) {
                                 Object newPeerIdLock = getNewPeerIdLock(peerId);
-                                synchronized(newPeerIdLock) {
-                                    if(!getWebSocketChannelByPeerId().containsKey(peerId)) {
+                                synchronized (newPeerIdLock) {
+                                    if (!getWebSocketChannelByPeerId().containsKey(peerId)) {
                                         getWebSocketChannelByPeerId().put(peerId, channel);
                                     } else {
                                         peerIdAlreadyUsed = true;
@@ -544,23 +544,23 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                             }
 
                             //==========================================
-                            // Peer id already used. 
+                            // Peer id already used.
                             // We close the new connection.
                             //==========================================
-                            if(peerIdAlreadyUsed) {
+                            if (peerIdAlreadyUsed) {
                                 SpincastWebsocketEndpoint.logger.warn("The Websocket endpoint '" + getEndpointId() +
-                                                                           "' is already used by a peer with " +
-                                                                           "id '" + peerId +
-                                                                           "'! The new connection will be closed.");
+                                                                      "' is already used by a peer with " +
+                                                                      "id '" + peerId +
+                                                                      "'! The new connection will be closed.");
                                 try {
                                     WebSockets.sendClose(CloseMessage.UNEXPECTED_ERROR, "Duplicate peer id", channel, null);
-                                    if(channel.isOpen()) {
+                                    if (channel.isOpen()) {
                                         channel.close();
                                     }
-                                } catch(Exception ex) {
+                                } catch (Exception ex) {
                                     SpincastWebsocketEndpoint.logger.error("Error closing the duplicate '" + peerId +
-                                                                                "' peer's Websocket connection: " +
-                                                                                ex.getMessage());
+                                                                           "' peer's Websocket connection: " +
+                                                                           ex.getMessage());
                                 }
                                 return;
                             }
@@ -575,9 +575,9 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                                                                  BufferedTextMessage bufferedTextMessage) throws IOException {
                                     String message = bufferedTextMessage.getData();
 
-                                    if(SpincastWebsocketEndpoint.this.endpointIsClosing) {
+                                    if (SpincastWebsocketEndpoint.this.endpointIsClosing) {
                                         SpincastWebsocketEndpoint.logger.warn("The endpoint is closed or closing, the received message from peer '" +
-                                                                                   peerId + "' won't be handled: " + message);
+                                                                              peerId + "' won't be handled: " + message);
                                         return;
                                     }
 
@@ -591,12 +591,13 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                                 protected void onFullBinaryMessage(final WebSocketChannel channel,
                                                                    BufferedBinaryMessage message) throws IOException {
 
-                                    if(SpincastWebsocketEndpoint.this.endpointIsClosing) {
+                                    if (SpincastWebsocketEndpoint.this.endpointIsClosing) {
                                         SpincastWebsocketEndpoint.logger.warn("The endpoint is closed or closing, the received bytes message from peer '" +
-                                                                                   peerId + "' won't be handled");
+                                                                              peerId + "' won't be handled");
                                         return;
                                     }
 
+                                    @SuppressWarnings("deprecation") // TODO No alternative for now from Undertow?
                                     ByteBuffer[] byteBuffersArray = message.getData().getResource();
                                     ByteBuffer byteBuffer = WebSockets.mergeBuffers(byteBuffersArray);
 
@@ -609,7 +610,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                                 @Override
                                 protected void onCloseMessage(CloseMessage cm, WebSocketChannel channel) {
 
-                                    if(SpincastWebsocketEndpoint.this.endpointIsClosing) {
+                                    if (SpincastWebsocketEndpoint.this.endpointIsClosing) {
                                         // nothing to do.
                                         return;
                                     }
@@ -620,11 +621,11 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
                                         // Event : Peer closed
                                         //==========================================
                                         removePeerChannelAndSendPeerClosedAppEvent(peerId);
-                                    } catch(Exception ex) {
+                                    } catch (Exception ex) {
                                         SpincastWebsocketEndpoint.logger.error("Error closing peer '" + peerId +
-                                                                                    "' on endpoint '" +
-                                                                                    getEndpointId() + "': " +
-                                                                                    ex.getMessage());
+                                                                               "' on endpoint '" +
+                                                                               getEndpointId() + "': " +
+                                                                               ex.getMessage());
                                     }
                                 }
                             });
@@ -647,7 +648,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
      */
     protected void sendOnPeerConnectedAppEvent(final String peerId) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             return;
         }
 
@@ -667,7 +668,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
     protected void sendOnStringMessageAppEvent(final String peerId,
                                                final String message) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             return;
         }
 
@@ -687,7 +688,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
     protected void sendOnBytesMessageAppEvent(final String peerId,
                                               final byte[] message) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             return;
         }
 
@@ -706,7 +707,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
      */
     protected void sendPeerClosedAppEvent(final String peerId) {
 
-        if(this.endpointIsClosing) {
+        if (this.endpointIsClosing) {
             return;
         }
 
@@ -741,20 +742,20 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
             getThreadExecutorForAppEvents().invokeAll(callables,
                                                       getThreadExecutorForAppEventsTimeoutAmount(),
                                                       getThreadExecutorForAppEventsTimeoutTimeUnit());
-        } catch(InterruptedException ex) {
+        } catch (InterruptedException ex) {
             logger.error("A Thread used for sending a Websocket event to the application took too long " +
-                              "(max " + getThreadExecutorForAppEventsTimeoutAmount() + " " +
-                              getThreadExecutorForAppEventsTimeoutTimeUnit().toString() + ")" +
-                              "on endpoint " + getEndpointId() + ": " + ex.getMessage());
-        } catch(Exception ex) {
+                         "(max " + getThreadExecutorForAppEventsTimeoutAmount() + " " +
+                         getThreadExecutorForAppEventsTimeoutTimeUnit().toString() + ")" +
+                         "on endpoint " + getEndpointId() + ": " + ex.getMessage());
+        } catch (Exception ex) {
             logger.error("A Thread used for sending a Websocket event to the application thrown an exception " +
-                              "on endpoint " + getEndpointId() + ": " + ex.getMessage());
+                         "on endpoint " + getEndpointId() + ": " + ex.getMessage());
         }
     }
 
     /**
      * The timeout amount before cancelling a task when
-     * sending events to the application. 
+     * sending events to the application.
      */
     protected int getThreadExecutorForAppEventsTimeoutAmount() {
         return getSpincastUndertowConfig().getWebsocketThreadExecutorForAppEventsTimeoutAmount();
@@ -762,7 +763,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
     /**
      * The timeout unit before cancelling a task when
-     * sending events to the application. 
+     * sending events to the application.
      */
     protected TimeUnit getThreadExecutorForAppEventsTimeoutTimeUnit() {
         return getSpincastUndertowConfig().getWebsocketThreadExecutorForAppEventsTimeoutTimeUnit();
@@ -774,9 +775,9 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
      */
     protected ExecutorService getThreadExecutorForAppEvents() {
 
-        if(this.threadExecutorForAppEvents == null) {
+        if (this.threadExecutorForAppEvents == null) {
             ThreadFactory threadFactory = getThreadExecutorForAppEventsThreadThreadFactory();
-            if(threadFactory != null) {
+            if (threadFactory != null) {
                 this.threadExecutorForAppEvents =
                         Executors.newFixedThreadPool(getThreadExecutorForAppEventsThreadNumber(), threadFactory);
             } else {
@@ -789,7 +790,7 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
     /**
      * The maximum number of concurrent threads used when
-     * sending events to the application. 
+     * sending events to the application.
      */
     protected int getThreadExecutorForAppEventsThreadNumber() {
         return getSpincastUndertowConfig().getWebsocketThreadExecutorForAppEventsThreadNumber();
@@ -797,9 +798,9 @@ public class SpincastWebsocketEndpoint implements WebsocketEndpoint {
 
     /**
      * The ThreadFactory to use for the Executor that
-     * sends events to the application. 
-     * 
-     * @return the ThreadFactory to use or <code>null</code> 
+     * sends events to the application.
+     *
+     * @return the ThreadFactory to use or <code>null</code>
      * to use the default one.
      */
     protected ThreadFactory getThreadExecutorForAppEventsThreadThreadFactory() {

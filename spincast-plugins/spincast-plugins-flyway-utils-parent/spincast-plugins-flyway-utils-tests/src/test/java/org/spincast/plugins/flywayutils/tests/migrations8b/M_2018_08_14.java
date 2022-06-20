@@ -11,8 +11,7 @@ import org.spincast.plugins.jdbc.statements.UpdateStatement;
 import com.google.inject.Inject;
 
 /**
- * IMPORTANT
- * This clas must be identical to the one in  package
+ * This class must be identical to the one in package
  * "org.spincast.plugins.flywayutils.tests.migrations8".
  */
 public class M_2018_08_14 extends SpincastFlywayMigrationBase {

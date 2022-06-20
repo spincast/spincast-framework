@@ -192,6 +192,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                 @Override
                 protected void onFullBinaryMessage(final WebSocketChannel channel,
                                                    BufferedBinaryMessage message) throws IOException {
+                    @SuppressWarnings("deprecation") // TODO No alternative for now from Undertow?
                     ByteBuffer[] byteBuffersArray = message.getData().getResource();
                     ByteBuffer byteBuffer = WebSockets.mergeBuffers(byteBuffersArray);
 
@@ -310,7 +311,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                         sendConnectionClosedAppEvent(reader);
                     } else {
                         WebsocketRequestBuilderDefault.logger.error("None IOException when trying to write to Websocket endpoint: " +
-                                                                         throwable);
+                                                                    throwable);
                     }
                 }
 
@@ -341,7 +342,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                         Thread.sleep(pingsIntervalSeconds * 1000);
                     } catch (Exception ex) {
                         WebsocketRequestBuilderDefault.logger.warn("Exception sleeping the thread: " +
-                                                                        ex.getMessage());
+                                                                   ex.getMessage());
                     }
 
                     if (WebsocketRequestBuilderDefault.this.connectionIsClosed ||
@@ -653,17 +654,17 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
                                                          getThreadExecutorForClientEventsTimeoutTimeUnit());
         } catch (InterruptedException ex) {
             logger.error("A Thread used for sending a Websocket event to the client took too long " +
-                              "(max " + getThreadExecutorForClientEventsTimeoutAmount() + " " +
-                              getThreadExecutorForClientEventsTimeoutTimeUnit().toString() + "): " + ex.getMessage());
+                         "(max " + getThreadExecutorForClientEventsTimeoutAmount() + " " +
+                         getThreadExecutorForClientEventsTimeoutTimeUnit().toString() + "): " + ex.getMessage());
         } catch (Exception ex) {
             logger.error("A Thread used for sending a Websocket event to the application thrown an exception: " +
-                              "" + ex.getMessage());
+                         "" + ex.getMessage());
         }
     }
 
     /**
      * The timeout amount before cancelling a task when
-     * sending events to the application. 
+     * sending events to the application.
      */
     protected int getThreadExecutorForClientEventsTimeoutAmount() {
         return getSpincastHttpClientWithWebsocketConfig().getWebsocketThreadExecutorForClientEventsTimeoutAmount();
@@ -671,7 +672,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
     /**
      * The timeout asdasd before cancelling a task when
-     * sending events to the application. 
+     * sending events to the application.
      */
     protected TimeUnit getThreadExecutorForClientEventsTimeoutTimeUnit() {
         return getSpincastHttpClientWithWebsocketConfig().getWebsocketThreadExecutorForClientEventsTimeoutTimeUnit();
@@ -698,7 +699,7 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
     /**
      * The maximum number of concurrent threads used when
-     * sending events to the application. 
+     * sending events to the application.
      */
     protected int getThreadExecutorForClientEventsThreadNumber() {
         return getSpincastHttpClientWithWebsocketConfig().getWebsocketThreadExecutorForClientEventsThreadNumber();
@@ -706,9 +707,9 @@ public class WebsocketRequestBuilderDefault extends HttpRequestBuilderBase<Webso
 
     /**
      * The ThreadFactory to use for the Executor that
-     * sends events to the client. 
-     * 
-     * @return the ThreadFactory to use or <code>null</code> 
+     * sends events to the client.
+     *
+     * @return the ThreadFactory to use or <code>null</code>
      * to use the default one.
      */
     protected ThreadFactory getThreadExecutorForClientEventsThreadThreadFactory() {

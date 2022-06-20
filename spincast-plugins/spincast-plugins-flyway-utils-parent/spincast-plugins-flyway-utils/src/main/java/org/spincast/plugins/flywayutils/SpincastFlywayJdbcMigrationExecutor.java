@@ -1,11 +1,10 @@
 package org.spincast.plugins.flywayutils;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.flywaydb.core.api.FlywayException;
-import org.flywaydb.core.api.resolver.MigrationExecutor;
-
+import org.flywaydb.core.api.executor.Context;
+import org.flywaydb.core.api.executor.MigrationExecutor;
 
 public class SpincastFlywayJdbcMigrationExecutor implements MigrationExecutor {
 
@@ -16,13 +15,13 @@ public class SpincastFlywayJdbcMigrationExecutor implements MigrationExecutor {
     }
 
     protected SpincastFlywayMigration getSpincastFlywayMigration() {
-        return this.spincastFlywayMigration;
+        return spincastFlywayMigration;
     }
 
     @Override
-    public void execute(Connection connection) throws SQLException {
+    public void execute(Context context) throws SQLException {
         try {
-            getSpincastFlywayMigration().migrate(connection);
+            getSpincastFlywayMigration().migrate(context.getConnection());
         } catch (SQLException e) {
             throw e;
         } catch (Exception e) {
@@ -31,7 +30,12 @@ public class SpincastFlywayJdbcMigrationExecutor implements MigrationExecutor {
     }
 
     @Override
-    public boolean executeInTransaction() {
+    public boolean canExecuteInTransaction() {
+        return true;
+    }
+
+    @Override
+    public boolean shouldExecute() {
         return true;
     }
 }

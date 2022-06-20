@@ -187,7 +187,7 @@ public class WebsocketDefaultTest extends NoAppWebsocketTestingBase {
                 JsonObject obj = context.json().create();
                 assertNotNull(obj);
 
-                obj = context.xml().fromXml("<test></test>");
+                obj = context.xml().fromXml("<test><k>val</k></test>");
                 assertNotNull(obj);
 
                 String placeholder = context.templating().createPlaceholder("name");

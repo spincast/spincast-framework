@@ -287,7 +287,7 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
     @Test
     public void dynamicDirResourcesSavedByFilter() throws Exception {
 
-        String dynamicDirPath = createTestingFilePath("generated");
+        String dynamicDirPath = createTestingFilePath("genThere");
         final File dynamicDir = new File(dynamicDirPath);
         assertFalse(dynamicDir.isFile());
 
@@ -685,13 +685,13 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
     @Test
     public void ignoreQueryString() throws Exception {
 
-        String generatedCssFilePath = createTestingFilePath("generated.txt");
-        final File generatedCssFile = new File(generatedCssFilePath);
-        assertFalse(generatedCssFile.isFile());
+        String generatedFilePath = createTestingFilePath("generated.txt");
+        final File generatedFile = new File(generatedFilePath);
+        assertFalse(generatedFile.isFile());
 
         final int[] nbrTimeCalled = new int[]{0};
 
-        getRouter().file("/generated.txt").pathAbsolute(generatedCssFilePath).handle(new Handler<DefaultRequestContext>() {
+        getRouter().file("/generated.txt").pathAbsolute(generatedFilePath).handle(new Handler<DefaultRequestContext>() {
 
             @Override
             public void handle(DefaultRequestContext context) {
@@ -716,20 +716,20 @@ public class StaticResourcesDynamicTest extends NoAppStartHttpServerTestingBase 
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
-        assertTrue(generatedCssFile.isFile());
+        assertTrue(generatedFile.isFile());
 
         response = GET("/generated.txt").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
-        assertTrue(generatedCssFile.isFile());
+        assertTrue(generatedFile.isFile());
 
         // Gets the cached version
         response = GET("/generated.txt?test=123").send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("_noQs!", response.getContentAsString());
         assertEquals(1, nbrTimeCalled[0]);
-        assertTrue(generatedCssFile.isFile());
+        assertTrue(generatedFile.isFile());
     }
 
 }

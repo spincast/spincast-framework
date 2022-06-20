@@ -387,7 +387,6 @@ public class OpenApiTest extends TestBase {
         assertEquals(1, requestContent.size());
         assertEquals("application/default1", requestContent.keySet().iterator().next());
 
-
         ApiResponses responses = getOperation.getResponses();
         assertNotNull(responses);
 
@@ -910,6 +909,5 @@ public class OpenApiTest extends TestBase {
         pathItem = openApi.getPaths().get("/toto");
         assertNotNull(pathItem);
     }
-
 
 }

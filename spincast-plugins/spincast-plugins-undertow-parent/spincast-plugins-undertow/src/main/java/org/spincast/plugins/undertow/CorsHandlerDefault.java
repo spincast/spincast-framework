@@ -1,6 +1,5 @@
 package org.spincast.plugins.undertow;
 
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -21,7 +20,6 @@ import com.google.inject.assistedinject.AssistedInject;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.Cookie;
 import io.undertow.util.HttpString;
 
 public class CorsHandlerDefault implements CorsHandler {
@@ -65,7 +63,7 @@ public class CorsHandlerDefault implements CorsHandler {
             }
 
             //==========================================
-            // To speed things up with static resources, we 
+            // To speed things up with static resources, we
             // don't even call the cors filter is the "Origin"
             // header is not present.
             //==========================================
@@ -163,9 +161,8 @@ public class CorsHandlerDefault implements CorsHandler {
 
             @Override
             public boolean requestContainsCookies() {
-
-                Map<String, Cookie> requestCookies = exchange.getRequestCookies();
-                return requestCookies != null && requestCookies.size() > 0;
+                boolean hasCookies = exchange.requestCookies().iterator().hasNext();
+                return hasCookies;
             }
 
             @Override
@@ -235,7 +232,7 @@ public class CorsHandlerDefault implements CorsHandler {
     }
 
     /**
-     * Those are the valid HTTP methods for requests to 
+     * Those are the valid HTTP methods for requests to
      * static resources served directly by the HTTP server.
      */
     protected Set<HttpMethod> getStaticResourceCorsAllowedMethods() {

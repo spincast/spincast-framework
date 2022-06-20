@@ -2,6 +2,8 @@ package org.spincast.tests.forms;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.regex.Pattern;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -18,6 +20,8 @@ import org.spincast.testing.defaults.NoAppStartHttpServerTestingBase;
 
 public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
 
+    private static final Pattern REMOVE_TRAILING_PATTERN = Pattern.compile("\\p{Blank}+$", Pattern.MULTILINE);
+
     protected String formatHtml(String html) {
 
         if (StringUtils.isBlank(html)) {
@@ -31,6 +35,11 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         doc.outputSettings().outline(true);
         //doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
         String result = doc.outerHtml();
+
+        // TODO temp, to remove when JSoup release a stable version
+        // containing the fix.
+        // @see https://github.com/jhy/jsoup/issues/1689
+        result = REMOVE_TRAILING_PATTERN.matcher(result).replaceAll("");
 
         return result;
     }
@@ -72,7 +81,9 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form01_2.html"), "UTF-8");
-        assertEquals(expected, formatHtml(response.getContentAsString()));
+        expected = formatHtml(expected);
+        String got = formatHtml(response.getContentAsString());
+        assertEquals(expected, got);
     }
 
     @Test
@@ -105,6 +116,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form02_2.html"), "UTF-8");
+        expected = formatHtml(expected);
         assertEquals(expected, formatHtml(response.getContentAsString()));
     }
 
@@ -148,6 +160,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form03_2.html"), "UTF-8");
+        expected = formatHtml(expected);
         assertEquals(expected, formatHtml(response.getContentAsString()));
     }
 
@@ -194,7 +207,9 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form06_2.html"), "UTF-8");
-        assertEquals(expected, formatHtml(response.getContentAsString()));
+        expected = formatHtml(expected);
+        String got = formatHtml(response.getContentAsString());
+        assertEquals(expected, got);
     }
 
     @Test
@@ -240,6 +255,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form04_2.html"), "UTF-8");
+        expected = formatHtml(expected);
         assertEquals(expected, formatHtml(response.getContentAsString()));
     }
 
@@ -286,6 +302,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form05_2.html"), "UTF-8");
+        expected = formatHtml(expected);
         assertEquals(expected, formatHtml(response.getContentAsString()));
     }
 
@@ -348,6 +365,7 @@ public class HtmlFormsFillingTest extends NoAppStartHttpServerTestingBase {
         assertEquals(ContentTypeDefaults.HTML.getMainVariationWithUtf8Charset(), response.getContentType());
 
         String expected = IOUtils.toString(this.getClass().getResourceAsStream("/forms/form07_2.html"), "UTF-8");
+        expected = formatHtml(expected);
         assertEquals(expected, formatHtml(response.getContentAsString()));
     }
 

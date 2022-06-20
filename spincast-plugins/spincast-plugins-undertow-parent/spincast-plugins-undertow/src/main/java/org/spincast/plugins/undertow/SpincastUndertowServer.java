@@ -82,8 +82,6 @@ import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.server.handlers.form.FormEncodedDataDefinition;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.server.handlers.form.MultiPartParserDefinition;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
-import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.HttpString;
@@ -112,7 +110,7 @@ public class SpincastUndertowServer implements Server {
     private final SkipResourceOnQueryStringHandlerFactory skipResourceOnQueryStringHandlerFactory;
     private final SpincastResourceHandlerFactory spincastResourceHandlerFactory;
     private final CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory;
-    private final FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
+    private final SpincastClassPathResourceManagerFactory fileClassPathResourceManagerFactory;
     private final SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory;
     private final SSLContextFactory sslContextFactory;
 
@@ -159,7 +157,7 @@ public class SpincastUndertowServer implements Server {
                                   SkipResourceOnQueryStringHandlerFactory skipResourceOnQueryStringHandlerFactory,
                                   SpincastResourceHandlerFactory spincastResourceHandlerFactory,
                                   CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
-                                  FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
+                                  SpincastClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                   SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                   WebsocketEndpointFactory spincastWebsocketEndpointFactory,
                                   SSLContextFactory sslContextFactory) {
@@ -224,7 +222,7 @@ public class SpincastUndertowServer implements Server {
         return this.cacheBusterRemovalHandlerFactory;
     }
 
-    protected FileClassPathResourceManagerFactory getFileClassPathResourceManagerFactory() {
+    protected SpincastClassPathResourceManagerFactory getFileClassPathResourceManagerFactory() {
         return this.fileClassPathResourceManagerFactory;
     }
 
@@ -707,7 +705,7 @@ public class SpincastUndertowServer implements Server {
                                                                  : ResponseCodeHandler.HANDLE_404;
 
             SpincastResourceHandler resourceHandler =
-                    getSpincastResourceHandlerFactory().create(new FileResourceManager(file, 1024),
+                    getSpincastResourceHandlerFactory().create(new SpincastFileSystemFileResourceManager(file),
                                                                staticResource,
                                                                next);
 
@@ -740,8 +738,8 @@ public class SpincastUndertowServer implements Server {
                 throw new RuntimeException("The classpath file doesn't exist so it can't be served : " + classpathPath);
             }
 
-            FileClassPathResourceManager fileClassPathResourceManager =
-                    getFileClassPathResourceManagerFactory().create(classpathPath);
+            SpincastClassPathFileResourceManager fileClassPathResourceManager =
+                    getFileClassPathResourceManagerFactory().createFileManage(classpathPath);
 
             SpincastResourceHandler resourceHandler =
                     getSpincastResourceHandlerFactory().create(fileClassPathResourceManager,
@@ -767,7 +765,8 @@ public class SpincastUndertowServer implements Server {
                                                                  : ResponseCodeHandler.HANDLE_404;
 
             SpincastResourceHandler resourceHandler =
-                    getSpincastResourceHandlerFactory().create(new FileResourceManager(dir, 1024),
+                    getSpincastResourceHandlerFactory().create(new SpincastFileSystemDirResourceManager(staticResource.getUrlPath(),
+                                                                                                        dir),
                                                                staticResource,
                                                                next);
 
@@ -801,11 +800,12 @@ public class SpincastUndertowServer implements Server {
                                            classpathPath);
             }
 
-            ClassPathResourceManager classPathResourceManager =
-                    new ClassPathResourceManager(SpincastUndertowServer.class.getClassLoader(), classpathPath);
+            SpincastClassPathDirResourceManager dirClassPathResourceManager =
+                    getFileClassPathResourceManagerFactory().createDirManager(staticResource.getUrlPath(),
+                                                                              classpathPath);
 
             SpincastResourceHandler resourceHandler =
-                    getSpincastResourceHandlerFactory().create(classPathResourceManager,
+                    getSpincastResourceHandlerFactory().create(dirClassPathResourceManager,
                                                                staticResource);
 
             GzipCheckerHandler gzipCheckerHandler = getGzipCheckerHandlerFactory().create(resourceHandler, null);
@@ -1156,11 +1156,7 @@ public class SpincastUndertowServer implements Server {
             return;
         }
 
-        Map<String, io.undertow.server.handlers.Cookie> undertowResponseCookiesMap =
-                ((HttpServerExchange)exchange).getResponseCookies();
-
         for (Cookie cookie : cookies.values()) {
-
             String name = cookie.getName();
             String value = cookie.getValue();
             try {
@@ -1191,7 +1187,7 @@ public class SpincastUndertowServer implements Server {
             undertowCookie.setSecure(cookie.isSecure());
             undertowCookie.setVersion(cookie.getVersion());
 
-            undertowResponseCookiesMap.put(name, undertowCookie);
+            ((HttpServerExchange)exchange).setResponseCookie(undertowCookie);
         }
     }
 
@@ -1203,26 +1199,21 @@ public class SpincastUndertowServer implements Server {
         //==========================================
         // Get current cookies from the request
         //==========================================
-        Map<String, io.undertow.server.handlers.Cookie> undertowRequestCookies =
-                ((HttpServerExchange)exchange).getRequestCookies();
-        if (undertowRequestCookies != null) {
-            for (io.undertow.server.handlers.Cookie undertowCookie : undertowRequestCookies.values()) {
-
-                String name = undertowCookie.getName();
-                String value = undertowCookie.getValue();
-                try {
-                    if (name != null) {
-                        name = URLDecoder.decode(name, getCookieEncoding());
-                    }
-                    if (value != null) {
-                        value = URLDecoder.decode(value, getCookieEncoding());
-                    }
-                } catch (Exception ex) {
-                    throw SpincastStatics.runtimize(ex);
+        for (io.undertow.server.handlers.Cookie undertowCookie : ((HttpServerExchange)exchange).requestCookies()) {
+            String name = undertowCookie.getName();
+            String value = undertowCookie.getValue();
+            try {
+                if (name != null) {
+                    name = URLDecoder.decode(name, getCookieEncoding());
                 }
-
-                cookies.put(name, value);
+                if (value != null) {
+                    value = URLDecoder.decode(value, getCookieEncoding());
+                }
+            } catch (Exception ex) {
+                throw SpincastStatics.runtimize(ex);
             }
+
+            cookies.put(name, value);
         }
 
         return cookies;
@@ -1670,4 +1661,3 @@ public class SpincastUndertowServer implements Server {
     }
 
 }
-

@@ -297,7 +297,6 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
 
             @Override
             public boolean requestContainsCookies() {
-
                 Map<String, String> cookies = context.request().getCookiesValues();
                 return (cookies != null) && (cookies.size() > 0);
             }

@@ -67,29 +67,29 @@ public class SpincastXmlManager implements XmlManager {
     }
 
     protected Injector getGuice() {
-        return this.guiceProvider.get();
+        return guiceProvider.get();
     }
 
     protected JsonManager getJsonManager() {
-        return this.jsonManager;
+        return jsonManager;
     }
 
     protected Set<XmlMixinInfo> getXmlMixinInfos() {
-        return this.xmlMixinInfos;
+        return xmlMixinInfos;
     }
 
     protected XmlPrettyPrinter getXmlPrettyPrinter() {
-        return this.xmlPrettyPrinter;
+        return xmlPrettyPrinter;
     }
 
     protected XmlMapper getXmlMapper() {
-        if (this.xmlMapper == null) {
+        if (xmlMapper == null) {
 
             XmlMapper xmlMapper = createXmlMapper();
             registerCustomModules(xmlMapper);
             this.xmlMapper = xmlMapper;
         }
-        return this.xmlMapper;
+        return xmlMapper;
     }
 
     /**
@@ -164,7 +164,7 @@ public class SpincastXmlManager implements XmlManager {
     }
 
     protected XmlMapper getXmlMapperPretty() {
-        if (this.xmlMapperPretty == null) {
+        if (xmlMapperPretty == null) {
             XmlMapper xmlMapper = getXmlMapper().copy();
 
             xmlMapper.setDefaultPrettyPrinter(getXmlPrettyPrinter());
@@ -173,9 +173,9 @@ public class SpincastXmlManager implements XmlManager {
             registerCustomModules(xmlMapper);
             configureMixins(xmlMapper);
 
-            this.xmlMapperPretty = xmlMapper;
+            xmlMapperPretty = xmlMapper;
         }
-        return this.xmlMapperPretty;
+        return xmlMapperPretty;
     }
 
     /**
@@ -189,8 +189,8 @@ public class SpincastXmlManager implements XmlManager {
 
     protected JsonSerializer<JsonObject> getJsonObjectSerializer() {
 
-        if (this.jsonObjectSerializer == null) {
-            this.jsonObjectSerializer = new JsonSerializer<JsonObject>() {
+        if (jsonObjectSerializer == null) {
+            jsonObjectSerializer = new JsonSerializer<JsonObject>() {
 
                 @Override
                 public void serialize(JsonObject jsonObject,
@@ -213,13 +213,13 @@ public class SpincastXmlManager implements XmlManager {
                 }
             };
         }
-        return this.jsonObjectSerializer;
+        return jsonObjectSerializer;
     }
 
     protected JsonSerializer<JsonArray> getJsonArraySerializer() {
 
-        if (this.jsonArraySerializer == null) {
-            this.jsonArraySerializer = new JsonSerializer<JsonArray>() {
+        if (jsonArraySerializer == null) {
+            jsonArraySerializer = new JsonSerializer<JsonArray>() {
 
                 @Override
                 public void serialize(JsonArray jsonArray,
@@ -268,13 +268,13 @@ public class SpincastXmlManager implements XmlManager {
                 }
             };
         }
-        return this.jsonArraySerializer;
+        return jsonArraySerializer;
     }
 
     protected JsonDeserializer<JsonObject> getJsonObjectDeserializer() {
 
-        if (this.jsonObjectDeserializer == null) {
-            this.jsonObjectDeserializer = new JsonDeserializer<JsonObject>() {
+        if (jsonObjectDeserializer == null) {
+            jsonObjectDeserializer = new JsonDeserializer<JsonObject>() {
 
                 @Override
                 public JsonObject deserialize(JsonParser jsonParser,
@@ -293,13 +293,13 @@ public class SpincastXmlManager implements XmlManager {
             };
         }
 
-        return this.jsonObjectDeserializer;
+        return jsonObjectDeserializer;
     }
 
     protected JsonDeserializer<JsonArray> getJsonArrayDeserializer() {
 
-        if (this.jsonArrayDeserializer == null) {
-            this.jsonArrayDeserializer = new JsonDeserializer<JsonArray>() {
+        if (jsonArrayDeserializer == null) {
+            jsonArrayDeserializer = new JsonDeserializer<JsonArray>() {
 
                 @Override
                 public JsonArray deserialize(JsonParser jsonParser,
@@ -340,7 +340,7 @@ public class SpincastXmlManager implements XmlManager {
             };
         }
 
-        return this.jsonArrayDeserializer;
+        return jsonArrayDeserializer;
     }
 
     protected Object deserializeObjectOrArray(FromXmlParser xmlParser, DeserializationContext context) {
@@ -386,7 +386,7 @@ public class SpincastXmlManager implements XmlManager {
             }
 
             //==========================================
-            // Since we already started parsing the object to look 
+            // Since we already started parsing the object to look
             // for a potential attribute, we have to parse this
             // first property to the next method.
             //==========================================
@@ -523,7 +523,7 @@ public class SpincastXmlManager implements XmlManager {
             }
 
             JsonToken token = xmlParser.getCurrentToken();
-            while (token == JsonToken.FIELD_NAME) {
+            while (token == null || token == JsonToken.FIELD_NAME) {
 
                 String fieldName = xmlParser.getValueAsString();
                 if (StringUtils.isBlank(fieldName)) {

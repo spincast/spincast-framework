@@ -96,6 +96,17 @@ public class SpincastResourceHandlerDefault extends ResourceHandler implements S
     public void handleRequest(HttpServerExchange exchange) throws Exception {
 
         //==========================================
+        // Resource doesn't exist? Continue...
+        // The next Handler may generate the resource or
+        // may be a 404 Handler.
+        //==========================================
+        Resource resource = getResourceManager().getResource(exchange.getRequestPath());
+        if (resource == null) {
+            getNext().handleRequest(exchange);
+            return;
+        }
+
+        //==========================================
         // Is it a hotlinking protected resource?
         //==========================================
         if (exchange.getRequestMethod().equals(Methods.GET) && getStaticResource().isHotlinkingProtected()) {
@@ -154,7 +165,7 @@ public class SpincastResourceHandlerDefault extends ResourceHandler implements S
         // No Content-Type for directories...
         //==========================================
         try {
-            Resource resource = getResourceManager().getResource(exchange.getRelativePath());
+            Resource resource = getResourceManager().getResource(exchange.getRequestPath());
             if (resource != null && resource.isDirectory()) {
                 return;
             }
@@ -165,7 +176,7 @@ public class SpincastResourceHandlerDefault extends ResourceHandler implements S
         //==========================================
         // If the target resource is a file, then we
         // use the file extension to determine the
-        // Content-Type. Otherwise, the 
+        // Content-Type. Otherwise, the
         // getSpincastUndertowUtils().getContentTypeToUse() method will use
         // the request's path.
         //==========================================

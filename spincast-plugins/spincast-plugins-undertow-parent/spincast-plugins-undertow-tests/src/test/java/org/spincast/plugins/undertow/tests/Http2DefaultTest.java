@@ -22,7 +22,7 @@ import org.spincast.core.utils.ssl.SSLContextFactory;
 import org.spincast.plugins.httpclient.HttpResponse;
 import org.spincast.plugins.undertow.CacheBusterRemovalHandlerFactory;
 import org.spincast.plugins.undertow.CorsHandlerFactory;
-import org.spincast.plugins.undertow.FileClassPathResourceManagerFactory;
+import org.spincast.plugins.undertow.SpincastClassPathResourceManagerFactory;
 import org.spincast.plugins.undertow.GzipCheckerHandlerFactory;
 import org.spincast.plugins.undertow.SkipResourceOnQueryStringHandlerFactory;
 import org.spincast.plugins.undertow.SpincastHttpAuthIdentityManagerFactory;
@@ -84,7 +84,7 @@ public class Http2DefaultTest extends NoAppStartHttpServerTestingBase {
                                              SkipResourceOnQueryStringHandlerFactory skipResourceOnQueryStringHandlerFactory,
                                              SpincastResourceHandlerFactory spincastResourceHandlerFactory,
                                              CacheBusterRemovalHandlerFactory cacheBusterRemovalHandlerFactory,
-                                             FileClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
+                                             SpincastClassPathResourceManagerFactory fileClassPathResourceManagerFactory,
                                              SpincastHttpAuthIdentityManagerFactory spincastHttpAuthIdentityManagerFactory,
                                              WebsocketEndpointFactory spincastWebsocketEndpointFactory,
                                              SSLContextFactory sslContextFactory) {

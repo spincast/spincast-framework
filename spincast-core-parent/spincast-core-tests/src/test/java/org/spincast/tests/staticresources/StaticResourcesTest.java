@@ -136,8 +136,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
         assertEquals("image/jpeg", response.getContentType());
 
         response = GET("/one/two/three").send();
-        assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
-
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
     }
 
     @Test
@@ -151,13 +150,17 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
         assertEquals("file content 2", response.getContentAsString());
 
         response = GET("/dir").send();
-        assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/dir/").send();
-        assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/dir/nope").send();
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
+        response = GET("/dir/dir2").send();
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
+
     }
 
     @Test
@@ -271,7 +274,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
         getRouter().dir("/dir").pathAbsolute(dir.getAbsolutePath()).handle();
 
         HttpResponse response = GET("/dir/").send();
-        assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
         response = GET("/dir/" + fileTarget.getName()).send();
         assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -314,7 +317,7 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
             getRouter().dir("/dir").pathRelative(dirRelativePath).handle();
 
             HttpResponse response = GET("/dir/").send();
-            assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
+            assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatus());
 
             response = GET("/dir/" + fileName).send();
             assertEquals(HttpStatus.SC_OK, response.getStatus());
@@ -994,7 +997,6 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
         getRouter().dir("/one").cache(123, true).classpath("/oneDir").handle();
 
         HttpResponse response = GET("/one/file2.txt").send();
-
         assertEquals(HttpStatus.SC_OK, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         assertEquals("file content 2", response.getContentAsString());
@@ -1307,37 +1309,6 @@ public class StaticResourcesTest extends NoAppStartHttpServerTestingBase {
 
         pragma = response.getHeaderFirst(HttpHeaders.PRAGMA);
         assertNull(pragma);
-    }
-
-    @Test
-    public void dirWithIndex() throws Exception {
-
-        getRouter().dir("/dir").classpath("/dirWithIndex").handle();
-
-        HttpResponse response = GET("/dir").send();
-        assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("text/html", response.getContentType());
-        assertEquals("<h1>Hello!</h1>", response.getContentAsString());
-    }
-
-    @Test
-    public void dirWithIndex2() throws Exception {
-
-        getRouter().dir("/dir").classpath("/dirWithIndex").handle();
-
-        HttpResponse response = GET("/dir/").send();
-        assertEquals(HttpStatus.SC_OK, response.getStatus());
-        assertEquals("text/html", response.getContentType());
-        assertEquals("<h1>Hello!</h1>", response.getContentAsString());
-    }
-
-    @Test
-    public void dirNoIndex() throws Exception {
-
-        getRouter().dir("/dir").classpath("/oneDir").handle();
-
-        HttpResponse response = GET("/dir/").send();
-        assertEquals(HttpStatus.SC_FORBIDDEN, response.getStatus());
     }
 
 }

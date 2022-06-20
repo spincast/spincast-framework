@@ -33,21 +33,21 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void toXml() throws Exception {
 
-        JsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = jsonManager.create();
         jsonObj.set("someBoolean", true);
         jsonObj.set("someInt", 123);
 
-        JsonArray jsonArray = this.jsonManager.createArray();
+        JsonArray jsonArray = jsonManager.createArray();
         jsonArray.add("toto");
         jsonArray.add(123);
 
-        JsonObject jsonObj2 = this.jsonManager.create();
+        JsonObject jsonObj2 = jsonManager.create();
         jsonObj2.set("anotherBoolean", true);
         jsonObj2.set("anotherInt", 44444);
         jsonObj2.set("innerObj", jsonObj);
         jsonObj2.set("someArray", jsonArray);
 
-        String xml = this.xmlManager.toXml(jsonObj2);
+        String xml = xmlManager.toXml(jsonObj2);
         assertNotNull(xml);
 
         // @formatter:off
@@ -70,16 +70,16 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void toXmlArrayElementIsJsonObject() throws Exception {
 
-        JsonObject jsonObject = this.jsonManager.create();
-        JsonArray array = this.jsonManager.createArray();
+        JsonObject jsonObject = jsonManager.create();
+        JsonArray array = jsonManager.createArray();
         jsonObject.set("someArray", array);
-        JsonObject inner = this.jsonManager.create();
+        JsonObject inner = jsonManager.create();
         inner.set("fieldName", "email");
         inner.set("message", "Not a valid email address.");
         inner.set("type", "VALIDATION_TYPE_EMAIL");
         array.add(inner);
 
-        String xml = this.xmlManager.toXml(jsonObject, true);
+        String xml = xmlManager.toXml(jsonObject, true);
 
         // @formatter:off
         String expected = "<JsonObject>\n" +
@@ -167,19 +167,19 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void toXmlArrayElementIsAnotherArray() throws Exception {
 
-        JsonObject jsonObject = this.jsonManager.create();
-        JsonArray array = this.jsonManager.createArray();
+        JsonObject jsonObject = jsonManager.create();
+        JsonArray array = jsonManager.createArray();
         jsonObject.set("someArray", array);
 
-        JsonArray inner = this.jsonManager.createArray();
+        JsonArray inner = jsonManager.createArray();
         inner.add("aaa");
         inner.add("bbb");
         inner.add("ccc");
         array.add(inner);
 
-        String xml = this.xmlManager.toXml(jsonObject, true);
+        String xml = xmlManager.toXml(jsonObject, true);
 
-        JsonObject resultObj = this.xmlManager.fromXml(xml);
+        JsonObject resultObj = xmlManager.fromXml(xml);
         assertNotNull(resultObj);
         JsonArray arr1 = resultObj.getJsonArray("someArray");
         assertNotNull(arr1);
@@ -193,27 +193,27 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void toXmlArrayElementsAreJsonObjectAnotherArray() throws Exception {
 
-        JsonObject jsonObject = this.jsonManager.create();
+        JsonObject jsonObject = jsonManager.create();
 
-        JsonObject innerObj = this.jsonManager.create();
+        JsonObject innerObj = jsonManager.create();
         innerObj.set("name", "Stromgol");
         jsonObject.set("inner1", innerObj);
 
-        JsonArray array = this.jsonManager.createArray();
+        JsonArray array = jsonManager.createArray();
         jsonObject.set("someArray", array);
 
-        JsonArray inner = this.jsonManager.createArray();
+        JsonArray inner = jsonManager.createArray();
         inner.add("aaa");
         inner.add("bbb");
         inner.add("ccc");
-        JsonObject innerObj2 = this.jsonManager.create();
+        JsonObject innerObj2 = jsonManager.create();
         innerObj2.set("name", "Stromgol2");
         inner.add(innerObj2);
         array.add(inner);
 
-        String xml = this.xmlManager.toXml(jsonObject, true);
+        String xml = xmlManager.toXml(jsonObject, true);
 
-        JsonObject resultObj = this.xmlManager.fromXml(xml);
+        JsonObject resultObj = xmlManager.fromXml(xml);
         assertNotNull(resultObj);
 
         JsonObject in1 = resultObj.getJsonObject("inner1");
@@ -249,7 +249,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>\n";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
@@ -276,7 +276,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>\n";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
@@ -303,7 +303,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -327,7 +327,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -351,7 +351,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -378,7 +378,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -402,7 +402,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -423,7 +423,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -444,7 +444,7 @@ public class XmlTest extends NoAppTestingBase {
         // @formatter:on
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -464,20 +464,11 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>\n";
         // @formatter:on
 
-        //==========================================
-        // It seems Jackson ignore the "directValue"
-        // value here.
-        //==========================================
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
-        assertNotNull(jsonObject);
-
-        JsonArray array = jsonObject.getJsonArray("someArray");
-        assertNotNull(array);
-        assertEquals(1, array.size());
-
-        JsonObject inner = array.getJsonObject(0);
-        assertNotNull(inner);
-        assertEquals("email", inner.getString("fieldName"));
+        try {
+            xmlManager.fromXml(xml);
+            fail();
+        } catch (Exception ex) {
+        }
     }
 
     @Test
@@ -494,29 +485,29 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>\n";
         // @formatter:on
 
-        //==========================================
-        // It seems Jackson ignore the "directValue"
-        // value here.
-        //==========================================
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
         assertNotNull(array);
-        assertEquals(1, array.size());
+        assertEquals(2, array.size());
 
         JsonObject inner = array.getJsonObject(0);
         assertNotNull(inner);
         assertEquals("email", inner.getString("fieldName"));
+
+        String innerStr = array.getString(1);
+        assertNotNull(innerStr);
+        assertTrue(innerStr.contains("directValue"));
     }
 
     @Test
     public void toXmlPretty() throws Exception {
 
-        JsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = jsonManager.create();
         jsonObj.set("someInt", 123);
 
-        String xml = this.xmlManager.toXml(jsonObj, true);
+        String xml = xmlManager.toXml(jsonObj, true);
         assertNotNull(xml);
 
         StringBuilder expected = new StringBuilder();
@@ -541,7 +532,7 @@ public class XmlTest extends NoAppTestingBase {
         user.name = "Stromgol";
         user.age = 42;
 
-        String xml = this.xmlManager.toXml(user, true);
+        String xml = xmlManager.toXml(user, true);
         assertNotNull(xml);
 
         StringBuilder expected = new StringBuilder();
@@ -572,7 +563,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonObject innerObj = jsonObject.getJsonObject("innerObj");
@@ -596,7 +587,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonObject innerObj = jsonObject.getJsonObject("innerObj");
@@ -613,7 +604,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
@@ -637,7 +628,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonObject someObj = jsonObject.getJsonObject("someObj");
@@ -663,7 +654,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
          // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonObject falseArray = jsonObject.getJsonObject("someArray");
@@ -683,7 +674,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
@@ -706,7 +697,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
         // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
@@ -735,7 +726,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</JsonObject>";
          // @formatter:on
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml);
+        JsonObject jsonObject = xmlManager.fromXml(xml);
         assertNotNull(jsonObject);
 
         JsonArray array = jsonObject.getJsonArray("someArray");
@@ -751,20 +742,20 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void toXmlMultiFieldElementInArray() throws Exception {
 
-        JsonObject jsonObject = this.jsonManager.create();
+        JsonObject jsonObject = jsonManager.create();
 
-        JsonArray array = this.jsonManager.createArray();
+        JsonArray array = jsonManager.createArray();
         jsonObject.set("someArray", array);
 
-        JsonObject inner = this.jsonManager.create();
+        JsonObject inner = jsonManager.create();
         inner.set("fieldName", "email");
         inner.set("message", "Not a valid email address.");
         inner.set("type", "VALIDATION_TYPE_EMAIL");
         array.add(inner);
 
-        String xml = this.xmlManager.toXml(jsonObject, true);
+        String xml = xmlManager.toXml(jsonObject, true);
 
-        JsonObject result = this.xmlManager.fromXml(xml);
+        JsonObject result = xmlManager.fromXml(xml);
         assertNotNull(result);
 
         JsonArray resultArray = result.getJsonArray("someArray");
@@ -792,7 +783,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</someArray>";
         // @formatter:on
 
-        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals(2, jsonArray.size());
 
@@ -809,7 +800,7 @@ public class XmlTest extends NoAppTestingBase {
 
         String xml = "<root><name>coco</name></root>";
 
-        JsonObject obj = this.xmlManager.fromXml(xml);
+        JsonObject obj = xmlManager.fromXml(xml);
         assertNotNull(obj);
         assertEquals("coco", obj.getString("name"));
     }
@@ -820,7 +811,7 @@ public class XmlTest extends NoAppTestingBase {
         String xml = "<root>directValue<name>coco</name></root>";
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -828,16 +819,12 @@ public class XmlTest extends NoAppTestingBase {
 
     @Test
     public void fromXmlJsonObjectOnePropAndDirectValue2() throws Exception {
-
         String xml = "<root><name>coco</name>directValue</root>";
-
-        //==========================================
-        // It seems Jackson ignore the "directValue"
-        // value here.
-        //==========================================
-        JsonObject obj = this.xmlManager.fromXml(xml);
-        assertNotNull(obj);
-        assertEquals("coco", obj.getString("name"));
+        try {
+            xmlManager.fromXml(xml);
+            fail();
+        } catch (Exception ex) {
+        }
     }
 
     @Test
@@ -846,7 +833,7 @@ public class XmlTest extends NoAppTestingBase {
         String xml = "<root>coco</root>";
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
         }
@@ -858,7 +845,7 @@ public class XmlTest extends NoAppTestingBase {
         String xml = "<root1>coco</root1><root2>coco</root2>";
 
         try {
-            this.xmlManager.fromXml(xml);
+            xmlManager.fromXml(xml);
             fail();
         } catch (Exception ex) {
             System.out.println();
@@ -876,7 +863,7 @@ public class XmlTest extends NoAppTestingBase {
                     + "</someArray>";
         //@formatter:on
 
-        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals(1, jsonArray.size());
 
@@ -914,7 +901,7 @@ public class XmlTest extends NoAppTestingBase {
                     + "</someArray>";
         //@formatter:on
 
-        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals(3, jsonArray.size());
 
@@ -951,7 +938,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</someArray>";
         // @formatter:on
 
-        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals("111", jsonArray.getString(0));
         assertEquals("222", jsonArray.getString(1));
@@ -971,7 +958,7 @@ public class XmlTest extends NoAppTestingBase {
                      "</someArray>";
         // @formatter:on
 
-        JsonArray jsonArray = this.xmlManager.fromXmlToJsonArray(xml);
+        JsonArray jsonArray = xmlManager.fromXmlToJsonArray(xml);
         assertNotNull(jsonArray);
         assertEquals("111", jsonArray.getString(0));
 
@@ -992,7 +979,7 @@ public class XmlTest extends NoAppTestingBase {
         }
 
         public String getName() {
-            return this.name;
+            return name;
         }
 
         public void setName(String name) {
@@ -1000,7 +987,7 @@ public class XmlTest extends NoAppTestingBase {
         }
 
         public SpincastConfig getSpincastConfig() {
-            return this.spincastConfig;
+            return spincastConfig;
         }
     }
 
@@ -1011,10 +998,10 @@ public class XmlTest extends NoAppTestingBase {
         obj.setName("test");
         assertNull(obj.getSpincastConfig());
 
-        String xml = this.xmlManager.toXml(obj);
+        String xml = xmlManager.toXml(obj);
         assertNotNull(xml);
 
-        obj = this.xmlManager.fromXml(xml, TestObject.class);
+        obj = xmlManager.fromXml(xml, TestObject.class);
         assertNotNull(obj);
         assertNotNull(obj.getSpincastConfig());
         assertEquals("test", obj.getName());
@@ -1027,10 +1014,10 @@ public class XmlTest extends NoAppTestingBase {
         obj.setName("test");
         assertNull(obj.getSpincastConfig());
 
-        String xml = this.xmlManager.toXml(obj);
+        String xml = xmlManager.toXml(obj);
         assertNotNull(xml);
 
-        obj = this.xmlManager.fromXmlToType(xml, TestObject.class);
+        obj = xmlManager.fromXmlToType(xml, TestObject.class);
         assertNotNull(obj);
         assertNotNull(obj.getSpincastConfig());
         assertEquals("test", obj.getName());
@@ -1042,7 +1029,7 @@ public class XmlTest extends NoAppTestingBase {
         InputStream stream = getClass().getClassLoader().getResourceAsStream("obj.xml");
         assertNotNull(stream);
 
-        TestObject obj = this.xmlManager.fromXmlInputStream(stream, TestObject.class);
+        TestObject obj = xmlManager.fromXmlInputStream(stream, TestObject.class);
         assertNotNull(obj);
         assertNotNull(obj.getSpincastConfig());
         assertEquals("test", obj.getName());
@@ -1051,7 +1038,7 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void dependenciesInjectionOnCreateFromXmlToJsonObject() throws Exception {
 
-        JsonObject obj = this.xmlManager.fromXml("<TestObject><name>test</name></TestObject>");
+        JsonObject obj = xmlManager.fromXml("<TestObject><name>test</name></TestObject>");
         assertNotNull(obj);
 
         assertTrue(obj instanceof JsonObjectDefault);
@@ -1075,15 +1062,15 @@ public class XmlTest extends NoAppTestingBase {
     @Test
     public void emptyObject() throws Exception {
 
-        JsonObject jsonObj = this.jsonManager.create();
+        JsonObject jsonObj = jsonManager.create();
         assertNotNull(jsonObj);
 
-        String xml = this.xmlManager.toXml(new NoPropToSerialize());
+        String xml = xmlManager.toXml(new NoPropToSerialize());
         assertNotNull(xml);
 
-        JsonArray jsonArray = this.jsonManager.fromStringArray("[]");
+        JsonArray jsonArray = jsonManager.fromStringArray("[]");
         assertNotNull(jsonArray);
-        xml = this.xmlManager.toXml(new NoPropToSerialize[0]);
+        xml = xmlManager.toXml(new NoPropToSerialize[0]);
         assertNotNull(xml);
 
     }
@@ -1111,7 +1098,7 @@ public class XmlTest extends NoAppTestingBase {
         xml.append("  </channel>\n");
         xml.append("</rss>\n");
 
-        JsonObject jsonObject = this.xmlManager.fromXml(xml.toString());
+        JsonObject jsonObject = xmlManager.fromXml(xml.toString());
         assertNotNull(jsonObject);
 
         JsonObject channelObj = jsonObject.getJsonObject("channel");

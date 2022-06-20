@@ -415,7 +415,7 @@ public class SpincastOpenApiManagerDefault<R extends RequestContext<?>, W extend
                           "paths:\n" +
                           "  " + routePath + ":\n";
 
-        String[] lines = ((String)specs).split("\\r?\\n");
+        String[] lines = specs.split("\\r?\\n");
         for (int i = 0; i < lines.length; i++) {
             specsStr += "    " + lines[i] + "\n";
         }
@@ -683,7 +683,6 @@ public class SpincastOpenApiManagerDefault<R extends RequestContext<?>, W extend
         return false;
     }
 
-
     protected void addConsumesAnnotationToHandlerMethod(List<Annotation> handlerMethodAnnotations,
                                                         Specs specs,
                                                         Route<R> route) {
@@ -838,7 +837,6 @@ public class SpincastOpenApiManagerDefault<R extends RequestContext<?>, W extend
         getRouteHttpMethodAndPathToHide().add(key);
     }
 
-
     protected void addYamlStringSpecifiedPaths(OpenAPI openApi) {
 
         List<Route<R>> mainRoutes = getRouter().getMainRoutes();
@@ -943,6 +941,5 @@ public class SpincastOpenApiManagerDefault<R extends RequestContext<?>, W extend
 
         throw new RuntimeException("HTTP method from Swagger not managed: " + httpMethod);
     }
-
 
 }

@@ -54,7 +54,7 @@ import org.spincast.shaded.org.apache.http.NameValuePair;
 import org.spincast.shaded.org.apache.http.client.utils.URLEncodedUtils;
 import org.spincast.shaded.org.commonjava.mimeparse.MIMEParse;
 import org.spincast.shaded.org.jsoup.Jsoup;
-import org.spincast.shaded.org.jsoup.safety.Whitelist;
+import org.spincast.shaded.org.jsoup.safety.Safelist;
 
 import com.google.inject.Inject;
 
@@ -81,7 +81,6 @@ public class SpincastUtilsDefault implements SpincastUtils {
     private final Object appRootDirectoryNoJarLock = new Object();
     private File generatedTempFilesDir;
     private Map<String, Object> fileSystemsLocks;
-
 
     @Inject
     public SpincastUtilsDefault(SpincastConfig spincastConfig) {
@@ -1047,9 +1046,6 @@ public class SpincastUtilsDefault implements SpincastUtils {
         return path;
     }
 
-
-
-
     @Override
     public String basicHtml(boolean newlineToBrFirst, String html) {
         return basicHtml(newlineToBrFirst, html, false);
@@ -1066,11 +1062,11 @@ public class SpincastUtilsDefault implements SpincastUtils {
             html = html.replaceAll("\\r?\\n", "\n<br>");
         }
 
-        Whitelist whitelist = null;
+        Safelist safelist = null;
         if (allowImages) {
-            whitelist = Whitelist.basicWithImages();
+            safelist = Safelist.basicWithImages();
         } else {
-            whitelist = Whitelist.basic();
+            safelist = Safelist.basic();
         }
 
         //==========================================
@@ -1081,7 +1077,7 @@ public class SpincastUtilsDefault implements SpincastUtils {
         //==========================================
         html = Jsoup.clean(html,
                            getSpincastConfig().getPublicUrlBase(),
-                           whitelist.preserveRelativeLinks(true).addTags("center"));
+                           safelist.preserveRelativeLinks(true).addTags("center"));
 
         //==========================================
         // JSoup addds some unwanted whitespaces
@@ -1282,6 +1278,5 @@ public class SpincastUtilsDefault implements SpincastUtils {
         }
         return result;
     }
-
 
 }

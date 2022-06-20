@@ -373,6 +373,16 @@ public class SwaggerAnnotationsCreatorDefault implements SwaggerAnnotationsCreat
             public Extension[] extensions() {
                 return new Extension[0];
             }
+
+            @Override
+            public boolean enumAsRef() {
+                return true;
+            }
+
+            @Override
+            public AdditionalPropertiesValue additionalProperties() {
+                return AdditionalPropertiesValue.FALSE;
+            }
         };
     }
 

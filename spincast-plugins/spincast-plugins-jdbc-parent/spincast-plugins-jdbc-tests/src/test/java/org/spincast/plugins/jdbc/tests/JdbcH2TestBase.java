@@ -84,7 +84,7 @@ public abstract class JdbcH2TestBase extends NoAppTestingBase {
                         "   id SERIAL PRIMARY KEY, " +
                         "   name VARCHAR(255) NOT NULL, " +
                         "   email VARCHAR(255) UNIQUE," +
-                        "   birthdate TIMESTAMP(9) WITH TIME ZONE NOT NULL DEFAULT NOW()," +
+                        "   birthdate TIMESTAMP(9) NOT NULL DEFAULT NOW()," +
                         "   nbr INTEGER," +
                         "   nbr2 INTEGER," +
                         "   nbr3 INTEGER," +

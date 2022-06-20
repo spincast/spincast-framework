@@ -1,9 +1,7 @@
 package org.spincast.plugins.jsclosurecompiler;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import com.google.common.base.Function;
 import com.google.javascript.jscomp.CommandLineRunner;
+import com.google.javascript.jscomp.jarjar.com.google.common.base.Function;
 
 /**
  * Extending {@link CommandLineRunner} allows us to
@@ -18,15 +16,12 @@ public class SpincastJsClosureCompilerCommandLineRunner extends CommandLineRunne
         setExitCodeReceiver(new Function<Integer, Void>() {
 
             @Override
-            public @Nullable Void apply(@Nullable Integer exitValue) {
-
+            public Void apply(Integer exitValue) {
                 if (exitValue == null || exitValue != 0) {
                     throw new RuntimeException("Errors running the Closure Compiler. Exit value: " + exitValue);
                 }
-
                 return null;
             }
         });
     }
-
 }

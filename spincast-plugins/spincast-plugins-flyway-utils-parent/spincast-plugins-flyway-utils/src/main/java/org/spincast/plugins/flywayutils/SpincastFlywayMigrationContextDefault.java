@@ -11,9 +11,12 @@ import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.resolver.Context;
 import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.internal.resolver.ResolvedMigrationComparator;
 import org.reflections.Reflections;
+import org.spincast.core.config.SpincastConfig;
 import org.spincast.core.utils.SpincastStatics;
 import org.spincast.plugins.jdbc.JdbcUtils;
 import org.spincast.plugins.jdbc.SpincastDataSourceFactory;
@@ -29,6 +32,7 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
     private final String migrationsPackage;
     private final Provider<Injector> injectorProvider;
     private final JdbcUtils jdbcUtils;
+    private final SpincastConfig spincastConfig;
     private final SpincastDataSourceFactory spincastDataSourceFactory;
     private final String schema;
 
@@ -37,8 +41,9 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
                                                  @Assisted("migrationsPackage") String migrationsPackage,
                                                  Provider<Injector> injectorProvider,
                                                  JdbcUtils jdbcUtils,
+                                                 SpincastConfig spincastConfig,
                                                  SpincastDataSourceFactory spincastDataSourceFactory) {
-        this(dataSource, null, migrationsPackage, injectorProvider, jdbcUtils, spincastDataSourceFactory);
+        this(dataSource, null, migrationsPackage, injectorProvider, jdbcUtils, spincastConfig, spincastDataSourceFactory);
     }
 
     @AssistedInject
@@ -47,37 +52,43 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
                                                  @Assisted("migrationsPackage") String migrationsPackage,
                                                  Provider<Injector> injectorProvider,
                                                  JdbcUtils jdbcUtils,
+                                                 SpincastConfig spincastConfig,
                                                  SpincastDataSourceFactory spincastDataSourceFactory) {
         this.dataSource = dataSource;
         this.migrationsPackage = migrationsPackage;
         this.injectorProvider = injectorProvider;
         this.jdbcUtils = jdbcUtils;
+        this.spincastConfig = spincastConfig;
         this.spincastDataSourceFactory = spincastDataSourceFactory;
         this.schema = schema;
     }
 
     protected DataSource getDataSource() {
-        return this.dataSource;
+        return dataSource;
     }
 
     protected String getMigrationsPackage() {
-        return this.migrationsPackage;
+        return migrationsPackage;
     }
 
     protected Injector getInjector() {
-        return this.injectorProvider.get();
+        return injectorProvider.get();
     }
 
     protected JdbcUtils getJdbcUtils() {
-        return this.jdbcUtils;
+        return jdbcUtils;
     }
 
     protected String getSchema() {
-        return this.schema;
+        return schema;
+    }
+
+    protected SpincastConfig getSpincastConfig() {
+        return spincastConfig;
     }
 
     protected SpincastDataSourceFactory getSpincastDataSourceFactory() {
-        return this.spincastDataSourceFactory;
+        return spincastDataSourceFactory;
     }
 
     @Override
@@ -87,21 +98,29 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
         flyway.migrate();
     }
 
+    protected boolean isValidateOnMigrate() {
+        return !getSpincastConfig().isTestingMode();
+    }
+
     protected Flyway createFlyway() {
-        Flyway flyway = new Flyway();
-        flyway.setDataSource(getDataSource());
+
+        FluentConfiguration builder = Flyway.configure().dataSource(getDataSource())
+                                            .resolvers(SpincastFlywayMigrationContextDefault.this)
+                                            .skipDefaultResolvers(true)
+                                            .validateOnMigrate(isValidateOnMigrate())
+                                            .skipDefaultCallbacks(true);
+
         String schema = getSchema();
         if (schema != null) {
-            flyway.setSchemas(schema);
+            builder = builder.schemas(schema);
         }
-        flyway.setResolvers(SpincastFlywayMigrationContextDefault.this);
-        flyway.setSkipDefaultResolvers(true);
-        flyway.setSkipDefaultCallbacks(true);
+
+        Flyway flyway = new Flyway(builder);
         return flyway;
     }
 
     @Override
-    public Collection<ResolvedMigration> resolveMigrations() {
+    public Collection<ResolvedMigration> resolveMigrations(Context context) {
         try {
 
             List<ResolvedMigration> migrations = new ArrayList<ResolvedMigration>();
@@ -139,7 +158,6 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
 
             Collections.sort(migrations, new ResolvedMigrationComparator());
             return migrations;
-
 
         } catch (Exception ex) {
             throw SpincastStatics.runtimize(ex);

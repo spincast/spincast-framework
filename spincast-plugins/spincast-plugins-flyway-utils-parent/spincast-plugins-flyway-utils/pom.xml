@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>5.1.4</version>
+            <version>8.5.11</version>
         </dependency>
         
         <!--=================================== 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>0.10.2</version>
         </dependency>
 
 	</dependencies>

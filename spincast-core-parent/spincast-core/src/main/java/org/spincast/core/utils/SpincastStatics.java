@@ -1,6 +1,7 @@
 package org.spincast.core.utils;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -25,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spincast.shaded.org.apache.commons.io.IOUtils;
 import org.spincast.shaded.org.apache.commons.lang3.time.FastDateFormat;
+
+import jdk.jshell.spi.ExecutionControl.RunException;
 
 /**
  * Some few static methods.
@@ -415,12 +418,10 @@ public class SpincastStatics {
         }
     }
 
-
     public static void closeQuietly(InputStream stream) {
         getInstance().closeQuietlyInstance(stream);
     }
 
-    @SuppressWarnings("deprecation")
     public void closeQuietlyInstance(InputStream stream) {
         IOUtils.closeQuietly(stream);
     }
@@ -429,7 +430,6 @@ public class SpincastStatics {
         getInstance().closeQuietlyInstance(stream);
     }
 
-    @SuppressWarnings("deprecation")
     public void closeQuietlyInstance(OutputStream stream) {
         IOUtils.closeQuietly(stream);
     }
@@ -438,7 +438,6 @@ public class SpincastStatics {
         getInstance().closeQuietlyInstance(reader);
     }
 
-    @SuppressWarnings("deprecation")
     public void closeQuietlyInstance(Reader reader) {
         IOUtils.closeQuietly(reader);
     }
@@ -447,7 +446,6 @@ public class SpincastStatics {
         getInstance().closeQuietlyInstance(closeable);
     }
 
-    @SuppressWarnings("deprecation")
     public void closeQuietlyInstance(Closeable closeable) {
         IOUtils.closeQuietly(closeable);
     }
@@ -512,6 +510,31 @@ public class SpincastStatics {
             return emptyListIfNullArray ? new ArrayList<T>() : null;
         }
         return new ArrayList<T>(Arrays.asList(array));
+    }
+
+    /**
+     * Create a directory and all its parents if required.
+     *
+     * @throws RunException if the directory can't be created.
+     */
+    public static void mkDirsOrThrow(File dir) {
+        getInstance().mkDirsOrThrowInstance(dir);
+    }
+
+    public void mkDirsOrThrowInstance(File dir) {
+        if (dir == null) {
+            return;
+        }
+
+        if (dir.isDirectory()) {
+            return;
+        }
+
+        boolean res = dir.mkdirs();
+        if (!res) {
+            throw new RuntimeException("Unable to create directory: " + dir.getAbsolutePath());
+        }
+
     }
 
 }

@@ -96,12 +96,19 @@ public class SpincastUndertowPluginModule extends SpincastGuiceModuleBase {
     }
 
     protected void bindFileClassPathResourceManagerFactory() {
-        install(new FactoryModuleBuilder().implement(FileClassPathResourceManager.class, getFileClassPathResourceManagerClass())
-                                          .build(FileClassPathResourceManagerFactory.class));
+        install(new FactoryModuleBuilder().implement(SpincastClassPathFileResourceManager.class,
+                                                     getFileClassPathResourceManagerClass())
+                                          .implement(SpincastClassPathDirResourceManager.class,
+                                                     getDirClassPathResourceManagerClass())
+                                          .build(SpincastClassPathResourceManagerFactory.class));
     }
 
-    protected Class<? extends FileClassPathResourceManager> getFileClassPathResourceManagerClass() {
-        return FileClassPathResourceManagerDefault.class;
+    protected Class<? extends SpincastClassPathFileResourceManager> getFileClassPathResourceManagerClass() {
+        return SpincastClassPathFileResourceManagerDefault.class;
+    }
+
+    protected Class<? extends SpincastClassPathDirResourceManager> getDirClassPathResourceManagerClass() {
+        return SpincastClassPathDirResourceManagerDefault.class;
     }
 
     protected void bindHttpAuthIdentityManagerFactory() {
