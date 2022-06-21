@@ -86,7 +86,7 @@ public class SpincastClassPathDirResourceManagerDefault implements SpincastClass
             Resource resource = new URLResource(resourceUrl, getDirPath());
 
             // We do not support directory index files (such as "index.html")
-            if (resource.getFile() == null || resource.getFile().isDirectory()) {
+            if (resource.isDirectory()) {
                 return null;
             }
 
