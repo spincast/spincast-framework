@@ -64,31 +64,31 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
     }
 
     protected DataSource getDataSource() {
-        return dataSource;
+        return this.dataSource;
     }
 
     protected String getMigrationsPackage() {
-        return migrationsPackage;
+        return this.migrationsPackage;
     }
 
     protected Injector getInjector() {
-        return injectorProvider.get();
+        return this.injectorProvider.get();
     }
 
     protected JdbcUtils getJdbcUtils() {
-        return jdbcUtils;
+        return this.jdbcUtils;
     }
 
     protected String getSchema() {
-        return schema;
+        return this.schema;
     }
 
     protected SpincastConfig getSpincastConfig() {
-        return spincastConfig;
+        return this.spincastConfig;
     }
 
     protected SpincastDataSourceFactory getSpincastDataSourceFactory() {
-        return spincastDataSourceFactory;
+        return this.spincastDataSourceFactory;
     }
 
     @Override
@@ -99,7 +99,14 @@ public class SpincastFlywayMigrationContextDefault implements SpincastFlywayMigr
     }
 
     protected boolean isValidateOnMigrate() {
-        return !getSpincastConfig().isTestingMode();
+        //==========================================
+        // We default to false since that was the
+        // default in Flyway before version 3,
+        // Also, this feature doesn't seem to work well.
+        // The migration files are always seen as
+        // "modified" by Flyway for me.
+        //==========================================
+        return false;
     }
 
     protected Flyway createFlyway() {
