@@ -767,7 +767,7 @@ public class SpincastRequestRequestContextAddon<R extends RequestContext<?>>
     }
 
     @Override
-    public Form getForm(String rootKey) {
+    public Form getFormAlreadyAdded(String rootKey) {
         return getForm(rootKey, false);
     }
 

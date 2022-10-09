@@ -65,7 +65,7 @@ Docs : "Forms"
 // GET handler
 public void myHandlerGet(AppRequestContext context) {
 
-    Form form = context.request().getForm("userForm");
+    Form form = context.request().getFormAlreadyAdded("userForm");
     if (form == null) {
         form = context.request().getFormOrCreate("userForm");
         context.response().addForm(form);
@@ -206,14 +206,13 @@ public void myHandlerPost(AppRequestContext context) {
 // GET handler
 public void myHandlerGet(AppRequestContext context) {
 
-    Form userForm = context.request().getForm("userForm");
+    Form userForm = context.request().getFormAlreadyAdded("userForm");
     if (userForm == null) {
     
         // Empty form! 
         // No username and no email elements are specified.
         userForm = context.request().getFormOrCreate("userForm");
-        
-        context.response().getModel().set("userForm", userForm);
+        context.response().addForm(form);
     }
     
     context.response().sendTemplateHtml("/templates/userEdit.html");

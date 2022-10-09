@@ -430,42 +430,54 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
     public Form getFormOrCreate(String rootKey);
 
     /**
-     * Gets the part of the submitted <code>FORM</code> body
-     * that is scoped by the specified <code>root key</code>.
+     * Get a <code>Form</code> that some of your previous
+     * code already added. This is to be used when you want
+     * to know if this is the case or not.
      * <p>
-     * When an HTML form is submitted, there may be utility fields
-     * (such as a CSRF token, etc.) in addition to
-     * business logic fields.
-     * By using this {@link #getFormOrCreate(String)}
-     * you only get the fields which names start with the specified
-     * <code>root key</code>. For example, if this HTML form was submitted:
-     * <pre>
-     * &lt;form&gt;
-     *  &lt;input type="text" name="csrfToken" value="12345" /&gt;
-     *  &lt;input type="text" name="myUser.userName" value="Stromgol" /&gt;
-     *  &lt;input type="text" name="myUser.lastNameName" value="LaPierre" /&gt;
-     * ...
-     * </pre>
+     * For example, When a Form is posted, you will use
+     * {@link #getFormOrCreate(String)} to create the
+     * <code>Form</code> to validate. For example:
+     *
+     * <code>
+     * Form form = context.request().getFormOrCreate("form");
+     * context.response().addForm(form);
+     *
+     * // perform validations...
+     *
+     * // add an error
+     * form.addError("someFieldKey",
+     *               "someFieldKey_tooLong",
+     *               "The someFieldKey contains too many characters.");
+     * </code>
+     *
+     * If there is an error, you may want to call the "GET"
+     * version of the current POST one in order to reuse its
+     * logic. But in that GET method you will then want to
+     * <em>keep the submitted data</em>, not add some freshly
+     * taken one from the database!
      * <p>
-     * ... then calling <code>getFormWithRootKey("myUser")</code> would
-     * return a {@link Form} object containing the "userName" and the "userName"
-     * fields, but not the "csrfToken".
-     * </p>
-     * <p>
-     * A {@link Form} object is in fact a {@link JsonObject} containing the submitted
-     * fields and a {@link ValidationSet} to store validations performed on it.
-     * <p>
-     * The same field is returned, everytime this method is called
-     * with the same <code>name</code>.
-     * <p>
-     * If the root key is not found in the POSTed data, an empty
-     * form will be created.
-     * <p>
+     * So the GET method will call
+     * {@link #getFormAlreadyAdded(String)} and only
+     * if it's <code>null</code> will it call
+     * {@link #getFormOrCreate(String)}, add fresh values
+     * taken from the database and add the form to the
+     * response:
+     *
+     * <code>
+     * Form form = context.request().getFormAlreadyAdded("yourFormName");
+     * if (form == null) {
+     *     form = context.request().getFormOrCreate("form");
+     *     context.response().addForm(form);
+     *     form.set("someFieldKey", valueFreshFromTheDatabase);
+     * }
+     * </code>
+     *
      * The key are <em>case sensitive</em>.
      *
-     * @return the form if it exists or <code>null</code> otherwise.
+     * @return the form if it has already been added
+     * by your application or <code>null</code> otherwise.
      */
-    public Form getForm(String rootKey);
+    public Form getFormAlreadyAdded(String rootKey);
 
     /**
      * The key of the map if the HTML's <code>name</code> attribute.
@@ -545,7 +557,6 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      */
     public boolean isFlashMessageExists();
 
-
     /**
      * Gets the the request cookies values as a Map,
      * using the names of the cookies as the keys.
@@ -558,7 +569,6 @@ public interface RequestRequestContextAddon<R extends RequestContext<?>> {
      * @return the value or <code>null</code> if not found.
      */
     public String getCookieValue(String name);
-
 
     /**
      * Did we validate that the current user has

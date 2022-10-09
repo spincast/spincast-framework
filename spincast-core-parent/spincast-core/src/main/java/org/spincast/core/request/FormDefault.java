@@ -479,7 +479,13 @@ public class FormDefault extends JsonObjectDefault implements Form {
         if (jsonPath == null) {
             Map<String, List<ValidationMessage>> messagesMap = getMessages();
             for (Entry<String, List<ValidationMessage>> entry : messagesMap.entrySet()) {
+                if (formatType == ValidationMessageFormatType.HTML) {
+                    textBuilder.append("<ul class=\"" + getCssClassForHtmlMessageWrapper() + "\">");
+                }
                 addMessageFormattedSpecifickey(entry.getKey(), entry.getValue(), formatType, textBuilder, jsonObject);
+                if (formatType == ValidationMessageFormatType.HTML) {
+                    textBuilder.append("</ul>");
+                }
             }
         } else {
             List<ValidationMessage> messages = getMessages().get(jsonPath);
@@ -521,13 +527,9 @@ public class FormDefault extends JsonObjectDefault implements Form {
         }
 
         if (formatType == ValidationMessageFormatType.PLAIN_TEXT) {
-
             addMessagesFormattedSpecifickeyTextPlain(key, textBuilder, messages);
-
         } else if (formatType == ValidationMessageFormatType.HTML) {
-
             addMessagesFormattedSpecifickeyHtml(key, textBuilder, messages);
-
         } else {
             throw new RuntimeException("Type not managed here: " + formatType);
         }
@@ -536,23 +538,19 @@ public class FormDefault extends JsonObjectDefault implements Form {
     protected void addMessagesFormattedSpecifickeyTextPlain(String key,
                                                             StringBuilder textBuilder,
                                                             List<ValidationMessage> messages) {
-
-        textBuilder.append("key \"").append(key).append("\"").append("\n");
         for (ValidationMessage message : messages) {
-            textBuilder.append("    - ").append(message.getText()).append("\n");
+            textBuilder.append("- ").append(message.getText()).append("\n");
         }
         textBuilder.append("\n");
     }
 
+    /**
+     * &lt;ul&gt; tag is already set.
+     */
     protected void addMessagesFormattedSpecifickeyHtml(String key,
                                                        StringBuilder textBuilder,
                                                        List<ValidationMessage> messages) {
-
-        textBuilder.append("<li class=\"" + getCssClassForErrorkey() + "\">").append(key).append("\n");
-        textBuilder.append("    <ul>\n");
-
         for (ValidationMessage message : messages) {
-
             String cssClass;
             if (message.getValidationLevel() == ValidationLevel.SUCCESS) {
                 cssClass = getCssClassForSuccessMessage();
@@ -562,11 +560,10 @@ public class FormDefault extends JsonObjectDefault implements Form {
                 cssClass = getCssClassForErrorMessage();
             }
 
-            textBuilder.append("        <li class=\"" + cssClass + "\">").append(message.getText())
+            textBuilder.append("<li class=\"" + cssClass + "\">")
+                       .append(message.getText())
                        .append("</li>\n");
         }
-        textBuilder.append("    </ul>\n");
-        textBuilder.append("</li>\n");
     }
 
     /**
@@ -574,6 +571,10 @@ public class FormDefault extends JsonObjectDefault implements Form {
      */
     protected String getCssClassForErrorkey() {
         return "validationKey";
+    }
+
+    protected String getCssClassForHtmlMessageWrapper() {
+        return "validationWrap";
     }
 
     /**
@@ -663,6 +664,5 @@ public class FormDefault extends JsonObjectDefault implements Form {
     public String toString() {
         return toJsonString(true);
     }
-
 
 }
