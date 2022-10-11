@@ -76,7 +76,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             File resourceFile = new File(pathForGeneratedResource);
 
             //==========================================
-            // Check if the main handler has saved the 
+            // Check if the main handler has saved the
             // generated resource by itself...
             //==========================================
             if (resourceFile.exists()) {
@@ -91,8 +91,8 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
 
             if (context.response().isHeadersSent()) {
                 logger.warn("Headers sent, we can't save a copy of the generated resource! You will have to make sure that " +
-                                 "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
-                                 "request!");
+                            "you save the generated resource by yourself, otherwise, a new version will be generated for each " +
+                            "request!");
                 return false;
             }
 
@@ -104,7 +104,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
 
         } catch (Exception ex) {
             logger.error("Unable to save the generated resource '" + pathForGeneratedResource + "' :\n" +
-                              SpincastStatics.getStackTrace(ex));
+                         SpincastStatics.getStackTrace(ex));
 
             // We still let the reponse being sent...
             return false;
@@ -260,7 +260,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
         } else if (corsResult == CorsFilterResponse.PREFLIGHT) {
 
             //==========================================
-            // We always skip all remaining handlers 
+            // We always skip all remaining handlers
             // on a Preflight request!
             // For example if the request is for a "dynamic resource",
             // we don't want to run the "saveGeneratedResource" after
@@ -540,7 +540,7 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
             // We lazy load the Flash message to make sure
             // that only when the Flash Message is actually needed
             // it is retrieved from the request. Otherwise, some
-            // resources may pass here, retrieve 
+            // requests for various resources may pass here, retrieve
             // the Flash message and delete it (since it is deleted
             // as soon as it is used).
             //==========================================
@@ -594,11 +594,12 @@ public class SpincastFiltersDefault<R extends RequestContext<?>> implements Spin
                 return AlertLevel.WARNING;
             } else if (flashType == FlashMessageLevel.ERROR) {
                 return AlertLevel.ERROR;
+            } else if (flashType == FlashMessageLevel.SIMPLE_MESSAGE) {
+                return AlertLevel.SIMPLE_MESSAGE;
             } else {
                 throw new RuntimeException("Flash type not managed here : " + flashType);
             }
         }
     }
-
 
 }

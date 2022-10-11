@@ -6,5 +6,6 @@ package org.spincast.core.flash;
 public enum FlashMessageLevel {
     ERROR,
     WARNING,
-    SUCCESS
+    SUCCESS,
+    SIMPLE_MESSAGE
 }

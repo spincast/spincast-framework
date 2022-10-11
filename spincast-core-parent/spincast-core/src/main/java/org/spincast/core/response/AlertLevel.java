@@ -6,5 +6,6 @@ package org.spincast.core.response;
 public enum AlertLevel {
     ERROR,
     WARNING,
-    SUCCESS
+    SUCCESS,
+    SIMPLE_MESSAGE
 }
